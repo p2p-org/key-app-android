@@ -60,7 +60,7 @@ interface OrcaSwapContract {
         fun setNewSettings(settingsResult: OrcaSettingsResult)
         fun swapOrConfirm()
         fun swap()
-        fun calculateAvailableAmount()
+        fun fillMaxAmount()
         fun reverseTokens()
         fun onFeeLimitsClicked()
         fun onBackPressed()

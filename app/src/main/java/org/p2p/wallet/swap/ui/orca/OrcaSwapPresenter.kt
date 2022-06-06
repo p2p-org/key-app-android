@@ -12,10 +12,12 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.send.model.FeePayerSelectionStrategy
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaSwapInteractor
+import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.SwapConfirmData
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getMinimumAmountOut
@@ -31,6 +33,7 @@ import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.formatToken
@@ -80,7 +83,6 @@ class OrcaSwapPresenter(
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
 
-    private var aroundValue: BigDecimal = BigDecimal.ZERO
     private var slippage: Slippage = Slippage.Percent
     private var isMaxClicked: Boolean = false
 
@@ -154,17 +156,29 @@ class OrcaSwapPresenter(
         this.slippage = settingsResult.newSlippage
         view?.showSlippage(this.slippage)
 
-        recalculate()
-
         swapInteractor.setFeePayerToken(settingsResult.newFeePayerToken)
         view?.showFeePayerToken(settingsResult.newFeePayerToken.tokenSymbol)
+
+        recalculate(FeePayerSelectionStrategy.CORRECT_AMOUNT)
     }
 
-    override fun calculateAvailableAmount() {
+    override fun fillMaxAmount() {
         val amount = sourceToken.total.formatToken()
-        setSourceAmount(amount)
+        if (!this::sourceToken.isInitialized) return
+
+        val decimalAmount = sourceAmount.toBigDecimalOrZero()
+        val aroundValue = sourceToken.usdRateOrZero.multiply(decimalAmount).scaleMedium()
+
+        val isMoreThanBalance = decimalAmount.isMoreThan(sourceToken.total)
+        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconSecondary
+
+        view?.setAvailableTextColor(availableColor)
+        view?.showAroundValue(aroundValue)
+
         view?.showNewAmount(amount)
         isMaxClicked = true
+
+        recalculate(FeePayerSelectionStrategy.CORRECT_AMOUNT)
     }
 
     override fun setSourceAmount(amount: String) {
@@ -173,7 +187,7 @@ class OrcaSwapPresenter(
         if (!this::sourceToken.isInitialized) return
 
         val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        aroundValue = sourceToken.usdRateOrZero.multiply(decimalAmount).scaleMedium()
+        val aroundValue = sourceToken.usdRateOrZero.multiply(decimalAmount).scaleMedium()
 
         val isMoreThanBalance = decimalAmount.isMoreThan(sourceToken.total)
         val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconSecondary
@@ -181,16 +195,14 @@ class OrcaSwapPresenter(
         view?.setAvailableTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
-        recalculate()
+        recalculate(FeePayerSelectionStrategy.SELECT_FEE_PAYER)
     }
 
     override fun loadDataForSettings() {
         launch {
             val sol = userInteractor.getUserTokens().find { it.isSOL } ?: return@launch
             val tokens = mutableListOf(sol).apply {
-                if (!sourceToken.isSOL) {
-                    add(sourceToken)
-                }
+                if (!sourceToken.isSOL) add(sourceToken)
             }
             view?.showSwapSettings(slippage, tokens, swapInteractor.getFeePayerToken())
             val feeSource = if (sourceToken.isSOL) SwapAnalytics.FeeSource.SOL else SwapAnalytics.FeeSource.OTHER
@@ -366,19 +378,24 @@ class OrcaSwapPresenter(
         view?.showProgressDialog(null)
     }
 
-    private fun recalculate() {
+    private fun recalculate(strategy: FeePayerSelectionStrategy) {
         val destination = destinationToken ?: return
 
         calculationJob?.cancel()
-
         launch {
             /* Fee is being calculated including entered amount, thus calculating fee if entered amount changed */
-            calculateFees(sourceToken, destination)
+            calculateFees(sourceToken, destination, strategy)
 
             calculateRates(sourceToken, destination)
         }.also { calculationJob = it }
     }
 
+    /**
+     * This launches full recalculation
+     * It's being called from the places:
+     * - when destination token is selected (assuming source is selected as well)
+     * - when user reversed tokens
+     * */
     private fun calculateData(source: Token.Active, destination: Token) {
         launch {
             try {
@@ -386,7 +403,7 @@ class OrcaSwapPresenter(
                 searchTradablePairs(source, destination)
                 view?.showButtonText(R.string.swap_calculating_fees)
                 swapInteractor.setFeePayerToken(source)
-                recalculate()
+                recalculate(FeePayerSelectionStrategy.CORRECT_AMOUNT)
             } catch (e: Throwable) {
                 Timber.e("Error calculating data")
             }
@@ -405,28 +422,110 @@ class OrcaSwapPresenter(
         }
     }
 
-    private suspend fun calculateFees(source: Token.Active, destination: Token) {
+    private suspend fun calculateFees(source: Token.Active, destination: Token, strategy: FeePayerSelectionStrategy) {
         val enteredAmount = sourceAmount.toBigDecimalOrZero()
         if (enteredAmount.isZero()) {
             view?.showTotal(null)
             return
         }
 
-        val fees = swapInteractor.calculateFeeAndTopUpAmount(
+        val feePayerToken = swapInteractor.getFeePayerToken()
+
+        val fee = calculateFeeRelayerFee(
+            feePayerToken = feePayerToken,
             sourceToken = source,
+            destination = destination
+        ) ?: return
+
+        showFeeDetails(
+            sourceToken = sourceToken,
+            destination = destination,
+            fee = fee,
+            feePayerToken = feePayerToken,
+            strategy = strategy,
+        )
+    }
+
+    private suspend inline fun calculateFeeRelayerFee(
+        sourceToken: Token.Active,
+        destination: Token,
+        feePayerToken: Token.Active
+    ): FeeRelayerSwapFee? {
+
+        val fees = swapInteractor.calculateFeesForFeeRelayer(
+            feePayerToken = feePayerToken,
+            sourceToken = sourceToken,
             destination = destination
         )
 
-        view?.showFees(fees)
+        /*
+         * Checking if fee or feeInPayingToken are null
+         * feeInPayingToken can be null only for renBTC network
+         * */
+        if (fees == null || sourceToken.isSOL) {
+            calculateTotal(sourceToken, destination, fee = null)
+            return null
+        }
 
-        calculateAmount(sourceToken, destination, fees)
+        return fees
     }
 
-    private fun calculateAmount(source: Token.Active, destination: Token, fee: SwapFee) {
-        val inputAmount = sourceAmount.toBigDecimalOrZero().toLamports(source.decimals)
+    private suspend fun showFeeDetails(
+        feePayerToken: Token.Active,
+        sourceToken: Token.Active,
+        destination: Token,
+        fee: FeeRelayerSwapFee,
+        strategy: FeePayerSelectionStrategy
+    ) {
+        val swapFee = buildSwapFee(feePayerToken, sourceToken, fee)
 
-        val pair = orcaPoolInteractor.findBestPoolsPairForInputAmount(inputAmount, poolPairs)
-        if (pair.isNullOrEmpty() || inputAmount.isZero()) {
+        if (strategy == FeePayerSelectionStrategy.NO_ACTION) {
+//            showFees(sourceToken, fee)
+            calculateTotal(sourceToken, destination, swapFee)
+        } else {
+            validateAndSelectFeePayer(sourceToken, swapFee, strategy)
+        }
+
+        view?.showFeePayerToken(feePayerToken.tokenSymbol)
+    }
+
+    private fun buildSwapFee(
+        newFeePayer: Token.Active,
+        destination: Token,
+        fee: FeeRelayerSwapFee
+    ): SwapFee {
+
+        val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else Constants.SOL_SYMBOL
+        val accountCreationFee = if (newFeePayer.isSOL) {
+            fee.feeInSol.fromLamports(newFeePayer.decimals)
+        } else {
+            fee.feeInPayingToken.fromLamports(newFeePayer.decimals)
+        }
+            .scaleMedium()
+        val accountCreationFeeUsd = accountCreationFee.toUsd(newFeePayer.usdRate)
+
+        return SwapFee(
+            isFreeTransactionAvailable = fee.isFreeTransactionAvailable,
+            accountCreationToken = accountCreationToken,
+            accountCreationFee = accountCreationFee,
+            accountCreationFeeUsd = accountCreationFeeUsd,
+            feePayerToken = newFeePayer
+        )
+    }
+
+    private suspend fun validateAndSelectFeePayer(
+        sourceToken: Token.Active,
+        fee: SwapFee,
+        strategy: FeePayerSelectionStrategy
+    ) {
+    }
+
+    private fun calculateTotal(source: Token.Active, destination: Token, fee: SwapFee?) {
+        val inputAmount = sourceAmount.toBigDecimalOrZero()
+        val inputAmountLamports = inputAmount.toLamports(source.decimals)
+
+        val pair = orcaPoolInteractor.findBestPoolsPairForInputAmount(inputAmountLamports, poolPairs)
+        if (pair.isNullOrEmpty() || inputAmountLamports.isZero()) {
             Timber.tag(TAG_SWAP).d("Best pair is empty")
             updateButtonState(source)
             return
@@ -437,30 +536,27 @@ class OrcaSwapPresenter(
         val deprecatedValues = pair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
         Timber.tag(TAG_SWAP).d("Best pair found, deprecation values: $deprecatedValues")
 
-        val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
+        val estimatedOutputAmount = pair.getOutputAmount(inputAmountLamports) ?: return
         destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).formatToken()
 
-        val minReceive = pair.getMinimumAmountOut(inputAmount, slippage.doubleValue) ?: return
+        val minReceive = pair.getMinimumAmountOut(inputAmountLamports, slippage.doubleValue) ?: return
         val minReceiveResult = minReceive.fromLamports(destination.decimals)
 
-        val totalUsd = sourceAmount.toBigDecimalOrZero().multiply(source.usdRateOrZero)
+        val totalUsd = inputAmount.multiply(source.usdRateOrZero)
 
         val receiveAtLeast = "${minReceiveResult.formatToken()} ${destination.tokenSymbol}"
         val receiveAtLeastUsd = destination.usdRate?.let { minReceiveResult.multiply(it) }
 
         val data = SwapTotal(
             destinationAmount = destinationAmount,
-            fee = fee.transactionFeeString,
-            approxFeeUsd = fee.approxFeeUsd,
-            total = "${sourceAmount.toBigDecimalOrZero().formatToken()} ${source.tokenSymbol}",
-            totalUsd = totalUsd.formatUsd(),
+            fee = fee,
+            total = inputAmount,
+            totalUsd = totalUsd,
             receiveAtLeast = receiveAtLeast,
             receiveAtLeastUsd = receiveAtLeastUsd?.formatUsd()
         )
         view?.showTotal(data)
 
-        val feePayerToken = swapInteractor.getFeePayerToken()
-        view?.showFeePayerToken(feePayerToken.tokenSymbol)
         updateButtonState(source)
     }
 

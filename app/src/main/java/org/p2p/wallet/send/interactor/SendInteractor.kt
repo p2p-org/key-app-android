@@ -19,7 +19,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
-import org.p2p.wallet.rpc.model.FeeRelayerSendFee
+import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
@@ -75,7 +75,7 @@ class SendInteractor(
         feePayerToken: Token.Active,
         token: Token.Active,
         receiver: String
-    ): FeeRelayerSendFee? {
+    ): FeeRelayerFee? {
         val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
         val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
@@ -103,7 +103,7 @@ class SendInteractor(
 
         if (fees.total.isZero()) return null
 
-        return FeeRelayerSendFee(
+        return FeeRelayerFee(
             feeInSol = fees.total,
             feeInPayingToken = getFeesInPayingToken(feePayerToken, fees.total)
         )

@@ -15,6 +15,7 @@ import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -82,7 +83,7 @@ class SwapDetailsView @JvmOverloads constructor(
             } else {
                 val spannedFee = SpanUtils.highlightText(
                     data.commonTransactionFee.orEmpty(),
-                    data.approxTransactionFeeUsd.orEmpty(),
+                    data.commonTransactionFee.orEmpty(),//todo: fix it, temporary
                     getColor(R.color.textIconSecondary)
                 )
                 transactionFeeTextView.text = spannedFee
@@ -149,8 +150,11 @@ class SwapDetailsView @JvmOverloads constructor(
             if (fullFee != null) {
                 totalFeeTextView.isVisible = isExpanded
 
+//                totalFeeTextView.text = SpanUtils.highlightText(
+//                    fullFee, data.approxFeeUsd, getColor(R.color.textIconSecondary)
+//                )
                 totalFeeTextView.text = SpanUtils.highlightText(
-                    fullFee, data.approxFeeUsd, getColor(R.color.textIconSecondary)
+                    fullFee, fullFee, getColor(R.color.textIconSecondary)
                 )
             } else {
                 totalFeeTextView.isVisible = false
@@ -177,7 +181,7 @@ class SwapDetailsView @JvmOverloads constructor(
 
     private fun buildTotalText(total: SwapTotal?): SpannableString {
         val totalAmount = if (total != null) {
-            if (total.fee.isNullOrEmpty()) total.total else "${total.total} + ${total.fee}"
+            if (total.fee == null) total.total.formatToken() else "${total.total} + ${total.fee.accountCreationFee}"
         } else {
             context.getString(R.string.swap_total_zero_sol)
         }

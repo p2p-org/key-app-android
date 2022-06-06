@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.model.orca
 
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.utils.asApproximateUsd
 import java.math.BigDecimal
 
@@ -8,9 +9,7 @@ class SwapFee(
     val accountCreationToken: String?,
     val accountCreationFee: BigDecimal?,
     val accountCreationFeeUsd: BigDecimal?,
-    val transactionFee: BigDecimal?,
-    val transactionFeeUsd: BigDecimal?,
-    val feePayerToken: String
+    val feePayerToken: Token.Active
 ) {
 
     val commonFee: String?
@@ -20,10 +19,7 @@ class SwapFee(
         get() = accountCreationFeeUsd?.asApproximateUsd().orEmpty()
 
     val commonTransactionFee: String?
-        get() = accountCreationFee?.let { "$it $approxTransactionFeeUsd" }
-
-    val approxTransactionFeeUsd: String
-        get() = transactionFeeUsd?.asApproximateUsd().orEmpty()
+        get() = accountCreationFee?.toPlainString()
 
     val transactionFeeString: String?
         get() = accountCreationFee?.let { "$it $feePayerToken" }

@@ -124,10 +124,10 @@ class OrcaSwapFragment :
         sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
         destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
         destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
-        availableTextView.setOnClickListener { presenter.calculateAvailableAmount() }
-        maxTextView.setOnClickListener { presenter.calculateAvailableAmount() }
+        availableTextView.setOnClickListener { presenter.fillMaxAmount() }
+        maxTextView.setOnClickListener { presenter.fillMaxAmount() }
 
-        setupAmountListener()
+        setupAmountFractionListener()
 
         exchangeImageView.setOnClickListener { presenter.reverseTokens() }
         swapDetails.setOnSlippageClickListener {
@@ -251,7 +251,7 @@ class OrcaSwapFragment :
         AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
         binding.amountEditText.setText(amount)
         binding.amountEditText.setSelection(amount.length)
-        setupAmountListener()
+        setupAmountFractionListener()
     }
 
     override fun setAvailableTextColor(@ColorRes availableColor: Int) {
@@ -345,7 +345,7 @@ class OrcaSwapFragment :
         )
     }
 
-    private fun setupAmountListener() {
+    private fun setupAmountFractionListener() {
         AmountFractionTextWatcher.installOn(binding.amountEditText) {
             presenter.setSourceAmount(it)
         }
