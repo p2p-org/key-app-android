@@ -10,6 +10,7 @@ import org.p2p.wallet.history.strategy.context.OrcaSwapParsingContext
 import org.p2p.wallet.history.strategy.context.SerumSwapParsingContext
 import org.p2p.wallet.history.strategy.context.SolanaParsingContext
 import org.p2p.wallet.history.strategy.types.BurnCheckParsingStrategy
+import org.p2p.wallet.history.strategy.types.CheckedTransferParsingStrategy
 import org.p2p.wallet.history.strategy.types.CloseAccountParsingStrategy
 import org.p2p.wallet.history.strategy.types.CreateAccountParsingStrategy
 import org.p2p.wallet.history.strategy.types.TransferParsingStrategy
@@ -33,7 +34,8 @@ object HistoryStrategyModule : InjectionModule {
                 CreateAccountParsingStrategy(),
                 CloseAccountParsingStrategy(),
                 TransferParsingStrategy(),
-                UnknownParsingStrategy()
+                UnknownParsingStrategy(),
+                CheckedTransferParsingStrategy()
             )
         }
 

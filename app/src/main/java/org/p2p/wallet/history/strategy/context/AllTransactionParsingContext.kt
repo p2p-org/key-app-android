@@ -19,6 +19,6 @@ class AllTransactionParsingContext(
     }
 
     override fun canParse(transaction: ConfirmedTransactionRootResponse): Boolean {
-        return true
+        return contexts.any { it.canParse(transaction) }
     }
 }

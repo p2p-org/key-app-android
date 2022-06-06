@@ -9,7 +9,7 @@ import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingStrategy
 import java.lang.IllegalStateException
 
-class TransferParsingStrategy : TransactionParsingStrategy {
+class CheckedTransferParsingStrategy : TransactionParsingStrategy {
 
     override fun parseTransaction(
         signature: String,
@@ -53,5 +53,5 @@ class TransferParsingStrategy : TransactionParsingStrategy {
         }
     }
 
-    override fun getType(): TransactionDetailsType = TransactionDetailsType.TRANSFER
+    override fun getType(): TransactionDetailsType = TransactionDetailsType.TRANSFER_CHECKED
 }

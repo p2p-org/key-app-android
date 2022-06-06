@@ -17,6 +17,7 @@ class SolanaParsingContext(
         val instructions = root.transaction?.message?.instructions?.filter { it.parsed != null }?.map { instruction ->
             val signature = root.transaction?.getTransactionId()
                 ?: return ParsingResult.Error(IllegalStateException("Signature cannot be null"))
+
             val type = TransactionDetailsType.valueOf(instruction.parsed?.type)
             val parsingStrategy = strategies.first { it.getType() == type }
 

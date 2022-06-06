@@ -4,9 +4,11 @@ import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
+import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
+import timber.log.Timber
 
 class TransactionDetailsRpcRepository(
     private val rpcApi: RpcHistoryApi,
@@ -49,7 +51,16 @@ class TransactionDetailsRpcRepository(
             transactionDetails.forEach {
                 it.error = transaction.meta.error?.instructionError
             }
-            transactionParsingContext.parseTransaction(transaction)
+            when (val parsingResult = transactionParsingContext.parseTransaction(transaction)) {
+
+                is ParsingResult.Transaction -> {
+                    Timber.tag("ParsingResult: " + parsingResult.items.size)
+                    transactionDetails.addAll(parsingResult.items)
+                }
+                is ParsingResult.Error -> {
+                    Timber.tag("ParsingResult: " + parsingResult.error.message)
+                }
+            }
         }
         return transactionDetails
     }
