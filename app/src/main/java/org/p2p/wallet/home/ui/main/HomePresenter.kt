@@ -97,7 +97,10 @@ class HomePresenter(
                 // emits two times when local tokens updated: with [] and actual list - strange
                 .collect { updatedTokens ->
                     Timber.d("local tokens change arrived")
-                    presenterState = presenterState.copy(tokens = updatedTokens)
+                    presenterState = presenterState.copy(
+                        tokens = updatedTokens,
+                        username = usernameInteractor.getUsername(),
+                    )
 
                     val isAccountEmpty = updatedTokens.run { size == 1 && first().isSOL && first().isZero }
                     when {
@@ -244,14 +247,8 @@ class HomePresenter(
             .scaleShort()
 
     private fun getBanners(): List<Banner> {
-        val usernameBanner = Banner(
-            R.string.main_username_banner_option,
-            R.string.main_username_banner_action,
-            R.drawable.ic_username,
-            R.color.backgroundBanner
-        )
-
         val usernameExists = presenterState.username != null
+
         val feedbackBanner = Banner(
             R.string.main_feedback_banner_option,
             R.string.main_feedback_banner_action,
@@ -263,7 +260,16 @@ class HomePresenter(
         return if (usernameExists) {
             listOf(feedbackBanner)
         } else {
-            listOf(usernameBanner, feedbackBanner)
+            val usernameBanner = Banner(
+                R.string.main_username_banner_option,
+                R.string.main_username_banner_action,
+                R.drawable.ic_username,
+                R.color.backgroundBanner
+            )
+            listOf(
+                usernameBanner,
+                feedbackBanner
+            )
         }
     }
 }

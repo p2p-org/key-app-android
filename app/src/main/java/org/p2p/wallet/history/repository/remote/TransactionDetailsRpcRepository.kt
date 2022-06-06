@@ -6,7 +6,7 @@ import org.p2p.solanaj.kits.transaction.parser.OrcaSwapInstructionParser
 import org.p2p.solanaj.kits.transaction.parser.SerumSwapInstructionParser
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.history.interactor.mapper.SolanaInstructionParser
-import org.p2p.wallet.history.model.RpcTransactionSignature
+import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -18,7 +18,7 @@ class TransactionDetailsRpcRepository(
 
     override suspend fun getTransactions(
         userPublicKey: String,
-        transactionSignatures: List<RpcTransactionSignature>
+        transactionSignatures: List<HistoryStreamItem>
     ): List<TransactionDetails> {
         val encoding = buildMap {
             this[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] =
@@ -26,16 +26,19 @@ class TransactionDetailsRpcRepository(
             this[RpcConstants.REQUEST_PARAMETER_KEY_COMMITMENT] =
                 RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
         }
-        val requestsBatch = transactionSignatures.map { signature ->
-            val params = listOf(signature.signature, encoding)
+        val requestsBatch = transactionSignatures.map { streamItem ->
+            val signature = streamItem.streamSource?.signature ?: return emptyList()
+            val params = listOf(signature, encoding)
             RpcRequest(method = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS, params = params)
         }
 
         val transactions = rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
 
         return fromNetworkToDomain(userPublicKey, transactions).onEach { transactionDetails ->
-            transactionDetails.status =
-                transactionSignatures.first { it.signature == transactionDetails.signature }.status
+            val signatureItem =
+                transactionSignatures.first { it.streamSource?.signature == transactionDetails.signature }
+            transactionDetails.status = signatureItem.streamSource?.status
+            transactionDetails.account = signatureItem.account
         }
     }
 

@@ -6,7 +6,7 @@ import androidx.annotation.IdRes
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
+import org.p2p.wallet.databinding.FragmentFeatureTogglesBinding
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.settings.SettingsAdapter
 import org.p2p.wallet.utils.attachAdapter
@@ -18,12 +18,12 @@ class FeatureTogglesFragment :
     FeatureTogglesContract.View {
 
     companion object {
-        fun create() = FeatureTogglesFragment()
+        fun create(): FeatureTogglesFragment = FeatureTogglesFragment()
     }
 
     override val presenter: FeatureTogglesContract.Presenter by inject()
 
-    private val binding: FragmentDebugSettingsBinding by viewBinding()
+    private val binding: FragmentFeatureTogglesBinding by viewBinding()
     private val adapter = SettingsAdapter(
         onToggleCheckedListener = ::onToggleCheckedListener
     )
@@ -31,16 +31,14 @@ class FeatureTogglesFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            settingsRecyclerView.attachAdapter(adapter)
-            toolbar.setNavigationOnClickListener {
-                popBackStack()
-            }
+            toolbar.setNavigationOnClickListener { popBackStack() }
+            featureTogglesRecyclerView.attachAdapter(adapter)
         }
 
-        presenter.loadData()
+        presenter.loadFeatureToggles()
     }
 
-    override fun showSettings(item: List<SettingsRow>) {
+    override fun showFeatureToggles(item: List<SettingsRow>) {
         adapter.setData(item)
     }
 

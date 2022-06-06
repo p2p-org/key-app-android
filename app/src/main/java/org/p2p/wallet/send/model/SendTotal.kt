@@ -1,7 +1,7 @@
 package org.p2p.wallet.send.model
 
-import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.asApproximateUsd
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.orZero
 import java.math.BigDecimal
 
@@ -26,14 +26,14 @@ class SendTotal constructor(
         }
 
     val showAdditionalFee: Boolean
-        get() = fee != null && sourceSymbol != fee.feePayerToken.tokenSymbol
+        get() = fee != null && sourceSymbol != fee.feePayerSymbol
 
     val showAccountCreation: Boolean
         // SendFee.SolanaFee is not null only if account creation is needed
         get() = fee != null && fee is SendFee.SolanaFee
 
     val fullTotal: String
-        get() = if (sourceSymbol == fee?.feePayerToken?.tokenSymbol) {
+        get() = if (sourceSymbol == fee?.feePayerSymbol) {
             if (approxTotalUsd != null) "$totalSum $approxTotalUsd" else totalSum
         } else {
             if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
@@ -48,8 +48,8 @@ class SendTotal constructor(
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
     private val totalFormatted: String
-        get() = "${AmountUtils.format(total)} $sourceSymbol"
+        get() = "${total.formatToken()} $sourceSymbol"
 
     private val totalSum: String
-        get() = "${AmountUtils.format(total + fee?.feeDecimals.orZero())} $sourceSymbol"
+        get() = "${(total + fee?.feeDecimals.orZero()).formatToken()} $sourceSymbol"
 }

@@ -8,11 +8,11 @@ import org.p2p.wallet.settings.model.SettingsRow
 interface FeatureTogglesContract {
 
     interface View : MvpView {
-        fun showSettings(item: List<SettingsRow>)
+        fun showFeatureToggles(item: List<SettingsRow>)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun loadData()
+        fun loadFeatureToggles()
         fun onToggleCheckedListener(@IdRes toggleId: Int, toggleChecked: Boolean)
     }
 }

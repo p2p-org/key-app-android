@@ -25,7 +25,12 @@ object FeeRelayerModule : InjectionModule {
     override fun create() = module {
         single(named(FEE_RELAYER_QUALIFIER)) {
             val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
-            getRetrofit(baseUrl, "FeeRelayer", interceptor = FeeRelayerInterceptor(get()))
+            getRetrofit(
+                baseUrl = baseUrl,
+                tag = "FeeRelayer",
+                resources = get(),
+                interceptor = FeeRelayerInterceptor(get())
+            )
         }
 
         single {
@@ -41,6 +46,7 @@ object FeeRelayerModule : InjectionModule {
                 amountRepository = get(),
                 userInteractor = get(),
                 feeRelayerRepository = get(),
+                dispatchers = get(),
                 tokenKeyProvider = get()
             )
         }

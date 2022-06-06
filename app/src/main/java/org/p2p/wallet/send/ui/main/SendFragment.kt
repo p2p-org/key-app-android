@@ -46,7 +46,7 @@ import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
-import org.p2p.wallet.utils.AmountUtils
+import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
@@ -54,7 +54,9 @@ import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
-import org.p2p.wallet.utils.getClipBoardText
+import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.formatUsd
+import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -112,7 +114,7 @@ class SendFragment :
         ) { _, result -> handleFragmentResult(result) }
 
         presenter.loadInitialData()
-        checkClipBoard()
+        checkClipboard()
     }
 
     private fun handleFragmentResult(result: Bundle) {
@@ -140,9 +142,9 @@ class SendFragment :
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroyView() {
         AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        super.onDestroyView()
     }
 
     private fun setupViews() {
@@ -158,74 +160,53 @@ class SendFragment :
                     }
                 }
             }
-            sendButton.setOnClickListener { presenter.sendOrConfirm() }
 
-            targetTextView.setOnClickListener {
-                addFragment(SearchFragment.create())
-            }
-            targetImageView.setOnClickListener {
-                addFragment(SearchFragment.create())
-            }
-            messageTextView.setOnClickListener {
-                addFragment(SearchFragment.create())
-            }
+            targetTextView.setOnClickListener { addFragment(SearchFragment.create()) }
+            targetImageView.setOnClickListener { addFragment(SearchFragment.create()) }
+            messageTextView.setOnClickListener { addFragment(SearchFragment.create()) }
 
-            clearImageView.setOnClickListener {
-                presenter.setTargetResult(null)
-            }
+            clearImageView.setOnClickListener { presenter.setTargetResult(result = null) }
 
             installAmountWatcher()
+            val originalTextSize = amountEditText.textSize
+            // Use invisible auto size textView to handle editText text size
+            amountEditText.doOnTextChanged { text, _, _, _ -> handleAmountTextChanged(text, originalTextSize) }
 
-            networkView.setOnClickListener {
-                presenter.loadCurrentNetwork()
-            }
+            networkView.setOnClickListener { presenter.loadCurrentNetwork() }
 
-            sourceImageView.setOnClickListener {
-                presenter.loadTokensForSelection()
-            }
+            sourceImageView.setOnClickListener { presenter.loadTokensForSelection() }
 
-            address?.let { presenter.validateTarget(it) }
+            accountFeeView.setOnClickListener { presenter.loadFeePayerTokens() }
 
-            amountEditText.focusAndShowKeyboard()
+            availableTextView.setOnClickListener { presenter.setMaxSourceAmountValue() }
 
-            accountFeeView.setOnClickListener {
-                presenter.loadFeePayerTokens()
-            }
+            maxTextView.setOnClickListener { presenter.setMaxSourceAmountValue() }
 
-            availableTextView.setOnClickListener {
-                presenter.setMaxSourceAmountValue()
-            }
+            aroundTextView.setOnClickListener { presenter.switchCurrency() }
 
-            maxTextView.setOnClickListener {
-                presenter.setMaxSourceAmountValue()
-            }
-
-            aroundTextView.setOnClickListener {
-                presenter.switchCurrency()
-            }
-
-            scanTextView.setOnClickListener {
-                presenter.onScanClicked()
-            }
+            scanTextView.setOnClickListener { presenter.onScanClicked() }
 
             pasteTextView.setOnClickListener {
-                val nameOrAddress = requireContext().getClipBoardText(trimmed = true)
+                val nameOrAddress = requireContext().getClipboardText(trimmed = true)
                 nameOrAddress?.let { presenter.validateTarget(it) }
             }
 
-            sendDetailsView.setOnPaidClickListener {
-                presenter.onFeeClicked()
-            }
+            sendDetailsView.setOnPaidClickListener { presenter.onFeeClicked() }
 
-            val originalTextSize = amountEditText.textSize
+            sendButton.setOnClickListener { presenter.sendOrConfirm() }
 
-            // Use invisible auto size textView to handle editText text size
-            amountEditText.doOnTextChanged { text, _, _, _ ->
-                autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
-                amountEditText.post {
-                    val textSize = if (text.isNullOrBlank()) originalTextSize else autoSizeHelperTextView.textSize
-                    amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-                }
+            amountEditText.focusAndShowKeyboard()
+
+            address?.let { presenter.validateTarget(it) }
+        }
+    }
+
+    private fun handleAmountTextChanged(text: CharSequence?, originalTextSize: Float) {
+        with(binding) {
+            autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
+            amountEditText.post {
+                val textSize = if (text.isNullOrBlank()) originalTextSize else autoSizeHelperTextView.textSize
+                amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
             }
         }
     }
@@ -359,7 +340,7 @@ class SendFragment :
         binding.accountInfoTextView.isVisible = false
     }
 
-    override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: String?) {
+    override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?) {
         with(binding) {
             accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
             accountInfoTextView.isVisible = true
@@ -426,13 +407,13 @@ class SendFragment :
                     )
                 }
 
-                binding.networkFeeTextView withTextOrGone highlightText
+                binding.networkFeeTextView.withTextOrGone(highlightText)
             }
             NetworkType.BITCOIN -> {
                 binding.networkImageView.setImageResource(R.drawable.ic_btc_rounded)
                 binding.networkNameTextView.setText(R.string.send_bitcoin_network_title)
                 // TODO: add renBTC fee
-                binding.networkFeeTextView withTextOrGone null
+                binding.networkFeeTextView.withTextOrGone(text = null)
             }
         }
     }
@@ -445,7 +426,7 @@ class SendFragment :
         with(binding) {
             glideManager.load(sourceImageView, token.iconUrl)
             sourceTextView.text = token.tokenSymbol
-            availableTextView.text = token.getFormattedTotal()
+            availableTextView.text = token.getFormattedTotal(includeSymbol = true)
         }
     }
 
@@ -502,7 +483,13 @@ class SendFragment :
     }
 
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = AmountUtils.format(available)
+        val formatted = if (symbol == USD_READABLE_SYMBOL) {
+            getString(R.string.main_send_around_in_usd, available.formatUsd())
+        } else {
+            "${available.formatToken()} $symbol"
+        }
+
+        binding.availableTextView.text = formatted
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
@@ -518,11 +505,11 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String) {
-        binding.aroundTextView.text = "${AmountUtils.format(tokenValue)} $symbol"
+        binding.aroundTextView.text = "${tokenValue.formatToken()} $symbol"
     }
 
     override fun showUsdAroundValue(usdValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, AmountUtils.format(usdValue))
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue.formatUsd())
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
@@ -555,9 +542,9 @@ class SendFragment :
         }
     }
 
-    private fun checkClipBoard() {
-        val clipBoardData = requireContext().getClipBoardText()
-        binding.pasteTextView.isEnabled = !clipBoardData.isNullOrBlank()
+    private fun checkClipboard() {
+        val clipboardData = requireContext().getClipboardText()
+        binding.pasteTextView.isEnabled = !clipboardData.isNullOrBlank()
     }
 
     private fun TextView.setTextDrawableColor(@ColorRes color: Int) {

@@ -153,7 +153,6 @@
                 android:hint="@string/main_swap_hint"
                 android:imeOptions="actionDone"
                 android:inputType="numberDecimal"
-                android:maxLength="20"
                 android:maxLines="1"
                 android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
                 android:textColorHint="@color/textIconSecondary"

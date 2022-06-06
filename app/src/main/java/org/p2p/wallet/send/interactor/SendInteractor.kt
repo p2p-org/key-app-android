@@ -1,7 +1,5 @@
 package org.p2p.wallet.send.interactor
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
@@ -25,7 +23,6 @@ import org.p2p.wallet.rpc.model.FeeRelayerSendFee
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.toPublicKey
@@ -41,7 +38,6 @@ class SendInteractor(
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val transactionInteractor: TransactionInteractor,
-    private val userInteractor: UserInteractor,
     private val amountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -61,16 +57,16 @@ class SendInteractor(
         orcaInfoInteractor.load()
     }
 
-    suspend fun setFeePayerToken(newToken: Token.Active) = withContext(Dispatchers.Default) {
+    fun setFeePayerToken(newToken: Token.Active) {
         if (!::feePayerToken.isInitialized) error("FeePayerToken is not initialized")
-        if (newToken.publicKey.equals(feePayerToken)) return@withContext
+        if (newToken.publicKey == feePayerToken.publicKey) return
 
         feePayerToken = newToken
     }
 
     fun getFeePayerToken(): Token.Active = feePayerToken
 
-    suspend fun switchFeePayerToSol(solToken: Token.Active?) {
+    fun switchFeePayerToSol(solToken: Token.Active?) {
         solToken?.let { setFeePayerToken(it) }
     }
 
@@ -83,7 +79,7 @@ class SendInteractor(
         val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
         val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
-        var transactionFee: BigInteger = BigInteger.ZERO
+        var transactionFee = BigInteger.ZERO
 
         // owner's signature
         transactionFee += lamportsPerSignature
@@ -93,12 +89,10 @@ class SendInteractor(
             transactionFee += lamportsPerSignature
         }
 
-        val shouldCreateAccount = if (token.mintAddress != WRAPPED_SOL_MINT) {
-            addressInteractor.findSplTokenAddressData(
-                mintAddress = token.mintAddress,
-                destinationAddress = receiver.toPublicKey()
-            ).shouldCreateAccount
-        } else false
+        val shouldCreateAccount = token.mintAddress != WRAPPED_SOL_MINT && addressInteractor.findSplTokenAddressData(
+            mintAddress = token.mintAddress,
+            destinationAddress = receiver.toPublicKey()
+        ).shouldCreateAccount
 
         val expectedFee = FeeAmount(
             transaction = transactionFee,

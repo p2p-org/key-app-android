@@ -6,6 +6,7 @@ import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
 import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
 import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isLessThan
 import org.p2p.wallet.utils.isMoreThan
@@ -18,6 +19,7 @@ import java.math.BigInteger
 sealed interface SendFee {
 
     val feePayerToken: Token.Active
+    val feePayerSymbol: String
     val formattedFee: String
     val sourceTokenSymbol: String
     val feeUsd: BigDecimal?
@@ -34,7 +36,7 @@ sealed interface SendFee {
             get() = feePayerToken.tokenSymbol
 
         override val formattedFee: String
-            get() = "${fee.toPlainString()} ${feePayerToken.tokenSymbol}"
+            get() = "${fee.formatToken()} ${feePayerToken.tokenSymbol}"
 
         override val feeDecimals: BigDecimal
             get() = fee
@@ -42,14 +44,14 @@ sealed interface SendFee {
         override val feeUsd: BigDecimal?
             get() = fee.toUsd(feePayerToken)
 
+        override val feePayerSymbol: String
+            get() = feePayerToken.tokenSymbol
+
         override fun isEnoughToCoverExpenses(
             sourceTokenTotal: BigInteger,
             inputAmount: BigInteger
         ): Boolean =
             sourceTokenTotal > inputAmount + feeLamports
-
-        val feePayerSymbol: String
-            get() = feePayerToken.tokenSymbol
 
         val fullFee: String
             get() = "$fee ${feePayerToken.tokenSymbol} ${approxFeeUsd.orEmpty()}"
@@ -75,10 +77,13 @@ sealed interface SendFee {
             get() = currentDecimals.scaleMedium()
 
         override val formattedFee: String
-            get() = "${currentDecimals.toPlainString()} ${feePayerToken.tokenSymbol}"
+            get() = "${currentDecimals.formatToken()} ${feePayerToken.tokenSymbol}"
 
         override val feeUsd: BigDecimal?
             get() = currentDecimals.toUsd(feePayerToken)
+
+        override val feePayerSymbol: String
+            get() = feePayerToken.tokenSymbol
 
         override fun isEnoughToCoverExpenses(
             sourceTokenTotal: BigInteger,
@@ -90,8 +95,8 @@ sealed interface SendFee {
             // assuming that source token is not SOL
             feePayerToken.isSOL ->
                 sourceTokenTotal >= inputAmount && feePayerTotalLamports > feeLamports
+            // assuming that source token and fee payer are same
             else ->
-                // assuming that source token and fee payer are same
                 sourceTokenTotal >= inputAmount + feeInPayingToken
         }
 
@@ -117,9 +122,6 @@ sealed interface SendFee {
                     SwitchToSol
             }
         }
-
-        val feePayerSymbol: String
-            get() = feePayerToken.tokenSymbol
 
         val accountCreationFullFee: String
             get() = "$feeDecimals $feePayerSymbol ${approxAccountCreationFeeUsd.orEmpty()}"

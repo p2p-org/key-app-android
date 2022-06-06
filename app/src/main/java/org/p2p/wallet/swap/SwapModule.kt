@@ -33,7 +33,12 @@ object SwapModule : InjectionModule {
     override fun create() = module {
         single {
             val baseUrl = androidContext().getString(R.string.orca_api_base_url)
-            getRetrofit(baseUrl = baseUrl, tag = "Orca", interceptor = null).create(OrcaApi::class.java)
+            getRetrofit(
+                baseUrl = baseUrl,
+                tag = "Orca",
+                resources = get(),
+                interceptor = null
+            ).create(OrcaApi::class.java)
         }
 
         single {

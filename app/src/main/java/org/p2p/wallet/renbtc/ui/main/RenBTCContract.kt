@@ -25,8 +25,7 @@ interface RenBTCContract {
 
     interface Presenter : MvpPresenter<View> {
         fun subscribe()
-        fun checkActiveSession(context: Context)
-        fun startNewSession(context: Context)
+        fun checkActiveOrStartNewSession(context: Context)
         fun cancelTimer()
         fun saveQr(name: String, bitmap: Bitmap, shareText: String? = null)
         fun onNetworkClicked()

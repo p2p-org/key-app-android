@@ -1,6 +1,5 @@
 package org.p2p.wallet.feerelayer.interactor
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.PublicKey
@@ -11,6 +10,7 @@ import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -22,6 +22,7 @@ class FeeRelayerAccountInteractor(
     private val amountRepository: RpcAmountRepository,
     private val feeRelayerRepository: FeeRelayerRepository,
     private val userInteractor: UserInteractor,
+    private val dispatchers: CoroutineDispatchers,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -31,13 +32,13 @@ class FeeRelayerAccountInteractor(
 
     private var transactionLimit: FreeTransactionFeeLimit? = null
 
-    suspend fun getRelayInfo(): RelayInfo = withContext(Dispatchers.IO) {
+    suspend fun getRelayInfo(): RelayInfo = withContext(dispatchers.io) {
         if (relayInfo == null) {
-            // get minimum token account balance
+            // get fee for creating token account
             val minimumTokenAccountBalance = async {
                 amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
             }
-            // get minimum relay account balance
+            // get fee for creating relay account
             val minimumRelayAccountBalance = async { amountRepository.getMinBalanceForRentExemption(0) }
             // get fee payer address
             val feePayerAddress = async { feeRelayerRepository.getFeePayerPublicKey() }
@@ -55,7 +56,7 @@ class FeeRelayerAccountInteractor(
         return@withContext relayInfo!!
     }
 
-    suspend fun getUserRelayAccount(useCache: Boolean = true): RelayAccount = withContext(Dispatchers.IO) {
+    suspend fun getUserRelayAccount(useCache: Boolean = true): RelayAccount = withContext(dispatchers.io) {
         if (relayAccount == null || !useCache) {
             val userPublicKey = tokenKeyProvider.publicKey.toPublicKey()
             val userRelayAddress = getUserRelayAddress(userPublicKey)

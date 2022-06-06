@@ -11,8 +11,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.databinding.WidgetAccountFeeViewBinding
 import org.p2p.wallet.send.model.SendFee
+import org.p2p.wallet.utils.asApproximateUsd
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
+import java.math.BigDecimal
 
 class AccountFeeView @JvmOverloads constructor(
     context: Context,
@@ -26,7 +28,7 @@ class AccountFeeView @JvmOverloads constructor(
 
     fun showFee(fee: SendFee) {
         with(binding) {
-            fillUsdFee(fee.feeUsd?.toPlainString())
+            fillUsdFee(fee.feeUsd)
 
             accountImageView.background = null
             accountFeeValueTextView.text = fee.formattedFee
@@ -35,7 +37,7 @@ class AccountFeeView @JvmOverloads constructor(
         }
     }
 
-    fun showInsufficientView(feeUsd: String?) {
+    fun showInsufficientView(feeUsd: BigDecimal?) {
         with(binding) {
             fillUsdFee(feeUsd)
 
@@ -57,12 +59,9 @@ class AccountFeeView @JvmOverloads constructor(
         }
     }
 
-    private fun fillUsdFee(feeUsd: String?) {
-        val usdFeeValue = if (!feeUsd.isNullOrEmpty()) {
-            "~$$feeUsd"
-        } else {
-            context.getString(R.string.common_not_available)
-        }
-        binding.accountFeeTextView.text = context.getString(R.string.send_account_creation_fee_format, usdFeeValue)
+    private fun fillUsdFee(feeUsd: BigDecimal?) {
+        val usdFeeValue = feeUsd?.asApproximateUsd(withBraces = false)
+        val result = if (usdFeeValue.isNullOrEmpty()) context.getString(R.string.common_not_available) else usdFeeValue
+        binding.accountFeeTextView.text = context.getString(R.string.send_account_creation_fee_format, result)
     }
 }
