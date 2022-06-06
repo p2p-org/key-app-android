@@ -3,8 +3,6 @@ package org.p2p.wallet.infrastructure.network.ssl
 import android.content.res.Resources
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.R
 import org.p2p.wallet.common.AppFeatureFlags
 import timber.log.Timber
 import java.io.InputStream
@@ -25,20 +23,20 @@ class CertificateManager(
 ) {
 
     fun setCertificate(builder: OkHttpClient.Builder) {
-        if (appFeatureFlags.isSslPinningEnabled) {
-            try {
-                createCertificate(resources.openRawResource(R.raw.cert)).apply {
-                    systemDefaultTrustManager()?.let { trustManager ->
-                        Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
-                        builder.sslSocketFactory(socketFactory, trustManager)
-                    }
-                }
-            } catch (e: Exception) {
-                if (!BuildConfig.DEBUG) {
-                    Timber.tag(SSL_CERT_TAG).e(e, "Error on opening SSL cert")
-                }
-            }
-        }
+//        if (appFeatureFlags.isSslPinningEnabled) {
+//            try {
+//                createCertificate(resources.openRawResource(R.raw.c)).apply {
+//                    systemDefaultTrustManager()?.let { trustManager ->
+//                        Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
+//                        builder.sslSocketFactory(socketFactory, trustManager)
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                if (!BuildConfig.DEBUG) {
+//                    Timber.tag(SSL_CERT_TAG).e(e, "Error on opening SSL cert")
+//                }
+//            }
+//        }
     }
 
     private fun createCertificate(trustedCertificateIS: InputStream): SSLContext {
