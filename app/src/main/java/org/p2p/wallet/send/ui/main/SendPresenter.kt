@@ -1,11 +1,11 @@
 package org.p2p.wallet.send.ui.main
 
-import android.content.res.Resources
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -74,7 +74,7 @@ class SendPresenter(
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val sendAnalytics: SendAnalytics,
     private val transactionManager: TransactionManager,
-    private val resources: Resources
+    private val resourcesProvider: ResourcesProvider
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
     companion object {
@@ -291,7 +291,7 @@ class SendPresenter(
 
         view?.showInputValue(totalAvailable)
 
-        val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
+        val message = resourcesProvider.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showSuccessSnackBar(message)
         setNewSourceAmount(totalAvailable.toString())
     }
@@ -476,7 +476,7 @@ class SendPresenter(
                 Timber.e(e, "Sending was cancelled")
             } catch (serverError: ServerException) {
                 val state = TransactionState.Error(
-                    serverError.getErrorMessage(resources).orEmpty()
+                    serverError.getErrorMessage(resourcesProvider.resources).orEmpty()
                 )
                 transactionManager.emitTransactionState(state)
             } catch (e: Throwable) {

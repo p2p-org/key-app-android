@@ -1,11 +1,11 @@
 package org.p2p.wallet.home
 
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
@@ -136,7 +136,7 @@ object HomeModule : InjectionModule {
                 analyticsInteractor = get(),
                 sendAnalytics = get(),
                 transactionManager = get(),
-                resources = get()
+                resourcesProvider = get()
             )
         }
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
@@ -146,8 +146,8 @@ object HomeModule : InjectionModule {
             BuySolanaPresenter(
                 tokenToBuy = token,
                 moonpayRepository = get(),
-                minBuyErrorFormat = androidContext().getString(R.string.buy_min_error_format),
-                maxBuyErrorFormat = androidContext().resources.getString(R.string.buy_max_error_format),
+                minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),
+                maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
                 analyticsInteractor = get()
             )

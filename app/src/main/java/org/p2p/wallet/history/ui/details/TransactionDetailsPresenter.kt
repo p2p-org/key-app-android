@@ -1,9 +1,9 @@
 package org.p2p.wallet.history.ui.details
 
-import android.content.res.Resources
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
@@ -19,8 +19,7 @@ import timber.log.Timber
 private const val DELAY_IN_MS = 5000L
 
 class TransactionDetailsPresenter(
-    private val resources: Resources,
-    private val theme: Resources.Theme,
+    private val resourcesProvider: ResourcesProvider,
     private val state: TransactionDetailsLaunchState,
     private val userLocalRepository: UserLocalRepository,
     private val historyInteractor: HistoryInteractor
@@ -95,7 +94,7 @@ class TransactionDetailsPresenter(
     }
 
     private fun parseTransfer(transaction: HistoryTransaction.Transfer) {
-        val title = transaction.getTitle(resources)
+        val title = transaction.getTitle(resourcesProvider.resources)
         view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
         view?.showStatus(transaction.status)
@@ -127,7 +126,7 @@ class TransactionDetailsPresenter(
         val amount = SpanUtils.highlightText(
             commonText = total,
             highlightedText = usdTotal,
-            color = resources.getColor(R.color.textIconSecondary, theme)
+            color = resourcesProvider.getColor(R.color.textIconSecondary)
         )
         view?.showAmount(R.string.details_received, amount)
         view?.showFee(null)
@@ -135,7 +134,7 @@ class TransactionDetailsPresenter(
     }
 
     private fun parseBurnOrMint(transaction: HistoryTransaction.BurnOrMint) {
-        val title = resources.getString(transaction.getTitle())
+        val title = resourcesProvider.getString(transaction.getTitle())
         view?.showTitle(title)
         view?.showDate(transaction.date.toDateTimeString())
 
@@ -166,7 +165,7 @@ class TransactionDetailsPresenter(
         val amount = SpanUtils.highlightText(
             commonText = total,
             highlightedText = usdTotal,
-            color = resources.getColor(R.color.textIconSecondary, theme)
+            color = resourcesProvider.getColor(R.color.textIconSecondary)
         )
         view?.showAmount(R.string.details_received, amount)
         view?.showFee(null)
