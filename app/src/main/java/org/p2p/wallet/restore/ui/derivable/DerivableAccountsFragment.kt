@@ -11,8 +11,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode.PIN_CODE
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDerivableAccountsBinding
 import org.p2p.wallet.restore.model.DerivableAccount

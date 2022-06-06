@@ -16,11 +16,11 @@ object BackupModule : InjectionModule {
         factory {
             SecretKeyInteractor(
                 authRepository = get(),
-                userLocalRepository = get(),
                 rpcRepository = get(),
                 tokenProvider = get(),
                 sharedPreferences = get(),
                 usernameInteractor = get(),
+                tokenPricesRepository = get(),
                 adminAnalytics = get()
             )
         }

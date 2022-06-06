@@ -1,5 +1,6 @@
 package org.p2p.wallet.user.repository
 
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Account
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.home.model.Token
@@ -16,8 +17,8 @@ import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
-import kotlinx.coroutines.withContext
 
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
@@ -31,7 +32,6 @@ class UserRemoteRepository(
 
     companion object {
         private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
-        private const val STANDARD_CURRENCY = "USD"
     }
 
     override suspend fun loadAllTokens(): List<TokenData> =
@@ -59,7 +59,7 @@ class UserRemoteRepository(
             if (fetchPrices) {
                 val prices = tokenPricesRepository.getTokenPricesBySymbols(
                     tokenSymbols.map { TokenSymbol(it) },
-                    STANDARD_CURRENCY
+                    USD_READABLE_SYMBOL
                 )
                 userLocalRepository.setTokenPrices(prices)
             }
