@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
@@ -262,7 +261,7 @@ class OrcaSwapFragment :
         }
     }
 
-    override fun showError(@StringRes errorText: Int?) {
+    override fun showSwapDetailsError(errorText: String?) {
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.ERROR)
         binding.swapDetails.showError(errorText)
     }
@@ -276,6 +275,10 @@ class OrcaSwapFragment :
 
     override fun showButtonEnabled(isEnabled: Boolean) {
         binding.swapButton.isEnabled = isEnabled
+    }
+
+    override fun setMaxButtonVisible(isVisible: Boolean) {
+        binding.maxTextView.isVisible = isVisible
     }
 
     override fun showTransactionStatusMessage(fromSymbol: String, toSymbol: String, isSuccess: Boolean) {

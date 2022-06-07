@@ -406,6 +406,7 @@
     <string name="swap_transfer_confirm_message">You are going to swap</string>
     <string name="swap_insufficient_balance">Your account does not have enough balance to cover fees. Please choose another token and try again</string>
     <string name="swap_successfully_format">%1s was swapped to %2s successfully</string>
+    <string name="swap_insufficient_funds_format">Insufficient %s funds to pay swap fees</string>
 
     <!-- Buy -->
     <string name="buy_token_on_moonpay">Buy %s on MoonPay</string>

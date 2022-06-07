@@ -60,6 +60,10 @@ class OrcaSwapInteractor(
         feePayerToken = newToken
     }
 
+    fun switchFeePayerToSol(solToken: Token.Active?) {
+        solToken?.let { setFeePayerToken(it) }
+    }
+
     suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit {
         return feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
     }
@@ -175,6 +179,8 @@ class OrcaSwapInteractor(
         return FeeRelayerSwapFee(
             feeInSol = fees.total,
             feeInPayingToken = getFeesInPayingToken(feePayerToken, fees.total),
+            transactionFeeInSol = fees.transaction,
+            transactionFeeInPayingToken = getFeesInPayingToken(feePayerToken, fees.transaction),
             isFreeTransactionAvailable = isFreeTransactionAvailable
         )
     }

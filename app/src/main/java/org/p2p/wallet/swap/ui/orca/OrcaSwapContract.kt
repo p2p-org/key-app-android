@@ -31,6 +31,7 @@ interface OrcaSwapContract {
         fun showNewAmount(amount: String)
         fun showAroundValue(aroundValue: BigDecimal)
         fun showButtonEnabled(isEnabled: Boolean)
+        fun setMaxButtonVisible(isVisible: Boolean)
 
         fun setAvailableTextColor(@ColorRes availableColor: Int)
         fun setNewAmount(sourceAmount: String)
@@ -42,7 +43,7 @@ interface OrcaSwapContract {
         fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
         fun showSourceSelection(tokens: List<Token.Active>)
         fun showDestinationSelection(tokens: List<Token>)
-        fun showError(@StringRes errorText: Int?)
+        fun showSwapDetailsError(errorText: String?)
         fun showFeeLimitsDialog(maxTransactionsAvailable: Int, remaining: Int)
 
         fun showBiometricConfirmationPrompt(data: SwapConfirmData)

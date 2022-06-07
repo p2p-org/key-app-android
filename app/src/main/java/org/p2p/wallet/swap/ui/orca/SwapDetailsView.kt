@@ -5,7 +5,6 @@ import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSwapDetailsBinding
@@ -13,9 +12,7 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
-import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -30,14 +27,14 @@ class SwapDetailsView @JvmOverloads constructor(
         LayoutInflater.from(context), this
     )
 
-    private var isExpanded: Boolean = false
+    private var isGlobalExpanded: Boolean = false
 
     init {
         orientation = VERTICAL
 
         with(binding) {
             headerView.setOnClickListener {
-                showExpanded(!isExpanded)
+                showExpanded(!isGlobalExpanded)
             }
             headerView.isEnabled = false
         }
@@ -51,8 +48,8 @@ class SwapDetailsView @JvmOverloads constructor(
                 return@with
             }
 
-            sourcePriceView.isVisible = isExpanded
-            destinationPriceView.isVisible = isExpanded
+            sourcePriceView.isVisible = isGlobalExpanded
+            destinationPriceView.isVisible = isGlobalExpanded
             destinationNameTextView.text = context.getString(R.string.swap_price_format, data.destinationSymbol)
             destinationPriceTextView.text = SpanUtils.highlightText(
                 data.fullSourcePrice,
@@ -68,45 +65,36 @@ class SwapDetailsView @JvmOverloads constructor(
         }
     }
 
-    fun showFee(data: SwapFee?) {
+    fun showFee(fee: SwapFee?) {
+        if (fee == null) {
+            binding.accountCreationFeeView.isVisible = false
+            binding.errorTextView.isVisible = false
+            binding.totalFeeTextView.isVisible = false
+            return
+        }
+
         with(binding) {
-            if (data == null) {
-                accountCreationFeeView.isVisible = false
-                return@with
-            }
+            accountCreationFeeView.isVisible = isGlobalExpanded
+            paidByTextView.isVisible = fee.isFreeTransactionAvailable
 
-            accountCreationFeeView.isVisible = isExpanded
-
-            if (data.isFreeTransactionAvailable) {
-                transactionFeeTextView.setText(R.string.send_free_transaction)
-                paidByTextView.isVisible = true
+            val feeText = if (fee.isFreeTransactionAvailable) {
+                context.getString(R.string.send_free_transaction)
             } else {
-                val spannedFee = SpanUtils.highlightText(
-                    data.commonTransactionFee.orEmpty(),
-                    data.commonTransactionFee.orEmpty(),//todo: fix it, temporary
-                    getColor(R.color.textIconSecondary)
-                )
-                transactionFeeTextView.text = spannedFee
-                paidByTextView.isVisible = false
+                fee.transactionFee
             }
 
-            val accountCreationToken = data.accountCreationToken
-            val fee = data.commonFee
-            val approxFeeUsd = data.approxFeeUsd
-            val isSol = accountCreationToken == Constants.SOL_SYMBOL
-            if (accountCreationToken != null && fee != null && !isSol) {
-                accountCreationFeeView.isVisible = isExpanded
+            transactionFeeTextView.text = feeText
+            accountCreationFeeView.isVisible = isGlobalExpanded
 
-                val account = context.getString(R.string.swap_account_creation_format, accountCreationToken)
-                accountCreationTextView.text = account
+            val accountText = context.getString(R.string.swap_account_creation_format, fee.accountCreationToken)
+            accountCreationTextView.text = accountText
 
-                val spannedFee = SpanUtils.highlightText(
-                    fee, approxFeeUsd, getColor(R.color.backgroundDisabled)
-                )
-                accountCreationTokenTextView.text = spannedFee
-            } else {
-                accountCreationFeeView.isVisible = false
-            }
+            val creationFeeUsdText = fee.accountCreationFeeUsd.orEmpty()
+            val creationFeeText = "${fee.accountCreationFee} $creationFeeUsdText".trim()
+            val spannedFee = SpanUtils.highlightText(
+                creationFeeText, creationFeeUsdText, getColor(R.color.backgroundDisabled)
+            )
+            accountCreationTokenTextView.text = spannedFee
         }
     }
 
@@ -119,36 +107,44 @@ class SwapDetailsView @JvmOverloads constructor(
     }
 
     fun showTotal(data: SwapTotal?) {
-        with(binding) {
-            totalTextView.text = buildTotalText(data)
+        /*
+         * Rare case, when source token is only available.
+         * Destination is empty, we are setting the default state
+         * */
+        if (data == null) {
+            val totalText = context.getString(R.string.swap_total_zero_sol)
+            buildTotalText(totalText)
 
-            if (data == null) {
-                showExpanded(false)
-                totalView.isVisible = false
-                receiveView.isVisible = false
-                totalFeeTextView.isVisible = false
-                headerView.isEnabled = false
-                return@with
-            }
+            binding.showExpanded(false)
+            binding.totalView.isVisible = false
+            binding.receiveView.isVisible = false
+            binding.totalFeeTextView.isVisible = false
+            binding.headerView.isEnabled = false
+            return
+        }
+
+        with(binding) {
+            val totalText = data.getFormattedTotal(split = false)
+            totalTextView.text = buildTotalText(totalText)
 
             headerView.isEnabled = true
-            totalView.isVisible = isExpanded
-            receiveView.isVisible = isExpanded
+            totalView.isVisible = isGlobalExpanded
+            receiveView.isVisible = isGlobalExpanded
 
             atLeastTextView.text = SpanUtils.highlightText(
                 data.fullReceiveAtLeast,
                 data.approxReceiveAtLeast.orEmpty(),
                 getColor(R.color.backgroundDisabled)
             )
-            totalSourceTextView.text = SpanUtils.highlightText(
-                data.fullTotal,
-                data.approxTotalUsd.orEmpty(),
-                getColor(R.color.backgroundDisabled)
-            )
+//            totalSourceTextView.text = SpanUtils.highlightText(
+//                data.fullTotal,
+//                data.approxTotalUsd.orEmpty(),
+//                getColor(R.color.backgroundDisabled)
+//            )
 
-            val fullFee = data.fullFee
+            val fullFee = ""
             if (fullFee != null) {
-                totalFeeTextView.isVisible = isExpanded
+                totalFeeTextView.isVisible = isGlobalExpanded
 
 //                totalFeeTextView.text = SpanUtils.highlightText(
 //                    fullFee, data.approxFeeUsd, getColor(R.color.textIconSecondary)
@@ -162,9 +158,8 @@ class SwapDetailsView @JvmOverloads constructor(
         }
     }
 
-    fun showError(@StringRes errorRes: Int?) {
-        val error = errorRes?.let { context.getString(it) }
-        binding.errorTextView withTextOrGone error
+    fun showError(errorText: String?) {
+        binding.errorTextView withTextOrGone errorText
     }
 
     fun setOnPayFeeClickListener(callback: () -> Unit) {
@@ -179,39 +174,31 @@ class SwapDetailsView @JvmOverloads constructor(
         binding.transactionFeeView.setOnClickListener { callback.invoke() }
     }
 
-    private fun buildTotalText(total: SwapTotal?): SpannableString {
-        val totalAmount = if (total != null) {
-            if (total.fee == null) total.total.formatToken() else "${total.total} + ${total.fee.accountCreationFee}"
-        } else {
-            context.getString(R.string.swap_total_zero_sol)
-        }
-
+    private fun buildTotalText(totalAmount: String): SpannableString {
         val totalDataText = context.getString(R.string.swap_total_format, totalAmount)
         return SpanUtils.setTextBold(totalDataText, totalAmount)
     }
 
-    private fun showExpanded(isExpanded: Boolean) {
-        with(binding) {
-            destinationPriceView.isVisible = isExpanded
-            sourcePriceView.isVisible = isExpanded
-            priceDividerView.isVisible = isExpanded
-            payFeeView.isVisible = isExpanded
-            transactionFeeView.isVisible = isExpanded
-            accountCreationFeeView.isVisible = isExpanded && accountCreationTokenTextView.text.isNotEmpty()
-            feeDividerView.isVisible = isExpanded
-            slippageView.isVisible = isExpanded
-            receiveView.isVisible = isExpanded
-            totalDividerView.isVisible = isExpanded
-            totalView.isVisible = isExpanded
-            totalFeeTextView.isVisible = isExpanded
+    private fun WidgetSwapDetailsBinding.showExpanded(isExpanded: Boolean) {
+        destinationPriceView.isVisible = isExpanded
+        sourcePriceView.isVisible = isExpanded
+        priceDividerView.isVisible = isExpanded
+        payFeeView.isVisible = isExpanded
+        transactionFeeView.isVisible = isExpanded
+        accountCreationFeeView.isVisible = isExpanded && accountCreationTokenTextView.text.isNotEmpty()
+        feeDividerView.isVisible = isExpanded
+        slippageView.isVisible = isExpanded
+        receiveView.isVisible = isExpanded
+        totalDividerView.isVisible = isExpanded
+        totalView.isVisible = isExpanded
+        totalFeeTextView.isVisible = isExpanded
 
-            val rotationValue = if (isExpanded) 180f else 0f
-            arrowImageView
-                .animate()
-                .rotation(rotationValue)
-                .start()
-        }
+        val rotationValue = if (isExpanded) 180f else 0f
+        arrowImageView
+            .animate()
+            .rotation(rotationValue)
+            .start()
 
-        this.isExpanded = isExpanded
+        isGlobalExpanded = isExpanded
     }
 }
