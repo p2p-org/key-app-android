@@ -20,7 +20,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.updates.UpdatesManager
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.token.interactor.TokenInteractor
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
@@ -33,7 +33,7 @@ private val TOKENS_VALID_FOR_BUY = setOf("SOL", "USDC")
 class HomePresenter(
     private val appFeatureFlags: AppFeatureFlags,
     private val updatesManager: UpdatesManager,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: TokenInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
     private val environmentManager: EnvironmentManager,

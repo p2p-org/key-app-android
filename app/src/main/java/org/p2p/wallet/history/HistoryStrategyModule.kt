@@ -40,7 +40,7 @@ object HistoryStrategyModule : InjectionModule {
         }
 
         factory<TransactionParsingContext> {
-            AllTransactionParsingContext(get(named("contexts")))
+            OrcaSwapParsingContext()
         }
     }
 }

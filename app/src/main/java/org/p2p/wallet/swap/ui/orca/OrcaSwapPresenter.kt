@@ -30,7 +30,7 @@ import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.token.interactor.TokenInteractor
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.formatToken
@@ -55,7 +55,7 @@ class OrcaSwapPresenter(
     private val resources: Resources,
     private val initialToken: Token.Active?,
     private val appScope: AppScope,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: TokenInteractor,
     private val swapInteractor: OrcaSwapInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val settingsInteractor: SettingsInteractor,

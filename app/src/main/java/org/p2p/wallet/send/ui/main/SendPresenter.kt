@@ -36,7 +36,7 @@ import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.token.interactor.TokenInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.cutEnd
@@ -65,7 +65,7 @@ class SendPresenter(
     private val initialToken: Token.Active?,
     private val sendInteractor: SendInteractor,
     private val addressInteractor: TransactionAddressInteractor,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: TokenInteractor,
     private val searchInteractor: SearchInteractor,
     private val burnBtcInteractor: BurnBtcInteractor,
     private val settingsInteractor: SettingsInteractor,

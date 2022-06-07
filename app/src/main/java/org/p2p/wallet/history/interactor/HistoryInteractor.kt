@@ -16,7 +16,7 @@ import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteReposito
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.token.interactor.TokenInteractor
 
 private const val DAY_IN_MILLISECONDS = (60 * 60 * 24) / 5
 private const val PAGE_SIZE = 10
@@ -28,7 +28,7 @@ class HistoryInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyTransactionMapper: HistoryTransactionMapper,
     private val rpcSignatureRepository: RpcSignatureRepository,
-    private val userInteractor: UserInteractor
+    private val userInteractor: TokenInteractor
 ) {
     private val allSignatures = mutableListOf<HistoryStreamItem>()
     private val tokenSignaturesMap = mutableMapOf<String, MutableList<HistoryStreamItem>>()

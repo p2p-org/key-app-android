@@ -7,13 +7,15 @@ import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingStrategy
 
-class CreateAccountParsingStrategy : TransactionParsingStrategy {
+class CreateAccountParsingStrategy(
+) : TransactionParsingStrategy {
 
     override fun parseTransaction(
         signature: String,
         instruction: InstructionResponse,
         transactionRoot: ConfirmedTransactionRootResponse
     ): ParsingResult {
+        val instructions = transactionRoot.transaction?.message?.instructions
 
         return ParsingResult.Transaction.create(
             CreateAccountDetails(
@@ -27,4 +29,6 @@ class CreateAccountParsingStrategy : TransactionParsingStrategy {
     }
 
     override fun getType(): TransactionDetailsType = TransactionDetailsType.CREATE_ACCOUNT
+
+    private fun extractProgram
 }

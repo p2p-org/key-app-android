@@ -15,7 +15,6 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.model.SeedPhraseResult
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English

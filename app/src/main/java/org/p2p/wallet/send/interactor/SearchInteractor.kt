@@ -4,13 +4,13 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.send.model.SearchAddress
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.token.interactor.TokenInteractor
 
 private const val ZERO_BALANCE = 0L
 
 class SearchInteractor(
     private val usernameInteractor: UsernameInteractor,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: TokenInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 

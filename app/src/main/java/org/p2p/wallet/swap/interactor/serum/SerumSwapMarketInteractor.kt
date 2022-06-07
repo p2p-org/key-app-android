@@ -1,13 +1,13 @@
 package org.p2p.wallet.swap.interactor.serum
 
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.token.interactor.TokenInteractor
 import org.p2p.wallet.utils.toPublicKey
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.SerumSwapProgram.usdcMint
 import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
 
 class SerumSwapMarketInteractor(
-    private val userInteractor: UserInteractor
+    private val userInteractor: TokenInteractor
 ) {
 
     // / Returns the `usdxMint` quoted market address.

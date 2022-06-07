@@ -1,4 +1,4 @@
-package org.p2p.wallet.user.local
+package org.p2p.wallet.token.api.model
 
 import com.google.gson.annotations.SerializedName
 

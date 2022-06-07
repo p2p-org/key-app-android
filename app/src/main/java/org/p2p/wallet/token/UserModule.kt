@@ -1,4 +1,4 @@
-package org.p2p.wallet.user
+package org.p2p.wallet.token
 
 import android.content.Context
 import okhttp3.OkHttpClient
@@ -15,14 +15,12 @@ import org.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_CONNECT_TIMEO
 import org.p2p.wallet.infrastructure.network.NetworkModule.DEFAULT_READ_TIMEOUT_SECONDS
 import org.p2p.wallet.infrastructure.network.NetworkModule.httpLoggingInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.CompareTokenInterceptor
-import org.p2p.wallet.user.api.SolanaApi
-import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.repository.UserAccountRemoteRepository
-import org.p2p.wallet.user.repository.UserAccountRepository
-import org.p2p.wallet.user.repository.UserInMemoryRepository
-import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.user.repository.UserRemoteRepository
-import org.p2p.wallet.user.repository.UserRepository
+import org.p2p.wallet.token.api.SolanaApi
+import org.p2p.wallet.token.interactor.TokenInteractor
+import org.p2p.wallet.token.repository.UserAccountRemoteRepository
+import org.p2p.wallet.token.repository.UserAccountRepository
+import org.p2p.wallet.token.repository.UserRemoteRepository
+import org.p2p.wallet.token.repository.TokenRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -66,12 +64,12 @@ object UserModule : InjectionModule {
 
         factory {
             UserRemoteRepository(get(), get(), get(), get(), get(), get(), get())
-        } bind UserRepository::class
+        } bind TokenRepository::class
 
         factory { get<Retrofit>(named(CRYPTO_COMPARE_QUALIFIER)).create(CompareApi::class.java) }
 
         single { UserInMemoryRepository() } bind UserLocalRepository::class
-        factory { UserInteractor(get(), get(), get(), get(), get(), get()) }
+        factory { TokenInteractor(get(), get(), get(), get(), get(), get()) }
 
         single { UserAccountRemoteRepository(get()) } bind UserAccountRepository::class
     }

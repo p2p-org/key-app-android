@@ -9,13 +9,13 @@ import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaToken
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.token.interactor.TokenInteractor
 import java.math.BigInteger
 
 class OrcaPoolInteractor(
     private val orcaRouteInteractor: OrcaRouteInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: TokenInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 

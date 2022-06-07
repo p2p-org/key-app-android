@@ -2,8 +2,8 @@ package org.p2p.wallet.home.model
 
 import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.db.TokenEntity
-import org.p2p.wallet.user.local.TokenResponse
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.token.api.model.TokenResponse
+import org.p2p.wallet.token.model.TokenData
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toPowerValue

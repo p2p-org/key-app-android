@@ -11,7 +11,7 @@ import org.p2p.wallet.history.model.RenBtcType
 import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.transaction.model.TransactionStatus
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.token.model.TokenData
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium

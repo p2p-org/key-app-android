@@ -2,7 +2,7 @@ package org.p2p.wallet.receive.list
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.token.model.TokenData
 
 interface TokenListContract {
 

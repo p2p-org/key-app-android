@@ -7,7 +7,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
-import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 

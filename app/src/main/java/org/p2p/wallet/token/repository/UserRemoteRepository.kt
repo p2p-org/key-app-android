@@ -1,4 +1,4 @@
-package org.p2p.wallet.user.repository
+package org.p2p.wallet.token.repository
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Account
@@ -11,8 +11,8 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.user.api.SolanaApi
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.token.api.SolanaApi
+import org.p2p.wallet.token.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
@@ -21,6 +21,7 @@ import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.scaleMedium
 
+//Separate and move this repository to TokenRepository
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
     private val compareApi: CompareApi,
@@ -29,7 +30,7 @@ class UserRemoteRepository(
     private val rpcBalanceRepository: RpcBalanceRepository,
     private val environmentManager: EnvironmentManager,
     private val dispatchers: CoroutineDispatchers
-) : UserRepository {
+) : TokenRepository {
 
     companion object {
         private const val API_CHUNKED_COUNT = 30

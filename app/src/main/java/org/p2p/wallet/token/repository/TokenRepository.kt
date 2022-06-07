@@ -1,9 +1,9 @@
-package org.p2p.wallet.user.repository
+package org.p2p.wallet.token.repository
 
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.token.model.TokenData
 
-interface UserRepository {
+interface TokenRepository {
     suspend fun loadAllTokens(): List<TokenData>
     suspend fun loadUserTokens(publicKey: String, fetchPrices: Boolean): List<Token.Active>
 }

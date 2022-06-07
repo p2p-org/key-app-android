@@ -1,4 +1,4 @@
-package org.p2p.wallet.user.interactor
+package org.p2p.wallet.token.interactor
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
@@ -9,14 +9,13 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.user.repository.UserRepository
+import org.p2p.wallet.token.repository.TokenRepository
 import org.p2p.wallet.utils.emptyString
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
-class UserInteractor(
-    private val userRepository: UserRepository,
+class TokenInteractor(
+    private val tokenRepository: TokenRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: HomeLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
@@ -53,7 +52,7 @@ class UserInteractor(
     suspend fun getBalance(address: String): Long = rpcRepository.getBalance(address)
 
     suspend fun loadAllTokensData() {
-        val data = userRepository.loadAllTokens()
+        val data = tokenRepository.loadAllTokens()
         userLocalRepository.setTokenData(data)
     }
 
@@ -74,7 +73,7 @@ class UserInteractor(
     }
 
     suspend fun loadUserTokensAndUpdateLocal(fetchPrices: Boolean) {
-        val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey, fetchPrices)
+        val newTokens = tokenRepository.loadUserTokens(tokenKeyProvider.publicKey, fetchPrices)
         val cachedTokens = mainLocalRepository.getUserTokens()
 
         updateLocalTokens(cachedTokens, newTokens)

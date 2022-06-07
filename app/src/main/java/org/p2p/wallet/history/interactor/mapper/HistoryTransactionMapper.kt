@@ -13,7 +13,6 @@ import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants
 
 class HistoryTransactionMapper(

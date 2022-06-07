@@ -9,7 +9,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.transaction.model.TransactionStatus
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.token.model.TokenData
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.asUsd

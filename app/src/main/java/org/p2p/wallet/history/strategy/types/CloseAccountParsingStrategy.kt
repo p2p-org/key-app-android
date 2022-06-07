@@ -15,20 +15,23 @@ class CloseAccountParsingStrategy : TransactionParsingStrategy {
         instruction: InstructionResponse,
         transactionRoot: ConfirmedTransactionRootResponse
     ): ParsingResult {
-        val parsedInfo = instruction.parsed
+        val instructions = transactionRoot.transaction?.message?.instructions.orEmpty()
+
+        val closedTokenPubKey = instructions.firstOrNull()?.parsed?.info?.account
+
+        val preBalances = transactionRoot.meta.preTokenBalances
+        val preTokenBalance = preBalances.firstOrNull()?.mint
         if (instruction.programId != SystemProgram.SPL_TOKEN_PROGRAM_ID.toBase58()) {
             return ParsingResult.Error(IllegalArgumentException("Incorrect program ID"))
         }
 
-        val closedTokenPublicKey = parsedInfo?.info?.account
-        val preBalances = transactionRoot.meta.preTokenBalances.firstOrNull()?.mint
         return ParsingResult.Transaction.create(
             CloseAccountDetails(
                 signature = signature,
                 blockTime = transactionRoot.blockTime,
                 slot = transactionRoot.slot,
-                account = closedTokenPublicKey,
-                mint = preBalances
+                account = closedTokenPubKey,
+                mint = preTokenBalance
             )
         )
     }

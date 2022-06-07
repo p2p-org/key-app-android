@@ -11,7 +11,7 @@ import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.token.interactor.TokenInteractor
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.scaleLong
@@ -22,7 +22,7 @@ import java.math.BigInteger
 
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: org.p2p.wallet.token.interactor.TokenInteractor,
     private val transactionAmountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val tokenInteractor: TokenInteractor,

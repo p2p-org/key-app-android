@@ -1,4 +1,4 @@
-package org.p2p.wallet.user.repository
+package org.p2p.wallet.token.repository
 
 import org.koin.ext.getFullName
 import org.p2p.solanaj.model.types.AccountInfo
