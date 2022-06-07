@@ -157,7 +157,8 @@ class BuySolanaFragment :
             PrefixSuffixTextWatcher.uninstallFrom(payEditText)
             PrefixSuffixTextWatcher.installOn(payEditText, finalPrefixSuffixSymbol, isSuffix = isSuffix) { data ->
                 if (!isSwapped) purchaseCostView.setValueText(data.prefixText)
-                continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError() &&
+                continueButton.isEnabled = data.prefixText.isNotEmpty() &&
+                    !hasInputError() &&
                     data.valueWithoutPrefix != SYMBOL_ZERO
                 presenter.setBuyAmount(data.valueWithoutPrefix)
             }
