@@ -1,28 +1,6 @@
 apply from: "$project.rootDir/scripts/common-library.gradle"
 
 android {
-    compileSdkVersion sdkCompileVersion
-
-    defaultConfig {
-        minSdkVersion sdkMinVersion
-        targetSdkVersion sdkTargetVersion
-
-        multiDexEnabled true
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
-    }
-
-    buildTypes {
-        debug
-        feature {
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-        release {
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-
     buildFeatures {
         viewBinding true
     }
