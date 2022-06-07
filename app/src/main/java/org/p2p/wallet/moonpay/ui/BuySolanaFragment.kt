@@ -9,14 +9,15 @@ import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.PrefixSuffixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.Constants.SYMBOL_ZERO
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -156,7 +157,8 @@ class BuySolanaFragment :
             PrefixSuffixTextWatcher.uninstallFrom(payEditText)
             PrefixSuffixTextWatcher.installOn(payEditText, finalPrefixSuffixSymbol, isSuffix = isSuffix) { data ->
                 if (!isSwapped) purchaseCostView.setValueText(data.prefixText)
-                continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError()
+                continueButton.isEnabled = data.prefixText.isNotEmpty() && !hasInputError() &&
+                    data.valueWithoutPrefix != SYMBOL_ZERO
                 presenter.setBuyAmount(data.valueWithoutPrefix)
             }
         }
