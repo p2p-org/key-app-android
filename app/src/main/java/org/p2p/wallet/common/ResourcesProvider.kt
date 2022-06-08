@@ -13,5 +13,9 @@ class ResourcesProvider(private val context: Context) {
 
     fun getString(@StringRes stringRes: Int) = context.getString(stringRes)
 
-    fun getString(@StringRes stringRes: Int, vararg formatArgs: Any) = context.getString(stringRes, *formatArgs)
+    fun getString(@StringRes stringRes: Int, vararg formatArgs: Any) = if (formatArgs.isNotEmpty()) {
+        context.getString(stringRes, *formatArgs)
+    } else {
+        getString(stringRes)
+    }
 }

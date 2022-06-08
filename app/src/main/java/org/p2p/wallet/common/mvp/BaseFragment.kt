@@ -20,6 +20,7 @@ import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.home.ui.main.HomeFragment
@@ -39,6 +40,8 @@ private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMA
 abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), BaseFragmentContract {
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+
+    protected val resourcesProvider: ResourcesProvider by inject()
 
     protected open val statusBarColor: Int = R.color.backgroundPrimary
 
@@ -77,7 +80,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         val window = requireActivity().window ?: return
         with(window) {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            statusBarColor = requireContext().getColor(colorResId)
+            statusBarColor = resourcesProvider.getColor(colorResId)
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
