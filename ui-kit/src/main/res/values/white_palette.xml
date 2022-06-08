@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--NOTE: use https://chir.ag/projects/name-that-color/ to add colors here in future-->
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="white_50">#80FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="black_80">#CC000000</color>
+
+    <color name="color_green">#2DB533</color>
+    <color name="color_green_transparent">#802DB533</color>
+
+    <color name="snow">#FFFFFF</color>
+    <color name="cloud">#FAFCFF</color>
+    <color name="smoke">#F8F9FE</color>
+    <color name="rain">#F3F6FE</color>
+    <color name="mountain">#EFF3FF</color>
+    <color name="night">#081422</color>
+    <color name="lime">#E4F312</color>
+    <color name="sky">#003CFF</color>
+    <color name="rose">#EB4A7A</color>
+    <color name="mint">#34C759</color>
+    <color name="sun">#F1AC45</color>
+
+    <color name="button_snow">@color/snow</color>
+    <color name="button_cloud">@color/cloud</color>
+    <color name="button_rain">@color/rain</color>
+    <color name="button_night">@color/night</color>
+    <color name="button_lime">@color/lime</color>
+
+    <color name="text_snow">@color/snow</color>
+    <color name="text_cloud">@color/cloud</color>
+    <color name="text_mountain">@color/mountain</color>
+    <color name="text_night">@color/night</color>
+    <color name="text_lime">@color/lime</color>
+    <color name="text_sky">@color/sky</color>
+    <color name="text_rose">@color/rose</color>
+    <color name="text_mint">@color/mint</color>
+    <color name="text_sun">@color/sun</color>
+
+    <color name="icons_snow">@color/snow</color>
+    <color name="icons_cloud">@color/cloud</color>
+    <color name="icons_rain">@color/rain</color>
+    <color name="icons_mountain">@color/mountain</color>
+    <color name="icons_night">@color/night</color>
+    <color name="icons_lime">@color/lime</color>
+    <color name="icons_sky">@color/sky</color>
+    <color name="icons_rose">@color/rose</color>
+    <color name="icons_mint">@color/mint</color>
+    <color name="icons_sun">@color/sun</color>
+
+    <color name="bg_snow">@color/snow</color>
+    <color name="bg_cloud">@color/cloud</color>
+    <color name="bg_smoke">@color/smoke</color>
+    <color name="bg_rain">@color/rain</color>
+    <color name="bg_mountain">@color/mountain</color>
+    <color name="bg_night">@color/night</color>
+    <color name="bg_lime">@color/lime</color>
+    <color name="bg_sky">@color/sky</color>
+    <color name="bg_rose">@color/rose</color>
+    <color name="bg_mint">@color/mint</color>
+    <color name="bg_sun">@color/sun</color>
+
+    <color name="elements_snow">@color/snow</color>
+    <color name="elements_cloud">@color/cloud</color>
+    <color name="elements_smoke">@color/smoke</color>
+    <color name="elements_rain">@color/rain</color>
+    <color name="elements_mountain">@color/mountain</color>
+    <color name="elements_night">@color/night</color>
+    <color name="elements_lime">@color/lime</color>
+    <color name="elements_sky">@color/sky</color>
+    <color name="elements_rose">@color/rose</color>
+    <color name="elements_mint">@color/mint</color>
+    <color name="elements_sun">@color/sun</color>
+</resources>
