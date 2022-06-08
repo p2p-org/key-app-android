@@ -1,9 +1,6 @@
 apply from: "$project.rootDir/scripts/common-library.gradle"
 
 android {
-    buildFeatures {
-        viewBinding true
-    }
     testOptions {
         unitTests {
             includeAndroidResources = true
