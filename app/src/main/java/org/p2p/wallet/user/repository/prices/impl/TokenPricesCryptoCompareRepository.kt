@@ -19,6 +19,23 @@ class TokenPricesCryptoCompareRepository(
     private val dispatchers: CoroutineDispatchers
 ) : TokenPricesRemoteRepository {
 
+    override suspend fun getTokenPriceBySymbol(
+        tokenSymbol: TokenSymbol,
+        targetCurrency: String
+    ): TokenPrice = withContext(dispatchers.io) {
+        val responseJson = cryptoCompareApi.getPrice(
+            tokenFrom = tokenSymbol.symbol,
+            tokenTo = targetCurrency
+        )
+
+        val priceValue = responseJson.getAsJsonPrimitive(Constants.USD_READABLE_SYMBOL)
+
+        TokenPrice(
+            tokenSymbol = tokenSymbol.symbol,
+            price = priceValue.asBigDecimal.scaleMedium()
+        )
+    }
+
     override suspend fun getTokenPricesBySymbols(
         tokenSymbols: List<TokenSymbol>,
         targetCurrency: String
@@ -27,13 +44,6 @@ class TokenPricesCryptoCompareRepository(
             tokenSymbols = tokenSymbols,
             targetCurrencySymbol = targetCurrency
         )
-    }
-
-    override suspend fun getTokenPriceBySymbol(
-        tokenSymbol: TokenSymbol,
-        targetCurrency: String
-    ): TokenPrice {
-        return getTokenPricesBySymbols(listOf(tokenSymbol), targetCurrency).first()
     }
 
     private suspend fun loadPrices(tokenSymbols: List<TokenSymbol>, targetCurrencySymbol: String): List<TokenPrice> {

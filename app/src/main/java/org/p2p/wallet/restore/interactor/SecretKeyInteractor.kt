@@ -22,6 +22,7 @@ import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.scaleLong
+import java.math.BigDecimal
 import java.math.BigInteger
 
 private const val KEY_PHRASES = "KEY_PHRASES"
@@ -36,6 +37,8 @@ class SecretKeyInteractor(
     private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val adminAnalytics: AdminAnalytics
 ) {
+
+    private var solRate: BigDecimal? = null
 
     suspend fun getDerivableAccounts(keys: List<String>): List<DerivableAccount> =
         withContext(Dispatchers.IO) {
@@ -64,7 +67,11 @@ class SecretKeyInteractor(
     ) = accounts.mapNotNull { account ->
         val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
         val tokenSymbol = TokenSymbol(SOL_SYMBOL)
-        val exchangeRate = tokenPricesRepository.getTokenPriceBySymbol(tokenSymbol, USD_READABLE_SYMBOL).price
+
+        val exchangeRate =
+            solRate ?: tokenPricesRepository.getTokenPriceBySymbol(tokenSymbol, USD_READABLE_SYMBOL).price
+        if (solRate == null) solRate = exchangeRate
+
         val total = balance.fromLamports().scaleLong()
         DerivableAccount(path, account, total, total.multiply(exchangeRate))
     }

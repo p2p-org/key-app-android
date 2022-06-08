@@ -39,8 +39,8 @@ class TokenPricesCoinGeckoRepository(
     override suspend fun getTokenPriceBySymbol(
         tokenSymbol: TokenSymbol,
         targetCurrency: String
-    ): TokenPrice {
-        return loadPrices(listOf(tokenSymbol), targetCurrency).first()
+    ): TokenPrice = withContext(dispatchers.io) {
+        loadPrices(listOf(tokenSymbol), targetCurrency).first()
     }
 
     /**
