@@ -17,7 +17,6 @@ import org.p2p.wallet.databinding.FragmentBuySolanaBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.Constants.SYMBOL_ZERO
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -103,10 +102,11 @@ class BuySolanaFragment :
     }
 
     override fun showMessage(message: String?) {
-        binding.apply {
-            errorTextView.withTextOrGone(message)
-            continueButton.isEnabled = !hasInputError()
-        }
+        binding.errorTextView.withTextOrGone(message)
+    }
+
+    override fun setContinueButtonEnabled(isEnabled: Boolean) {
+        binding.continueButton.isEnabled = isEnabled && !hasInputError()
     }
 
     override fun navigateToMoonpay(amount: String) {
@@ -157,9 +157,6 @@ class BuySolanaFragment :
             PrefixSuffixTextWatcher.uninstallFrom(payEditText)
             PrefixSuffixTextWatcher.installOn(payEditText, finalPrefixSuffixSymbol, isSuffix = isSuffix) { data ->
                 if (!isSwapped) purchaseCostView.setValueText(data.prefixText)
-                continueButton.isEnabled = data.prefixText.isNotEmpty() &&
-                    !hasInputError() &&
-                    data.valueWithoutPrefix != SYMBOL_ZERO
                 presenter.setBuyAmount(data.valueWithoutPrefix)
             }
         }

@@ -95,6 +95,7 @@ class BuySolanaPresenter(
 
     override fun setBuyAmount(amount: String, isDelayEnabled: Boolean) {
         this.amount = amount
+        view?.setContinueButtonEnabled(false)
         calculateTokens(amount, isDelayEnabled)
     }
 
@@ -208,9 +209,12 @@ class BuySolanaPresenter(
             receiveAmountText = "$amount $receiveSymbol",
             purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.asUsd() else null
         )
-        view?.showData(data)
-            .also { currentBuyViewData = data }
-        view?.showMessage(message = null)
+        view?.apply {
+            showData(data)
+            currentBuyViewData = data
+            showMessage(message = null)
+            setContinueButtonEnabled(true)
+        }
     }
 
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
@@ -231,9 +235,12 @@ class BuySolanaPresenter(
             }
 
         val errorMessageRaw = if (isAmountLower) minBuyErrorFormat else maxBuyErrorFormat
-        view?.showMessage(
-            errorMessageRaw.format(suffixPrefixWithAmount)
-        )
+        view?.apply {
+            setContinueButtonEnabled(false)
+            showMessage(
+                errorMessageRaw.format(suffixPrefixWithAmount)
+            )
+        }
     }
 
     private fun clear() {
@@ -246,8 +253,11 @@ class BuySolanaPresenter(
             accountCreationCost = null,
             total = BigDecimal.ZERO
         )
-        view?.showData(clearedData)
-        view?.showMessage(null)
+        view?.apply {
+            showData(clearedData)
+            setContinueButtonEnabled(false)
+            showMessage(null)
+        }
     }
 
     override fun detach() {
