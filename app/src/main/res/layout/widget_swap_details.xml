@@ -322,6 +322,7 @@
             android:layout_weight="1"
             android:gravity="end|center_vertical"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
+            android:textStyle="bold"
             tools:text="1,050.67 USDC (~$1,049.98)" />
 
     </LinearLayout>

@@ -1,7 +1,7 @@
 package org.p2p.wallet.swap.model.orca
 
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.send.model.FeePayerSelectionStrategy
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
@@ -15,11 +15,12 @@ import org.p2p.wallet.utils.toUsd
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class SwapFee(
-    val fee: FeeRelayerSwapFee,
-    val feePayerToken: Token.Active,
-    val sourceToken: Token.Active,
-    val destination: Token
+class SwapFee constructor(
+    private val fee: FeeRelayerSwapFee,
+    private val feePayerToken: Token.Active,
+    private val sourceToken: Token.Active,
+    private val destination: Token,
+    private val solToken: Token.Active?
 ) {
 
     fun calculateFeePayerState(
@@ -30,9 +31,11 @@ class SwapFee(
         val isSourceSol = sourceToken.tokenSymbol == SOL_SYMBOL
         val isAllowedToCorrectAmount = strategy == FeePayerSelectionStrategy.CORRECT_AMOUNT
         val totalNeeded = fee.feeInPayingToken + inputAmount
+        val isEnoughSolBalance = solToken?.let { !it.totalInLamports.isLessThan(fee.feeInSol) } ?: false
+        val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
         return when {
             // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
-            isAllowedToCorrectAmount && !isSourceSol && sourceTokenTotal.isLessThan(totalNeeded) -> {
+            shouldTryReduceAmount && sourceTokenTotal.isLessThan(totalNeeded) -> {
                 val diff = totalNeeded - sourceTokenTotal
                 val desiredAmount = if (diff.isLessThan(inputAmount)) inputAmount - diff else null
                 if (desiredAmount != null) FeePayerState.ReduceInputAmount(desiredAmount) else FeePayerState.SwitchToSol
@@ -59,10 +62,12 @@ class SwapFee(
         }
 
     val feeAmountInPayingToken: BigDecimal
-        get() = fee.feeInPayingToken.fromLamports(feePayerToken.decimals)
+        get() = fee.feeInPayingToken.fromLamports(feePayerToken.decimals).scaleMedium()
 
     val feeAmountInSol: BigDecimal
-        get() = fee.feeInSol.fromLamports()
+        get() = fee.feeInSol.fromLamports().scaleMedium()
+
+    val feePayerSymbol: String = feePayerToken.tokenSymbol
 
     val isFreeTransactionAvailable: Boolean = fee.isFreeTransactionAvailable
 

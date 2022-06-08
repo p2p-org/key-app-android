@@ -12,8 +12,6 @@ import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
@@ -27,13 +25,9 @@ class OrcaSwapInteractor(
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
-    private val orcaRouteInteractor: OrcaRouteInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
-    private val orcaPoolInteractor: OrcaPoolInteractor,
-    private val rpcAmountRepository: RpcAmountRepository,
     private val orcaNativeSwapInteractor: OrcaNativeSwapInteractor,
-    private val environmentManager: EnvironmentManager,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val environmentManager: EnvironmentManager
 ) {
 
     /*
@@ -179,8 +173,6 @@ class OrcaSwapInteractor(
         return FeeRelayerSwapFee(
             feeInSol = fees.total,
             feeInPayingToken = getFeesInPayingToken(feePayerToken, fees.total),
-            transactionFeeInSol = fees.transaction,
-            transactionFeeInPayingToken = getFeesInPayingToken(feePayerToken, fees.transaction),
             isFreeTransactionAvailable = isFreeTransactionAvailable
         )
     }

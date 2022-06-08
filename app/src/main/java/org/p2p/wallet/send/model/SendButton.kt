@@ -43,8 +43,8 @@ class SendButton(
             val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
             val address = searchResult?.searchAddress?.address.orEmpty()
 
-            val isEnoughBalance = inputAmount.isLessThan(total)
-            val isEnoughToCoverExpenses = sendFee != null && sendFee.isEnoughToCoverExpenses(total, inputAmount)
+            val isEnoughBalance = !total.isLessThan(inputAmount)
+            val isEnoughToCoverExpenses = sendFee == null || sendFee.isEnoughToCoverExpenses(total, inputAmount)
             val isValidAddress = PublicKeyValidator.isValid(address)
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)

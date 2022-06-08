@@ -64,13 +64,10 @@ object SwapModule : InjectionModule {
                 feeRelayerSwapInteractor = get(),
                 feeRelayerAccountInteractor = get(),
                 feeRelayerInteractor = get(),
-                orcaRouteInteractor = get(),
+                feeRelayerTopUpInteractor = get(),
                 orcaInfoInteractor = get(),
-                orcaPoolInteractor = get(),
-                rpcAmountRepository = get(),
                 orcaNativeSwapInteractor = get(),
-                environmentManager = get(),
-                tokenKeyProvider = get()
+                environmentManager = get()
             )
         }
         single { OrcaInfoInteractor(get()) }
@@ -95,6 +92,7 @@ object SwapModule : InjectionModule {
                 browseAnalytics = get(),
                 analyticsInteractor = get(),
                 swapAnalytics = get(),
+                transactionBuilderInteractor = get(),
                 transactionManager = get(),
             )
         } bind OrcaSwapContract.Presenter::class

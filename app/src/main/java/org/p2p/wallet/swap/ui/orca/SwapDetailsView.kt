@@ -1,11 +1,11 @@
 package org.p2p.wallet.swap.ui.orca
 
-import androidx.core.view.isVisible
 import android.content.Context
 import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSwapDetailsBinding
 import org.p2p.wallet.swap.model.Slippage
@@ -113,33 +113,31 @@ class SwapDetailsView @JvmOverloads constructor(
          * */
         if (data == null) {
             val totalText = context.getString(R.string.swap_total_zero_sol)
-            buildTotalText(totalText)
+            binding.totalTextView.text = buildTotalText(totalText)
 
             binding.showExpanded(false)
             binding.totalView.isVisible = false
             binding.receiveView.isVisible = false
             binding.totalFeeTextView.isVisible = false
             binding.headerView.isEnabled = false
+            binding.errorTextView.isVisible = false
             return
         }
 
-        with(binding) {
-            val totalText = data.getFormattedTotal(split = false)
-            totalTextView.text = buildTotalText(totalText)
+        val totalText = data.getFormattedTotal(split = false)
+        binding.totalTextView.text = buildTotalText(totalText)
 
-            headerView.isEnabled = true
-            totalView.isVisible = isGlobalExpanded
-            receiveView.isVisible = isGlobalExpanded
+        binding.headerView.isEnabled = true
+        binding.totalView.isVisible = isGlobalExpanded
+        binding.receiveView.isVisible = isGlobalExpanded
 
-            atLeastTextView.text = SpanUtils.highlightText(
-                data.fullReceiveAtLeast,
-                data.approxReceiveAtLeast.orEmpty(),
-                getColor(R.color.backgroundDisabled)
-            )
+        binding.atLeastTextView.text = SpanUtils.highlightText(
+            data.fullReceiveAtLeast,
+            data.approxReceiveAtLeast.orEmpty(),
+            getColor(R.color.backgroundDisabled)
+        )
 
-            /* TODO: add approximate USD */
-            totalFeeTextView.text = data.getFormattedTotal(split = true)
-        }
+        binding.totalFeeTextView.text = data.getFormattedTotal(split = true)
     }
 
     fun showError(errorText: String?) {

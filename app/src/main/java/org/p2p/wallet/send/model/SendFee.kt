@@ -1,7 +1,8 @@
 package org.p2p.wallet.send.model
 
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.send.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
 import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
 import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
@@ -69,8 +70,9 @@ sealed interface SendFee {
     class SolanaFee(
         override val sourceTokenSymbol: String,
         override val feePayerToken: Token.Active,
-        val feeLamports: BigInteger,
-        val feeInPayingToken: BigInteger
+        private val solToken: Token.Active?,
+        private val feeInSol: BigInteger,
+        private val feeInPayingToken: BigInteger
     ) : SendFee {
 
         override val feeDecimals: BigDecimal
@@ -91,10 +93,10 @@ sealed interface SendFee {
         ): Boolean = when {
             // if source is SOL, then fee payer is SOL as well
             sourceTokenSymbol == SOL_SYMBOL ->
-                sourceTokenTotal >= inputAmount + feeLamports
+                sourceTokenTotal >= inputAmount + feeInSol
             // assuming that source token is not SOL
             feePayerToken.isSOL ->
-                sourceTokenTotal >= inputAmount && feePayerTotalLamports > feeLamports
+                sourceTokenTotal >= inputAmount && feePayerTotalLamports > feeInSol
             // assuming that source token and fee payer are same
             else ->
                 sourceTokenTotal >= inputAmount + feeInPayingToken
@@ -108,9 +110,11 @@ sealed interface SendFee {
             val isSourceSol = sourceTokenSymbol == SOL_SYMBOL
             val isAllowedToCorrectAmount = strategy == CORRECT_AMOUNT
             val totalNeeded = feeInPayingToken + inputAmount
+            val isEnoughSolBalance = solToken?.let { !it.totalInLamports.isLessThan(feeInSol) } ?: false
+            val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
             return when {
                 // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
-                isAllowedToCorrectAmount && !isSourceSol && sourceTokenTotal.isLessThan(totalNeeded) -> {
+                shouldTryReduceAmount && sourceTokenTotal.isLessThan(totalNeeded) -> {
                     val diff = totalNeeded - sourceTokenTotal
                     val desiredAmount = if (diff.isLessThan(inputAmount)) inputAmount - diff else null
                     if (desiredAmount != null) ReduceInputAmount(desiredAmount) else SwitchToSol
@@ -133,7 +137,7 @@ sealed interface SendFee {
             get() = feePayerToken.total.toLamports(feePayerToken.decimals)
 
         private val currentDecimals: BigDecimal =
-            (if (feePayerToken.isSOL) feeLamports else feeInPayingToken)
+            (if (feePayerToken.isSOL) feeInSol else feeInPayingToken)
                 .fromLamports(feePayerToken.decimals)
                 .scaleMedium()
     }

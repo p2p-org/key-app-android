@@ -10,6 +10,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.analytics.BrowseAnalytics
@@ -24,10 +28,6 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.CurrencyMode
-import org.p2p.wallet.send.model.FeePayerSelectionStrategy
-import org.p2p.wallet.send.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
-import org.p2p.wallet.send.model.FeePayerSelectionStrategy.NO_ACTION
-import org.p2p.wallet.send.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchAddress
@@ -723,8 +723,9 @@ class SendPresenter(
         return SendFee.SolanaFee(
             feePayerToken = newFeePayer,
             sourceTokenSymbol = source.tokenSymbol,
-            feeLamports = feeInSol,
-            feeInPayingToken = feeInPayingToken
+            feeInSol = feeInSol,
+            feeInPayingToken = feeInPayingToken,
+            solToken = solToken
         ).also { sendFee = it }
     }
 
