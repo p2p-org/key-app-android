@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
@@ -62,7 +62,7 @@ class SendConfirmBottomSheet(
             fragment = this,
             negativeRes = R.string.auth_biometric_use_pin_code,
             onError = { toast(R.string.fingerprint_not_recognized) },
-            usePinCode = { binding.pinView.isVisible = true },
+            onPinCodeClicked = { binding.pinView.isVisible = true },
             onSuccess = { confirm() }
         )
     }
@@ -93,8 +93,8 @@ class SendConfirmBottomSheet(
         }
     }
 
-    private fun initPinView() = with(binding) {
-        pinView.apply {
+    private fun initPinView() {
+        binding.pinView.apply {
             setFingerprintVisible(true)
             onPinCompleted = ::checkPinCode
             onBiometricClicked = {
@@ -110,7 +110,7 @@ class SendConfirmBottomSheet(
     }
 
     private fun checkPinCode(pinCode: String) {
-        CoroutineScope(dispatchers.io).launch {
+        lifecycleScope.launch {
             when (authInteractor.signInByPinCode(pinCode)) {
                 SignInResult.Success -> confirm()
                 SignInResult.WrongPin -> withContext(dispatchers.ui) { showWrongPinError() }
@@ -120,7 +120,7 @@ class SendConfirmBottomSheet(
 
     private fun showWrongPinError() {
         val message = getString(R.string.auth_pin_code_wrong_pin)
-        context?.vibrate(VIBRATE_DURATION)
+        requireContext().vibrate(VIBRATE_DURATION)
         binding.pinView.startErrorAnimation(message)
     }
 
