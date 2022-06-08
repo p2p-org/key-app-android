@@ -58,6 +58,12 @@ class SwapFee(
                 sourceTokenTotal >= inputAmount + fee.feeInPayingToken
         }
 
+    val feeAmountInPayingToken: BigDecimal
+        get() = fee.feeInPayingToken.fromLamports(feePayerToken.decimals)
+
+    val feeAmountInSol: BigDecimal
+        get() = fee.feeInSol.fromLamports()
+
     val isFreeTransactionAvailable: Boolean = fee.isFreeTransactionAvailable
 
     val transactionFee: String

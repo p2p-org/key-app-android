@@ -1,11 +1,14 @@
 package org.p2p.wallet.swap.model.orca
 
-import org.p2p.wallet.R
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.utils.formatToken
 import java.math.BigDecimal
 
 data class SwapTotal(
     val fee: SwapFee?,
+    val feePayerToken: Token.Active,
+    val sourceToken: Token.Active,
+    val destination: Token,
     val destinationAmount: String,
     val inputAmount: BigDecimal,
     val inputAmountUsd: BigDecimal?,
@@ -14,11 +17,33 @@ data class SwapTotal(
 ) {
 
     fun getFormattedTotal(split: Boolean): String {
+        val inputTotal = "${inputAmount.formatToken()} ${sourceToken.tokenSymbol}"
+
+        /*
+        * Showing only input for the total field
+        * */
         if (fee == null) {
-            inputAmount.formatToken()
+            return inputTotal
         }
 
-        return ""
+        /*
+         * If source is SOL then fee payer can be only SOL as well
+         * */
+        if (sourceToken.isSOL) {
+            return "${inputAmount + fee.feeAmountInSol} ${sourceToken.tokenSymbol}"
+        }
+
+        val feeSolTotal = "${fee.feeAmountInSol} ${feePayerToken.tokenSymbol}"
+
+        /*
+         * Source token is definitely SPL
+         * Validating if user pays with SOL or SPL
+         * */
+        return if (sourceToken.tokenSymbol == feePayerToken.tokenSymbol) {
+            "${inputAmount + fee.feeAmountInPayingToken} ${feePayerToken.tokenSymbol}"
+        } else {
+            if (split) "$inputTotal \n$feeSolTotal" else "$inputTotal + $feeSolTotal"
+        }
     }
 
     val fullTotal: String

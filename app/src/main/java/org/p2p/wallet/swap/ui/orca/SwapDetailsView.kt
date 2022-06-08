@@ -1,11 +1,11 @@
 package org.p2p.wallet.swap.ui.orca
 
+import androidx.core.view.isVisible
 import android.content.Context
 import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSwapDetailsBinding
 import org.p2p.wallet.swap.model.Slippage
@@ -136,25 +136,9 @@ class SwapDetailsView @JvmOverloads constructor(
                 data.approxReceiveAtLeast.orEmpty(),
                 getColor(R.color.backgroundDisabled)
             )
-//            totalSourceTextView.text = SpanUtils.highlightText(
-//                data.fullTotal,
-//                data.approxTotalUsd.orEmpty(),
-//                getColor(R.color.backgroundDisabled)
-//            )
 
-            val fullFee = ""
-            if (fullFee != null) {
-                totalFeeTextView.isVisible = isGlobalExpanded
-
-//                totalFeeTextView.text = SpanUtils.highlightText(
-//                    fullFee, data.approxFeeUsd, getColor(R.color.textIconSecondary)
-//                )
-                totalFeeTextView.text = SpanUtils.highlightText(
-                    fullFee, fullFee, getColor(R.color.textIconSecondary)
-                )
-            } else {
-                totalFeeTextView.isVisible = false
-            }
+            /* TODO: add approximate USD */
+            totalFeeTextView.text = data.getFormattedTotal(split = true)
         }
     }
 
