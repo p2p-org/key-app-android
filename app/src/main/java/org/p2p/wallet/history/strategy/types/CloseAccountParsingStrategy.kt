@@ -18,7 +18,6 @@ class CloseAccountParsingStrategy : TransactionParsingStrategy {
         val instructions = transactionRoot.transaction?.message?.instructions.orEmpty()
 
         val closedTokenPubKey = instructions.firstOrNull()?.parsed?.info?.account
-
         val preBalances = transactionRoot.meta.preTokenBalances
         val preTokenBalance = preBalances.firstOrNull()?.mint
         if (instruction.programId != SystemProgram.SPL_TOKEN_PROGRAM_ID.toBase58()) {

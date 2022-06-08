@@ -23,5 +23,5 @@ class UnknownParsingStrategy : TransactionParsingStrategy {
         )
     }
 
-    override fun getType(): TransactionDetailsType = TransactionDetailsType.UNKNOWN
+    override fun getType(): TransactionDetailsType = TransactionDetailsType.OTHER
 }

@@ -7,10 +7,10 @@ enum class TransactionDetailsType(val typeStr: String?) {
     CREATE_ACCOUNT("create"),
     BURN_CHECKED("burnChecked"),
     CLOSE_ACCOUNT("closeAccount"),
-    UNKNOWN("unknown");
+    OTHER("unknown");
 
     companion object {
         fun valueOf(typeStr: String?): TransactionDetailsType =
-            values().firstOrNull { it.typeStr.equals(typeStr, ignoreCase = true) } ?: UNKNOWN
+            values().firstOrNull { it.typeStr.equals(typeStr, ignoreCase = true) } ?: OTHER
     }
 }

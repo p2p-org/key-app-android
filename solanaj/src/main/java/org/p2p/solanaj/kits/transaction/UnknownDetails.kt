@@ -6,5 +6,5 @@ class UnknownDetails(
     slot: Int,
     override var account: String? = null
 ) : TransactionDetails(signature, blockTime, slot) {
-    override val type: TransactionDetailsType = TransactionDetailsType.UNKNOWN
+    override val type: TransactionDetailsType = TransactionDetailsType.OTHER
 }
