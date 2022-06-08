@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toStartOf="@id/arrowImageView"
         app:layout_constraintStart_toEndOf="@id/accountImageView"
         app:layout_constraintTop_toBottomOf="@id/accountFeeTextView"
-        tools:text="0.509 USDC рЙ\nЙЙЙЙЙЙЙррЙЙЙ\nЙЙЙЙЙЙЙЙЙЙЙЙ" />
+        tools:text="0.509 USDC" />
 
     <ImageView
         android:id="@+id/arrowImageView"
