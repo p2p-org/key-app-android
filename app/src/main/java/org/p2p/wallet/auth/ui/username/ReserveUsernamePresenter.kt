@@ -11,6 +11,8 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 
+private const val USERNAME_MAX_LENGTH = 15
+
 class ReserveUsernamePresenter(
     private val usernameInteractor: UsernameInteractor,
     private val analytics: OnboardingAnalytics,
@@ -26,6 +28,11 @@ class ReserveUsernamePresenter(
         checkUsernameJob?.cancel()
         if (username.isEmpty()) {
             view?.showIdleState()
+            return
+        }
+
+        if (username.length > USERNAME_MAX_LENGTH) {
+            view?.showUsernameLengthError(username, USERNAME_MAX_LENGTH)
             return
         }
 

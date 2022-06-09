@@ -47,7 +47,7 @@ class TransactionDetailsPresenter(
                  * therefore we are giving some time to make our request not fail
                  * */
                 delay(DELAY_IN_MS)
-                val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey, state.transactionId)
+                val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey)
                 handleHistory(details)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading transaction details")

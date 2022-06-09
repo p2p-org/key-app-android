@@ -4,5 +4,6 @@ import org.p2p.solanaj.model.types.ConfirmationStatus
 
 data class RpcTransactionSignature(
     val signature: String,
-    val status: ConfirmationStatus
+    val status: ConfirmationStatus,
+    val blockTime: Long
 )

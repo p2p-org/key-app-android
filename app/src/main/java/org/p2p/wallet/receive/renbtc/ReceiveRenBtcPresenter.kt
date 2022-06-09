@@ -62,7 +62,7 @@ class ReceiveRenBtcPresenter(
 
     override fun startNewSession(context: Context) {
         launch {
-            RenVMService.startWithNewSession(context)
+            RenVMService.startWithCheck(context)
         }
     }
 

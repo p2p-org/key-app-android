@@ -8,8 +8,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.model.SettingsRow
@@ -40,7 +40,10 @@ class SettingsFragment :
     override val presenter: SettingsContract.Presenter by inject()
 
     private val binding: FragmentSettingsBinding by viewBinding()
-    private val adapter = SettingsAdapter(::onItemClickListener, ::onLogoutClickListener)
+    private val adapter = SettingsAdapter(
+        onSettingsRowClickListener = ::onItemClickListener,
+        onLogoutClickListener = ::onLogoutClickListener
+    )
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -40,7 +40,7 @@ fun Context.copyToClipBoard(content: String) {
     clipboard.setPrimaryClip(clip)
 }
 
-fun Context.getClipBoardText(trimmed: Boolean = true): String? {
+fun Context.getClipboardText(trimmed: Boolean = true): String? {
     val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
     val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
     return if (trimmed) text?.trim() else text

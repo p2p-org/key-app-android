@@ -31,17 +31,16 @@ import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.AmountUtils
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
@@ -166,7 +165,7 @@ class OrcaSwapPresenter(
     }
 
     override fun calculateAvailableAmount() {
-        val amount = AmountUtils.format(sourceToken.total.scaleLong())
+        val amount = sourceToken.total.formatToken()
         setSourceAmount(amount)
         view?.showNewAmount(amount)
         isMaxClicked = true
@@ -438,24 +437,24 @@ class OrcaSwapPresenter(
         val deprecatedValues = pair.joinToString { "${it.tokenAName} -> ${it.tokenBName} (${it.deprecated})" }
         Timber.tag(TAG_SWAP).d("Best pair found, deprecation values: $deprecatedValues")
         val estimatedOutputAmount = pair.getOutputAmount(inputAmount) ?: return
-        destinationAmount = AmountUtils.format(estimatedOutputAmount.fromLamports(destination.decimals).scaleLong())
+        destinationAmount = estimatedOutputAmount.fromLamports(destination.decimals).formatToken()
 
         val minReceive = pair.getMinimumAmountOut(inputAmount, slippage.doubleValue) ?: return
-        val minReceiveResult = minReceive.fromLamports(destination.decimals).scaleLong()
+        val minReceiveResult = minReceive.fromLamports(destination.decimals)
 
         val totalUsd = sourceAmount.toBigDecimalOrZero().multiply(source.usdRateOrZero)
 
-        val receiveAtLeast = "${AmountUtils.format(minReceiveResult)} ${destination.tokenSymbol}"
+        val receiveAtLeast = "${minReceiveResult.formatToken()} ${destination.tokenSymbol}"
         val receiveAtLeastUsd = destination.usdRate?.let { minReceiveResult.multiply(it) }
 
         val data = SwapTotal(
             destinationAmount = destinationAmount,
-            total = "${AmountUtils.format(sourceAmount.toBigDecimalOrZero())} ${source.tokenSymbol}",
-            totalUsd = AmountUtils.format(totalUsd.scaleShort()),
+            total = "${sourceAmount.toBigDecimalOrZero().formatToken()} ${source.tokenSymbol}",
+            totalUsd = totalUsd.formatUsd(),
             fee = fees?.transactionFeeString,
             approxFeeUsd = fees?.approxFeeUsd.orEmpty(),
             receiveAtLeast = receiveAtLeast,
-            receiveAtLeastUsd = receiveAtLeastUsd?.let { AmountUtils.format(it) }
+            receiveAtLeastUsd = receiveAtLeastUsd?.formatUsd()
         )
         view?.showTotal(data)
 
@@ -481,10 +480,10 @@ class OrcaSwapPresenter(
         val priceData = SwapPrice(
             sourceSymbol = source.tokenSymbol,
             destinationSymbol = destination.tokenSymbol,
-            sourcePrice = "${AmountUtils.format(inputPrice)} ${source.tokenSymbol}",
-            destinationPrice = "${AmountUtils.format(outputPrice)} ${destination.tokenSymbol}",
-            sourcePriceInUsd = inputPriceUsd?.scaleShort()?.let { AmountUtils.format(it) },
-            destinationPriceInUsd = outputPriceUsd?.scaleShort()?.let { AmountUtils.format(it) }
+            sourcePrice = "${inputPrice.formatToken()} ${source.tokenSymbol}",
+            destinationPrice = "${outputPrice.formatToken()} ${destination.tokenSymbol}",
+            sourcePriceInUsd = inputPriceUsd?.formatUsd(),
+            destinationPriceInUsd = outputPriceUsd?.formatUsd()
         )
         view?.showPrice(priceData)
     }

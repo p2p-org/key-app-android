@@ -32,7 +32,7 @@ class TransactionDetailsBottomSheetPresenter(
             try {
                 view?.showLoading(true)
 
-                val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey, state.transactionId)
+                val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey)
 
                 if (details != null) {
                     handleHistory(details)
