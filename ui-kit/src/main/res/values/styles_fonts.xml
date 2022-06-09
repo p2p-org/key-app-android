@@ -11,43 +11,43 @@
         <item name="android:textStyle">normal</item>
     </style>
 
-    <style name="TextAppearance.Regular.Caption2">
+    <style name="TextAppearance.Regular.Caption2" parent="TextAppearance.Regular">
         <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.066</item>
     </style>
 
-    <style name="TextAppearance.Regular.Caption1">
+    <style name="TextAppearance.Regular.Caption1" parent="TextAppearance.Regular">
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="TextAppearance.Regular.Subheadline">
+    <style name="TextAppearance.Regular.Subheadline" parent="TextAppearance.Regular">
         <item name="android:textSize">15sp</item>
     </style>
 
-    <style name="TextAppearance.Regular.Callout">
+    <style name="TextAppearance.Regular.Callout" parent="TextAppearance.Regular">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="TextAppearance.Regular.Text">
+    <style name="TextAppearance.Regular.Text" parent="TextAppearance.Regular">
         <item name="android:textSize">17sp</item>
     </style>
 
-    <style name="TextAppearance.Regular.Title3">
+    <style name="TextAppearance.Regular.Title3" parent="TextAppearance.Regular">
         <item name="android:textSize">20sp</item>
         <item name="android:letterSpacing">0.38</item>
     </style>
 
-    <style name="TextAppearance.Regular.Title2">
+    <style name="TextAppearance.Regular.Title2" parent="TextAppearance.Regular">
         <item name="android:textSize">22sp</item>
         <item name="android:letterSpacing">0.35</item>
     </style>
 
-    <style name="TextAppearance.Regular.Title1">
+    <style name="TextAppearance.Regular.Title1" parent="TextAppearance.Regular">
         <item name="android:textSize">28sp</item>
         <item name="android:letterSpacing">0.364</item>
     </style>
 
-    <style name="TextAppearance.Regular.LargeTitle">
+    <style name="TextAppearance.Regular.LargeTitle" parent="TextAppearance.Regular">
         <item name="android:textSize">34sp</item>
         <item name="android:letterSpacing">0.374</item>
     </style>
@@ -59,43 +59,43 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Caption2">
+    <style name="TextAppearance.SemiBold.Caption2" parent="TextAppearance.SemiBold">
         <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.066</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Caption1">
+    <style name="TextAppearance.SemiBold.Caption1" parent="TextAppearance.SemiBold">
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Subheadline">
+    <style name="TextAppearance.SemiBold.Subheadline" parent="TextAppearance.SemiBold">
         <item name="android:textSize">15sp</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Callout">
+    <style name="TextAppearance.SemiBold.Callout" parent="TextAppearance.SemiBold">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Text">
+    <style name="TextAppearance.SemiBold.Text" parent="TextAppearance.SemiBold">
         <item name="android:textSize">17sp</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Title3">
+    <style name="TextAppearance.SemiBold.Title3" parent="TextAppearance.SemiBold">
         <item name="android:textSize">20sp</item>
         <item name="android:letterSpacing">0.38</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Title2">
+    <style name="TextAppearance.SemiBold.Title2" parent="TextAppearance.SemiBold">
         <item name="android:textSize">22sp</item>
         <item name="android:letterSpacing">0.35</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Title1">
+    <style name="TextAppearance.SemiBold.Title1" parent="TextAppearance.SemiBold">
         <item name="android:textSize">28sp</item>
         <item name="android:letterSpacing">0.364</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.LargeTitle">
+    <style name="TextAppearance.SemiBold.LargeTitle" parent="TextAppearance.SemiBold">
         <item name="android:textSize">34sp</item>
         <item name="android:letterSpacing">0.374</item>
     </style>
