@@ -193,7 +193,8 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':solanaj')
+    implementation project(':solanaj')
+    implementation project(':ui-kit')
 
     def lifecycle_version = "2.1.0"
 
