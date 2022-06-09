@@ -25,12 +25,12 @@ commands:
           name: "Create apikey.properties and fill them"
           command: |
             touch apikey.properties
-            echo 'rpcPoolApiKey="${RPC_POOL_API_KEY}"' >> apikey.properties
-            echo 'moonpayKey="${MOONPAY_KEY}"' >> apikey.properties
-            echo 'comparePublicKey="${COMPARE_PUBLIC_KEY}"' >> apikey.properties
-            echo 'intercomApiKey="${INTERCOM_API_KEY}"' >> apikey.properties
-            echo 'intercomAppId="${INTERCOM_APP_ID}"' >> apikey.properties
-            echo 'amplitudeKey="${AMPLITUDE_KEY}"' >> apikey.properties
+            echo "rpcPoolApiKey=\"${RPC_POOL_API_KEY}\"" >> apikey.properties
+            echo "moonpayKey=\"${MOONPAY_KEY}\"" >> apikey.properties
+            echo "comparePublicKey=\"${COMPARE_PUBLIC_KEY}\"" >> apikey.properties
+            echo "intercomApiKey=\"${INTERCOM_API_KEY}\"" >> apikey.properties
+            echo "intercomAppId=\"${INTERCOM_APP_ID}\"" >> apikey.properties
+            echo "amplitudeKey=\"${AMPLITUDE_KEY}\"" >> apikey.properties
             echo "apikey.properties created succesfully"
 
   restore_gradle_cache:

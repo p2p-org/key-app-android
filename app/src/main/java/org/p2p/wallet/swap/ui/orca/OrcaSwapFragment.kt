@@ -121,9 +121,15 @@ class OrcaSwapFragment :
             }
             return@setOnMenuItemClickListener false
         }
+
         sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
+        sourceTextView.setOnClickListener { presenter.loadTokensForSourceSelection() }
+        sourceDownImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
+
         destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
         destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+        destinationDownImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+
         availableTextView.setOnClickListener { presenter.calculateAvailableAmount() }
         maxTextView.setOnClickListener { presenter.calculateAvailableAmount() }
 

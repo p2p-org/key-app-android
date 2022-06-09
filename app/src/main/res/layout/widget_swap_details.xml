@@ -182,7 +182,7 @@
             android:text="@string/details_paid_by_p2p_brackets"
             android:textAlignment="textEnd"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="@color/colorGreen"
+            android:textColor="@color/color_green"
             app:drawableEndCompat="@drawable/ic_info" />
     </LinearLayout>
 

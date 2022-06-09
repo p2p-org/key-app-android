@@ -555,6 +555,7 @@
 &#8226; Slippage tolerance cannot exceed 50%</string>
 
     <!-- Debug Settings -->
+    <string name="debug_settings_notifications_title">Notifications</string>
     <string name="debug_settings_deeplinks_title">Deeplinks</string>
     <string name="debug_settings_logs_title">Logs</string>
     <string name="debug_settings_feature_toggles_title">Feature Toggles</string>
@@ -563,11 +564,17 @@
     <string name="debug_settings_ci_info">CI Info</string>
     <string name="debug_settings_app_info">App Info</string>
 
+    <!-- Debug Settings -> Notifications -->
+    <string name="debug_notifications_title">Debug Notifications</string>
+    <string name="debug_notifications_item_default">Notification Default</string>
+    <string name="debug_notifications_item_receive">Notification Receive</string>
+
     <!-- Debug Settings -> Feature Toggles -->
     <string name="feature_toggles_title">@string/debug_settings_feature_toggles_title</string>
     <string name="feature_auto_update">Enable auto update</string>
     <string name="feature_dev_net">Enable DevNet env</string>
     <string name="feature_ssl_pinning">Enable SSL pinning</string>
+    <string name="feature_coin_gecko">Enable CoinGecko as price source</string>
 
     <!-- fixme: rename these resources by existing prefixes -->
     <string name="seed_info_the_definition">The definition</string>

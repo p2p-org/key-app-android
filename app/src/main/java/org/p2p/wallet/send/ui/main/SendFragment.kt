@@ -175,6 +175,8 @@ class SendFragment :
             networkView.setOnClickListener { presenter.loadCurrentNetwork() }
 
             sourceImageView.setOnClickListener { presenter.loadTokensForSelection() }
+            sourceTextView.setOnClickListener { presenter.loadTokensForSelection() }
+            downImageView.setOnClickListener { presenter.loadTokensForSelection() }
 
             accountFeeView.setOnClickListener { presenter.loadFeePayerTokens() }
 

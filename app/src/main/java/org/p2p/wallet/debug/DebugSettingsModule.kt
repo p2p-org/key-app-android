@@ -5,6 +5,8 @@ import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesContract
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesPresenter
+import org.p2p.wallet.debug.pushnotifications.PushNotificationsContract
+import org.p2p.wallet.debug.pushnotifications.PushNotificationsPresenter
 import org.p2p.wallet.debug.settings.DebugSettingsContract
 import org.p2p.wallet.debug.settings.DebugSettingsPresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -37,5 +39,10 @@ object DebugSettingsModule : InjectionModule {
                 get(),
             )
         } bind FeatureTogglesContract.Presenter::class
+        factory {
+            PushNotificationsPresenter(
+                get(),
+            )
+        } bind PushNotificationsContract.Presenter::class
     }
 }

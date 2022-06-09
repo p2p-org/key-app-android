@@ -9,20 +9,28 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import org.p2p.wallet.R
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import timber.log.Timber
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.util.Date
+import kotlinx.coroutines.withContext
 
-class FileRepository(private val context: Context) {
+class FileRepository(
+    private val context: Context,
+    private val coroutineDispatchers: CoroutineDispatchers
+) {
 
     private val pdfFolder: File
+    private val miscFolder: File
 
     init {
         val rootFolder = context.getExternalFilesDir(null)
         pdfFolder = File(rootFolder, "pdf")
+        miscFolder = File(rootFolder, "misc")
     }
 
     fun saveQr(name: String, bitmap: Bitmap): File? {
@@ -41,9 +49,35 @@ class FileRepository(private val context: Context) {
         return pdfFolder
     }
 
+    suspend fun saveFileToMisc(fileNameWithExt: String, stream: InputStream) {
+        withContext(coroutineDispatchers.io) {
+            ensureMiscFolderExists()
+
+            val newMiscFile = File(miscFolder, fileNameWithExt)
+            newMiscFile.outputStream().use { fileOut ->
+                stream.use { inStream ->
+                    inStream.copyTo(fileOut)
+                }
+            }
+        }
+    }
+
+    fun getFileFromMisc(fileNameWithExt: String): File? {
+        return if (isFileExists(fileNameWithExt)) {
+            File(miscFolder, fileNameWithExt)
+        } else {
+            null
+        }
+    }
+
+    fun isFileExists(fileNameWithExt: String): Boolean {
+        return File(pdfFolder, fileNameWithExt).exists() || File(miscFolder, fileNameWithExt).exists()
+    }
+
     private fun getPdfFile(fileName: String) = File(pdfFolder, "$fileName.pdf")
 
     private fun ensurePdfFolderExists() = pdfFolder.mkdirs()
+    private fun ensureMiscFolderExists() = miscFolder.mkdirs()
 
     fun saveBitmapAsFile(bitmap: Bitmap, name: String? = null): File? {
         val fileName = name ?: Date().toString()

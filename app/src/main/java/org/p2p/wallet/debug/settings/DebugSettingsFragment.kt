@@ -8,6 +8,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesFragment
+import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debugdrawer.CustomLogDialog
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
@@ -63,6 +64,9 @@ class DebugSettingsFragment :
 
     private fun onSettingsRowClicked(@StringRes titleResId: Int) {
         when (titleResId) {
+            R.string.debug_settings_notifications_title -> {
+                replaceFragment(PushNotificationsFragment.create())
+            }
             R.string.settings_network -> {
                 addFragment(
                     SettingsNetworkFragment.create(REQUEST_KEY, BUNDLE_KEY_NEW_NETWORK_NAME),
