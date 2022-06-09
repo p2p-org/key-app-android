@@ -33,9 +33,9 @@ object HistoryStrategyModule : InjectionModule {
                 BurnCheckParsingStrategy(),
                 CreateAccountParsingStrategy(),
                 CloseAccountParsingStrategy(),
-                TransferParsingStrategy(),
+                TransferParsingStrategy(get(), get()),
                 UnknownParsingStrategy(),
-                CheckedTransferParsingStrategy()
+                CheckedTransferParsingStrategy(get(), get())
             )
         }
 

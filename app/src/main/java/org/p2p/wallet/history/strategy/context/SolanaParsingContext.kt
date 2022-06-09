@@ -5,6 +5,7 @@ import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.history.strategy.TransactionParsingStrategy
+import timber.log.Timber
 import java.lang.IllegalStateException
 
 class SolanaParsingContext(
@@ -34,6 +35,8 @@ class SolanaParsingContext(
 
     override fun canParse(transaction: ConfirmedTransactionRootResponse): Boolean {
         // Default parser for all type of transactions
+        Timber.tag("CanParse = SolanaParser = true")
+
         return true
     }
 }

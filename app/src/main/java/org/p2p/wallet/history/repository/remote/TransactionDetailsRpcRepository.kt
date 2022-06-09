@@ -54,11 +54,11 @@ class TransactionDetailsRpcRepository(
             when (val parsingResult = transactionParsingContext.parseTransaction(transaction)) {
 
                 is ParsingResult.Transaction -> {
-                    Timber.tag("ParsingResult: " + parsingResult.items.size)
+                    Timber.tag("__________Success" + parsingResult.items.size)
                     transactionDetails.addAll(parsingResult.items)
                 }
                 is ParsingResult.Error -> {
-                    Timber.tag("ParsingResult: " + parsingResult.error.message)
+                    Timber.tag("__________Error" + parsingResult.error.message)
                 }
             }
         }

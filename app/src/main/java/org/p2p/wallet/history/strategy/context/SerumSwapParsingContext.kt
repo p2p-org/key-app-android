@@ -6,6 +6,7 @@ import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.solanaj.programs.SerumSwapProgram
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
+import timber.log.Timber
 import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigInteger
@@ -118,6 +119,8 @@ class SerumSwapParsingContext : TransactionParsingContext {
 
     override fun canParse(transactionRoot: ConfirmedTransactionRootResponse): Boolean {
         val instructions = transactionRoot.transaction?.message?.instructions.orEmpty()
+        Timber.tag("CanParse = SerumSwapParsing ${getSerumSwapInstruction(instructions) != null}")
+
         return getSerumSwapInstruction(instructions) != null
     }
 

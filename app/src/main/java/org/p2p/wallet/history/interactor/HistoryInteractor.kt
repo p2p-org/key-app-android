@@ -17,6 +17,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
+import timber.log.Timber
 
 private const val DAY_IN_MILLISECONDS = (60 * 60 * 24) / 5
 private const val PAGE_SIZE = 10
@@ -145,7 +146,10 @@ class HistoryInteractor(
 
     private suspend fun loadTransactions(signatures: List<HistoryStreamItem>): List<HistoryTransaction> {
         val transactionDetails = transactionsRemoteRepository.getTransactions(tokenKeyProvider.publicKey, signatures)
-        return transactionDetails.mapToHistoryTransactions()
+        Timber.tag("____________").d(transactionDetails.size.toString())
+        val mappedItems = transactionDetails.mapToHistoryTransactions()
+        Timber.tag("____________").d(mappedItems.size.toString())
+        return mappedItems
     }
 
     private suspend fun List<TransactionDetails>.mapToHistoryTransactions(): List<HistoryTransaction> {

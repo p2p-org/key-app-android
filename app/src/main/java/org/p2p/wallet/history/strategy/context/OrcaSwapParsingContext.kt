@@ -6,6 +6,7 @@ import org.p2p.solanaj.kits.transaction.network.meta.InnerInstructionDetailsResp
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
+import timber.log.Timber
 import java.lang.IllegalStateException
 
 const val ZERO_AMOUNT = "0"
@@ -26,8 +27,8 @@ class OrcaSwapParsingContext : TransactionParsingContext {
 
     override fun canParse(transaction: ConfirmedTransactionRootResponse): Boolean {
         val instructions = transaction.transaction?.message?.instructions
-
         val orcaSwapInstruction = instructions?.firstOrNull { it.programId in orcaSwapProgramIds }
+        Timber.tag("CanParse = OrcaSwapParsing ${orcaSwapInstruction != null}")
         return orcaSwapInstruction != null
     }
 

@@ -5,11 +5,19 @@ import org.p2p.solanaj.kits.transaction.TransferDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.solanaj.programs.SystemProgram
+import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingStrategy
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.orZero
+import org.p2p.wallet.utils.toBase58Instance
 import java.lang.IllegalStateException
 
-class TransferParsingStrategy : TransactionParsingStrategy {
+class TransferParsingStrategy(
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val userInteractor: UserInteractor
+) : TransactionParsingStrategy {
 
     override fun parseTransaction(
         signature: String,
@@ -49,7 +57,72 @@ class TransferParsingStrategy : TransactionParsingStrategy {
                 )
             )
         } else {
-            return ParsingResult.Error(IllegalStateException("Not implemented yet"))
+            val instructions = transactionRoot.transaction?.message?.instructions
+            val postTokenBalances = transactionRoot?.meta?.postTokenBalances ?: emptyList()
+            val accountKeys = transactionRoot.transaction?.message?.accountKeys
+
+            // getPubKeys
+            val transferInstruction = instructions?.lastOrNull()
+            val authority = transferInstruction?.parsed?.info?.authority
+            val sourcePubKey = transferInstruction?.parsed?.info?.source
+            val destinationPubKey = transferInstruction?.parsed?.info?.destination
+
+            // get lamports
+
+            val lamports: String = instructionInfo?.lamports?.toLong()?.toBigInteger()
+                ?.toString() ?: instructionInfo?.amount ?: instructionInfo?.tokenAmount?.amount ?: "0"
+
+            var destinationAuthority: String? = null
+            val createATokenInstruction =
+                instructions?.firstOrNull { it.programId == TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID.toBase58() }
+            val initAccountInstruction =
+                instructions?.firstOrNull { it.programId == "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" }
+            if (createATokenInstruction != null) {
+                destinationAuthority = createATokenInstruction.parsed?.info?.wallet.toString()
+            } else if (initAccountInstruction != null && initAccountInstruction.parsed?.type == "initializeAccount") {
+                destinationAuthority = initAccountInstruction.parsed?.info?.owner.toString()
+            }
+
+            // Define token with mint
+
+            val tokenBalance = postTokenBalances.firstOrNull { !it.mint.isNullOrEmpty() }
+            if (tokenBalance != null) {
+                var myAccount: String = tokenKeyProvider.publicKey
+                if (sourcePubKey != myAccount && destinationPubKey != myAccount && accountKeys?.size.orZero() >= 4) {
+
+                    if (myAccount.toBase58Instance() == accountKeys?.get(0)?.publicKey?.toBase58Instance()) {
+                        myAccount = sourcePubKey.toString()
+                    }
+
+                    if (myAccount.toBase58Instance() == accountKeys?.get(3)?.publicKey?.toBase58Instance()) {
+                        myAccount = destinationPubKey.toString()
+                    }
+                }
+
+                val token = tokenBalance.mint?.let { userInteractor.findTokenData(it) }
+
+                return ParsingResult.Transaction.create(
+                    TransferDetails(
+                        signature = signature,
+                        blockTime = transactionRoot.blockTime,
+                        slot = transactionRoot.slot,
+                        fee = transactionRoot.meta.fee,
+                        source = sourcePubKey,
+                        destination = destinationAuthority,
+                        authority = authority,
+                        mint = token?.mintAddress,
+                        amount = lamports,
+                        _decimals = decimals,
+                        programId = instruction?.programId.orEmpty(),
+                        typeStr = parsedInfo?.type,
+                        account = myAccount
+
+                    )
+                )
+            } else {
+                return ParsingResult.Error(IllegalStateException("Not implemented YET"))
+                // Mint not found
+            }
         }
     }
 
