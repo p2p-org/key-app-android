@@ -20,7 +20,6 @@ import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
-import timber.log.Timber
 import java.math.BigDecimal
 
 class HistoryTransactionConverter {
@@ -115,7 +114,6 @@ class HistoryTransactionConverter {
         publicKey: String,
         rate: TokenPrice?
     ): HistoryTransaction {
-        Timber.tag("TAGGGGGG").d(response.toString())
         val isSend = if (response.isSimpleTransfer) {
             (response.source == directPublicKey && response.destination != publicKey) || response.authority == publicKey
         } else {
@@ -128,7 +126,11 @@ class HistoryTransactionConverter {
             response.source
         }
         val amount = rate?.price?.let {
-            response.amount.orEmpty().toBigInteger().fromLamports(tokenData.decimals).times(it)
+            response.amount.toBigDecimalOrZero()
+                .toBigInteger()
+                .fromLamports(response.decimals)
+                .scaleLong()
+                .times(it)
         }
 
         val date = ZonedDateTime.ofInstant(

@@ -3,7 +3,6 @@ package org.p2p.wallet.history.strategy.context
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
-import timber.log.Timber
 
 class AllTransactionParsingContext(
     private val contexts: List<TransactionParsingContext>
@@ -21,7 +20,6 @@ class AllTransactionParsingContext(
     }
 
     override fun canParse(transaction: ConfirmedTransactionRootResponse): Boolean {
-        Timber.tag("_______").d("HIIII")
-        return true
+        return contexts.any { it.canParse(transaction) }
     }
 }

@@ -8,7 +8,6 @@ import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
-import timber.log.Timber
 
 class TransactionDetailsRpcRepository(
     private val rpcApi: RpcHistoryApi,
@@ -33,7 +32,7 @@ class TransactionDetailsRpcRepository(
 
         val transactions = rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
 
-        return fromNetworkToDomain(userPublicKey, transactions).onEach { transactionDetails ->
+        return fromNetworkToDomain(transactions).onEach { transactionDetails ->
             val signatureItem =
                 transactionSignatures.first { it.streamSource?.signature == transactionDetails.signature }
             transactionDetails.status = signatureItem.streamSource?.status
@@ -42,7 +41,6 @@ class TransactionDetailsRpcRepository(
     }
 
     private suspend fun fromNetworkToDomain(
-        tokenPublicKey: String,
         transactions: List<ConfirmedTransactionRootResponse>
     ): List<TransactionDetails> {
         val transactionDetails = mutableListOf<TransactionDetails>()
@@ -51,15 +49,9 @@ class TransactionDetailsRpcRepository(
             transactionDetails.forEach {
                 it.error = transaction.meta.error?.instructionError
             }
-            when (val parsingResult = transactionParsingContext.parseTransaction(transaction)) {
-
-                is ParsingResult.Transaction -> {
-                    Timber.tag("__________Success" + parsingResult.items.size)
-                    transactionDetails.addAll(parsingResult.items)
-                }
-                is ParsingResult.Error -> {
-                    Timber.tag("__________Error" + parsingResult.error.message)
-                }
+            val parsingResult = transactionParsingContext.parseTransaction(transaction)
+            if (parsingResult is ParsingResult.Transaction) {
+                transactionDetails.addAll(parsingResult.items)
             }
         }
         return transactionDetails
