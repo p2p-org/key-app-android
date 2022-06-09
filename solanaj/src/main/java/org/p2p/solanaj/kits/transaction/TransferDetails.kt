@@ -4,7 +4,7 @@ import org.p2p.solanaj.programs.SystemProgram.PROGRAM_ID
 
 private const val SOL_DECIMALS = 9
 
-class TransferDetails(
+class   TransferDetails(
     signature: String,
     blockTime: Long,
     slot: Int,

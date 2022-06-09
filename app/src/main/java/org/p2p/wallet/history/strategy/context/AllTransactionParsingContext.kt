@@ -9,7 +9,7 @@ class AllTransactionParsingContext(
     private val contexts: List<TransactionParsingContext>
 ) : TransactionParsingContext {
 
-    override fun parseTransaction(
+    override suspend fun parseTransaction(
         root: ConfirmedTransactionRootResponse
     ): ParsingResult {
         val parsedTransactions = contexts.filter { it.canParse(root) }.map { parsingContext ->

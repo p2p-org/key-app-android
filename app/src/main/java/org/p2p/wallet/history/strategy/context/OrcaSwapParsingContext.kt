@@ -32,7 +32,7 @@ class OrcaSwapParsingContext : TransactionParsingContext {
         return orcaSwapInstruction != null
     }
 
-    override fun parseTransaction(
+    override suspend fun parseTransaction(
         transactionRoot: ConfirmedTransactionRootResponse
     ): ParsingResult {
 

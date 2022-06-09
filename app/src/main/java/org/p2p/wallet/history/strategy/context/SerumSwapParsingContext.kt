@@ -13,7 +13,7 @@ import java.math.BigInteger
 
 class SerumSwapParsingContext : TransactionParsingContext {
 
-    override fun parseTransaction(
+    override suspend fun parseTransaction(
         transactionRoot: ConfirmedTransactionRootResponse
     ): ParsingResult {
 

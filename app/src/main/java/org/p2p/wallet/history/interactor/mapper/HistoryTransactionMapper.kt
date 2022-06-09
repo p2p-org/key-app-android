@@ -60,8 +60,8 @@ class HistoryTransactionMapper(
             response = details,
             sourceData = sourceData,
             destinationData = destinationData,
-            sourceRate = destinationRate,
-            destinationRate = sourceRate,
+            sourceRate = sourceRate,
+            destinationRate = destinationRate,
             sourcePublicKey = userPublicKey
         )
     }

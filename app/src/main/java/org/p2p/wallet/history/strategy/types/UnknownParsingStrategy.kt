@@ -9,7 +9,7 @@ import org.p2p.wallet.history.strategy.TransactionParsingStrategy
 
 class UnknownParsingStrategy : TransactionParsingStrategy {
 
-    override fun parseTransaction(
+    override suspend fun parseTransaction(
         signature: String,
         instruction: InstructionResponse,
         transactionRoot: ConfirmedTransactionRootResponse

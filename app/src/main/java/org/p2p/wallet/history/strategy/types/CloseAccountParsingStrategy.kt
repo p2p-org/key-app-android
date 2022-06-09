@@ -10,7 +10,7 @@ import org.p2p.wallet.history.strategy.TransactionParsingStrategy
 
 class CloseAccountParsingStrategy : TransactionParsingStrategy {
 
-    override fun parseTransaction(
+    override suspend fun parseTransaction(
         signature: String,
         instruction: InstructionResponse,
         transactionRoot: ConfirmedTransactionRootResponse

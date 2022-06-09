@@ -12,7 +12,7 @@ class SolanaParsingContext(
     private val strategies: List<TransactionParsingStrategy>
 ) : TransactionParsingContext {
 
-    override fun parseTransaction(
+    override suspend fun parseTransaction(
         root: ConfirmedTransactionRootResponse
     ): ParsingResult {
         val instructions = root.transaction?.message?.instructions?.filter { it.parsed != null }?.map { instruction ->

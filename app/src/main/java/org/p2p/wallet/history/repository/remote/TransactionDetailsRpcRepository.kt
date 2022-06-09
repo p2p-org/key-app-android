@@ -41,7 +41,7 @@ class TransactionDetailsRpcRepository(
         }
     }
 
-    private fun fromNetworkToDomain(
+    private suspend fun fromNetworkToDomain(
         tokenPublicKey: String,
         transactions: List<ConfirmedTransactionRootResponse>
     ): List<TransactionDetails> {

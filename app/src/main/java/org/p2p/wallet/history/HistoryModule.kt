@@ -47,7 +47,8 @@ object HistoryModule : InjectionModule {
                 historyTransactionMapper = get(),
                 userInteractor = get(),
                 transactionsRemoteRepository = get(),
-                rpcSignatureRepository = get()
+                rpcSignatureRepository = get(),
+                serviceScope = get()
             )
         }
 

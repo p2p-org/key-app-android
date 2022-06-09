@@ -4,7 +4,7 @@ import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 
 interface TransactionParsingContext {
 
-    fun parseTransaction(
+    suspend fun parseTransaction(
         root: ConfirmedTransactionRootResponse
     ): ParsingResult
 

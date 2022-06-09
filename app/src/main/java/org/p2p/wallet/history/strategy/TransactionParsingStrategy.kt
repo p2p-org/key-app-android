@@ -5,7 +5,7 @@ import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 
 interface TransactionParsingStrategy {
-    fun parseTransaction(
+    suspend fun parseTransaction(
         signature: String,
         instruction: InstructionResponse,
         transactionRoot: ConfirmedTransactionRootResponse
