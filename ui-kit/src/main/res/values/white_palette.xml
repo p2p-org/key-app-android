@@ -14,13 +14,13 @@
     <color name="snow">#FFFFFF</color>
     <color name="cloud">#FAFCFF</color>
     <color name="smoke">#F8F9FE</color>
-    <color name="rain">#F3F6FE</color>
-    <color name="mountain">#EFF3FF</color>
-    <color name="night">#081422</color>
+    <color name="rain">#EBEEF5</color>
+    <color name="mountain">#6F7D8D</color>
+    <color name="night">#2B2B2B</color>
     <color name="lime">#E4F312</color>
     <color name="sky">#003CFF</color>
     <color name="rose">#EB4A7A</color>
-    <color name="mint">#34C759</color>
+    <color name="mint">#35C5AB</color>
     <color name="sun">#F1AC45</color>
 
     <color name="button_snow">@color/snow</color>

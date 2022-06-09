@@ -1,11 +1,11 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig

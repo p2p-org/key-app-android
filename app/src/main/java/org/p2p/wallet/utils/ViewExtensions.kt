@@ -22,7 +22,7 @@ import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import org.p2p.wallet.common.ui.widget.SnackBar
+import org.p2p.wallet.common.ui.widget.CustomSnackBar
 import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.databinding.WidgetBottomSheetSnackbarBinding
 
@@ -171,17 +171,17 @@ fun View.getColor(@ColorRes colorRes: Int): Int =
 fun Fragment.getColor(@ColorRes colorRes: Int): Int =
     requireContext().getColor(colorRes)
 
-fun Fragment.snackbar(action: (SnackBar) -> Unit) {
+fun Fragment.snackbar(action: (CustomSnackBar) -> Unit) {
     val viewGroup = requireActivity().findViewById<ViewGroup>(android.R.id.content)
     viewGroup.snackbar(action)
 }
 
-fun AppCompatActivity.snackbar(action: (SnackBar) -> Unit) {
+fun AppCompatActivity.snackbar(action: (CustomSnackBar) -> Unit) {
     val viewGroup = findViewById<View>(android.R.id.content) as ViewGroup
     viewGroup.snackbar(action)
 }
 
-fun ViewGroup.snackbar(action: (SnackBar) -> Unit) {
+fun ViewGroup.snackbar(action: (CustomSnackBar) -> Unit) {
     val parent = findSuitableParent()
     val binding =
         WidgetBottomSheetSnackbarBinding.inflate(
