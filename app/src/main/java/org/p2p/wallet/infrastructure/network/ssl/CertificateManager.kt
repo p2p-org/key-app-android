@@ -3,6 +3,7 @@ package org.p2p.wallet.infrastructure.network.ssl
 import android.content.res.Resources
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.AppFeatureFlags
 import timber.log.Timber
@@ -26,7 +27,7 @@ class CertificateManager(
     fun setCertificate(builder: OkHttpClient.Builder) {
         if (appFeatureFlags.isSslPinningEnabled) {
             try {
-                createCertificate(resources.openRawResource(R.raw.c)).apply {
+                createCertificate(resources.openRawResource(R.raw.cert)).apply {
                     systemDefaultTrustManager()?.let { trustManager ->
                         Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
                         builder.sslSocketFactory(socketFactory, trustManager)
