@@ -2,12 +2,12 @@ package org.p2p.wallet.history.strategy
 
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 
-sealed class ParsingResult {
-    data class Transaction(val items: List<TransactionDetails>) : ParsingResult() {
+sealed interface ParsingResult {
+    data class Transaction(val details: List<TransactionDetails>) : ParsingResult {
         companion object {
-            fun create(vararg items: TransactionDetails) = Transaction(items = items.toList())
+            fun create(vararg details: TransactionDetails) = Transaction(details = details.toList())
         }
     }
 
-    data class Error(val error: Throwable) : ParsingResult()
+    data class Error(val error: Throwable) : ParsingResult
 }

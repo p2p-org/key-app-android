@@ -51,7 +51,7 @@ class TransactionDetailsRpcRepository(
             }
             val parsingResult = transactionParsingContext.parseTransaction(transaction)
             if (parsingResult is ParsingResult.Transaction) {
-                transactionDetails.addAll(parsingResult.items)
+                transactionDetails.addAll(parsingResult.details)
             }
         }
         return transactionDetails

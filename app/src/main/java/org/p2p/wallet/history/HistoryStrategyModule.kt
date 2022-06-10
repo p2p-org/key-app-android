@@ -18,17 +18,19 @@ import org.p2p.wallet.history.strategy.types.UnknownParsingStrategy
 
 object HistoryStrategyModule : InjectionModule {
 
+    private const val STRATEGY_CONTEXTS_QUALIFIER = "STRATEGY_CONTEXTS_QUALIFIER"
+    private const val STRATEGY_PARSERS_QUALIFIER = "STRATEGY_PARSERS_QUALIFIER"
     override fun create(): Module = module {
 
-        factory(named("contexts")) {
+        factory(named(STRATEGY_CONTEXTS_QUALIFIER)) {
             listOf(
                 SerumSwapParsingContext(),
                 OrcaSwapParsingContext(),
-                SolanaParsingContext(get(named("strategies")))
+                SolanaParsingContext(get(named(STRATEGY_PARSERS_QUALIFIER)), get())
             )
         }
 
-        factory(named("strategies")) {
+        factory(named(STRATEGY_PARSERS_QUALIFIER)) {
             listOf(
                 BurnCheckParsingStrategy(),
                 CreateAccountParsingStrategy(),
@@ -40,7 +42,7 @@ object HistoryStrategyModule : InjectionModule {
         }
 
         factory<TransactionParsingContext> {
-            AllTransactionParsingContext(get(named("contexts")))
+            AllTransactionParsingContext(get(named(STRATEGY_CONTEXTS_QUALIFIER)))
         }
     }
 }

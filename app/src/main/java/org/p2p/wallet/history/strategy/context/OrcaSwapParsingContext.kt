@@ -6,10 +6,9 @@ import org.p2p.solanaj.kits.transaction.network.meta.InnerInstructionDetailsResp
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
+import org.p2p.wallet.utils.Constants.ZERO_AMOUNT
 import timber.log.Timber
 import java.lang.IllegalStateException
-
-const val ZERO_AMOUNT = "0"
 
 class OrcaSwapParsingContext : TransactionParsingContext {
 

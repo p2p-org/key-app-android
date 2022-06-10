@@ -19,4 +19,6 @@ object Constants {
     const val SOL_NAME = "Solana"
 
     const val DEVICE_TYPE = "Android"
+
+    const val ZERO_AMOUNT = "0"
 }
