@@ -47,7 +47,9 @@ class UsernameInteractor(
         return username?.let { Username(it) }
     }
 
-    fun saveQr(name: String, bitmap: Bitmap): File? = fileLocalRepository.saveQr(name, bitmap)
+    fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? = fileLocalRepository.saveQr(
+        name, bitmap, forSharing
+    )
 
     suspend fun resolveUsername(name: String): List<ResolveUsername> =
         usernameRepository.resolve(name)
