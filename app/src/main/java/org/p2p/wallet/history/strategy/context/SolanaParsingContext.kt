@@ -21,8 +21,11 @@ class SolanaParsingContext(
         root: ConfirmedTransactionRootResponse
     ): ParsingResult = withContext(serviceScope.coroutineContext) {
         val instructions =
-            root.transaction?.message?.instructions?.filter { it.parsed != null }
-                ?.map { async { toParsingResult(root, it) } }?.awaitAll()
+            root.transaction?.message
+                ?.instructions
+                ?.filter { it.parsed != null }
+                ?.map { async { toParsingResult(root, it) } }
+                ?.awaitAll()
 
         val details = instructions?.filterIsInstance<ParsingResult.Transaction>()
             ?.flatMap { it.details }
