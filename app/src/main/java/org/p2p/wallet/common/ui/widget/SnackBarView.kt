@@ -5,7 +5,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 
 class SnackBarView(
     parent: ViewGroup,
-    content: SnackBar
+    content: CustomSnackBar
 ) : BaseTransientBottomBar<SnackBarView>(parent, content, content) {
 
     init {

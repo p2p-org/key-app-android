@@ -37,4 +37,25 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    sourceSets {
+        main {
+            java.srcDirs += 'src/main/kotlin'
+            res.srcDirs += 'src/main/res'
+        }
+        debug {
+            java.srcDirs += 'src/debug/kotlin'
+            res.srcDirs += 'src/debug/res'
+        }
+        feature {
+            java.srcDirs += 'src/feature/kotlin'
+            res.srcDirs += 'src/feature/res'
+        }
+        release {
+            java.srcDirs += 'src/release/kotlin'
+            res.srcDirs += 'src/release/res'
+        }
+
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
 }
