@@ -36,6 +36,7 @@ import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
+import org.p2p.wallet.history.HistoryStrategyModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
@@ -166,6 +167,7 @@ class CheckModulesTest : KoinTest {
         NetworkModule.create(),
         ScanQrModule.create(),
         HistoryModule.create(),
+        HistoryStrategyModule.create(),
         SettingsModule.create(),
         DebugSettingsModule.create(),
         SwapModule.create(),
