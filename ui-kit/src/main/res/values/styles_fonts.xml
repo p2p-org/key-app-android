@@ -13,7 +13,11 @@
 
     <style name="TextAppearance.Regular.Caption2" parent="TextAppearance.Regular">
         <item name="android:textSize">11sp</item>
-        <item name="android:letterSpacing">0.066</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="TextAppearance.Regular.Footnote" parent="TextAppearance.Regular">
+        <item name="android:textSize">13sp</item>
     </style>
 
     <style name="TextAppearance.Regular.Caption1" parent="TextAppearance.Regular">
@@ -34,22 +38,22 @@
 
     <style name="TextAppearance.Regular.Title3" parent="TextAppearance.Regular">
         <item name="android:textSize">20sp</item>
-        <item name="android:letterSpacing">0.38</item>
+        <item name="android:letterSpacing">0.02</item>
     </style>
 
     <style name="TextAppearance.Regular.Title2" parent="TextAppearance.Regular">
         <item name="android:textSize">22sp</item>
-        <item name="android:letterSpacing">0.35</item>
+        <item name="android:letterSpacing">0.02</item>
     </style>
 
     <style name="TextAppearance.Regular.Title1" parent="TextAppearance.Regular">
         <item name="android:textSize">28sp</item>
-        <item name="android:letterSpacing">0.364</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
 
     <style name="TextAppearance.Regular.LargeTitle" parent="TextAppearance.Regular">
         <item name="android:textSize">34sp</item>
-        <item name="android:letterSpacing">0.374</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
     <!--endregion-->
 
@@ -61,12 +65,17 @@
 
     <style name="TextAppearance.SemiBold.Caption2" parent="TextAppearance.SemiBold">
         <item name="android:textSize">11sp</item>
-        <item name="android:letterSpacing">0.066</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
 
     <style name="TextAppearance.SemiBold.Caption1" parent="TextAppearance.SemiBold">
         <item name="android:textSize">12sp</item>
     </style>
+
+    <style name="TextAppearance.SemiBold.Footnote" parent="TextAppearance.SemiBold">
+        <item name="android:textSize">13sp</item>
+    </style>
+
 
     <style name="TextAppearance.SemiBold.Subheadline" parent="TextAppearance.SemiBold">
         <item name="android:textSize">15sp</item>
@@ -82,22 +91,22 @@
 
     <style name="TextAppearance.SemiBold.Title3" parent="TextAppearance.SemiBold">
         <item name="android:textSize">20sp</item>
-        <item name="android:letterSpacing">0.38</item>
+        <item name="android:letterSpacing">0.02</item>
     </style>
 
     <style name="TextAppearance.SemiBold.Title2" parent="TextAppearance.SemiBold">
         <item name="android:textSize">22sp</item>
-        <item name="android:letterSpacing">0.35</item>
+        <item name="android:letterSpacing">0.02</item>
     </style>
 
     <style name="TextAppearance.SemiBold.Title1" parent="TextAppearance.SemiBold">
         <item name="android:textSize">28sp</item>
-        <item name="android:letterSpacing">0.364</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
 
     <style name="TextAppearance.SemiBold.LargeTitle" parent="TextAppearance.SemiBold">
         <item name="android:textSize">34sp</item>
-        <item name="android:letterSpacing">0.374</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
     <!--endregion-->
 
