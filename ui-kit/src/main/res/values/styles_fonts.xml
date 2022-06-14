@@ -11,28 +11,33 @@
         <item name="android:textStyle">normal</item>
     </style>
 
-    <style name="TextAppearance.Regular.Caption2" parent="TextAppearance.Regular">
+    <style name="TextAppearance.Regular.Label2" parent="TextAppearance.Regular">
         <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.01</item>
     </style>
 
-    <style name="TextAppearance.Regular.Footnote" parent="TextAppearance.Regular">
-        <item name="android:textSize">13sp</item>
-    </style>
-
-    <style name="TextAppearance.Regular.Caption1" parent="TextAppearance.Regular">
+    <style name="TextAppearance.Regular.Label1" parent="TextAppearance.Regular">
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="TextAppearance.Regular.Subheadline" parent="TextAppearance.Regular">
+    <style name="TextAppearance.Regular.Caps" parent="TextAppearance.Regular">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="TextAppearance.Regular.Text4" parent="TextAppearance.Regular">
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="TextAppearance.Regular.Text3" parent="TextAppearance.Regular">
         <item name="android:textSize">15sp</item>
     </style>
 
-    <style name="TextAppearance.Regular.Callout" parent="TextAppearance.Regular">
+    <style name="TextAppearance.Regular.Text2" parent="TextAppearance.Regular">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="TextAppearance.Regular.Text" parent="TextAppearance.Regular">
+    <style name="TextAppearance.Regular.Text1" parent="TextAppearance.Regular">
         <item name="android:textSize">17sp</item>
     </style>
 
@@ -63,29 +68,34 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Caption2" parent="TextAppearance.SemiBold">
+    <style name="TextAppearance.SemiBold.Label2" parent="TextAppearance.SemiBold">
         <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.01</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Caption1" parent="TextAppearance.SemiBold">
+    <style name="TextAppearance.SemiBold.Label1" parent="TextAppearance.SemiBold">
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Footnote" parent="TextAppearance.SemiBold">
+    <style name="TextAppearance.SemiBold.Caps" parent="TextAppearance.SemiBold">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="TextAppearance.SemiBold.Text4" parent="TextAppearance.SemiBold">
         <item name="android:textSize">13sp</item>
     </style>
 
 
-    <style name="TextAppearance.SemiBold.Subheadline" parent="TextAppearance.SemiBold">
+    <style name="TextAppearance.SemiBold.Text3" parent="TextAppearance.SemiBold">
         <item name="android:textSize">15sp</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Callout" parent="TextAppearance.SemiBold">
+    <style name="TextAppearance.SemiBold.Text2" parent="TextAppearance.SemiBold">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="TextAppearance.SemiBold.Text" parent="TextAppearance.SemiBold">
+    <style name="TextAppearance.SemiBold.Text1" parent="TextAppearance.SemiBold">
         <item name="android:textSize">17sp</item>
     </style>
 
