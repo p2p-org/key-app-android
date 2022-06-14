@@ -80,7 +80,7 @@ class SecretKeyInteractor(
         }
 
         if (lookup) {
-            usernameInteractor.lookupUsername(publicKey)
+            usernameInteractor.findUsernameByAddress(publicKey)
         }
         adminAnalytics.logPasswordCreated()
     }
