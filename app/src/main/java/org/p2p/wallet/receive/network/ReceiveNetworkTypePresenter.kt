@@ -14,7 +14,7 @@ import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.Constants.MIN_REQUIRED_DATA_LENGTH
+import org.p2p.wallet.utils.Constants.MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.scaleLong
@@ -138,7 +138,8 @@ class ReceiveNetworkTypePresenter(
 
     private suspend fun createBtcWallet(sol: Token.Active) {
         val btcCreationFee = transactionAmountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
-        val minRequiredBalance = transactionAmountRepository.getMinBalanceForRentExemption(MIN_REQUIRED_DATA_LENGTH)
+        val minRequiredBalance =
+            transactionAmountRepository.getMinBalanceForRentExemption(MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH)
         val solAmount = sol.total.toLamports(sol.decimals)
         val isAmountEnough = (solAmount - minRequiredBalance).isMoreThan(btcCreationFee)
         if (isAmountEnough) {
