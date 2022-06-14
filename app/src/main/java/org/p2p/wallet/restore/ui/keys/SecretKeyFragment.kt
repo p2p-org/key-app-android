@@ -86,8 +86,6 @@ class SecretKeyFragment :
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
         }
-
-        setButtonEnabled(phraseAdapter.itemCount != 0)
     }
 
     private fun FragmentSecretKeyBinding.initKeysList() {
@@ -188,7 +186,6 @@ class SecretKeyFragment :
         span.setSpan(clickableTermsOfUse, termsStart, termsEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
 
         val privacyPolicy = getString(R.string.auth_privacy_policy)
-
         /*
         * Applying clickable span for privacy policy
         * */
