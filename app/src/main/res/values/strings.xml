@@ -342,7 +342,7 @@
     <string name="send_type_paste">Type or paste</string>
     <string name="send_no_address">There\'s no address like this</string>
     <string name="send_current_price">Current price</string>
-    <string name="send_caution_empty_balance">Caution: this address has no funds</string>
+    <string name="send_caution_empty_balance">This address has no funds</string>
     <string name="send_zero_usd">$0</string>
     <string name="send_receive_at_least">Receive at least: %s</string>
     <string name="send_account_creation_fee_format">Account creation fee: %s</string>
