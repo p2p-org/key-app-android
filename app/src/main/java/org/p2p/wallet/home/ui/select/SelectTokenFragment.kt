@@ -72,14 +72,16 @@ class SelectTokenFragment :
         }
     }
 
-    override fun showTokens(items: List<Token>, filtered: Boolean) {
+    override fun showTokens(items: List<Token>) {
         tokenAdapter.setItems(items)
-        with(binding) {
-            val isEmpty = items.isEmpty()
-            tokenRecyclerView.isVisible = !isEmpty
-            emptyTextView.isVisible = isEmpty && !filtered
-            messageTextView.isVisible = isEmpty && filtered
-        }
+    }
+
+    override fun setEmptyViewVisibility(visible: Boolean) {
+        binding.emptyTextView.isVisible = visible
+    }
+
+    override fun setNoSearchedTokensViewVisibility(visible: Boolean) {
+        binding.messageTextView.isVisible = visible
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean = false
@@ -96,7 +98,7 @@ class SelectTokenFragment :
         val searchView = search.actionView as SearchView
 
         searchView.apply {
-            this.onActionViewExpanded()
+            onActionViewExpanded()
             setOnQueryTextListener(this@SelectTokenFragment)
         }
         searchView.showSoftKeyboard()
