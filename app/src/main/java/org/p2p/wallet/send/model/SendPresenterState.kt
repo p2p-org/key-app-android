@@ -5,7 +5,7 @@ import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class SendState(
+class SendPresenterState(
     var inputAmount: String = "0",
     var solToken: Token.Active? = null,
     var mode: CurrencyMode = CurrencyMode.Token(SOL_SYMBOL),

@@ -36,7 +36,7 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendButton
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
-import org.p2p.wallet.send.model.SendState
+import org.p2p.wallet.send.model.SendPresenterState
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.send.model.Target
@@ -90,7 +90,7 @@ class SendPresenter(
         if (newValue != null) view?.showSourceToken(newValue)
     }
 
-    private var state = SendState()
+    private var state = SendPresenterState()
 
     private var calculationJob: Job? = null
     private var checkAddressJob: Job? = null
@@ -106,14 +106,11 @@ class SendPresenter(
             try {
                 view?.showFullScreenLoading(true)
 
-                /*
-                 * We should find SOL anyway because SOL is needed for Selection Mechanism
-                 * */
-                val userPublicKey = tokenKeyProvider.publicKey
-                state.solToken = userInteractor.getUserTokens().find { it.isSOL && it.publicKey == userPublicKey }
-                token = state.initialToken ?: state.solToken
+                // We should find SOL anyway because SOL is needed for Selection Mechanism
+                state.solToken = userInteractor.getUserSolToken()
+                val initialToken = state.initialToken ?: state.solToken ?: error("SOL account is not found")
 
-                sendInteractor.initialize(state.solToken!!)
+                sendInteractor.initialize(initialToken).also { token = initialToken }
                 state.minRentExemption = sendInteractor.getMinRelayRentExemption()
 
                 calculateTotal(sendFee = null)
