@@ -7,8 +7,8 @@ import org.p2p.wallet.home.model.Token
 interface SelectTokenContract {
     interface View : MvpView {
         fun showTokens(items: List<Token>)
-        fun setEmptyViewVisibility(visible: Boolean)
-        fun setNoSearchedTokensViewVisibility(visible: Boolean)
+        fun setEmptyViewVisibility(isVisible: Boolean)
+        fun setTokenNotFoundViewVisibility(isVisible: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

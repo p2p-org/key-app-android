@@ -76,12 +76,12 @@ class SelectTokenFragment :
         tokenAdapter.setItems(items)
     }
 
-    override fun setEmptyViewVisibility(visible: Boolean) {
-        binding.emptyTextView.isVisible = visible
+    override fun setEmptyViewVisibility(isVisible: Boolean) {
+        binding.emptyTextView.isVisible = isVisible
     }
 
-    override fun setNoSearchedTokensViewVisibility(visible: Boolean) {
-        binding.messageTextView.isVisible = visible
+    override fun setTokenNotFoundViewVisibility(isVisible: Boolean) {
+        binding.tokenNotFoundTextView.isVisible = isVisible
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean = false
