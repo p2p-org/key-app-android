@@ -8,6 +8,7 @@ import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -128,12 +129,25 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
         }
         if (binding.bottomNavigation.selectedItemId != itemId) {
             binding.bottomNavigation.menu.findItem(itemId).isChecked = true
+        } else {
+            checkAndDismissLastBottomSheet()
         }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         showUI()
+    }
+
+    private fun checkAndDismissLastBottomSheet() {
+        childFragmentManager.apply {
+            if (fragments.size > 2) {
+                val lastScreen = fragments.lastOrNull()
+                if (lastScreen is BottomSheetDialogFragment) {
+                    lastScreen.dismissAllowingStateLoss()
+                }
+            }
+        }
     }
 
     private fun showUI() {
