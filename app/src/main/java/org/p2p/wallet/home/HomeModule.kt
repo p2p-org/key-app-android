@@ -136,7 +136,7 @@ object HomeModule : InjectionModule {
                 sendAnalytics = get(),
                 transactionManager = get(),
                 resources = get(),
-                dispatchers = get()
+                dispatchers = get(),
             )
         }
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
