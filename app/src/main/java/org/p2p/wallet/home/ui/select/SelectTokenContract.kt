@@ -6,7 +6,7 @@ import org.p2p.wallet.home.model.Token
 
 interface SelectTokenContract {
     interface View : MvpView {
-        fun showTokens(items: List<Token>)
+        fun showTokens(items: List<Token>, filtered: Boolean = false)
     }
 
     interface Presenter : MvpPresenter<View> {

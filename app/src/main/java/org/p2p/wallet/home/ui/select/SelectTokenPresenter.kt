@@ -22,6 +22,6 @@ class SelectTokenPresenter(private val tokens: List<Token>) :
         val filteredItems = tokens.filter {
             it.tokenName.startsWith(searchText, ignoreCase = true) || it.tokenSymbol.startsWith(searchText)
         }
-        view?.showTokens(filteredItems)
+        view?.showTokens(filteredItems, filtered = true)
     }
 }

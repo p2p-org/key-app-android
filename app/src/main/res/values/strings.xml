@@ -337,6 +337,7 @@
     <string name="send_fees_format">Fees: %s</string>
     <string name="send_paste">Paste</string>
     <string name="send_multiple_accounts">Multiple accounts were found</string>
+    <string name="send_no_tokens">The token not found. Try to change name</string>
     <string name="send_account_found">Account was found</string>
     <string name="send_p2p_username_sol_address">P2P username / SOL address</string>
     <string name="send_type_paste">Type or paste</string>

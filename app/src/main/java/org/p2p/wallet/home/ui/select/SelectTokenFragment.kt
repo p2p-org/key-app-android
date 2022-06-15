@@ -1,13 +1,13 @@
 package org.p2p.wallet.home.ui.select
 
+import android.os.Bundle
+import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -68,15 +68,18 @@ class SelectTokenFragment :
             tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokenRecyclerView.attachAdapter(tokenAdapter)
 
-            val isEmpty = tokens.isEmpty()
-            tokenRecyclerView.isVisible = !isEmpty
-            emptyTextView.isVisible = isEmpty
             presenter.load()
         }
     }
 
-    override fun showTokens(items: List<Token>) {
+    override fun showTokens(items: List<Token>, filtered: Boolean) {
         tokenAdapter.setItems(items)
+        with(binding) {
+            val isEmpty = items.isEmpty()
+            tokenRecyclerView.isVisible = !isEmpty
+            emptyTextView.isVisible = isEmpty && !filtered
+            messageTextView.isVisible = isEmpty && filtered
+        }
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean = false
