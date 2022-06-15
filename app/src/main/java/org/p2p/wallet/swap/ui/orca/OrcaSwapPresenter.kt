@@ -100,8 +100,13 @@ class OrcaSwapPresenter(
         launch {
             view?.showFullScreenLoading(true)
             try {
+                /*
+                * We should find SOL anyway because SOL is needed for Selection Mechanism
+                * */
+                solToken = userInteractor.getUserTokens().find { it.isSOL }
+
                 val token = initialToken
-                    ?: userInteractor.getUserTokens().find { it.isSOL }.also { solToken = it }
+                    ?: solToken
                     ?: error("No SOL account found")
 
                 setSourceToken(token)

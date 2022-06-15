@@ -82,14 +82,12 @@ class SendFragment :
             EXTRA_ADDRESS to address
         )
 
-        fun create(initialToken: Token): SendFragment = SendFragment().withArgs(
+        fun create(initialToken: Token.Active): SendFragment = SendFragment().withArgs(
             EXTRA_TOKEN to initialToken
         )
     }
 
-    override val presenter: SendContract.Presenter by inject {
-        parametersOf(token)
-    }
+    override val presenter: SendContract.Presenter by inject()
     private val glideManager: GlideManager by inject()
 
     private val binding: FragmentSendBinding by viewBinding()
@@ -97,7 +95,12 @@ class SendFragment :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val address: String? by args(EXTRA_ADDRESS)
-    private val token: Token? by args(EXTRA_TOKEN)
+    private val token: Token.Active? by args(EXTRA_TOKEN)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        token?.let { presenter.setInitialToken(it) }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

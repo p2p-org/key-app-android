@@ -122,9 +122,8 @@ object HomeModule : InjectionModule {
                 networkType = type
             )
         }
-        factory<SendContract.Presenter> { (token: Token.Active) ->
+        factory<SendContract.Presenter> {
             SendPresenter(
-                initialToken = token,
                 sendInteractor = get(),
                 addressInteractor = get(),
                 userInteractor = get(),
@@ -136,7 +135,8 @@ object HomeModule : InjectionModule {
                 analyticsInteractor = get(),
                 sendAnalytics = get(),
                 transactionManager = get(),
-                resources = get()
+                resources = get(),
+                dispatchers = get()
             )
         }
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->

@@ -65,6 +65,7 @@ interface SendContract {
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun setInitialToken(initialToken: Token.Active)
         fun send()
         fun sendOrConfirm()
         fun loadInitialData()
