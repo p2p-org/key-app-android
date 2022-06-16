@@ -8,7 +8,8 @@ import com.google.android.material.button.MaterialButton
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.toPx
 
-private const val LOADER_RADIUS = 8f
+private const val LOADER_RADIUS_LARGE = 8f
+private const val LOADER_RADIUS_SMALL = 6F
 private const val LOADER_STROKE_WIDTH = 2f
 
 class UiKitButton @JvmOverloads constructor(
@@ -44,9 +45,22 @@ class UiKitButton @JvmOverloads constructor(
         override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {}
     }
 
+    init {
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitButton).use { typedArray ->
+            val height = typedArray.getDimension(R.styleable.UiKitButton_android_layout_height, -1f)
+            val smallButtonHeight = resources.getDimension(R.dimen.ui_kit_button_small_height)
+            val loaderRadius = if (height > smallButtonHeight) {
+                LOADER_RADIUS_LARGE.toPx()
+            } else {
+                LOADER_RADIUS_SMALL.toPx()
+            }
+            circularProgressDrawable.centerRadius = loaderRadius
+
+        }
+    }
+
     private fun initCircularProgressDrawable() = CircularProgressDrawable(context).apply {
         setColorSchemeColors(context.getColor(R.color.lime))
-        centerRadius = LOADER_RADIUS.toPx()
         strokeWidth = LOADER_STROKE_WIDTH.toPx()
     }
 }
