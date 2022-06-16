@@ -70,7 +70,7 @@ object SwapModule : InjectionModule {
                 environmentManager = get()
             )
         }
-        single { OrcaInfoInteractor(get()) }
+        single { OrcaInfoInteractor(get(), get()) }
         single { OrcaRouteInteractor(get(), get()) }
         factory { OrcaInstructionsInteractor(get()) }
         factory { OrcaPoolInteractor(get(), get(), get(), get()) }
