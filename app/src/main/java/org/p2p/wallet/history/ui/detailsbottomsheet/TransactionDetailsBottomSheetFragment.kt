@@ -61,6 +61,7 @@ class TransactionDetailsBottomSheetFragment :
         super.onStart()
         BottomSheetBehavior.from(requireView().parent as View).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
         }
     }
 
