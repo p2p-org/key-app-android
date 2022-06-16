@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.getSystemService
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.notification.NotificationType
@@ -66,6 +67,10 @@ class AppDeeplinksManager(private val context: Context) {
     private fun popToMainScreen() {
         mainFragmentManager?.apply {
             if (backStackEntryCount > 1) {
+                val lastScreen = fragments.lastOrNull()
+                if (lastScreen is BottomSheetDialogFragment) {
+                    lastScreen.dismissAllowingStateLoss()
+                }
                 popBackStackImmediate(
                     MainFragment::class.java.name,
                     0
