@@ -1,6 +1,7 @@
 package org.p2p.wallet.user.repository.prices.impl
 
 import com.google.gson.JsonObject
+import kotlinx.coroutines.withContext
 import org.p2p.wallet.home.api.CryptoCompareApi
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -8,7 +9,6 @@ import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.scaleMedium
-import kotlinx.coroutines.withContext
 
 private const val COMPARE_API_CHUNK_SIZE = 30
 private const val COMPARE_API_BODY_KEY = "Response"
@@ -18,6 +18,23 @@ class TokenPricesCryptoCompareRepository(
     private val cryptoCompareApi: CryptoCompareApi,
     private val dispatchers: CoroutineDispatchers
 ) : TokenPricesRemoteRepository {
+
+    override suspend fun getTokenPriceBySymbol(
+        tokenSymbol: TokenSymbol,
+        targetCurrency: String
+    ): TokenPrice = withContext(dispatchers.io) {
+        val responseJson = cryptoCompareApi.getPrice(
+            tokenFrom = tokenSymbol.symbol,
+            tokenTo = targetCurrency
+        )
+
+        val priceValue = responseJson.getAsJsonPrimitive(Constants.USD_READABLE_SYMBOL)
+
+        TokenPrice(
+            tokenSymbol = tokenSymbol.symbol,
+            price = priceValue.asBigDecimal.scaleMedium()
+        )
+    }
 
     override suspend fun getTokenPricesBySymbols(
         tokenSymbols: List<TokenSymbol>,
