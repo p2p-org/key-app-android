@@ -712,7 +712,7 @@ class SendPresenter(
         calculateByMode(token)
     }
 
-    private fun buildSolanaFee(
+    internal fun buildSolanaFee(
         newFeePayer: Token.Active,
         source: Token.Active,
         feeInSol: BigInteger,

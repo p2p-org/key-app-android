@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
@@ -137,27 +138,24 @@ class SendPresenterTest {
     }
 
     @Test
-    fun `test fee payer validation, update fee payer strategy`(testDispatcher: TestDispatcher) = runTest {
+    fun `test fee payer validation, update fee payer, NO_ACTION strategy`(testDispatcher: TestDispatcher) = runTest {
         // given
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
         val feeInSol = BigInteger.valueOf(5000L)
         val feeInPayingToken = BigInteger.valueOf(10000L)
-        val result = SearchResult.AddressOnly(SearchAddress("Some address"))
         every { dispatchers.ui } returns testDispatcher
         every { sendInteractor.getFeePayerToken() } returns splToken
         coEvery { testObject.calculateFeeRelayerFee(splToken, feePayerToken, any()) } returns (feeInSol to feeInPayingToken)
 
         // when
-        testObject.findValidFeePayer(splToken, feePayerToken, SELECT_FEE_PAYER)
+        testObject.findValidFeePayer(splToken, feePayerToken, NO_ACTION)
 
         // then
-        coVerifyOrder {
-            view.showAccountFeeViewLoading(isLoading = true)
-            testObject.calculateFeeRelayerFee(splToken, feePayerToken, result)
-            testObject.showFeeDetails(splToken, feeInSol, feeInPayingToken, feePayerToken, SELECT_FEE_PAYER)
-            view.showAccountFeeViewLoading(isLoading = false)
-        }
+        verify { view.showAccountFeeViewLoading(isLoading = true) }
+        coVerify { testObject.calculateFeeRelayerFee(splToken, feePayerToken, any()) }
+        coVerify { testObject.showFeeDetails(splToken, feeInSol, feeInPayingToken, feePayerToken, NO_ACTION) }
+        verify { view.showAccountFeeViewLoading(isLoading = false) }
     }
 
     @Test
@@ -165,6 +163,7 @@ class SendPresenterTest {
         // given
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
+        val strategy = SELECT_FEE_PAYER
         val result = SearchResult.AddressOnly(SearchAddress("Some address"))
         val fee: FeeRelayerFee = mockk()
         every { dispatchers.ui } returns testDispatcher
@@ -230,7 +229,7 @@ class SendPresenterTest {
                 serumV3Usdc = null,
                 serumV3Usdt = null
             ),
-            100L,
+            100000L,
             null
         )
 
@@ -247,7 +246,7 @@ class SendPresenterTest {
                 serumV3Usdc = null,
                 serumV3Usdt = null
             ),
-            100L,
+            10000000L,
             null
         )
 }
