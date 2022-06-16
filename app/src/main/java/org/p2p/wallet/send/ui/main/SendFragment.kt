@@ -12,6 +12,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -434,6 +435,10 @@ class SendFragment :
 
     override fun showTotal(data: SendTotal?) {
         binding.sendDetailsView.showTotal(data)
+    }
+
+    override fun showDetailsError(@StringRes errorTextRes: Int?) {
+        binding.sendDetailsView.showError(errorTextRes)
     }
 
     override fun showInputValue(value: BigDecimal, forced: Boolean) {

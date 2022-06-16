@@ -19,6 +19,7 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isLessThan
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.retryRequest
 import java.math.BigInteger
 
@@ -82,7 +83,7 @@ class FeeRelayerInteractor(
             slippage = Slippage.Percent.doubleValue
         )
 
-        return FeeAmount(transactionFee ?: BigInteger.ZERO, accountCreationFee ?: BigInteger.ZERO)
+        return FeeAmount(transactionFee.orZero(), accountCreationFee.orZero())
     }
 
     /*

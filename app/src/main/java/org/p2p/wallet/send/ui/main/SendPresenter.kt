@@ -125,6 +125,7 @@ class SendPresenter(
 
     override fun setSourceToken(newToken: Token.Active) {
         token = newToken
+        view?.showDetailsError(null)
         if (newToken.isRenBTC) {
             view?.showNetworkSelectionView(true)
         } else {
@@ -643,11 +644,21 @@ class SendPresenter(
     ): Pair<BigInteger, BigInteger>? {
         val recipient = result?.searchAddress?.address ?: return null
 
-        val fees = sendInteractor.calculateFeesForFeeRelayer(
-            feePayerToken = feePayerToken,
-            token = sourceToken,
-            recipient = recipient
-        )
+        val fees = try {
+            sendInteractor.calculateFeesForFeeRelayer(
+                feePayerToken = feePayerToken,
+                token = sourceToken,
+                recipient = recipient
+            )
+        } catch (e: Throwable) {
+            Timber.e(e, "Error calculating fees")
+            state.sendFee = null
+            calculateTotal(sendFee = null)
+            view?.hideAccountFeeView()
+            view?.showDetailsError(R.string.send_cannot_send_token)
+            view?.showButtonText(R.string.main_select_token)
+            return null
+        }
 
         /*
          * Checking if fee or feeInPayingToken are null

@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
@@ -123,6 +123,7 @@ class SendPresenterTest {
         testObject.setSourceToken(token)
 
         // then
+        verify { view.showDetailsError(null) }
         verify(exactly = 0) { view.showNetworkSelectionView(isVisible = true) } // this is called for renBTC only
         verify { view.showNetworkDestination(NetworkType.SOLANA) }
         verify { view.showNetworkSelectionView(isVisible = false) }
