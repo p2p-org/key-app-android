@@ -197,7 +197,7 @@ class SendFragment :
 
             sendButton.setOnClickListener { presenter.sendOrConfirm() }
 
-            amountEditText.focusAndShowKeyboard()
+            if (isVisible) amountEditText.focusAndShowKeyboard()
 
             address?.let { presenter.validateTarget(it) }
         }

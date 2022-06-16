@@ -40,7 +40,7 @@ fun View.requireActivity(): AppCompatActivity {
 
 fun View.focusAndShowKeyboard() {
     /**
-     * This is to be called when the window already has focus.
+     * This has to be called when the window already has focus.
      */
     fun View.showTheKeyboardNow() {
         if (isFocused) {
@@ -54,6 +54,7 @@ fun View.focusAndShowKeyboard() {
     }
 
     requestFocus()
+
     if (hasWindowFocus()) {
         // No need to wait for the window to get focus.
         showTheKeyboardNow()
