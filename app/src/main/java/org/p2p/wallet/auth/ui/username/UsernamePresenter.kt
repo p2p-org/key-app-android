@@ -46,7 +46,7 @@ class UsernamePresenter(
     override fun saveQr(name: String, bitmap: Bitmap, shareText: String?) {
         launch {
             try {
-                val savedFile = usernameInteractor.saveQr(name, bitmap)
+                val savedFile = usernameInteractor.saveQr(name, bitmap, forSharing = shareText != null)
                 shareText?.let { textToShare ->
                     savedFile?.let { file ->
                         view?.showShareQr(file, textToShare)
