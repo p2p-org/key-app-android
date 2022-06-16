@@ -95,7 +95,7 @@ class UserInteractor(
             .sortedWith(TokenComparator())
 
     suspend fun getUserSolToken(): Token.Active? =
-        mainLocalRepository.getUserTokens().find { it.isSOL && tokenKeyProvider.publicKey == it.publicKey }
+        mainLocalRepository.getUserTokens().find { it.isSOL }
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
