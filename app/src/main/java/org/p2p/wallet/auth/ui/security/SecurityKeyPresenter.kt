@@ -9,6 +9,8 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import kotlin.properties.Delegates
 
+private const val SECURE_KEY_NAME = "SecureKey"
+
 class SecurityKeyPresenter(
     private val context: Context,
     private val secretKeyInteractor: SecretKeyInteractor,
@@ -64,7 +66,7 @@ class SecurityKeyPresenter(
 
     override fun createScreenShootFile(bitmap: Bitmap) {
         try {
-            val file = fileRepository.saveBitmapAsFile(bitmap) ?: return
+            val file = fileRepository.saveBitmapAsFile(bitmap, SECURE_KEY_NAME) ?: return
             view?.shareScreenShot(file)
         } catch (e: Exception) {
             view?.showErrorMessage(e)
