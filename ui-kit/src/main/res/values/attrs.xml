@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="UiKitButton">
         <attr name="android:layout_height" />
+        <attr name="iconTint" />
     </declare-styleable>
 </resources>

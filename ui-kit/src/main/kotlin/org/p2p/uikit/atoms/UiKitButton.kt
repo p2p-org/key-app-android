@@ -19,7 +19,7 @@ class UiKitButton @JvmOverloads constructor(
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
     private var currentIcon: Drawable? = null
-    private val circularProgressDrawable = initCircularProgressDrawable()
+    private val circularProgressDrawable = CircularProgressDrawable(context)
 
     var isLoading: Boolean = false
         set(loading) {
@@ -47,6 +47,8 @@ class UiKitButton @JvmOverloads constructor(
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitButton).use { typedArray ->
+            val defaultColor = context.getColor(R.color.icons_night)
+            val iconTint = typedArray.getColor(R.styleable.UiKitButton_iconTint, defaultColor)
             val height = typedArray.getDimension(R.styleable.UiKitButton_android_layout_height, -1f)
             val smallButtonHeight = resources.getDimension(R.dimen.ui_kit_button_small_height)
             val loaderRadius = if (height > smallButtonHeight) {
@@ -54,13 +56,12 @@ class UiKitButton @JvmOverloads constructor(
             } else {
                 LOADER_RADIUS_SMALL.toPx()
             }
-            circularProgressDrawable.centerRadius = loaderRadius
 
+            circularProgressDrawable.apply {
+                setColorSchemeColors(iconTint)
+                centerRadius = loaderRadius
+                strokeWidth = LOADER_STROKE_WIDTH.toPx()
+            }
         }
-    }
-
-    private fun initCircularProgressDrawable() = CircularProgressDrawable(context).apply {
-        setColorSchemeColors(context.getColor(R.color.lime))
-        strokeWidth = LOADER_STROKE_WIDTH.toPx()
     }
 }
