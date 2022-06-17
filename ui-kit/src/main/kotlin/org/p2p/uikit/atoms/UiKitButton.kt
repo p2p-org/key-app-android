@@ -23,15 +23,7 @@ class UiKitButton @JvmOverloads constructor(
 
     var isLoading: Boolean = false
         set(loading) {
-            if (loading) {
-                currentIcon = icon
-                icon = circularProgressDrawable
-                icon.callback = drawableCallback
-                circularProgressDrawable.start()
-            } else {
-                icon = currentIcon
-                circularProgressDrawable.stop()
-            }
+            renderLoading(loading)
             field = loading
         }
 
@@ -63,5 +55,15 @@ class UiKitButton @JvmOverloads constructor(
                 strokeWidth = LOADER_STROKE_WIDTH.toPx()
             }
         }
+    }
+
+    private fun renderLoading(isLoading: Boolean): Unit = if (isLoading) {
+        currentIcon = icon
+        icon = circularProgressDrawable
+        icon.callback = drawableCallback
+        circularProgressDrawable.start()
+    } else {
+        icon = currentIcon
+        circularProgressDrawable.stop()
     }
 }
