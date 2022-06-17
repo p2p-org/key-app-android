@@ -15,8 +15,10 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.model.SeedPhraseResult
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+import org.p2p.wallet.user.repository.prices.TokenSymbol
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.scaleLong
@@ -28,13 +30,15 @@ private const val KEY_DERIVATION_PATH = "KEY_DERIVATION_PATH"
 
 class SecretKeyInteractor(
     private val authRepository: AuthRepository,
-    private val userLocalRepository: UserLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val tokenProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences,
     private val usernameInteractor: UsernameInteractor,
+    private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val adminAnalytics: AdminAnalytics
 ) {
+
+    private var solRate: BigDecimal? = null
 
     suspend fun getDerivableAccounts(keys: List<String>): List<DerivableAccount> =
         withContext(Dispatchers.IO) {
@@ -56,13 +60,18 @@ class SecretKeyInteractor(
             return@withContext result
         }
 
-    private fun mapDerivableAccounts(
+    private suspend fun mapDerivableAccounts(
         accounts: List<Account>,
         balances: List<Pair<String, BigInteger>>,
         path: DerivationPath
     ) = accounts.mapNotNull { account ->
         val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
-        val exchangeRate = userLocalRepository.getPriceByToken(SOL_SYMBOL)?.price ?: BigDecimal.ZERO
+        val tokenSymbol = TokenSymbol(SOL_SYMBOL)
+
+        val exchangeRate =
+            solRate ?: tokenPricesRepository.getTokenPriceBySymbol(tokenSymbol, USD_READABLE_SYMBOL).price
+        if (solRate == null) solRate = exchangeRate
+
         val total = balance.fromLamports().scaleLong()
         DerivableAccount(path, account, total, total.multiply(exchangeRate))
     }

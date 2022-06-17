@@ -3,6 +3,7 @@ package org.p2p.wallet.user.repository.prices.impl
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.home.api.CoinGeckoApi
 import org.p2p.wallet.home.model.TokenPrice
@@ -11,7 +12,6 @@ import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
 import org.p2p.wallet.utils.scaleMedium
 import timber.log.Timber
-import kotlinx.coroutines.withContext
 
 private const val COIN_GECKO_TOKENS_FILE_NAME = "coin_gecko_tokens.json"
 
@@ -34,6 +34,13 @@ class TokenPricesCoinGeckoRepository(
         targetCurrency: String
     ): List<TokenPrice> = withContext(dispatchers.io) {
         loadPrices(tokenSymbols, targetCurrency)
+    }
+
+    override suspend fun getTokenPriceBySymbol(
+        tokenSymbol: TokenSymbol,
+        targetCurrency: String
+    ): TokenPrice = withContext(dispatchers.io) {
+        loadPrices(listOf(tokenSymbol), targetCurrency).first()
     }
 
     /**

@@ -7,4 +7,9 @@ interface TokenPricesRemoteRepository {
         tokenSymbols: List<TokenSymbol>,
         targetCurrency: String
     ): List<TokenPrice>
+
+    suspend fun getTokenPriceBySymbol(
+        tokenSymbol: TokenSymbol,
+        targetCurrency: String
+    ): TokenPrice
 }

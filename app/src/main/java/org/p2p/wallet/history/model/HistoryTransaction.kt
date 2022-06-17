@@ -17,7 +17,6 @@ import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.scaleShortOrFirstNotZero
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
@@ -124,7 +123,7 @@ sealed class HistoryTransaction(
             "${total.formatToken()} ${tokenData.symbol}"
         }
 
-        fun getFormattedAmount(): String? = totalInUsd?.scaleShort()?.asUsd()
+        fun getFormattedAmount(): String? = totalInUsd?.asUsd()
     }
 
     @Parcelize
@@ -162,7 +161,7 @@ sealed class HistoryTransaction(
                 "${total.scaleLong().toPlainString()} $REN_BTC_SYMBOL"
             }
 
-        fun getFormattedAmount(): String? = totalInUsd?.scaleShort()?.asUsd()
+        fun getFormattedAmount(): String? = totalInUsd?.asUsd()
     }
 
     @Parcelize

@@ -2,6 +2,8 @@ package org.p2p.wallet.utils
 
 object Constants {
 
+    const val MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH = 0
+
     const val SYMBOL_ZERO = "0"
     const val USD_SYMBOL = "$"
     const val USD_READABLE_SYMBOL = "USD"
