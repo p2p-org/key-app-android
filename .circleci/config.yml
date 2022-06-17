@@ -152,6 +152,7 @@ jobs:
       - restore_gradle_cache
       - create_api_keys_file
       - fill_ssl_certificate # needed for Koin graph unit test
+      - create_google_services_file
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_cache:
