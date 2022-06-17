@@ -13,6 +13,7 @@ interface SecretKeyContract {
         fun showError(@StringRes messageRes: Int)
         fun showFile(file: File)
         fun setButtonEnabled(isEnabled: Boolean)
+        fun addFirstKey(key: SecretKey)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -20,5 +21,6 @@ interface SecretKeyContract {
         fun verifySeedPhrase()
         fun openPrivacyPolicy()
         fun openTermsOfUse()
+        fun load()
     }
 }

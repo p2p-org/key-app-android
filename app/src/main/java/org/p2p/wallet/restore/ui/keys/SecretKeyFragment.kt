@@ -41,6 +41,9 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
 
+private const val SEED_PHRASE_SIZE_SHORT = 12
+private const val SEED_PHRASE_SIZE_LONG = 24
+
 class SecretKeyFragment :
     BaseMvpFragment<SecretKeyContract.View, SecretKeyContract.Presenter>(R.layout.fragment_secret_key),
     SecretKeyContract.View {
@@ -86,6 +89,7 @@ class SecretKeyFragment :
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
         }
+        presenter.load()
     }
 
     private fun FragmentSecretKeyBinding.initKeysList() {
@@ -96,8 +100,6 @@ class SecretKeyFragment :
         keysRecyclerView.attachAdapter(phraseAdapter)
         keysRecyclerView.isVisible = true
 
-        phraseAdapter.addSecretKey(SecretKey())
-
         keysRecyclerView.children.find { it.id == R.id.keyEditText }?.focusAndShowKeyboard()
     }
 
@@ -107,6 +109,10 @@ class SecretKeyFragment :
 
     override fun setButtonEnabled(isEnabled: Boolean) {
         binding.restoreButton.isEnabled = isEnabled
+    }
+
+    override fun addFirstKey(key: SecretKey) {
+        phraseAdapter.addSecretKey(SecretKey())
     }
 
     override fun showError(messageRes: Int) = with(binding) {
@@ -128,7 +134,8 @@ class SecretKeyFragment :
             isEnabled = false
             setStartIcon(iconRes = null)
         } else {
-            isEnabled = true
+            isEnabled =
+                phraseAdapter.itemCount == SEED_PHRASE_SIZE_LONG || phraseAdapter.itemCount == SEED_PHRASE_SIZE_SHORT
             setStartIcon(iconRes = R.drawable.ic_restore)
         }
     }
