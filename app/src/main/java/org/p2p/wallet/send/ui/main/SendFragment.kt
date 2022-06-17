@@ -443,7 +443,7 @@ class SendFragment :
 
     override fun showInputValue(value: BigDecimal, forced: Boolean) {
         with(binding.amountEditText) {
-            val textValue = "$value"
+            val textValue = value.toPlainString()
             if (forced) {
                 AmountFractionTextWatcher.uninstallFrom(this)
                 setText(textValue)
