@@ -650,6 +650,9 @@ class SendPresenter(
                 token = sourceToken,
                 recipient = recipient
             )
+        } catch (e: CancellationException) {
+            Timber.w("Fee calculation is cancelled")
+            return null
         } catch (e: Throwable) {
             Timber.e(e, "Error calculating fees")
             state.sendFee = null
