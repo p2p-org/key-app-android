@@ -107,7 +107,7 @@ commands:
       - run:
           name: "Write google-services.json file from env"
           command: |
-            echo "$GOOGLE_SERVICES_HEX" | xxd -r -p - > p2p-wallet.jks
+            echo "$GOOGLE_SERVICES_HEX" | xxd -r -p - > app/google-services.json
 
 defaults: &defaults
   working_directory: ~/app
