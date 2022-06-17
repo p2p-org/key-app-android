@@ -86,7 +86,7 @@ class CheckedTransferParsingStrategy(
                 }
                 val token = tokenBalance?.mint?.let { userInteractor.findTokenData(it) }
 
-                var accountInfo = userAccountRepository.getAccountInfo(sourcePubKey ?: destinationPubKey ?: "")
+                var accountInfo = (sourcePubKey ?: destinationPubKey)?.let { userAccountRepository.getAccountInfo(it) }
                 val mint = token?.mintAddress ?: accountInfo?.value?.mint
                 parsingResult = TransferDetails(
                     signature = signature,

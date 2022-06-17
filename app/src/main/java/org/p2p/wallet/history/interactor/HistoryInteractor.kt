@@ -63,7 +63,7 @@ class HistoryInteractor(
     }
 
     suspend fun loadTransactions(account: String, isRefresh: Boolean = false): List<HistoryTransaction> {
-        if (historyStreamSources.isEmpty()) {
+        if (historyStreamSources.isEmpty() || accountsStreamSources[account] == null) {
             initStreamSources()
         }
         if (account !in tokenSignaturesMap) {
