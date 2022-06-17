@@ -65,7 +65,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
@@ -102,6 +102,7 @@
         </LinearLayout>
 
 
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
@@ -124,6 +125,62 @@
 
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/errorStateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/actionButtonsView">
+
+            <ImageView
+                android:id="@+id/errorImageView"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@drawable/bg_circle_stroke_icon_secondary"
+                android:src="@drawable/ic_history_error_placeholder"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.2"
+                tools:ignore="contentDescription" />
+
+            <TextView
+                android:id="@+id/errorTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="@string/common_error"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
+                app:layout_constraintTop_toBottomOf="@id/errorImageView" />
+
+            <TextView
+                android:id="@+id/errorMessageTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/error_history_message"
+                android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
+                android:textColor="@color/textIconSecondary"
+                app:layout_constraintTop_toBottomOf="@id/errorTextView" />
+
+            <org.p2p.wallet.common.ui.widget.ProgressButton
+                android:id="@+id/retryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:buttonText="@string/common_try_again"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.7" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <org.p2p.wallet.common.ui.widget.ActionButtonsView
             android:id="@+id/actionButtonsView"
@@ -137,9 +194,9 @@
         <include
             android:id="@+id/shimmerView"
             layout="@layout/view_history_shimmer"
-            app:layout_constraintTop_toBottomOf="@id/actionButtonsView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/actionButtonsView" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
