@@ -5,16 +5,16 @@ import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
+import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
-import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class FeeRelayerInstructionsInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val userLocalRepository: UserLocalRepository,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
+    private val orcaInfoInteractor: OrcaInfoInteractor,
     private val addressInteractor: TransactionAddressInteractor
 ) {
 
@@ -110,8 +110,9 @@ class FeeRelayerInstructionsInteractor(
         var transitTokenMintPubkey: PublicKey? = null
         if (pools.size == 2) {
             val interTokenName = pools[0].tokenBName
-            val pubkey = userLocalRepository.findTokenDataBySymbol(interTokenName)?.mintAddress
-            transitTokenMintPubkey = pubkey?.let { PublicKey(pubkey) }
+            val tokenNames = orcaInfoInteractor.getInfo()?.tokenNames ?: return null
+            val pubkey = tokenNames.filterValues { it == interTokenName }.keys.firstOrNull()
+            transitTokenMintPubkey = pubkey?.let { PublicKey(it) }
         }
         return transitTokenMintPubkey
     }
