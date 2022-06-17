@@ -6,14 +6,11 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import androidx.annotation.DrawableRes
 import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -68,8 +65,4 @@ fun Context.shareScreenShot(image: File, providedText: String = "Save Screenshot
     } catch (e: ActivityNotFoundException) {
         toast("No App Available")
     }
-}
-
-fun Context.getDrawableCompat(@DrawableRes drawableId: Int): Drawable? {
-    return ContextCompat.getDrawable(this, drawableId)
 }
