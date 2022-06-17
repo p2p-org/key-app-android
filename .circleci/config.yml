@@ -102,7 +102,7 @@ commands:
             echo ${SSL_CERTIFICATE} >> app/src/main/res/raw/cert.pem
 
   create_google_services_file:
-    description: "Create and fill google-services.json for google services working"
+    description: "Create and fill google-services.json"
     steps:
       - run:
           name: "Write google-services.json file from env"
