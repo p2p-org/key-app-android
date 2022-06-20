@@ -1,13 +1,14 @@
 package org.p2p.solanaj.model.types;
 
-import com.squareup.moshi.Json;
+
+import com.google.gson.annotations.SerializedName;
 
 import org.p2p.solanaj.model.types.RpcResultObject;
 
 public class RpcNotificationResult {
 
     public static class Result extends RpcResultObject {
-        @Json(name = "value")
+        @SerializedName("value")
         private Object value;
 
         public Object getValue() {
@@ -17,9 +18,9 @@ public class RpcNotificationResult {
 
     public static class Params {
 
-        @Json(name = "result")
+        @SerializedName("result")
         private Result result;
-        @Json(name = "subscription")
+        @SerializedName("subscription")
         private long subscription;
 
         public Result getResult() {
@@ -32,11 +33,11 @@ public class RpcNotificationResult {
 
     }
 
-    @Json(name = "jsonrpc")
+    @SerializedName("jsonrpc")
     private String jsonrpc;
-    @Json(name = "method")
+    @SerializedName("method")
     private String method;
-    @Json(name = "params")
+    @SerializedName("params")
     private Params params;
 
     public String getJsonrpc() {

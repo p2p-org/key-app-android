@@ -11,10 +11,19 @@ plugins {
 apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
 
+def checkForSslPinning() {
+    def sslCertificate = rootProject.file("app/src/main/res/raw/cert.pem")
+    if (sslCertificate.exists()) {
+        logger.quiet "(SSL): PEM for SSL pinning is found"
+    } else {
+        logger.quiet "(SSL): PEM for SSL pinning is NOT found"
+    }
+}
+
 def initApiKeys(defaultConfig) {
     def apikeyPropertiesFile = rootProject.file("apikey.properties")
     if (apikeyPropertiesFile.canRead()) {
-        logger.quiet "apikey.properties found, using file!"
+        logger.quiet "(API_KEYS): apikey.properties found, using file!"
 
         def apikeyProperties = new Properties()
         apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
@@ -25,7 +34,7 @@ def initApiKeys(defaultConfig) {
         defaultConfig.buildConfigField("String", "intercomAppId", "${apikeyProperties['intercomAppId']}")
         defaultConfig.buildConfigField("String", "amplitudeKey", "${apikeyProperties['amplitudeKey']}")
     } else {
-        logger.quiet "apikey.properties is not found, using empty values!"
+        logger.quiet "(API_KEYS): apikey.properties is not found, using empty values!"
 
         def emptyString = "\"\""
         defaultConfig.buildConfigField("String", "rpcPoolApiKey", emptyString)
@@ -48,7 +57,8 @@ String getVersionBuild() {
 }
 
 String getBuildAppFileName() {
-    """p2p_wallet_${getVersionBuild()}_${VERSION_NAME}_${taskNumber()}"""
+    def taskNumberWithoutSlash = taskNumber().replace("/", "-")
+    "p2p_wallet_${getVersionBuild()}_${VERSION_NAME}_${taskNumberWithoutSlash}"
 }
 
 android {
@@ -66,10 +76,12 @@ android {
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
 
         initApiKeys(it)
+        checkForSslPinning()
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
+        buildConfigField("boolean", "SSL_PINNING_ENABLED", "false")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
 
         javaCompileOptions {
@@ -87,14 +99,14 @@ android {
 
             def signingPropertiesFile = rootProject.file("signing.properties")
             if (signingPropertiesFile.canRead()) {
-                logger.quiet "Using signing properties file"
+                logger.quiet "(SIGNING): using signing properties file"
                 secretProperties.load(new FileInputStream(signingPropertiesFile))
                 storeFile file(secretProperties['keystorePath'])
                 storePassword secretProperties['keystorePassword']
                 keyAlias secretProperties['keyAlias']
                 keyPassword secretProperties['keyPassword']
             } else {
-                logger.quiet "Using signing properties from CI"
+                logger.quiet "(SIGNING): using signing properties from CI"
                 secretProperties["KEYSTORE_PASSWORD"] = "${System.getenv('KEYSTORE_PASSWORD')}"
                 secretProperties["KEY_PASSWORD"] = "${System.getenv('KEY_PASSWORD')}"
                 secretProperties["KEY_ALIAS"] = "${System.getenv('KEY_ALIAS')}"
@@ -150,7 +162,7 @@ android {
             firebaseAppDistribution {
                 artifactType = "AAB"
                 releaseNotes = releaseChangelog(VERSION_NAME)
-                groups = "wallet.feature.test"
+                groups = "wallet.release.test"
             }
         }
     }
@@ -181,7 +193,8 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':solanaj')
+    implementation project(':solanaj')
+    implementation project(':ui-kit')
 
     def lifecycle_version = "2.1.0"
 

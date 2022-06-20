@@ -15,7 +15,7 @@
 
     <!--Success colors-->
     <color name="systemSuccess">#77DB7C</color>
-    <color name="systemSuccessMain">@color/colorGreen</color>
+    <color name="systemSuccessMain">@color/color_green</color>
     <color name="systemSuccessSecondary">#50D756</color>
     <color name="systemSuccessBackground">#F5FBF5</color>
 

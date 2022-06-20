@@ -128,6 +128,7 @@
     <string name="auth_name_p2p_sol">%s.p2p.sol</string>
     <string name="auth_available_name">%1$s is available</string>
     <string name="auth_unavailable_name">%1$s is unavailable</string>
+    <string name="auth_username_length_error">Enter a name under %d characters</string>
     <string name="auth_username">Your username</string>
     <string name="auth_your_p2p_username">Your P2P username allows you to receive any token within the Solana network even if it is not included in your wallet list.</string>
     <string name="auth_copy">Copy</string>
@@ -251,6 +252,7 @@
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>
+    <string name="home_debug">Debug Settings</string>
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
 
     <!-- receive -->
@@ -335,11 +337,13 @@
     <string name="send_fees_format">Fees: %s</string>
     <string name="send_paste">Paste</string>
     <string name="send_multiple_accounts">Multiple accounts were found</string>
+    <string name="send_no_tokens">The token not found. Try to change name</string>
     <string name="send_account_found">Account was found</string>
     <string name="send_p2p_username_sol_address">P2P username / SOL address</string>
     <string name="send_type_paste">Type or paste</string>
     <string name="send_no_address">There\'s no address like this</string>
     <string name="send_current_price">Current price</string>
+    <string name="send_empty_balance">This address has no funds</string>
     <string name="send_caution_empty_balance">Caution: this address has no funds</string>
     <string name="send_zero_usd">$0</string>
     <string name="send_receive_at_least">Receive at least: %s</string>
@@ -367,6 +371,7 @@
     <string name="send_using_max_amount">Using the maximum %s amount</string>
     <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
     <string name="send_not_enough_funds">Not enough funds</string>
+    <string name="send_min_required_amount_warning">You can\'t send less than 0.0009 SOL</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -550,6 +555,28 @@
 &#8226; Slippage can occur at any time, but it is most prevalent during periods of higher volatility\n\n
 &#8226; Transactions that exceed 20% slippage tolerance may be frontrun\n\n
 &#8226; Slippage tolerance cannot exceed 50%</string>
+
+    <!-- Debug Settings -->
+    <string name="debug_settings_notifications_title">Notifications</string>
+    <string name="debug_settings_deeplinks_title">Deeplinks</string>
+    <string name="debug_settings_logs_title">Logs</string>
+    <string name="debug_settings_feature_toggles_title">Feature Toggles</string>
+    <string name="debug_settings_logs_subtitle">Tap to show Logs</string>
+    <string name="debug_settings_device_info">Device Info</string>
+    <string name="debug_settings_ci_info">CI Info</string>
+    <string name="debug_settings_app_info">App Info</string>
+
+    <!-- Debug Settings -> Notifications -->
+    <string name="debug_notifications_title">Debug Notifications</string>
+    <string name="debug_notifications_item_default">Notification Default</string>
+    <string name="debug_notifications_item_receive">Notification Receive</string>
+
+    <!-- Debug Settings -> Feature Toggles -->
+    <string name="feature_toggles_title">@string/debug_settings_feature_toggles_title</string>
+    <string name="feature_auto_update">Enable auto update</string>
+    <string name="feature_dev_net">Enable DevNet env</string>
+    <string name="feature_ssl_pinning">Enable SSL pinning</string>
+    <string name="feature_coin_gecko">Enable CoinGecko as price source</string>
 
     <!-- fixme: rename these resources by existing prefixes -->
     <string name="seed_info_the_definition">The definition</string>

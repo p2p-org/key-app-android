@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="UiKitButton">
+        <attr name="android:layout_height" />
+        <attr name="iconTint" />
+    </declare-styleable>
+</resources>

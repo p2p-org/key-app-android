@@ -95,6 +95,10 @@ class TokenHistoryFragment :
                 (actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
             }
         )
+
+        retryButton.setOnClickListener {
+            presenter.retryLoad()
+        }
     }
 
     private fun Toolbar.setupToolbar() {
@@ -165,6 +169,14 @@ class TokenHistoryFragment :
 
     override fun showPagingState(newState: PagingState) {
         historyAdapter.setPagingState(newState)
+        with(binding) {
+            shimmerView.root.isVisible = newState == PagingState.InitialLoading
+            refreshLayout.isVisible = newState != PagingState.InitialLoading
+            errorStateLayout.isVisible = newState is PagingState.Error
+            emptyStateLayout.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
+            historyRecyclerView.isVisible =
+                (newState == PagingState.Idle && !historyAdapter.isEmpty()) || newState == PagingState.Loading
+        }
     }
 
     override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {

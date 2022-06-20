@@ -16,7 +16,8 @@ class TransferDetails(
     val authority: String?,
     val mint: String?,
     val amount: String?,
-    private val _decimals: Int
+    private val _decimals: Int,
+    override var account: String? = null
 ) : TransactionDetails(signature, blockTime, slot) {
 
     // if there is no decimals, then putting SOL decimals instead

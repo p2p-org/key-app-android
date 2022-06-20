@@ -192,7 +192,7 @@
                     android:gravity="end"
                     android:maxLines="1"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="@color/colorGreen"
+                    android:textColor="@color/color_green"
                     tools:text="Completed" />
 
             </LinearLayout>

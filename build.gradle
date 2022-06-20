@@ -36,7 +36,7 @@ task installGitHook(type: Copy) {
         useGitHooks = localProperties.getOrDefault('use_git_hooks', use_git_hooks)
     }
 
-    logger.quiet "use_git_hooks=$useGitHooks"
+    logger.quiet "(GIT_HOOKS): use_git_hooks=$useGitHooks"
     if (useGitHooks) {
         from rootProject.file('scripts/pre-commit')
         into rootProject.file('.git/hooks')

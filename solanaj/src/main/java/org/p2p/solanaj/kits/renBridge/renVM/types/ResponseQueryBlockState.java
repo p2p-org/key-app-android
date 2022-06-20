@@ -1,83 +1,83 @@
 package org.p2p.solanaj.kits.renBridge.renVM.types;
 
 import java.util.List;
-import com.squareup.moshi.Json;
+
+import com.google.gson.annotations.SerializedName;
 
 public class ResponseQueryBlockState {
     public static class Btc {
-        @Json(name = "fees")
+        @SerializedName("fees")
         public Fees fees;
-        @Json(name = "gasCap")
+        @SerializedName("gasCap")
         public String gasCap;
-        @Json(name = "gasLimit")
+        @SerializedName("gasLimit")
         public String gasLimit;
-        @Json(name = "gasPrice")
+        @SerializedName("gasPrice")
         public String gasPrice;
-        @Json(name = "latestHeight")
+        @SerializedName("latestHeight")
         public String latestHeight;
-        @Json(name = "minimumAmount")
+        @SerializedName("minimumAmount")
         public String minimumAmount;
-        @Json(name = "shards")
+        @SerializedName("shards")
         public List<Shard> shards = null;
 
     }
 
     public static class Chain {
-        @Json(name = "burnFee")
+        @SerializedName("burnFee")
         public String burnFee;
-        @Json(name = "chain")
+        @SerializedName("chain")
         public String chain;
-        @Json(name = "mintFee")
+        @SerializedName("mintFee")
         public String mintFee;
 
     }
 
     public static class Fees {
-        @Json(name = "chains")
+        @SerializedName("chains")
         public List<Chain> chains = null;
 
     }
 
     public static class Outpoint {
-        @Json(name = "hash")
+        @SerializedName("hash")
         public String hash;
-        @Json(name = "index")
+        @SerializedName("index")
         public String index;
 
     }
 
     public static class Shard {
-        @Json(name = "pubKey")
+        @SerializedName("pubKey")
         public String pubKey;
-        @Json(name = "shard")
+        @SerializedName("shard")
         public String shard;
-        @Json(name = "state")
+        @SerializedName("state")
         public ShardState state;
 
     }
 
     public static class ShardState {
-        @Json(name = "outpoint")
+        @SerializedName("outpoint")
         public Outpoint outpoint;
-        @Json(name = "pubKeyScript")
+        @SerializedName("pubKeyScript")
         public String pubKeyScript;
-        @Json(name = "value")
+        @SerializedName("value")
         public String value;
 
     }
 
     public static class Values {
-        @Json(name = "BTC")
+        @SerializedName("BTC")
         public Btc btc;
-
     }
 
     public static class State {
-        @Json(name = "v")
+        @SerializedName("v")
         public Values v;
     }
 
-    @Json(name = "state")
+    @SerializedName("state")
     public State state;
 
     public List<Shard> getShardList() {

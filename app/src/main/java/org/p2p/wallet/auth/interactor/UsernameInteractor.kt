@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import androidx.core.content.edit
 import org.json.JSONObject
+import org.p2p.wallet.auth.model.LookupResult
 import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
@@ -32,13 +33,12 @@ class UsernameInteractor(
         sharedPreferences.edit { putString(KEY_USERNAME, username) }
     }
 
-    suspend fun lookupUsername(owner: String) {
-        val lookupUsername = usernameRepository.lookup(owner)
-        sharedPreferences.edit { putString(KEY_USERNAME, lookupUsername) }
+    suspend fun findUsernameByAddress(owner: String) {
+        when (val result = usernameRepository.findUsernameByAddress(owner)) {
+            is LookupResult.UsernameFound -> sharedPreferences.edit { putString(KEY_USERNAME, result.username) }
+            is LookupResult.UsernameNotFound -> Unit
+        }
     }
-
-    suspend fun findUsernameByAddress(owner: String): String? =
-        usernameRepository.lookup(owner)
 
     fun usernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)
 
@@ -47,7 +47,9 @@ class UsernameInteractor(
         return username?.let { Username(it) }
     }
 
-    fun saveQr(name: String, bitmap: Bitmap): File? = fileLocalRepository.saveQr(name, bitmap)
+    fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? = fileLocalRepository.saveQr(
+        name, bitmap, forSharing
+    )
 
     suspend fun resolveUsername(name: String): List<ResolveUsername> =
         usernameRepository.resolve(name)

@@ -1,13 +1,14 @@
 package org.p2p.solanaj.model.types;
 
-import com.squareup.moshi.Json;
+import com.google.gson.annotations.SerializedName;
+
 
 public class RpcResponse<T> {
 
     public static class Error {
-        @Json(name = "code")
+        @SerializedName("code")
         private long code;
-        @Json(name = "message")
+        @SerializedName("message")
         private String message;
 
         public long getCode() {
@@ -20,13 +21,13 @@ public class RpcResponse<T> {
 
     }
 
-    @Json(name = "jsonrpc")
+    @SerializedName("jsonrpc")
     private String jsonrpc;
-    @Json(name = "result")
+    @SerializedName("result")
     private T result;
-    @Json(name = "error")
+    @SerializedName("error")
     private Error error;
-    @Json(name = "id")
+    @SerializedName("id")
     private String id;
 
     public Error getError() {

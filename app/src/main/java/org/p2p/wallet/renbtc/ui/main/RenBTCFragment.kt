@@ -83,8 +83,7 @@ class RenBTCFragment :
         }
 
         presenter.subscribe()
-        presenter.checkActiveSession(requireContext())
-        presenter.startNewSession(requireContext())
+        presenter.checkActiveOrStartNewSession(requireContext())
     }
 
     override fun onDestroyView() {

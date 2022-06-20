@@ -61,6 +61,18 @@
 
             </LinearLayout>
 
+            <ImageView
+                android:id="@+id/debugButton"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:layout_gravity="end"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/home_debug"
+                android:padding="12dp"
+                android:src="@drawable/ic_home_debug"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>

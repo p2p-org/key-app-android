@@ -62,3 +62,5 @@ inline fun <reified T> extractFromBundle(bundle: Bundle?, key: String? = null, d
 
 inline fun <reified T> Fragment.getArg(key: String, defaultValue: T? = null) =
     extractFromBundle(arguments, key, defaultValue)
+
+fun Bundle.toStringMap(): Map<String, String> = keySet().associateWith { getString(it, emptyString()) }

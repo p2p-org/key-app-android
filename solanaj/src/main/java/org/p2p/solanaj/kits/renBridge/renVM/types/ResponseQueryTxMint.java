@@ -1,102 +1,103 @@
 package org.p2p.solanaj.kits.renBridge.renVM.types;
 
 import java.util.List;
-import com.squareup.moshi.Json;
+
+import com.google.gson.annotations.SerializedName;
 
 public class ResponseQueryTxMint {
 
     public static class In {
-        @Json(name = "v")
+        @SerializedName("v")
         public ValueIn valueIn;
 
     }
 
     public static class Tx {
-        @Json(name = "hash")
+        @SerializedName("hash")
         public String hash;
-        @Json(name = "version")
+        @SerializedName("version")
         public String version;
-        @Json(name = "selector")
+        @SerializedName("selector")
         public String selector;
-        @Json(name = "in")
+        @SerializedName("in")
         public In in;
-        @Json(name = "out")
+        @SerializedName("out")
         public Out out;
 
     }
 
     public static class ValueIn {
-        @Json(name = "amount")
+        @SerializedName("amount")
         public String amount;
-        @Json(name = "ghash")
+        @SerializedName("ghash")
         public String ghash;
-        @Json(name = "gpubkey")
+        @SerializedName("gpubkey")
         public String gpubkey;
-        @Json(name = "nhash")
+        @SerializedName("nhash")
         public String nhash;
-        @Json(name = "nonce")
+        @SerializedName("nonce")
         public String nonce;
-        @Json(name = "payload")
+        @SerializedName("payload")
         public String payload;
-        @Json(name = "phash")
+        @SerializedName("phash")
         public String phash;
-        @Json(name = "to")
+        @SerializedName("to")
         public String to;
-        @Json(name = "txid")
+        @SerializedName("txid")
         public String txid;
-        @Json(name = "txindex")
+        @SerializedName("txindex")
         public long txindex;
 
     }
 
     public static class Out {
-        @Json(name = "t")
+        @SerializedName("t")
         public TypeOut typeOut;
-        @Json(name = "v")
+        @SerializedName("v")
         public ValueOut valueOut;
 
     }
 
     public static class TypeOut {
-        @Json(name = "struct")
+        @SerializedName("struct")
         public List<OutStructType> struct = null;
 
     }
 
     public static class OutStructType {
-        @Json(name = "hash")
+        @SerializedName("hash")
         public String hash;
-        @Json(name = "amount")
+        @SerializedName("amount")
         public String amount;
-        @Json(name = "sighash")
+        @SerializedName("sighash")
         public String sighash;
-        @Json(name = "sig")
+        @SerializedName("sig")
         public String sig;
-        @Json(name = "txid")
+        @SerializedName("txid")
         public String txid;
-        @Json(name = "txindex")
+        @SerializedName("txindex")
         public String txindex;
 
     }
 
     public static class ValueOut {
-        @Json(name = "amount")
+        @SerializedName("amount")
         public String amount;
-        @Json(name = "hash")
+        @SerializedName("hash")
         public String hash;
-        @Json(name = "sig")
+        @SerializedName("sig")
         public String sig;
-        @Json(name = "sighash")
+        @SerializedName("sighash")
         public String sighash;
-        @Json(name = "txid")
+        @SerializedName("txid")
         public String txid;
-        @Json(name = "txindex")
+        @SerializedName("txindex")
         public String txindex;
     }
 
-    @Json(name = "tx")
+    @SerializedName("tx")
     public Tx tx;
-    @Json(name = "txStatus")
+    @SerializedName("txStatus")
     public String txStatus;
 
     public ValueOut getValueOut() {

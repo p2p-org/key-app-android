@@ -24,14 +24,14 @@ class HistoryTransactionMapper(
     suspend fun mapTransactionDetailsToHistoryTransactions(
         transactions: List<TransactionDetails>,
         accountsInfo: List<Pair<String, AccountInfo>>,
-        userPublicKey: String,
-        tokenPublicKey: String
+        userPublicKey: String
     ): List<HistoryTransaction> = withContext(dispatchers.io) {
         transactions.mapNotNull { transaction ->
+
             when (transaction) {
                 is SwapDetails -> parseOrcaSwapDetails(transaction, accountsInfo, userPublicKey)
                 is BurnOrMintDetails -> parseBurnAndMintDetails(transaction, userPublicKey)
-                is TransferDetails -> parseTransferDetails(transaction, tokenPublicKey, userPublicKey)
+                is TransferDetails -> parseTransferDetails(transaction, transaction.account.orEmpty(), userPublicKey)
                 is CloseAccountDetails -> parseCloseDetails(transaction)
                 is CreateAccountDetails -> parseCreateDetails(transaction)
                 is UnknownDetails -> historyTransactionConverter.mapUnknownTransactionToHistory(transaction)
@@ -60,8 +60,8 @@ class HistoryTransactionMapper(
             response = details,
             sourceData = sourceData,
             destinationData = destinationData,
-            sourceRate = destinationRate,
-            destinationRate = sourceRate,
+            sourceRate = sourceRate,
+            destinationRate = destinationRate,
             sourcePublicKey = userPublicKey
         )
     }

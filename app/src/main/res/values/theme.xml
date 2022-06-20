@@ -28,5 +28,8 @@
         <item name="android:editTextColor">@color/textIconPrimary</item>
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="android:actionMenuTextColor">?colorSecondary</item>
+
+        <item name="snackbarStyle">@style/UiKit.Native.Snackbar</item>
+        <item name="snackbarButtonStyle">@style/UiKit.Native.SnackbarButton</item>
     </style>
 </resources>
