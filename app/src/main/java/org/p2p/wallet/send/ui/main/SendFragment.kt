@@ -33,7 +33,6 @@ import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
-import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
@@ -47,15 +46,19 @@ import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
-import org.p2p.wallet.utils.AmountUtils
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
-import org.p2p.wallet.utils.getClipBoardText
+import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.formatUsd
+import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.getColor
+import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
@@ -75,11 +78,11 @@ class SendFragment :
 
     companion object {
 
-        fun create(address: String? = null) = SendFragment().withArgs(
+        fun create(address: String? = null): SendFragment = SendFragment().withArgs(
             EXTRA_ADDRESS to address
         )
 
-        fun create(initialToken: Token) = SendFragment().withArgs(
+        fun create(initialToken: Token): SendFragment = SendFragment().withArgs(
             EXTRA_TOKEN to initialToken
         )
     }
@@ -93,8 +96,6 @@ class SendFragment :
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val sendAnalytics: SendAnalytics by inject()
-
     private val address: String? by args(EXTRA_ADDRESS)
     private val token: Token? by args(EXTRA_TOKEN)
 
@@ -104,120 +105,110 @@ class SendFragment :
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_SEND,
-            viewLifecycleOwner
-        ) { _, result ->
-            when {
-                result.containsKey(EXTRA_TOKEN) -> {
-                    val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
-                    if (token != null) presenter.setSourceToken(token)
-                }
-                result.containsKey(EXTRA_FEE_PAYER) -> {
-                    val token = result.getParcelable<Token.Active>(EXTRA_FEE_PAYER)
-                    if (token != null) presenter.setFeePayerToken(token)
-                }
-                result.containsKey(EXTRA_RESULT) -> {
-                    val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
-                    if (searchResult != null) presenter.setTargetResult(searchResult)
-                }
-                result.containsKey(EXTRA_NETWORK) -> {
-                    val ordinal = result.getInt(EXTRA_NETWORK, 0)
-                    presenter.setNetworkDestination(NetworkType.values()[ordinal])
-                }
-                result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
-                    popBackStack()
-                }
-            }
-        }
+            KEY_REQUEST_SEND, this
+        ) { _, result -> handleFragmentResult(result) }
+
+        // childFragmentManager for BottomSheets
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND, this
+        ) { _, result -> handleFragmentResult(result) }
 
         presenter.loadInitialData()
-        checkClipBoard()
+        checkClipboard()
     }
 
-    override fun onStop() {
-        super.onStop()
+    private fun handleFragmentResult(result: Bundle) {
+        when {
+            result.containsKey(EXTRA_TOKEN) -> {
+                val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
+                if (token != null) presenter.setSourceToken(token)
+            }
+            result.containsKey(EXTRA_FEE_PAYER) -> {
+                val token = result.getParcelable<Token.Active>(EXTRA_FEE_PAYER)
+                if (token != null) presenter.setFeePayerToken(token)
+            }
+            result.containsKey(EXTRA_RESULT) -> {
+                val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
+                if (searchResult != null) presenter.setTargetResult(searchResult)
+            }
+            result.containsKey(EXTRA_NETWORK) -> {
+                val ordinal = result.getInt(EXTRA_NETWORK, 0)
+                presenter.setNetworkDestination(NetworkType.values()[ordinal])
+            }
+            result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
+                clearScreenData()
+                activity?.onBackPressed()
+            }
+        }
+    }
+
+    override fun onDestroyView() {
         AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        super.onDestroyView()
     }
 
     private fun setupViews() {
         with(binding) {
-            if (backStackEntryCount() > 1) {
-                toolbar.setNavigationIcon(R.drawable.ic_back)
-                toolbar.setNavigationOnClickListener { popBackStack() }
-            }
-            sendButton.setOnClickListener { presenter.sendOrConfirm() }
-
-            targetTextView.setOnClickListener {
-                addFragment(SearchFragment.create())
-            }
-            targetImageView.setOnClickListener {
-                addFragment(SearchFragment.create())
-            }
-            messageTextView.setOnClickListener {
-                addFragment(SearchFragment.create())
+            toolbar.setNavigationIcon(R.drawable.ic_back)
+            toolbar.setNavigationOnClickListener {
+                if (backStackEntryCount() > 1) {
+                    popBackStack()
+                } else {
+                    requireActivity().apply {
+                        hideKeyboard()
+                        onBackPressed()
+                    }
+                }
             }
 
-            clearImageView.setOnClickListener {
-                presenter.setTargetResult(null)
-            }
+            targetTextView.setOnClickListener { addFragment(SearchFragment.create()) }
+            targetImageView.setOnClickListener { addFragment(SearchFragment.create()) }
+            messageTextView.setOnClickListener { addFragment(SearchFragment.create()) }
 
-            AmountFractionTextWatcher.installOn(amountEditText) {
-                presenter.setNewSourceAmount(it)
-            }
+            clearImageView.setOnClickListener { presenter.setTargetResult(result = null) }
 
-            networkView.setOnClickListener {
-                presenter.loadCurrentNetwork()
-            }
+            AmountFractionTextWatcher.installOn(amountEditText) { presenter.setNewSourceAmount(it) }
+            val originalTextSize = amountEditText.textSize
+            // Use invisible auto size textView to handle editText text size
+            amountEditText.doOnTextChanged { text, _, _, _ -> handleAmountTextChanged(text, originalTextSize) }
 
-            sourceImageView.setOnClickListener {
-                presenter.loadTokensForSelection()
-            }
+            networkView.setOnClickListener { presenter.loadCurrentNetwork() }
 
-            address?.let { presenter.validateTarget(it) }
+            sourceImageView.setOnClickListener { presenter.loadTokensForSelection() }
+            sourceTextView.setOnClickListener { presenter.loadTokensForSelection() }
+            downImageView.setOnClickListener { presenter.loadTokensForSelection() }
 
-            amountEditText.focusAndShowKeyboard()
+            accountFeeView.setOnClickListener { presenter.loadFeePayerTokens() }
 
-            accountFeeView.setOnClickListener {
-                presenter.loadFeePayerTokens()
-            }
+            availableTextView.setOnClickListener { presenter.setMaxSourceAmountValue() }
 
-            availableTextView.setOnClickListener {
-                presenter.setMaxSourceAmountValue()
-            }
+            maxTextView.setOnClickListener { presenter.setMaxSourceAmountValue() }
 
-            maxTextView.setOnClickListener {
-                presenter.setMaxSourceAmountValue()
-            }
+            aroundTextView.setOnClickListener { presenter.switchCurrency() }
 
-            aroundTextView.setOnClickListener {
-                presenter.switchCurrency()
-            }
-
-            scanTextView.setOnClickListener {
-                presenter.onScanClicked()
-            }
+            scanTextView.setOnClickListener { presenter.onScanClicked() }
 
             pasteTextView.setOnClickListener {
-                val nameOrAddress = requireContext().getClipBoardText(trimmed = true)
+                val nameOrAddress = requireContext().getClipboardText(trimmed = true)
                 nameOrAddress?.let { presenter.validateTarget(it) }
             }
 
-            sendDetailsView.setOnPaidClickListener {
-                presenter.onFeeClicked()
-            }
+            sendDetailsView.setOnPaidClickListener { presenter.onFeeClicked() }
 
-            val originalTextSize = amountEditText.textSize
+            sendButton.setOnClickListener { presenter.sendOrConfirm() }
 
-            // Use invisible auto size textView to handle editText text size
-            amountEditText.doOnTextChanged { text, _, _, _ ->
-                autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
-                amountEditText.post {
-                    val textSize =
-                        if (text.isNullOrBlank()) originalTextSize
-                        else autoSizeHelperTextView.textSize
+            if (isVisible) amountEditText.focusAndShowKeyboard()
 
-                    amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-                }
+            address?.let { presenter.validateTarget(it) }
+        }
+    }
+
+    private fun handleAmountTextChanged(text: CharSequence?, originalTextSize: Float) {
+        with(binding) {
+            autoSizeHelperTextView.setText(text, TextView.BufferType.EDITABLE)
+            amountEditText.post {
+                val textSize = if (text.isNullOrBlank()) originalTextSize else autoSizeHelperTextView.textSize
+                amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
             }
         }
     }
@@ -416,13 +407,13 @@ class SendFragment :
                     )
                 }
 
-                binding.networkFeeTextView withTextOrGone highlightText
+                binding.networkFeeTextView.withTextOrGone(highlightText)
             }
             NetworkType.BITCOIN -> {
                 binding.networkImageView.setImageResource(R.drawable.ic_btc_rounded)
                 binding.networkNameTextView.setText(R.string.send_bitcoin_network_title)
                 // TODO: add renBTC fee
-                binding.networkFeeTextView withTextOrGone null
+                binding.networkFeeTextView.withTextOrGone(text = null)
             }
         }
     }
@@ -435,7 +426,7 @@ class SendFragment :
         with(binding) {
             glideManager.load(sourceImageView, token.iconUrl)
             sourceTextView.text = token.tokenSymbol
-            availableTextView.text = token.getFormattedTotal()
+            availableTextView.text = token.getFormattedTotal(includeSymbol = true)
         }
     }
 
@@ -444,12 +435,9 @@ class SendFragment :
     }
 
     override fun showInputValue(value: BigDecimal) {
-        val textValue = "$value"
         with(binding.amountEditText) {
-            setText(textValue)
-            setSelection(
-                text.toString().length
-            )
+            setText("$value")
+            setSelection(text.toString().length)
         }
     }
 
@@ -459,9 +447,9 @@ class SendFragment :
 
     override fun showProgressDialog(data: ShowProgress?) {
         if (data != null) {
-            ProgressBottomSheet.show(parentFragmentManager, data, KEY_REQUEST_SEND)
+            ProgressBottomSheet.show(childFragmentManager, data, KEY_REQUEST_SEND)
         } else {
-            ProgressBottomSheet.hide(parentFragmentManager)
+            ProgressBottomSheet.hide(childFragmentManager)
         }
     }
 
@@ -484,7 +472,13 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        binding.availableTextView.text = AmountUtils.format(available)
+        val formatted = if (symbol == Constants.USD_READABLE_SYMBOL) {
+            getString(R.string.main_send_around_in_usd, available.formatUsd())
+        } else {
+            "${available.formatToken()} $symbol"
+        }
+
+        binding.availableTextView.text = formatted
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
@@ -500,11 +494,11 @@ class SendFragment :
 
     @SuppressLint("SetTextI18n")
     override fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String) {
-        binding.aroundTextView.text = "${AmountUtils.format(tokenValue)} $symbol"
+        binding.aroundTextView.text = "${tokenValue.formatToken()} $symbol"
     }
 
     override fun showUsdAroundValue(usdValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, AmountUtils.format(usdValue))
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue.formatUsd())
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
@@ -521,9 +515,25 @@ class SendFragment :
         )
     }
 
-    private fun checkClipBoard() {
-        val clipBoardData = requireContext().getClipBoardText()
-        binding.pasteTextView.isEnabled = !clipBoardData.isNullOrBlank()
+    override fun showWarning(messageRes: Int?) {
+        if (messageRes != null) {
+            binding.warningView.isVisible = true
+            binding.warningTextView.setText(messageRes)
+        } else {
+            binding.warningView.isVisible = false
+        }
+    }
+
+    private fun clearScreenData() {
+        with(binding) {
+            amountEditText.setText(emptyString())
+            clearImageView.callOnClick()
+        }
+    }
+
+    private fun checkClipboard() {
+        val clipboardData = requireContext().getClipboardText()
+        binding.pasteTextView.isEnabled = !clipboardData.isNullOrBlank()
     }
 
     private fun TextView.setTextDrawableColor(@ColorRes color: Int) {

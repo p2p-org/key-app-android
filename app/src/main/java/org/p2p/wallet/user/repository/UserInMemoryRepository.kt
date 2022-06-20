@@ -12,7 +12,7 @@ private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
 class UserInMemoryRepository : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
-    private val tokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
+    private val allTokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
 
     private val tokensSearchResultFlow = MutableStateFlow(TokenListData())
     private val searchTextByTokens: MutableMap<String, List<TokenData>> = mutableMapOf()
@@ -21,10 +21,9 @@ class UserInMemoryRepository : UserLocalRepository {
         pricesFlow.value = prices
     }
 
-    override fun getPriceByToken(symbol: String): TokenPrice? =
-        pricesFlow.value.firstOrNull { it.tokenSymbol == symbol }
-
-    private val allTokensFlow = MutableStateFlow<List<TokenData>>(emptyList())
+    override fun getPriceByToken(symbol: String): TokenPrice? {
+        return pricesFlow.value.firstOrNull { it.tokenSymbol == symbol }
+    }
 
     override fun setTokenData(data: List<TokenData>) {
         allTokensFlow.value = data.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
@@ -49,7 +48,7 @@ class UserInMemoryRepository : UserLocalRepository {
                 if (needToLoadMore) {
                     searchTextByTokens[DEFAULT_TOKEN_KEY] = getPopularDecimals() + allInMemoryTokens.take(newSize)
                 }
-                setResult(DEFAULT_TOKEN_KEY)
+                setSearchResult(DEFAULT_TOKEN_KEY)
             }
             searchText in searchTextByTokens -> {
                 val tokensBySearchText = searchTextByTokens.getOrDefault(searchText, emptyList())
@@ -58,22 +57,23 @@ class UserInMemoryRepository : UserLocalRepository {
                 if (needToLoadMore) {
                     loadMoreTokensBySearchText(searchText, newSize)
                 }
-                setResult(searchText)
+                setSearchResult(searchText)
             }
             searchText !in searchTextByTokens -> {
                 loadMoreTokensBySearchText(searchText, count)
-                setResult(searchText)
+                setSearchResult(searchText)
             }
         }
     }
 
-    private fun setResult(key: String) {
-        val result = TokenListData(
+    private fun setSearchResult(key: String) {
+        val searchResult = TokenListData(
             searchText = key,
             result = searchTextByTokens[key].orEmpty()
         )
-        tokensSearchResultFlow.value = result
+        tokensSearchResultFlow.value = searchResult
     }
+
     private fun loadMoreTokensBySearchText(searchText: String, newSearchTokensSize: Int) {
         val searchResult = findTokensBySearchText(searchText)
         searchTextByTokens[searchText] = searchResult.take(newSearchTokensSize)
@@ -88,33 +88,31 @@ class UserInMemoryRepository : UserLocalRepository {
 
     override fun getTokenListFlow(): Flow<TokenListData> = tokensSearchResultFlow
 
-    override fun getTokenList(): List<TokenData> = tokensFlow.value
-
     override fun findTokenData(mintAddress: String): TokenData? {
-        val data = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
-        if (data == null) {
+        val resultToken = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
+        if (resultToken == null) {
             Timber.w("No data found for $mintAddress")
         }
 
-        return data
+        return resultToken
     }
 
     override fun findTokenDataBySymbol(symbol: String): TokenData? {
-        val data = allTokensFlow.value.firstOrNull { it.symbol == symbol }
-        if (data == null) {
+        val resultToken = allTokensFlow.value.firstOrNull { it.symbol == symbol }
+        if (resultToken == null) {
             Timber.w("No data found for $symbol")
         }
 
-        return data
+        return resultToken
     }
 
     private fun getPopularDecimals(): List<TokenData> {
-        val items = mutableListOf<TokenData>()
+        val popularTokens = mutableListOf<TokenData>()
         val tokens = allTokensFlow.value
         for (symbol in popularItems) {
             val token = tokens.firstOrNull { it.symbol == symbol }
-            if (token != null) items.add(token)
+            if (token != null) popularTokens.add(token)
         }
-        return items
+        return popularTokens
     }
 }

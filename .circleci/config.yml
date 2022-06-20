@@ -25,12 +25,12 @@ commands:
           name: "Create apikey.properties and fill them"
           command: |
             touch apikey.properties
-            echo 'rpcPoolApiKey="${RPC_POOL_API_KEY}"' >> apikey.properties
-            echo 'moonpayKey="${MOONPAY_KEY}"' >> apikey.properties
-            echo 'comparePublicKey="${COMPARE_PUBLIC_KEY}"' >> apikey.properties
-            echo 'intercomApiKey="${INTERCOM_API_KEY}"' >> apikey.properties
-            echo 'intercomAppId="${INTERCOM_APP_ID}"' >> apikey.properties
-            echo 'amplitudeKey="${AMPLITUDE_KEY}"' >> apikey.properties
+            echo "rpcPoolApiKey=\"${RPC_POOL_API_KEY}\"" >> apikey.properties
+            echo "moonpayKey=\"${MOONPAY_KEY}\"" >> apikey.properties
+            echo "comparePublicKey=\"${COMPARE_PUBLIC_KEY}\"" >> apikey.properties
+            echo "intercomApiKey=\"${INTERCOM_API_KEY}\"" >> apikey.properties
+            echo "intercomAppId=\"${INTERCOM_APP_ID}\"" >> apikey.properties
+            echo "amplitudeKey=\"${AMPLITUDE_KEY}\"" >> apikey.properties
             echo "apikey.properties created succesfully"
 
   restore_gradle_cache:
@@ -38,7 +38,6 @@ commands:
     steps:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-
 
   upload_feature_apk_to_slack:
     description: "Upload `feature` app to Slack channel"
@@ -54,11 +53,11 @@ commands:
               -F "file=@$(find app/build/outputs/apk/feature -name 'p2p*')" \
               https://slack.com/api/files.upload
 
-  upload_release_apk_to_slack:
-    description: "Upload `release` app to Slack channel"
+  upload_release_bundle_to_slack:
+    description: "Upload `release` bundle app to Slack channel"
     steps:
       - run:
-          name: "Upload using CURL request to Slack"
+          name: "Upload AAB using CURL request to Slack"
           command: |
             curl \
               -S -s -o /dev/null \
@@ -67,6 +66,21 @@ commands:
               -F initial_comment="Hey! Here is the release AAB. Success :tada:" \
               -F "file=@$(find app/build/outputs/bundle/release -name 'p2p*')" \
               https://slack.com/api/files.upload
+
+  upload_release_apk_to_slack:
+    description: "Upload `release` APK app to Slack channel"
+    steps:
+      - run:
+          name: "Upload APK using CURL request to Slack"
+          command: |
+            curl \
+              -S -s -o /dev/null \
+              -F token="${SLACK_BOT_TOKEN}" \
+              -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
+              -F initial_comment="Hey! Here is the release APK. Success :tada:" \
+              -F "file=@$(find app/build/outputs/apk/release -name 'p2p*')" \
+              https://slack.com/api/files.upload
+
 
   generate_build_version:
     description: "Update BUILD_VERSION >> gradle.properties"
@@ -77,6 +91,15 @@ commands:
             ./gradlew setVersionBuild -Pversion=${CIRCLE_BUILD_NUM}
             echo "Set build version to ${CIRCLE_BUILD_NUM}"
 
+
+  fill_ssl_certificate:
+    description: "Create and fill cert.pem certificate for SSL pinning"
+    steps:
+      - run:
+          name: "Create and fill cert.pem"
+          command: |
+            touch app/src/main/res/raw/cert.pem
+            echo ${SSL_CERTIFICATE} >> app/src/main/res/raw/cert.pem
 
 defaults: &defaults
   working_directory: ~/app
@@ -120,6 +143,7 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
+      - fill_ssl_certificate # needed for Koin graph unit test
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_cache:
@@ -134,6 +158,7 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
+      - fill_ssl_certificate
       - generate_build_version
       - store_artifacts:
           path: "./app/gradle.properties"
@@ -151,6 +176,7 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
+      - fill_ssl_certificate
       - generate_build_version
       - run:
           name: "Generate build version"
@@ -161,15 +187,16 @@ jobs:
           path: "./app/gradle.properties"
           destination: gradle.properties
       - run:
-          name: "Write signing jks file from env"
+          name: "Write signing JKS file from env"
           command: |
             echo "$SIGNING_JKS_FILE_HEX" | xxd -r -p - > p2p-wallet.jks
       - run:
           name: "Bundle and upload release to Firebase App Distribution"
-          command: ./gradlew bundleRelease appDistributionUploadRelease
+          command: ./gradlew assembleRelease bundleRelease appDistributionUploadRelease
+      - upload_release_bundle_to_slack
       - upload_release_apk_to_slack
       - store_artifacts:
-          path: app/build/outputs/apk/release
+          path: app/build/outputs/bundle/release
 
 workflows:
   version: 2

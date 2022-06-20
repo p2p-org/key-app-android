@@ -2,6 +2,7 @@ package org.p2p.wallet.utils
 
 object Constants {
 
+    const val SYMBOL_ZERO = "0"
     const val USD_SYMBOL = "$"
     const val USD_READABLE_SYMBOL = "USD"
 
@@ -17,4 +18,6 @@ object Constants {
     const val SOL_MINT = "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ"
 
     const val SOL_NAME = "Solana"
+
+    const val DEVICE_TYPE = "Android"
 }

@@ -14,6 +14,9 @@ import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
+import org.p2p.wallet.utils.asUsd
+import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleShort
@@ -92,6 +95,7 @@ class BuySolanaPresenter(
 
     override fun setBuyAmount(amount: String, isDelayEnabled: Boolean) {
         this.amount = amount
+        view?.setContinueButtonEnabled(false)
         calculateTokens(amount, isDelayEnabled)
     }
 
@@ -186,7 +190,11 @@ class BuySolanaPresenter(
 
     private fun handleEnteredAmountValid(buyCurrencyInfo: BuyCurrency) {
         val receiveSymbol = if (isSwappedToToken) USD_SYMBOL else tokenToBuy.tokenSymbol
-        val amount = if (isSwappedToToken) buyCurrencyInfo.totalAmount.scaleShort() else buyCurrencyInfo.receiveAmount
+        val amount = if (isSwappedToToken) {
+            buyCurrencyInfo.totalAmount.formatUsd()
+        } else {
+            buyCurrencyInfo.receiveAmount.toBigDecimal().formatToken()
+        }
         val currencyForTokensAmount = buyCurrencyInfo.price * buyCurrencyInfo.receiveAmount.toBigDecimal()
         val data = BuyViewData(
             tokenSymbol = tokenToBuy.tokenSymbol,
@@ -199,11 +207,14 @@ class BuySolanaPresenter(
             accountCreationCost = null,
             total = buyCurrencyInfo.totalAmount.scaleShort(),
             receiveAmountText = "$amount $receiveSymbol",
-            purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.scaleShort().toString() else null
+            purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.asUsd() else null
         )
-        view?.showData(data)
-            .also { currentBuyViewData = data }
-        view?.showMessage(message = null)
+        view?.apply {
+            showData(data)
+            currentBuyViewData = data
+            showMessage(message = null)
+            setContinueButtonEnabled(true)
+        }
     }
 
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
@@ -224,9 +235,12 @@ class BuySolanaPresenter(
             }
 
         val errorMessageRaw = if (isAmountLower) minBuyErrorFormat else maxBuyErrorFormat
-        view?.showMessage(
-            errorMessageRaw.format(suffixPrefixWithAmount)
-        )
+        view?.apply {
+            setContinueButtonEnabled(false)
+            showMessage(
+                errorMessageRaw.format(suffixPrefixWithAmount)
+            )
+        }
     }
 
     private fun clear() {
@@ -239,8 +253,11 @@ class BuySolanaPresenter(
             accountCreationCost = null,
             total = BigDecimal.ZERO
         )
-        view?.showData(clearedData)
-        view?.showMessage(null)
+        view?.apply {
+            showData(clearedData)
+            setContinueButtonEnabled(false)
+            showMessage(null)
+        }
     }
 
     override fun detach() {

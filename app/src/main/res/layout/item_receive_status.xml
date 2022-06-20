@@ -44,7 +44,7 @@
         android:ellipsize="end"
         android:lines="1"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="@color/colorGreen"
+        android:textColor="@color/color_green"
         android:visibility="gone"
         tools:text="3/3"
         tools:visibility="visible" />

@@ -104,7 +104,7 @@ class TransactionDetailsBottomSheetFragment :
     override fun showStatus(status: TransactionStatus) {
         binding.statusTextView.setText(status.resValue)
         val color = when (status) {
-            TransactionStatus.COMPLETED -> R.color.colorGreen
+            TransactionStatus.COMPLETED -> R.color.color_green
             TransactionStatus.PENDING -> R.color.systemWarningMain
             TransactionStatus.ERROR -> R.color.systemErrorMain
         }

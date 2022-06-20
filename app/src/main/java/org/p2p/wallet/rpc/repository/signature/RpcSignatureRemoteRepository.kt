@@ -18,7 +18,7 @@ class RpcSignatureRemoteRepository(private val rpcPoolApi: RpcSignatureApi) : Rp
             ConfigObjects.ConfirmedSignFAddr2(before, limit)
         )
 
-        val rpcRequest = RpcRequest("getConfirmedSignaturesForAddress2", params)
+        val rpcRequest = RpcRequest("getSignaturesForAddress", params)
         return rpcPoolApi.getConfirmedSignaturesForAddress2(rpcRequest).result
     }
 }

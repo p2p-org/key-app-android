@@ -10,7 +10,6 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
@@ -25,8 +24,7 @@ class HistoryPresenter(
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val environmentManager: EnvironmentManager,
-    private val sendAnalytics: SendAnalytics,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val sendAnalytics: SendAnalytics
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private var isPagingEnded = false
@@ -51,25 +49,19 @@ class HistoryPresenter(
         refreshJob = launch {
             view?.showRefreshing(isRefreshing = true)
             fetchHistory(isRefresh = true)
-            view?.scrollToTop()
             view?.showRefreshing(isRefreshing = false)
+            view?.scrollToTop()
         }
     }
 
     override fun loadNextHistoryPage() {
         if (isPagingEnded) return
 
-        pagingJob?.cancel()
+        if (pagingJob?.isActive == true) {
+            return
+        }
         pagingJob = launch {
             view?.showPagingState(PagingState.Loading)
-            fetchHistory()
-        }
-    }
-
-    override fun retry() {
-        launch {
-            val pagingState = if (transactions.isEmpty()) PagingState.InitialLoading else PagingState.Loading
-            view?.showPagingState(pagingState)
             fetchHistory()
         }
     }
@@ -90,19 +82,8 @@ class HistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val signatures = historyInteractor.loadSignaturesForAddress(
-                tokenPublicKey = tokenKeyProvider.publicKey,
-                before = lastTransactionSignature
-            )
-            val fetchedItems = historyInteractor.loadTransactionHistory(
-                tokenPublicKey = tokenKeyProvider.publicKey,
-                signaturesWithStatus = signatures,
-                forceRefresh = isRefresh
-            )
-
-            lastTransactionSignature = fetchedItems.last().signature
+            val fetchedItems = historyInteractor.loadTransactions(isRefresh)
             transactions.addAll(fetchedItems)
-
             view?.showHistory(transactions)
             view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {

@@ -138,7 +138,6 @@ class ReceiveRenBtcFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.progressView.isVisible = isLoading
         binding.receiveCardView.showQrLoading(isLoading)
     }
 

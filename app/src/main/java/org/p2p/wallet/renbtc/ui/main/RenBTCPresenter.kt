@@ -59,18 +59,14 @@ class RenBTCPresenter(
         }
     }
 
-    override fun startNewSession(context: Context) {
-        RenVMService.startWithNewSession(context)
-    }
-
-    override fun checkActiveSession(context: Context) {
+    override fun checkActiveOrStartNewSession(context: Context) {
         RenVMService.startWithCheck(context)
     }
 
     override fun saveQr(name: String, bitmap: Bitmap, shareText: String?) {
         launch {
             try {
-                val savedFile = usernameInteractor.saveQr(name, bitmap)
+                val savedFile = usernameInteractor.saveQr(name, bitmap, forSharing = shareText != null)
                 shareText?.let { textToShare ->
                     savedFile?.let { file ->
                         view?.showShareQr(file, textToShare)

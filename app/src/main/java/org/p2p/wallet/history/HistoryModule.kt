@@ -10,9 +10,9 @@ import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
+import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
@@ -41,14 +41,16 @@ object HistoryModule : InjectionModule {
         }
         factory {
             HistoryInteractor(
-                rpcSignatureRepository = get(),
                 rpcAccountRepository = get(),
-                transactionsRemoteRepository = get(),
                 transactionsLocalRepository = get(),
                 tokenKeyProvider = get(),
-                historyTransactionMapper = get()
+                historyTransactionMapper = get(),
+                userInteractor = get(),
+                transactionsRemoteRepository = get(),
+                rpcSignatureRepository = get()
             )
         }
+
         factory { (token: Token.Active) ->
             TokenHistoryPresenter(
                 token = token,
@@ -63,8 +65,7 @@ object HistoryModule : InjectionModule {
         } bind TokenHistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
             TransactionDetailsPresenter(
-                resources = get(),
-                theme = get(),
+                resourcesProvider = get(),
                 state = state,
                 userLocalRepository = get(),
                 historyInteractor = get()
@@ -105,8 +106,7 @@ object HistoryModule : InjectionModule {
                 swapAnalytics = get(),
                 analyticsInteractor = get(),
                 environmentManager = get(),
-                sendAnalytics = get(),
-                tokenKeyProvider = get()
+                sendAnalytics = get()
             )
         } bind HistoryContract.Presenter::class
     }

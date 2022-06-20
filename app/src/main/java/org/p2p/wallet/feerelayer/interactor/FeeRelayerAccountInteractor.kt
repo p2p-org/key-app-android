@@ -42,8 +42,8 @@ class FeeRelayerAccountInteractor(
             val lamportsPerSignature = async { amountRepository.getLamportsPerSignature() }
 
             relayInfo = RelayInfo(
-                minimumTokenAccountBalance = minimumTokenAccountBalance.await(),
-                minimumRelayAccountBalance = minimumRelayAccountBalance.await(),
+                minimumTokenAccountRent = minimumTokenAccountBalance.await(),
+                minimumRelayAccountRent = minimumRelayAccountBalance.await(),
                 feePayerAddress = feePayerAddress.await(),
                 lamportsPerSignature = lamportsPerSignature.await()
             )

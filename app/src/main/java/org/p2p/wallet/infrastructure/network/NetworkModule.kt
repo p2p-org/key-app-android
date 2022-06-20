@@ -1,5 +1,6 @@
 package org.p2p.wallet.infrastructure.network
 
+import android.content.res.Resources
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -19,9 +20,12 @@ import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
+import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
+import org.p2p.wallet.rpc.RpcModule.RPC_SOLANA_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,12 +34,13 @@ import java.util.concurrent.TimeUnit
 
 object NetworkModule : InjectionModule {
 
-    const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 60L
-    const val DEFAULT_READ_TIMEOUT_SECONDS = 60L
+    const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 30L
+    const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     override fun create() = module {
         single { EnvironmentManager(get(), get()) }
         single { TokenKeyProvider(get()) }
+        single { CertificateManager(get(), get()) }
 
         single {
             GsonBuilder()
@@ -50,30 +55,56 @@ object NetworkModule : InjectionModule {
 
         single(named(MOONPAY_QUALIFIER)) {
             val moonPayApiUrl = androidContext().getString(R.string.moonpayBaseUrl)
-            getRetrofit(moonPayApiUrl, "Moonpay", MoonpayErrorInterceptor(get()))
+            getRetrofit(
+                baseUrl = moonPayApiUrl,
+                tag = "Moonpay",
+                resources = get(),
+                interceptor = MoonpayErrorInterceptor(get())
+            )
         }
 
         single(named(RPC_RETROFIT_QUALIFIER)) {
             val environment = get<EnvironmentManager>().loadEnvironment()
             val rpcApiUrl = environment.endpoint
-            getRetrofit(rpcApiUrl, "Rpc", RpcInterceptor(get(), get()))
+            getRetrofit(
+                baseUrl = rpcApiUrl,
+                tag = "Rpc",
+                resources = get(),
+                interceptor = RpcInterceptor(get(), get())
+            )
+        }
+        single(named(RPC_SOLANA_RETROFIT_QUALIFIER)) {
+            val environment = get<EnvironmentManager>().loadRpcEnvironment()
+            val rpcApiUrl = environment.endpoint
+            getRetrofit(
+                baseUrl = rpcApiUrl,
+                tag = "RpcSolana",
+                resources = get(),
+                interceptor = RpcSolanaInterceptor(get())
+            )
         }
 
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
             val endpoint = androidContext().getString(R.string.notification_service_url)
-            getRetrofit(endpoint, "NotificationService", null)
+            getRetrofit(
+                baseUrl = endpoint,
+                tag = "NotificationService",
+                resources = get(),
+                interceptor = null
+            )
         }
     }
 
     fun Scope.getRetrofit(
         baseUrl: String,
         tag: String = "OkHttpClient",
+        resources: Resources,
         interceptor: Interceptor?
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create(get()))
-            .client(getClient(tag, interceptor))
+            .client(getClient(tag, resources, interceptor))
             .build()
     }
 
@@ -83,11 +114,13 @@ object NetworkModule : InjectionModule {
         }
     }
 
-    private fun Scope.getClient(tag: String, interceptor: Interceptor? = null): OkHttpClient {
+    private fun Scope.getClient(tag: String, resources: Resources, interceptor: Interceptor? = null): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
+                val certificateManager: CertificateManager = get()
+                certificateManager.setCertificate(this)
                 if (BuildConfig.CRASHLYTICS_ENABLED) {
                     addInterceptor(CrashHttpLoggingInterceptor())
                 }

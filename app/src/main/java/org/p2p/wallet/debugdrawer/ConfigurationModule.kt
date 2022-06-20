@@ -23,12 +23,12 @@ class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
             urlTextView.text = environment.endpoint
             enablePollingSwitch.isChecked = appFeatureFlags.isPollingEnabled
             enablePollingSwitch.setOnCheckedChangeListener { _, isChecked ->
-                appFeatureFlags.setPollingEnabled(isChecked)
+                appFeatureFlags.isPollingEnabled = isChecked
             }
 
             enableProdEnvSwitch.isChecked = appFeatureFlags.isDevnetEnabled
             enableProdEnvSwitch.setOnCheckedChangeListener { _, isChecked ->
-                appFeatureFlags.setIsDevnetEnabled(isChecked)
+                appFeatureFlags.isDevnetEnabled = isChecked
             }
         }
 

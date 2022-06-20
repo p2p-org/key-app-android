@@ -11,6 +11,7 @@ interface BuySolanaContract {
         fun showData(viewData: BuyViewData)
         fun showLoading(isLoading: Boolean)
         fun showMessage(message: String?)
+        fun setContinueButtonEnabled(isEnabled: Boolean)
         fun navigateToMoonpay(amount: String)
         fun swapData(isSwapped: Boolean, prefixSuffixSymbol: String)
         fun close()

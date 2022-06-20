@@ -10,5 +10,7 @@ data class SendTransactionRequest(
     @SerializedName("pubkeys")
     val pubkeys: List<String>,
     @SerializedName("blockhash")
-    val blockHash: String
+    val blockHash: String,
+    @SerializedName("info")
+    val info: FeeRelayerInfoRequest
 )
