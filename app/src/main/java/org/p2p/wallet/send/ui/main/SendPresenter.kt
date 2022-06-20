@@ -1,8 +1,5 @@
 package org.p2p.wallet.send.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
@@ -62,6 +59,9 @@ import java.math.BigInteger
 import java.math.RoundingMode
 import java.util.Locale
 import kotlin.properties.Delegates
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class SendPresenter(
     private val initialToken: Token.Active?,
@@ -146,7 +146,8 @@ class SendPresenter(
         }
 
         view?.showNetworkSelectionView(isVisible = newToken.isRenBTC)
-        validateAddressByNetwork(result = target, updateNetwork = newToken.isRenBTC)
+        val validatedResult = validateResultByNetwork(result = target, updateNetwork = newToken.isRenBTC)
+        handleTargetResult(validatedResult)
 
         val feePayerToken = userTokens.firstOrNull { it.isSOL } ?: newToken
         sendInteractor.setFeePayerToken(feePayerToken)
@@ -159,44 +160,48 @@ class SendPresenter(
     }
 
     override fun setTargetResult(result: SearchResult?) {
-        target = result
+        val validatedResult = validateResultByNetwork(result = result, updateNetwork = true)
 
-        validateAddressByNetwork(result = result, updateNetwork = true)
+        target = validatedResult
 
-        when (result) {
-            is SearchResult.Full -> handleFullResult(result)
-            is SearchResult.AddressOnly -> handleAddressOnlyResult(result)
-            is SearchResult.EmptyBalance -> handleEmptyBalanceResult(result)
-            is SearchResult.Wrong -> handleWrongResult(result)
-            else -> handleIdleTarget()
-        }
+        handleTargetResult(validatedResult)
 
         val sourceToken = token ?: return
         calculateData(sourceToken)
     }
 
-    private fun validateAddressByNetwork(result: SearchResult?, updateNetwork: Boolean) {
-        val addressState = result?.addressState ?: return
+    private fun handleTargetResult(validatedResult: SearchResult?) {
+        when (validatedResult) {
+            is SearchResult.Full -> handleFullResult(validatedResult)
+            is SearchResult.AddressOnly -> handleAddressOnlyResult(validatedResult)
+            is SearchResult.EmptyBalance -> handleEmptyBalanceResult(validatedResult)
+            is SearchResult.Wrong -> handleWrongResult(validatedResult)
+            else -> handleIdleTarget()
+        }
+    }
+
+    private fun validateResultByNetwork(result: SearchResult?, updateNetwork: Boolean): SearchResult? {
+        val addressState = result?.addressState ?: return null
 
         if (updateNetwork) selectNetworkType(addressState.networkType)
 
         val address = addressState.address
 
-        when (networkType) {
+        return when (networkType) {
             NetworkType.BITCOIN -> {
                 val isValid = BitcoinAddressValidator.isValid(address)
                 if (isValid) {
-                    view?.showAddressOnlyTarget(address)
+                    result
                 } else {
-                    view?.showWrongAddressTarget(address)
+                    SearchResult.Wrong(AddressState(address, networkType))
                 }
             }
             NetworkType.SOLANA -> {
                 val isValid = PublicKeyValidator.isValid(address)
                 if (isValid) {
-                    validateTarget(address)
+                    result
                 } else {
-                    view?.showWrongAddressTarget(address)
+                    SearchResult.Wrong(AddressState(address))
                 }
             }
         }
