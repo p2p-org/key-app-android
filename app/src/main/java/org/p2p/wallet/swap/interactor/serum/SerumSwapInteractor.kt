@@ -402,8 +402,7 @@ class SerumSwapInteractor(
             toMarket = toMarket,
             fromOpenOrders = params.fromOpenOrders,
             toOpenOrders = params.toOpenOrders,
-            feePayer = params.feePayer,
-            isSimulation = isSimulation
+            feePayer = params.feePayer
         )
     }
 
@@ -505,8 +504,7 @@ class SerumSwapInteractor(
         toMarket: Market,
         fromOpenOrders: PublicKey?,
         toOpenOrders: PublicKey?,
-        feePayer: PublicKey?,
-        isSimulation: Boolean = false
+        feePayer: PublicKey?
     ): SignersAndInstructions {
 
         val owner = tokenKeyProvider.publicKey.toPublicKey()
@@ -520,8 +518,7 @@ class SerumSwapInteractor(
                     fromMarket = fromMarket,
                     toMarket = toMarket,
                     feePayer = feePayer,
-                    close = close,
-                    isSimulation = isSimulation
+                    close = close
                 )
             }
 
@@ -680,12 +677,11 @@ class SerumSwapInteractor(
     }
 
     // Create from and to open orders and wait for confirmation before transitive swaping
-    suspend fun createFromAndToOpenOrdersForSwapTransitive(
+    private suspend fun createFromAndToOpenOrdersForSwapTransitive(
         fromMarket: Market,
         toMarket: Market,
         feePayer: PublicKey?,
-        close: Boolean?,
-        isSimulation: Boolean
+        close: Boolean?
     ): Triple<PublicKey, PublicKey, List<TransactionInstruction>> {
         val minRentExemption = openOrdersInteractor.getMinimumBalanceForRentExemption(dexPID)
 
@@ -716,7 +712,6 @@ class SerumSwapInteractor(
             signers.add(0, Account(tokenKeyProvider.secretKey))
         }
 
-// TODO: DELETE?
 //        val serializedTransaction = serializationInteractor.serializeTransaction(
 //            instructions = instructions,
 //            recentBlockhash = null,

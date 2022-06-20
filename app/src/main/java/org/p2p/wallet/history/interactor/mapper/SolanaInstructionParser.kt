@@ -172,16 +172,8 @@ object SolanaInstructionParser {
 
             val tokenBalance = transactionRoot.meta.postTokenBalances?.firstOrNull { !it.mint.isNullOrEmpty() }
             if (tokenBalance != null) {
-                var myAccount = userPublicKey
                 val accountKeys = transactionRoot.transaction?.message?.accountKeys.orEmpty()
-                if ((sourcePubKey != userPublicKey && destinationPubKey != myAccount) && accountKeys.size >= 4) {
-
-                    if (myAccount == accountKeys[0].publicKey) {
-                        myAccount = sourcePubKey.orEmpty()
-                    }
-                    if (myAccount == accountKeys[3].publicKey) {
-                        myAccount = destinationPubKey.orEmpty()
-                    }
+                if ((sourcePubKey != userPublicKey && destinationPubKey != userPublicKey) && accountKeys.size >= 4) {
 
                     val tokenMint = userInteractor.findTokenData(tokenBalance.mint.orEmpty())?.mintAddress
 

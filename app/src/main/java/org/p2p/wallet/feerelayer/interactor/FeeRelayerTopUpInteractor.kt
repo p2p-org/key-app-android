@@ -56,7 +56,7 @@ class FeeRelayerTopUpInteractor(
             feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = sourceToken,
             userAuthorityAddress = owner.publicKey,
-            userRelayAddress = relayAccount.publicKey,
+            relayAccountPublicKey = relayAccount.publicKey,
             topUpPools = topUpPools,
             targetAmount = targetAmount,
             expectedFee = expectedFee,
@@ -236,7 +236,7 @@ class FeeRelayerTopUpInteractor(
         feeRelayerProgramId: PublicKey,
         sourceToken: TokenInfo,
         userAuthorityAddress: PublicKey,
-        userRelayAddress: PublicKey,
+        relayAccountPublicKey: PublicKey,
         topUpPools: OrcaPoolsPair,
         targetAmount: BigInteger,
         expectedFee: BigInteger,
@@ -268,7 +268,7 @@ class FeeRelayerTopUpInteractor(
         if (needsCreateUserRelayAccount) {
             val transferInstruction = SystemProgram.transfer(
                 fromPublicKey = feePayerAddress.toPublicKey(),
-                toPublicKey = userRelayAddress,
+                toPublicKey = relayAccountPublicKey,
                 lamports = minimumRelayAccountBalance
             )
             instructions += transferInstruction
@@ -291,8 +291,7 @@ class FeeRelayerTopUpInteractor(
         )
 
         val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(userAuthorityAddress)
-        // TODO do we even need this val?
-        val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
+        val foundUserRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
         when (topUpSwap) {
             is SwapData.Direct -> {
                 accountCreationFee += minimumTokenAccountBalance
@@ -300,7 +299,7 @@ class FeeRelayerTopUpInteractor(
                 // top up
                 val topUpSwapInstruction = FeeRelayerProgram.topUpSwapInstruction(
                     feeRelayerProgramId = feeRelayerProgramId,
-                    userRelayAddress = userRelayAddress,
+                    userRelayAddress = foundUserRelayAddress,
                     userTemporarilyWSOLAddress = userTemporarilyWSOLAddress,
                     topUpSwap = topUpSwap,
                     userAuthorityAddress = userAuthorityAddress,
@@ -329,7 +328,7 @@ class FeeRelayerTopUpInteractor(
 
                 val topUpSwapInstruction = FeeRelayerProgram.topUpSwapInstruction(
                     feeRelayerProgramId = feeRelayerProgramId,
-                    userRelayAddress = userRelayAddress,
+                    userRelayAddress = foundUserRelayAddress,
                     userTemporarilyWSOLAddress = userTemporarilyWSOLAddress,
                     topUpSwap = topUpSwap,
                     userAuthorityAddress = userAuthorityAddress,

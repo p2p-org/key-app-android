@@ -82,6 +82,8 @@ class FileRepository(
     private fun ensurePdfFolderExists() = pdfFolder.mkdirs()
     private fun ensureMiscFolderExists() = miscFolder.mkdirs()
 
+    // PWN-3968
+    @Suppress("DEPRECATION")
     fun saveBitmapAsFile(bitmap: Bitmap, name: String? = null, toPublic: Boolean = false): File? {
         val fileName = name ?: Date().toString()
         val appName = context.getString(R.string.app_name)

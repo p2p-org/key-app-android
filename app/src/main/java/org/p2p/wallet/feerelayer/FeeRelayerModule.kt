@@ -28,7 +28,6 @@ object FeeRelayerModule : InjectionModule {
             getRetrofit(
                 baseUrl = baseUrl,
                 tag = "FeeRelayer",
-                resources = get(),
                 interceptor = FeeRelayerInterceptor(get())
             )
         }

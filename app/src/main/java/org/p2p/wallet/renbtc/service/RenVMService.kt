@@ -85,8 +85,8 @@ class RenVMService : Service(), CoroutineScope {
                     renBtcInteractor.startPolling(session)
                 } else {
                     renBtcInteractor.setSessionSate(RenBtcSession.Loading)
-                    val session = renBtcInteractor.generateSession()
-                    renBtcInteractor.startPolling(session)
+                    val renSession = renBtcInteractor.generateSession()
+                    renBtcInteractor.startPolling(renSession)
                 }
             } catch (e: Throwable) {
                 renBtcInteractor.setSessionSate(RenBtcSession.Error(e))

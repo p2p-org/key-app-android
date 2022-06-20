@@ -38,7 +38,6 @@ object SwapModule : InjectionModule {
             getRetrofit(
                 baseUrl = baseUrl,
                 tag = "p2pWeb",
-                resources = get(),
                 interceptor = null
             ).create(InternalWebApi::class.java)
         }
@@ -48,7 +47,6 @@ object SwapModule : InjectionModule {
             getRetrofit(
                 baseUrl = baseUrl,
                 tag = "Orca",
-                resources = get(),
                 interceptor = null
             ).create(OrcaApi::class.java)
         }

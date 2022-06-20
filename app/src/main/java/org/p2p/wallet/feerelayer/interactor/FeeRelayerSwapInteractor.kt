@@ -280,7 +280,6 @@ class FeeRelayerSwapInteractor(
                 val relaySwapInstruction = FeeRelayerProgram.createRelaySwapInstruction(
                     programId = feeRelayerProgramId,
                     transitiveSwap = swapData,
-                    userAuthorityAddressPubkey = userAuthorityAddress,
                     sourceAddressPubkey = userSourceTokenAccountAddress,
                     transitTokenAccount = transitTokenAccount,
                     destinationAddressPubkey = userDestinationTokenAccountAddress,
