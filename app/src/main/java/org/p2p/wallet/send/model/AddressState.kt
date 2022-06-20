@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class SearchAddress(
+data class AddressState(
     val address: String,
     val networkType: NetworkType = NetworkType.SOLANA
 ) : Parcelable
