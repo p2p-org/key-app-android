@@ -60,7 +60,7 @@ class HistoryFragment :
                 scrollListener.reset()
             }
             retryButton.setOnClickListener {
-                presenter.loadHistory()
+                presenter.refreshHistory()
             }
         }
         presenter.loadHistory()

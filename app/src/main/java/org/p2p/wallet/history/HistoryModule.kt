@@ -47,7 +47,8 @@ object HistoryModule : InjectionModule {
                 historyTransactionMapper = get(),
                 userInteractor = get(),
                 transactionsRemoteRepository = get(),
-                rpcSignatureRepository = get()
+                rpcSignatureRepository = get(),
+                serviceScope = get()
             )
         }
 
@@ -94,7 +95,7 @@ object HistoryModule : InjectionModule {
 
             TransactionDetailsRpcRepository(
                 rpcApi = api,
-                userInteractor = get()
+                transactionParsingContext = get()
             )
         } bind TransactionDetailsRemoteRepository::class
 

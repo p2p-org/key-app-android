@@ -45,6 +45,8 @@ class HistoryPresenter(
         isPagingEnded = false
         lastTransactionSignature = null
         refreshJob?.cancel()
+        transactions.clear()
+        pagingJob?.cancel()
 
         refreshJob = launch {
             view?.showRefreshing(isRefreshing = true)
@@ -79,9 +81,6 @@ class HistoryPresenter(
 
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
         try {
-            if (isRefresh) {
-                transactions.clear()
-            }
             val fetchedItems = historyInteractor.loadTransactions(isRefresh)
             transactions.addAll(fetchedItems)
             view?.showHistory(transactions)
