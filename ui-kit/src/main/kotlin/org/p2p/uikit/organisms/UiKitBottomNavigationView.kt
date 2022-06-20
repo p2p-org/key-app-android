@@ -1,11 +1,11 @@
 package org.p2p.uikit.organisms
 
+import androidx.core.content.ContextCompat
 import android.content.Context
 import android.util.AttributeSet
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import org.p2p.uikit.R
-import org.p2p.wallet.common.extensions.getDrawableCompat
 
 class UiKitBottomNavigationView @JvmOverloads constructor(
     context: Context,
@@ -25,7 +25,7 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
         minimumHeight = resources.getDimension(R.dimen.bottom_navigation_height).toInt()
 
         labelVisibilityMode = LABEL_VISIBILITY_LABELED
-        itemBackground = context.getDrawableCompat(R.drawable.shape_bottom_navigation_selected)
+        itemBackground = ContextCompat.getDrawable(context, R.drawable.shape_bottom_navigation_selected)
 
         NavigationView.OnNavigationItemSelectedListener { item ->
             val screenTab = when (item.itemId) {

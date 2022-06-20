@@ -4,7 +4,7 @@
         <layer-list>
             <item android:id="@+id/bottom_rectangle" android:gravity="bottom|center_horizontal">
                 <shape android:shape="rectangle">
-                    <size android:width="26dp" android:height="2dp" />
+                    <size android:width="35dp" android:height="2dp" />
                     <solid android:color="@color/night" />
                 </shape>
             </item>

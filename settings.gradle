@@ -2,4 +2,3 @@ include ':solanaj'
 include ':app'
 include ':ui-kit'
 rootProject.name = "P2P Wallet"
-include ':common'
