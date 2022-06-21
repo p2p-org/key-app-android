@@ -1,6 +1,5 @@
 package org.p2p.wallet.renbtc.interactor
 
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +24,6 @@ import java.nio.ByteBuffer
 
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val environmentManager: EnvironmentManager,
     private val rpcAmountRepository: RpcAmountRepository,
     private val renVMRepository: RenVMRepository,
     private val rpcSolanaInteractor: RpcSolanaInteractor,

@@ -15,6 +15,8 @@ public class AccountInfo extends RpcResultObject {
         private boolean executable;
         @SerializedName("lamports")
         private long lamports;
+        @SerializedName("mint")
+        private String mint;
         @SerializedName("owner")
         private String owner;
         @SerializedName("rentEpoch")
@@ -39,6 +41,10 @@ public class AccountInfo extends RpcResultObject {
 
         public long getRentEpoch() {
             return rentEpoch;
+        }
+
+        public String getMint() {
+            return mint;
         }
 
     }

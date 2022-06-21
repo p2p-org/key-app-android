@@ -5,23 +5,34 @@ import org.p2p.wallet.home.model.Token
 
 private const val QUERY_MIN_LENGTH = 2
 
-class SelectTokenPresenter(private val tokens: List<Token>) :
-    BasePresenter<SelectTokenContract.View>(),
-    SelectTokenContract.Presenter {
+class SelectTokenPresenter(
+    private val allTokens: List<Token>
+) : BasePresenter<SelectTokenContract.View>(), SelectTokenContract.Presenter {
 
     override fun load() {
-        view?.showTokens(tokens)
+        showTokens()
     }
 
     override fun search(searchText: String) {
         if (searchText.length < QUERY_MIN_LENGTH) {
-            view?.showTokens(tokens)
+            view?.setTokenNotFoundViewVisibility(isVisible = false)
+            showTokens()
             return
         }
 
-        val filteredItems = tokens.filter {
+        val filteredItems = allTokens.filter {
             it.tokenName.startsWith(searchText, ignoreCase = true) || it.tokenSymbol.startsWith(searchText)
         }
-        view?.showTokens(filteredItems)
+        view?.apply {
+            showTokens(filteredItems)
+            setTokenNotFoundViewVisibility(filteredItems.isEmpty())
+        }
+    }
+
+    private fun showTokens() {
+        view?.apply {
+            showTokens(allTokens)
+            setEmptyViewVisibility(isVisible = allTokens.isEmpty())
+        }
     }
 }

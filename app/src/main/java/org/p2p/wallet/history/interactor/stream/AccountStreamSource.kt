@@ -46,6 +46,7 @@ class AccountStreamSource(
 
     override fun reset() {
         lastFetchedSignature = null
+        isPagingEnded = false
         buffer.clear()
     }
 

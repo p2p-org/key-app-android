@@ -31,15 +31,15 @@ class SearchViewHolder(
         when (item) {
             is SearchResult.Full -> {
                 topTextView.text = item.username
-                bottomTextView.withTextOrGone(item.searchAddress.address.cutEnd())
+                bottomTextView.withTextOrGone(item.addressState.address.cutEnd())
                 bottomTextView.setTextColor(bottomTextView.context.getColor(R.color.backgroundDisabled))
             }
             is SearchResult.AddressOnly -> {
-                topTextView.text = item.searchAddress.address.cutEnd()
+                topTextView.text = item.addressState.address.cutEnd()
                 bottomTextView.isVisible = false
             }
             is SearchResult.EmptyBalance -> {
-                topTextView.text = item.searchAddress.address.cutEnd()
+                topTextView.text = item.addressState.address.cutEnd()
                 val caution = bottomTextView.context.getString(R.string.send_caution_empty_balance)
                 bottomTextView.withTextOrGone(caution)
                 val warningColor = bottomTextView.context.getColor(R.color.systemWarningMain)
