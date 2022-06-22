@@ -1,22 +1,61 @@
 package org.p2p.wallet.swap.model.orca
 
-data class SwapTotal(
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.formatUsd
+import java.math.BigDecimal
+
+class SwapTotal(
     val destinationAmount: String,
-    val total: String,
-    val totalUsd: String?,
-    val fee: String?,
-    val approxFeeUsd: String,
-    val receiveAtLeast: String,
-    val receiveAtLeastUsd: String?
+    private val fee: SwapFee?,
+    private val sourceToken: Token.Active,
+    private val destination: Token,
+    private val inputAmount: BigDecimal,
+    private val receiveAtLeastDecimals: BigDecimal
 ) {
 
-    val fullTotal: String
-        get() = if (approxTotalUsd != null) "$total $approxTotalUsd" else total
+    fun getFormattedTotal(split: Boolean): String {
+        val inputTotal = "${inputAmount.formatToken()} ${sourceToken.tokenSymbol}"
 
-    val approxTotalUsd: String? get() = totalUsd?.let { "(~$it)" }
+        /*
+        * Showing only input for the total field
+        * */
+        if (fee == null) {
+            return inputTotal
+        }
 
-    val fullFee: String?
-        get() = fee?.let { "$it $approxFeeUsd" }
+        /*
+         * If source is SOL then fee payer can be only SOL as well
+         * */
+        if (sourceToken.isSOL) {
+            return "${inputAmount + fee.feeAmountInSol} ${sourceToken.tokenSymbol}"
+        }
+
+        val feeSolTotal = "${fee.feeAmountInSol} ${fee.feePayerSymbol}"
+
+        /*
+         * Source token is definitely SPL
+         * Validating if user pays with SOL or SPL
+         * */
+        return if (sourceToken.tokenSymbol == fee.feePayerSymbol) {
+            "${inputAmount + fee.feeAmountInPayingToken} ${fee.feePayerSymbol}"
+        } else {
+            if (split) "$inputTotal \n$feeSolTotal" else "$inputTotal + $feeSolTotal"
+        }
+    }
+
+    val receiveAtLeast: String = "${receiveAtLeastDecimals.formatToken()} ${destination.tokenSymbol}"
+
+    val receiveAtLeastUsd: String?
+        get() {
+            val receiveAtLeastUsd = destination.usdRate?.let { receiveAtLeastDecimals.multiply(it) }
+            return receiveAtLeastUsd?.formatUsd()
+        }
+
+    val inputAmountUsd: BigDecimal?
+        get() = sourceToken.usdRate?.let { inputAmount.multiply(it) }
+
+    val approxTotalUsd: String? get() = inputAmountUsd?.let { "(~$it)" }
 
     val fullReceiveAtLeast: String
         get() = if (approxReceiveAtLeast != null) "$receiveAtLeast $approxReceiveAtLeast" else receiveAtLeast

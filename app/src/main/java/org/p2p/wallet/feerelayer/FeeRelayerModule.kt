@@ -28,7 +28,6 @@ object FeeRelayerModule : InjectionModule {
             getRetrofit(
                 baseUrl = baseUrl,
                 tag = "FeeRelayer",
-                resources = get(),
                 interceptor = FeeRelayerInterceptor(get())
             )
         }
@@ -46,11 +45,12 @@ object FeeRelayerModule : InjectionModule {
                 amountRepository = get(),
                 userInteractor = get(),
                 feeRelayerRepository = get(),
+                dispatchers = get(),
                 tokenKeyProvider = get()
             )
         }
 
-        factory { FeeRelayerInteractor(get(), get(), get(), get(), get(), get()) }
+        factory { FeeRelayerInteractor(get(), get(), get(), get(), get(), get(), get()) }
         factory { FeeRelayerTopUpInteractor(get(), get(), get(), get(), get(), get()) }
         factory { FeeRelayerInstructionsInteractor(get(), get(), get(), get()) }
         single { FeeRelayerSwapInteractor(get(), get(), get(), get(), get(), get(), get()) }

@@ -18,7 +18,7 @@ object OrcaConverter {
             programId = fromNetwork(response.programIds)
         )
 
-    fun fromNetwork(response: OrcaTokensResponse): OrcaToken =
+    private fun fromNetwork(response: OrcaTokensResponse): OrcaToken =
         OrcaToken(
             mint = response.mint,
             name = response.name,
@@ -26,7 +26,7 @@ object OrcaConverter {
             fetchPrice = response.fetchPrice,
         )
 
-    fun fromNetwork(response: OrcaAquafarmResponse): OrcaAquafarm =
+    private fun fromNetwork(response: OrcaAquafarmResponse): OrcaAquafarm =
         OrcaAquafarm(
             account = response.account,
             nonce = response.nonce,
@@ -40,7 +40,7 @@ object OrcaConverter {
             farmTokenMint = response.farmTokenMint
         )
 
-    fun fromNetwork(response: OrcaPoolResponse): OrcaPool =
+    private fun fromNetwork(response: OrcaPoolResponse): OrcaPool =
         OrcaPool(
             account = response.account.toPublicKey(),
             authority = response.authority.toPublicKey(),

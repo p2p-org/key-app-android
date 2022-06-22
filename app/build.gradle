@@ -185,6 +185,7 @@ android {
         viewBinding true
     }
     testOptions {
+        unitTests.all { useJUnitPlatform() }
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
         animationsDisabled = true
@@ -196,20 +197,19 @@ dependencies {
     implementation project(':solanaj')
     implementation project(':ui-kit')
 
-    def lifecycle_version = "2.1.0"
-
-    implementation "androidx.appcompat:appcompat:1.4.1"
+    implementation "androidx.appcompat:appcompat:1.4.2"
     implementation "androidx.biometric:biometric:1.1.0"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation "com.google.android.material:material:1.5.0"
+    implementation "com.google.android.material:material:1.6.1"
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation "androidx.browser:browser:1.4.0"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
-    def coroutinesVersion = '1.6.0'
+    def coroutinesVersion = '1.6.1'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
@@ -239,7 +239,7 @@ dependencies {
 
     implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
 
-    implementation 'com.amplitude:android-sdk:2.33.0'
+    implementation 'com.amplitude:android-sdk:2.35.3'
 
     def googleServicesUtilitiesVersion = "18.0.1"
     implementation "com.google.android.gms:play-services-base:$googleServicesUtilitiesVersion"
@@ -279,7 +279,7 @@ dependencies {
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'
     testImplementation 'androidx.test.ext:junit-ktx:1.1.3'
-    testImplementation "androidx.arch.core:core-testing:$lifecycle_version"
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
     // https://github.com/mockk/mockk
     testImplementation 'io.mockk:mockk:1.12.0'
     // https://mvnrepository.com/artifact/junit/junit
@@ -292,4 +292,13 @@ dependencies {
     testImplementation "io.insert-koin:koin-test:$koinVersion"
     // Koin for JUnit 4
     testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.8.2") {
+        because 'This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.'
+    }
+    def junitJupiterVersion = "5.8.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitJupiterVersion"
 }
