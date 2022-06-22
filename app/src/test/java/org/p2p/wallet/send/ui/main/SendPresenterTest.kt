@@ -1,6 +1,5 @@
 package org.p2p.wallet.send.ui.main
 
-import android.content.res.Resources
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
@@ -11,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
@@ -25,8 +25,8 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
+import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.send.model.SearchAddress
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.transaction.TransactionManager
@@ -78,7 +78,7 @@ class SendPresenterTest {
     lateinit var transactionManager: TransactionManager
 
     @MockK
-    lateinit var resources: Resources
+    lateinit var resourcesProvider: ResourcesProvider
 
     @MockK
     lateinit var dispatchers: CoroutineDispatchers
@@ -129,7 +129,7 @@ class SendPresenterTest {
         verify { view.showNetworkSelectionView(isVisible = false) }
 
         coVerifyOrder {
-            testObject.calculateRenBtcFeeIfNeeded(hideTotal = true)
+            testObject.calculateRenBtcFeeIfNeeded()
             testObject.calculateByMode(token)
             testObject.updateMaxButtonVisibility(token)
             sendAnalytics.logSendChangingToken(token.tokenSymbol)
@@ -165,14 +165,14 @@ class SendPresenterTest {
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
         val strategy = SELECT_FEE_PAYER
-        val result = SearchResult.AddressOnly(SearchAddress("Some address"))
+        val result = SearchResult.AddressOnly(AddressState("Some address"))
         val fee: FeeRelayerFee = mockk()
         every { dispatchers.ui } returns testDispatcher
         coEvery {
             sendInteractor.calculateFeesForFeeRelayer(
                 feePayerToken = feePayerToken,
                 token = splToken,
-                recipient = result.searchAddress.address
+                recipient = result.addressState.address
             )
         } returns fee
         every { fee.feeInPayingToken } returns BigInteger.valueOf(25000L)
@@ -183,7 +183,7 @@ class SendPresenterTest {
 
         // then
         coVerify {
-            sendInteractor.calculateFeesForFeeRelayer(splToken, feePayerToken, result.searchAddress.address)
+            sendInteractor.calculateFeesForFeeRelayer(splToken, feePayerToken, result.addressState.address)
         }
 
         verify(exactly = 0) { testObject.calculateTotal(any()) }
@@ -195,13 +195,13 @@ class SendPresenterTest {
         // given
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
-        val result = SearchResult.AddressOnly(SearchAddress("Some address"))
+        val result = SearchResult.AddressOnly(AddressState("Some address"))
         every { dispatchers.ui } returns testDispatcher
         coEvery {
             sendInteractor.calculateFeesForFeeRelayer(
                 feePayerToken = feePayerToken,
                 token = splToken,
-                recipient = result.searchAddress.address
+                recipient = result.addressState.address
             )
         } returns null
 
@@ -210,7 +210,7 @@ class SendPresenterTest {
 
         // then
         coVerify {
-            sendInteractor.calculateFeesForFeeRelayer(splToken, feePayerToken, result.searchAddress.address)
+            sendInteractor.calculateFeesForFeeRelayer(splToken, feePayerToken, result.addressState.address)
         }
 
         verify { testObject.calculateTotal(any()) }
