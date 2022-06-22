@@ -1,9 +1,11 @@
 package org.p2p.wallet.home.ui.main
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
@@ -33,7 +35,6 @@ import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
-import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 import kotlin.math.absoluteValue
 
@@ -50,13 +51,18 @@ class HomeFragment :
 
     override val presenter: HomeContract.Presenter by inject()
 
-    private val binding: FragmentHomeBinding by viewBinding()
+    private lateinit var binding: FragmentHomeBinding
 
     private val mainAdapter: TokenAdapter by unsafeLazy {
         TokenAdapter(this)
     }
 
     private val browseAnalytics: BrowseAnalytics by inject()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

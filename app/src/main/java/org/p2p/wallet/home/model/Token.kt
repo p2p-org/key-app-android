@@ -12,7 +12,6 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.asUsd
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
@@ -74,7 +73,7 @@ sealed class Token constructor(
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
-        fun getFormattedUsdTotal(): String? = totalInUsd?.scaleShort()?.asUsd()
+        fun getFormattedUsdTotal(): String? = totalInUsd?.asUsd()
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {

@@ -47,7 +47,7 @@ class RenTransactionsAdapter(
                 titleTextView.text = item.getTransactionTitle(itemView.context)
                 subTitleTextView.text = item.getLatestStatus()?.getStringResId(itemView.context)
                 val color = if (item.getLatestStatus() is RenTransactionStatus.SuccessfullyMinted) {
-                    itemView.context.getColor(R.color.colorGreen)
+                    itemView.context.getColor(R.color.color_green)
                 } else {
                     itemView.context.getColor(R.color.backgroundDisabled)
                 }

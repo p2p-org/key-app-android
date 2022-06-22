@@ -6,15 +6,17 @@ import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
@@ -22,11 +24,12 @@ import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class MainFragment : BaseFragment(R.layout.fragment_main) {
+class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
 
     private val binding: FragmentMainBinding by viewBinding()
     private val fragments = SparseArrayCompat<Fragment>()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val deeplinksManager: AppDeeplinksManager by inject()
 
     companion object {
         fun create(): MainFragment = MainFragment()
@@ -37,11 +40,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.bottomNavigation.selectedItemId != R.id.itemHome) {
                 navigate(R.id.itemHome)
-                binding.bottomNavigation.menu[0].isChecked = true
             } else {
                 requireActivity().finish()
             }
         }
+        deeplinksManager.mainTabsSwitcher = this
         with(binding) {
             bottomNavigation.setOnItemSelectedListener {
                 if (it.itemId == R.id.itemFeedback) {
@@ -63,11 +66,17 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                     is SettingsFragment -> fragments.put(R.id.itemSettings, fragment)
                 }
             }
+            binding.bottomNavigation.selectedItemId = R.id.itemHome
         }
-        binding.bottomNavigation.selectedItemId = R.id.itemHome
+        deeplinksManager.handleSavedDeeplinkIntent()
     }
 
-    private fun navigate(itemId: Int) {
+    override fun onDestroyView() {
+        deeplinksManager.mainTabsSwitcher = null
+        super.onDestroyView()
+    }
+
+    override fun navigate(itemId: Int) {
         if (!fragments.containsKey(itemId)) {
             val fragment = when (Tabs.fromTabId(itemId)) {
                 Tabs.HOME -> {
@@ -118,11 +127,27 @@ class MainFragment : BaseFragment(R.layout.fragment_main) {
                 }
             }
         }
+        if (binding.bottomNavigation.selectedItemId != itemId) {
+            binding.bottomNavigation.menu.findItem(itemId).isChecked = true
+        } else {
+            checkAndDismissLastBottomSheet()
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         showUI()
+    }
+
+    private fun checkAndDismissLastBottomSheet() {
+        childFragmentManager.apply {
+            if (fragments.size > 2) {
+                val lastScreen = fragments.lastOrNull()
+                if (lastScreen is BottomSheetDialogFragment) {
+                    lastScreen.dismissAllowingStateLoss()
+                }
+            }
+        }
     }
 
     private fun showUI() {

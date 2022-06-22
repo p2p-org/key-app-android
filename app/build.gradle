@@ -57,7 +57,8 @@ String getVersionBuild() {
 }
 
 String getBuildAppFileName() {
-    """p2p_wallet_${getVersionBuild()}_${VERSION_NAME}_${taskNumber()}"""
+    def taskNumberWithoutSlash = taskNumber().replace("/", "-")
+    "p2p_wallet_${getVersionBuild()}_${VERSION_NAME}_${taskNumberWithoutSlash}"
 }
 
 android {
@@ -193,7 +194,8 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':solanaj')
+    implementation project(':solanaj')
+    implementation project(':ui-kit')
 
     implementation "androidx.appcompat:appcompat:1.4.2"
     implementation "androidx.biometric:biometric:1.1.0"

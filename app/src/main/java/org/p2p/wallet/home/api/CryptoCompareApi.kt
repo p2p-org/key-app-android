@@ -4,7 +4,12 @@ import com.google.gson.JsonObject
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface CompareApi {
+interface CryptoCompareApi {
+    @GET("data/price")
+    suspend fun getPrice(
+        @Query("fsym") tokenFrom: String,
+        @Query("tsyms") tokenTo: String
+    ): JsonObject
 
     @GET("data/pricemulti")
     suspend fun getMultiPrice(

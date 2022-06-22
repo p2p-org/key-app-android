@@ -36,7 +36,6 @@ object SwapModule : InjectionModule {
             getRetrofit(
                 baseUrl = baseUrl,
                 tag = "Orca",
-                resources = get(),
                 interceptor = null
             ).create(OrcaApi::class.java)
         }

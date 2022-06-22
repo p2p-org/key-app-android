@@ -94,4 +94,5 @@ fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
 
 fun Int?.orZero(): Int = this ?: 0
 
-private fun BigDecimal.lessThenMinUsd() = isLessThan(USD_MIN_VALUE.toBigDecimal())
+// value is in (0..0.01)
+private fun BigDecimal.lessThenMinUsd() = !isZero() && isLessThan(USD_MIN_VALUE.toBigDecimal())

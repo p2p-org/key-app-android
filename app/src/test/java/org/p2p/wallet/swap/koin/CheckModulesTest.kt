@@ -36,6 +36,7 @@ import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
+import org.p2p.wallet.history.HistoryStrategyModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
@@ -55,6 +56,7 @@ import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
@@ -159,11 +161,13 @@ class CheckModulesTest : KoinTest {
         RootModule.create(),
         BackupModule.create(),
         UserModule.create(),
+        TokenPricesModule.create(),
         HomeModule.create(),
         RenBtcModule.create(),
         NetworkModule.create(),
         ScanQrModule.create(),
         HistoryModule.create(),
+        HistoryStrategyModule.create(),
         SettingsModule.create(),
         DebugSettingsModule.create(),
         SwapModule.create(),

@@ -86,7 +86,6 @@ class UserInteractor(
             val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
             newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
         }
-
         mainLocalRepository.updateTokens(newTokensToCache)
     }
 

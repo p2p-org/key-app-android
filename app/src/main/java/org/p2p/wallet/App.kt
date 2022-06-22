@@ -21,6 +21,7 @@ import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
+import org.p2p.wallet.history.HistoryStrategyModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
@@ -39,6 +40,7 @@ import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
 
@@ -95,6 +97,7 @@ class App : Application() {
                     PushNotificationsModule.create(),
                     BackupModule.create(),
                     UserModule.create(),
+                    TokenPricesModule.create(),
                     HomeModule.create(),
                     RenBtcModule.create(),
                     ScanQrModule.create(),
@@ -102,6 +105,7 @@ class App : Application() {
                     SettingsModule.create(),
                     DebugSettingsModule.create(),
                     SwapModule.create(),
+                    HistoryStrategyModule.create()
                 )
             )
         }

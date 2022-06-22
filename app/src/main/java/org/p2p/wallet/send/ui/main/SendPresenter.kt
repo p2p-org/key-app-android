@@ -1,9 +1,9 @@
 package org.p2p.wallet.send.ui.main
 
-import android.content.res.Resources
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -20,15 +20,16 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
+import org.p2p.wallet.renbtc.utils.BitcoinAddressValidator
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.model.AddressValidation
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
+import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.send.model.SearchAddress
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendButton
 import org.p2p.wallet.send.model.SendConfirmData
@@ -78,7 +79,7 @@ class SendPresenter(
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val sendAnalytics: SendAnalytics,
     private val transactionManager: TransactionManager,
-    private val resources: Resources,
+    private val resourcesProvider: ResourcesProvider,
     private val dispatchers: CoroutineDispatchers
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -126,17 +127,21 @@ class SendPresenter(
     override fun setSourceToken(newToken: Token.Active) {
         token = newToken
         view?.showDetailsError(null)
-        if (newToken.isRenBTC) {
-            view?.showNetworkSelectionView(true)
-        } else {
-            /* reset to default network and updating UI if source is not renBTC */
-            state.networkType = NetworkType.SOLANA
-            view?.showNetworkDestination(state.networkType)
-            view?.showNetworkSelectionView(false)
+        if (!newToken.isRenBTC) {
+            /*
+           * if source is not renBTC, the user cannot select the network,
+           * therefore switching to Solana network automatically
+           * */
+            selectNetworkType(NetworkType.SOLANA)
         }
 
-        calculateRenBtcFeeIfNeeded(hideTotal = true)
+        view?.showNetworkSelectionView(isVisible = newToken.isRenBTC)
+        val validatedResult = validateResultByNetwork(result = state.searchResult, updateNetwork = newToken.isRenBTC)
+        handleTargetResult(validatedResult)
+
+        calculateRenBtcFeeIfNeeded()
         calculateByMode(newToken)
+        checkAddress(state.searchResult?.addressState?.address)
         updateMaxButtonVisibility(newToken)
         sendAnalytics.logSendChangingToken(newToken.tokenSymbol)
 
@@ -144,34 +149,57 @@ class SendPresenter(
     }
 
     override fun setTargetResult(result: SearchResult?) {
-        state.searchResult = result
+        val validatedResult = validateResultByNetwork(result = result, updateNetwork = true)
 
-        result?.let {
-            selectNetworkType(result.searchAddress.networkType)
-            if (state.networkType != result.searchAddress.networkType) {
-                view?.showWrongAddressTarget(result.searchAddress.address)
-                return
-            }
-        }
+        state.searchResult = validatedResult
 
-        when (result) {
-            is SearchResult.Full -> handleFullResult(result)
-            is SearchResult.AddressOnly -> handleAddressOnlyResult(result)
-            is SearchResult.EmptyBalance -> handleEmptyBalanceResult(result)
-            is SearchResult.Wrong -> handleWrongResult(result)
-            else -> handleIdleTarget()
-        }
+        validateResultByNetwork(result = result, updateNetwork = true)
+
+        handleTargetResult(validatedResult)
 
         val sourceToken = token ?: return
         calculateByMode(sourceToken)
     }
 
+    private fun handleTargetResult(validatedResult: SearchResult?) {
+        when (validatedResult) {
+            is SearchResult.Full -> handleFullResult(validatedResult)
+            is SearchResult.AddressOnly -> handleAddressOnlyResult(validatedResult)
+            is SearchResult.EmptyBalance -> handleEmptyBalanceResult(validatedResult)
+            is SearchResult.Wrong -> handleWrongResult(validatedResult)
+            else -> handleIdleTarget()
+        }
+    }
+
+    private fun validateResultByNetwork(result: SearchResult?, updateNetwork: Boolean): SearchResult? {
+        val addressState = result?.addressState ?: return null
+
+        if (updateNetwork) selectNetworkType(addressState.networkType)
+
+        val address = addressState.address
+
+        return when (state.networkType) {
+            NetworkType.BITCOIN -> {
+                val isValid = BitcoinAddressValidator.isValid(address)
+                if (isValid) {
+                    result
+                } else {
+                    SearchResult.Wrong(AddressState(address, state.networkType))
+                }
+            }
+            NetworkType.SOLANA -> {
+                val isValid = PublicKeyValidator.isValid(address)
+                if (isValid) {
+                    result
+                } else {
+                    SearchResult.Wrong(AddressState(address))
+                }
+            }
+        }
+    }
+
     private fun selectNetworkType(networkType: NetworkType) {
-        if (!token.isRenBTC) return
-
-        this.state.networkType = networkType
-        calculateRenBtcFeeIfNeeded()
-
+        state.networkType = networkType
         view?.showNetworkDestination(networkType)
     }
 
@@ -215,15 +243,14 @@ class SendPresenter(
     }
 
     override fun setNetworkDestination(networkType: NetworkType) {
-        this.state.networkType = networkType
-        view?.showNetworkDestination(networkType)
+        selectNetworkType(networkType)
         validateSelectedNetwork(networkType)
-        calculateRenBtcFeeIfNeeded(hideTotal = true)
+        calculateRenBtcFeeIfNeeded()
     }
 
     override fun send() {
         val token = token ?: error("Token cannot be null!")
-        val address = state.searchResult?.searchAddress?.address ?: error("Target address cannot be null!")
+        val address = state.searchResult?.addressState?.address ?: error("Target address cannot be null!")
 
         sendAnalytics.logSendStarted(state.networkType, state.tokenAmount, token, state.sendFee, state.usdAmount)
 
@@ -235,7 +262,7 @@ class SendPresenter(
 
     override fun sendOrConfirm() {
         val token = token ?: error("Token cannot be null!")
-        val address = state.searchResult?.searchAddress?.address ?: error("Target address cannot be null!")
+        val address = state.searchResult?.addressState?.address ?: error("Target address cannot be null!")
 
         sendAnalytics.logUserConfirmedSend(state.networkType, state.tokenAmount, token, state.sendFee, state.usdAmount)
 
@@ -286,7 +313,7 @@ class SendPresenter(
 
         view?.showInputValue(totalAvailable, forced = false)
 
-        val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
+        val message = resourcesProvider.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showSuccessSnackBar(message)
 
         state.inputAmount = totalAvailable.toString()
@@ -368,31 +395,32 @@ class SendPresenter(
     }
 
     private fun validateSelectedNetwork(networkType: NetworkType) {
-        val target = state.searchResult ?: return
-        if (target.searchAddress.networkType != networkType) {
-            view?.showWrongAddressTarget(target.searchAddress.address)
-        } else {
-            view?.showAddressOnlyTarget(target.searchAddress.address)
+        val target = state.searchResult
+        if (target == null || target.addressState.networkType == networkType) {
+            setTargetResult(target)
+            return
         }
+
+        view?.showWrongAddressTarget(target.addressState.address)
     }
 
     private fun handleFullResult(result: SearchResult.Full) {
-        view?.showFullTarget(result.searchAddress.address, result.username)
-        checkAddress(result.searchAddress.address)
+        view?.showFullTarget(result.addressState.address, result.username)
+        checkAddress(result.addressState.address)
     }
 
     private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
-        view?.showAddressOnlyTarget(result.searchAddress.address)
-        checkAddress(result.searchAddress.address)
+        view?.showAddressOnlyTarget(result.addressState.address)
+        checkAddress(result.addressState.address)
     }
 
     private fun handleEmptyBalanceResult(result: SearchResult.EmptyBalance) {
-        view?.showEmptyBalanceTarget(result.searchAddress.address.cutEnd())
-        checkAddress(result.searchAddress.address)
+        view?.showEmptyBalanceTarget(result.addressState.address.cutEnd())
+        checkAddress(result.addressState.address)
     }
 
     private fun handleWrongResult(result: SearchResult.Wrong) {
-        view?.showWrongAddressTarget(result.searchAddress.address.cutEnd())
+        view?.showWrongAddressTarget(result.addressState.address.cutEnd())
         view?.hideAccountFeeView()
     }
 
@@ -482,7 +510,7 @@ class SendPresenter(
                 Timber.e(e, "Sending was cancelled")
             } catch (serverError: ServerException) {
                 val state = TransactionState.Error(
-                    serverError.getErrorMessage(resources).orEmpty()
+                    serverError.getErrorMessage(resourcesProvider.resources).orEmpty()
                 )
                 transactionManager.emitTransactionState(state)
             } catch (e: Throwable) {
@@ -527,7 +555,7 @@ class SendPresenter(
             tokenData = TokenConverter.toTokenData(token!!),
             totalInUsd = state.usdAmount,
             total = state.tokenAmount,
-            destination = state.searchResult!!.searchAddress.address,
+            destination = state.searchResult!!.addressState.address,
             fee = BigInteger.ZERO,
             status = TransactionStatus.PENDING
         )
@@ -589,20 +617,21 @@ class SendPresenter(
         view?.showTotal(data)
     }
 
-    internal fun calculateRenBtcFeeIfNeeded(hideTotal: Boolean = false) {
+    internal fun calculateRenBtcFeeIfNeeded() {
         if (state.networkType == NetworkType.SOLANA) {
-            if (hideTotal) view?.showTotal(null)
+            view?.showTotal(null)
             return
         }
 
         if (feeJob?.isActive == true) return
-        val sourceToken = token ?: return
-        view?.hideAccountFeeView()
 
         launch(dispatchers.ui) {
+            val solToken = userInteractor.getUserTokens().find { it.isSOL } ?: return@launch
+            view?.hideAccountFeeView()
+
             val fee = burnBtcInteractor.getBurnFee()
-            calculateTotal(SendFee.RenBtcFee(sourceToken, fee))
-        }
+            calculateTotal(SendFee.RenBtcFee(solToken, fee))
+        }.also { feeJob = it }
     }
 
     /**
@@ -642,7 +671,7 @@ class SendPresenter(
         feePayerToken: Token.Active,
         result: SearchResult?
     ): Pair<BigInteger, BigInteger>? {
-        val recipient = result?.searchAddress?.address ?: return null
+        val recipient = result?.addressState?.address ?: return null
 
         val fees = try {
             sendInteractor.calculateFeesForFeeRelayer(
@@ -806,10 +835,14 @@ class SendPresenter(
     }
 
     private fun setBitcoinTargetResult(address: String) {
-        if (!token.isRenBTC) {
-            view?.showWrongAddressTarget(address)
+        if (token.isRenBTC) {
+            val addressState = AddressState(address, NetworkType.BITCOIN)
+            val result = SearchResult.AddressOnly(addressState)
+            setTargetResult(result)
+
+            calculateRenBtcFeeIfNeeded()
         } else {
-            setTargetResult(SearchResult.AddressOnly(SearchAddress(address, NetworkType.BITCOIN)))
+            view?.showWrongAddressTarget(address)
         }
     }
 
@@ -832,6 +865,7 @@ class SendPresenter(
             searchResult = state.searchResult,
             tokenAmount = state.tokenAmount,
             sendFee = sendFee,
+            currentNetworkType = state.networkType,
             minRentExemption = state.minRentExemption
         )
 

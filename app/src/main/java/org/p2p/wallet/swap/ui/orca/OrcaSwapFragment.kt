@@ -41,7 +41,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
 import java.math.BigDecimal
 
 const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
@@ -114,9 +113,15 @@ class OrcaSwapFragment :
             }
             return@setOnMenuItemClickListener false
         }
+
         sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
+        sourceTextView.setOnClickListener { presenter.loadTokensForSourceSelection() }
+        sourceDownImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
+
         destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
         destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+        destinationDownImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
+
         availableTextView.setOnClickListener { presenter.fillMaxAmount() }
         maxTextView.setOnClickListener { presenter.fillMaxAmount() }
 
@@ -219,7 +224,6 @@ class OrcaSwapFragment :
     }
 
     override fun showFeePayerToken(feePayerTokenSymbol: String) {
-        Timber.d("### showFeePayerToken $feePayerTokenSymbol")
         binding.swapDetails.showFeePayerToken(feePayerTokenSymbol)
     }
 

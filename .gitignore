@@ -43,6 +43,9 @@ captures/
 # SSL cert
 /app/src/main/res/raw/cert.pem
 
+# Google-services json
+/app/google-services.json
+
 # Intellij
 *.iml
 .idea/*
