@@ -22,7 +22,7 @@ object UserModule : InjectionModule {
             getRetrofit(
                 baseUrl = androidContext().getString(R.string.solanaTokensBaseUrl),
                 interceptor = null,
-                resources = get()
+                tag = null
             )
                 .create(SolanaApi::class.java)
         }

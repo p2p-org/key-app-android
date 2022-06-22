@@ -1,6 +1,5 @@
 package org.p2p.wallet.infrastructure.network
 
-import android.content.res.Resources
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -58,7 +57,6 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = moonPayApiUrl,
                 tag = "Moonpay",
-                resources = get(),
                 interceptor = MoonpayErrorInterceptor(get())
             )
         }
@@ -69,7 +67,6 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = rpcApiUrl,
                 tag = "Rpc",
-                resources = get(),
                 interceptor = RpcInterceptor(get(), get())
             )
         }
@@ -79,7 +76,6 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = rpcApiUrl,
                 tag = "RpcSolana",
-                resources = get(),
                 interceptor = RpcSolanaInterceptor(get())
             )
         }
@@ -89,7 +85,6 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = endpoint,
                 tag = "NotificationService",
-                resources = get(),
                 interceptor = null
             )
         }
@@ -97,14 +92,13 @@ object NetworkModule : InjectionModule {
 
     fun Scope.getRetrofit(
         baseUrl: String,
-        tag: String = "OkHttpClient",
-        resources: Resources,
+        tag: String? = "OkHttpClient",
         interceptor: Interceptor?
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create(get()))
-            .client(getClient(tag, resources, interceptor))
+            .client(getClient(tag, interceptor))
             .build()
     }
 
@@ -114,7 +108,7 @@ object NetworkModule : InjectionModule {
         }
     }
 
-    private fun Scope.getClient(tag: String, resources: Resources, interceptor: Interceptor? = null): OkHttpClient {
+    private fun Scope.getClient(tag: String?, interceptor: Interceptor? = null): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -129,7 +123,7 @@ object NetworkModule : InjectionModule {
                     addInterceptor(interceptor)
                 }
 
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
                     addInterceptor(httpLoggingInterceptor(tag))
                 }
             }

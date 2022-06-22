@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.interactor.orca
 
-import kotlinx.coroutines.Dispatchers
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.swap.model.orca.OrcaPools
 import org.p2p.wallet.swap.model.orca.OrcaRoute
@@ -11,7 +11,8 @@ import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import timber.log.Timber
 
 class OrcaInfoInteractor(
-    private val orcaRepository: OrcaSwapRepository
+    private val orcaRepository: OrcaSwapRepository,
+    private val dispatchers: CoroutineDispatchers
 ) {
 
     private var info: OrcaSwapInfo? = null
@@ -19,7 +20,7 @@ class OrcaInfoInteractor(
     fun getInfo(): OrcaSwapInfo? = info
 
     // Prepare all needed infos for swapping
-    suspend fun load() = withContext(Dispatchers.IO) {
+    suspend fun load() = withContext(dispatchers.io) {
         if (info != null) return@withContext
 
         val configs = orcaRepository.loadOrcaConfigs()
