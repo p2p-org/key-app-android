@@ -236,6 +236,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
+    implementation 'com.google.firebase:firebase-config'
 
     implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
 

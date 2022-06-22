@@ -1,6 +1,7 @@
 package org.p2p.wallet.utils
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.p2p.wallet.R
 
 fun <R> unsafeLazy(initializer: () -> R): Lazy<R> = lazy(LazyThreadSafetyMode.NONE, initializer)
@@ -19,7 +20,13 @@ inline fun <E> List<E>.ifNotEmpty(action: (originalList: List<E>) -> Unit): List
     return this
 }
 
-inline fun <reified Type> Gson.fromJsonReified(json: String): Type = fromJson(json, Type::class.java)
+inline fun <reified Type> Gson.fromJsonReified(json: String): Type {
+    return if (Type::class is List<*>) {
+        fromJson(json, object : TypeToken<Type>() {}.type)
+    } else {
+        fromJson(json, Type::class.java)
+    }
+}
 
 fun Result<*>.invokeAndForget() {
     getOrNull()

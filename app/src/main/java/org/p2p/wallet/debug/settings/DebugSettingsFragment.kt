@@ -7,7 +7,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
-import org.p2p.wallet.debug.featuretoggles.FeatureTogglesFragment
+import org.p2p.wallet.debug.feature_toggles.FeatureTogglesFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debugdrawer.CustomLogDialog
 import org.p2p.wallet.settings.model.SettingsRow

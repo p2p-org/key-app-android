@@ -8,6 +8,7 @@ private const val KEY_DEV_NET_ENABLED = "KEY_DEV_NET_ENABLED"
 private const val KEY_SSL_PINNING_ENABLED = "KEY_SSL_PINNING_ENABLED"
 
 private const val KEY_COIN_GECKO_ENABLED = "KEY_COIN_GECKO_ENABLED"
+private const val KEY_DEBUG_FEATURE_TOGGLES_ENABLED = "KEY_DEBUG_FEATURE_TOGGLES_ENABLED"
 
 class AppFeatureFlags(prefs: SharedPreferences) {
     var isPollingEnabled: Boolean by BooleanPreference(
@@ -21,5 +22,12 @@ class AppFeatureFlags(prefs: SharedPreferences) {
     )
     var useCoinGeckoForPrices: Boolean by BooleanPreference(
         prefs, KEY_COIN_GECKO_ENABLED, false
+    )
+
+    /**
+     * Allows to override values from FirebaseRemoteConfig
+     */
+    var isDebugRemoteConfigEnabled: Boolean by BooleanPreference(
+        prefs, KEY_DEBUG_FEATURE_TOGGLES_ENABLED, false
     )
 }

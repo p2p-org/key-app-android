@@ -1,10 +1,9 @@
 package org.p2p.wallet
 
+import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
-import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -17,6 +16,8 @@ import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.crashlytics.CrashLoggingService
 import org.p2p.wallet.common.crashlytics.TimberCrashTree
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
+import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConfig
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.feerelayer.FeeRelayerModule
@@ -41,14 +42,17 @@ import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
+import org.p2p.wallet.utils.NoOp
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class App : Application() {
 
     private val crashLoggingService: CrashLoggingService by inject()
     private val appScope: AppScope by inject()
     private val pushTokenRepository: PushTokenRepository by inject()
+    private val appFirebaseRemoteConfig: AppFirebaseRemoteConfig by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -70,6 +74,8 @@ class App : Application() {
         if (BuildConfig.DEBUG) {
             logFirebaseDevicePushToken()
         }
+
+        appFirebaseRemoteConfig.init(onRemoteConfigInitialized = { NoOp })
     }
 
     private fun setupKoin() {
@@ -90,6 +96,7 @@ class App : Application() {
                     TransactionModule.create(),
                     AnalyticsModule.create(),
                     AppModule.create(restartAction = ::restart),
+                    FeatureTogglesModule.create(),
 
                     // feature screens
                     AuthModule.create(),

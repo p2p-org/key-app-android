@@ -1,23 +1,19 @@
 package org.p2p.wallet.swap.koin
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -33,6 +29,7 @@ import org.p2p.solanaj.rpc.Environment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
+import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
@@ -61,6 +58,11 @@ import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -143,9 +145,10 @@ class CheckModulesTest : KoinTest {
     }
 
     private fun mockFirebase() {
-        mockkStatic(FirebaseApp::class, FirebaseCrashlytics::class)
+        mockkStatic(FirebaseApp::class, FirebaseCrashlytics::class, FirebaseRemoteConfig::class)
         every { FirebaseApp.getInstance() } returns mockk(relaxed = true)
         every { FirebaseCrashlytics.getInstance() } returns mockk(relaxed = true)
+        every { FirebaseRemoteConfig.getInstance() } returns mockk(relaxed = true)
 
         mockkStatic(Cipher::class)
         every { Cipher.getInstance(any()) } returns mockk(relaxed = true)
@@ -177,7 +180,8 @@ class CheckModulesTest : KoinTest {
         PushNotificationsModule.create(),
         TransactionModule.create(),
         AnalyticsModule.create(),
-        AppModule.create(restartAction = {})
+        AppModule.create(restartAction = {}),
+        FeatureTogglesModule.create()
     )
 
     private fun createEmptyActiveToken(): Token.Active {

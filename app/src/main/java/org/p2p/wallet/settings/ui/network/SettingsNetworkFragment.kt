@@ -27,7 +27,7 @@ class SettingsNetworkFragment :
     SettingsNetworkContract.View {
 
     companion object {
-        fun create(requestKey: String, resultKey: String) = SettingsNetworkFragment().withArgs(
+        fun create(requestKey: String, resultKey: String): SettingsNetworkFragment = SettingsNetworkFragment().withArgs(
             EXTRA_REQUEST_KEY to requestKey,
             EXTRA_RESULT_KEY to resultKey
         )
