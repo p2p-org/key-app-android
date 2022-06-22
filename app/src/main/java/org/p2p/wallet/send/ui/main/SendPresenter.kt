@@ -153,8 +153,6 @@ class SendPresenter(
 
         state.searchResult = validatedResult
 
-        validateResultByNetwork(result = result, updateNetwork = true)
-
         handleTargetResult(validatedResult)
 
         val sourceToken = token ?: return
