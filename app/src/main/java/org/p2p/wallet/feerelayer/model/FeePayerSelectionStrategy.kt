@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.model
+package org.p2p.wallet.feerelayer.model
 
 /**
  * Selection strategy limits our action when [FeePayerState] is calculated

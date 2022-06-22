@@ -12,12 +12,12 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -82,14 +82,12 @@ class SendFragment :
             EXTRA_ADDRESS to address
         )
 
-        fun create(initialToken: Token): SendFragment = SendFragment().withArgs(
+        fun create(initialToken: Token.Active): SendFragment = SendFragment().withArgs(
             EXTRA_TOKEN to initialToken
         )
     }
 
-    override val presenter: SendContract.Presenter by inject {
-        parametersOf(token)
-    }
+    override val presenter: SendContract.Presenter by inject()
     private val glideManager: GlideManager by inject()
 
     private val binding: FragmentSendBinding by viewBinding()
@@ -97,7 +95,12 @@ class SendFragment :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val address: String? by args(EXTRA_ADDRESS)
-    private val token: Token? by args(EXTRA_TOKEN)
+    private val token: Token.Active? by args(EXTRA_TOKEN)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        token?.let { presenter.setInitialToken(it) }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -434,9 +437,13 @@ class SendFragment :
         binding.sendDetailsView.showTotal(data)
     }
 
+    override fun showDetailsError(@StringRes errorTextRes: Int?) {
+        binding.sendDetailsView.showError(errorTextRes)
+    }
+
     override fun showInputValue(value: BigDecimal, forced: Boolean) {
         with(binding.amountEditText) {
-            val textValue = "$value"
+            val textValue = value.toPlainString()
             if (forced) {
                 AmountFractionTextWatcher.uninstallFrom(this)
                 setText(textValue)
@@ -477,9 +484,9 @@ class SendFragment :
         binding.progressView.isVisible = isLoading
     }
 
-    override fun setAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
-        setTextColor(getColor(availableColor))
-        setTextDrawableColor(availableColor)
+    override fun setTotalAmountTextColor(@ColorRes textColor: Int) = with(binding.availableTextView) {
+        setTextColor(getColor(textColor))
+        setTextDrawableColor(textColor)
     }
 
     override fun showAvailableValue(available: BigDecimal, symbol: String) {

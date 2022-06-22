@@ -66,7 +66,7 @@
         app:shimmer_base_color="@color/backgroundAppStroke"
         app:shimmer_highlight_alpha="0"
         app:shimmer_highlight_color="@color/backgroundAppStroke"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

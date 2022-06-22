@@ -2,42 +2,32 @@ package org.p2p.wallet.swap.interactor.orca
 
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
-import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
+import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
-import org.p2p.wallet.swap.model.orca.SwapFee
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.toPublicKey
-import org.p2p.wallet.utils.toUsd
-import java.math.BigDecimal
+import org.p2p.wallet.utils.isZero
 import java.math.BigInteger
 
 class OrcaSwapInteractor(
     private val feeRelayerSwapInteractor: FeeRelayerSwapInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val orcaRouteInteractor: OrcaRouteInteractor,
+    private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
-    private val orcaPoolInteractor: OrcaPoolInteractor,
-    private val rpcAmountRepository: RpcAmountRepository,
     private val orcaNativeSwapInteractor: OrcaNativeSwapInteractor,
-    private val environmentManager: EnvironmentManager,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val environmentManager: EnvironmentManager
 ) {
 
     /*
@@ -62,6 +52,10 @@ class OrcaSwapInteractor(
         if (newToken.publicKey.equals(feePayerToken)) return
 
         feePayerToken = newToken
+    }
+
+    fun switchFeePayerToSol(solToken: Token.Active?) {
+        solToken?.let { setFeePayerToken(it) }
     }
 
     suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit {
@@ -155,113 +149,36 @@ class OrcaSwapInteractor(
         return OrcaSwapResult.Finished(transactionId, destinationAddress.orEmpty())
     }
 
-    suspend fun calculateFeeAndNeededTopUpAmountForSwapping(
+    // Fees calculator
+    suspend fun calculateFeesForFeeRelayer(
+        feePayerToken: Token.Active,
         sourceToken: Token.Active,
         destination: Token
-    ): SwapFee {
-        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-        val freeTransactionLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val fee = feeRelayerSwapInteractor.calculateSwappingNetworkFees(
+    ): FeeRelayerSwapFee? {
+        val expectedFee = feeRelayerSwapInteractor.calculateSwappingNetworkFees(
             sourceTokenMint = sourceToken.mintAddress,
             destinationTokenMint = destination.mintAddress,
             destinationAddress = destination.publicKey
         )
 
-        val accountCreationToken = if (destination is Token.Other) destination.tokenSymbol else SOL_SYMBOL
-        val accountCreationFee = if (feePayerToken.isSOL) {
-            fee.total.fromLamports(feePayerToken.decimals)
-        } else {
-            getFeesInPayingToken(fee.total).fromLamports(feePayerToken.decimals)
-        }
-            .scaleMedium()
-        val accountCreationFeeUsd = accountCreationFee.toUsd(feePayerToken.usdRate)
+        val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
 
+        if (fees.total.isZero()) return null
+
+        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
+        val freeTransactionLimits = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val transactionNetworkFee = BigInteger.valueOf(2) * relayInfo.lamportsPerSignature
         val isFreeTransactionAvailable = freeTransactionLimits.isFreeTransactionFeeAvailable(transactionNetworkFee)
 
-        val transactionFee = transactionNetworkFee.fromLamports(feePayerToken.decimals).scaleMedium()
-        val transactionFeeUsd = transactionFee.toUsd(feePayerToken.usdRate)
-
-        return SwapFee(
-            isFreeTransactionAvailable = isFreeTransactionAvailable,
-            accountCreationToken = accountCreationToken,
-            accountCreationFee = accountCreationFee,
-            accountCreationFeeUsd = accountCreationFeeUsd,
-            transactionFee = transactionFee,
-            transactionFeeUsd = transactionFeeUsd,
-            feePayerToken = feePayerToken.tokenSymbol
+        return FeeRelayerSwapFee(
+            feeInSol = fees.total,
+            feeInPayingToken = getFeesInPayingToken(feePayerToken, fees.total),
+            isFreeTransactionAvailable = isFreeTransactionAvailable
         )
     }
 
-    // Get fees from current context
-    // - Returns: transactions fees (fees for signatures), liquidity provider fees (fees in intermediary token?, fees in destination token)
-    suspend fun getFees(
-        myWalletsMints: List<String>,
-        fromWalletPubkey: String,
-        toWalletPubkey: String?,
-        feeRelayerFeePayerPubkey: String?,
-        bestPoolsPair: OrcaPoolsPair?,
-        inputAmount: BigDecimal?,
-        slippage: Double
-    ): Pair<BigInteger, List<BigInteger>> {
-        val owner = tokenKeyProvider.publicKey.toPublicKey()
-
-        val lamportsPerSignature = rpcAmountRepository.getLamportsPerSignature(commitment = null)
-        val minRentExempt = rpcAmountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
-
-        var transactionFees: BigInteger = BigInteger.ZERO
-
-        val numberOfPools = BigInteger.valueOf(bestPoolsPair?.size?.toLong() ?: 0L)
-
-        var numberOfTransactions = BigInteger.ONE
-
-        if (numberOfPools == BigInteger.valueOf(2L)) {
-            val myTokens = myWalletsMints.mapNotNull { orcaPoolInteractor.getTokenFromMint(it) }.map { it.first }
-            val intermediaryTokenName = bestPoolsPair!![0].tokenBName
-
-            if (!myTokens.contains(intermediaryTokenName) || toWalletPubkey == null) {
-                numberOfTransactions += BigInteger.ONE
-            }
-
-            if (intermediaryTokenName == SOL_SYMBOL) {
-                transactionFees += lamportsPerSignature
-                transactionFees += minRentExempt
-            }
-        }
-
-        // owner's signatures
-        transactionFees += lamportsPerSignature * numberOfTransactions
-
-        if (feeRelayerFeePayerPubkey == null) {
-            // userAuthority's signatures
-            transactionFees += lamportsPerSignature * numberOfPools
-        } else {
-            throw IllegalStateException("feeRelayer is being implemented")
-        }
-
-        // when swap from/to native SOL, a fee for creating it is needed
-        if (fromWalletPubkey == owner.toBase58() || bestPoolsPair!!.last().tokenBName == SOL_SYMBOL) {
-            transactionFees += lamportsPerSignature
-            transactionFees += minRentExempt
-        }
-
-        if (toWalletPubkey.isNullOrEmpty()) {
-            transactionFees += lamportsPerSignature
-            transactionFees += minRentExempt
-        }
-
-        val liquidityProviderFees = if (inputAmount != null) {
-            orcaRouteInteractor.calculateLiquidityProviderFees(
-                poolsPair = bestPoolsPair!!,
-                inputAmount = inputAmount,
-                slippage = slippage
-            )
-        } else emptyList()
-
-        return transactionFees to liquidityProviderFees
-    }
-
     suspend fun getFeesInPayingToken(
+        feePayerToken: Token.Active,
         feeInSOL: BigInteger
     ): BigInteger {
         if (feePayerToken.isSOL) return feeInSOL

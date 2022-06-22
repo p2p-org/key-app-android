@@ -1,6 +1,5 @@
 package org.p2p.wallet.swap
 
-import android.content.Context
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.bind
@@ -10,7 +9,6 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.swap.api.InternalWebApi
 import org.p2p.wallet.swap.api.OrcaApi
 import org.p2p.wallet.swap.interactor.SwapInstructionsInteractor
 import org.p2p.wallet.swap.interactor.SwapSerializationInteractor
@@ -33,16 +31,6 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
 object SwapModule : InjectionModule {
 
     override fun create() = module {
-        single {
-            val baseUrl = get<Context>().getString(R.string.p2pWebBaseUrl)
-            getRetrofit(
-                baseUrl = baseUrl,
-                tag = "p2pWeb",
-                resources = get(),
-                interceptor = null
-            ).create(InternalWebApi::class.java)
-        }
-
         single {
             val baseUrl = androidContext().getString(R.string.orca_api_base_url)
             getRetrofit(
@@ -76,16 +64,13 @@ object SwapModule : InjectionModule {
                 feeRelayerSwapInteractor = get(),
                 feeRelayerAccountInteractor = get(),
                 feeRelayerInteractor = get(),
-                orcaRouteInteractor = get(),
+                feeRelayerTopUpInteractor = get(),
                 orcaInfoInteractor = get(),
-                orcaPoolInteractor = get(),
-                rpcAmountRepository = get(),
                 orcaNativeSwapInteractor = get(),
-                environmentManager = get(),
-                tokenKeyProvider = get()
+                environmentManager = get()
             )
         }
-        single { OrcaInfoInteractor(get()) }
+        single { OrcaInfoInteractor(get(), get()) }
         single { OrcaRouteInteractor(get(), get()) }
         factory { OrcaInstructionsInteractor(get()) }
         factory { OrcaPoolInteractor(get(), get(), get(), get()) }
@@ -93,7 +78,7 @@ object SwapModule : InjectionModule {
 
         factory { TransactionAddressInteractor(get(), get(), get()) }
 
-        factory { OrcaSwapRemoteRepository(get(), get(), get(), get()) } bind OrcaSwapRepository::class
+        single { OrcaSwapRemoteRepository(get(), get(), get(), get()) } bind OrcaSwapRepository::class
 
         factory { (token: Token.Active?) ->
             OrcaSwapPresenter(
@@ -107,6 +92,7 @@ object SwapModule : InjectionModule {
                 browseAnalytics = get(),
                 analyticsInteractor = get(),
                 swapAnalytics = get(),
+                transactionBuilderInteractor = get(),
                 transactionManager = get(),
             )
         } bind OrcaSwapContract.Presenter::class

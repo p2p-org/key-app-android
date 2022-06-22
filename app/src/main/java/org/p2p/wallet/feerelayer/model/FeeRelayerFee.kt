@@ -1,8 +1,8 @@
-package org.p2p.wallet.rpc.model
+package org.p2p.wallet.feerelayer.model
 
 import java.math.BigInteger
 
-data class FeeRelayerSendFee(
+data class FeeRelayerFee(
     val feeInSol: BigInteger,
     val feeInPayingToken: BigInteger?
 )

@@ -135,6 +135,10 @@ sealed class Token constructor(
     val isUSDC: Boolean
         get() = tokenSymbol == USDC_SYMBOL
 
+    @IgnoredOnParcel
+    val isActive: Boolean
+        get() = this is Active
+
     fun getFormattedName(): String = if (isSOL) SOL_NAME else tokenName
 
     companion object {

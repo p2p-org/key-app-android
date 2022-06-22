@@ -22,6 +22,7 @@ interface SendContract {
         fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean)
         fun showTransactionDetails(transaction: HistoryTransaction)
         fun showTotal(data: SendTotal?)
+        fun showDetailsError(@StringRes errorTextRes: Int?)
         fun showWrongWalletError()
         fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
         fun showInputValue(value: BigDecimal, forced: Boolean)
@@ -33,7 +34,7 @@ interface SendContract {
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
         fun setMaxButtonVisibility(isVisible: Boolean)
-        fun setAvailableTextColor(@ColorRes availableColor: Int)
+        fun setTotalAmountTextColor(@ColorRes textColor: Int)
 
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelectionView(isVisible: Boolean)
@@ -65,6 +66,7 @@ interface SendContract {
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun setInitialToken(initialToken: Token.Active)
         fun send()
         fun sendOrConfirm()
         fun loadInitialData()

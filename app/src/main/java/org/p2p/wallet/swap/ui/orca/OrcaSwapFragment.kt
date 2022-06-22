@@ -1,16 +1,13 @@
 package org.p2p.wallet.swap.ui.orca
 
-import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
@@ -22,9 +19,6 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.AmountFractionTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
-import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.swap.model.Slippage
@@ -43,11 +37,11 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getColor
-import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import timber.log.Timber
 import java.math.BigDecimal
 
 const val KEY_REQUEST_SWAP = "KEY_REQUEST_SWAP"
@@ -76,11 +70,10 @@ class OrcaSwapFragment :
     }
     private val binding: FragmentSwapOrcaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
-    private var onBackPressedCallback: OnBackPressedCallback? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onBackPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             presenter.onBackPressed()
         }
 
@@ -124,10 +117,10 @@ class OrcaSwapFragment :
         sourceImageView.setOnClickListener { presenter.loadTokensForSourceSelection() }
         destinationImageView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
         destinationTextView.setOnClickListener { presenter.loadTokensForDestinationSelection() }
-        availableTextView.setOnClickListener { presenter.calculateAvailableAmount() }
-        maxTextView.setOnClickListener { presenter.calculateAvailableAmount() }
+        availableTextView.setOnClickListener { presenter.fillMaxAmount() }
+        maxTextView.setOnClickListener { presenter.fillMaxAmount() }
 
-        setupAmountListener()
+        setupAmountFractionListener()
 
         exchangeImageView.setOnClickListener { presenter.reverseTokens() }
         swapDetails.setOnSlippageClickListener {
@@ -199,16 +192,10 @@ class OrcaSwapFragment :
         }
     }
 
-    override fun setNewAmount(sourceAmount: String) {
-        binding.amountEditText.setText(sourceAmount)
-    }
-
-    @SuppressLint("SetTextI18n")
     override fun showPrice(data: SwapPrice?) {
         binding.swapDetails.showPrice(data)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun showTotal(data: SwapTotal?) {
         with(binding) {
             swapDetails.showTotal(data)
@@ -232,6 +219,7 @@ class OrcaSwapFragment :
     }
 
     override fun showFeePayerToken(feePayerTokenSymbol: String) {
+        Timber.d("### showFeePayerToken $feePayerTokenSymbol")
         binding.swapDetails.showFeePayerToken(feePayerTokenSymbol)
     }
 
@@ -243,26 +231,26 @@ class OrcaSwapFragment :
         SwapConfirmBottomSheet.show(this, data) { presenter.swap() }
     }
 
-    override fun close() {
+    override fun closeScreen() {
         popBackStack()
     }
 
-    override fun showNewAmount(amount: String) {
+    override fun showNewSourceAmount(amount: String) {
         AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
         binding.amountEditText.setText(amount)
         binding.amountEditText.setSelection(amount.length)
-        setupAmountListener()
+        setupAmountFractionListener()
     }
 
-    override fun setAvailableTextColor(@ColorRes availableColor: Int) {
-        val colorFromTheme = getColor(availableColor)
+    override fun setTotalAmountTextColor(@ColorRes totalAmountTextColor: Int) {
+        val colorFromTheme = getColor(totalAmountTextColor)
         binding.availableTextView.setTextColor(colorFromTheme)
         binding.availableTextView.compoundDrawables.filterNotNull().forEach {
             it.colorFilter = PorterDuffColorFilter(colorFromTheme, PorterDuff.Mode.SRC_IN)
         }
     }
 
-    override fun showError(@StringRes errorText: Int?) {
+    override fun showSwapDetailsError(errorText: String?) {
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.ERROR)
         binding.swapDetails.showError(errorText)
     }
@@ -278,17 +266,8 @@ class OrcaSwapFragment :
         binding.swapButton.isEnabled = isEnabled
     }
 
-    override fun showTransactionStatusMessage(fromSymbol: String, toSymbol: String, isSuccess: Boolean) {
-        if (isSuccess) {
-            showSuccessSnackBar(getString(R.string.swap_transaction_completed, fromSymbol, toSymbol))
-        } else {
-            showErrorSnackBar(getString(R.string.swap_transaction_failed, fromSymbol, toSymbol))
-        }
-    }
-
-    override fun showTransactionDetails(transaction: HistoryTransaction) {
-        val state = TransactionDetailsLaunchState.History(transaction)
-        popAndReplaceFragment(TransactionDetailsFragment.create(state))
+    override fun setMaxButtonVisible(isVisible: Boolean) {
+        binding.maxTextView.isVisible = isVisible
     }
 
     override fun showSourceSelection(tokens: List<Token.Active>) {
@@ -345,7 +324,7 @@ class OrcaSwapFragment :
         )
     }
 
-    private fun setupAmountListener() {
+    private fun setupAmountFractionListener() {
         AmountFractionTextWatcher.installOn(binding.amountEditText) {
             presenter.setSourceAmount(it)
         }
