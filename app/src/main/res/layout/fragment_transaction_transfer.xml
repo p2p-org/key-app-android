@@ -71,7 +71,7 @@
                         android:layout_width="8dp"
                         android:layout_height="8dp"
                         android:layout_marginEnd="8dp"
-                        android:background="@color/colorGreen"
+                        android:background="@color/color_green"
                         app:layout_constraintBottom_toBottomOf="@id/statusTextView"
                         app:layout_constraintEnd_toStartOf="@id/statusTextView"
                         app:layout_constraintTop_toTopOf="@id/statusTextView" />

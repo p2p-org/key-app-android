@@ -3,17 +3,17 @@ package org.p2p.wallet.send.model
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-sealed class SearchResult(open val searchAddress: SearchAddress) : Parcelable {
+sealed class SearchResult(open val addressState: AddressState) : Parcelable {
 
     @Parcelize
-    data class Wrong(override val searchAddress: SearchAddress) : SearchResult(searchAddress)
+    data class Wrong(override val addressState: AddressState) : SearchResult(addressState)
 
     @Parcelize
-    data class AddressOnly(override val searchAddress: SearchAddress) : SearchResult(searchAddress)
+    data class AddressOnly(override val addressState: AddressState) : SearchResult(addressState)
 
     @Parcelize
-    data class Full(override val searchAddress: SearchAddress, val username: String) : SearchResult(searchAddress)
+    data class Full(override val addressState: AddressState, val username: String) : SearchResult(addressState)
 
     @Parcelize
-    data class EmptyBalance(override val searchAddress: SearchAddress) : SearchResult(searchAddress)
+    data class EmptyBalance(override val addressState: AddressState) : SearchResult(addressState)
 }

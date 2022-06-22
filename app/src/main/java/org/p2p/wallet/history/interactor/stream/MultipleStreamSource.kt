@@ -1,42 +1,38 @@
 package org.p2p.wallet.history.interactor.stream
 
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
-import java.util.concurrent.Executors
+import org.p2p.wallet.common.di.ServiceScope
 
 class MultipleStreamSource(
-    private val sources: List<HistoryStreamSource>
+    private val sources: List<HistoryStreamSource>,
+    private val serviceScope: ServiceScope
 ) : AbstractStreamSource() {
     private val buffer = mutableListOf<HistoryStreamItem>()
-    private val executor =
-        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
-    override suspend fun currentItem(): HistoryStreamItem? =
-        withContext(executor + CoroutineExceptionHandler { _, _ -> }) {
-            var maxValue: HistoryStreamItem?
+    override suspend fun currentItem(): HistoryStreamItem? = withContext(context = serviceScope.coroutineContext) {
+        var maxValue: HistoryStreamItem?
 
-            val items = sources.map {
-                async(this.coroutineContext) { it.currentItem() }
-            }
-                .awaitAll()
-                .filterNotNull()
-
-            if (items.isEmpty()) {
-                return@withContext null
-            }
-
-            maxValue = items.firstOrNull()
-            for (item in items) {
-                if (maxValue?.streamSource!!.blockTime <= item.streamSource!!.blockTime) {
-                    maxValue = item
-                }
-            }
-            return@withContext maxValue
+        val items = sources.map {
+            async { it.currentItem() }
         }
+            .awaitAll()
+            .filterNotNull()
+
+        if (items.isEmpty()) {
+            return@withContext null
+        }
+
+        maxValue = items.firstOrNull()
+        for (item in items) {
+            if (maxValue?.streamSource!!.blockTime <= item.streamSource!!.blockTime) {
+                maxValue = item
+            }
+        }
+        return@withContext maxValue
+    }
 
     override suspend fun next(configuration: StreamSourceConfiguration): HistoryStreamItem? {
         if (buffer.isEmpty()) {

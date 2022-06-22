@@ -197,7 +197,7 @@ class SendFragment :
 
             sendButton.setOnClickListener { presenter.sendOrConfirm() }
 
-            amountEditText.focusAndShowKeyboard()
+            if (isVisible) amountEditText.focusAndShowKeyboard()
 
             address?.let { presenter.validateTarget(it) }
         }
@@ -298,7 +298,7 @@ class SendFragment :
             targetTextView.text = address
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
-            messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
+            messageTextView.withTextOrGone(getString(R.string.send_empty_balance))
             messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
             clearImageView.isVisible = true
             scanTextView.isVisible = false

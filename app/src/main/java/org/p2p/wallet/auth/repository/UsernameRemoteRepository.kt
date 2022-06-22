@@ -3,8 +3,11 @@ package org.p2p.wallet.auth.repository
 import org.json.JSONObject
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.model.Credentials
+import org.p2p.wallet.auth.model.LookupResult
 import org.p2p.wallet.auth.model.RegisterNameRequest
 import org.p2p.wallet.auth.model.ResolveUsername
+import org.p2p.wallet.infrastructure.network.data.ErrorCode
+import org.p2p.wallet.infrastructure.network.data.ServerException
 
 class UsernameRemoteRepository(
     private val api: UsernameApi
@@ -28,10 +31,21 @@ class UsernameRemoteRepository(
         api.registerUsername(username, body)
     }
 
-    override suspend fun lookup(owner: String): String? {
-        val response = api.lookup(owner)
-        return response.firstOrNull()?.name
-    }
+    override suspend fun findUsernameByAddress(owner: String): LookupResult =
+        try {
+            val username = api.lookup(owner).firstOrNull()
+            if (username != null) {
+                LookupResult.UsernameFound(username.name)
+            } else {
+                LookupResult.UsernameNotFound
+            }
+        } catch (e: ServerException) {
+            if (e.errorCode == ErrorCode.SERVER_ERROR) {
+                LookupResult.UsernameNotFound
+            } else {
+                throw e
+            }
+        }
 
     override suspend fun resolve(name: String): List<ResolveUsername> {
         val response = api.resolve(name)

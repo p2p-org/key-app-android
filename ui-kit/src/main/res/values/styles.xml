@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="UiKit.Native.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.UiKit.Native.Snackbar</item>
+        <item name="actionTextColorAlpha">0.5</item>
+        <item name="titleTextColor">@color/text_cloud</item>
+    </style>
+
+    <style name="UiKit.Native.SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
+        <item name="android:textColor">@color/text_lime</item>
+    </style>
+
+    <style name="ThemeOverlay.UiKit.Native.Snackbar" parent="">
+        <item name="colorOnSurface">@color/elements_night</item>
+        <item name="colorPrimary">@color/text_lime</item>
+    </style>
+</resources>

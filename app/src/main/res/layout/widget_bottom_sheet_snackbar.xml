@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.p2p.wallet.common.ui.widget.SnackBar xmlns:android="http://schemas.android.com/apk/res/android"
+<org.p2p.wallet.common.ui.widget.CustomSnackBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/snackbar"
     android:padding="8dp"
     android:layout_width="match_parent"

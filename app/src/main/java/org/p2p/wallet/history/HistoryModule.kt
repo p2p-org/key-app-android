@@ -1,6 +1,7 @@
 package org.p2p.wallet.history
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -10,9 +11,9 @@ import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
+import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
@@ -47,7 +48,8 @@ object HistoryModule : InjectionModule {
                 historyTransactionMapper = get(),
                 userInteractor = get(),
                 transactionsRemoteRepository = get(),
-                rpcSignatureRepository = get()
+                rpcSignatureRepository = get(),
+                serviceScope = get()
             )
         }
 
@@ -65,8 +67,7 @@ object HistoryModule : InjectionModule {
         } bind TokenHistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
             TransactionDetailsPresenter(
-                resources = get(),
-                theme = get(),
+                resourcesProvider = get(),
                 state = state,
                 userLocalRepository = get(),
                 historyInteractor = get()
@@ -82,12 +83,7 @@ object HistoryModule : InjectionModule {
 
     private fun Module.dataLayer() {
         factory { TransactionDetailsEntityMapper(get()) }
-        single {
-            TransactionDetailsDatabaseRepository(
-                daoDelegate = get(),
-                mapper = get()
-            )
-        } bind TransactionDetailsLocalRepository::class
+        singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
 
         single {
             val api = get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER))
@@ -95,7 +91,7 @@ object HistoryModule : InjectionModule {
 
             TransactionDetailsRpcRepository(
                 rpcApi = api,
-                userInteractor = get()
+                transactionParsingContext = get()
             )
         } bind TransactionDetailsRemoteRepository::class
 

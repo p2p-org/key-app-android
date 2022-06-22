@@ -1,42 +1,6 @@
-plugins {
-    id 'kotlin-android'
-    id 'com.android.library'
-}
+apply from: "$project.rootDir/scripts/common-library.gradle"
 
 android {
-    compileSdkVersion sdkCompileVersion
-
-    defaultConfig {
-        minSdkVersion sdkMinVersion
-        targetSdkVersion sdkTargetVersion
-
-        multiDexEnabled true
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
-    }
-
-    buildTypes {
-        debug
-        feature {
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-        release {
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-
-    buildFeatures {
-        viewBinding true
-    }
     testOptions {
         unitTests {
             includeAndroidResources = true
