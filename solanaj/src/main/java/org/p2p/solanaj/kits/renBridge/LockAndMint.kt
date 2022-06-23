@@ -166,11 +166,11 @@ class LockAndMint(
 
         val isValid: Boolean
             get() {
-            val dayInMillis = TimeUnit.DAYS.toMillis(1)
-            val currentTime = System.currentTimeMillis()
-            /* We should subtract one day from expiry time to make it valid  */
-            return currentTime < expiryTime - dayInMillis
-        }
+                val dayInMillis = TimeUnit.DAYS.toMillis(1)
+                val currentTime = System.currentTimeMillis()
+                /* We should subtract one day from expiry time to make it valid  */
+                return currentTime < expiryTime - dayInMillis
+            }
     }
 
     class State {
