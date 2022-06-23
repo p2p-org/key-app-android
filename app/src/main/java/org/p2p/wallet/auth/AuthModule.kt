@@ -29,6 +29,8 @@ import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.feerelayer.FeeRelayerModule.FEE_RELAYER_QUALIFIER
+import org.p2p.wallet.splash.SplashContract
+import org.p2p.wallet.splash.SplashPresenter
 import retrofit2.Retrofit
 
 object AuthModule {
@@ -43,6 +45,7 @@ object AuthModule {
         factory { SecurityKeyPresenter(get(), get(), get(), get()) } bind SecurityKeyContract.Presenter::class
         factory { CreatePinPresenter(get(), get(), get(), get(), get()) } bind CreatePinContract.Presenter::class
         factory { SignInPinPresenter(get(), get(), get(), get(), get()) } bind SignInPinContract.Presenter::class
+        factory { SplashPresenter(get()) } bind SplashContract.Presenter::class
         factory { VerifySecurityKeyPresenter(get(), get(), get()) } bind VerifySecurityKeyContract.Presenter::class
         factory { AuthDonePresenter(get(), get(), get()) } bind AuthDoneContract.Presenter::class
 

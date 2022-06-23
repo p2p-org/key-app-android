@@ -278,6 +278,10 @@ dependencies {
     //https://facebook.github.io/shimmer-android/
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
+    // Lottie
+    def lottieVersion = "3.5.0"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
+
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'
     testImplementation 'androidx.test.ext:junit-ktx:1.1.3'
