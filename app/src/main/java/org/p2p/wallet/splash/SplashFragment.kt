@@ -12,7 +12,7 @@ class SplashFragment :
     SplashContract.View {
 
     companion object {
-        fun create() = SplashFragment()
+        fun create(): SplashFragment = SplashFragment()
     }
 
     override val presenter: SplashContract.Presenter by inject()
