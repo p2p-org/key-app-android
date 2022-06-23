@@ -130,8 +130,8 @@
             android:id="@+id/additionalRightPinCodeButton"
             android:layout_width="62dp"
             android:layout_height="62dp"
-            android:visibility="invisible"
             app:keyboard_button_image="@drawable/ic_backspace" />
+
     </LinearLayout>
 
 </LinearLayout>
