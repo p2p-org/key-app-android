@@ -11,7 +11,7 @@
     <!--  Section Header  -->
 
     <declare-styleable name="SectionHeader">
-        <attr name="showIcon" format="boolean" />
+        <attr name="withIcon" format="boolean" />
         <attr name="sectionText" format="string" />
         <attr name="textIconTint" format="color" />
         <attr name="isCaps" format="boolean" />

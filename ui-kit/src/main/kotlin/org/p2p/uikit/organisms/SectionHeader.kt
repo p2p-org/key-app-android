@@ -18,14 +18,14 @@ class SectionHeader @JvmOverloads constructor(
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.SectionHeader).use { typedArray ->
-            val showIcon = typedArray.getBoolean(R.styleable.SectionHeader_showIcon, true)
+            val withIcon = typedArray.getBoolean(R.styleable.SectionHeader_withIcon, true)
             val defaultColor = context.getColor(R.color.text_mountain)
             val tint = typedArray.getColor(R.styleable.SectionHeader_textIconTint, defaultColor)
             val text = typedArray.getString(R.styleable.SectionHeader_sectionText)
             val isCaps = typedArray.getBoolean(R.styleable.SectionHeader_isCaps, false)
 
             binding.apply {
-                chevronImageView.isVisible = showIcon
+                chevronImageView.isVisible = withIcon
                 titleTextView.isAllCaps = isCaps
                 titleTextView.text = text
                 titleTextView.setTextColor(tint)
