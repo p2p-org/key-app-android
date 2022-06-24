@@ -25,8 +25,7 @@ jobs:
 
       - name: Create apikey properties file
         run: |
-          - touch apikey.properties
-          - echo "rpcPoolApiKey=\"${{ secrets.RPC_POOL_API_KEY }}\"" >> apikey.properties
+          - echo "rpcPoolApiKey=\"${{ secrets.RPC_POOL_API_KEY }}\"" > apikey.properties
           - echo "moonpayKey=\"${{ secrets.MOONPAY_KEY }}\"" >> apikey.properties
           - echo "comparePublicKey=\"${{ secrets.COMPARE_PUBLIC_KEY }}\"" >> apikey.properties
           - echo "intercomApiKey=\"${{ secrets.INTERCOM_API_KEY }}\"" >> apikey.properties
