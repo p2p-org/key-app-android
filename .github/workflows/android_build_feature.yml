@@ -40,12 +40,12 @@ jobs:
       - name: Setup google-json from secrets
         env:
           FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          run: echo $FIREBASE_SECRET > app/google-services.json
+        run: echo $FIREBASE_SECRET > app/google-services.json
 
       - name: Create and fill cert.pem certificate for SSL pinning
         env:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
-          run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
       - name: Build feature artifacts with gradle
         run: ./gradlew assembleFeature
