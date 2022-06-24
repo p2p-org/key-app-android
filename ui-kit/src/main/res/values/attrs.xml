@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--  Button  -->
+
     <declare-styleable name="UiKitButton">
         <attr name="android:layout_height" />
         <attr name="iconTint" />
     </declare-styleable>
+
+    <!--  Section Header  -->
+
+    <declare-styleable name="SectionHeader">
+        <attr name="showIcon" format="boolean" />
+        <attr name="sectionText" format="string" />
+        <attr name="textIconTint" format="color" />
+        <attr name="isCaps" format="boolean" />
+    </declare-styleable>
+
 </resources>
