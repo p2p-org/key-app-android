@@ -16,5 +16,10 @@ jobs:
           FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
         run: echo $FIREBASE_SECRET > app/google-services.json
 
+      name: Create and fill cert.pem certificate for SSL pinning
+        env:
+          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw.cert.pem
+
       - name: Run unit tests
         run: ./gradlew test
