@@ -1,0 +1,57 @@
+name: Android build feature artifacts [APK,AAB]
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  Build-Feature-APK:
+    runs-on: ubuntu-latest
+    name: Build Feature APK
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with: { java-version: 11 }
+
+      - name: Install NDK
+        run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;23.2.8568313" --sdk_root=${ANDROID_SDK_ROOT}
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Output version code
+        run: echo VERSION_CODE
+
+      - name: Create apikey properties file
+        run: |
+          - touch apikey.properties
+          - echo "rpcPoolApiKey=\"${{ secret.RPC_POOL_API_KEY }}\"" >> apikey.properties
+          - echo "moonpayKey=\"${{ secret.MOONPAY_KEY }}\"" >> apikey.properties
+          - echo "comparePublicKey=\"${{ secret.COMPARE_PUBLIC_KEY }}\"" >> apikey.properties
+          - echo "intercomApiKey=\"${{ secret.INTERCOM_API_KEY }}\"" >> apikey.properties
+          - echo "intercomAppId=\"${{ secret.INTERCOM_APP_ID }}\"" >> apikey.properties
+          - echo "amplitudeKey=\"${{ secret.AMPLITURE_KEY }}\"" >> apikey.properties
+          - echo "apikeys.properties succesfully created"
+
+      - name: Setup google-json from secrets
+        env:
+          FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          run: echo $FIREBASE_SECRET > app/google-services.json
+
+      - name: Create and fill cert.pem certificate for SSL pinning
+        env:
+          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+          run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+
+      - name: Build feature artifacts with gradle
+        run: ./gradlew assembleFeature
+
+
+
+
+
+
