@@ -8,7 +8,7 @@ import androidx.core.view.isVisible
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSectionHeaderBinding
 
-class SectionHeader @JvmOverloads constructor(
+class UiKitSectionHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -17,12 +17,12 @@ class SectionHeader @JvmOverloads constructor(
     private val binding = WidgetSectionHeaderBinding.inflate(LayoutInflater.from(context), this)
 
     init {
-        context.obtainStyledAttributes(attrs, R.styleable.SectionHeader).use { typedArray ->
-            val withIcon = typedArray.getBoolean(R.styleable.SectionHeader_withIcon, true)
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitSectionHeader).use { typedArray ->
+            val withIcon = typedArray.getBoolean(R.styleable.UiKitSectionHeader_withIcon, true)
             val defaultColor = context.getColor(R.color.text_mountain)
-            val tint = typedArray.getColor(R.styleable.SectionHeader_textIconTint, defaultColor)
-            val text = typedArray.getString(R.styleable.SectionHeader_sectionText)
-            val isCaps = typedArray.getBoolean(R.styleable.SectionHeader_isCaps, false)
+            val tint = typedArray.getColor(R.styleable.UiKitSectionHeader_textIconTint, defaultColor)
+            val text = typedArray.getString(R.styleable.UiKitSectionHeader_sectionText)
+            val isCaps = typedArray.getBoolean(R.styleable.UiKitSectionHeader_isCaps, false)
 
             binding.apply {
                 chevronImageView.isVisible = withIcon

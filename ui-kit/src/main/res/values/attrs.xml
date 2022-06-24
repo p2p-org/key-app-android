@@ -10,7 +10,7 @@
 
     <!--  Section Header  -->
 
-    <declare-styleable name="SectionHeader">
+    <declare-styleable name="UiKitSectionHeader">
         <attr name="withIcon" format="boolean" />
         <attr name="sectionText" format="string" />
         <attr name="textIconTint" format="color" />
