@@ -27,7 +27,7 @@ jobs:
           COMPARE_PUBLIC_KEY: ${{ secrets.COMPARE_PUBLIC_KEY }}
           INTERCOM_API_KEY: ${{ secrets.INTERCOM_API_KEY }}
           INTERCOM_APP_ID: ${{ secrets.INTERCOM_APP_ID }}
-          AMPLITUDE_KEY: ${{ secrets.AMPLITURE_KEY }}
+          AMPLITUDE_KEY: ${{ secrets.AMPLITUDE_KEY }}
 
         run: |
           - echo "rpcPoolApiKey=\"$RPC_POOL_APIKEY\"" > apikey.properties
