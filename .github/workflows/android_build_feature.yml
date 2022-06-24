@@ -30,7 +30,7 @@ jobs:
           - echo "comparePublicKey=\"${{ secrets.COMPARE_PUBLIC_KEY }}\"" >> apikey.properties
           - echo "intercomApiKey=\"${{ secrets.INTERCOM_API_KEY }}\"" >> apikey.properties
           - echo "intercomAppId=\"${{ secrets.INTERCOM_APP_ID }}\"" >> apikey.properties
-          - echo "amplitudeKey=\"${{ secrets.AMPLITURE_KEY }}\"" >> apikey.properties
+          - echo "amplitudeKey=\"${{ secrets.AMPLITUDE_KEY }}\"" >> apikey.properties
           - echo "apikeys.properties succesfully created"
 
       - name: Setup google-json from secrets
