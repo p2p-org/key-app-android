@@ -1,6 +1,12 @@
 name: Android Kotlin lint
 
-on: [ pull_request]
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
 
 jobs:
   Android-lint:

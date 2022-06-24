@@ -1,6 +1,13 @@
 name: Android Unit Tests
 
-on: [ pull_request ]
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+
 
 jobs:
   Unit-test:
