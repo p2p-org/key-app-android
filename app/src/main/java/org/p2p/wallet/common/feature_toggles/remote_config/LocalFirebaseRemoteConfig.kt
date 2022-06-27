@@ -1,6 +1,6 @@
 package org.p2p.wallet.common.feature_toggles.remote_config
 
-class LocalFirebaseRemoteConfig(appFirebaseRemoteConfig: AppFirebaseRemoteConfig) : RemoteConfigValuesSource {
+class LocalFirebaseRemoteConfig(appFirebaseRemoteConfig: AppFirebaseRemoteConfig) : RemoteConfigValuesProvider {
 
     private val toggleKeyToValue: MutableMap<String, String> =
         appFirebaseRemoteConfig.allFeatureTogglesRaw().toMutableMap()

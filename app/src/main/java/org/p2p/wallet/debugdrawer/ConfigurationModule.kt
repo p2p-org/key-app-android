@@ -6,14 +6,14 @@ import android.view.ViewGroup
 import io.palaima.debugdrawer.base.DebugModuleAdapter
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.p2p.wallet.common.AppFeatureFlags
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.databinding.ViewDebugDrawerConfigureEnvironmentBinding
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 
 class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
 
     private val environmentManager: EnvironmentManager by inject()
-    private val appFeatureFlags: AppFeatureFlags by inject()
+    private val inAppFeatureFlags: InAppFeatureFlags by inject()
 
     override fun onCreateView(inflater: LayoutInflater, parent: ViewGroup): View {
         val binding = ViewDebugDrawerConfigureEnvironmentBinding.inflate(inflater, parent, false)
@@ -21,14 +21,14 @@ class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
         val environment = environmentManager.loadEnvironment()
         with(binding) {
             urlTextView.text = environment.endpoint
-            enablePollingSwitch.isChecked = appFeatureFlags.isPollingEnabled
+            enablePollingSwitch.isChecked = inAppFeatureFlags.isPollingEnabled.featureValue
             enablePollingSwitch.setOnCheckedChangeListener { _, isChecked ->
-                appFeatureFlags.isPollingEnabled = isChecked
+                inAppFeatureFlags.isPollingEnabled.featureValue = isChecked
             }
 
-            enableProdEnvSwitch.isChecked = appFeatureFlags.isDevnetEnabled
+            enableProdEnvSwitch.isChecked = inAppFeatureFlags.isDevNetEnabled.featureValue
             enableProdEnvSwitch.setOnCheckedChangeListener { _, isChecked ->
-                appFeatureFlags.isDevnetEnabled = isChecked
+                inAppFeatureFlags.isDevNetEnabled.featureValue = isChecked
             }
         }
 

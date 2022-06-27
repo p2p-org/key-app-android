@@ -4,7 +4,7 @@ import android.content.Context
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.rpc.Environment
-import org.p2p.wallet.common.AppFeatureFlags
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -14,7 +14,7 @@ import timber.log.Timber
 
 class SettingsNetworkPresenter(
     private val context: Context,
-    private val appFeatureFlags: AppFeatureFlags,
+    private val inAppFeatureFlags: InAppFeatureFlags,
     private val mainLocalRepository: HomeLocalRepository,
     private val environmentManager: EnvironmentManager,
     private val analytics: BrowseAnalytics
@@ -42,7 +42,7 @@ class SettingsNetworkPresenter(
 
     override fun loadData() {
         val environment = environmentManager.loadEnvironment()
-        view?.showEnvironment(environment, appFeatureFlags.isDevnetEnabled)
+        view?.showEnvironment(environment, inAppFeatureFlags.isDevNetEnabled.featureValue)
     }
 
     override fun save() {

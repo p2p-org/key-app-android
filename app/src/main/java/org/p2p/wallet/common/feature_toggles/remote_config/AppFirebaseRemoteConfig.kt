@@ -5,9 +5,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-private val FETCHING_INTERVAL_SECS = TimeUnit.MINUTES.toSeconds(60)
+private val ONE_HOUR_IN_SECONDS = TimeUnit.MINUTES.toSeconds(60)
 
-class AppFirebaseRemoteConfig : RemoteConfigValuesSource {
+class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
 
     private val remoteConfig: FirebaseRemoteConfig
         get() = FirebaseRemoteConfig.getInstance()
@@ -38,7 +38,7 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesSource {
      */
     private fun createRemoteConfigSettings(): FirebaseRemoteConfigSettings =
         FirebaseRemoteConfigSettings.Builder()
-            .setMinimumFetchIntervalInSeconds(FETCHING_INTERVAL_SECS)
+            .setMinimumFetchIntervalInSeconds(ONE_HOUR_IN_SECONDS)
             .build()
 
     override fun getString(toggleKey: String): String? = remoteConfig.getString(toggleKey).takeIf(String::isNotBlank)

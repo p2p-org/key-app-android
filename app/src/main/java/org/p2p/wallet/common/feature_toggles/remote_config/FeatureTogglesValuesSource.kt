@@ -1,16 +1,17 @@
 package org.p2p.wallet.common.feature_toggles.remote_config
 
-import org.p2p.wallet.common.AppFeatureFlags
+import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.common.InAppFeatureFlags
 
-class FeatureTogglesValuesSourceChooser(
+class FeatureTogglesValuesSource(
     private val debugRemoteConfigValuesSource: LocalFirebaseRemoteConfig,
     private val appFirebaseRemoteConfig: AppFirebaseRemoteConfig,
-    private val appFeatureFlags: AppFeatureFlags
-) : RemoteConfigValuesSource {
+    private val inAppFeatureFlags: InAppFeatureFlags
+) : RemoteConfigValuesProvider {
     private val shouldGetValuesFromDebug
-        get() = appFeatureFlags.isDebugRemoteConfigEnabled
+        get() = BuildConfig.DEBUG && inAppFeatureFlags.isDebugRemoteConfigEnabled.featureValue
 
-    private val sourceToGetFrom: RemoteConfigValuesSource
+    private val sourceToGetFrom: RemoteConfigValuesProvider
         get() = if (shouldGetValuesFromDebug) debugRemoteConfigValuesSource else appFirebaseRemoteConfig
 
     override fun getString(toggleKey: String): String? = sourceToGetFrom.getString(toggleKey)

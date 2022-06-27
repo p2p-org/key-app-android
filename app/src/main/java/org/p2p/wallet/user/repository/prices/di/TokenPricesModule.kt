@@ -3,7 +3,7 @@ package org.p2p.wallet.user.repository.prices.di
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import org.p2p.wallet.R
-import org.p2p.wallet.common.AppFeatureFlags
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.api.CoinGeckoApi
 import org.p2p.wallet.home.api.CryptoCompareApi
@@ -47,7 +47,7 @@ object TokenPricesModule : InjectionModule {
         }
 
         factory<TokenPricesRemoteRepository> {
-            val shouldInjectCoinGeckoApi = get<AppFeatureFlags>().useCoinGeckoForPrices
+            val shouldInjectCoinGeckoApi = get<InAppFeatureFlags>().useCoinGeckoForPrices.featureValue
             Timber.i("Injecting TokenPricesRemoteRepository, useCoinGeckoForPrices=$shouldInjectCoinGeckoApi")
             if (shouldInjectCoinGeckoApi) {
                 get<TokenPricesCoinGeckoRepository>()

@@ -4,8 +4,8 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.debug.feature_toggles.FeatureTogglesContract
-import org.p2p.wallet.debug.feature_toggles.FeatureTogglesPresenter
+import org.p2p.wallet.debug.featuretoggles.FeatureTogglesContract
+import org.p2p.wallet.debug.featuretoggles.FeatureTogglesPresenter
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsContract
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsPresenter
 import org.p2p.wallet.debug.settings.DebugSettingsContract
@@ -29,7 +29,7 @@ object DebugSettingsModule : InjectionModule {
         factory {
             SettingsNetworkPresenter(
                 context = get(),
-                appFeatureFlags = get(),
+                inAppFeatureFlags = get(),
                 mainLocalRepository = get(),
                 environmentManager = get(),
                 analytics = get()

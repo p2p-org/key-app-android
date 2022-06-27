@@ -1,4 +1,4 @@
-package org.p2p.wallet.debug.feature_toggles
+package org.p2p.wallet.debug.featuretoggles
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -10,7 +10,7 @@ interface FeatureTogglesContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun loadFeatureToggles()
+        fun load()
         fun onToggleChanged(toggle: FeatureToggleRow, newValue: String)
     }
 }

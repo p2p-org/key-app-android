@@ -1,10 +1,9 @@
-package org.p2p.wallet.debug.feature_toggles
+package org.p2p.wallet.debug.featuretoggles
 
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import android.annotation.SuppressLint
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.ViewGroup
@@ -39,8 +38,6 @@ class FeatureTogglesAdapter(
         }
     }
 
-    // not so much data for using DiffUtil
-    @SuppressLint("NotifyDataSetChanged")
     fun setToggleRows(newToggleRows: List<FeatureToggleRow>) {
         val diffResult = DiffUtil.calculateDiff(AdapterDiffUtil(featureToggleRows, newToggleRows))
         featureToggleRows.clear()
@@ -94,8 +91,9 @@ class FeatureTogglesAdapter(
 
         private fun EditText.initToggleValueInput() {
             removeTextChangedListener(toggleValueInputWatcher)
+            isClickable = currentRow.canBeChanged
+            isEnabled = currentRow.canBeChanged
             setText(currentRow.toggleValue)
-            isClickable = currentRow.isCheckable
             addTextChangedListener(toggleValueInputWatcher)
         }
     }

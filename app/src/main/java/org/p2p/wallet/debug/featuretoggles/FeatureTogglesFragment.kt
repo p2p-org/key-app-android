@@ -1,4 +1,4 @@
-package org.p2p.wallet.debug.feature_toggles
+package org.p2p.wallet.debug.featuretoggles
 
 import android.os.Bundle
 import android.view.View
@@ -33,7 +33,7 @@ class FeatureTogglesFragment :
 
     override fun onResume() {
         super.onResume()
-        presenter.loadFeatureToggles()
+        presenter.load()
     }
 
     override fun showFeatureToggles(toggleRows: List<FeatureToggleRow>) {
