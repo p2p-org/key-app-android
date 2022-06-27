@@ -64,14 +64,14 @@ fun BigDecimal.toUsd(token: Token): BigDecimal? =
     token.usdRate?.let { this.multiply(it).scaleShort() }
 
 fun BigDecimal.formatUsd(): String = this.stripTrailingZeros().run {
-    DecimalFormatter.format(this, USD_DECIMALS)
+    if (isZero()) this.toString() else DecimalFormatter.format(this, USD_DECIMALS)
 } // case: 1000.023000 -> 1 000.02
 
 fun BigDecimal.formatToken(): String = this.stripTrailingZeros().run {
-    DecimalFormatter.format(this, DEFAULT_DECIMAL)
+    if (isZero()) this.toString() else DecimalFormatter.format(this, DEFAULT_DECIMAL)
 } // case: 10000.000000007900 -> 100 000.000000008
 
-fun BigDecimal?.isNullOrZero() = this == null || this.compareTo(BigDecimal.ZERO) == 0
+fun BigDecimal?.isNullOrZero(): Boolean = this == null || this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isNotZero() = this.compareTo(BigDecimal.ZERO) != 0
 fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
@@ -86,7 +86,11 @@ fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 
 fun BigDecimal.asUsd(): String = if (lessThenMinUsd()) "<$0.01" else "$${formatUsd()}"
-fun BigDecimal.asApproximateUsd(): String = if (lessThenMinUsd()) "(<$0.01)" else "(~$${formatUsd()})"
+fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
+    lessThenMinUsd() -> "(<$0.01)"
+    withBraces -> "~($${formatUsd()})"
+    else -> "~$${formatUsd()}"
+}
 
 fun Int?.orZero(): Int = this ?: 0
 

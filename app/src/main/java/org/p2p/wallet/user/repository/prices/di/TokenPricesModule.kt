@@ -21,8 +21,7 @@ object TokenPricesModule : InjectionModule {
             val compareApi = getRetrofit(
                 baseUrl = baseUrl,
                 tag = "CryptoCompare",
-                interceptor = CompareTokenInterceptor(),
-                resources = get()
+                interceptor = CompareTokenInterceptor()
             )
                 .create(CryptoCompareApi::class.java)
 
@@ -33,8 +32,7 @@ object TokenPricesModule : InjectionModule {
             val coinGeckoApi = getRetrofit(
                 baseUrl = baseUrl,
                 tag = "CoinGecko",
-                interceptor = null,
-                resources = get()
+                interceptor = null
             )
                 .create(CoinGeckoApi::class.java)
 

@@ -101,6 +101,14 @@ commands:
             touch app/src/main/res/raw/cert.pem
             echo ${SSL_CERTIFICATE} >> app/src/main/res/raw/cert.pem
 
+  create_google_services_file:
+    description: "Create and fill google-services.json"
+    steps:
+      - run:
+          name: "Write google-services.json file from env"
+          command: |
+            echo "$GOOGLE_SERVICES_HEX" | xxd -r -p - > app/google-services.json
+
 defaults: &defaults
   working_directory: ~/app
   executor:
@@ -144,6 +152,7 @@ jobs:
       - restore_gradle_cache
       - create_api_keys_file
       - fill_ssl_certificate # needed for Koin graph unit test
+      - create_google_services_file
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_cache:
@@ -159,6 +168,7 @@ jobs:
       - restore_gradle_cache
       - create_api_keys_file
       - fill_ssl_certificate
+      - create_google_services_file
       - generate_build_version
       - store_artifacts:
           path: "./app/gradle.properties"
@@ -177,6 +187,7 @@ jobs:
       - restore_gradle_cache
       - create_api_keys_file
       - fill_ssl_certificate
+      - create_google_services_file
       - generate_build_version
       - run:
           name: "Generate build version"

@@ -1,30 +1,106 @@
 package org.p2p.wallet.swap.model.orca
 
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.send.model.FeePayerState
+import org.p2p.wallet.swap.model.FeeRelayerSwapFee
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.asApproximateUsd
+import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.fromLamports
+import org.p2p.wallet.utils.isLessThan
+import org.p2p.wallet.utils.isMoreThan
+import org.p2p.wallet.utils.scaleMedium
+import org.p2p.wallet.utils.toUsd
 import java.math.BigDecimal
+import java.math.BigInteger
 
-class SwapFee(
-    val isFreeTransactionAvailable: Boolean,
-    val accountCreationToken: String?,
-    val accountCreationFee: BigDecimal?,
-    val accountCreationFeeUsd: BigDecimal?,
-    val transactionFee: BigDecimal?,
-    val transactionFeeUsd: BigDecimal?,
-    val feePayerToken: String
+class SwapFee constructor(
+    private val fee: FeeRelayerSwapFee,
+    private val feePayerToken: Token.Active,
+    private val sourceToken: Token.Active,
+    private val destination: Token,
+    private val solToken: Token.Active?
 ) {
 
-    val commonFee: String?
-        get() = accountCreationFee?.let { "$it $approxFeeUsd" }
+    fun calculateFeePayerState(
+        strategy: FeePayerSelectionStrategy,
+        sourceTokenTotal: BigInteger,
+        inputAmount: BigInteger
+    ): FeePayerState {
+        val isSourceSol = sourceToken.tokenSymbol == SOL_SYMBOL
+        val isAllowedToCorrectAmount = strategy == FeePayerSelectionStrategy.CORRECT_AMOUNT
+        val totalNeeded = fee.feeInPayingToken + inputAmount
+        val isEnoughSolBalance = solToken?.let { !it.totalInLamports.isLessThan(fee.feeInSol) } ?: false
+        val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
+        return when {
+            // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
+            shouldTryReduceAmount && sourceTokenTotal.isLessThan(totalNeeded) -> {
+                val diff = totalNeeded - sourceTokenTotal
+                val desiredAmount = if (diff.isLessThan(inputAmount)) inputAmount - diff else null
+                if (desiredAmount != null) FeePayerState.ReduceInputAmount(desiredAmount) else FeePayerState.SwitchToSol
+            }
+            // if there is enough SPL token balance to cover amount and fee
+            !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) ->
+                FeePayerState.UpdateFeePayer
+            else ->
+                FeePayerState.SwitchToSol
+        }
+    }
 
-    val approxFeeUsd: String
-        get() = accountCreationFeeUsd?.asApproximateUsd().orEmpty()
+    fun isEnoughToCoverExpenses(sourceTokenTotal: BigInteger, inputAmount: BigInteger): Boolean =
+        when {
+            // if source is SOL, then fee payer is SOL as well
+            sourceToken.tokenSymbol == SOL_SYMBOL ->
+                sourceTokenTotal >= inputAmount + fee.feeInSol
+            // assuming that source token is not SOL
+            feePayerToken.isSOL ->
+                sourceTokenTotal >= inputAmount && feePayerTotalLamports > fee.feeInSol
+            // assuming that source token and fee payer are same
+            else ->
+                sourceTokenTotal >= inputAmount + fee.feeInPayingToken
+        }
 
-    val commonTransactionFee: String?
-        get() = accountCreationFee?.let { "$it $approxTransactionFeeUsd" }
+    val feeAmountInPayingToken: BigDecimal
+        get() = fee.feeInPayingToken.fromLamports(feePayerToken.decimals).scaleMedium()
 
-    val approxTransactionFeeUsd: String
-        get() = transactionFeeUsd?.asApproximateUsd().orEmpty()
+    val feeAmountInSol: BigDecimal
+        get() = fee.feeInSol.fromLamports().scaleMedium()
 
-    val transactionFeeString: String?
-        get() = accountCreationFee?.let { "$it $feePayerToken" }
+    val feePayerSymbol: String = feePayerToken.tokenSymbol
+
+    val isFreeTransactionAvailable: Boolean = fee.isFreeTransactionAvailable
+
+    val transactionFee: String
+        get() = "${currentDecimals.formatToken()} ${feePayerToken.tokenSymbol}"
+
+    val accountCreationToken: String =
+        if (destination is Token.Other) destination.tokenSymbol else SOL_SYMBOL
+
+    val accountCreationFee: String
+        get() = "${accountCreationFeeDecimals.formatToken()} ${feePayerToken.tokenSymbol}"
+
+    val accountCreationFeeUsd: String? =
+        accountCreationFeeUsdDecimals?.asApproximateUsd()
+
+    private val accountCreationFeeDecimals: BigDecimal
+        get() {
+            return if (feePayerToken.isSOL) {
+                fee.feeInSol.fromLamports(feePayerToken.decimals)
+            } else {
+                fee.feeInPayingToken.fromLamports(feePayerToken.decimals)
+            }
+                .scaleMedium()
+        }
+
+    private val accountCreationFeeUsdDecimals: BigDecimal?
+        get() = accountCreationFeeDecimals.toUsd(feePayerToken.usdRate)
+
+    private val currentDecimals: BigDecimal =
+        (if (feePayerToken.isSOL) fee.feeInSol else fee.feeInPayingToken)
+            .fromLamports(feePayerToken.decimals)
+            .scaleMedium()
+
+    private val feePayerTotalLamports: BigInteger
+        get() = feePayerToken.totalInLamports
 }
