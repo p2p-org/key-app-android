@@ -2,6 +2,7 @@ package org.p2p.wallet.send.model
 
 import org.p2p.wallet.utils.asApproximateUsd
 import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.orZero
 import java.math.BigDecimal
 
 class SendTotal constructor(
@@ -17,9 +18,9 @@ class SendTotal constructor(
         when (fee) {
             is SendFee.SolanaFee ->
                 if (sourceSymbol == fee.feePayerSymbol) totalSum
-                else "$totalFormatted + ${fee.fee} ${fee.feePayerSymbol}"
+                else "$totalFormatted + ${fee.feeDecimals} ${fee.feePayerSymbol}"
             is SendFee.RenBtcFee ->
-                "$totalFormatted + ${fee.fee} ${fee.feePayerSymbol}"
+                "$totalFormatted + ${fee.feeDecimals} ${fee.feePayerSymbol}"
             else ->
                 totalFormatted
         }
@@ -50,5 +51,5 @@ class SendTotal constructor(
         get() = "${total.formatToken()} $sourceSymbol"
 
     private val totalSum: String
-        get() = "${(total + (fee?.fee ?: BigDecimal.ZERO)).formatToken()} $sourceSymbol"
+        get() = "${(total + fee?.feeDecimals.orZero()).formatToken()} $sourceSymbol"
 }

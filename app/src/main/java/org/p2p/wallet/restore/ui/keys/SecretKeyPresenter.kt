@@ -25,12 +25,10 @@ class SecretKeyPresenter(
 ) : BasePresenter<SecretKeyContract.View>(), SecretKeyContract.Presenter {
 
     private var keys: List<SecretKey> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
-        if (oldValue != newValue) {
-            val newSeedPhraseSize = newValue.size
-            val isSeedPhraseValid =
-                newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT
-            view?.setButtonEnabled(isSeedPhraseValid)
-        }
+        val newSeedPhraseSize = newValue.size
+        val isSeedPhraseValid =
+            newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT
+        view?.setButtonEnabled(isSeedPhraseValid)
     }
 
     override fun setNewKeys(keys: List<SecretKey>) {
@@ -51,6 +49,14 @@ class SecretKeyPresenter(
         val inputStream = resources.assets.open(TERMS_OF_SERVICE_FILE_FULL)
         val file = fileRepository.savePdf(TERMS_OF_SERVICE_FILE_NAME, inputStream.readBytes())
         view?.showFile(file)
+    }
+
+    override fun load() {
+        if (keys.isEmpty()) {
+            view?.addFirstKey(SecretKey())
+        } else {
+            keys = keys.toList()
+        }
     }
 
     override fun openPrivacyPolicy() {

@@ -1,9 +1,9 @@
 package org.p2p.wallet.history.interactor
 
-import kotlinx.coroutines.supervisorScope
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
+import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.stream.AccountStreamSource
@@ -19,7 +19,7 @@ import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 
 private const val DAY_IN_MILLISECONDS = (60 * 60 * 24) / 5
-private const val PAGE_SIZE = 10
+private const val PAGE_SIZE = 20
 
 class HistoryInteractor(
     private val rpcAccountRepository: RpcAccountRepository,
@@ -28,9 +28,10 @@ class HistoryInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyTransactionMapper: HistoryTransactionMapper,
     private val rpcSignatureRepository: RpcSignatureRepository,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val serviceScope: ServiceScope
 ) {
-    private val allSignatures = mutableListOf<HistoryStreamItem>()
+    private val allSignatures = mutableListOf<String>()
     private val tokenSignaturesMap = mutableMapOf<String, MutableList<HistoryStreamItem>>()
     private lateinit var multipleStreamSource: HistoryStreamSource
     private val accountsStreamSources = mutableMapOf<String, HistoryStreamSource>()
@@ -44,7 +45,7 @@ class HistoryInteractor(
                 accountStreamSource
             }
         )
-        multipleStreamSource = MultipleStreamSource(historyStreamSources)
+        multipleStreamSource = MultipleStreamSource(historyStreamSources, serviceScope)
     }
 
     suspend fun loadTransactions(isRefresh: Boolean = false): List<HistoryTransaction> {
@@ -57,12 +58,12 @@ class HistoryInteractor(
             multipleStreamSource.reset()
         }
         val signatures = loadAllSignatures()
-        allSignatures.addAll(signatures)
+        allSignatures.addAll(signatures.mapNotNull { it.streamSource?.signature })
         return loadTransactions(signatures)
     }
 
     suspend fun loadTransactions(account: String, isRefresh: Boolean = false): List<HistoryTransaction> {
-        if (historyStreamSources.isEmpty()) {
+        if (historyStreamSources.isEmpty() || accountsStreamSources[account] == null) {
             initStreamSources()
         }
         if (account !in tokenSignaturesMap) {
@@ -91,20 +92,18 @@ class HistoryInteractor(
 
     private suspend fun loadAllSignatures(): MutableList<HistoryStreamItem> {
         val transactionsSignatures = mutableListOf<HistoryStreamItem>()
-        supervisorScope {
-            while (true) {
-                val firstItem = multipleStreamSource.currentItem() ?: break
-                val lastSignatureBlockTime = firstItem.streamSource?.blockTime ?: break
-                val time = lastSignatureBlockTime - DAY_IN_MILLISECONDS
+        while (true) {
+            val firstItem = multipleStreamSource.currentItem() ?: break
+            val lastSignatureBlockTime = firstItem.streamSource?.blockTime ?: break
+            val time = lastSignatureBlockTime - DAY_IN_MILLISECONDS
 
-                while (true) {
-                    val currentItem = multipleStreamSource.next(StreamSourceConfiguration(time))
-                    if (!allSignatures.contains(currentItem)) {
-                        transactionsSignatures.add(currentItem ?: break)
-                    }
-                    if (transactionsSignatures.size >= PAGE_SIZE) {
-                        return@supervisorScope transactionsSignatures
-                    }
+            while (true) {
+                val currentItem = multipleStreamSource.next(StreamSourceConfiguration(time))
+                if (!allSignatures.contains(currentItem?.streamSource?.signature)) {
+                    transactionsSignatures.add(currentItem ?: break)
+                }
+                if (transactionsSignatures.size >= PAGE_SIZE) {
+                    return transactionsSignatures
                 }
             }
         }
@@ -145,7 +144,7 @@ class HistoryInteractor(
 
     private suspend fun loadTransactions(signatures: List<HistoryStreamItem>): List<HistoryTransaction> {
         val transactionDetails = transactionsRemoteRepository.getTransactions(tokenKeyProvider.publicKey, signatures)
-        return transactionDetails.mapToHistoryTransactions()
+        return transactionDetails.mapToHistoryTransactions().distinctBy { it.signature }
     }
 
     private suspend fun List<TransactionDetails>.mapToHistoryTransactions(): List<HistoryTransaction> {

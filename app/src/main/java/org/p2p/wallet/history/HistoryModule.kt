@@ -1,6 +1,7 @@
 package org.p2p.wallet.history
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -47,7 +48,8 @@ object HistoryModule : InjectionModule {
                 historyTransactionMapper = get(),
                 userInteractor = get(),
                 transactionsRemoteRepository = get(),
-                rpcSignatureRepository = get()
+                rpcSignatureRepository = get(),
+                serviceScope = get()
             )
         }
 
@@ -81,12 +83,7 @@ object HistoryModule : InjectionModule {
 
     private fun Module.dataLayer() {
         factory { TransactionDetailsEntityMapper(get()) }
-        single {
-            TransactionDetailsDatabaseRepository(
-                daoDelegate = get(),
-                mapper = get()
-            )
-        } bind TransactionDetailsLocalRepository::class
+        singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
 
         single {
             val api = get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER))
@@ -94,7 +91,7 @@ object HistoryModule : InjectionModule {
 
             TransactionDetailsRpcRepository(
                 rpcApi = api,
-                userInteractor = get()
+                transactionParsingContext = get()
             )
         } bind TransactionDetailsRemoteRepository::class
 

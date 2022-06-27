@@ -1,7 +1,9 @@
 package org.p2p.wallet.home
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -122,9 +124,8 @@ object HomeModule : InjectionModule {
                 networkType = type
             )
         }
-        factory<SendContract.Presenter> { (token: Token.Active) ->
+        factory<SendContract.Presenter> {
             SendPresenter(
-                initialToken = token,
                 sendInteractor = get(),
                 addressInteractor = get(),
                 userInteractor = get(),
@@ -136,7 +137,8 @@ object HomeModule : InjectionModule {
                 analyticsInteractor = get(),
                 sendAnalytics = get(),
                 transactionManager = get(),
-                resourcesProvider = get()
+                resourcesProvider = get(),
+                dispatchers = get(),
             )
         }
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
@@ -152,13 +154,7 @@ object HomeModule : InjectionModule {
                 analyticsInteractor = get()
             )
         }
-        factory<TokenListContract.Presenter> {
-            TokenListPresenter(
-                interactor = get(),
-                browseAnalytics = get(),
-                analyticsInteractor = get()
-            )
-        }
+        factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(
                 defaultToken = token,
@@ -169,15 +165,7 @@ object HomeModule : InjectionModule {
             )
         }
 
-        factory<ReceiveRenBtcContract.Presenter> {
-            ReceiveRenBtcPresenter(
-                interactor = get(),
-                qrCodeInteractor = get(),
-                usernameInteractor = get(),
-                receiveAnalytics = get(),
-                context = get()
-            )
-        }
+        factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)

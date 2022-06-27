@@ -12,12 +12,12 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -46,7 +46,7 @@ import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
-import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
@@ -82,14 +82,12 @@ class SendFragment :
             EXTRA_ADDRESS to address
         )
 
-        fun create(initialToken: Token): SendFragment = SendFragment().withArgs(
+        fun create(initialToken: Token.Active): SendFragment = SendFragment().withArgs(
             EXTRA_TOKEN to initialToken
         )
     }
 
-    override val presenter: SendContract.Presenter by inject {
-        parametersOf(token)
-    }
+    override val presenter: SendContract.Presenter by inject()
     private val glideManager: GlideManager by inject()
 
     private val binding: FragmentSendBinding by viewBinding()
@@ -97,7 +95,12 @@ class SendFragment :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val address: String? by args(EXTRA_ADDRESS)
-    private val token: Token? by args(EXTRA_TOKEN)
+    private val token: Token.Active? by args(EXTRA_TOKEN)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        token?.let { presenter.setInitialToken(it) }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -167,7 +170,7 @@ class SendFragment :
 
             clearImageView.setOnClickListener { presenter.setTargetResult(result = null) }
 
-            AmountFractionTextWatcher.installOn(amountEditText) { presenter.setNewSourceAmount(it) }
+            installAmountWatcher()
             val originalTextSize = amountEditText.textSize
             // Use invisible auto size textView to handle editText text size
             amountEditText.doOnTextChanged { text, _, _, _ -> handleAmountTextChanged(text, originalTextSize) }
@@ -210,6 +213,12 @@ class SendFragment :
                 val textSize = if (text.isNullOrBlank()) originalTextSize else autoSizeHelperTextView.textSize
                 amountEditText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
             }
+        }
+    }
+
+    private fun installAmountWatcher() {
+        AmountFractionTextWatcher.installOn(binding.amountEditText) {
+            presenter.setNewSourceAmount(it)
         }
     }
 
@@ -298,7 +307,7 @@ class SendFragment :
             targetTextView.text = address
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
-            messageTextView.withTextOrGone(getString(R.string.send_caution_empty_balance))
+            messageTextView.withTextOrGone(getString(R.string.send_empty_balance))
             messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
             clearImageView.isVisible = true
             scanTextView.isVisible = false
@@ -320,32 +329,28 @@ class SendFragment :
         }
     }
 
-    override fun showAccountFeeView(fee: SendFee?, notEnoughFunds: Boolean) {
+    override fun showAccountFeeView(fee: SendFee) {
         with(binding) {
-            if (fee == null) {
-                accountCardView.isVisible = false
-                accountInfoTextView.isVisible = false
-                return
-            }
-
             val tokenSymbol = fee.sourceTokenSymbol
             accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
             accountInfoTextView.isVisible = true
             accountCardView.isVisible = true
 
-            val feeUsd = if (fee.feeUsd != null) "~$${fee.feeUsd}" else getString(R.string.common_not_available)
-            accountFeeTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
-            if (notEnoughFunds) {
-                accountImageView.setBackgroundResource(R.drawable.bg_error_rounded)
-                accountImageView.setImageResource(R.drawable.ic_error)
-                accountFeeValueTextView.text = getString(R.string.send_not_enough_funds)
-                accountFeeValueTextView.setTextColor(getColor(R.color.systemErrorMain))
-            } else {
-                accountImageView.background = null
-                accountFeeValueTextView.text = fee.formattedFee
-                accountFeeValueTextView.setTextColor(getColor(R.color.textIconPrimary))
-                glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
-            }
+            accountFeeView.showFee(fee)
+        }
+    }
+
+    override fun hideAccountFeeView() {
+        binding.accountCardView.isVisible = false
+        binding.accountInfoTextView.isVisible = false
+    }
+
+    override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?) {
+        with(binding) {
+            accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
+            accountInfoTextView.isVisible = true
+            accountCardView.isVisible = true
+            accountFeeView.showInsufficientView(feeUsd)
         }
     }
 
@@ -434,10 +439,22 @@ class SendFragment :
         binding.sendDetailsView.showTotal(data)
     }
 
-    override fun showInputValue(value: BigDecimal) {
+    override fun showDetailsError(@StringRes errorTextRes: Int?) {
+        binding.sendDetailsView.showError(errorTextRes)
+    }
+
+    override fun showInputValue(value: BigDecimal, forced: Boolean) {
         with(binding.amountEditText) {
-            setText("$value")
-            setSelection(text.toString().length)
+            val textValue = value.toPlainString()
+            if (forced) {
+                AmountFractionTextWatcher.uninstallFrom(this)
+                setText(textValue)
+                setSelection(textValue.length)
+                installAmountWatcher()
+            } else {
+                setText(textValue)
+                setSelection(textValue.length)
+            }
         }
     }
 
@@ -457,22 +474,25 @@ class SendFragment :
         binding.maxTextView.isVisible = isVisible
     }
 
-    override fun showSearchLoading(isLoading: Boolean) {
+    override fun showIndeterminateLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
+    }
+
+    override fun showAccountFeeViewLoading(isLoading: Boolean) {
+        binding.accountFeeView.setLoading(isLoading)
     }
 
     override fun showFullScreenLoading(isLoading: Boolean) {
         binding.progressView.isVisible = isLoading
     }
 
-    override fun updateAvailableTextColor(@ColorRes availableColor: Int) = with(binding.availableTextView) {
-        setTextColor(getColor(availableColor))
-        setTextDrawableColor(availableColor)
+    override fun setTotalAmountTextColor(@ColorRes textColor: Int) = with(binding.availableTextView) {
+        setTextColor(getColor(textColor))
+        setTextDrawableColor(textColor)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
-        val formatted = if (symbol == Constants.USD_READABLE_SYMBOL) {
+        val formatted = if (symbol == USD_READABLE_SYMBOL) {
             getString(R.string.main_send_around_in_usd, available.formatUsd())
         } else {
             "${available.formatToken()} $symbol"

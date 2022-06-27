@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Button Values -->
+
+    <dimen name="ui_kit_button_large_height">56dp</dimen>
+    <dimen name="ui_kit_button_medium_height">48dp</dimen>
+    <dimen name="ui_kit_button_small_height">32dp</dimen>
+
+</resources>

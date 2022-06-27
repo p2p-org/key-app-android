@@ -1,18 +1,16 @@
-package org.p2p.solanaj.kits.transaction.parser
+package org.p2p.wallet.history.strategy.context
 
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InnerInstructionDetailsResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
-import java.lang.Exception
+import org.p2p.wallet.history.strategy.ParsingResult
+import org.p2p.wallet.history.strategy.TransactionParsingContext
+import org.p2p.wallet.utils.Constants.ZERO_AMOUNT
+import timber.log.Timber
+import java.lang.IllegalStateException
 
-private const val ZERO_AMOUNT = "0"
-object OrcaSwapInstructionParser {
-
-    private class ParsedInstructionDetails(
-        val rootInstruction: InstructionResponse,
-        val innerInstructionDetails: InnerInstructionDetailsResponse?
-    )
+class OrcaSwapParsingContext : TransactionParsingContext {
 
     private val orcaSwapProgramIds = setOf(
         "DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1", // swap ocra,
@@ -21,19 +19,25 @@ object OrcaSwapInstructionParser {
         "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8", // main deprecated
     )
 
-    internal class OrcaSwapTransactionParseError(message: String) : Exception(message)
+    private class ParsedInstructionDetails(
+        val rootInstruction: InstructionResponse,
+        val innerInstructionDetails: InnerInstructionDetailsResponse?
+    )
 
-    fun isTransactionContainsOrcaSwap(transactionRoot: ConfirmedTransactionRootResponse): Boolean {
-        val instructions = transactionRoot.transaction?.message?.instructions
-
+    override fun canParse(transaction: ConfirmedTransactionRootResponse): Boolean {
+        val instructions = transaction.transaction?.message?.instructions
         val orcaSwapInstruction = instructions?.firstOrNull { it.programId in orcaSwapProgramIds }
+        Timber.tag("CanParse = OrcaSwapParsing ${orcaSwapInstruction != null}")
         return orcaSwapInstruction != null
     }
 
-    fun parse(
-        signature: String,
+    override suspend fun parseTransaction(
         transactionRoot: ConfirmedTransactionRootResponse
-    ): Result<SwapDetails> {
+    ): ParsingResult {
+
+        val signature = transactionRoot.transaction?.getTransactionId()
+            ?: return ParsingResult.Error(IllegalStateException("Signature cannot be null"))
+
         val innerInstructions = transactionRoot.meta.innerInstructions
 
         if (isLiquidityToPool(innerInstructions)) {
@@ -76,15 +80,15 @@ object OrcaSwapInstructionParser {
             ?.find { it.parsed?.type == "closeAccount" }
 
         if (closeInstruction?.parsed != null) {
-            if (closeInstruction.parsed.info.account == source) {
-                source = closeInstruction.parsed.info.destination
+            if (closeInstruction.parsed?.info?.account == source) {
+                source = closeInstruction.parsed?.info?.destination
             }
-            if (closeInstruction.parsed.info.account == destination) {
-                destination = closeInstruction.parsed.info.destination
+            if (closeInstruction.parsed?.info?.account == destination) {
+                destination = closeInstruction.parsed?.info?.destination
             }
         }
 
-        return Result.success(
+        return ParsingResult.Transaction.create(
             SwapDetails(
                 signature = signature,
                 blockTime = transactionRoot.blockTime,
@@ -105,7 +109,7 @@ object OrcaSwapInstructionParser {
     private fun parseFailedInstruction(
         signature: String,
         transactionRoot: ConfirmedTransactionRootResponse,
-    ): Result<SwapDetails> {
+    ): ParsingResult {
         val postTokenBalances = transactionRoot.meta.postTokenBalances
             ?: return parseResultFailure("($signature) meta.postTokenBalances is null")
 
@@ -136,7 +140,7 @@ object OrcaSwapInstructionParser {
             destinationTokenBalance.uiTokenAmountDetails?.amount
                 ?: ZERO_AMOUNT
 
-        return Result.success(
+        return ParsingResult.Transaction.create(
             SwapDetails(
                 signature = signature,
                 blockTime = transactionRoot.blockTime,
@@ -176,6 +180,10 @@ object OrcaSwapInstructionParser {
             instructions[2].parsed?.type == "transfer"
     }
 
+    private fun parseResultFailure(message: String): ParsingResult {
+        return ParsingResult.Error(IllegalStateException(message))
+    }
+
     private val ConfirmedTransactionRootResponse.parsedInstructionDetails: List<ParsedInstructionDetails>
         get() {
             val rootInstructions = transaction?.message?.instructions.orEmpty()
@@ -188,8 +196,4 @@ object OrcaSwapInstructionParser {
                 )
             }
         }
-
-    private fun parseResultFailure(message: String): Result<SwapDetails> {
-        return Result.failure(OrcaSwapTransactionParseError(message))
-    }
 }

@@ -1,8 +1,5 @@
 package org.p2p.wallet.renbtc.interactor
 
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.utils.toPublicKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bitcoinj.core.Base58
@@ -16,16 +13,15 @@ import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.utils.Hash
 import org.p2p.solanaj.utils.Utils
 import org.p2p.solanaj.utils.crypto.Hex
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.scaleMedium
-import java.math.BigDecimal
+import org.p2p.wallet.utils.toLamports
+import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 import java.nio.ByteBuffer
 
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val environmentManager: EnvironmentManager,
     private val rpcAmountRepository: RpcAmountRepository,
     private val renVMRepository: RenVMRepository,
     private val rpcSolanaInteractor: RpcSolanaInteractor,
@@ -34,6 +30,7 @@ class BurnBtcInteractor(
 
     companion object {
         private const val BURN_FEE_LENGTH = 97
+        private const val REN_BTC_DECIMALS = 6
         private val BURN_FEE_VALUE = "0.000005"
     }
 
@@ -67,9 +64,10 @@ class BurnBtcInteractor(
         return@withContext burnDetails.confirmedSignature
     }
 
-    suspend fun getBurnFee(): BigDecimal {
+    suspend fun getBurnFee(): BigInteger {
         val fee = rpcAmountRepository.getMinBalanceForRentExemption(BURN_FEE_LENGTH)
-        return fee.fromLamports().add(BURN_FEE_VALUE.toBigDecimal()).scaleMedium()
+        val feeLamports = BURN_FEE_VALUE.toBigDecimal().toLamports(REN_BTC_DECIMALS)
+        return fee + feeLamports
     }
 
     private suspend fun submitBurnTransaction(

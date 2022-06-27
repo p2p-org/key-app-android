@@ -1,27 +1,28 @@
-package org.p2p.solanaj.kits.transaction.parser
+package org.p2p.wallet.history.strategy.context
 
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.solanaj.programs.SerumSwapProgram
+import org.p2p.wallet.history.strategy.ParsingResult
+import org.p2p.wallet.history.strategy.TransactionParsingContext
+import timber.log.Timber
 import java.lang.Exception
+import java.lang.IllegalStateException
 import java.math.BigInteger
 
-object SerumSwapInstructionParser {
+class SerumSwapParsingContext : TransactionParsingContext {
 
-    internal class SerumSwapParseError(message: String) : Exception(message)
+    override suspend fun parseTransaction(
+        transactionRoot: ConfirmedTransactionRootResponse
+    ): ParsingResult {
 
-    fun isTransactionContainsSerumSwap(transactionRoot: ConfirmedTransactionRootResponse): Boolean {
-        val instructions = transactionRoot.transaction?.message?.instructions.orEmpty()
-        return getSerumSwapInstruction(instructions) != null
-    }
+        val signature = transactionRoot.transaction?.getTransactionId()
+            ?: return ParsingResult.Error(IllegalStateException("Signature cannot be null"))
 
-    fun parse(
-        signature: String,
-        transactionRoot: ConfirmedTransactionRootResponse,
-    ): Result<SwapDetails> {
         val parsedTransaction = transactionRoot.transaction
             ?: return parseError("($signature) .transaction is null")
+
         val instructions = parsedTransaction.message.instructions
 
         val preTokenBalances = transactionRoot.meta.preTokenBalances
@@ -75,21 +76,21 @@ object SerumSwapInstructionParser {
         val innerInstruction = transactionRoot.meta.innerInstructions?.firstOrNull()
         // amounts
         val fromInstruction = innerInstruction?.instructions?.find {
-            it.parsed?.type == "transfer" && it.parsed.info.source == fromAddress
+            it.parsed?.type == "transfer" && it.parsed?.info?.source == fromAddress
         }
 
         val amountString = fromInstruction?.parsed?.info?.amount
         val fromAmount = amountString?.let { BigInteger(it) } ?: BigInteger.ZERO
 
         val toInstruction = innerInstruction?.instructions?.find {
-            it.parsed?.type == "transfer" && it.parsed.info.destination == toAddress
+            it.parsed?.type == "transfer" && it.parsed?.info?.destination == toAddress
         }
         val toAmountString = toInstruction?.parsed?.info?.amount
         val toAmount = toAmountString?.let { BigInteger(it) } ?: BigInteger.ZERO
 
         // if swap from native sol, detect if from or to address is a new account
         val createAccountInstruction = instructions.firstOrNull {
-            it.parsed?.type == "createAccount" && it.parsed.info.newAccount == fromAddress
+            it.parsed?.type == "createAccount" && it.parsed?.info?.newAccount == fromAddress
         }
 
         val realSource = createAccountInstruction?.parsed?.info?.source
@@ -98,7 +99,7 @@ object SerumSwapInstructionParser {
         }
 
         // get token from mint address and finish request
-        return Result.success(
+        return ParsingResult.Transaction.create(
             SwapDetails(
                 signature = signature,
                 blockTime = transactionRoot.blockTime,
@@ -116,6 +117,15 @@ object SerumSwapInstructionParser {
         )
     }
 
+    override fun canParse(transactionRoot: ConfirmedTransactionRootResponse): Boolean {
+        val instructions = transactionRoot.transaction?.message?.instructions.orEmpty()
+        Timber.tag("CanParse = SerumSwapParsing ${getSerumSwapInstruction(instructions) != null}")
+
+        return getSerumSwapInstruction(instructions) != null
+    }
+
+    internal class SerumSwapParseError(message: String) : Exception(message)
+
     // Serum swap
     private fun getSerumSwapInstruction(instructions: List<InstructionResponse>): InstructionResponse? {
         return instructions.lastOrNull { it.programId == SerumSwapProgram.serumSwapPID.toBase58() }
@@ -125,7 +135,7 @@ object SerumSwapInstructionParser {
         return mintValue == SerumSwapProgram.usdcMint.toBase58() || mintValue == SerumSwapProgram.usdtMint.toBase58()
     }
 
-    private fun parseError(message: String): Result<SwapDetails> {
-        return Result.failure(SerumSwapParseError(message))
+    private fun parseError(message: String): ParsingResult {
+        return ParsingResult.Error(SerumSwapParseError(message))
     }
 }
