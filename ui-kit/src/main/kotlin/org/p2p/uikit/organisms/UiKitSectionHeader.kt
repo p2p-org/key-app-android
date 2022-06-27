@@ -14,35 +14,45 @@ class UiKitSectionHeader @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
+    var title: String? = null
+        set(value) {
+            binding.titleTextView.text = value
+            field = value
+        }
+
+    var isIconVisible: Boolean = true
+        set(value) {
+            binding.chevronImageView.isVisible = value
+            field = value
+        }
+
+    var isHidden: Boolean = false
+        set(value) {
+            rotateChevron(value)
+            field = value
+        }
+
     private val binding = WidgetSectionHeaderBinding.inflate(LayoutInflater.from(context), this)
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitSectionHeader).use { typedArray ->
-            val withIcon = typedArray.getBoolean(R.styleable.UiKitSectionHeader_withIcon, true)
             val defaultColor = context.getColor(R.color.text_mountain)
             val tint = typedArray.getColor(R.styleable.UiKitSectionHeader_textIconTint, defaultColor)
-            val text = typedArray.getString(R.styleable.UiKitSectionHeader_sectionText)
             val isCaps = typedArray.getBoolean(R.styleable.UiKitSectionHeader_isCaps, false)
+            isIconVisible = typedArray.getBoolean(R.styleable.UiKitSectionHeader_withIcon, true)
+            title = typedArray.getString(R.styleable.UiKitSectionHeader_sectionText)
 
             binding.apply {
-                chevronImageView.isVisible = withIcon
+                chevronImageView.isVisible = isIconVisible
                 titleTextView.isAllCaps = isCaps
-                titleTextView.text = text
+                titleTextView.text = title
                 titleTextView.setTextColor(tint)
                 chevronImageView.setColorFilter(tint)
             }
         }
     }
 
-    fun setText(text: String) {
-        binding.titleTextView.text = text
-    }
-
-    fun showIcon(isVisible: Boolean) {
-        binding.chevronImageView.isVisible = isVisible
-    }
-
-    fun setHidden(isHidden: Boolean) {
+    private fun rotateChevron(isHidden: Boolean) {
         val rotationValue = if (isHidden) 0f else 180f
         binding.chevronImageView
             .animate()
