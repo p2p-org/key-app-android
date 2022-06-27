@@ -18,7 +18,7 @@ import java.math.BigInteger
 class TransactionInteractor(
     private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val rpcTransactionRepository: RpcHistoryRepository,
-    private val rpcAmountInteractor: RpcAmountRepository,
+    private val rpcAmountRepository: RpcAmountRepository,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -30,7 +30,8 @@ class TransactionInteractor(
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null
     ): PreparedTransaction {
-        val actualLamportsPerSignature = lamportsPerSignature ?: rpcAmountInteractor.getLamportsPerSignature()
+        val actualLamportsPerSignature =
+            lamportsPerSignature ?: rpcAmountRepository.getLamportsPerSignature(commitment = null)
 
         val transaction = Transaction()
         transaction.addInstructions(instructions)

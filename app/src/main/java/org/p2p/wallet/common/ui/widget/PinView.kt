@@ -134,6 +134,5 @@ class PinView @JvmOverloads constructor(
 
     private fun updateDots() {
         binding.pinCodeView.refresh(pinCode.length)
-        binding.keyboardView.setRightButtonVisible(pinCode.isNotEmpty())
     }
 }

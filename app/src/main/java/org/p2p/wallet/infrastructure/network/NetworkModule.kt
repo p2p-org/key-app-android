@@ -92,7 +92,7 @@ object NetworkModule : InjectionModule {
 
     fun Scope.getRetrofit(
         baseUrl: String,
-        tag: String = "OkHttpClient",
+        tag: String? = "OkHttpClient",
         interceptor: Interceptor?
     ): Retrofit {
         return Retrofit.Builder()
@@ -108,7 +108,7 @@ object NetworkModule : InjectionModule {
         }
     }
 
-    private fun Scope.getClient(tag: String, interceptor: Interceptor? = null): OkHttpClient {
+    private fun Scope.getClient(tag: String?, interceptor: Interceptor? = null): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -123,7 +123,7 @@ object NetworkModule : InjectionModule {
                     addInterceptor(interceptor)
                 }
 
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
                     addInterceptor(httpLoggingInterceptor(tag))
                 }
             }
