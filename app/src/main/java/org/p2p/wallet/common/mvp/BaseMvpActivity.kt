@@ -24,8 +24,8 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
         presenter.detach()
     }
 
-    override fun showErrorMessage(messageRes: Int) {
-        showErrorDialog(messageRes = messageRes)
+    override fun showErrorMessage(messageResId: Int) {
+        showErrorDialog(messageRes = messageResId)
     }
 
     override fun showErrorMessage(e: Throwable?) {

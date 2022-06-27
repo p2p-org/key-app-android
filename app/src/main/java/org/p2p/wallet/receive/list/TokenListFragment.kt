@@ -98,7 +98,7 @@ class TokenListFragment :
     }
 
     private fun loadNextPage(count: Int) {
-        presenter.load(false)
+        presenter.load(isRefresh = false)
     }
 
     private fun onScrollYChanged(dY: Int) {

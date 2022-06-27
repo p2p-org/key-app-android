@@ -57,6 +57,8 @@ class ConnectionStateProvider(context: Context) {
         networkState.first { it }
     }
 
+    // PWN-3970
+    @Suppress("DEPRECATION")
     private fun hasConnection(): Boolean = connectivityManager.allNetworks.any { network ->
         connectivityManager.getNetworkCapabilities(network)
             ?.run {

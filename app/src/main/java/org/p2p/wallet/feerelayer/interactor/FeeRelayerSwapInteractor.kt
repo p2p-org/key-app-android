@@ -68,18 +68,16 @@ class FeeRelayerSwapInteractor(
         val recentBlockhash = rpcRepository.getRecentBlockhash()
 
         val destinationToken = destination.destinationToken
-        val userDestinationAccountOwnerAddress = destination.userDestinationAccountOwnerAddress
         val needsCreateDestinationTokenAccount = destination.needsCreateDestinationTokenAccount
 
         val swapFeesAndPools = preparedParams.actionFeesAndPools
-        val swappingFee = swapFeesAndPools.fee.total
-        val swapPools = swapFeesAndPools.poolsPair
+        val poolsPair = swapFeesAndPools.poolsPair
 
         return prepareSwapTransaction(
             feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = sourceToken,
             destinationToken = destinationToken,
-            pools = swapPools,
+            pools = poolsPair,
             inputAmount = inputAmount,
             slippage = slippage,
             blockhash = recentBlockhash.recentBlockhash,
@@ -282,7 +280,6 @@ class FeeRelayerSwapInteractor(
                 val relaySwapInstruction = FeeRelayerProgram.createRelaySwapInstruction(
                     programId = feeRelayerProgramId,
                     transitiveSwap = swapData,
-                    userAuthorityAddressPubkey = userAuthorityAddress,
                     sourceAddressPubkey = userSourceTokenAccountAddress,
                     transitTokenAccount = transitTokenAccount,
                     destinationAddressPubkey = userDestinationTokenAccountAddress,

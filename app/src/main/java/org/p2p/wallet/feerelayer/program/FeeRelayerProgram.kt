@@ -26,14 +26,12 @@ object FeeRelayerProgram {
     fun createRelaySwapInstruction(
         programId: PublicKey,
         transitiveSwap: SwapData.SplTransitive,
-        userAuthorityAddressPubkey: PublicKey,
         sourceAddressPubkey: PublicKey,
         transitTokenAccount: PublicKey,
         destinationAddressPubkey: PublicKey,
         feePayerPubkey: PublicKey
     ): TransactionInstruction {
         val transferAuthorityPubkey = PublicKey(transitiveSwap.from.transferAuthorityPubkey)
-        val transitTokenMintPubkey = PublicKey(transitiveSwap.transitTokenMintPubkey)
         val swapFromProgramId = PublicKey(transitiveSwap.from.programId)
         val swapFromAccount = PublicKey(transitiveSwap.from.accountPubkey)
         val swapFromAuthority = PublicKey(transitiveSwap.from.authorityPubkey)
@@ -55,12 +53,10 @@ object FeeRelayerProgram {
         return splSwapTransitiveInstruction(
             programId = programId,
             feePayer = feePayerPubkey,
-            userAuthority = userAuthorityAddressPubkey,
             userTransferAuthority = transferAuthorityPubkey,
             userSourceTokenAccount = sourceAddressPubkey,
             userTransitTokenAccount = transitTokenAccount,
             userDestinationTokenAccount = destinationAddressPubkey,
-            transitTokenMint = transitTokenMintPubkey,
             swapFromProgramId = swapFromProgramId,
             swapFromAccount = swapFromAccount,
             swapFromAuthority = swapFromAuthority,
@@ -384,12 +380,10 @@ object FeeRelayerProgram {
     private fun splSwapTransitiveInstruction(
         programId: PublicKey,
         feePayer: PublicKey,
-        userAuthority: PublicKey,
         userTransferAuthority: PublicKey,
         userSourceTokenAccount: PublicKey,
         userTransitTokenAccount: PublicKey,
         userDestinationTokenAccount: PublicKey,
-        transitTokenMint: PublicKey,
         swapFromProgramId: PublicKey,
         swapFromAccount: PublicKey,
         swapFromAuthority: PublicKey,

@@ -23,7 +23,7 @@ class SignInPinFragment :
     SignInPinContract.View {
 
     companion object {
-        fun create() = SignInPinFragment()
+        fun create(): SignInPinFragment = SignInPinFragment()
     }
 
     override val presenter: SignInPinContract.Presenter by inject()
@@ -44,7 +44,6 @@ class SignInPinFragment :
             pinView.onPinCompleted = { presenter.signIn(it) }
             pinView.onResetClicked = { popAndReplaceFragment(SecretKeyFragment.create()) }
         }
-        presenter.load()
     }
 
     override fun showLoading(isLoading: Boolean) {
