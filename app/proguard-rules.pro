@@ -43,5 +43,6 @@
 
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
 -keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
--keep public class org.p2p.wallet.common.crashlytics.TimberCrashTree
--keep public class org.p2p.wallet.common.crashlytics.CrashHttpLoggingInterceptor
+-keep public class org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
+-keep public class org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
+-keep class io.sentry.SentryEvent { *; }

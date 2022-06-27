@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.crashlytics
+package org.p2p.wallet.common.crashlogging.helpers
 
 import okhttp3.Interceptor
 import okhttp3.Request

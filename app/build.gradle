@@ -6,6 +6,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
     id 'com.google.firebase.crashlytics'
+    id "io.sentry.android.gradle" version "3.1.1"
 }
 
 apply from: "$project.rootDir/scripts/ktlint.gradle"
@@ -33,6 +34,8 @@ def initApiKeys(defaultConfig) {
         defaultConfig.buildConfigField("String", "intercomApiKey", "${apikeyProperties['intercomApiKey']}")
         defaultConfig.buildConfigField("String", "intercomAppId", "${apikeyProperties['intercomAppId']}")
         defaultConfig.buildConfigField("String", "amplitudeKey", "${apikeyProperties['amplitudeKey']}")
+
+        defaultConfig.manifestPlaceholders = [SENTRY_DSN: "${apikeyProperties['sentryDsn']}"]
     } else {
         logger.quiet "(API_KEYS): apikey.properties is not found, using empty values!"
 
@@ -43,6 +46,8 @@ def initApiKeys(defaultConfig) {
         defaultConfig.buildConfigField("String", "intercomApiKey", emptyString)
         defaultConfig.buildConfigField("String", "intercomAppId", emptyString)
         defaultConfig.buildConfigField("String", "amplitudeKey", emptyString)
+
+        defaultConfig.manifestPlaceholders = [SENTRY_DSN: emptyString]
     }
 }
 
@@ -126,6 +131,7 @@ android {
             shrinkResources false
             versionNameSuffix ".${getVersionBuild()}-debug"
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
+            manifestPlaceholders = [SENTRY_ENV: "debug"]
         }
 
         feature {
@@ -138,6 +144,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+            manifestPlaceholders = [SENTRY_ENV: "feature"]
 
             firebaseAppDistribution {
                 artifactType = "APK"
@@ -158,6 +165,7 @@ android {
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
+            manifestPlaceholders = [SENTRY_ENV: "release"]
 
             firebaseAppDistribution {
                 artifactType = "AAB"
@@ -184,12 +192,18 @@ android {
     buildFeatures {
         viewBinding true
     }
+
     testOptions {
         unitTests.all { useJUnitPlatform() }
         unitTests.returnDefaultValues = true
         unitTests.includeAndroidResources = true
         animationsDisabled = true
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
+
+    sentry {
+        // List the build types that should be ignored
+        ignoredBuildTypes = ["debug"]
     }
 }
 
@@ -204,7 +218,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation ("com.google.android.material:material"){
+    implementation("com.google.android.material:material") {
         version { strictly "1.6.1" }
     }
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
@@ -279,8 +293,12 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
     // Lottie
-    def lottieVersion = "3.5.0"
+    def lottieVersion = '3.5.0'
     implementation "com.airbnb.android:lottie:$lottieVersion"
+
+    // Sentry
+    def sentryVersion = '6.1.3'
+    implementation "io.sentry:sentry-android:$sentryVersion"
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'
