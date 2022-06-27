@@ -94,10 +94,7 @@ class TokenHistoryPresenter(
             if (isRefresh) {
                 transactions.clear()
             }
-            val fetchedItems = historyInteractor.loadTransactions(
-                token.publicKey,
-                isRefresh = isRefresh || transactions.isEmpty()
-            )
+            val fetchedItems = historyInteractor.loadTransactions(token.publicKey)
             transactions.addAll(fetchedItems)
             view?.showHistory(transactions)
             view?.showPagingState(PagingState.Idle)
