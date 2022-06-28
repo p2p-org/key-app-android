@@ -56,7 +56,7 @@ class FeeRelayerTopUpInteractor(
             feeRelayerProgramId = feeRelayerProgramId,
             sourceToken = sourceToken,
             userAuthorityAddress = owner.publicKey,
-            userRelayAddress = relayAccount.publicKey,
+            relayAccountPublicKey = relayAccount.publicKey,
             topUpPools = topUpPools,
             targetAmount = targetAmount,
             expectedFee = expectedFee,
@@ -236,7 +236,7 @@ class FeeRelayerTopUpInteractor(
         feeRelayerProgramId: PublicKey,
         sourceToken: TokenInfo,
         userAuthorityAddress: PublicKey,
-        userRelayAddress: PublicKey,
+        relayAccountPublicKey: PublicKey,
         topUpPools: OrcaPoolsPair,
         targetAmount: BigInteger,
         expectedFee: BigInteger,
@@ -268,7 +268,7 @@ class FeeRelayerTopUpInteractor(
         if (needsCreateUserRelayAccount) {
             val transferInstruction = SystemProgram.transfer(
                 fromPublicKey = feePayerAddress.toPublicKey(),
-                toPublicKey = userRelayAddress,
+                toPublicKey = relayAccountPublicKey,
                 lamports = minimumRelayAccountBalance
             )
             instructions += transferInstruction
@@ -277,21 +277,21 @@ class FeeRelayerTopUpInteractor(
         }
 
         // top up swap
-        val transitTokenMintPubkey = feeRelayerInstructionsInteractor.getTransitTokenMintPubkey(topUpPools)
-        if (transitTokenMintPubkey == null && topUpPools.size > 1) {
-            throw IllegalStateException("Transit mint is null")
+        val transitTokenMintPubKey = feeRelayerInstructionsInteractor.getTransitTokenMintPubkey(topUpPools)
+        if (transitTokenMintPubKey == null && topUpPools.size > 1) {
+            error("Transit mint is null")
         }
         val topUpSwap = feeRelayerInstructionsInteractor.prepareSwapData(
             pools = topUpPools,
             inputAmount = null,
             minAmountOut = targetAmount,
             slippage = Slippage.Percent.doubleValue,
-            transitTokenMintPubkey = transitTokenMintPubkey,
+            transitTokenMintPubkey = transitTokenMintPubKey,
             userAuthorityAddress = userAuthorityAddress,
         )
 
         val userTemporarilyWSOLAddress = feeRelayerAccountInteractor.getUserTemporaryWsolAccount(userAuthorityAddress)
-        val userRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
+        val foundUserRelayAddress = feeRelayerAccountInteractor.getUserRelayAddress(userAuthorityAddress)
         when (topUpSwap) {
             is SwapData.Direct -> {
                 accountCreationFee += minimumTokenAccountBalance
@@ -299,7 +299,7 @@ class FeeRelayerTopUpInteractor(
                 // top up
                 val topUpSwapInstruction = FeeRelayerProgram.topUpSwapInstruction(
                     feeRelayerProgramId = feeRelayerProgramId,
-                    userRelayAddress = userRelayAddress,
+                    userRelayAddress = foundUserRelayAddress,
                     userTemporarilyWSOLAddress = userTemporarilyWSOLAddress,
                     topUpSwap = topUpSwap,
                     userAuthorityAddress = userAuthorityAddress,
@@ -328,7 +328,7 @@ class FeeRelayerTopUpInteractor(
 
                 val topUpSwapInstruction = FeeRelayerProgram.topUpSwapInstruction(
                     feeRelayerProgramId = feeRelayerProgramId,
-                    userRelayAddress = userRelayAddress,
+                    userRelayAddress = foundUserRelayAddress,
                     userTemporarilyWSOLAddress = userTemporarilyWSOLAddress,
                     topUpSwap = topUpSwap,
                     userAuthorityAddress = userAuthorityAddress,
@@ -355,7 +355,7 @@ class FeeRelayerTopUpInteractor(
         transaction.recentBlockHash = blockhash
 
         // calculate fee first
-        val expectedFee = FeeAmount(
+        val expectedFeeAmount = FeeAmount(
             transaction = transaction.calculateTransactionFee(lamportsPerSignature),
             accountBalances = accountCreationFee
         )
@@ -366,6 +366,6 @@ class FeeRelayerTopUpInteractor(
 
         transaction.sign(signers)
 
-        return topUpSwap to PreparedTransaction(transaction, signers, expectedFee)
+        return topUpSwap to PreparedTransaction(transaction, signers, expectedFeeAmount)
     }
 }

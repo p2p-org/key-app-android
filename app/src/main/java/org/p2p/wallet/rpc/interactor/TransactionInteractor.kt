@@ -78,11 +78,12 @@ class TransactionInteractor(
         val feePayerPublicKey = feePayer ?: accountPublicKey
 
         // serialize transaction
-        val transaction = Transaction()
-        transaction.addInstructions(instructions)
-        transaction.setFeePayer(feePayerPublicKey)
-        transaction.setRecentBlockHash(blockhash)
-        transaction.sign(signers)
+        val transaction = Transaction().apply {
+            addInstructions(instructions)
+            setFeePayer(feePayerPublicKey)
+            recentBlockHash = blockhash
+            sign(signers)
+        }
 
         val serializedMessage = transaction.serialize()
         val serializedTransaction = Base64Utils.encode(serializedMessage)

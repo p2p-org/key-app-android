@@ -268,7 +268,7 @@ class SendPresenter(
         if (isConfirmationRequired) {
             val data = SendConfirmData(
                 token = token,
-                amount = state.tokenAmount.toString(),
+                amount = state.tokenAmount.toPlainString(),
                 amountUsd = state.usdAmount.toString(),
                 destination = address
             )

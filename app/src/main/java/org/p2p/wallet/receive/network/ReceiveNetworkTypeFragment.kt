@@ -72,7 +72,7 @@ class ReceiveNetworkTypeFragment :
                 presenter.onNetworkChanged(NetworkType.BITCOIN)
             }
         }
-        childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { key, bundle ->
+        childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
             if (bundle.containsKey(BUNDLE_KEY_IS_TOPUP_SELECTED)) {
                 onTopupResult(bundle)
             }
