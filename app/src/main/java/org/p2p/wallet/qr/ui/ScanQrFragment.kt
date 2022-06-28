@@ -22,6 +22,7 @@ import org.p2p.wallet.common.permissions.PermissionsDialog
 import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
 import org.p2p.wallet.send.analytics.SendAnalytics
+import org.p2p.wallet.utils.NoOp
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -109,6 +110,7 @@ class ScanQrFragment :
                     message = getString(R.string.camera_permission_alert_message)
                 )
             }
+            else -> NoOp
         }
     }
 

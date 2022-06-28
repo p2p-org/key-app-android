@@ -31,7 +31,7 @@ class BurnBtcInteractor(
     companion object {
         private const val BURN_FEE_LENGTH = 97
         private const val REN_BTC_DECIMALS = 6
-        private val BURN_FEE_VALUE = "0.000005"
+        private const val BURN_FEE_VALUE = "0.000005"
     }
 
     private var nonceBuffer: ByteArray = byteArrayOf()

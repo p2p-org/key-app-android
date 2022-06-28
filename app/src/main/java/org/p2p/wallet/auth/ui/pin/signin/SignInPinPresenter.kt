@@ -84,14 +84,6 @@ class SignInPinPresenter(
         }
     }
 
-    override fun load() {
-        val authType = if (authInteractor.getBiometricStatus() == BiometricStatus.ENABLED) {
-            AuthAnalytics.AuthType.BIOMETRIC
-        } else {
-            AuthAnalytics.AuthType.PIN
-        }
-    }
-
     private inline fun signInActual(
         crossinline performSignIn: suspend () -> SignInResult
     ) {

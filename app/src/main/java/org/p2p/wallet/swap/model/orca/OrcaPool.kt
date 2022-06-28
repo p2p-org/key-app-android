@@ -67,7 +67,7 @@ data class OrcaPool(
     ): BigInteger {
         val fees = getFee(inputAmount)
         val inputAmountLessFee = inputAmount - fees
-        return _getOutputAmount(inputAmountLessFee)
+        return getOutputAmountInternal(inputAmountLessFee)
     }
 
     fun getInputAmount(
@@ -119,7 +119,7 @@ data class OrcaPool(
 
     fun calculatingFees(inputAmount: BigInteger): BigInteger {
         val inputFees = getFee(inputAmount)
-        return _getOutputAmount(inputFees)
+        return getOutputAmountInternal(inputFees)
     }
 
     fun getMinimumAmountOut(
@@ -172,14 +172,11 @@ data class OrcaPool(
     }
 
     // / price impact
-    fun getPriceImpact(
-        inputAmount: BigInteger,
-        outputAmount: BigInteger
-    ): BigDecimal? {
+    fun getPriceImpact(inputAmount: BigInteger): BigDecimal? {
         val baseOutputAmount = getBaseOutputAmount(inputAmount) ?: return null
 
-        val inputAmountDecimal = inputAmount.fromLamports(0).toDouble()
-        val baseOutputAmountDecimal = baseOutputAmount.fromLamports(0).toDouble()
+        val inputAmountDecimal = inputAmount.fromLamports(decimals = 0).toDouble()
+        val baseOutputAmountDecimal = baseOutputAmount.fromLamports(decimals = 0).toDouble()
 
         return BigDecimal((baseOutputAmountDecimal - inputAmountDecimal) / baseOutputAmountDecimal * 100.0)
     }
@@ -192,7 +189,7 @@ data class OrcaPool(
         return tradingFee + ownerFee
     }
 
-    private fun _getOutputAmount(inputAmount: BigInteger): BigInteger {
+    private fun getOutputAmountInternal(inputAmount: BigInteger): BigInteger {
         val poolInputAmount = tokenABalance?.amount
         val poolOutputAmount = tokenBBalance?.amount
 
@@ -395,7 +392,11 @@ data class OrcaPool(
         // Solve for y:
         // y**2 + y * (sum' - (A*n**n - 1) * D / (A * n**n)) = D ** (n + 1) / (n ** (2 * n) * prod' * A)
         // y**2 + b*y = c
-        private fun _computeOutputAmount(leverage: BigInteger, newInputAmount: BigInteger, d: BigInteger): BigInteger {
+        private fun computeOutputAmountInternal(
+            leverage: BigInteger,
+            newInputAmount: BigInteger,
+            d: BigInteger
+        ): BigInteger {
             val c = d.pow(N_COINS + 1) / (newInputAmount * N_COINS_SQUARED.toBigInteger() * leverage)
 
             val b = newInputAmount + (d / leverage)
@@ -427,7 +428,7 @@ data class OrcaPool(
                 outputPoolAmount,
                 inputPoolAmount
             )
-            val newInputPoolAmount = _computeOutputAmount(
+            val newInputPoolAmount = computeOutputAmountInternal(
                 leverage,
                 newOutputPoolAmount,
                 d
@@ -436,7 +437,9 @@ data class OrcaPool(
             return inputAmount
         }
 
-        // returns Pair<quotient, divisor>)
+        /**
+         * @return Pair<quotient, divisor>)
+         */
         private fun ceilingDivision(
             dividend: BigInteger,
             divisor: BigInteger
@@ -445,23 +448,23 @@ data class OrcaPool(
                 return BigInteger.ZERO to divisor
             }
 
-            var divisor = divisor
-            var quotient = dividend / divisor
-            if (quotient.isZero()) {
-                return BigInteger.ZERO to divisor
+            var resultDivisor = divisor
+            var resultQuotient = dividend / resultDivisor
+            if (resultQuotient.isZero()) {
+                return BigInteger.ZERO to resultDivisor
             }
 
-            var remainder = dividend % divisor
+            var remainder = dividend % resultDivisor
             if (remainder > BigInteger.ZERO) {
-                quotient += BigInteger.ONE
-                divisor = dividend / quotient
-                remainder = dividend / quotient
+                resultQuotient += BigInteger.ONE
+                resultDivisor = dividend / resultQuotient
+                remainder = dividend / resultQuotient
                 if (remainder > BigInteger.ZERO) {
-                    divisor += BigInteger.ONE
+                    resultDivisor += BigInteger.ONE
                 }
             }
 
-            return quotient to divisor
+            return resultQuotient to resultDivisor
         }
 
         private fun computeOutputAmount(
@@ -474,7 +477,7 @@ data class OrcaPool(
             val newInputPoolAmount = inputAmount + inputPoolAmount
             val d = computeD(leverage, inputPoolAmount, outputPoolAmount)
 
-            val newOutputPoolAmount = _computeOutputAmount(leverage, newInputPoolAmount, d)
+            val newOutputPoolAmount = computeOutputAmountInternal(leverage, newInputPoolAmount, d)
             val outputAmount = outputPoolAmount - newOutputPoolAmount
             return outputAmount
         }

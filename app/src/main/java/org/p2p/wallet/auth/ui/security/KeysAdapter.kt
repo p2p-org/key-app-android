@@ -40,7 +40,7 @@ class KeysAdapter : RecyclerView.Adapter<KeysAdapter.KeyViewHolder>() {
 
         @SuppressLint("SetTextI18n")
         fun bind(value: String) {
-            indexTextView.text = "${adapterPosition + 1}. "
+            indexTextView.text = "${bindingAdapterPosition + 1}. "
             nameTextView.text = value
         }
     }

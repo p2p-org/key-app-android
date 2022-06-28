@@ -28,21 +28,13 @@ class PublicKey {
         this.publicKey = publicKey
     }
 
-    fun asByteArray(): ByteArray {
-        return publicKey.copyOf()
-    }
+    fun asByteArray(): ByteArray = publicKey.copyOf()
 
-    fun toBase58(): String {
-        return Base58.encode(publicKey)
-    }
+    fun toBase58(): String = Base58.encode(publicKey)
 
-    fun equals(pubkey: PublicKey): Boolean {
-        return this.publicKey.contentEquals(pubkey.asByteArray())
-    }
+    fun equals(other: PublicKey): Boolean = this.publicKey.contentEquals(other.asByteArray())
 
-    override fun toString(): String {
-        return toBase58()
-    }
+    override fun toString(): String = toBase58()
 
     class ProgramDerivedAddress(val address: PublicKey, val nonce: Int)
 
