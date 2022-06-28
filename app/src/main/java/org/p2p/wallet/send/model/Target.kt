@@ -33,7 +33,16 @@ data class Target constructor(
         get() {
             val lowercaseValue = value.lowercase().trim()
             return when {
-                lowercaseValue.endsWith(P2P_DOMAIN) || lowercaseValue.endsWith(SOL_DOMAIN) -> lowercaseValue
+                lowercaseValue.endsWith(P2P_DOMAIN) ||
+                    lowercaseValue.endsWith(SOL_DOMAIN) ||
+                    lowercaseValue.contains(".") -> {
+                    val firstDotIndex = lowercaseValue.indexOf(".")
+                    if (firstDotIndex > 0) {
+                        lowercaseValue.substring(0, firstDotIndex)
+                    } else {
+                        lowercaseValue
+                    }
+                }
                 else -> lowercaseValue.replace(".", "")
             }
         }
