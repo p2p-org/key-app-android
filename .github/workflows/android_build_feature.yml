@@ -56,6 +56,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACH_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
         run: |
+          curl \
           -S -s -o /dev/null \
           -F token="${SLACK_BOT_TOKEN}" \
           -F channels="${SLACK_CHANNEL_ID}" \

@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.interactor
 
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
@@ -48,19 +49,20 @@ class HistoryInteractor(
         multipleStreamSource = MultipleStreamSource(historyStreamSources, serviceScope)
     }
 
-    suspend fun loadTransactions(isRefresh: Boolean = false): List<HistoryTransaction> {
-        if (historyStreamSources.isEmpty()) {
-            initStreamSources()
+    suspend fun loadTransactions(isRefresh: Boolean = false): List<HistoryTransaction> =
+        withContext(serviceScope.coroutineContext) {
+            if (historyStreamSources.isEmpty()) {
+                initStreamSources()
+            }
+            if (isRefresh) {
+                allSignatures.clear()
+                tokenSignaturesMap.clear()
+                multipleStreamSource.reset()
+            }
+            val signatures = loadAllSignatures()
+            allSignatures.addAll(signatures.mapNotNull { it.streamSource?.signature })
+            return@withContext loadTransactions(signatures)
         }
-        if (isRefresh) {
-            allSignatures.clear()
-            tokenSignaturesMap.clear()
-            multipleStreamSource.reset()
-        }
-        val signatures = loadAllSignatures()
-        allSignatures.addAll(signatures.mapNotNull { it.streamSource?.signature })
-        return loadTransactions(signatures)
-    }
 
     suspend fun loadTransactions(account: String, isRefresh: Boolean = false): List<HistoryTransaction> {
         if (historyStreamSources.isEmpty() || accountsStreamSources[account] == null) {
