@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "553127941597",
+    "firebase_url": "https://p2p-wallet.firebaseio.com",
+    "project_id": "p2p-wallet",
+    "storage_bucket": "p2p-wallet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553127941597:android:e555c8e43db6e8f22c5234",
+        "android_client_info": {
+          "package_name": "org.p2p.wallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553127941597-9031f9lh0oteojcqh1prv50a7rdos76n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALuyoazWQsOcvVJnDWphITAPH1Suna2L8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553127941597-9031f9lh0oteojcqh1prv50a7rdos76n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "553127941597-2cueeajq5d7rrmh7l0945j02lcdghimo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.p2p.p2p-wallet"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553127941597:android:a1a46cafc2c765fb2c5234",
+        "android_client_info": {
+          "package_name": "org.p2p.wallet.feature"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553127941597-9031f9lh0oteojcqh1prv50a7rdos76n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALuyoazWQsOcvVJnDWphITAPH1Suna2L8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553127941597-9031f9lh0oteojcqh1prv50a7rdos76n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "553127941597-2cueeajq5d7rrmh7l0945j02lcdghimo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.p2p.p2p-wallet"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
