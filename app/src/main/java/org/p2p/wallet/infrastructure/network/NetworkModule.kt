@@ -1,6 +1,5 @@
 package org.p2p.wallet.infrastructure.network
 
-import android.content.Context
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -44,7 +43,7 @@ object NetworkModule : InjectionModule {
         single { CertificateManager(get(), get()) }
         single {
             val urlRes = if (BuildConfig.DEBUG) R.string.feeRelayerTestBaseUrl else R.string.feeRelayerBaseUrl
-            val baseUrl = get<Context>().getString(urlRes)
+            val baseUrl = androidContext().getString(urlRes)
             FeeRelayerEnvironment(baseUrl)
         }
 

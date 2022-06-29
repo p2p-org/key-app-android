@@ -6,18 +6,18 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BaseFragment
-import org.p2p.wallet.databinding.FragmentFeeRelayerBinding
+import org.p2p.wallet.databinding.FragmentDebugFeeRelayerBinding
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class DebugFeeRelayerFragment : BaseFragment(R.layout.fragment_fee_relayer) {
+class DebugFeeRelayerFragment : BaseFragment(R.layout.fragment_debug_fee_relayer) {
 
     companion object {
-        fun create() = DebugFeeRelayerFragment()
+        fun create(): DebugFeeRelayerFragment = DebugFeeRelayerFragment()
     }
 
-    private val binding: FragmentFeeRelayerBinding by viewBinding()
+    private val binding: FragmentDebugFeeRelayerBinding by viewBinding()
 
     private val environmentManager: EnvironmentManager by inject()
     private val appRestarter: AppRestarter by inject()
