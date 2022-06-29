@@ -12,11 +12,13 @@ import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import kotlin.reflect.KClass
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
+private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
 private const val KEY_RPC_BASE_URL = "KEY_RPC_BASE_URL"
 
 class EnvironmentManager(
     private val context: Context,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val defaultFeeRelayerEnvironment: FeeRelayerEnvironment
 ) {
 
     fun interface EnvironmentManagerListener {
@@ -66,6 +68,19 @@ class EnvironmentManager(
     fun loadEnvironment(): Environment {
         val url = sharedPreferences.getString(KEY_BASE_URL, Environment.RPC_POOL.endpoint).orEmpty()
         return parse(url)
+    }
+
+    fun loadFeeRelayerEnvironment(): FeeRelayerEnvironment {
+        val url = sharedPreferences.getString(
+            KEY_FEE_RELAYER_BASE_URL,
+            defaultFeeRelayerEnvironment.baseFeeRelayerUrl
+        ).orEmpty()
+
+        return FeeRelayerEnvironment(url)
+    }
+
+    fun saveFeeRelayerEnvironment(newUrl: String) {
+        sharedPreferences.edit { putString(KEY_FEE_RELAYER_BASE_URL, newUrl) }
     }
 
     fun loadRpcEnvironment(): RpcEnvironment = if (loadEnvironment() == Environment.DEVNET) {

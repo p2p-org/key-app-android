@@ -1,5 +1,6 @@
 package org.p2p.wallet.infrastructure.network
 
+import android.content.Context
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -15,6 +16,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.FeeRelayerEnvironment
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
@@ -37,9 +39,14 @@ object NetworkModule : InjectionModule {
     const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     override fun create() = module {
-        single { EnvironmentManager(get(), get()) }
+        single { EnvironmentManager(get(), get(), get()) }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
+        single {
+            val urlRes = if (BuildConfig.DEBUG) R.string.feeRelayerTestBaseUrl else R.string.feeRelayerBaseUrl
+            val baseUrl = get<Context>().getString(urlRes)
+            FeeRelayerEnvironment(baseUrl)
+        }
 
         single {
             GsonBuilder()
