@@ -11,24 +11,24 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerError
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.RpcConstants
 import timber.log.Timber
 import java.io.IOException
 
 open class RpcInterceptor(
     private val gson: Gson,
-    environmentManager: EnvironmentManager
+    environmentManager: NetworkEnvironmentManager
 ) : Interceptor {
 
     private val TAG = "RpcInterceptor"
-    private var currentEnvironment = environmentManager.loadEnvironment()
+    private var currentEnvironment = environmentManager.loadCurrentEnvironment()
 
     init {
         environmentManager.addEnvironmentListener(this::class) { newEnvironment ->
@@ -58,7 +58,7 @@ open class RpcInterceptor(
         val signaturesEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_SIGNATURES
         val environmentUrl =
             if (json?.getString(key) == historyEndpoint || json?.getString(key) == signaturesEndpoint) {
-                Environment.RPC_POOL
+                NetworkEnvironment.RPC_POOL
             } else {
                 currentEnvironment
             }
@@ -93,9 +93,9 @@ open class RpcInterceptor(
         return json
     }
 
-    private fun getBaseUrl(environment: Environment): String {
+    private fun getBaseUrl(environment: NetworkEnvironment): String {
         var uri = Uri.parse(environment.endpoint)
-        if (environment == Environment.RPC_POOL) {
+        if (environment == NetworkEnvironment.RPC_POOL) {
             uri = uri.buildUpon().encodedPath(BuildConfig.rpcPoolApiKey).build()
         }
         return uri.host ?: throw IllegalStateException("Host cannot be null ${uri.host}")

@@ -15,7 +15,7 @@ import org.p2p.wallet.common.crashlytics.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
@@ -23,6 +23,7 @@ import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
+import org.p2p.wallet.moonpay.api.MoonpayUrlCreator
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_SOLANA_RETROFIT_QUALIFIER
@@ -38,7 +39,8 @@ object NetworkModule : InjectionModule {
     const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     override fun create() = module {
-        single { EnvironmentManager(get(), get()) }
+        single { NetworkEnvironmentManager(get()) }
+        single { MoonpayUrlCreator(androidContext().getString(R.string.moonpayWalletDomain), BuildConfig.moonpayKey) }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
 
@@ -64,7 +66,7 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(RPC_RETROFIT_QUALIFIER)) {
-            val environment = get<EnvironmentManager>().loadEnvironment()
+            val environment = get<NetworkEnvironmentManager>().loadCurrentEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(
                 baseUrl = rpcApiUrl,
@@ -74,7 +76,7 @@ object NetworkModule : InjectionModule {
             )
         }
         single(named(RPC_SOLANA_RETROFIT_QUALIFIER)) {
-            val environment = get<EnvironmentManager>().loadRpcEnvironment()
+            val environment = get<NetworkEnvironmentManager>().loadRpcEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(
                 baseUrl = rpcApiUrl,

@@ -14,7 +14,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureTog
 
 object FeatureTogglesModule : InjectionModule {
     override fun create() = module {
-        singleOf(::AppFirebaseRemoteConfig)
+        single(createdAtStart = true) { AppFirebaseRemoteConfig() }
         singleOf(::LocalFirebaseRemoteConfig)
 
         singleOf(::FeatureTogglesValuesSource) bind RemoteConfigValuesProvider::class

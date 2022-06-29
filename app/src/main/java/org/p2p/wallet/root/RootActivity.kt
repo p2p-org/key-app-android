@@ -54,6 +54,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
             presenter.openRootScreen()
         }
 
+        presenter.loadAvailableNetworkEnvironments()
         presenter.loadPricesAndBids()
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()

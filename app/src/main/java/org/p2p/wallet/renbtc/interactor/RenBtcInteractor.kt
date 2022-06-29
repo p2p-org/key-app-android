@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.p2p.solanaj.kits.renBridge.LockAndMint
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.model.RenBtcSession
@@ -69,7 +69,7 @@ class RenBtcInteractor(
         renTransactionManager.startPolling(session, tokenKeyProvider.secretKey)
     }
 
-    suspend fun getPaymentData(environment: Environment, gatewayAddress: String) =
+    suspend fun getPaymentData(environment: NetworkEnvironment, gatewayAddress: String) =
         repository.getPaymentData(environment, gatewayAddress)
 
     suspend fun setSessionSate(session: RenBtcSession) {

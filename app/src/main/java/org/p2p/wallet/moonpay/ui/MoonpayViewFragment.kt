@@ -13,8 +13,8 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMoonpayViewBinding
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.moonpay.api.MoonpayUrlCreator
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -34,7 +34,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
         )
     }
 
-    private val environmentManager: EnvironmentManager by inject()
+    private val moonpayUrlCreator: MoonpayUrlCreator by inject()
     private val binding: FragmentMoonpayViewBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val tokenKeyProvider: TokenKeyProvider by inject()
@@ -55,7 +55,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
             lifecycleScope.launchWhenResumed {
                 delay(DELAY_IN_MS)
-                val url = environmentManager.getMoonpayUrl(amount, tokenKeyProvider.publicKey, currencyCode)
+                val url = moonpayUrlCreator.create(amount, tokenKeyProvider.publicKey, currencyCode)
                 Timber.tag("Moonpay").d("Loading moonpay with url: $url")
                 webView.loadUrl(url)
             }

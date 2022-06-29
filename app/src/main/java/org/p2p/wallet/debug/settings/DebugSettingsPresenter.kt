@@ -6,16 +6,16 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
 
 class DebugSettingsPresenter(
-    environmentManager: EnvironmentManager,
+    environmentManager: NetworkEnvironmentManager,
     private val resourcesProvider: ResourcesProvider,
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
-    private var networkName = environmentManager.loadEnvironment().name
+    private var networkName = environmentManager.loadCurrentEnvironment().name
 
     override fun loadData() {
         val settings = getMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()

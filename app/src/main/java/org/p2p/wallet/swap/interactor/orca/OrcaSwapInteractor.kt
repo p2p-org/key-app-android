@@ -10,7 +10,7 @@ import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.model.Slippage
@@ -35,7 +35,7 @@ class OrcaSwapInteractor(
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val rpcAmountRepository: RpcAmountRepository,
     private val orcaNativeSwapInteractor: OrcaNativeSwapInteractor,
-    private val environmentManager: EnvironmentManager,
+    private val environmentManager: NetworkEnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
