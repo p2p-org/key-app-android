@@ -17,4 +17,14 @@
         <attr name="isCaps" format="boolean" />
     </declare-styleable>
 
+    <!-- Cells -->
+
+    <declare-styleable name="UiKitTitleView">
+        <attr name="icon" />
+        <attr name="title" />
+        <attr name="subtitleColor" format="color" />
+        <attr name="subtitle1" format="string" />
+        <attr name="subtitle2" format="string" />
+    </declare-styleable>
+
 </resources>
