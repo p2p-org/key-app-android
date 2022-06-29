@@ -19,15 +19,15 @@ class UiKitToolbarView @JvmOverloads constructor(
         minimumHeight = resources.getDimension(R.dimen.toolbar_height).toInt()
     }
 
-    fun setSearchMenu(queryTextListener: SearchView.OnQueryTextListener, initVisibility: Boolean = true) {
+    fun setSearchMenu(queryTextListener: SearchView.OnQueryTextListener, isMenuVisible: Boolean = true) {
         inflateMenu(R.menu.menu_ui_kit_toolbar_search)
 
         val search = menu.findItem(R.id.menu_search_view)
         searchView = search.actionView as SearchView
         searchView?.apply {
-            isVisible = initVisibility
+            isVisible = isMenuVisible
             setOnQueryTextListener(queryTextListener)
-            if (initVisibility) {
+            if (isMenuVisible) {
                 onActionViewExpanded()
             }
         }
