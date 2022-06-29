@@ -49,7 +49,7 @@ jobs:
         run: echo $SSL_CERTIFICATE > app/src/main/res/raw/cert.pem
 
       - name: Build feature artifacts with gradle
-        run: ./gradlew --no-daemon -g /cache assembleFeature
+        run: ./gradlew assembleFeature
 
       - name: Save feature artifacts
         uses: actions/upload-artifact@v3
