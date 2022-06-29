@@ -1,0 +1,39 @@
+name: "Create Apikey file"
+description: "Create apikey.properties and fill them"
+inputs:
+  rpc-pool-secret:
+    description: "Rpc pool api key"
+    required: true
+  moonpay-secret:
+    description: "Moonpay api key"
+    required: true
+  compare-secret:
+    description: "Compare token api key"
+    required: true
+  intercom-id-secret:
+    description: "Intercom app id"
+    required: true
+  intercom-key-secret:
+    description: "Intercom app key"
+    required: true
+  amplitude-secret:
+    description: "Amplitude api key"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Create apikey.properties file
+      shell: bash
+      run: |
+        - touch apikey.properties
+        - echo "rpcPoolApiKey=\"${{ inputs.rpc-pool-secret }}\"" >> apikey.properties
+        - echo "moonpayKey=\"${{ inputs.moonpay-secret }}\"" >> apikey.properties
+        - echo "comparePublicKey=\"${{ inputs.compare-secret }}\"" >> apikey.properties
+        - echo "intercomApiKey=\"${{ inputs.intercom-id-secret }}\"" >> apikey.properties
+        - echo "intercomAppId=\"${{ inputs.intercom-key-secret }}\"" >> apikey.properties
+        - echo "amplitudeKey=\"${{ inputs.amplitude-secret }}\"" >> apikey.properties
+        - echo "apikeys.properties succesfully created"
+        - name: Build feature artifacts with gradle
+
+

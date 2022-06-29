@@ -1,13 +1,9 @@
 name: Android build feature artifacts [APK,AAB]
 
-on:
-  pull_request:
-    branches:
-      - develop
+on: [ pull_request ]
 
 jobs:
-  Build-Feature-APK:
-    needs: [Android-lint,Unit-test]
+  build-apk-feature:
     runs-on: ubuntu-latest
     name: Build Feature APK
     steps:
@@ -16,60 +12,32 @@ jobs:
 
       - name: Setup Java
         uses: actions/setup-java@v1
-        with: { java-version: 11 }
+        with:
+          java-version: 11
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+      - uses: ./.github/actions/setup-firebase
+        with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
 
-      - name: Create apikey properties file
-        env:
-          PRC_POOL_API_KEY: ${{ secrets.RPC_POOL_API_KEY }}
-          MOONPAY_KEY: ${{ secrets.MOONPAY_KEY }}
-          COMPARE_PUBLIC_KEY: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          INTERCOM_API_KEY: ${{ secrets.INTERCOM_API_KEY }}
-          INTERCOM_APP_ID: ${{ secrets.INTERCOM_APP_ID }}
-          AMPLITUDE_KEY: ${{ secrets.AMPLITUDE_KEY }}
+      - name: Create apikey file
+        uses: ./.github/actions/setup-apikey
+        with:
+          rpc-pool-secret: ${{ secret.RPC_POOL_API_KEY }}
+          moonpay-secret: ${{ secret.MOONPAY_KEY }}
+          compare-secret: ${{ secret.COMPARE_PUBLIC_KEY }}
+          intercom-id-secret: ${{ secret.INTERCOM_APP_ID }}
+          intercom-key-secret: ${{ secret.INTERCOM_API_KEY }}
+          amplitude-secret: ${{ secret.AMPLITUDE_KEY }}
 
-        run: |
-          echo "rpcPoolApiKey=\"$RPC_POOL_APIKEY\"" > apikey.properties
-          echo "moonpayKey=\"$MOONPAY_KEY\"" >> apikey.properties
-          echo "comparePublicKey=\"$COMPARE_PUBLIC_KEY\"" >> apikey.properties
-          echo "intercomApiKey=\"$INTERCOM_API_KEY\"" >> apikey.properties
-          echo "intercomAppId=\"$INTERCOM_APP_ID\"" >> apikey.properties
-          echo "amplitudeKey=\"$AMPLITUDE_KEY\"" >> apikey.properties
-          echo "apikeys.properties succesfully created"
-
-      - name: Setup google-json from secrets
-        env:
-          FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-        run: echo $FIREBASE_SECRET > app/google-services.json
-
-      - name: Create and fill cert.pem certificate for SSL pinning
-        env:
-          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
-        run: echo $SSL_CERTIFICATE > app/src/main/res/raw/cert.pem
-
-      - name: Build feature artifacts with gradle
+      - name: Upload artifact to Firebase
         run: ./gradlew assembleFeature appDistributionUploadFeature
 
-      - name: Save feature artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload artifact to Slack
+        uses: ./.github/actions/setup-slack
         with:
-          name: p2p-wallet-feature.apk
-          path: app/build/outputs/apk/feature/
-
-      - name: Upload apk to slack channel
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
-        run: |
-          curl \
-          -S -s -o /dev/null \
-          -F token="${SLACK_BOT_TOKEN}" \
-          -F channels="${SLACK_CHANNEL_ID}" \
-          -F initial_comment="Hey! Here is a new feature apk. Success :tada:" \
-          -F "file=@$(find app/build/outputs/apk/feature -name 'p2p*')" \
-          https://slack.com/api/files.upload
+          aritfact: @$(find app/build/outputs/apk/feature -name 'p2p*')
+          bot-token: ${{ secret.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secret.SLACK_CHANNEL_ID }}
 
 
 
