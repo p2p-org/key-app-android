@@ -15,7 +15,7 @@
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/actionImageView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="$190.91" />
 
@@ -25,8 +25,21 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/actionImageView"
         app:layout_constraintTop_toBottomOf="@id/usdAmountTextView"
         tools:text="23.8112 SOL" />
+
+    <ImageView
+        android:id="@+id/actionImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingStart="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_chevron_right" />
 
 </merge>

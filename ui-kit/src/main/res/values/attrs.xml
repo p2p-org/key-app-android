@@ -28,6 +28,7 @@
     </declare-styleable>
 
     <declare-styleable name="UiKitAmountView">
+        <attr name="icon" />
         <attr name="usdAmount" format="string" />
         <attr name="tokenAmount" format="string" />
     </declare-styleable>
