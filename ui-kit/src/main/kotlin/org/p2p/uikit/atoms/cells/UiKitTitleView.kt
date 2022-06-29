@@ -2,12 +2,12 @@ package org.p2p.uikit.atoms.cells
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTitleViewBinding
+import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
@@ -42,7 +42,7 @@ class UiKitTitleView @JvmOverloads constructor(
             field = value
         }
 
-    private val binding = WidgetTitleViewBinding.inflate(LayoutInflater.from(context), this)
+    private val binding = inflateViewBinding<WidgetTitleViewBinding>()
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitTitleView).use { typedArray ->
@@ -52,6 +52,7 @@ class UiKitTitleView @JvmOverloads constructor(
 
             icon = if (iconRes == -1) null else iconRes
             binding.subtitle1TextView.setTextColor(subtitleTextColor)
+            title = typedArray.getString(R.styleable.UiKitTitleView_title)
             subtitle1 = typedArray.getString(R.styleable.UiKitTitleView_subtitle1)
             subtitle2 = typedArray.getString(R.styleable.UiKitTitleView_subtitle2)
         }
