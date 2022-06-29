@@ -22,5 +22,5 @@ runs:
         -F token="${{ inputs.bot-token }}" \
         -F channels="${{ inputs.channel-id }}" \
         -F initial_comment="Hey! Here is a new feature apk. Success :tada:" \
-        -F "file="${{ inputs.artifact }}" \
+        -F "file=@$(find app/build/outputs/apk/feature -name 'p2p*')" \
         https://slack.com/api/files.upload
