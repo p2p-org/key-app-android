@@ -22,12 +22,17 @@ jobs:
       - name: Create apikey file
         uses: ./.github/actions/setup-apikey
         with:
-          rpc-pool-secret: ${{ secret.RPC_POOL_API_KEY }}
-          moonpay-secret: ${{ secret.MOONPAY_KEY }}
-          compare-secret: ${{ secret.COMPARE_PUBLIC_KEY }}
-          intercom-id-secret: ${{ secret.INTERCOM_APP_ID }}
-          intercom-key-secret: ${{ secret.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secret.AMPLITUDE_KEY }}
+          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
+          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+
+      - name: Create and fill cert.pem certificate for SSL pinning
+        env:
+          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
       - name: Upload artifact to Firebase
         run: ./gradlew assembleFeature appDistributionUploadFeature
@@ -36,8 +41,8 @@ jobs:
         uses: ./.github/actions/setup-slack
         with:
           aritfact: app/build/outputs/apk/feature/*.apk
-          bot-token: ${{ secret.SLACK_BOT_TOKEN }}
-          channel-id: ${{ secret.SLACK_CHANNEL_ID }}
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
 
 
 
