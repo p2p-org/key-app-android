@@ -38,14 +38,13 @@ object NetworkModule : InjectionModule {
     const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     override fun create() = module {
-        single { EnvironmentManager(get(), get(), get()) }
+        single {
+            val baseUrl = androidContext().getString(R.string.feeRelayerBaseUrl)
+            val environment = FeeRelayerEnvironment(baseUrl)
+            EnvironmentManager(get(), get(), environment)
+        }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
-        single {
-            val urlRes = if (BuildConfig.DEBUG) R.string.feeRelayerTestBaseUrl else R.string.feeRelayerBaseUrl
-            val baseUrl = androidContext().getString(urlRes)
-            FeeRelayerEnvironment(baseUrl)
-        }
 
         single {
             GsonBuilder()

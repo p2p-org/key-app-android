@@ -1,5 +1,5 @@
 package org.p2p.wallet.infrastructure.network.environment
 
-class FeeRelayerEnvironment(
+data class FeeRelayerEnvironment(
     val baseFeeRelayerUrl: String
 )

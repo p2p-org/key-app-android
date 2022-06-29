@@ -1,23 +1,20 @@
 package org.p2p.wallet.swap.koin
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -30,6 +27,7 @@ import org.koin.test.check.checkKoinModules
 import org.koin.test.mock.MockProviderRule
 import org.mockito.Mockito
 import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.RpcEnvironment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
@@ -42,6 +40,8 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.FeeRelayerEnvironment
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
@@ -61,6 +61,11 @@ import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -99,6 +104,14 @@ class CheckModulesTest : KoinTest {
         every { getExternalFilesDir(any()) }.returns(externalDirMock)
     }
 
+    private val environmentManagerMock: EnvironmentManager = mockk {
+        EnvironmentManager(
+            mockk(),
+            sharedPrefsMock,
+            FeeRelayerEnvironment("https://blockstream.info/")
+        )
+    }
+
     private val applicationMock: Application = mockk {
         every { applicationContext }.returns(contextMock)
         every { baseContext }.returns(contextMock)
@@ -112,6 +125,10 @@ class CheckModulesTest : KoinTest {
         }
     }
 
+    private val networkModule: Module = module {
+        single { environmentManagerMock }
+    }
+
     @Before
     fun before() {
         // need to fix The main looper is not available at AndroidDispatcherFactory
@@ -123,8 +140,10 @@ class CheckModulesTest : KoinTest {
     fun verifyKoinApp() {
         mockFirebase()
 
+        mockEnvironmentManager()
+
         checkKoinModules(
-            modules = allModules + javaxDefaultModule,
+            modules = allModules + javaxDefaultModule + networkModule,
             appDeclaration = {
                 allowOverride(override = true)
 
@@ -140,6 +159,17 @@ class CheckModulesTest : KoinTest {
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
             }
         )
+    }
+
+    private fun mockEnvironmentManager() {
+        every {
+            environmentManagerMock.loadFeeRelayerEnvironment()
+        } returns FeeRelayerEnvironment("https://blockstream.info/")
+
+        every { environmentManagerMock.loadRpcEnvironment() } returns RpcEnvironment.MAINNET
+
+        every { environmentManagerMock.loadEnvironment() } returns Environment.DEVNET
+        every { environmentManagerMock.addEnvironmentListener(any(), any()) } just Runs
     }
 
     private fun mockFirebase() {
