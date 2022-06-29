@@ -7,7 +7,7 @@ import androidx.core.view.isVisible
 import com.google.android.material.appbar.MaterialToolbar
 import org.p2p.uikit.R
 
-class UiKitToolbarView @JvmOverloads constructor(
+class UiKitToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
