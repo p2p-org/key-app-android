@@ -27,4 +27,9 @@
         <attr name="subtitle2" format="string" />
     </declare-styleable>
 
+    <declare-styleable name="UiKitAmountView">
+        <attr name="usdAmount" format="string" />
+        <attr name="tokenAmount" format="string" />
+    </declare-styleable>
+
 </resources>
