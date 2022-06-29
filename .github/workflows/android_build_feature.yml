@@ -30,13 +30,13 @@ jobs:
           AMPLITUDE_KEY: ${{ secrets.AMPLITUDE_KEY }}
 
         run: |
-            echo "rpcPoolApiKey=\"$RPC_POOL_APIKEY\"" > apikey.properties
-            echo "moonpayKey=\"$MOONPAY_KEY\"" >> apikey.properties
-            echo "comparePublicKey=\"$COMPARE_PUBLIC_KEY\"" >> apikey.properties
-            echo "intercomApiKey=\"$INTERCOM_API_KEY\"" >> apikey.properties
-            echo "intercomAppId=\"$INTERCOM_APP_ID\"" >> apikey.properties
-            echo "amplitudeKey=\"$AMPLITUDE_KEY\"" >> apikey.properties
-            echo "apikeys.properties succesfully created"
+          echo "rpcPoolApiKey=\"$RPC_POOL_APIKEY\"" > apikey.properties
+          echo "moonpayKey=\"$MOONPAY_KEY\"" >> apikey.properties
+          echo "comparePublicKey=\"$COMPARE_PUBLIC_KEY\"" >> apikey.properties
+          echo "intercomApiKey=\"$INTERCOM_API_KEY\"" >> apikey.properties
+          echo "intercomAppId=\"$INTERCOM_APP_ID\"" >> apikey.properties
+          echo "amplitudeKey=\"$AMPLITUDE_KEY\"" >> apikey.properties
+          echo "apikeys.properties succesfully created"
 
       - name: Setup google-json from secrets
         env:
@@ -49,7 +49,13 @@ jobs:
         run: echo $SSL_CERTIFICATE > app/src/main/res/raw/cert.pem
 
       - name: Build feature artifacts with gradle
-        run: ./gradlew assembleFeature
+        run: ./gradlew --no-daemon -g /cache assembleFeature
+
+      - name: Save feature artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: p2p-wallet-feature.apk
+          path: app/build/outputs/apk/feature/
 
       - name: Upload apk to slack channel
         env:
