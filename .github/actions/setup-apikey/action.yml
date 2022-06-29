@@ -34,6 +34,5 @@ runs:
         echo "intercomAppId=\"${{ inputs.intercom-key-secret }}\"" >> apikey.properties
         echo "amplitudeKey=\"${{ inputs.amplitude-secret }}\"" >> apikey.properties
         echo "apikeys.properties succesfully created"
-        name: Build feature artifacts with gradle
 
 
