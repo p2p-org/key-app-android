@@ -25,7 +25,6 @@ class SettingsNetworkListFeatureToggle(
         SettingsNetworkValue(url = "https://p2p.rpcpool.com", networkName = "mainnet-beta"),
         SettingsNetworkValue(url = "https://solana-api.projectserum.com", networkName = "mainnet-beta"),
         SettingsNetworkValue(url = "https://api.mainnet-beta.solana.com", networkName = "mainnet-beta"),
-        SettingsNetworkValue(url = "https://api.devnet.solana.com/", networkName = "devnet")
     )
     override val value: List<SettingsNetworkValue>
         get() = valuesProvider.getString(featureKey)
