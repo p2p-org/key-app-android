@@ -4,13 +4,13 @@ import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.common.di.ServiceScope
-import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.stream.AccountStreamSource
 import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
 import org.p2p.wallet.history.interactor.stream.HistoryStreamSource
 import org.p2p.wallet.history.interactor.stream.MultipleStreamSource
 import org.p2p.wallet.history.interactor.stream.StreamSourceConfiguration
+import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -75,8 +75,11 @@ class HistoryInteractor(
         }
 
         val signatures = loadSignaturesForAccount(account, accountsStreamSources[account]!!)
-        tokenSignaturesMap[account]?.addAll(signatures)
-        return loadTransactions(signatures)
+        return loadTransactions(signatures).also {
+            // NOTE: it is important to put signatures after sending result of loadTransactions
+            // as a guarantee that data was loaded
+            tokenSignaturesMap[account]?.addAll(signatures)
+        }
     }
 
     /*
