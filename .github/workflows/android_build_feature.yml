@@ -35,7 +35,7 @@ jobs:
       - name: Upload artifact to Slack
         uses: ./.github/actions/setup-slack
         with:
-          aritfact: @$(find app/build/outputs/apk/feature -name 'p2p*')
+          aritfact: app/build/outputs/apk/feature/*.apk
           bot-token: ${{ secret.SLACK_BOT_TOKEN }}
           channel-id: ${{ secret.SLACK_CHANNEL_ID }}
 
