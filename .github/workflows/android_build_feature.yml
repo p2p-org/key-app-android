@@ -40,9 +40,10 @@ jobs:
       - name: Upload artifact to Slack
         uses: ./.github/actions/setup-slack
         with:
-          aritfact: app/build/outputs/apk/feature/*.apk
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "feature"
+          artifact-type: "apk"
 
 
 
