@@ -11,7 +11,7 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -36,7 +36,7 @@ class HomePresenter(
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val environmentManager: EnvironmentManager,
+    private val environmentManager: NetworkEnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {

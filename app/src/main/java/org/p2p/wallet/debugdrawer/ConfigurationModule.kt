@@ -8,17 +8,17 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.databinding.ViewDebugDrawerConfigureEnvironmentBinding
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 
 class ConfigurationModule : DebugModuleAdapter(), KoinComponent {
 
-    private val environmentManager: EnvironmentManager by inject()
+    private val environmentManager: NetworkEnvironmentManager by inject()
     private val inAppFeatureFlags: InAppFeatureFlags by inject()
 
     override fun onCreateView(inflater: LayoutInflater, parent: ViewGroup): View {
         val binding = ViewDebugDrawerConfigureEnvironmentBinding.inflate(inflater, parent, false)
 
-        val environment = environmentManager.loadEnvironment()
+        val environment = environmentManager.loadCurrentEnvironment()
         with(binding) {
             urlTextView.text = environment.endpoint
             enablePollingSwitch.isChecked = inAppFeatureFlags.isPollingEnabled.featureValue

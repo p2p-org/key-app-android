@@ -9,20 +9,22 @@ private val ONE_HOUR_IN_SECONDS = TimeUnit.MINUTES.toSeconds(60)
 
 class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
 
-    private val remoteConfig: FirebaseRemoteConfig
-        get() = FirebaseRemoteConfig.getInstance()
-
-    fun init(onRemoteConfigInitialized: () -> Unit) {
+    init {
         remoteConfig.setConfigSettingsAsync(createRemoteConfigSettings())
             .addOnSuccessListener { Timber.d("Remote config is set") }
             .addOnFailureListener { Timber.e("Remote config is not set", it) }
 
         // maybe add loading screen in the start for remoteConfig to finish the job?
         remoteConfig.fetchAndActivate()
-            .addOnSuccessListener { Timber.d("Remote config fetched and activated") }
+            .addOnSuccessListener {
+                Timber.d("Remote config fetched and activated")
+                Timber.d("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
+            }
             .addOnFailureListener { Timber.e("Remote config is not fetched and activated", it) }
-            .addOnCompleteListener { onRemoteConfigInitialized.invoke() }
     }
+
+    private val remoteConfig: FirebaseRemoteConfig
+        get() = FirebaseRemoteConfig.getInstance()
 
     fun allFeatureTogglesRaw(): Map<String, String> = remoteConfig.all.mapValues { it.value.asString() }
 

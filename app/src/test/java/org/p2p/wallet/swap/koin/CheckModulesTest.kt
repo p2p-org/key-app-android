@@ -25,7 +25,7 @@ import org.koin.test.KoinTest
 import org.koin.test.check.checkKoinModules
 import org.koin.test.mock.MockProviderRule
 import org.mockito.Mockito
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
@@ -77,7 +77,7 @@ class CheckModulesTest : KoinTest {
     }
 
     private val sharedPrefsMock: SharedPreferences = mockk(relaxed = true) {
-        every { getString(eq("KEY_BASE_URL"), any()) }.returns(Environment.RPC_POOL.endpoint)
+        every { getString(eq("KEY_BASE_URL"), any()) }.returns(NetworkEnvironment.RPC_POOL.endpoint)
     }
 
     private val resourcesMock: Resources = mockk(relaxed = true)

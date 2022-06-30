@@ -21,6 +21,7 @@ object UserModule : InjectionModule {
         single<SolanaApi> {
             getRetrofit(
                 baseUrl = androidContext().getString(R.string.solanaTokensBaseUrl),
+                tag = "SolanaApi",
                 interceptor = null,
                 resources = get()
             )
