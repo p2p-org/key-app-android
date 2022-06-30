@@ -20,7 +20,7 @@ runs:
     - name: Curl upload file to slack POST request
       shell: bash
       run: |
-        ls -R app/build/outputs/${{ inputs.build-type }}/${{ inputs.artifact-type }}
+        ls -R app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }}
         curl \
         -S -s -o /dev/null \
         -F token="${{ inputs.bot-token }}" \
