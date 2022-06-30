@@ -1,13 +1,14 @@
 package org.p2p.wallet.debug.settings
 
+import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesFragment
+import org.p2p.wallet.debug.feerelayer.DebugFeeRelayerFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debugdrawer.CustomLogDialog
 import org.p2p.wallet.settings.model.SettingsRow
@@ -75,6 +76,9 @@ class DebugSettingsFragment :
                     popEnter = 0,
                     popExit = 0
                 )
+            }
+            R.string.settings_fee_relayer -> {
+                replaceFragment(DebugFeeRelayerFragment.create())
             }
             R.string.debug_settings_logs_title -> {
                 CustomLogDialog(requireContext()).show()
