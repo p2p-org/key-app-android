@@ -147,6 +147,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - create_sentry_properties_file
       - create_api_keys_file
       - run:
           name: "Static analysis"
