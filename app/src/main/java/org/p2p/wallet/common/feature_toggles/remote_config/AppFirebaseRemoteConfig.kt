@@ -3,9 +3,6 @@ package org.p2p.wallet.common.feature_toggles.remote_config
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-
-private val ONE_HOUR_IN_SECONDS = TimeUnit.MINUTES.toSeconds(60)
 
 class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
 
@@ -40,7 +37,7 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
      */
     private fun createRemoteConfigSettings(): FirebaseRemoteConfigSettings =
         FirebaseRemoteConfigSettings.Builder()
-            .setMinimumFetchIntervalInSeconds(ONE_HOUR_IN_SECONDS)
+            .setMinimumFetchIntervalInSeconds(0)
             .build()
 
     override fun getString(toggleKey: String): String? = remoteConfig.getString(toggleKey).takeIf(String::isNotBlank)
