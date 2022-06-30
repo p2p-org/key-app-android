@@ -16,6 +16,7 @@ import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.renbtc.repository.RenRepository
 import org.p2p.wallet.renbtc.repository.RenLoaclRepository
 import org.p2p.wallet.renbtc.repository.RenStateLocalRepository
+import kotlinx.coroutines.FlowPreview
 
 class RenBtcInteractor(
     private val repository: RenRepository,
@@ -32,6 +33,7 @@ class RenBtcInteractor(
             transaction
         }
 
+    @FlowPreview
     fun getSessionFlow(): Flow<RenBtcSession> {
         val signer = tokenKeyProvider.publicKey
         val daoFlow = databaseRepository.findSessionFlow(signer).filterNotNull().map { RenBtcSession.Active(it) }
@@ -58,11 +60,11 @@ class RenBtcInteractor(
         session
     }
 
-    suspend fun startSession(session: LockAndMint.Session): LockAndMint.Session = coroutineScope {
+    suspend fun startSession(lockAndMintSession: LockAndMint.Session): LockAndMint.Session = coroutineScope {
         databaseRepository.clearSessionData()
-        val session = renTransactionManager.initializeSession(session, tokenKeyProvider.publicKey)
-        setSessionSate(RenBtcSession.Active(session))
-        session
+        val renSession = renTransactionManager.initializeSession(lockAndMintSession, tokenKeyProvider.publicKey)
+        setSessionSate(RenBtcSession.Active(renSession))
+        renSession
     }
 
     suspend fun startPolling(session: LockAndMint.Session) {

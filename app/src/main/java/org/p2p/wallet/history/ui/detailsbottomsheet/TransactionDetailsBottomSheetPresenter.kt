@@ -34,11 +34,7 @@ class TransactionDetailsBottomSheetPresenter(
 
                 val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey)
 
-                if (details != null) {
-                    handleHistory(details)
-                } else {
-                    view?.showError(R.string.error_general_message)
-                }
+                handleHistory(details)
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading transaction details")
                 view?.showError(R.string.details_transaction_not_found)

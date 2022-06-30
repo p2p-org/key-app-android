@@ -13,6 +13,8 @@ interface MoonpayApi {
         @Query("baseCurrencyAmount") baseCurrencyAmount: String?,
         @Query("quoteCurrencyAmount") quoteCurrencyAmount: String?,
         @Query("baseCurrencyCode") baseCurrencyCode: String,
+        @Query("fixed") fixed: String = "true",
+        @Query("regionalPricing") regionalPricing: String = "true",
     ): MoonpayBuyCurrencyResponse
 
     @GET("currencies/{currencyCode}/ask_price/")

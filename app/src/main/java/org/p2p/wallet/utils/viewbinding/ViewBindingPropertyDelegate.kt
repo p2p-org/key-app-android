@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package org.p2p.wallet.utils.viewbinding
 
 import androidx.lifecycle.Lifecycle

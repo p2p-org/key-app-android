@@ -122,9 +122,9 @@ class ReceiveTokenFragment :
 
     override fun showUserData(userPublicKey: String, directPublicKey: String, username: Username?) {
         binding.directAddressBottomTextView.text = userPublicKey
-        val username = username?.getFullUsername(requireContext())
-        if (username != null) {
-            binding.receiveCardView.setQrName(username)
+        val fullUsername = username?.getFullUsername(requireContext())
+        if (fullUsername != null) {
+            binding.receiveCardView.setQrName(fullUsername)
         }
         binding.directAddressBottomTextView.text = directPublicKey
         binding.directTokenAddressView.setOnClickListener {
