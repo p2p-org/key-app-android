@@ -1,21 +1,36 @@
 package org.p2p.wallet.common.crashlogging.impl
 
+import io.sentry.Breadcrumb
 import io.sentry.Sentry
+import io.sentry.SentryLevel
 import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
 
 /**
  * Disable mechanism is located in build.gradle
  * see build.gradle sentry { ... } block
  */
+
+private const val BREADCRUMB_CATEGORY = "SentryFacade"
+
 class SentryFacade : CrashLoggingFacade {
 
     override fun logInformation(information: String) {
-        Sentry.addBreadcrumb(information)
+        Sentry.addBreadcrumb(
+            Breadcrumb(information).apply {
+                category = BREADCRUMB_CATEGORY
+                level = SentryLevel.INFO
+            }
+        )
     }
 
     override fun logThrowable(error: Throwable, message: String?) {
         if (message != null) {
-            Sentry.addBreadcrumb("${error.javaClass.name}: $message")
+            Sentry.addBreadcrumb(
+                Breadcrumb("${error.javaClass.name}: $message").apply {
+                    category = BREADCRUMB_CATEGORY
+                    level = SentryLevel.INFO
+                }
+            )
         }
         Sentry.captureException(error)
     }

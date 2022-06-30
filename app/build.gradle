@@ -34,8 +34,6 @@ def initApiKeys(defaultConfig) {
         defaultConfig.buildConfigField("String", "intercomApiKey", "${apikeyProperties['intercomApiKey']}")
         defaultConfig.buildConfigField("String", "intercomAppId", "${apikeyProperties['intercomAppId']}")
         defaultConfig.buildConfigField("String", "amplitudeKey", "${apikeyProperties['amplitudeKey']}")
-
-        defaultConfig.manifestPlaceholders = [SENTRY_DSN: "${apikeyProperties['sentryDsn']}"]
     } else {
         logger.quiet "(API_KEYS): apikey.properties is not found, using empty values!"
 
@@ -46,8 +44,18 @@ def initApiKeys(defaultConfig) {
         defaultConfig.buildConfigField("String", "intercomApiKey", emptyString)
         defaultConfig.buildConfigField("String", "intercomAppId", emptyString)
         defaultConfig.buildConfigField("String", "amplitudeKey", emptyString)
+    }
+}
 
-        defaultConfig.manifestPlaceholders = [SENTRY_DSN: emptyString]
+def initSentry(defaultConfig) {
+    def sentryPropertiesFile = rootProject.file("sentry.properties")
+    if (sentryPropertiesFile.canRead()) {
+        def sentryProperties = new Properties()
+        sentryProperties.load(new FileInputStream(sentryPropertiesFile))
+        defaultConfig.manifestPlaceholders = [SENTRY_DSN: sentryProperties["auth.dsn"]]
+    } else {
+        logger.quiet "(SENTRY): sentry.properties is not found, using empty values!"
+        defaultConfig.manifestPlaceholders = [SENTRY_DSN: ""]
     }
 }
 
@@ -81,6 +89,7 @@ android {
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
 
         initApiKeys(it)
+        initSentry(it)
         checkForSslPinning()
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
@@ -158,7 +167,7 @@ android {
         }
 
         release {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -204,6 +213,10 @@ android {
     sentry {
         // List the build types that should be ignored
         ignoredBuildTypes = ["debug"]
+
+        autoInstallation {
+            enabled = false
+        }
     }
 }
 
@@ -299,6 +312,10 @@ dependencies {
     // Sentry
     def sentryVersion = '6.1.3'
     implementation "io.sentry:sentry-android:$sentryVersion"
+    implementation "io.sentry:sentry-android-fragment:$sentryVersion"
+    implementation "io.sentry:sentry-android-core:$sentryVersion"
+    implementation "io.sentry:sentry-android-okhttp:$sentryVersion"
+    implementation "io.sentry:sentry-android-ndk:$sentryVersion"
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'
