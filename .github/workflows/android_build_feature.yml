@@ -1,18 +1,20 @@
 name: Android build feature artifacts [APK,AAB]
 
 on:
-  pull_request:
+  workflow_run:
+    workflows:
+      - android-lint
+      - android-unit-tests
+    types:
+      - completed
     branches:
       - develop
 
 jobs:
-  build-apk-feature:
-    needs:
-      - android-lint
-      - androi-unit-tests
-
-    environment: develop
+  on-success:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     name: Build Feature APK
     steps:
       - name: Checkout branch
