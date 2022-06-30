@@ -26,3 +26,4 @@ runs:
         -F channels="${{ inputs.channel-id }}" \
         -F initial_comment="Hey! Here is the feature APK. Success :tada:" \
         -F "file=@$(find app/build/outputs/${{ inputs.artifact-type }}/{{ inputs.build-type }} -name 'p2p*')" \
+        https://slack.com/api/files.upload
