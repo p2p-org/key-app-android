@@ -23,7 +23,6 @@ import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
-import org.p2p.wallet.moonpay.api.MoonpayUrlCreator
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_SOLANA_RETROFIT_QUALIFIER
@@ -40,7 +39,6 @@ object NetworkModule : InjectionModule {
 
     override fun create() = module {
         single { NetworkEnvironmentManager(get()) }
-        single { MoonpayUrlCreator(androidContext().getString(R.string.moonpayWalletDomain), BuildConfig.moonpayKey) }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
 

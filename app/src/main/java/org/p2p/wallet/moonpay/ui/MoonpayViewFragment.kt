@@ -8,15 +8,17 @@ import android.webkit.WebViewClient
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMoonpayViewBinding
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.moonpay.api.MoonpayUrlCreator
+import org.p2p.wallet.moonpay.api.MoonpayUrlBuilder
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import timber.log.Timber
@@ -34,7 +36,6 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
         )
     }
 
-    private val moonpayUrlCreator: MoonpayUrlCreator by inject()
     private val binding: FragmentMoonpayViewBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val tokenKeyProvider: TokenKeyProvider by inject()
@@ -55,7 +56,13 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
             lifecycleScope.launchWhenResumed {
                 delay(DELAY_IN_MS)
-                val url = moonpayUrlCreator.create(amount, tokenKeyProvider.publicKey, currencyCode)
+                val url = MoonpayUrlBuilder.build(
+                    moonpayWalletDomain = context.getString(R.string.moonpayWalletDomain),
+                    moonpayApiKey = BuildConfig.moonpayKey,
+                    amount = amount,
+                    walletAddress = tokenKeyProvider.publicKey,
+                    currencyCode = currencyCode
+                )
                 Timber.tag("Moonpay").d("Loading moonpay with url: $url")
                 webView.loadUrl(url)
             }
