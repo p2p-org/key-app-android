@@ -38,7 +38,8 @@ commands:
     steps:
       - run:
           name: "Create sentry.properties from hex"
-          command:  echo "$SENTRY_PROPERTIES_HEX" | xxd -r -p - > sentry.properties
+          command: |
+            echo "$SENTRY_PROPERTIES_HEX" | xxd -r -p - > sentry.properties
 
   restore_gradle_cache:
     description: "Try and use .gradle cache"
