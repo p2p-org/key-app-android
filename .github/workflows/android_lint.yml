@@ -9,7 +9,7 @@ on:
       - develop
 
 jobs:
-  Android-lint:
+  android-lint:
     runs-on: ubuntu-latest
     steps:
       #Check out current repository
