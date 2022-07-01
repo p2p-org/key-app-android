@@ -152,7 +152,7 @@ jobs:
       - create_api_keys_file
       - run:
           name: "Static analysis"
-          command: ./gradlew ktlint -PautoCorrect=0
+          command: ./gradlew ktlint -PautoCorrect=0 --stacktrace
 
   unit_tests:
     <<: *defaults
