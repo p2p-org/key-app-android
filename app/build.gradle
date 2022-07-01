@@ -212,7 +212,7 @@ android {
 
     sentry {
         // List the build types that should be ignored
-        ignoredBuildTypes = ["debug"]
+        ignoredBuildTypes = ["debug,feature"]
 
         autoInstallation {
             enabled = false
