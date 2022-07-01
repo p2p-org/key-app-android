@@ -68,6 +68,9 @@ jobs:
         run: ./gradlew assembleFeature
 
       - name: Upload artifact to Firebase
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew appDistributionUploadFeature
 
       - name: Upload artifact to Slack
