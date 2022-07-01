@@ -40,9 +40,6 @@ jobs:
     name: "[Github Actions] - Run android build feature artifacts"
     runs-on: ubuntu-latest
     environment: develop
-    needs:
-      - android-lint
-      - android-unit-tests
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
