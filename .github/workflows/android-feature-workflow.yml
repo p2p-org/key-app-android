@@ -36,7 +36,7 @@ jobs:
       - name: Create and fill sentry.properties
         env:
           SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
-        run: echo $SENTRY_SECRET | xxd -r -p - > sentry.properties
+        run: echo $SENTRY_SECRET  > sentry.properties
 
 
       - name: Run unit tests
@@ -77,7 +77,7 @@ jobs:
       - name: Create and fill sentry.properties
         env:
           SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
-        run: echo $SENTRY_SECRET | xxd -r -p - > sentry.properties
+        run: echo $SENTRY_SECRET > sentry.properties
 
       - name: Upload artifact to Firebase
         env:
