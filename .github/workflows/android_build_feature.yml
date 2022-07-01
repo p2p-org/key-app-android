@@ -7,8 +7,6 @@ on:
       - android-unit-tests
     types:
       - completed
-    branches:
-      - develop
 
 jobs:
   on-success:
