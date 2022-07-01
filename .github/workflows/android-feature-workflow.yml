@@ -34,7 +34,7 @@ jobs:
         run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
       - name: Run unit tests
-        run: ./gradlew test
+        run: ./gradlew testDebug
 
   android-build-artifacts:
     name: "[Github Actions] - Run android build feature artifacts"
