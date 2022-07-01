@@ -103,6 +103,9 @@ android {
         }
 
         setProperty("archivesBaseName", getBuildAppFileName())
+
+        def firebaseFile = rootProject.file("app/google-services.json")
+        logger.quiet("Is firebase exists = ${firebaseFile.exists()}")
     }
 
     signingConfigs {
