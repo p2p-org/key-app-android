@@ -24,7 +24,7 @@ object FeeRelayerModule : InjectionModule {
     override fun create() = module {
         single(named(FEE_RELAYER_QUALIFIER)) {
             val environmentManager = get<EnvironmentManager>()
-            val url = environmentManager.loadFeeRelayerEnvironment().baseFeeRelayerUrl
+            val url = environmentManager.loadFeeRelayerEnvironment().baseUrl
             getRetrofit(
                 baseUrl = url,
                 tag = "FeeRelayer",
