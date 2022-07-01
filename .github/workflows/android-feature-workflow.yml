@@ -18,7 +18,6 @@ jobs:
 
   android-unit-tests:
     name: "[Github Actions] - Run android unit tests"
-    environment: develop
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
