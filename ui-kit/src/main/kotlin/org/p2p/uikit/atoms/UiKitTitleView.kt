@@ -1,4 +1,4 @@
-package org.p2p.uikit.atoms.cells
+package org.p2p.uikit.atoms
 
 import android.content.Context
 import android.util.AttributeSet
