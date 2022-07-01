@@ -494,6 +494,7 @@
     <string name="settings_hide_zero_balances">Hide zero balances</string>
     <string name="settings_security">Security</string>
     <string name="settings_network">Network</string>
+    <string name="settings_fee_relayer">Fee Relayer Environment</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
     <string name="settings_security_face_id">FaceID</string>

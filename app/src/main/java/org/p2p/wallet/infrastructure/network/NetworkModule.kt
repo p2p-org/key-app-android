@@ -15,6 +15,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.FeeRelayerEnvironment
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
@@ -37,7 +38,11 @@ object NetworkModule : InjectionModule {
     const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     override fun create() = module {
-        single { EnvironmentManager(get(), get()) }
+        single {
+            val baseUrl = androidContext().getString(R.string.feeRelayerBaseUrl)
+            val environment = FeeRelayerEnvironment(baseUrl)
+            EnvironmentManager(get(), get(), environment)
+        }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
 
