@@ -38,6 +38,10 @@ jobs:
 
   android-build-artifacts:
     name: "[Github Actions] - Run android build feature artifacts"
+    needs:
+      - android-lint
+      - android-unit-tests
+
     runs-on: ubuntu-latest
     environment: develop
     steps:
@@ -64,14 +68,16 @@ jobs:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
         run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
-      - name: Build Artifacts
-        run: ./gradlew assembleFeature
+      - name: Create and fill sentry.properties
+        env:
+          SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
+        run: echo $SENTRY_PROPERTIES_HEX | xxd -r -p - > sentry.properties
 
       - name: Upload artifact to Firebase
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew appDistributionUploadFeature
+        run: ./gradlew assembleFeature appDistributionUploadFeature
 
       - name: Upload artifact to Slack
         uses: ./.github/actions/setup-slack

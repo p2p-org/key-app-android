@@ -6,6 +6,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
     id 'com.google.firebase.crashlytics'
+    id "io.sentry.android.gradle" version "3.1.1"
 }
 
 apply from: "$project.rootDir/scripts/ktlint.gradle"
@@ -103,9 +104,6 @@ android {
         }
 
         setProperty("archivesBaseName", getBuildAppFileName())
-
-        def firebaseFile = rootProject.file("app/google-services.json")
-        logger.quiet("Is firebase exists = ${firebaseFile.exists()}")
     }
 
     signingConfigs {
@@ -209,6 +207,15 @@ android {
         unitTests.includeAndroidResources = true
         animationsDisabled = true
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
+
+    sentry {
+        // List the build types that should be ignored
+        ignoredBuildTypes = ["debug"]
+
+        autoInstallation {
+            enabled = false
+        }
     }
 }
 
