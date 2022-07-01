@@ -1,0 +1,75 @@
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+
+jobs:
+  android-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup-gradle
+      - name: Run ktlint
+        run: ./gradlew ktlint -PautoCorrect=0
+
+  android-unit-tests:
+    environment: develop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with: { java-version: 11 }
+      - name: Setup google-json from secrets
+        env:
+          FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+        run: echo $FIREBASE_SECRET > app/google-services.json
+
+      - name: Create and fill cert.pem certificate for SSL pinning
+        env:
+          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+
+      - name: Run unit tests
+        run: ./gradlew test
+
+  android-build-artifacts:
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    environment: develop
+    needs:
+      - android-lint
+      - android-unit-tests
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-firebase
+        with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+      - name: Create apikey file
+        uses: ./.github/actions/setup-apikey
+        with:
+          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
+          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+
+        - name: Create and fill cert.pem certificate for SSL pinning
+          env:
+            SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+          run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+
+        - name: Upload artifact to Firebase
+          run: ./gradlew assembleFeature
+
+        - name: Upload artifact to Slack
+          uses: ./.github/actions/setup-slack
+          with:
+            bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+            channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+            build-type: "feature"
+            artifact-type: "apk"
