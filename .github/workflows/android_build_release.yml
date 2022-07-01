@@ -8,7 +8,7 @@ on:
     types:
       - completed
     branches:
-      - develop
+      - main
 
 jobs:
   on-success:
@@ -47,8 +47,8 @@ jobs:
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "feature"
-          artifact-type: "apk"
+          build-type: "release"
+          artifact-type: "bundle"
 
 
 
