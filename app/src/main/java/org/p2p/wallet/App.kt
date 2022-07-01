@@ -14,8 +14,8 @@ import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.analytics.AnalyticsModule
-import org.p2p.wallet.common.crashlytics.CrashLoggingService
-import org.p2p.wallet.common.crashlytics.TimberCrashTree
+import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.debugdrawer.DebugDrawer
@@ -46,7 +46,7 @@ import timber.log.Timber
 
 class App : Application() {
 
-    private val crashLoggingService: CrashLoggingService by inject()
+    private val crashLogger: CrashLogger by inject()
     private val appScope: AppScope by inject()
     private val pushTokenRepository: PushTokenRepository by inject()
 
@@ -128,7 +128,7 @@ class App : Application() {
         }
         // Always plant this tree
         // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag
-        Timber.plant(TimberCrashTree(crashLoggingService))
+        Timber.plant(TimberCrashTree(crashLogger))
     }
 
     private fun logFirebaseDevicePushToken() {
@@ -140,9 +140,8 @@ class App : Application() {
     }
 
     private fun setupCrashLoggingService() {
-        crashLoggingService.apply {
-            isLoggingEnabled = BuildConfig.CRASHLYTICS_ENABLED
-            setCustomKey(BuildConfig.TASK_NUMBER, "")
+        crashLogger.apply {
+            setCustomKey("task_number", BuildConfig.TASK_NUMBER)
         }
     }
 }
