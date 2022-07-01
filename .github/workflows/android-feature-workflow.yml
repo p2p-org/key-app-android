@@ -64,7 +64,7 @@ jobs:
           run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
         - name: Upload artifact to Firebase
-          run: ./gradlew assembleFeature
+          run: ./gradlew assembleFeature appDistributionUploadFeature
 
         - name: Upload artifact to Slack
           uses: ./.github/actions/setup-slack
