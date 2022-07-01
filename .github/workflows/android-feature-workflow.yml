@@ -8,6 +8,7 @@ on:
 
 jobs:
   android-lint:
+    name: "[Github Actions] - Run android ktlint check"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,6 +17,7 @@ jobs:
         run: ./gradlew ktlint -PautoCorrect=0
 
   android-unit-tests:
+    name: "[Github Actions] - Run android unit tests"
     environment: develop
     runs-on: ubuntu-latest
     steps:
@@ -36,6 +38,7 @@ jobs:
         run: ./gradlew test
 
   android-build-artifacts:
+    name: "[Github Actions] - Run android build feature artifacts"
     if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     environment: develop
