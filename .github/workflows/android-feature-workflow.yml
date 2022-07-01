@@ -33,6 +33,12 @@ jobs:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
         run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
+      - name: Create and fill sentry.properties
+        env:
+          SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
+        run: echo $SENTRY_PROPERTIES_HEX | xxd -r -p - > sentry.properties
+
+
       - name: Run unit tests
         run: ./gradlew testDebug
 
