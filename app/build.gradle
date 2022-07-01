@@ -89,6 +89,7 @@ android {
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
 
         initApiKeys(it)
+        initSentry(it)
         checkForSslPinning()
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
