@@ -36,7 +36,7 @@ jobs:
       - name: Create and fill sentry.properties
         env:
           SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
-        run: echo $SENTRY_PROPERTIES_HEX | xxd -r -p - > sentry.properties
+        run: echo $SENTRY_SECERT | xxd -r -p - > sentry.properties
 
 
       - name: Run unit tests
