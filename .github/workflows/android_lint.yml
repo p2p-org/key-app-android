@@ -1,4 +1,4 @@
-name: Android Kotlin lint
+name: android-lint
 
 on:
   pull_request:
