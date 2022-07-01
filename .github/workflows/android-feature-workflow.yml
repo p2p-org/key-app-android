@@ -39,7 +39,6 @@ jobs:
 
   android-build-artifacts:
     name: "[Github Actions] - Run android build feature artifacts"
-    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     environment: develop
     needs:
