@@ -11,7 +11,7 @@
         <attr name="subtitle2" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="UiKitAmountView">
+    <declare-styleable name="UiKitRightAmountView">
         <attr name="icon" />
         <attr name="usdAmount" format="string" />
         <attr name="tokenAmount" format="string" />
