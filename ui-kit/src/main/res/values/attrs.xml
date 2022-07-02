@@ -3,7 +3,7 @@
 
     <!-- Atoms -->
 
-    <declare-styleable name="UiKitTitleView">
+    <declare-styleable name="UiKitLeftAmountView">
         <attr name="icon" />
         <attr name="title" />
         <attr name="subtitleColor" format="color" />
