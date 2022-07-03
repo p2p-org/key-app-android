@@ -10,6 +10,8 @@ jobs:
   android-lint:
     name: "[Github Actions] - Run android ktlint check"
     runs-on: ubuntu-latest
+    container:
+      image: docker://fabernovel/android:api-31-v1.1.0
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
@@ -19,10 +21,10 @@ jobs:
   android-unit-tests:
     name: "[Github Actions] - Run android unit tests"
     runs-on: ubuntu-latest
+    container:
+      image: docker://fabernovel/android:api-31-v1.1.0
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v1
-        with: { java-version: 11 }
       - uses: ./.github/actions/setup-gradle
       - name: Setup google-json from secrets
         env:
@@ -39,7 +41,6 @@ jobs:
           SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
         run: echo $SENTRY_SECRET -> sentry.properties
 
-
       - name: Run unit tests
         run: ./gradlew testDebug
 
@@ -50,6 +51,8 @@ jobs:
       - android-unit-tests
 
     runs-on: ubuntu-latest
+    container:
+      image: docker://fabernovel/android:api-31-v1.1.0
     environment: develop
     steps:
       - uses: actions/checkout@v2
