@@ -9,7 +9,7 @@ on:
 jobs:
   android-lint:
     name: "[Github Actions] - Run android ktlint check"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     container:
       image: docker://fabernovel/android:api-31-v1.1.0
     steps:
@@ -20,7 +20,7 @@ jobs:
 
   android-unit-tests:
     name: "[Github Actions] - Run android unit tests"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     container:
       image: docker://fabernovel/android:api-31-v1.1.0
     steps:
@@ -50,7 +50,7 @@ jobs:
       - android-lint
       - android-unit-tests
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     container:
       image: docker://fabernovel/android:api-31-v1.1.0
     environment: develop
