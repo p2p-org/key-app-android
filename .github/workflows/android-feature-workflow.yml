@@ -9,7 +9,7 @@ on:
 jobs:
   android-lint:
     name: "[Github Actions] - Run android ktlint check"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
@@ -18,7 +18,7 @@ jobs:
 
   android-unit-tests:
     name: "[Github Actions] - Run android unit tests"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
@@ -40,7 +40,7 @@ jobs:
         run: echo $SENTRY_SECRET -> sentry.properties
 
       - name: Run unit tests
-        run: ./gradlew testDebug
+        run: ./gradlew testFeature
 
   android-build-artifacts:
     name: "[Github Actions] - Run android build feature artifacts"
@@ -48,7 +48,7 @@ jobs:
       - android-lint
       - android-unit-tests
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     environment: develop
     steps:
       - uses: actions/checkout@v2
