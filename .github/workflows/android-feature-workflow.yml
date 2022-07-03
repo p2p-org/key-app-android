@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - develop
-
 jobs:
   android-lint:
     name: "[Github Actions] - Run android ktlint check"
@@ -23,14 +22,13 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create and fill sentry.properties
-        env:
-          SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
-        run: echo $SENTRY_SECRET -> sentry.properties
+      - uses: ./.github/actions/setup-sentry
+        with:
+          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          auth-dns: ${{ secrets.SENTRY_AUTH_DNS }}
+
 
       - uses: ./.github/actions/setup-gradle
-
-      - name: Install NDK
-        run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
 
       - uses: actions/setup-java@v1
         with: { java-version: 11 }
@@ -81,9 +79,11 @@ jobs:
         run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
       - name: Create and fill sentry.properties
-        env:
-          SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
-        run: echo $SENTRY_SECRET -> sentry.properties
+      - uses: ./.github/actions/setup-sentry
+        with:
+          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          auth-dns: ${{ secrets.SENTRY_AUTH_DNS }}
+
 
       - name: Upload artifact to Firebase
         env:

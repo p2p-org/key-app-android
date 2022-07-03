@@ -1,0 +1,36 @@
+name: "Setup Sentry"
+description: "Create sentry file for Github Action"
+inputs:
+  default-project:
+    description: "android"
+    required: false
+    default: "android"
+  default-organization:
+    description: "P2P"
+    required: false
+    default: "p2p"
+  default-url:
+    description: "url"
+    required: false
+    default: "ttps://sentry.io/"
+  auth-token:
+    description: "Sentry auth token"
+    required: true
+  auth-dns:
+    description: "Sentry DNS"
+    required: true
+
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        touch sentry.properties
+        echo "defaults.project=\"${{ inputs.default-project }}\"" >> sentry.properties
+        echo "defaults.org=\"${{ inputs.default-organization }}\"" >> sentry.properties
+        echo "defaults.url=\"${{ inputs.default-url }}\"" >> sentry.properties
+        echo "auth.token=\"${{ inputs.auth-token }}\"" >> sentry.properties
+        echo "auth.dns=\"${{ inputs.auth-dns }}\"" >> sentry.properties
+
+
