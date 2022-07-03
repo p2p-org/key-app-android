@@ -84,7 +84,6 @@ jobs:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dns: ${{ secrets.SENTRY_AUTH_DNS }}
 
-
       - name: Upload artifact to Firebase
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

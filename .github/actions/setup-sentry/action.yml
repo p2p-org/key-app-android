@@ -24,7 +24,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - shell: bash
+    - name: Create sentry.properties file
+      shell: bash
       run: |
         touch sentry.properties
         echo "defaults.project=\"${{ inputs.default-project }}\"" >> sentry.properties
