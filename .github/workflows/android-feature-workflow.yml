@@ -29,6 +29,9 @@ jobs:
 
       - uses: ./.github/actions/setup-gradle
 
+      - name: Install NDK
+        run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;20.0.5594570" --sdk_root=${ANDROID_SDK_ROOT}
+
       - uses: actions/setup-java@v1
         with: { java-version: 11 }
 
