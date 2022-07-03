@@ -22,11 +22,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create and fill sentry.properties
-      - uses: ./.github/actions/setup-sentry
+        uses: ./.github/actions/setup-sentry
         with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dns: ${{ secrets.SENTRY_AUTH_DNS }}
-
 
       - uses: ./.github/actions/setup-gradle
 
