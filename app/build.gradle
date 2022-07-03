@@ -217,6 +217,9 @@ android {
         autoInstallation {
             enabled = false
         }
+        includeProguardMapping = false
+        autoUploadProguardMapping = false
+
     }
 }
 
