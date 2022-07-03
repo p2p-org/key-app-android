@@ -10,8 +10,6 @@ jobs:
   android-lint:
     name: "[Github Actions] - Run android ktlint check"
     runs-on: ubuntu-18.04
-    container:
-      image: docker://fabernovel/android:api-30-v1.1.0
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
@@ -21,11 +19,11 @@ jobs:
   android-unit-tests:
     name: "[Github Actions] - Run android unit tests"
     runs-on: ubuntu-18.04
-    container:
-      image: docker://fabernovel/android:api-30-v1.1.0
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
+      - uses: actions/setup-java@v1
+        with: { java-version: 11 }
       - name: Setup google-json from secrets
         env:
           FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
@@ -51,8 +49,6 @@ jobs:
       - android-unit-tests
 
     runs-on: ubuntu-18.04
-    container:
-      image: docker://fabernovel/android:api-30-v1.1.0
     environment: develop
     steps:
       - uses: actions/checkout@v2
