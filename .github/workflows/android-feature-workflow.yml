@@ -25,7 +25,7 @@ jobs:
         uses: ./.github/actions/setup-sentry
         with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dns: ${{ secrets.SENTRY_AUTH_DNS }}
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
       - uses: ./.github/actions/setup-gradle
 
@@ -81,7 +81,7 @@ jobs:
         uses: ./.github/actions/setup-sentry
         with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dns: ${{ secrets.SENTRY_AUTH_DNS }}
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
       - name: Upload artifact to Firebase
         env:

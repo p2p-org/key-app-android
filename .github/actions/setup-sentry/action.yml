@@ -16,7 +16,7 @@ inputs:
   auth-token:
     description: "Sentry auth token"
     required: true
-  auth-dns:
+  auth-dsn:
     description: "Sentry DNS"
     required: true
 
@@ -32,6 +32,6 @@ runs:
         echo "defaults.org=\"${{ inputs.default-organization }}\"" >> sentry.properties
         echo "defaults.url=\"${{ inputs.default-url }}\"" >> sentry.properties
         echo "auth.token=\"${{ inputs.auth-token }}\"" >> sentry.properties
-        echo "auth.dns=\"${{ inputs.auth-dns }}\"" >> sentry.properties
+        echo "auth.dsn=\"${{ inputs.auth-dsn }}\"" >> sentry.properties
 
 
