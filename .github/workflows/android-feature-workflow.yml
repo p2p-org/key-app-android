@@ -11,7 +11,7 @@ jobs:
     name: "[Github Actions] - Run android ktlint check"
     runs-on: ubuntu-18.04
     container:
-      image: docker://fabernovel/android:api-31-v1.1.0
+      image: docker://fabernovel/android:api-30-v1.1.0
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
@@ -22,7 +22,7 @@ jobs:
     name: "[Github Actions] - Run android unit tests"
     runs-on: ubuntu-18.04
     container:
-      image: docker://fabernovel/android:api-31-v1.1.0
+      image: docker://fabernovel/android:api-30-v1.1.0
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
@@ -52,7 +52,7 @@ jobs:
 
     runs-on: ubuntu-18.04
     container:
-      image: docker://fabernovel/android:api-31-v1.1.0
+      image: docker://fabernovel/android:api-30-v1.1.0
     environment: develop
     steps:
       - uses: actions/checkout@v2
