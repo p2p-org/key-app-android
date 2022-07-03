@@ -21,9 +21,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Create and fill sentry.properties
+        env:
+          SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
+        run: echo $SENTRY_SECRET -> sentry.properties
+
       - uses: ./.github/actions/setup-gradle
+
       - uses: actions/setup-java@v1
         with: { java-version: 11 }
+
       - name: Setup google-json from secrets
         env:
           FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
@@ -34,13 +42,8 @@ jobs:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
         run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
-      - name: Create and fill sentry.properties
-        env:
-          SENTRY_SECRET: ${{ secrets.SENTRY_SECRET }}
-        run: echo $SENTRY_SECRET -> sentry.properties
-
       - name: Run unit tests
-        run: ./gradlew testFeature
+        run: ./gradlew testDebug
 
   android-build-artifacts:
     name: "[Github Actions] - Run android build feature artifacts"
