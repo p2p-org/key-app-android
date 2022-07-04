@@ -1,0 +1,16 @@
+name: "Setup keystore file"
+description: "Create jks file"
+inputs:
+   keystore_secret:
+     required: true
+     description: "Raw value jks"
+
+runs:
+  using: composite
+  steps:
+    - name: Create p2p-wallet.jks
+      shell: bash
+      env:
+        KEYSTORE_SECRET: ${{ inputs.keystore_secret }}
+      run: |
+        echo $KEYSTORE_SECRET -> p2p-wallet.jks

@@ -83,6 +83,10 @@ jobs:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
+      - name: Create keystore file
+        uses: ./.github/actions/setup-keystore
+        with:
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Upload artifact to Firebase
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
