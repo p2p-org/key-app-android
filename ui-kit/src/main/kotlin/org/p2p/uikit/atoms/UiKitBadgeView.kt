@@ -32,9 +32,10 @@ class UiKitBadgeView @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.UiKitBadgeView).use { typedArray ->
             val defaultTextColor = ContextCompat.getColor(context, R.color.mountain)
             val hasStroke = typedArray.getBoolean(R.styleable.UiKitBadgeView_hasStroke, false)
-            val shape = when (typedArray.getInt(R.styleable.UiKitBadgeView_shape, 0)) {
-                0 -> Shape.OVAL
-                else -> Shape.RECTANGLE
+            val shape = if (typedArray.getInt(R.styleable.UiKitBadgeView_shape, 0) == 0) {
+                Shape.OVAL
+            } else {
+                Shape.RECTANGLE
             }
 
             setBackground(shape, hasStroke)
@@ -56,9 +57,9 @@ class UiKitBadgeView @JvmOverloads constructor(
         val rectangleCornerRadius = resources.getDimension(R.dimen.ui_kit_badge_rectangle_corner_radius)
         val cornerRadiusDp = if (shape == Shape.OVAL) ovalCornerRadius else rectangleCornerRadius
         val strokeBackgroundId = if (shape == Shape.OVAL) {
-            R.drawable.backgroun_badge_stroke_oval
+            R.drawable.background_badge_stroke_oval
         } else {
-            R.drawable.backgroun_badge_stroke_rectangle
+            R.drawable.background_badge_stroke_rectangle
         }
         val strokeBackground = ContextCompat.getDrawable(context, strokeBackgroundId)
         val backgroundColor = getBackgroundColor()
