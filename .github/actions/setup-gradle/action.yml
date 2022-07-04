@@ -25,6 +25,8 @@ runs:
       run: chmod +x ./gradlew
 
     - name: Setup version
-      uses: ./.github/actions/setup-version
-      with:
-        build-num: ${{ github.run_number }}
+      shell: bash
+      run: |
+        ./gradlew setVersionBuild -Pversion=${{ github.run_number }}
+        echo "Set build version to ${{ github.run_number }}"
+
