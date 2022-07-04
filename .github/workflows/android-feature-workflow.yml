@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/}
+        run: echo running on branch ${GITHUB_BASE_REF##*/}
       - name: Branch name_head
-        run: echo running on branch ${GITHUB_HEAD_REF##*/}
+        run: echo running on branch ${GITHUB_REF_NAME##*/}
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-sentry
       - uses: ./.github/actions/setup-gradle
