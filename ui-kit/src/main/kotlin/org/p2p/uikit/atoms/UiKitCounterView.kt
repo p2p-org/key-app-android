@@ -50,20 +50,20 @@ class UiKitCounterView @JvmOverloads constructor(
     }
 
     override fun setText(text: CharSequence?, type: BufferType?) {
+        val errorMessage = "Text should be digits and '+' only"
+
         when {
             text.isNullOrBlank() -> count = 0
-            !text.all { it.isDigit() || it == PLUS_SIGN } -> {
-                throw IllegalArgumentException("Text should be digits and '+' only")
-            }
+            !text.all { it.isDigit() || it == PLUS_SIGN } -> throw IllegalArgumentException(errorMessage)
             else -> super.setText(text, type)
         }
     }
 
-    fun inc() {
+    fun incCounter() {
         count = count.inc()
     }
 
-    fun dec() {
+    fun decCounter() {
         count = count.dec()
     }
 
