@@ -1,10 +1,10 @@
 on:
   pull_request:
     branches:
-      - develop
+      - main
   push:
     branches:
-      - develop
+      - main
 jobs:
   android-lint:
     name: "[Github Actions] - Run android ktlint check"
@@ -87,12 +87,12 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew assembleFeature appDistributionUploadFeature
+        run: ./gradlew assembleRelease appDistributionUploadRelease
 
       - name: Upload artifact to Slack
         uses: ./.github/actions/setup-slack
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "feature"
+          build-type: "release"
           artifact-type: "apk"
