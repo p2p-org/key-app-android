@@ -87,6 +87,7 @@ jobs:
         uses: ./.github/actions/setup-keystore
         with:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+          keystore-passphrase: ${{ secrets.KEYSTORE_PASSPHRASE }}
       - name: Upload artifact to Firebase
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
