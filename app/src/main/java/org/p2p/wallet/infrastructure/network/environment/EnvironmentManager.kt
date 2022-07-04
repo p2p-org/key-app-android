@@ -1,9 +1,9 @@
 package org.p2p.wallet.infrastructure.network.environment
 
-import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import androidx.core.content.edit
 import org.p2p.solanaj.rpc.Environment
 import org.p2p.solanaj.rpc.RpcEnvironment
 import org.p2p.wallet.BuildConfig
@@ -13,12 +13,14 @@ import kotlin.reflect.KClass
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
+private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_RPC_BASE_URL = "KEY_RPC_BASE_URL"
 
 class EnvironmentManager(
     private val context: Context,
     private val sharedPreferences: SharedPreferences,
-    private val defaultFeeRelayerEnvironment: FeeRelayerEnvironment
+    private val defaultFeeRelayerEnvironment: FeeRelayerEnvironment,
+    private val defaultNotificationServiceEnvironment: NotificationServiceEnvironment
 ) {
 
     fun interface EnvironmentManagerListener {
@@ -73,7 +75,7 @@ class EnvironmentManager(
     fun loadFeeRelayerEnvironment(): FeeRelayerEnvironment {
         val url = sharedPreferences.getString(
             KEY_FEE_RELAYER_BASE_URL,
-            defaultFeeRelayerEnvironment.baseFeeRelayerUrl
+            defaultFeeRelayerEnvironment.baseUrl
         ).orEmpty()
 
         return FeeRelayerEnvironment(url)
@@ -81,6 +83,19 @@ class EnvironmentManager(
 
     fun saveFeeRelayerEnvironment(newUrl: String) {
         sharedPreferences.edit { putString(KEY_FEE_RELAYER_BASE_URL, newUrl) }
+    }
+
+    fun loadNotificationServiceEnvironment(): NotificationServiceEnvironment {
+        val url = sharedPreferences.getString(
+            KEY_NOTIFICATION_SERVICE_BASE_URL,
+            defaultNotificationServiceEnvironment.baseUrl
+        ).orEmpty()
+
+        return NotificationServiceEnvironment(url)
+    }
+
+    fun saveNotificationServiceEnvironment(newUrl: String) {
+        sharedPreferences.edit { putString(KEY_NOTIFICATION_SERVICE_BASE_URL, newUrl) }
     }
 
     fun loadRpcEnvironment(): RpcEnvironment = if (loadEnvironment() == Environment.DEVNET) {
