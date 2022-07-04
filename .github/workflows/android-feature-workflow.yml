@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-sentry
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
 

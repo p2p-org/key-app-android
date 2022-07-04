@@ -8,12 +8,12 @@ class PropertiesFile {
 
     PropertiesFile(File propertiesFile, Logger logger) {
         this.logger = logger
+        propertiesFileName = propertiesFile.name
         if (propertiesFile.canRead()) {
-            propertiesFileName = propertiesFile.name
             properties.load(new FileInputStream(propertiesFile))
             logger.quiet("[${propertiesFile.name}] File ${propertiesFile.name} found, using file")
         } else {
-            logger.quiet("[${propertiesFile.name} No file ${propertiesFile.name} found, doing nothing")
+            logger.quiet("[${propertiesFile.name}] No file ${propertiesFile.name} found, doing nothing")
         }
     }
 
