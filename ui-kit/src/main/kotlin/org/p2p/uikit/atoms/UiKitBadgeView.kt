@@ -23,11 +23,9 @@ class UiKitBadgeView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
-    companion object {
-        enum class Shape {
-            OVAL,
-            RECTANGLE
-        }
+    enum class Shape {
+        OVAL,
+        RECTANGLE
     }
 
     init {
