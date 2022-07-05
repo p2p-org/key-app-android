@@ -59,6 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+      - uses: actions/checkout@v2
+
       - name: Create google-services.json
         uses: ./.github/actions/setup-firebase
         with:
@@ -91,7 +93,6 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
           keystore-phrase: ${{ secrets.KEYSTORE_PASSPHRASE }}
 
-      - uses: actions/checkout@v2
       - uses: ./.github/actions/setup-gradle
 
       - name: Upload artifact to Firebase
