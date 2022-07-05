@@ -11,11 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-sentry
         with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+
+      - uses: ./.github/actions/setup-gradle
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
 
