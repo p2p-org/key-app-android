@@ -1,6 +1,5 @@
 package org.p2p.wallet.infrastructure.network
 
-import android.content.res.Resources
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -11,11 +10,12 @@ import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.crashlytics.CrashHttpLoggingInterceptor
+import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
@@ -38,6 +38,7 @@ object NetworkModule : InjectionModule {
     const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     override fun create() = module {
+        single { NetworkServicesUrlProvider(get(), get()) }
         single { NetworkEnvironmentManager(get()) }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
@@ -58,7 +59,6 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = moonPayApiUrl,
                 tag = "Moonpay",
-                resources = get(),
                 interceptor = MoonpayErrorInterceptor(get())
             )
         }
@@ -69,7 +69,6 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = rpcApiUrl,
                 tag = "Rpc",
-                resources = get(),
                 interceptor = RpcInterceptor(get(), get())
             )
         }
@@ -79,17 +78,15 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = rpcApiUrl,
                 tag = "RpcSolana",
-                resources = get(),
                 interceptor = RpcSolanaInterceptor(get())
             )
         }
 
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
-            val endpoint = androidContext().getString(R.string.notification_service_url)
+            val url = get<NetworkServicesUrlProvider>().loadNotificationServiceEnvironment().baseUrl
             getRetrofit(
-                baseUrl = endpoint,
+                baseUrl = url,
                 tag = "NotificationService",
-                resources = get(),
                 interceptor = null
             )
         }
@@ -97,14 +94,13 @@ object NetworkModule : InjectionModule {
 
     fun Scope.getRetrofit(
         baseUrl: String,
-        tag: String = "OkHttpClient",
-        resources: Resources,
+        tag: String? = "OkHttpClient",
         interceptor: Interceptor?
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create(get()))
-            .client(getClient(tag, resources, interceptor))
+            .client(getClient(tag, interceptor))
             .build()
     }
 
@@ -114,7 +110,7 @@ object NetworkModule : InjectionModule {
         }
     }
 
-    private fun Scope.getClient(tag: String, resources: Resources, interceptor: Interceptor? = null): OkHttpClient {
+    private fun Scope.getClient(tag: String?, interceptor: Interceptor? = null): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -129,7 +125,7 @@ object NetworkModule : InjectionModule {
                     addInterceptor(interceptor)
                 }
 
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
                     addInterceptor(httpLoggingInterceptor(tag))
                 }
             }

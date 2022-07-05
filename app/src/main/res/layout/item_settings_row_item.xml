@@ -39,6 +39,7 @@
         android:id="@+id/topTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
         app:layout_constraintBottom_toTopOf="@+id/bottomTextView"
         app:layout_constraintStart_toEndOf="@id/imageView"

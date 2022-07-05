@@ -72,6 +72,12 @@
         <option name="LABEL_INDENT_SIZE" value="4" />
       </indentOptions>
     </codeStyleSettings>
+    <codeStyleSettings language="JAVA">
+      <option name="CALL_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+      <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
+      <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+      <option name="METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
+    </codeStyleSettings>
     <codeStyleSettings language="Markdown">
       <option name="RIGHT_MARGIN" value="200" />
     </codeStyleSettings>

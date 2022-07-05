@@ -22,9 +22,10 @@ interface SendContract {
         fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean)
         fun showTransactionDetails(transaction: HistoryTransaction)
         fun showTotal(data: SendTotal?)
+        fun showDetailsError(@StringRes errorTextRes: Int?)
         fun showWrongWalletError()
         fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
-        fun showInputValue(value: BigDecimal)
+        fun showInputValue(value: BigDecimal, forced: Boolean)
         fun showUsdAroundValue(usdValue: BigDecimal)
         fun showTokenAroundValue(tokenValue: BigDecimal, symbol: String)
         fun showAvailableValue(available: BigDecimal, symbol: String)
@@ -33,14 +34,15 @@ interface SendContract {
         fun showLoading(isLoading: Boolean)
         fun showProgressDialog(data: ShowProgress?)
         fun setMaxButtonVisibility(isVisible: Boolean)
-        fun updateAvailableTextColor(@ColorRes availableColor: Int)
+        fun setTotalAmountTextColor(@ColorRes textColor: Int)
 
         fun showNetworkDestination(type: NetworkType)
         fun showNetworkSelectionView(isVisible: Boolean)
         fun navigateToNetworkSelection(currentNetworkType: NetworkType)
         fun navigateToTokenSelection(tokens: List<Token.Active>)
 
-        fun showSearchLoading(isLoading: Boolean)
+        fun showAccountFeeViewLoading(isLoading: Boolean)
+        fun showIndeterminateLoading(isLoading: Boolean)
         fun showIdleTarget()
         fun showWrongAddressTarget(address: String)
         fun showFullTarget(address: String, username: String)
@@ -50,7 +52,11 @@ interface SendContract {
 
         fun showWarning(@StringRes messageRes: Int?)
 
-        fun showAccountFeeView(fee: SendFee? = null, notEnoughFunds: Boolean = false)
+        fun hideAccountFeeView()
+        fun showAccountFeeView(fee: SendFee)
+
+        fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?)
+
         fun showFeePayerTokenSelector(feePayerTokens: List<Token.Active>)
 
         fun showBiometricConfirmationPrompt(data: SendConfirmData)
@@ -60,6 +66,7 @@ interface SendContract {
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun setInitialToken(initialToken: Token.Active)
         fun send()
         fun sendOrConfirm()
         fun loadInitialData()

@@ -80,7 +80,6 @@ class ResetPinPresenter(
     }
 
     private fun resetPin(pinCode: String) {
-        val resetResult: AuthAnalytics.AuthResult
         if (createdPin.isEmpty()) {
             createdPin = pinCode
             view?.showConfirmNewPin()
@@ -90,7 +89,7 @@ class ResetPinPresenter(
         if (createdPin != pinCode) {
             view?.showConfirmationError()
             view?.vibrate(VIBRATE_DURATION)
-            resetResult = AuthAnalytics.AuthResult.ERROR
+            adminAnalytics.logPinResetValidated(AuthAnalytics.AuthResult.ERROR)
             return
         }
 
@@ -100,8 +99,7 @@ class ResetPinPresenter(
         } else {
             resetPinWithoutBiometrics()
         }
-        resetResult = AuthAnalytics.AuthResult.SUCCESS
-        adminAnalytics.logPinResetValidated(resetResult)
+        adminAnalytics.logPinResetValidated(AuthAnalytics.AuthResult.SUCCESS)
     }
 
     private fun resetPinActually(cipher: Cipher? = null) {

@@ -15,11 +15,13 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.PrefixSuffixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
@@ -41,6 +43,8 @@ class BuySolanaFragment :
 
     private val binding: FragmentBuySolanaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val environmentManager: EnvironmentManager by inject()
+    private val tokenKeyProvider: TokenKeyProvider by inject()
 
     private var backPressedCallback: OnBackPressedCallback? = null
 
@@ -113,7 +117,9 @@ class BuySolanaFragment :
         val solSymbol = Constants.SOL_SYMBOL.lowercase()
         val tokenSymbol = token.tokenSymbol.lowercase()
         val currencyCode = if (token.isSOL) solSymbol else "${tokenSymbol}_$solSymbol"
-        replaceFragment(MoonpayViewFragment.create(amount, currencyCode))
+        val url = environmentManager.getMoonpayUrl(amount, tokenKeyProvider.publicKey, currencyCode)
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Buy.EXTERNAL)
+        requireContext().showUrlInCustomTabs(url)
     }
 
     override fun close() {

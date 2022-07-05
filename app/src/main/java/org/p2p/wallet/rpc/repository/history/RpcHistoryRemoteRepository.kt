@@ -18,7 +18,7 @@ class RpcHistoryRemoteRepository(
         val base64Transaction = Base64Utils.encode(serializedTransaction)
             .replace("\n", emptyString())
 
-        val params = buildList<Any> {
+        val params = buildList {
             add(base64Transaction)
             add(RequestConfiguration(encoding = Encoding.BASE64.encoding))
         }

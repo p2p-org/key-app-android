@@ -1,0 +1,98 @@
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+jobs:
+  android-lint:
+    name: "[Github Actions] - Run android ktlint check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup-gradle
+      - name: Run ktlint
+        run: ./gradlew ktlint -PautoCorrect=0
+
+  android-unit-tests:
+    name: "[Github Actions] - Run android unit tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create and fill sentry.properties
+        uses: ./.github/actions/setup-sentry
+        with:
+          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+
+      - uses: ./.github/actions/setup-gradle
+
+      - uses: actions/setup-java@v1
+        with: { java-version: 11 }
+
+      - name: Setup google-json from secrets
+        env:
+          FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+        run: echo $FIREBASE_SECRET > app/google-services.json
+
+      - name: Create and fill cert.pem certificate for SSL pinning
+        env:
+          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+
+      - name: Run unit tests
+        run: ./gradlew testDebug
+
+  android-build-artifacts:
+    name: "[Github Actions] - Run android build feature artifacts"
+    needs:
+      - android-lint
+      - android-unit-tests
+
+    runs-on: ubuntu-latest
+    environment: develop
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup-gradle
+
+      - name: Create google-services.json
+        uses: ./.github/actions/setup-firebase
+        with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+
+      - name: Create apikey file
+        uses: ./.github/actions/setup-apikey
+        with:
+          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
+          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+
+      - name: Create and fill cert.pem certificate for SSL pinning
+        env:
+          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
+        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+
+      - name: Create and fill sentry.properties
+        uses: ./.github/actions/setup-sentry
+        with:
+          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+
+      - name: Upload artifact to Firebase
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: ./gradlew assembleFeature appDistributionUploadFeature
+
+      - name: Upload artifact to Slack
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "feature"
+          artifact-type: "apk"

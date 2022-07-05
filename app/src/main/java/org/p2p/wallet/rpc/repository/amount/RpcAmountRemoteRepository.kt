@@ -11,12 +11,11 @@ class RpcAmountRemoteRepository(
     private val rpcApi: RpcAmountApi
 ) : RpcAmountRepository {
 
-    private var lamportsPerSignature: BigInteger? = null
-
+    private val lamportsPerSignatureCache = mutableMapOf<String?, BigInteger>()
     private val rentExemptionCache = mutableMapOf<Int, BigInteger>()
 
     override suspend fun getLamportsPerSignature(commitment: String?): BigInteger {
-        val cachedLamports = lamportsPerSignature
+        val cachedLamports = lamportsPerSignatureCache[commitment]
         return if (cachedLamports != null) {
             Timber.tag(RpcAmountRemoteRepository::class.getFullName())
                 .d("Getting from cache, lamportsPerSignature: $cachedLamports")
@@ -29,7 +28,9 @@ class RpcAmountRemoteRepository(
             }
             val rpcRequest = RpcRequest("getFees", params)
             val response = rpcApi.getFees(rpcRequest).result
-            BigInteger.valueOf(response.value.feeCalculator.lamportsPerSignature)
+            val result = response.value.feeCalculator.lamportsPerSignature.toBigInteger()
+            lamportsPerSignatureCache[commitment] = result
+            return result
         }
     }
 
@@ -42,7 +43,9 @@ class RpcAmountRemoteRepository(
         } else {
             val params = listOf(dataLength)
             val rpcRequest = RpcRequest("getMinimumBalanceForRentExemption", params)
-            return rpcApi.getMinimumBalanceForRentExemption(rpcRequest).result.toBigInteger()
+            val result = rpcApi.getMinimumBalanceForRentExemption(rpcRequest).result.toBigInteger()
+            rentExemptionCache[dataLength] = result
+            return result
         }
     }
 }

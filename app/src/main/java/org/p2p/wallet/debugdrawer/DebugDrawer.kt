@@ -37,7 +37,7 @@ object DebugDrawer : KoinComponent {
             isFocusable = false
             isClickable = false
         }
-        val parent = (content.parent as ViewGroup).apply {
+        (content.parent as ViewGroup).apply {
             isFocusableInTouchMode = false
             isFocusable = false
             isClickable = false

@@ -29,7 +29,7 @@ class ExpandLinearLayout @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     init {
-        orientation = LinearLayout.VERTICAL
+        orientation = VERTICAL
     }
     private var parallax: Float = 1f
         set(value) {

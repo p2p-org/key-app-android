@@ -7,15 +7,19 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
 
 class DebugSettingsPresenter(
     environmentManager: NetworkEnvironmentManager,
     private val resourcesProvider: ResourcesProvider,
+    networkServicesUrlProvider: NetworkServicesUrlProvider
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
     private var networkName = environmentManager.loadCurrentEnvironment().name
+    private val feeRelayerUrl = networkServicesUrlProvider.loadFeeRelayerEnvironment().baseUrl
+    private val notificationServiceUrl = networkServicesUrlProvider.loadNotificationServiceEnvironment().baseUrl
 
     override fun loadData() {
         val settings = getMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()
@@ -41,6 +45,16 @@ class DebugSettingsPresenter(
                 titleResId = R.string.settings_network,
                 subtitle = networkName,
                 iconRes = R.drawable.ic_settings_network
+            ),
+            SettingsRow.Section(
+                titleResId = R.string.settings_fee_relayer,
+                subtitle = feeRelayerUrl,
+                iconRes = R.drawable.ic_network
+            ),
+            SettingsRow.Section(
+                titleResId = R.string.settings_notification_service,
+                subtitle = notificationServiceUrl,
+                iconRes = R.drawable.ic_network
             ),
             SettingsRow.Section(
                 titleResId = R.string.debug_settings_feature_toggles_title,

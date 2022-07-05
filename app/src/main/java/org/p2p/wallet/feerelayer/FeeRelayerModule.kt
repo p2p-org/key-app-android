@@ -1,10 +1,8 @@
 package org.p2p.wallet.feerelayer
 
-import android.content.Context
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
@@ -16,6 +14,7 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRemoteRepository
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
+import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.feerelayer.FeeRelayerInterceptor
 import retrofit2.Retrofit
 
@@ -24,11 +23,11 @@ object FeeRelayerModule : InjectionModule {
     const val FEE_RELAYER_QUALIFIER = "https://fee-relayer.solana.p2p.org"
     override fun create() = module {
         single(named(FEE_RELAYER_QUALIFIER)) {
-            val baseUrl = get<Context>().getString(R.string.feeRelayerBaseUrl)
+            val environmentManager = get<EnvironmentManager>()
+            val url = environmentManager.loadFeeRelayerEnvironment().baseUrl
             getRetrofit(
-                baseUrl = baseUrl,
+                baseUrl = url,
                 tag = "FeeRelayer",
-                resources = get(),
                 interceptor = FeeRelayerInterceptor(get())
             )
         }
@@ -46,11 +45,12 @@ object FeeRelayerModule : InjectionModule {
                 amountRepository = get(),
                 userInteractor = get(),
                 feeRelayerRepository = get(),
+                dispatchers = get(),
                 tokenKeyProvider = get()
             )
         }
 
-        factory { FeeRelayerInteractor(get(), get(), get(), get(), get(), get()) }
+        factory { FeeRelayerInteractor(get(), get(), get(), get(), get(), get(), get()) }
         factory { FeeRelayerTopUpInteractor(get(), get(), get(), get(), get(), get()) }
         factory { FeeRelayerInstructionsInteractor(get(), get(), get(), get()) }
         single { FeeRelayerSwapInteractor(get(), get(), get(), get(), get(), get(), get()) }

@@ -23,7 +23,7 @@ object UserModule : InjectionModule {
                 baseUrl = androidContext().getString(R.string.solanaTokensBaseUrl),
                 tag = "SolanaApi",
                 interceptor = null,
-                resources = get()
+                tag = null
             )
                 .create(SolanaApi::class.java)
         }

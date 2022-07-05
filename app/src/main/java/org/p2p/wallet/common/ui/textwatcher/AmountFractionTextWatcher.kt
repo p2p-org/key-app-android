@@ -79,12 +79,14 @@ class AmountFractionTextWatcher(
         cursorPosition = if (valueText.length < symbolsAfterCursor) 0 else valueText.length - symbolsAfterCursor
     }
 
-    override fun afterTextChanged(edit: Editable?) {
+    override fun afterTextChanged(edit: Editable) {
         field.get()?.apply {
             removeTextChangedListener(this@AmountFractionTextWatcher)
-            field.get()?.let {
-                setText(valueText)
-                setSelection(cursorPosition)
+            if (edit.length < valueText.length) {
+                edit.clear()
+                edit.append(valueText)
+            } else {
+                edit.replace(0, valueText.length, valueText)
             }
             addTextChangedListener(this@AmountFractionTextWatcher)
         }

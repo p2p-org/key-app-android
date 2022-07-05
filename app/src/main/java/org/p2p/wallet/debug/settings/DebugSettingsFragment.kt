@@ -8,7 +8,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesFragment
+import org.p2p.wallet.debug.feerelayer.DebugFeeRelayerFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
+import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
 import org.p2p.wallet.debugdrawer.CustomLogDialog
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
@@ -75,6 +77,12 @@ class DebugSettingsFragment :
                     popEnter = 0,
                     popExit = 0
                 )
+            }
+            R.string.settings_fee_relayer -> {
+                replaceFragment(DebugFeeRelayerFragment.create())
+            }
+            R.string.settings_notification_service -> {
+                replaceFragment(DebugPushServiceFragment.create())
             }
             R.string.debug_settings_logs_title -> {
                 CustomLogDialog(requireContext()).show()

@@ -12,8 +12,10 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.asUsd
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
+import java.math.BigInteger
 
 sealed class Token constructor(
     open val publicKey: String?,
@@ -55,6 +57,10 @@ sealed class Token constructor(
         isWrapped = isWrapped,
         usdRate = usdRate
     ) {
+
+        @IgnoredOnParcel
+        val totalInLamports: BigInteger
+            get() = total.toLamports(decimals)
 
         @IgnoredOnParcel
         val isZero: Boolean
@@ -127,6 +133,10 @@ sealed class Token constructor(
     @IgnoredOnParcel
     val isUSDC: Boolean
         get() = tokenSymbol == USDC_SYMBOL
+
+    @IgnoredOnParcel
+    val isActive: Boolean
+        get() = this is Active
 
     fun getFormattedName(): String = if (isSOL) SOL_NAME else tokenName
 

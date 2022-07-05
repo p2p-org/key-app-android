@@ -60,7 +60,6 @@ class NetworkSelectionFragment : BaseFragment(R.layout.fragment_network_selectio
     private fun setNetworkSelectionResult(network: NetworkType) {
         setNetworkSelected(network)
         setFragmentResult(KEY_REQUEST_SEND, bundleOf(EXTRA_NETWORK to network.ordinal))
-        val message = getString(R.string.send_network_selected_format, network.stringValue)
         // TODO showSnackBar
     }
 

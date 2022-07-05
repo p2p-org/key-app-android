@@ -63,3 +63,5 @@ captures/
 .externalNativeBuild
 
 *.DS_Store
+
+sentry.properties

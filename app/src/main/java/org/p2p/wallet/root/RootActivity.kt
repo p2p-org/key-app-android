@@ -12,8 +12,8 @@ import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.crashlytics.CrashLoggingService
-import org.p2p.wallet.common.crashlytics.FragmentLoggingLifecycleListener
+import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.wallet.common.crashlogging.helpers.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
@@ -37,7 +37,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     private val adminAnalytics: AdminAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val crashLoggingService: CrashLoggingService by inject()
+    private val crashLogger: CrashLogger by inject()
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -112,7 +112,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
             Timber.i("Google services are NOT found on device: code=$userHasGoogleServices")
         }
 
-        crashLoggingService.setCustomKey("has_google_services", userHasGoogleServices)
+        crashLogger.setCustomKey("has_google_services", userHasGoogleServices)
     }
 
     override fun onStop() {

@@ -10,6 +10,7 @@
     <string name="solanaTokensBaseUrl">https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/</string>
 
     <string name="feeRelayerBaseUrl">https://fee-relayer.solana.p2p.org/</string>
+    <string name="feeRelayerTestBaseUrl">https://test-solana-fee-relayer.wallet.p2p.org/</string>
 
     <string name="node_solana">https://solana-api.projectserum.com/</string>
     <string name="node_mainnet">https://api.mainnet-beta.solana.com/</string>
@@ -22,8 +23,8 @@
 
     <string name="blockstreamUrl">https://blockstream.info/</string>
 
-    <string name="p2pWebBaseUrl">https://raw.githubusercontent.com/p2p-org/p2p-wallet-web/develop/src/app/contexts/swap/orca-commons/data/json/</string>
     <string name="orca_api_base_url">https://api.orca.so/</string>
 
-    <string name="notification_service_url">https://push-service.wallet.p2p.org/</string>
+    <string name="notificationServiceBaseUrl">https://push-service.wallet.p2p.org/</string>
+    <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/</string>
 </resources>

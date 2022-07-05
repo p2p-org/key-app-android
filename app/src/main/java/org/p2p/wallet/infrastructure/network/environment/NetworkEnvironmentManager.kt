@@ -10,6 +10,8 @@ import kotlin.reflect.KClass
 private const val KEY_BASE_URL = "KEY_BASE_URL"
 private const val KEY_RPC_BASE_URL = "KEY_RPC_BASE_URL"
 
+
+
 class NetworkEnvironmentManager(private val sharedPreferences: SharedPreferences) {
 
     fun interface EnvironmentManagerListener {

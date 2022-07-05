@@ -70,7 +70,7 @@ class ExpandView @JvmOverloads constructor(
     }
 
     private fun setupExpandLayout() {
-        binding.expandableLayout.onExpansionChangeListener = { rotation, state ->
+        binding.expandableLayout.onExpansionChangeListener = { rotation, _ ->
             setArrowRotation(rotation)
         }
         if (contentPadding == 0) {

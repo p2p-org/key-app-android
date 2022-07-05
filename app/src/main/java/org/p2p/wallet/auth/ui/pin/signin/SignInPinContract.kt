@@ -24,6 +24,5 @@ interface SignInPinContract {
         fun checkIfBiometricAvailable()
         fun stopTimer()
         fun logout()
-        fun load()
     }
 }

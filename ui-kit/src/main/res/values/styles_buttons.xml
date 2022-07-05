@@ -12,21 +12,21 @@
     <style name="UiKit.Atoms.Button.Large">
         <item name="cornerRadius">12dp</item>
         <item name="android:paddingHorizontal">36dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.SemiBold.Text2</item>
+        <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Text2</item>
         <item name="iconSize">16dp</item>
     </style>
 
     <style name="UiKit.Atoms.Button.Medium">
         <item name="cornerRadius">12dp</item>
         <item name="android:paddingHorizontal">36dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.SemiBold.Text2</item>
+        <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Text2</item>
         <item name="iconSize">16dp</item>
     </style>
 
     <style name="UiKit.Atoms.Button.Small">
         <item name="cornerRadius">8dp</item>
         <item name="android:paddingHorizontal">16dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.SemiBold.Text4</item>
+        <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Text4</item>
         <item name="iconSize">10dp</item>
     </style>
 
