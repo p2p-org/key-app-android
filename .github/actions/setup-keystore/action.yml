@@ -1,10 +1,10 @@
 name: "Setup keystore file"
 description: "Create jks file"
 inputs:
-  keystore_secret:
+  keystore-secret:
     required: true
     description: "Raw value jks"
-  keystore_phrase:
+  keystore-phrase:
     required: true
     description: "Keystore GPG key passphrase"
 
@@ -14,6 +14,5 @@ runs:
     - name: Create p2p-wallet.jks
       shell: bash
       run: |
-        echo ${{ inputs.keystore_secret }} -> p2p-wallet.asc
-        gpg -d --passphrase "${{ inputs.keystore_phrase }}" --batch p2p-wallet.asc > p2p-wallet.jks
-~
+        echo ${{ inputs.keystore-secret }} -> p2p-wallet.asc
+        gpg -d --passphrase "${{ inputs.keystore-phrase }}" --batch p2p-wallet.asc > p2p-wallet.jks
