@@ -8,12 +8,15 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.util.AttributeSet
 import android.view.Gravity
+import androidx.annotation.ColorInt
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.toPx
 
-private const val RADIUS_LIST_SIZE = 8
+private const val RADII_LIST_SIZE = 8
 private const val VERTICAL_PADDING_DP = 0
 private const val HORIZONTAL_PADDING_DP = 8
 
@@ -23,9 +26,18 @@ class UiKitBadgeView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
-    enum class Shape {
-        OVAL,
-        RECTANGLE;
+    enum class Shape(
+        @DrawableRes val strokeBackgroundRes: Int,
+        @DimenRes val cornerRadiusDimesRes: Int
+    ) {
+        OVAL(
+            R.drawable.background_badge_stroke_oval,
+            R.dimen.ui_kit_badge_oval_corner_radius
+        ),
+        RECTANGLE(
+            R.drawable.background_badge_stroke_rectangle,
+            R.dimen.ui_kit_badge_rectangle_corner_radius
+        );
 
         companion object {
             fun valueOf(value: Int): Shape {
@@ -47,6 +59,7 @@ class UiKitBadgeView @JvmOverloads constructor(
         }
 
         gravity = Gravity.CENTER
+
         setPadding(
             HORIZONTAL_PADDING_DP.toPx(),
             VERTICAL_PADDING_DP.toPx(),
@@ -56,17 +69,10 @@ class UiKitBadgeView @JvmOverloads constructor(
     }
 
     private fun setBackground(shape: Shape, hasStroke: Boolean) {
-        val ovalCornerRadius = resources.getDimension(R.dimen.ui_kit_badge_oval_corner_radius)
-        val rectangleCornerRadius = resources.getDimension(R.dimen.ui_kit_badge_rectangle_corner_radius)
-        val cornerRadiusDp = if (shape == Shape.OVAL) ovalCornerRadius else rectangleCornerRadius
-        val strokeBackgroundId = if (shape == Shape.OVAL) {
-            R.drawable.background_badge_stroke_oval
-        } else {
-            R.drawable.background_badge_stroke_rectangle
-        }
-        val strokeBackground = ContextCompat.getDrawable(context, strokeBackgroundId)
+        val strokeBackground = ContextCompat.getDrawable(context, shape.strokeBackgroundRes)
         val backgroundColor = getBackgroundColor()
-        val filledBackground = createFilledBackground(backgroundColor, cornerRadiusDp)
+        val filledBackground = createFilledBackground(backgroundColor, shape.cornerRadiusDimesRes)
+
         background = if (hasStroke) strokeBackground else filledBackground
     }
 
@@ -75,11 +81,11 @@ class UiKitBadgeView @JvmOverloads constructor(
     }
 
     private fun createFilledBackground(
-        backgroundColor: Int,
-        cornerRadiusDp: Float,
+        @ColorInt backgroundColor: Int,
+        @DimenRes cornerRadiusDimenRes: Int,
     ): LayerDrawable {
-        val cornerRadiusPx = cornerRadiusDp.toPx()
-        val corners = FloatArray(RADIUS_LIST_SIZE) { cornerRadiusPx }
+        val cornerRadiusPx = resources.getDimension(cornerRadiusDimenRes).toPx()
+        val corners = FloatArray(RADII_LIST_SIZE) { cornerRadiusPx }
 
         val backgroundShape = ShapeDrawable().apply {
             shape = RoundRectShape(corners, null, null)
