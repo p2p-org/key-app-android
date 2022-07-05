@@ -1,4 +1,4 @@
-package org.p2p.wallet.debug.feerelayer
+package org.p2p.wallet.debug.pushservice
 
 import android.os.Bundle
 import android.view.View
@@ -6,18 +6,18 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BaseFragment
-import org.p2p.wallet.databinding.FragmentDebugFeeRelayerBinding
+import org.p2p.wallet.databinding.FragmentDebugPushServiceBinding
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class DebugFeeRelayerFragment : BaseFragment(R.layout.fragment_debug_fee_relayer) {
+class DebugPushServiceFragment : BaseFragment(R.layout.fragment_debug_push_service) {
 
     companion object {
-        fun create(): DebugFeeRelayerFragment = DebugFeeRelayerFragment()
+        fun create(): DebugPushServiceFragment = DebugPushServiceFragment()
     }
 
-    private val binding: FragmentDebugFeeRelayerBinding by viewBinding()
+    private val binding: FragmentDebugPushServiceBinding by viewBinding()
 
     private val environmentManager: EnvironmentManager by inject()
     private val appRestarter: AppRestarter by inject()
@@ -28,16 +28,16 @@ class DebugFeeRelayerFragment : BaseFragment(R.layout.fragment_debug_fee_relayer
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            val url = environmentManager.loadFeeRelayerEnvironment().baseUrl
+            val url = environmentManager.loadNotificationServiceEnvironment().baseUrl
             environmentTextView.text = url
 
             testUrlButton.setOnClickListener {
-                val testUrl = getString(R.string.feeRelayerTestBaseUrl)
+                val testUrl = getString(R.string.notificationServiceTestBaseUrl)
                 updateEnvironmentAndRestart(testUrl)
             }
 
             releaseUrlButton.setOnClickListener {
-                val releaseUrl = getString(R.string.feeRelayerBaseUrl)
+                val releaseUrl = getString(R.string.notificationServiceBaseUrl)
                 updateEnvironmentAndRestart(releaseUrl)
             }
 
@@ -49,7 +49,7 @@ class DebugFeeRelayerFragment : BaseFragment(R.layout.fragment_debug_fee_relayer
     }
 
     private fun updateEnvironmentAndRestart(newUrl: String) {
-        environmentManager.saveFeeRelayerEnvironment(newUrl)
+        environmentManager.saveNotificationServiceEnvironment(newUrl)
         appRestarter.restartApp()
     }
 }
