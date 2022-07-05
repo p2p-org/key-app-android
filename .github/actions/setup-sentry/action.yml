@@ -27,8 +27,8 @@ runs:
       shell: bash
       run: |
         touch sentry.properties
-        echo "defaults.project=${{ inputs.default-project }" >> sentry.properties
-        echo "defaults.org=${{ inputs.default-organization }} >> sentry.properties
-        echo "defaults.url=${{ inputs.default-url }} >> sentry.properties
-        echo "auth.token=${{ inputs.auth-token }} >> sentry.properties
-        echo "auth.dsn=${{ inputs.auth-dsn }} >> sentry.properties
+        echo "defaults.project=${{ inputs.default-project }}" >> sentry.properties
+        echo "defaults.org=${{ inputs.default-organization }}" >> sentry.properties
+        echo "defaults.url=${{ inputs.default-url }}" >> sentry.properties
+        echo "auth.token=${{ inputs.auth-token }}" >> sentry.properties
+        echo "auth.dsn=${{ inputs.auth-dsn }}" >> sentry.properties
