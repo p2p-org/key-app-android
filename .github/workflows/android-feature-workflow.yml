@@ -11,8 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - uses: ./.github/actions/setup-sentry
+        with:
+            auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+            auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+
       - uses: ./.github/actions/setup-gradle
+
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
 
@@ -21,8 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: ${GITHUB_HEAD_REF}
+
       - name: Create and fill sentry.properties
         uses: ./.github/actions/setup-sentry
         with:
@@ -57,7 +62,6 @@ jobs:
     environment: develop
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup-gradle
 
       - name: Create google-services.json
         uses: ./.github/actions/setup-firebase
@@ -84,6 +88,8 @@ jobs:
         with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+
+      - uses: ./.github/actions/setup-gradle
 
       - name: Upload artifact to Firebase
         env:
