@@ -38,8 +38,8 @@ class OrcaRouteInteractor(
         pool: OrcaPool,
         tokens: OrcaTokens,
         owner: Account,
-        fromTokenPubkey: String,
-        toTokenPubkey: String?,
+        fromTokenPublicKeyB64: String,
+        toTokenPublicKeyB64: String?,
         amount: BigInteger,
         slippage: Double,
         feeRelayerFeePayer: PublicKey?,
@@ -47,28 +47,28 @@ class OrcaRouteInteractor(
     ): AccountInstructions {
         val fromMint = tokens[pool.tokenAName]?.mint?.toPublicKey()
         val toMint = tokens[pool.tokenBName]?.mint?.toPublicKey()
-        val fromTokenPubkey = fromTokenPubkey.toPublicKey()
+        val fromTokenPublicKey = fromTokenPublicKeyB64.toPublicKey()
 
         if (fromMint == null || toMint == null) {
-            throw IllegalStateException("Pool mints are not found")
+            error("Pool mints are not found")
         }
 
         // Create fromTokenAccount when needed
         val sourceAccountInstructions =
-            if (fromMint.toBase58() == WRAPPED_SOL_MINT && owner.publicKey.equals(fromTokenPubkey)) {
+            if (fromMint.toBase58() == WRAPPED_SOL_MINT && owner.publicKey.equals(fromTokenPublicKey)) {
                 instructionsInteractor.prepareCreatingWSOLAccountAndCloseWhenDone(
                     from = owner.publicKey,
                     amount = amount,
                     payer = feeRelayerFeePayer ?: owner.publicKey
                 )
             } else {
-                AccountInstructions(fromTokenPubkey)
+                AccountInstructions(fromTokenPublicKey)
             }
 
         // If necessary, create a TokenAccount for the output token
         // If destination token is Solana, create WSOL if needed
         val destinationAccountInstructions = if (toMint.toBase58() == WRAPPED_SOL_MINT) {
-            val toTokenPublicKey = toTokenPubkey?.toPublicKey()
+            val toTokenPublicKey = toTokenPublicKeyB64?.toPublicKey()
             if (toTokenPublicKey != null && !toTokenPublicKey.equals(owner.publicKey)) {
                 // wrapped sol has already been created, just return it, then close later
                 val cleanupInstructions = listOf(
@@ -91,9 +91,9 @@ class OrcaRouteInteractor(
                     payer = owner.publicKey
                 )
             }
-        } else if (toTokenPubkey != null) {
+        } else if (toTokenPublicKeyB64 != null) {
             // If destination is another token and has already been created
-            AccountInstructions(toTokenPubkey.toPublicKey())
+            AccountInstructions(toTokenPublicKeyB64.toPublicKey())
         } else {
             // create wrapped sol
             instructionsInteractor.prepareForCreatingAssociatedTokenAccount(
@@ -283,27 +283,27 @@ class OrcaRouteInteractor(
         val pool0 = poolsPair[0]
 
         val sourceDecimals = pool0.tokenABalance?.decimals ?: throw IllegalStateException("Token A balance is null")
-        val inputAmount = inputAmount.toLamports(sourceDecimals)
+        val inputAmountLamports = inputAmount.toLamports(sourceDecimals)
 
         // 1 pool
         val result = mutableListOf<BigInteger>()
-        val fee0 = pool0.calculatingFees(inputAmount)
+        val fee0 = pool0.calculatingFees(inputAmountLamports)
         result.add(fee0)
 
         // 2 pool
         if (poolsPair.size == 2) {
             val pool1 = poolsPair[1]
 
-            val inputAmount = pool0.getMinimumAmountOut(inputAmount, slippage)
-            if (inputAmount != null) {
-                val fee1 = pool1.calculatingFees(inputAmount)
+            val minAmountOut = pool0.getMinimumAmountOut(inputAmountLamports, slippage)
+            if (minAmountOut != null) {
+                val fee1 = pool1.calculatingFees(minAmountOut)
                 result.add(fee1)
             }
         }
         return result
     }
 
-    // / Find routes for from and to token name, aka symbol
+    // Find routes for from and to token name, aka symbol
     fun findRoutes(
         info: OrcaSwapInfo,
         fromTokenName: String?,

@@ -6,6 +6,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.kits.AccountInstructions
+import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
@@ -54,7 +55,7 @@ class OrcaNativeSwapInteractor(
             throw IllegalStateException("Cannot swap these tokens")
         }
 
-        val minRenExemption = rpcAmountRepository.getMinBalanceForRentExemption()
+        val minRenExemption = rpcAmountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
         return if (bestPoolsPair.size == 1) {
             swapDirect(
@@ -98,8 +99,8 @@ class OrcaNativeSwapInteractor(
             pool = pool,
             tokens = info.tokens,
             owner = owner,
-            fromTokenPubkey = fromTokenPubkey,
-            toTokenPubkey = toTokenPubkey,
+            fromTokenPublicKeyB64 = fromTokenPubkey,
+            toTokenPublicKeyB64 = toTokenPubkey,
             feeRelayerFeePayer = null,
             amount = amount,
             slippage = slippage,
@@ -200,8 +201,8 @@ class OrcaNativeSwapInteractor(
             pool = pool0,
             tokens = info.tokens,
             owner = owner,
-            fromTokenPubkey = fromWalletPubkey,
-            toTokenPubkey = intermediary.account.toBase58(),
+            fromTokenPublicKeyB64 = fromWalletPubkey,
+            toTokenPublicKeyB64 = intermediary.account.toBase58(),
             feeRelayerFeePayer = null,
             amount = lamports,
             slippage = slippage,
@@ -215,8 +216,8 @@ class OrcaNativeSwapInteractor(
             pool = pool1,
             tokens = info.tokens,
             owner = owner,
-            fromTokenPubkey = intermediary.account.toBase58(),
-            toTokenPubkey = destination.account.toBase58(),
+            fromTokenPublicKeyB64 = intermediary.account.toBase58(),
+            toTokenPublicKeyB64 = destination.account.toBase58(),
             feeRelayerFeePayer = null,
             amount = minOutAmount,
             slippage = slippage,
@@ -278,8 +279,8 @@ class OrcaNativeSwapInteractor(
             pool = pool0,
             tokens = info.tokens,
             owner = owner,
-            fromTokenPubkey = fromWalletPubkey,
-            toTokenPubkey = intermediary.account.toBase58(),
+            fromTokenPublicKeyB64 = fromWalletPubkey,
+            toTokenPublicKeyB64 = intermediary.account.toBase58(),
             feeRelayerFeePayer = null,
             amount = lamports,
             slippage = slippage,
@@ -293,8 +294,8 @@ class OrcaNativeSwapInteractor(
             pool = pool1,
             tokens = info.tokens,
             owner = owner,
-            fromTokenPubkey = intermediary.account.toBase58(),
-            toTokenPubkey = destination.account.toBase58(),
+            fromTokenPublicKeyB64 = intermediary.account.toBase58(),
+            toTokenPublicKeyB64 = destination.account.toBase58(),
             feeRelayerFeePayer = null,
             amount = minOutAmount,
             slippage = slippage,
@@ -433,7 +434,7 @@ class OrcaNativeSwapInteractor(
         val serializedTransaction = Base64Utils.encode(serializedMessage)
 
         /**
-         * [swapRepository.sendAndWait] sends transaction and connects to the socket client
+         * swapRepository.sendAndWait sends transaction and connects to the socket client
          * where transaction confirmation status is awaiting.
          * Once it came, [transactionStatusInteractor] callback triggers and we proceed
          * */

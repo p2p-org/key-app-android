@@ -68,7 +68,7 @@
                 android:layout_gravity="end"
                 android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/home_debug"
-                android:padding="12dp"
+                android:padding="16dp"
                 android:src="@drawable/ic_home_debug"
                 android:visibility="gone"
                 tools:visibility="visible" />

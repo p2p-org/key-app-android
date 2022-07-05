@@ -33,6 +33,14 @@ commands:
             echo "amplitudeKey=\"${AMPLITUDE_KEY}\"" >> apikey.properties
             echo "apikey.properties created succesfully"
 
+  create_sentry_properties_file:
+    description: "Create sentry.properties for gradle plugin"
+    steps:
+      - run:
+          name: "Create sentry.properties from hex"
+          command: |
+            echo "$SENTRY_PROPERTIES_HEX" | xxd -r -p - > sentry.properties
+
   restore_gradle_cache:
     description: "Try and use .gradle cache"
     steps:
@@ -64,7 +72,7 @@ commands:
               -F token="${SLACK_BOT_TOKEN}" \
               -F channels="${P2P_SLACK_APK_CHANNEL_ID}" \
               -F initial_comment="Hey! Here is the release AAB. Success :tada:" \
-              -F "file=@$(find app/build/outputs/bundle/release -name 'p2p*')" \
+              -F "file=@$(find app/build/outputs/bundle/release -name 'p2p*.aab')" \
               https://slack.com/api/files.upload
 
   upload_release_apk_to_slack:
@@ -101,6 +109,14 @@ commands:
             touch app/src/main/res/raw/cert.pem
             echo ${SSL_CERTIFICATE} >> app/src/main/res/raw/cert.pem
 
+  create_google_services_file:
+    description: "Create and fill google-services.json"
+    steps:
+      - run:
+          name: "Write google-services.json file from env"
+          command: |
+            echo "$GOOGLE_SERVICES_HEX" | xxd -r -p - > app/google-services.json
+
 defaults: &defaults
   working_directory: ~/app
   executor:
@@ -132,10 +148,11 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - create_sentry_properties_file
       - create_api_keys_file
       - run:
           name: "Static analysis"
-          command: ./gradlew ktlint -PautoCorrect=0
+          command: ./gradlew ktlint -PautoCorrect=0 --stacktrace
 
   unit_tests:
     <<: *defaults
@@ -143,7 +160,9 @@ jobs:
       - checkout
       - restore_gradle_cache
       - create_api_keys_file
+      - create_sentry_properties_file
       - fill_ssl_certificate # needed for Koin graph unit test
+      - create_google_services_file
       - android/run-tests:
           test-command: ./gradlew testDebug
       - save_cache:
@@ -157,8 +176,10 @@ jobs:
     steps:
       - checkout
       - restore_gradle_cache
+      - create_sentry_properties_file
       - create_api_keys_file
       - fill_ssl_certificate
+      - create_google_services_file
       - generate_build_version
       - store_artifacts:
           path: "./app/gradle.properties"
@@ -175,8 +196,10 @@ jobs:
     steps:
       - checkout
       - restore_gradle_cache
+      - create_sentry_properties_file
       - create_api_keys_file
       - fill_ssl_certificate
+      - create_google_services_file
       - generate_build_version
       - run:
           name: "Generate build version"

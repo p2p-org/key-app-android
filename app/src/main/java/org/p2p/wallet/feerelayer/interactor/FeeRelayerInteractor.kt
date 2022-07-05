@@ -1,6 +1,5 @@
 package org.p2p.wallet.feerelayer.interactor
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
@@ -10,6 +9,7 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
@@ -19,6 +19,7 @@ import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isLessThan
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.retryRequest
 import java.math.BigInteger
 
@@ -28,7 +29,8 @@ class FeeRelayerInteractor(
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: EnvironmentManager,
+    private val dispatchers: CoroutineDispatchers
 ) {
 
     companion object {
@@ -54,7 +56,7 @@ class FeeRelayerInteractor(
     * STEP 0: Prepare all information needed for the transaction
     * Load all needed info for relay operations, need to be completed before any operation
     * */
-    suspend fun load() = withContext(Dispatchers.IO) {
+    suspend fun load() = withContext(dispatchers.io) {
         feeRelayerAccountInteractor.getRelayInfo()
         feeRelayerAccountInteractor.getUserRelayAccount(useCache = false)
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
@@ -81,7 +83,7 @@ class FeeRelayerInteractor(
             slippage = Slippage.Percent.doubleValue
         )
 
-        return FeeAmount(transactionFee ?: BigInteger.ZERO, accountCreationFee ?: BigInteger.ZERO)
+        return FeeAmount(transactionFee.orZero(), accountCreationFee.orZero())
     }
 
     /*

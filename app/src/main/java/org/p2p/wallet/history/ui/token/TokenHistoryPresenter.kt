@@ -85,7 +85,7 @@ class TokenHistoryPresenter(
         }
         launch {
             view?.showPagingState(PagingState.InitialLoading)
-            fetchHistory()
+            fetchHistory(transactions.isEmpty())
         }
     }
 

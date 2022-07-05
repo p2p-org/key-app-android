@@ -16,6 +16,8 @@ class DebugSettingsPresenter(
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
     private var networkName = environmentManager.loadEnvironment().name
+    private val feeRelayerUrl = environmentManager.loadFeeRelayerEnvironment().baseUrl
+    private val notificationServiceUrl = environmentManager.loadNotificationServiceEnvironment().baseUrl
 
     override fun loadData() {
         val settings = getMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()
@@ -41,6 +43,16 @@ class DebugSettingsPresenter(
                 titleResId = R.string.settings_network,
                 subtitle = networkName,
                 iconRes = R.drawable.ic_settings_network
+            ),
+            SettingsRow.Section(
+                titleResId = R.string.settings_fee_relayer,
+                subtitle = feeRelayerUrl,
+                iconRes = R.drawable.ic_network
+            ),
+            SettingsRow.Section(
+                titleResId = R.string.settings_notification_service,
+                subtitle = notificationServiceUrl,
+                iconRes = R.drawable.ic_network
             ),
             SettingsRow.Section(
                 titleResId = R.string.debug_settings_feature_toggles_title,

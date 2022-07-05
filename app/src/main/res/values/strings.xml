@@ -236,6 +236,7 @@
     <string name="main_buy">Buy</string>
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
+    <string name="main_enter_incorrect_amount">Incorrect amount</string>
     <string name="main_burn_renbtc">Burn renBTC</string>
     <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
@@ -372,6 +373,7 @@
     <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
     <string name="send_not_enough_funds">Not enough funds</string>
     <string name="send_min_required_amount_warning">You can\'t send less than 0.0009 SOL</string>
+    <string name="send_cannot_send_token">Cannot send the selected token</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -381,7 +383,7 @@
     <string name="swap_fees">Swap fees</string>
     <string name="swap_settings">Swap settings</string>
     <string name="swap_funds_not_enough">Don\'t go over the available funds</string>
-    <string name="swap_calculating_fees">Calculating fees</string>
+    <string name="swap_calculating_fees">Calculating</string>
     <string name="swap_searching_swap_pair">Searching pairs for swap</string>
     <string name="swap_cannot_swap_these_tokens">Cannot swap these tokens</string>
     <string name="swap_calculating_rates_and_fees">Calculating rates and fees</string>
@@ -407,6 +409,8 @@
     <string name="swap_transfer_confirm_message">You are going to swap</string>
     <string name="swap_insufficient_balance">Your account does not have enough balance to cover fees. Please choose another token and try again</string>
     <string name="swap_successfully_format">%1s was swapped to %2s successfully</string>
+    <string name="swap_insufficient_funds_format">Insufficient %s funds to pay swap fees</string>
+    <string name="swap_insufficient_funds">Insufficient funds to cover fees</string>
 
     <!-- Buy -->
     <string name="buy_token_on_moonpay">Buy %s on MoonPay</string>
@@ -490,6 +494,8 @@
     <string name="settings_hide_zero_balances">Hide zero balances</string>
     <string name="settings_security">Security</string>
     <string name="settings_network">Network</string>
+    <string name="settings_fee_relayer">Fee Relayer Environment</string>
+    <string name="settings_notification_service">Notification Service Environment</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
     <string name="settings_security_face_id">FaceID</string>

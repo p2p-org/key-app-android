@@ -18,7 +18,7 @@ class MoonpayBuyCurrencyResponse(
     val totalAmount: BigDecimal,
     @SerializedName("baseCurrency")
     val baseCurrency: BaseCurrencyResponse,
-    @SerializedName("currency")
+    @SerializedName("quoteCurrency")
     val currency: BaseCurrencyResponse
 ) {
     class BaseCurrencyResponse(

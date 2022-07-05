@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_wallet">Wallet</string>
+    <string name="common_history">History</string>
+    <string name="common_send">Send</string>
+    <string name="common_feedback">Feedback</string>
+    <string name="common_settings">Settings</string>
+
+    <string name="common_search">Search</string>
+</resources>
