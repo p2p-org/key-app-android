@@ -4,7 +4,7 @@ inputs:
   keystore_secret:
     required: true
     description: "Raw value jks"
-  keystore_passphrase:
+  keystore_phrase:
     required: true
     description: "Keystore GPG key passphrase"
 
