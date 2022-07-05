@@ -25,5 +25,6 @@
 
     <string name="orca_api_base_url">https://api.orca.so/</string>
 
-    <string name="notification_service_url">https://push-service.wallet.p2p.org/</string>
+    <string name="notificationServiceBaseUrl">https://push-service.wallet.p2p.org/</string>
+    <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/</string>
 </resources>

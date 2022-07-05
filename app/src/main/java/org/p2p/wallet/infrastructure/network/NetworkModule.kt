@@ -16,6 +16,7 @@ import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.FeeRelayerEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NotificationServiceEnvironment
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
@@ -39,9 +40,11 @@ object NetworkModule : InjectionModule {
 
     override fun create() = module {
         single {
-            val baseUrl = androidContext().getString(R.string.feeRelayerBaseUrl)
-            val environment = FeeRelayerEnvironment(baseUrl)
-            EnvironmentManager(get(), get(), environment)
+            val feeRelayerBaseUrl = androidContext().getString(R.string.feeRelayerBaseUrl)
+            val feeRelayerEnvironment = FeeRelayerEnvironment(feeRelayerBaseUrl)
+            val notificationServiceBaseUrl = androidContext().getString(R.string.notificationServiceBaseUrl)
+            val notificationServiceEnvironment = NotificationServiceEnvironment(notificationServiceBaseUrl)
+            EnvironmentManager(get(), get(), feeRelayerEnvironment, notificationServiceEnvironment)
         }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
@@ -86,9 +89,10 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
-            val endpoint = androidContext().getString(R.string.notification_service_url)
+            val environmentManager = get<EnvironmentManager>()
+            val url = environmentManager.loadNotificationServiceEnvironment().baseUrl
             getRetrofit(
-                baseUrl = endpoint,
+                baseUrl = url,
                 tag = "NotificationService",
                 interceptor = null
             )
