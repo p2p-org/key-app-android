@@ -2,7 +2,7 @@ def sh = { args -> args.execute().text.trim() }
 
 def gitSha = { sh('git rev-parse --short HEAD') }
 
-def branchFullName = { System.getenv('CI_COMMIT_REF_NAME') ?: sh('git rev-parse --abbrev-ref HEAD') }
+def branchFullName = { System.getenv('GITHUB_HEAD_REF') ?: sh('git rev-parse --abbrev-ref HEAD') }
 
 def branchName = { "${branchFullName().split('/').last().toString()}" }
 

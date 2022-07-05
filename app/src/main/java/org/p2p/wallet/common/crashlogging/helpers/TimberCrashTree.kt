@@ -1,10 +1,11 @@
-package org.p2p.wallet.common.crashlytics
+package org.p2p.wallet.common.crashlogging.helpers
 
 import android.util.Log
+import org.p2p.wallet.common.crashlogging.CrashLogger
 import timber.log.Timber
 
 class TimberCrashTree(
-    private val crashLoggingService: CrashLoggingService
+    private val crashLogger: CrashLogger
 ) : Timber.Tree() {
     override fun isLoggable(tag: String?, priority: Int): Boolean {
         return priority >= Log.INFO && super.isLoggable(tag, priority)
@@ -16,16 +17,16 @@ class TimberCrashTree(
         val priorityAsString = priority.priorityToString()
         when {
             isThrowablePriority && t != null -> {
-                crashLoggingService.logThrowable(t)
+                crashLogger.logThrowable(t)
             }
             isThrowablePriority && t == null -> {
-                crashLoggingService.logInformation("[$priorityAsString] $message")
+                crashLogger.logInformation("[$priorityAsString] $message")
             }
             isInformationPriority && t != null -> {
-                crashLoggingService.logInformation("[$priorityAsString] $t ($message)")
+                crashLogger.logInformation("[$priorityAsString] $t ($message)")
             }
             isInformationPriority -> {
-                crashLoggingService.logInformation("[$priorityAsString] $message")
+                crashLogger.logInformation("[$priorityAsString] $message")
             }
         }
     }
