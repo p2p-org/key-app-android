@@ -23,7 +23,7 @@
 
     <string name="blockstreamUrl">https://blockstream.info/</string>
 
-    <string name="orca_api_base_url">https://api.orca.so/</string>
+    <string name="orca_api_base_url">https://orca.wallet.p2p.org/</string>
 
     <string name="notificationServiceBaseUrl">https://push-service.wallet.p2p.org/</string>
     <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/</string>
