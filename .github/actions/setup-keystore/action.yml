@@ -15,6 +15,7 @@ runs:
       shell: bash
       env:
         KEYSTORE_SECRET: ${{ inputs.keystore_secret }}
+        KEYSTORE_PHRASE: ${{ inputs.keystore_phrase }}
       run: |
         echo $KEYSTORE_SECRET -> p2p-wallet.asc
-        gpg -d --passphrase "${{ inputs.keystore-passphrase }}" --batch p2p-wallet.asc > p2p-wallet.jks
+        gpg -d --passphrase "$KEYSTORE_PHRASE" --batch p2p-wallet.asc > p2p-wallet.jks
