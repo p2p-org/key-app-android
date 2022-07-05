@@ -5,12 +5,12 @@ import android.util.AttributeSet
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import org.p2p.uikit.R
-import org.p2p.uikit.databinding.WidgetRightAmountViewBinding
+import org.p2p.uikit.databinding.WidgetEndAmountViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
-class UiKitRightAmountView @JvmOverloads constructor(
+class UiKitEndAmountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -29,20 +29,19 @@ class UiKitRightAmountView @JvmOverloads constructor(
         }
 
     @DrawableRes
-    var icon: Int? = null
+    var icon: Int = 0
         set(value) {
             binding.actionImageView.withImageOrGone(value)
             field = value
         }
 
-    private val binding = inflateViewBinding<WidgetRightAmountViewBinding>()
+    private val binding = inflateViewBinding<WidgetEndAmountViewBinding>()
 
     init {
-        context.obtainStyledAttributes(attrs, R.styleable.UiKitRightAmountView).use { typedArray ->
-            val iconRes = typedArray.getResourceId(R.styleable.UiKitRightAmountView_icon, -1)
-            icon = if (iconRes != -1) iconRes else null
-            usdAmount = typedArray.getString(R.styleable.UiKitRightAmountView_usdAmount)
-            tokenAmount = typedArray.getString(R.styleable.UiKitRightAmountView_tokenAmount)
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitEndAmountView).use { typedArray ->
+            icon = typedArray.getResourceId(R.styleable.UiKitEndAmountView_icon, 0)
+            usdAmount = typedArray.getString(R.styleable.UiKitEndAmountView_usdAmount)
+            tokenAmount = typedArray.getString(R.styleable.UiKitEndAmountView_tokenAmount)
         }
     }
 }

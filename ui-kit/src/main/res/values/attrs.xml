@@ -3,7 +3,7 @@
 
     <!-- Atoms -->
 
-    <declare-styleable name="UiKitLeftAmountView">
+    <declare-styleable name="UiKitStartAmountView">
         <attr name="icon" />
         <attr name="title" />
         <attr name="subtitleColor" format="color" />
@@ -11,7 +11,7 @@
         <attr name="subtitle2" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="UiKitRightAmountView">
+    <declare-styleable name="UiKitEndAmountView">
         <attr name="icon" />
         <attr name="usdAmount" format="string" />
         <attr name="tokenAmount" format="string" />

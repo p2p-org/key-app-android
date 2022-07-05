@@ -5,19 +5,19 @@ import android.util.AttributeSet
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import org.p2p.uikit.R
-import org.p2p.uikit.databinding.WidgetLeftAmountViewBinding
+import org.p2p.uikit.databinding.WidgetStartAmountViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
-class UiKitLeftAmountView @JvmOverloads constructor(
+class UiKitStartAmountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     @DrawableRes
-    var icon: Int? = null
+    var icon: Int = 0
         set(value) {
             binding.imageView.withImageOrGone(value)
             field = value
@@ -41,20 +41,19 @@ class UiKitLeftAmountView @JvmOverloads constructor(
             field = value
         }
 
-    private val binding = inflateViewBinding<WidgetLeftAmountViewBinding>()
+    private val binding = inflateViewBinding<WidgetStartAmountViewBinding>()
 
     init {
-        context.obtainStyledAttributes(attrs, R.styleable.UiKitLeftAmountView).use { typedArray ->
-            val iconRes = typedArray.getResourceId(R.styleable.UiKitLeftAmountView_icon, -1)
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitStartAmountView).use { typedArray ->
             val defaultSubtitleColor = context.getColor(R.color.text_mountain)
-            val subtitleTextColor =
-                typedArray.getColor(R.styleable.UiKitLeftAmountView_subtitleColor, defaultSubtitleColor)
+            val subtitleColorIndex = R.styleable.UiKitStartAmountView_subtitleColor
+            val subtitleTextColor = typedArray.getColor(subtitleColorIndex, defaultSubtitleColor)
 
-            icon = if (iconRes == -1) null else iconRes
+            icon = typedArray.getResourceId(R.styleable.UiKitStartAmountView_icon, 0)
             binding.subtitle1TextView.setTextColor(subtitleTextColor)
-            title = typedArray.getString(R.styleable.UiKitLeftAmountView_title)
-            subtitle1 = typedArray.getString(R.styleable.UiKitLeftAmountView_subtitle1)
-            subtitle2 = typedArray.getString(R.styleable.UiKitLeftAmountView_subtitle2)
+            title = typedArray.getString(R.styleable.UiKitStartAmountView_title)
+            subtitle1 = typedArray.getString(R.styleable.UiKitStartAmountView_subtitle1)
+            subtitle2 = typedArray.getString(R.styleable.UiKitStartAmountView_subtitle2)
         }
     }
 }
