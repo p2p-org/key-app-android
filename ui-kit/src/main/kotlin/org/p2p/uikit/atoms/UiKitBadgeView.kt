@@ -25,18 +25,21 @@ class UiKitBadgeView @JvmOverloads constructor(
 
     enum class Shape {
         OVAL,
-        RECTANGLE
+        RECTANGLE;
+
+        companion object {
+            fun valueOf(value: Int): Shape {
+                require(value in values().indices) { "Value $value must be in ${values().indices}" }
+                return values()[value]
+            }
+        }
     }
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitBadgeView).use { typedArray ->
             val defaultTextColor = ContextCompat.getColor(context, R.color.mountain)
             val hasStroke = typedArray.getBoolean(R.styleable.UiKitBadgeView_hasStroke, false)
-            val shape = if (typedArray.getInt(R.styleable.UiKitBadgeView_shape, 0) == 0) {
-                Shape.OVAL
-            } else {
-                Shape.RECTANGLE
-            }
+            val shape = Shape.valueOf(typedArray.getInt(R.styleable.UiKitBadgeView_shape, Shape.OVAL.ordinal))
 
             setBackground(shape, hasStroke)
             setTextAppearance(R.style.UiKit_TextAppearance_Regular_Text4)
