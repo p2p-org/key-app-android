@@ -49,7 +49,7 @@ class UiKitBadgeView @JvmOverloads constructor(
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitBadgeView).use { typedArray ->
-            val defaultTextColor = ContextCompat.getColor(context, R.color.mountain)
+            val defaultTextColor = context.getColor(R.color.mountain)
             val hasStroke = typedArray.getBoolean(R.styleable.UiKitBadgeView_hasStroke, false)
             val shape = Shape.valueOf(typedArray.getInt(R.styleable.UiKitBadgeView_shape, Shape.OVAL.ordinal))
 
@@ -77,7 +77,7 @@ class UiKitBadgeView @JvmOverloads constructor(
     }
 
     private fun getBackgroundColor(): Int {
-        return (background as? ColorDrawable)?.color ?: ContextCompat.getColor(context, R.color.lime)
+        return (background as? ColorDrawable)?.color ?: context.getColor(R.color.lime)
     }
 
     private fun createFilledBackground(

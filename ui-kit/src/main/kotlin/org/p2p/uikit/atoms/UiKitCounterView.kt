@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.Gravity
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.toPx
 
@@ -37,7 +36,7 @@ class UiKitCounterView @JvmOverloads constructor(
         minHeight = MIN_SIZE_DP.toPx()
         gravity = Gravity.CENTER
 
-        val textColor = ContextCompat.getColor(context, R.color.text_snow)
+        val textColor = context.getColor(R.color.text_snow)
         setBackground(isRead)
         setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label2)
         setTextColor(textColor)

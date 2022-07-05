@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetLeftAmountViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
@@ -47,7 +46,7 @@ class UiKitLeftAmountView @JvmOverloads constructor(
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitLeftAmountView).use { typedArray ->
             val iconRes = typedArray.getResourceId(R.styleable.UiKitLeftAmountView_icon, -1)
-            val defaultSubtitleColor = ContextCompat.getColor(context, R.color.text_mountain)
+            val defaultSubtitleColor = context.getColor(R.color.text_mountain)
             val subtitleTextColor =
                 typedArray.getColor(R.styleable.UiKitLeftAmountView_subtitleColor, defaultSubtitleColor)
 
