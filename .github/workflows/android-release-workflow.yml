@@ -46,7 +46,7 @@ jobs:
         run: ./gradlew testDebug
 
   android-build-artifacts:
-    name: "[Github Actions] - Run android build feature artifacts"
+    name: "[Github Actions] - Run android build release artifacts"
     needs:
       - android-lint
       - android-unit-tests
@@ -94,10 +94,18 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew assembleRelease appDistributionUploadRelease
 
-      - name: Upload artifact to Slack
+      - name: Upload APK to Slack
         uses: ./.github/actions/setup-slack
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "release"
           artifact-type: "apk"
+
+      - name: Upload Bundle to Slack
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "release"
+          artifact-type: "bundle"

@@ -15,4 +15,4 @@ runs:
       shell: bash
       run: |
         echo ${{ inputs.keystore-secret }} -> p2p-wallet.asc
-        gpg -d --passphrase ${{ inputs.keystore-phrase }} --batch p2p-wallet.asc > p2p-wallet.jks
+        gpg -d --passphrase "${{ inputs.keystore-phrase }}" --batch p2p-wallet.asc > p2p-wallet.jks
