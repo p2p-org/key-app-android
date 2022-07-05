@@ -1,13 +1,13 @@
 on:
   pull_request:
     branches:
-      - main
+      - release
   push:
     branches:
-      - main
+      - release
 jobs:
   android-lint:
-    name: "[Github Actions] - Run android ktlint check"
+    name: "Run ktlint check"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
         run: ./gradlew ktlint -PautoCorrect=0
 
   android-unit-tests:
-    name: "[Github Actions] - Run android unit tests"
+    name: "Run unit tests"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -51,7 +51,7 @@ jobs:
         run: ./gradlew testDebug
 
   android-build-artifacts:
-    name: "[Github Actions] - Run android build release artifacts"
+    name: "Run build release artifacts"
     needs:
       - android-lint
       - android-unit-tests

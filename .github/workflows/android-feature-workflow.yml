@@ -7,7 +7,7 @@ on:
       - develop
 jobs:
   android-lint:
-    name: "[Github Actions] - Run ktlint check"
+    name: "Run ktlint check"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew ktlint -PautoCorrect=0
 
   android-unit-tests:
-    name: "[Github Actions] - Run unit tests"
+    name: "Run unit tests"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
         run: ./gradlew testDebug
 
   android-build-artifacts:
-    name: "[Github Actions] - Run build feature artifacts"
+    name: "Run build feature artifacts"
     needs:
       - android-lint
       - android-unit-tests
