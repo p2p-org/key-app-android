@@ -10,6 +10,7 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import android.widget.LinearLayout
 import androidx.core.content.FileProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -29,11 +30,11 @@ import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showSoftKeyboard
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.context
@@ -86,6 +87,9 @@ class SecretKeyFragment :
                 replaceFragment(SeedInfoFragment.create())
             }
 
+            phraseContainer.setOnClickListener { _ ->
+                presenter.requestFocusOnLastSecret()
+            }
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
         }
@@ -99,8 +103,6 @@ class SecretKeyFragment :
         }
         keysRecyclerView.attachAdapter(phraseAdapter)
         keysRecyclerView.isVisible = true
-
-        keysRecyclerView.children.find { it.id == R.id.keyEditText }?.focusAndShowKeyboard()
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
@@ -120,6 +122,13 @@ class SecretKeyFragment :
         restoreButton.setRestoreButtonErrorState(
             isError = true, buttonTextRes = messageRes
         )
+    }
+
+    override fun showFocusOnLastSecret(index: Int) {
+        val viewGroup = binding.keysRecyclerView.children.toList().get(index) as LinearLayout
+        val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }
+        secretKeyEditText?.requestFocus()
+        secretKeyEditText?.showSoftKeyboard()
     }
 
     private fun FragmentSecretKeyBinding.setPhraseContainerError(setError: Boolean) {
