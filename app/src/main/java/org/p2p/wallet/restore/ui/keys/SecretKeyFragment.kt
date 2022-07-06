@@ -129,8 +129,9 @@ class SecretKeyFragment :
         )
     }
 
-    override fun showFocusOnLastSecret(index: Int) {
-        val viewGroup = binding.keysRecyclerView.children.toList().getOrNull(index) as? LinearLayout ?: return
+    override fun showFocusOnLastSecret(lastSecretItemIndex: Int) {
+        val viewGroup =
+            binding.keysRecyclerView.children.toList().getOrNull(lastSecretItemIndex) as? LinearLayout ?: return
         val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }
         secretKeyEditText?.requestFocus()
         secretKeyEditText?.showSoftKeyboard()
