@@ -3,8 +3,11 @@ package org.p2p.wallet.common.feature_toggles.remote_config
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import timber.log.Timber
+import kotlin.IllegalStateException
 
 class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
+
+    private var isFetchFailed: Boolean = false
 
     init {
         remoteConfig.setConfigSettingsAsync(createRemoteConfigSettings())
@@ -14,10 +17,14 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
         // maybe add loading screen in the start for remoteConfig to finish the job?
         remoteConfig.fetchAndActivate()
             .addOnSuccessListener {
+                isFetchFailed = false
                 Timber.d("Remote config fetched and activated")
-                Timber.d("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
+                Timber.i("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
             }
-            .addOnFailureListener { Timber.e("Remote config is not fetched and activated", it) }
+            .addOnFailureListener { error ->
+                isFetchFailed = true
+                Timber.e(IllegalStateException(message = "Remote config is not fetched and activated", cause = error))
+            }
     }
 
     private val remoteConfig: FirebaseRemoteConfig
@@ -40,8 +47,31 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
             .setMinimumFetchIntervalInSeconds(0)
             .build()
 
-    override fun getString(toggleKey: String): String? = remoteConfig.getString(toggleKey).takeIf(String::isNotBlank)
-    override fun getBoolean(toggleKey: String): Boolean = remoteConfig.getBoolean(toggleKey)
-    override fun getInt(toggleKey: String): Int? = remoteConfig.getString(toggleKey).toIntOrNull()
-    override fun getFloat(toggleKey: String): Float? = remoteConfig.getString(toggleKey).toFloatOrNull()
+    override fun getString(toggleKey: String): String? {
+        if (isFetchFailed) {
+            return null
+        }
+        return remoteConfig.getString(toggleKey).takeIf(String::isNotBlank)
+    }
+
+    override fun getBoolean(toggleKey: String): Boolean {
+        if (isFetchFailed) {
+            return false
+        }
+        return remoteConfig.getBoolean(toggleKey)
+    }
+
+    override fun getInt(toggleKey: String): Int? {
+        if (isFetchFailed) {
+            return null
+        }
+        return remoteConfig.getString(toggleKey).toIntOrNull()
+    }
+
+    override fun getFloat(toggleKey: String): Float? {
+        if (isFetchFailed) {
+            return null
+        }
+        return remoteConfig.getString(toggleKey).toFloatOrNull()
+    }
 }
