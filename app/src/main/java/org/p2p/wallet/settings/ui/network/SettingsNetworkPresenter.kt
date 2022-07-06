@@ -26,7 +26,6 @@ class SettingsNetworkPresenter(
             try {
                 networkName = environment.name
                 environmentManager.saveEnvironment(environment)
-                mainLocalRepository.clear()
                 RenVMService.stopService(context)
                 analytics.logNetworkChanging(networkName)
                 /* Sometimes these operations are completed too quickly
