@@ -96,6 +96,11 @@ class SecretKeyFragment :
         presenter.load()
     }
 
+    override fun onResume() {
+        super.onResume()
+        presenter.requestFocusOnLastSecret()
+    }
+
     private fun FragmentSecretKeyBinding.initKeysList() {
         keysRecyclerView.layoutManager = FlexboxLayoutManager(requireContext()).also {
             it.flexDirection = FlexDirection.ROW
@@ -125,7 +130,7 @@ class SecretKeyFragment :
     }
 
     override fun showFocusOnLastSecret(index: Int) {
-        val viewGroup = binding.keysRecyclerView.children.toList().get(index) as LinearLayout
+        val viewGroup = binding.keysRecyclerView.children.toList().getOrNull(index) as? LinearLayout ?: return
         val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }
         secretKeyEditText?.requestFocus()
         secretKeyEditText?.showSoftKeyboard()
