@@ -29,15 +29,15 @@ class UiKitStartAmountView @JvmOverloads constructor(
             field = value
         }
 
-    var subtitle1: String? = null
+    var subtitle: String? = null
         set(value) {
-            binding.subtitle1TextView.withTextOrGone(value)
+            binding.subtitleTextView.withTextOrGone(value)
             field = value
         }
 
-    var subtitle2: String? = null
+    var subSubtitle: String? = null
         set(value) {
-            binding.subtitle2TextView.withTextOrGone(value)
+            binding.subSubtitleTextView.withTextOrGone(value)
             field = value
         }
 
@@ -50,10 +50,10 @@ class UiKitStartAmountView @JvmOverloads constructor(
             val subtitleTextColor = typedArray.getColor(subtitleColorIndex, defaultSubtitleColor)
 
             icon = typedArray.getResourceId(R.styleable.UiKitStartAmountView_icon, 0)
-            binding.subtitle1TextView.setTextColor(subtitleTextColor)
+            binding.subtitleTextView.setTextColor(subtitleTextColor)
             title = typedArray.getString(R.styleable.UiKitStartAmountView_title)
-            subtitle1 = typedArray.getString(R.styleable.UiKitStartAmountView_subtitle1)
-            subtitle2 = typedArray.getString(R.styleable.UiKitStartAmountView_subtitle2)
+            subtitle = typedArray.getString(R.styleable.UiKitStartAmountView_subtitle)
+            subSubtitle = typedArray.getString(R.styleable.UiKitStartAmountView_subSubtitle)
         }
     }
 }

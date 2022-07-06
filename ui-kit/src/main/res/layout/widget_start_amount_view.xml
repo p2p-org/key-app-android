@@ -30,7 +30,7 @@
         tools:text="Send" />
 
     <TextView
-        android:id="@+id/subtitle1TextView"
+        android:id="@+id/subtitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -41,13 +41,13 @@
         tools:text="23.8112 SOL" />
 
     <TextView
-        android:id="@+id/subtitle2TextView"
+        android:id="@+id/subSubtitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
         app:layout_constraintStart_toEndOf="@id/imageView"
-        app:layout_constraintTop_toBottomOf="@id/subtitle1TextView"
+        app:layout_constraintTop_toBottomOf="@id/subtitleTextView"
         tools:text="23.8112 SOL" />
 
 </merge>
