@@ -1,8 +1,10 @@
 package org.p2p.uikit.atoms
 
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.Gravity
+import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatTextView
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.toPx
@@ -25,9 +27,10 @@ class UiKitCounterView @JvmOverloads constructor(
             field = value
         }
 
-    var isRead: Boolean = false
+    @ColorInt
+    var fillingColor: Int = context.getColor(R.color.mountain)
         set(value) {
-            setBackground(value)
+            (background as? GradientDrawable)?.setColor(value)
             field = value
         }
 
@@ -37,7 +40,7 @@ class UiKitCounterView @JvmOverloads constructor(
         gravity = Gravity.CENTER
 
         val textColor = context.getColor(R.color.text_snow)
-        setBackground(isRead)
+        setBackgroundResource(R.drawable.background_counter)
         setTextAppearance(R.style.UiKit_TextAppearance_Regular_Label2)
         setTextColor(textColor)
         setPadding(
@@ -67,10 +70,5 @@ class UiKitCounterView @JvmOverloads constructor(
         "$VISIBLE_COUNT_MAX_VALUE+"
     } else {
         value.toString()
-    }
-
-    private fun setBackground(isRead: Boolean) {
-        val drawableRes = if (isRead) R.drawable.background_counter_read else R.drawable.background_counter_new
-        setBackgroundResource(drawableRes)
     }
 }
