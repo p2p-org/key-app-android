@@ -15,16 +15,18 @@ import kotlin.properties.Delegates
 
 class SeedPhraseWatcher(
     private val onKeyAdded: (SecretKey) -> Unit,
-    private val onSeedPhraseInserted: (List<SecretKey>) -> Unit
+    private val onSeedPhraseInserted: (List<SecretKey>) -> Unit,
+    var isLast: Boolean
 ) : TextWatcher {
 
     companion object {
         fun installOn(
+            isLast: Boolean,
             editText: EditText,
             onKeyAdded: (SecretKey) -> Unit,
             onSeedPhraseInserted: (List<SecretKey>) -> Unit
         ): SeedPhraseWatcher {
-            val seedPhraseWatcher = SeedPhraseWatcher(onKeyAdded, onSeedPhraseInserted)
+            val seedPhraseWatcher = SeedPhraseWatcher(onKeyAdded, onSeedPhraseInserted, isLast)
             editText.addTextChangedListener(seedPhraseWatcher)
             editText.setTag(R.id.seed_phrase_watcher_tag_id, seedPhraseWatcher)
             return seedPhraseWatcher
@@ -72,7 +74,9 @@ class SeedPhraseWatcher(
         }
     }
 
-    override fun afterTextChanged(s: Editable?) {}
+    override fun afterTextChanged(s: Editable?) {
+        if (isLast) s?.clear()
+    }
 }
 
 private data class SeedPhrase(
