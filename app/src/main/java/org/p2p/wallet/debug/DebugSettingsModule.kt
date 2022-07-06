@@ -24,6 +24,7 @@ object DebugSettingsModule : InjectionModule {
             DebugSettingsPresenter(
                 get(),
                 get(),
+                get()
             )
         } bind DebugSettingsContract.Presenter::class
         factory {

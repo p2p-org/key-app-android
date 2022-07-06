@@ -20,7 +20,7 @@
 
     <EditText
         android:id="@+id/toggleValueEditText"
-        style="@style/TextAppearance.Regular.Label1"
+        style="@style/UiKit.TextAppearance.Regular.Label1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

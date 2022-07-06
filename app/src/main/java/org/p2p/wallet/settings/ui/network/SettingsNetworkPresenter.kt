@@ -1,8 +1,6 @@
 package org.p2p.wallet.settings.ui.network
 
 import android.content.Context
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -11,6 +9,8 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.renbtc.service.RenVMService
 import timber.log.Timber
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SettingsNetworkPresenter(
     private val context: Context,
@@ -42,6 +42,7 @@ class SettingsNetworkPresenter(
     }
 
     override fun loadData() {
+        Timber.d(environmentManager.availableNetworks.toString())
         view?.showEnvironment(
             currentNetwork = environmentManager.loadCurrentEnvironment(),
             isDevnetEnabled = inAppFeatureFlags.isDevNetEnabled.featureValue,

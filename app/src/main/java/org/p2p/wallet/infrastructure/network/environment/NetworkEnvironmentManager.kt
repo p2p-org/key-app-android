@@ -4,33 +4,30 @@ import androidx.core.content.edit
 import android.content.SharedPreferences
 import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.solanaj.rpc.RpcEnvironment
-import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import kotlin.reflect.KClass
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
 private const val KEY_RPC_BASE_URL = "KEY_RPC_BASE_URL"
 
-
-
-class NetworkEnvironmentManager(private val sharedPreferences: SharedPreferences) {
+class NetworkEnvironmentManager(
+    private val sharedPreferences: SharedPreferences,
+    private val networkListFeatureToggle: SettingsNetworkListFeatureToggle
+) {
 
     fun interface EnvironmentManagerListener {
         fun onEnvironmentChanged(newEnvironment: NetworkEnvironment)
     }
 
-    var availableNetworks: List<NetworkEnvironment> = listOf(
-        NetworkEnvironment.MAINNET,
-        NetworkEnvironment.RPC_POOL,
-        NetworkEnvironment.SOLANA
-    )
-        private set
+    val availableNetworks: List<NetworkEnvironment>
+        get() = loadAvailableEnvironments()
+
     private var listeners = mutableMapOf<String, EnvironmentManagerListener>()
 
-    fun loadAvailableEnvironments(networks: List<NetworkEnvironment>) {
-        this.availableNetworks = networks
-        if (BuildConfig.DEBUG) {
-            this.availableNetworks = availableNetworks + NetworkEnvironment.DEVNET
-        }
+    private fun loadAvailableEnvironments(): List<NetworkEnvironment> {
+        val networksFromRemoteConfig = networkListFeatureToggle.value.map { it.url }
+        val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
+        return NetworkEnvironment.values().filter(isNetworkAvailable)
     }
 
     fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {

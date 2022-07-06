@@ -39,7 +39,7 @@ object NetworkModule : InjectionModule {
 
     override fun create() = module {
         single { NetworkServicesUrlProvider(get(), get()) }
-        single { NetworkEnvironmentManager(get()) }
+        single { NetworkEnvironmentManager(get(), get()) }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
 

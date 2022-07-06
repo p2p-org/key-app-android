@@ -16,6 +16,5 @@ interface RootContract {
     interface Presenter : MvpPresenter<View> {
         fun openRootScreen()
         fun loadPricesAndBids()
-        fun loadAvailableNetworkEnvironments()
     }
 }

@@ -28,6 +28,7 @@ class SettingsNetworkListFeatureToggle(
     )
     override val value: List<SettingsNetworkValue>
         get() = valuesProvider.getString(featureKey)
-            ?.let { gson.fromJsonReified(it) }
+            ?.let { gson.fromJsonReified<List<SettingsNetworkValue>>(it) }
+            ?.takeIf(List<SettingsNetworkValue>::isNotEmpty)
             ?: defaultValue
 }
