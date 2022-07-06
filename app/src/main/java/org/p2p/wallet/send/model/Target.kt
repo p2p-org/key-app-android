@@ -32,11 +32,24 @@ data class Target constructor(
     val trimmedUsername: String
         get() {
             val lowercaseValue = value.lowercase().trim()
-            return when {
-                lowercaseValue.endsWith(P2P_DOMAIN) || lowercaseValue.endsWith(SOL_DOMAIN) -> lowercaseValue
-                else -> lowercaseValue.replace(".", "")
-            }
+            return checkAndTrimName(lowercaseValue)
         }
+
+    private fun checkAndTrimName(value: String): String {
+        return when {
+            value.endsWith(P2P_DOMAIN) ||
+                value.endsWith(SOL_DOMAIN) ||
+                value.contains(".") -> {
+                val firstDotIndex = value.indexOf(".")
+                if (firstDotIndex > 0) {
+                    value.substring(0, firstDotIndex)
+                } else {
+                    value
+                }
+            }
+            else -> value.replace(".", "")
+        }
+    }
 
     @IgnoredOnParcel
     val validation: Validation
