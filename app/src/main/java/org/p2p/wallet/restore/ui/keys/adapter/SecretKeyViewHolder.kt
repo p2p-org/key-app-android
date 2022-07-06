@@ -44,7 +44,7 @@ class SecretKeyViewHolder(
 
     @SuppressLint("SetTextI18n")
     fun onBind(item: SecretKey) {
-        textWatcher?.isLast = bindingAdapterPosition == Constants.SEED_PHRASE_SIZE_LONG
+        textWatcher?.isLastKey = bindingAdapterPosition == Constants.SEED_PHRASE_SIZE_LONG
 
         if (item.text.isEmpty()) {
             textWatcher = SeedPhraseWatcher.installOn(

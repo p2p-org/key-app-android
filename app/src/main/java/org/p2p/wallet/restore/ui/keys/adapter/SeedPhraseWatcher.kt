@@ -16,7 +16,7 @@ import kotlin.properties.Delegates
 class SeedPhraseWatcher(
     private val onKeyAdded: (SecretKey) -> Unit,
     private val onSeedPhraseInserted: (List<SecretKey>) -> Unit,
-    var isLast: Boolean
+    var isLastKey: Boolean
 ) : TextWatcher {
 
     companion object {
@@ -75,7 +75,7 @@ class SeedPhraseWatcher(
     }
 
     override fun afterTextChanged(s: Editable?) {
-        if (isLast) s?.clear()
+        if (isLastKey) s?.clear()
     }
 }
 
