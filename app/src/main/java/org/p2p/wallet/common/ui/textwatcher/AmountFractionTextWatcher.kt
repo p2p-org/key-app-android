@@ -82,10 +82,10 @@ class AmountFractionTextWatcher(
     override fun afterTextChanged(edit: Editable) {
         field.get()?.apply {
             removeTextChangedListener(this@AmountFractionTextWatcher)
-            field.get()?.let {
-                setText(valueText)
-                setSelection(cursorPosition)
-            }
+
+            setText(valueText)
+            setSelection(cursorPosition)
+
             addTextChangedListener(this@AmountFractionTextWatcher)
         }
     }
