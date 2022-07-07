@@ -2,17 +2,20 @@ package org.p2p.wallet.common.feature_toggles.remote_config
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import org.p2p.wallet.BuildConfig
 import timber.log.Timber
-import kotlin.IllegalStateException
 
 class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
 
     private var isFetchFailed: Boolean = false
 
     init {
-        remoteConfig.setConfigSettingsAsync(createRemoteConfigSettings())
-            .addOnSuccessListener { Timber.d("Remote config is set") }
-            .addOnFailureListener { Timber.e("Remote config is not set", it) }
+        // do not put it in release - we don't need to change fetch interval there
+        if (BuildConfig.DEBUG) {
+            remoteConfig.setConfigSettingsAsync(createRemoteConfigSettings())
+                .addOnSuccessListener { Timber.d("Remote config for debug is set") }
+                .addOnFailureListener { Timber.e("Remote config for debug is not set", it) }
+        }
 
         // maybe add loading screen in the start for remoteConfig to finish the job?
         remoteConfig.fetchAndActivate()
@@ -23,7 +26,7 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
             }
             .addOnFailureListener { error ->
                 isFetchFailed = true
-                Timber.e(IllegalStateException(message = "Remote config is not fetched and activated", cause = error))
+                Timber.e(IllegalStateException("Remote config is not fetched and activated", error))
             }
     }
 
