@@ -3,6 +3,7 @@ package org.p2p.wallet.restore.ui.keys.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.restore.model.SecretKey
+import org.p2p.wallet.utils.Constants
 
 class SecretPhraseAdapter(
     private val onSeedPhraseChanged: (List<SecretKey>) -> Unit
@@ -43,7 +44,7 @@ class SecretPhraseAdapter(
     private fun removeSecretKey(index: Int) {
         if (index == -1) return
         data.removeAt(index)
-        notifyItemRemoved(index)
+        notifyDataSetChanged()
 
         onSeedPhraseChanged(data)
     }
@@ -57,20 +58,22 @@ class SecretPhraseAdapter(
     }
 
     private fun addAllSecretKeys(secretKeys: List<SecretKey>) {
-        secretKeys.forEach { item ->
-            /* If there is empty element exists, then we are updating it to the first entered key */
-            val index = data.indexOfFirst { it.text.isEmpty() }
-            if (index != -1) {
-                /* First we update the UI and then updating the actual data */
-                notifyItemChanged(index, item)
-                data.removeAt(index)
-                data.add(index, item)
-            } else {
-                /* If there is no empty elements, then this is a new item */
-                data.add(item)
-                notifyItemInserted(data.size - 1)
+        secretKeys
+            .take(Constants.SEED_PHRASE_SIZE_LONG)
+            .forEach { item ->
+                /* If there is empty element exists, then we are updating it to the first entered key */
+                val index = data.indexOfFirst { it.text.isEmpty() }
+                if (index != -1) {
+                    /* First we update the UI and then updating the actual data */
+                    notifyItemChanged(index, item)
+                    data.removeAt(index)
+                    data.add(index, item)
+                } else {
+                    /* If there is no empty elements, then this is a new item */
+                    data.add(item)
+                    notifyItemInserted(data.size - 1)
+                }
             }
-        }
 
         onSeedPhraseChanged(data)
 
