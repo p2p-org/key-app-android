@@ -55,7 +55,7 @@ interface OrcaSwapContract {
         fun loadDataForSettings()
         fun setNewSourceToken(newToken: Token.Active)
         fun setNewDestinationToken(newToken: Token)
-        fun setSourceAmount(amount: String)
+        fun setSourceAmount(amount: String, isMaxClicked: Boolean = false)
         fun setNewSettings(settingsResult: OrcaSettingsResult)
         fun swapOrConfirm()
         fun swap()

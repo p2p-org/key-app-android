@@ -176,28 +176,12 @@ class OrcaSwapPresenter(
     }
 
     override fun fillMaxAmount() {
-        sourceAmount = sourceToken.total.formatToken()
         view?.showNewSourceAmount(sourceAmount)
-
-        if (!this::sourceToken.isInitialized) return
-
-        val decimalAmount = sourceAmount.toBigDecimalOrZero()
-        val aroundValue = sourceToken.usdRateOrZero.multiply(decimalAmount).scaleMedium()
-
-        val isMoreThanBalance = decimalAmount.isMoreThan(sourceToken.total)
-        val availableColor = if (isMoreThanBalance) R.color.systemErrorMain else R.color.textIconSecondary
-
-        view?.setTotalAmountTextColor(availableColor)
-        view?.showAroundValue(aroundValue)
-
-        isMaxClicked = true
-
-        val destination = destinationToken ?: return
-        calculateBestPair()
-        findValidFeePayer(CORRECT_AMOUNT, destination, desiredFeePayerToken = sourceToken)
+        val amount = sourceToken.total.formatToken()
+        setSourceAmount(amount, true)
     }
 
-    override fun setSourceAmount(amount: String) {
+    override fun setSourceAmount(amount: String, isMaxClicked: Boolean) {
         sourceAmount = amount
 
         if (!this::sourceToken.isInitialized) return
@@ -211,7 +195,14 @@ class OrcaSwapPresenter(
         view?.setTotalAmountTextColor(availableColor)
         view?.showAroundValue(aroundValue)
 
+        this.isMaxClicked = isMaxClicked
+
+        if (destinationToken == null) {
+            updateButtonState()
+        }
+
         val destination = destinationToken ?: return
+
         calculateBestPair()
         findValidFeePayer(SELECT_FEE_PAYER, destination, desiredFeePayerToken = sourceToken)
     }
