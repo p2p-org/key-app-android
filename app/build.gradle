@@ -14,7 +14,7 @@ apply from: "$project.rootDir/scripts/versioning.gradle"
 
 def checkForSslPinning() {
     def sslCertificate = rootProject.file("app/src/main/res/raw/cert.pem")
-    if (sslCertificate.exists()) {
+    if (sslCertificate.exists() && sslCertificate.length() != 0) {
         logger.quiet "(SSL): PEM for SSL pinning is found"
     } else {
         logger.quiet "(SSL): PEM for SSL pinning is NOT found"
@@ -22,41 +22,20 @@ def checkForSslPinning() {
 }
 
 def initApiKeys(defaultConfig) {
-    def apikeyPropertiesFile = rootProject.file("apikey.properties")
-    if (apikeyPropertiesFile.canRead()) {
-        logger.quiet "(API_KEYS): apikey.properties found, using file!"
+    def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
+    def emptyString = "\"\""
 
-        def apikeyProperties = new Properties()
-        apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
-        defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apikeyProperties['rpcPoolApiKey']}")
-        defaultConfig.buildConfigField("String", "moonpayKey", "${apikeyProperties['moonpayKey']}")
-        defaultConfig.buildConfigField("String", "comparePublicKey", "${apikeyProperties['comparePublicKey']}")
-        defaultConfig.buildConfigField("String", "intercomApiKey", "${apikeyProperties['intercomApiKey']}")
-        defaultConfig.buildConfigField("String", "intercomAppId", "${apikeyProperties['intercomAppId']}")
-        defaultConfig.buildConfigField("String", "amplitudeKey", "${apikeyProperties['amplitudeKey']}")
-    } else {
-        logger.quiet "(API_KEYS): apikey.properties is not found, using empty values!"
-
-        def emptyString = "\"\""
-        defaultConfig.buildConfigField("String", "rpcPoolApiKey", emptyString)
-        defaultConfig.buildConfigField("String", "moonpayKey", emptyString)
-        defaultConfig.buildConfigField("String", "comparePublicKey", emptyString)
-        defaultConfig.buildConfigField("String", "intercomApiKey", emptyString)
-        defaultConfig.buildConfigField("String", "intercomAppId", emptyString)
-        defaultConfig.buildConfigField("String", "amplitudeKey", emptyString)
-    }
+    defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrDefault('rpcPoolApiKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrDefault('moonpayKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrDefault('comparePublicKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrDefault('intercomApiKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrDefault('intercomAppId', emptyString)}")
+    defaultConfig.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrDefault('amplitudeKey', emptyString)}")
 }
 
 def initSentry(defaultConfig) {
-    def sentryPropertiesFile = rootProject.file("sentry.properties")
-    if (sentryPropertiesFile.canRead()) {
-        def sentryProperties = new Properties()
-        sentryProperties.load(new FileInputStream(sentryPropertiesFile))
-        defaultConfig.manifestPlaceholders = [SENTRY_DSN: sentryProperties["auth.dsn"]]
-    } else {
-        logger.quiet "(SENTRY): sentry.properties is not found, using empty values!"
-        defaultConfig.manifestPlaceholders = [SENTRY_DSN: ""]
-    }
+    def sentryProperties = new PropertiesFile(rootProject.file("sentry.properties"), logger)
+    defaultConfig.manifestPlaceholders = [SENTRY_DSN: sentryProperties.getOrThrow("auth.dsn")]
 }
 
 String getVersionBuild() {
@@ -213,13 +192,9 @@ android {
     sentry {
         // List the build types that should be ignored
         ignoredBuildTypes = ["debug"]
-
         autoInstallation {
             enabled = false
         }
-        includeProguardMapping = false
-        autoUploadProguardMapping = false
-
     }
 }
 
@@ -274,16 +249,11 @@ dependencies {
 
     implementation 'com.amplitude:android-sdk:2.35.3'
 
-    def googleServicesUtilitiesVersion = "18.0.1"
-    implementation "com.google.android.gms:play-services-base:$googleServicesUtilitiesVersion"
+    implementation "com.google.android.gms:play-services-base:18.1.0"
 
     // Debug drawer
     def debugDrawerVersion = '0.8.0'
-    implementation "io.palaima.debugdrawer:debugdrawer:$debugDrawerVersion"
-    implementation "io.palaima.debugdrawer:debugdrawer-base:$debugDrawerVersion"
-    implementation "io.palaima.debugdrawer:debugdrawer-commons:$debugDrawerVersion"
     implementation "io.palaima.debugdrawer:debugdrawer-timber:$debugDrawerVersion"
-
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.12.0'

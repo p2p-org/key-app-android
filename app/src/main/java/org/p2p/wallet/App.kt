@@ -18,7 +18,6 @@ import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
-import org.p2p.wallet.debugdrawer.DebugDrawer
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
 import org.p2p.wallet.history.HistoryStrategyModule
@@ -62,7 +61,6 @@ class App : Application() {
         AppNotificationManager.createNotificationChannels(this)
         IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
         AndroidThreeTen.init(this)
-        DebugDrawer.init(this)
 
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
 
