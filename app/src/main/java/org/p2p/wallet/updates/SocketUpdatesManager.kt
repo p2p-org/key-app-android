@@ -14,7 +14,7 @@ import kotlinx.coroutines.withTimeout
 import org.p2p.solanaj.ws.SocketStateListener
 import org.p2p.solanaj.ws.SubscriptionWebSocketClient
 import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.utils.NoOp
 import timber.log.Timber
 import java.util.concurrent.Executors
@@ -24,7 +24,7 @@ private const val DELAY_MS = 5000L
 
 class SocketUpdatesManager private constructor(
     appScope: AppScope,
-    environmentManager: EnvironmentManager,
+    environmentManager: NetworkEnvironmentManager,
     private val connectionStateProvider: ConnectionStateProvider,
     private val updateHandlers: List<UpdateHandler>,
     private val initDispatcher: CoroutineDispatcher
@@ -32,7 +32,7 @@ class SocketUpdatesManager private constructor(
 
     constructor(
         appScope: AppScope,
-        environmentManager: EnvironmentManager,
+        environmentManager: NetworkEnvironmentManager,
         connectionStateProvider: ConnectionStateProvider,
         updateHandlers: List<UpdateHandler>
     ) : this(
@@ -43,7 +43,7 @@ class SocketUpdatesManager private constructor(
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     )
 
-    private val endpoint = environmentManager.loadEnvironment().endpoint
+    private val endpoint = environmentManager.loadCurrentEnvironment().endpoint
     private var client: SubscriptionWebSocketClient? = null
     private var connectionJob: Job? = null
 

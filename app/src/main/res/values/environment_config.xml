@@ -12,8 +12,8 @@
     <string name="feeRelayerBaseUrl">https://fee-relayer.solana.p2p.org/</string>
     <string name="feeRelayerTestBaseUrl">https://test-solana-fee-relayer.wallet.p2p.org/</string>
 
-    <string name="node_solana">https://solana-api.projectserum.com</string>
-    <string name="node_mainnet">https://api.mainnet-beta.solana.com</string>
+    <string name="node_solana">https://solana-api.projectserum.com/</string>
+    <string name="node_mainnet">https://api.mainnet-beta.solana.com/</string>
     <string name="node_rpcpool">https://p2p.rpcpool.com/</string>
     <string name="node_devnet">https://api.devnet.solana.com/</string>
 
