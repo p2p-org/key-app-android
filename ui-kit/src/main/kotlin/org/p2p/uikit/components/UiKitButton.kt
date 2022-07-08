@@ -1,4 +1,4 @@
-package org.p2p.uikit.atoms
+package org.p2p.uikit.components
 
 import android.content.Context
 import android.graphics.drawable.Drawable
