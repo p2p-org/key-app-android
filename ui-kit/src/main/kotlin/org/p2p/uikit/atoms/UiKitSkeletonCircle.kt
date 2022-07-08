@@ -5,6 +5,10 @@ import android.content.Context
 import android.util.AttributeSet
 import org.p2p.uikit.R
 
+/**
+ * Usage:
+ * - to set width and height of this Skeleton use special @dimen values
+ */
 class UiKitSkeletonCircle(
     context: Context,
     attrs: AttributeSet? = null,
