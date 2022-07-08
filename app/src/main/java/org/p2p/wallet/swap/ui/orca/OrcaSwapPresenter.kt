@@ -178,7 +178,7 @@ class OrcaSwapPresenter(
     override fun fillMaxAmount() {
         view?.showNewSourceAmount(sourceAmount)
         val amount = sourceToken.total.formatToken()
-        setSourceAmount(amount, true)
+        setSourceAmount(amount = amount, isMaxClicked = true)
     }
 
     override fun setSourceAmount(amount: String, isMaxClicked: Boolean) {
