@@ -42,7 +42,9 @@ jobs:
         with:
           name: timestamp
       - run: |
+          ls -R
           value='cat timestamp.txt'
+          cd bash_scripts
           bash slack_ktlint_message ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
 
 
@@ -92,6 +94,7 @@ jobs:
       - shell: bash
         run: |
           value='cat timestamp.txt'
+          cd bash_scripts
           bash slack_deploy_ready ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
 
   android-build-artifacts:
@@ -147,9 +150,11 @@ jobs:
       - run: |
           git fetch
           value='cat timestamp.txt'
+          cd bash_scripts
           bash slack_upload_to_slack_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
           bash slack_get_changelog_file.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $GITHUB_HEAD_REF
           bash slack_get_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $GITHUB_HEAD_REF
+          cd ..
       - name: Upload artifact to Slack
         uses: ./.github/actions/setup-slack
         with:
