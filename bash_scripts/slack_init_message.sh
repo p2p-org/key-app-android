@@ -5,11 +5,9 @@ slack_ktlint_message="Запущен процесс новой сборки (0%)
 4 Upload to Firebase :hourglass:
 5 Upload to Slack :hourglass: "
 
-echo $SLACK_BOT_TOKEN
-echo $SLACK_CHANNEL_ID
 SLACK_SEND_MESSAGE_RESPONSE=$(curl \
-    -F token="${SLACK_BOT_TOKEN}" \
-    -F channel="${SLACK_CHANNEL_ID}" \
+    -F token=${{ SLACK_BOT_TOKEN }}" \
+    -F channel="${{ SLACK_CHANNEL_ID }}" \
     -F text="$slack_ktlint_message" \
     https://slack.com/api/chat.postMessage
     )
