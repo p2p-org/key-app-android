@@ -44,7 +44,7 @@ jobs:
       - run: |
           value='cat timestamp.txt'
           cd bash_scripts
-          bash slack_ktlint_message ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash slack_ktlint_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
 
 
   android-unit-tests:
@@ -94,7 +94,7 @@ jobs:
         run: |
           value='cat timestamp.txt'
           cd bash_scripts
-          bash slack_deploy_ready ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash slack_deploy_ready.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
 
   android-build-artifacts:
     name: "Run build feature artifacts"
