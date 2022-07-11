@@ -14,7 +14,7 @@ interface SecretKeyContract {
         fun showFile(file: File)
         fun setButtonEnabled(isEnabled: Boolean)
         fun addFirstKey(key: SecretKey)
-        fun showFocusOnLastSecret(lastSecretItemIndex: Int)
+        fun showFocusOnLastKey(lastSecretItemIndex: Int)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -23,6 +23,6 @@ interface SecretKeyContract {
         fun openPrivacyPolicy()
         fun openTermsOfUse()
         fun load()
-        fun requestFocusOnLastSecret()
+        fun requestFocusOnLastKey()
     }
 }
