@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.model.orca
 
-import org.p2p.wallet.swap.api.OrcaAquafarmResponse
-import org.p2p.wallet.swap.api.OrcaConfigsResponse
+import org.p2p.wallet.swap.api.OrcaInfoResponse
 import org.p2p.wallet.swap.api.OrcaPoolResponse
 import org.p2p.wallet.swap.api.OrcaTokensResponse
 import org.p2p.wallet.swap.api.ProgramIdResponse
@@ -10,12 +9,11 @@ import java.math.BigInteger
 
 object OrcaConverter {
 
-    fun fromNetwork(response: OrcaConfigsResponse): OrcaConfigs =
+    fun fromNetwork(response: OrcaInfoResponse): OrcaConfigs =
         OrcaConfigs(
-            tokens = response.tokens.mapValues { fromNetwork(it.value) } as OrcaTokens,
-            aquafarms = response.aquafarms.mapValues { fromNetwork(it.value) } as OrcaAquafarms,
-            pools = response.pools.mapValues { fromNetwork(it.value) } as OrcaPools,
-            programId = fromNetwork(response.programIds)
+            tokens = response.config.tokens.mapValues { fromNetwork(it.value) } as OrcaTokens,
+            pools = response.config.pools.mapValues { fromNetwork(it.value) } as OrcaPools,
+            programId = fromNetwork(response.config.programIds)
         )
 
     private fun fromNetwork(response: OrcaTokensResponse): OrcaToken =
@@ -24,20 +22,6 @@ object OrcaConverter {
             name = response.name,
             decimals = response.decimals,
             fetchPrice = response.fetchPrice,
-        )
-
-    private fun fromNetwork(response: OrcaAquafarmResponse): OrcaAquafarm =
-        OrcaAquafarm(
-            account = response.account,
-            nonce = response.nonce,
-            tokenProgramId = response.tokenProgramId,
-            emissionsAuthority = response.emissionsAuthority,
-            removeRewardsAuthority = response.removeRewardsAuthority,
-            baseTokenMint = response.baseTokenMint,
-            baseTokenVault = response.baseTokenVault,
-            rewardTokenMint = response.rewardTokenMint,
-            rewardTokenVault = response.rewardTokenVault,
-            farmTokenMint = response.farmTokenMint
         )
 
     private fun fromNetwork(response: OrcaPoolResponse): OrcaPool =

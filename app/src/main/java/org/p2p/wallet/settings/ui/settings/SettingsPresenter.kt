@@ -9,14 +9,14 @@ import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.model.SettingsRow
 import timber.log.Timber
 
 class SettingsPresenter(
-    environmentManager: EnvironmentManager,
+    environmentManager: NetworkEnvironmentManager,
     private val usernameInteractor: UsernameInteractor,
     private val authLogoutInteractor: AuthLogoutInteractor,
     private val appRestarter: AppRestarter,
@@ -26,7 +26,7 @@ class SettingsPresenter(
     private val context: Context
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
-    private var networkName = environmentManager.loadEnvironment().name
+    private var networkName = environmentManager.loadCurrentEnvironment().name
 
     override fun loadData() {
         launch {

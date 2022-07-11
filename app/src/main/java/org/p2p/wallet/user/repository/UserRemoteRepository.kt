@@ -2,11 +2,11 @@ package org.p2p.wallet.user.repository
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Account
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
@@ -26,7 +26,7 @@ class UserRemoteRepository(
     private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val rpcRepository: RpcAccountRepository,
     private val rpcBalanceRepository: RpcBalanceRepository,
-    private val environmentManager: EnvironmentManager,
+    private val environmentManager: NetworkEnvironmentManager,
     private val dispatchers: CoroutineDispatchers
 ) : UserRepository {
 
@@ -103,7 +103,7 @@ class UserRemoteRepository(
     }
 
     private fun mapDevnetRenBTC(account: Account): Token.Active? {
-        if (environmentManager.loadEnvironment() != Environment.DEVNET) return null
+        if (environmentManager.loadCurrentEnvironment() != NetworkEnvironment.DEVNET) return null
         val token = userLocalRepository.findTokenData(REN_BTC_DEVNET_MINT)
         val result = if (token == null) {
             userLocalRepository.findTokenData(REN_BTC_DEVNET_MINT_ALTERNATE)

@@ -14,7 +14,7 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRemoteRepository
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.network.NetworkModule.getRetrofit
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.feerelayer.FeeRelayerInterceptor
 import retrofit2.Retrofit
 
@@ -23,7 +23,7 @@ object FeeRelayerModule : InjectionModule {
     const val FEE_RELAYER_QUALIFIER = "https://fee-relayer.solana.p2p.org"
     override fun create() = module {
         single(named(FEE_RELAYER_QUALIFIER)) {
-            val environmentManager = get<EnvironmentManager>()
+            val environmentManager = get<NetworkServicesUrlProvider>()
             val url = environmentManager.loadFeeRelayerEnvironment().baseUrl
             getRetrofit(
                 baseUrl = url,

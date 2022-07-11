@@ -1,6 +1,5 @@
 package org.p2p.wallet.restore.ui.keys
 
-import androidx.annotation.StringRes
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +9,7 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import android.widget.LinearLayout
+import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -20,8 +19,8 @@ import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ProgressButton
 import org.p2p.wallet.databinding.FragmentSecretKeyBinding
@@ -29,12 +28,13 @@ import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.attachAdapter
+import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.showSoftKeyboard
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.context

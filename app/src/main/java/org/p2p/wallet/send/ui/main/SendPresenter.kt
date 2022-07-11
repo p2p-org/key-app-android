@@ -269,7 +269,7 @@ class SendPresenter(
             val data = SendConfirmData(
                 token = token,
                 amount = state.tokenAmount.toPlainString(),
-                amountUsd = state.usdAmount.toString(),
+                amountUsd = state.usdAmount.toPlainString(),
                 destination = address
             )
 
@@ -524,9 +524,10 @@ class SendPresenter(
         destinationAddress: PublicKey,
         lamports: BigInteger
     ) {
+        val destinationAddressShort = destinationAddress.toBase58().cutMiddle()
         val data = ShowProgress(
             title = R.string.send_transaction_being_processed,
-            subTitle = "${state.tokenAmount} ${token.tokenSymbol} → ${destinationAddress.toBase58().cutMiddle()}",
+            subTitle = "${state.tokenAmount.toPlainString()} ${token.tokenSymbol} → $destinationAddressShort",
             transactionId = emptyString()
         )
         view?.showProgressDialog(data)

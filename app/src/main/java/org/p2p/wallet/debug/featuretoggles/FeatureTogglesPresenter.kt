@@ -1,50 +1,44 @@
 package org.p2p.wallet.debug.featuretoggles
 
-import androidx.annotation.IdRes
-import org.p2p.wallet.R
-import org.p2p.wallet.common.AppFeatureFlags
+import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.common.feature_toggles.toggles.remote.BooleanFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
+import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.settings.model.SettingsRow
 
 class FeatureTogglesPresenter(
-    private val appFeatureFlags: AppFeatureFlags
+    private val inAppFeatureFlags: InAppFeatureFlags,
+    private val debugRemoteConfigValuesSource: LocalFirebaseRemoteConfig,
+    private val remoteFeatureToggles: List<RemoteFeatureToggle<*>>,
 ) : BasePresenter<FeatureTogglesContract.View>(), FeatureTogglesContract.Presenter {
 
-    override fun loadFeatureToggles() {
-        view?.showFeatureToggles(getFeatureToggles())
+    override fun load() {
+        view?.showFeatureToggles(buildFeatureToggleRows())
     }
 
-    override fun onToggleCheckedListener(@IdRes toggleId: Int, toggleChecked: Boolean) {
-        when (toggleId) {
-            R.id.enable_dev_net -> appFeatureFlags.isDevnetEnabled = toggleChecked
-            R.id.polling_enabled -> appFeatureFlags.isPollingEnabled = toggleChecked
-            R.id.ssl_pinning_enabled -> appFeatureFlags.isSslPinningEnabled = toggleChecked
-            R.id.coin_gecko_enabled -> appFeatureFlags.useCoinGeckoForPrices = toggleChecked
+    override fun onToggleChanged(toggle: FeatureToggleRow, newValue: String) {
+        inAppFeatureFlags.findFeatureFlagByName(toggle.toggleName)
+            ?.let { inAppFlag -> inAppFlag.featureValue = newValue.toBoolean() }
+            ?: debugRemoteConfigValuesSource.changeFeatureToggle(toggle.toggleName, newValue)
+
+        load()
+    }
+
+    private fun buildFeatureToggleRows(): List<FeatureToggleRow> {
+        return remoteFeatureToggles.map {
+            FeatureToggleRow(
+                toggleName = it.featureKey,
+                toggleValue = it.value.toString(),
+                isCheckable = it is BooleanFeatureToggle,
+                canBeChanged = inAppFeatureFlags.isDebugRemoteConfigEnabled.featureValue
+            )
+        } + inAppFeatureFlags.allInAppFeatureFlags.map {
+            FeatureToggleRow(
+                toggleName = it.featureName,
+                toggleValue = it.featureValue.toString(),
+                isCheckable = true,
+                canBeChanged = true
+            )
         }
-    }
-
-    private fun getFeatureToggles(): List<SettingsRow.Toggle> {
-        return listOf(
-            SettingsRow.Toggle(
-                titleResId = R.string.feature_auto_update,
-                toggleId = R.id.polling_enabled,
-                toggleChecked = appFeatureFlags.isPollingEnabled
-            ),
-            SettingsRow.Toggle(
-                titleResId = R.string.feature_ssl_pinning,
-                toggleId = R.id.ssl_pinning_enabled,
-                toggleChecked = appFeatureFlags.isSslPinningEnabled
-            ),
-            SettingsRow.Toggle(
-                titleResId = R.string.feature_dev_net,
-                toggleId = R.id.enable_dev_net,
-                toggleChecked = appFeatureFlags.isDevnetEnabled
-            ),
-            SettingsRow.Toggle(
-                titleResId = R.string.feature_coin_gecko,
-                toggleId = R.id.coin_gecko_enabled,
-                toggleChecked = appFeatureFlags.useCoinGeckoForPrices
-            ),
-        )
     }
 }

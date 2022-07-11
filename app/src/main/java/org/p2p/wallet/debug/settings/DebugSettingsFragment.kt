@@ -11,7 +11,7 @@ import org.p2p.wallet.debug.featuretoggles.FeatureTogglesFragment
 import org.p2p.wallet.debug.feerelayer.DebugFeeRelayerFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
-import org.p2p.wallet.debugdrawer.CustomLogDialog
+import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.settings.SettingsAdapter

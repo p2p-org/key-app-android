@@ -1,13 +1,14 @@
 package org.p2p.wallet.moonpay.ui
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -15,8 +16,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.textwatcher.PrefixSuffixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.moonpay.api.MoonpayUrlBuilder
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
@@ -43,7 +44,6 @@ class BuySolanaFragment :
 
     private val binding: FragmentBuySolanaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
-    private val environmentManager: EnvironmentManager by inject()
     private val tokenKeyProvider: TokenKeyProvider by inject()
 
     private var backPressedCallback: OnBackPressedCallback? = null
@@ -117,7 +117,13 @@ class BuySolanaFragment :
         val solSymbol = Constants.SOL_SYMBOL.lowercase()
         val tokenSymbol = token.tokenSymbol.lowercase()
         val currencyCode = if (token.isSOL) solSymbol else "${tokenSymbol}_$solSymbol"
-        val url = environmentManager.getMoonpayUrl(amount, tokenKeyProvider.publicKey, currencyCode)
+        val url = MoonpayUrlBuilder.build(
+            moonpayWalletDomain = requireContext().getString(R.string.moonpayWalletDomain),
+            moonpayApiKey = BuildConfig.moonpayKey,
+            amount = amount,
+            walletAddress = tokenKeyProvider.publicKey,
+            currencyCode = currencyCode,
+        )
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Buy.EXTERNAL)
         requireContext().showUrlInCustomTabs(url)
     }

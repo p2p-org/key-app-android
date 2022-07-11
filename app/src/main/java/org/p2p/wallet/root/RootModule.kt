@@ -1,14 +1,13 @@
 package org.p2p.wallet.root
 
+import org.koin.core.module.dsl.factoryOf
 import org.p2p.wallet.common.di.InjectionModule
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.auth.analytics.AdminAnalytics
 
 object RootModule : InjectionModule {
 
     override fun create() = module {
-        factory { RootPresenter(get(), get()) } bind RootContract.Presenter::class
-        single { AdminAnalytics(get()) }
+        factoryOf(::RootPresenter) bind RootContract.Presenter::class
     }
 }

@@ -6,16 +6,34 @@ on:
     branches:
       - develop
 jobs:
+
+  slack-init-message:
+    name: "Send start workflow message to Slack"
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          cd bash_scripts
+          bash slack_init_message.sh
+          cd ..
+      - uses: actions/upload-artifact@v3
+        with:
+          name: timestamp
+          path: bash_scripts/timestamp.txt
+          retention-days: 1
   android-lint:
     name: "Run ktlint check"
+    needs:
+      - slack-init-message
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - uses: ./.github/actions/setup-sentry
         with:
-            auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-            auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
       - uses: ./.github/actions/setup-gradle
 
@@ -24,6 +42,8 @@ jobs:
 
   android-unit-tests:
     name: "Run unit tests"
+    needs:
+      - slack-init-message
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -52,11 +72,27 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebug
 
+  slack-await-message:
+    name: "Send Slack await message"
+    needs:
+      - android-lint
+      - android-unit-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: timestamp
+      - shell: bash
+        run: |
+          cd bash_scripts
+          bash slack_deploy_ready $(cat timestamp.txt)
+
   android-build-artifacts:
     name: "Run build feature artifacts"
     needs:
       - android-lint
       - android-unit-tests
+      - slack-await-message
 
     runs-on: ubuntu-latest
     environment: develop
@@ -97,6 +133,17 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew assembleFeature appDistributionUploadFeature
 
+      - uses: actions/download-artifact@v3
+        with:
+          name: timestamp
+
+      - run: |
+          cd bash_scripts
+          bash slack_upload_to_slack_message.sh $(cat timestamp.txt)
+          git fetch
+          bash slack_get_changelog_file.sh
+          bash slack_get_jira_ticket.sh
+          cd ..
       - name: Upload artifact to Slack
         uses: ./.github/actions/setup-slack
         with:

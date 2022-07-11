@@ -1,4 +1,4 @@
-package org.p2p.wallet.debugdrawer
+package org.p2p.wallet.debug.logs
 
 import android.content.Context
 import android.content.Intent

@@ -3,7 +3,7 @@ package org.p2p.wallet.home.ui.main
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.AppFeatureFlags
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.home.model.Banner
@@ -11,7 +11,7 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -31,12 +31,12 @@ private const val BANNER_START_INDEX = 2
 private val TOKENS_VALID_FOR_BUY = setOf("SOL", "USDC")
 
 class HomePresenter(
-    private val appFeatureFlags: AppFeatureFlags,
+    private val inAppFeatureFlags: InAppFeatureFlags,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val environmentManager: EnvironmentManager,
+    private val environmentManager: NetworkEnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
@@ -231,7 +231,7 @@ class HomePresenter(
     }
 
     private suspend fun loadTokensOnPolling() {
-        val isPollingEnabled = appFeatureFlags.isPollingEnabled
+        val isPollingEnabled = inAppFeatureFlags.isPollingEnabled.featureValue
         if (isPollingEnabled) {
             userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = false)
             Timber.d("Successfully auto-updated loaded tokens")

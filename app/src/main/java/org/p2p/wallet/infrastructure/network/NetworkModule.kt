@@ -14,9 +14,8 @@ import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
-import org.p2p.wallet.infrastructure.network.environment.FeeRelayerEnvironment
-import org.p2p.wallet.infrastructure.network.environment.NotificationServiceEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
@@ -39,13 +38,8 @@ object NetworkModule : InjectionModule {
     const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
 
     override fun create() = module {
-        single {
-            val feeRelayerBaseUrl = androidContext().getString(R.string.feeRelayerBaseUrl)
-            val feeRelayerEnvironment = FeeRelayerEnvironment(feeRelayerBaseUrl)
-            val notificationServiceBaseUrl = androidContext().getString(R.string.notificationServiceBaseUrl)
-            val notificationServiceEnvironment = NotificationServiceEnvironment(notificationServiceBaseUrl)
-            EnvironmentManager(get(), get(), feeRelayerEnvironment, notificationServiceEnvironment)
-        }
+        single { NetworkServicesUrlProvider(get(), get()) }
+        single { NetworkEnvironmentManager(get(), get()) }
         single { TokenKeyProvider(get()) }
         single { CertificateManager(get(), get()) }
 
@@ -70,7 +64,7 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(RPC_RETROFIT_QUALIFIER)) {
-            val environment = get<EnvironmentManager>().loadEnvironment()
+            val environment = get<NetworkEnvironmentManager>().loadCurrentEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(
                 baseUrl = rpcApiUrl,
@@ -79,7 +73,7 @@ object NetworkModule : InjectionModule {
             )
         }
         single(named(RPC_SOLANA_RETROFIT_QUALIFIER)) {
-            val environment = get<EnvironmentManager>().loadRpcEnvironment()
+            val environment = get<NetworkEnvironmentManager>().loadRpcEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(
                 baseUrl = rpcApiUrl,
@@ -89,8 +83,7 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)) {
-            val environmentManager = get<EnvironmentManager>()
-            val url = environmentManager.loadNotificationServiceEnvironment().baseUrl
+            val url = get<NetworkServicesUrlProvider>().loadNotificationServiceEnvironment().baseUrl
             getRetrofit(
                 baseUrl = url,
                 tag = "NotificationService",
