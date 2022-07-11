@@ -34,16 +34,16 @@ jobs:
 
       - uses: ./.github/actions/setup-sentry
         with:
-            auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-            auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-
-      - uses: ./.github/actions/setup-gradle
+          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+      - name: Run ktlint
+        run: ./gradlew ktlint -PautoCorrect=0
       - uses: actions/download-artifact@v3
         with:
           name: timestamp
-      - run: ls -R
-      - name: Run ktlint
-        run: ./gradlew ktlint -PautoCorrect=0
+      - run: |
+          bash slack_ktlint_message ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $(cat timestamp.txt)
+
 
   android-unit-tests:
     name: "Run unit tests"
