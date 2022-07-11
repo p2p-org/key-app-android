@@ -42,7 +42,7 @@ jobs:
         with:
           name: timestamp
       - run: |
-          value='cat timestamp.txt'
+          value=`cat timestamp.txt`
           cd bash_scripts
           bash slack_ktlint_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
 
@@ -92,7 +92,7 @@ jobs:
           name: timestamp
       - shell: bash
         run: |
-          value='cat timestamp.txt'
+          value=`cat timestamp.txt`
           cd bash_scripts
           bash slack_deploy_ready.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
 
@@ -148,7 +148,7 @@ jobs:
 
       - run: |
           git fetch
-          value='cat timestamp.txt'
+          value=`cat timestamp.txt`
           cd bash_scripts
           bash slack_upload_to_slack_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
           bash slack_get_changelog_file.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $GITHUB_HEAD_REF
