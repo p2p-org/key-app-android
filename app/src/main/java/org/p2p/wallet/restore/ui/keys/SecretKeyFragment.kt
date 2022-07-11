@@ -88,7 +88,7 @@ class SecretKeyFragment :
             }
 
             phraseContainer.setOnClickListener { _ ->
-                presenter.requestFocusOnLastSecret()
+                presenter.requestFocusOnLastKey()
             }
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
@@ -98,7 +98,7 @@ class SecretKeyFragment :
 
     override fun onResume() {
         super.onResume()
-        presenter.requestFocusOnLastSecret()
+        presenter.requestFocusOnLastKey()
     }
 
     private fun FragmentSecretKeyBinding.initKeysList() {
@@ -129,7 +129,7 @@ class SecretKeyFragment :
         )
     }
 
-    override fun showFocusOnLastSecret(lastSecretItemIndex: Int) {
+    override fun showFocusOnLastKey(lastSecretItemIndex: Int) {
         val viewGroup =
             binding.keysRecyclerView.children.toList().getOrNull(lastSecretItemIndex) as? LinearLayout ?: return
         val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }

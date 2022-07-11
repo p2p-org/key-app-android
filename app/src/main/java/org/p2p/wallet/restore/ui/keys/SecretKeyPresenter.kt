@@ -59,8 +59,8 @@ class SecretKeyPresenter(
         }
     }
 
-    override fun requestFocusOnLastSecret() {
-        view?.showFocusOnLastSecret(keys.size)
+    override fun requestFocusOnLastKey() {
+        view?.showFocusOnLastKey(keys.size)
     }
 
     override fun openPrivacyPolicy() {
