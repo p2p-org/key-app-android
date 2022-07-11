@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import okhttp3.OkHttpClient
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -20,7 +20,7 @@ object RetrofitBuilder {
             .addNetworkInterceptor(ContentTypeInterceptor())
             .build()
 
-        val baseUrl = if (url.isNullOrEmpty()) Environment.SOLANA.endpoint else url
+        val baseUrl = if (url.isNullOrEmpty()) NetworkEnvironment.SOLANA.endpoint else url
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)

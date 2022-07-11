@@ -11,7 +11,7 @@ import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
@@ -27,7 +27,7 @@ class OrcaSwapInteractor(
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val orcaNativeSwapInteractor: OrcaNativeSwapInteractor,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: NetworkEnvironmentManager,
 ) {
 
     /*

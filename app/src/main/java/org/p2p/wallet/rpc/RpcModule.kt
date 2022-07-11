@@ -9,7 +9,7 @@ import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.api.RpcAccountApi
 import org.p2p.wallet.rpc.api.RpcAmountApi
 import org.p2p.wallet.rpc.api.RpcBalanceApi
@@ -79,7 +79,7 @@ object RpcModule : InjectionModule {
         }
         factory { TokenInteractor(get(), get(), get(), get()) }
 
-        factory { RpcSolanaInteractor(get(), get<EnvironmentManager>().loadRpcEnvironment(), get<AppScope>()) }
+        factory { RpcSolanaInteractor(get(), get<NetworkEnvironmentManager>().loadRpcEnvironment(), get<AppScope>()) }
 
         factory { RenVMRepository(get()) }
 

@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--  Button  -->
+    <!-- Atoms -->
+
+    <declare-styleable name="UiKitStartAmountView">
+        <attr name="icon" />
+        <attr name="title" />
+        <attr name="subtitleColor" format="color" />
+        <attr name="subtitle" format="string" />
+        <attr name="subSubtitle" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitEndAmountView">
+        <attr name="icon" />
+        <attr name="usdAmount" format="string" />
+        <attr name="tokenAmount" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitBadgeView">
+        <attr name="hasStroke" format="boolean" />
+        <attr name="android:textColor" />
+        <attr name="shape" format="enum">
+            <enum name="oval" value="0" />
+            <enum name="rectangle" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <!--  Organisms  -->
 
     <declare-styleable name="UiKitButton">
         <attr name="android:layout_height" />
         <attr name="iconTint" />
     </declare-styleable>
-
-    <!--  Section Header  -->
 
     <declare-styleable name="UiKitSectionHeader">
         <attr name="withIcon" format="boolean" />

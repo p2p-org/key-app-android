@@ -9,8 +9,8 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
@@ -29,7 +29,7 @@ class FeeRelayerInteractor(
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val orcaPoolInteractor: OrcaPoolInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val environmentManager: EnvironmentManager,
+    private val environmentManager: NetworkEnvironmentManager,
     private val dispatchers: CoroutineDispatchers
 ) {
 

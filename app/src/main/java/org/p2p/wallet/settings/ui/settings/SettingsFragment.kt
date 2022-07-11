@@ -99,8 +99,9 @@ class SettingsFragment :
 
     private fun onItemClickListener(@StringRes titleResId: Int) {
         when (titleResId) {
-            R.string.settings_username -> presenter.onUsernameClicked()
-
+            R.string.settings_username -> {
+                presenter.onUsernameClicked()
+            }
             R.string.settings_wallet_pin -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.PIN_RESET)
                 replaceFragment(ResetPinFragment.create(REQUEST_KEY, BUNDLE_KEY_IS_PIN_CHANGED))

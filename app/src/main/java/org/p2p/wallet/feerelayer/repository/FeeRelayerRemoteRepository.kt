@@ -12,14 +12,14 @@ import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapDataConverter
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
 class FeeRelayerRemoteRepository(
     private val api: FeeRelayerApi,
     private val devnetApi: FeeRelayerDevnetApi,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: NetworkEnvironmentManager
 ) : FeeRelayerRepository {
 
     override suspend fun getFeePayerPublicKey(): PublicKey {

@@ -7,4 +7,9 @@
     <dimen name="ui_kit_button_medium_height">48dp</dimen>
     <dimen name="ui_kit_button_small_height">32dp</dimen>
 
+    <!--  Badge -->
+
+    <dimen name="ui_kit_badge_oval_corner_radius">32dp</dimen>
+    <dimen name="ui_kit_badge_rectangle_corner_radius">5dp</dimen>
+
 </resources>
