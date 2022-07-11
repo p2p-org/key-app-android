@@ -6,7 +6,7 @@ slack_ktlint_message="Запущен процесс новой сборки (0%)
 5 Upload to Slack :hourglass: "
 
 SLACK_SEND_MESSAGE_RESPONSE=$(curl \
-    -F token="${SLACK_CHANNEL_ACCESS_TOKEN}" \
+    -F token="${SLACK_BOT_TOKEN}" \
     -F channel="${SLACK_CHANNEL_ID}" \
     -F text="$slack_ktlint_message" \
     https://slack.com/api/chat.postMessage

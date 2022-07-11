@@ -7,7 +7,7 @@ slack_ktlint_message="Запущен процесс новой сборки (75%
   5 Upload to Slack :man-running:"
 
   curl \
-  -F token="${SLACK_CHANNEL_ACCESS_TOKEN}" \
+  -F token="${SLACK_BOT_TOKEN}" \
   -F channel="${SLACK_CHANNEL_ID}" \
   -F ts="$1" \
   -F text="${slack_ktlint_message}" \
