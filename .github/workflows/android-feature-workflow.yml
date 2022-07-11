@@ -11,9 +11,9 @@ jobs:
     name: "Send start workflow message to Slack"
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - shell: bash
         run: |
-          git fetch
           cd bash_scripts
           bash slack_init_message.sh
           cd ..
@@ -22,6 +22,7 @@ jobs:
           name: timestamp
           path: bash_scripts/timestamp.txt
           retention-days: 1
+
   android-lint:
     name: "Run ktlint check"
     needs:
@@ -80,6 +81,7 @@ jobs:
       - android-unit-tests
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/download-artifact@v3
         with:
           name: timestamp
