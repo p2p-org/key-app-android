@@ -87,7 +87,6 @@ jobs:
           name: timestamp
       - shell: bash
         run: |
-          git fetch
           cd bash_scripts
           bash slack_deploy_ready $(cat timestamp.txt)
 
