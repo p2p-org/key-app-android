@@ -13,6 +13,7 @@ jobs:
     steps:
       - shell: bash
         run: |
+          git fetch
           cd bash_scripts
           bash slack_init_message.sh
           cd ..
@@ -84,6 +85,7 @@ jobs:
           name: timestamp
       - shell: bash
         run: |
+          git fetch
           cd bash_scripts
           bash slack_deploy_ready $(cat timestamp.txt)
 
@@ -138,9 +140,9 @@ jobs:
           name: timestamp
 
       - run: |
+          git fetch
           cd bash_scripts
           bash slack_upload_to_slack_message.sh $(cat timestamp.txt)
-          git fetch
           bash slack_get_changelog_file.sh
           bash slack_get_jira_ticket.sh
           cd ..
