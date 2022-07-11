@@ -9,6 +9,7 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import androidx.core.view.children
@@ -28,19 +29,21 @@ import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
-import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showSoftKeyboard
 import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
+
+private const val SEED_PHRASE_SIZE_SHORT = 12
+private const val SEED_PHRASE_SIZE_LONG = 24
 
 class SecretKeyFragment :
     BaseMvpFragment<SecretKeyContract.View, SecretKeyContract.Presenter>(R.layout.fragment_secret_key),
@@ -84,10 +87,18 @@ class SecretKeyFragment :
                 replaceFragment(SeedInfoFragment.create())
             }
 
+            phraseContainer.setOnClickListener { _ ->
+                presenter.requestFocusOnLastKey()
+            }
             termsAndConditionsTextView.text = buildTermsAndPrivacyText()
             termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
         }
         presenter.load()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.requestFocusOnLastKey()
     }
 
     private fun FragmentSecretKeyBinding.initKeysList() {
@@ -97,8 +108,6 @@ class SecretKeyFragment :
         }
         keysRecyclerView.attachAdapter(phraseAdapter)
         keysRecyclerView.isVisible = true
-
-        keysRecyclerView.children.find { it.id == R.id.keyEditText }?.focusAndShowKeyboard()
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
@@ -120,6 +129,14 @@ class SecretKeyFragment :
         )
     }
 
+    override fun showFocusOnLastKey(lastSecretItemIndex: Int) {
+        val viewGroup =
+            binding.keysRecyclerView.children.toList().getOrNull(lastSecretItemIndex) as? LinearLayout ?: return
+        val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }
+        secretKeyEditText?.requestFocus()
+        secretKeyEditText?.showSoftKeyboard()
+    }
+
     private fun FragmentSecretKeyBinding.setPhraseContainerError(setError: Boolean) {
         phraseContainer.background = context.getDrawableCompat(
             if (setError) R.drawable.bg_red_secondary_stroked else R.drawable.bg_gray_secondary_stroked
@@ -132,9 +149,8 @@ class SecretKeyFragment :
             isEnabled = false
             setStartIcon(iconRes = null)
         } else {
-            val isLongSeedPhrase = phraseAdapter.itemCount == Constants.SEED_PHRASE_SIZE_LONG
-            val isShortSeedPhrase = phraseAdapter.itemCount == Constants.SEED_PHRASE_SIZE_SHORT
-            isEnabled = isLongSeedPhrase || isShortSeedPhrase
+            isEnabled =
+                phraseAdapter.itemCount == SEED_PHRASE_SIZE_LONG || phraseAdapter.itemCount == SEED_PHRASE_SIZE_SHORT
             setStartIcon(iconRes = R.drawable.ic_restore)
         }
     }
