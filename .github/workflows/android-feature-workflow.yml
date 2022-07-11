@@ -38,7 +38,10 @@ jobs:
             auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
       - uses: ./.github/actions/setup-gradle
-
+      - uses: actions/download-artifact@v3
+        with:
+          name: timestamp
+        run ls -R
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
 
