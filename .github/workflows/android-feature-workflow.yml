@@ -88,7 +88,7 @@ jobs:
       - shell: bash
         run: |
           cd bash_scripts
-          bash slack_deploy_ready $(cat timestamp.txt)
+          bash slack_deploy_ready ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $(cat timestamp.txt)
 
   android-build-artifacts:
     name: "Run build feature artifacts"
@@ -143,9 +143,9 @@ jobs:
       - run: |
           git fetch
           cd bash_scripts
-          bash slack_upload_to_slack_message.sh $(cat timestamp.txt)
-          bash slack_get_changelog_file.sh
-          bash slack_get_jira_ticket.sh
+          bash slack_upload_to_slack_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $(cat timestamp.txt)
+          bash slack_get_changelog_file.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} ${{ GITHUB_HEAD_REF }}
+          bash slack_get_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} ${{ GITHUB_HEAD_REF }}
           cd ..
       - name: Upload artifact to Slack
         uses: ./.github/actions/setup-slack

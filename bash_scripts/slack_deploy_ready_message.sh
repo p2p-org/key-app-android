@@ -8,8 +8,8 @@ slack_ktlint_message="Запущен процесс новой сборки (50%
 Сборка почти готова, ожидаем апрува от разработчика чтоб доставить вам новый билд ))"
 
 curl \
--F token="${SLACK_BOT_TOKEN}" \
--F channel="${SLACK_CHANNEL_ID}" \
--F ts="$1" \
+-F token="$1" \
+-F channel="$2" \
+-F ts="$3" \
 -F text="${slack_ktlint_message}" \
 https://slack.com/api/chat.update
