@@ -41,7 +41,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: timestamp
-        run: ls -R
+      - run: ls -R
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
 
