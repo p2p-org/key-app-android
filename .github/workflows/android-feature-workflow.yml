@@ -15,7 +15,7 @@ jobs:
       - shell: bash
         run: |
           cd bash_scripts
-          bash slack_init_message.sh
+          bash slack_init_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
       - uses: actions/upload-artifact@v3
         with:
