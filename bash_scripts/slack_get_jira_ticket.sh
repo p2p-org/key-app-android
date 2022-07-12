@@ -7,5 +7,5 @@ jira_ticket_message="https://p2pvalidator.atlassian.net/browse/${array[0]}-${arr
 curl \
 -F token="$1" \
 -F channel="$2" \
--F text="Ссылка на задачу в Jira - ${jira_ticket_message}" \
+-F text="Jira ticket - ${jira_ticket_message}" \
 https://slack.com/api/chat.postMessage
