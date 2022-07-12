@@ -1,6 +1,6 @@
 #!/bin/bash
 git fetch
-printf "$(git shortlog origin/develop..origin/$3)" > changelog.txt
+printf "$(git shortlog origin/develop..origin/$GITHUB_HEAD_REF)" > changelog.txt
 
 curl \
 -F token="$1" \
