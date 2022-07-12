@@ -163,5 +163,6 @@ jobs:
           artifact-type: "apk"
 
       - run: |
+          value=`cat timestamp.txt`
           cd bash_scripts
           bash slack_finish_deploy_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
