@@ -14,10 +14,10 @@ Jira Ticket - $jira_ticket_message
 5 Upload to Slack :hourglass: "
 
 SLACK_SEND_MESSAGE_RESPONSE=$(curl \
--F token="$1" \
--F channel="$2"\
--F text="$slack_ktlint_message" \
-https://slack.com/api/chat.postMessage
-)
+    -F token="$1" \
+    -F channel="$2"\
+    -F text="$slack_ktlint_message" \
+    https://slack.com/api/chat.postMessage
+    )
 echo "$SLACK_SEND_MESSAGE_RESPONSE" > timestamp.json
 echo $(sed -n 's|.*"ts":"\([^"]*\)".*|\1|p' timestamp.json ) > timestamp.txt
