@@ -4,6 +4,6 @@ import retrofit2.http.GET
 
 interface OrcaApi {
 
-    @GET("configs")
-    suspend fun loadConfigs(): OrcaConfigsResponse
+    @GET("info")
+    suspend fun loadConfigs(): OrcaInfoResponse
 }

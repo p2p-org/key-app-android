@@ -1,14 +1,14 @@
 package org.p2p.wallet.root
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class RootPresenter(
     private val authInteractor: AuthInteractor,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
 ) : BasePresenter<RootContract.View>(), RootContract.Presenter {
 
     override fun loadPricesAndBids() {

@@ -1,5 +1,6 @@
 package org.p2p.wallet.debug
 
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
@@ -23,26 +24,19 @@ object DebugSettingsModule : InjectionModule {
             DebugSettingsPresenter(
                 get(),
                 get(),
+                get()
             )
         } bind DebugSettingsContract.Presenter::class
         factory {
             SettingsNetworkPresenter(
                 context = get(),
-                appFeatureFlags = get(),
+                inAppFeatureFlags = get(),
                 mainLocalRepository = get(),
                 environmentManager = get(),
                 analytics = get()
             )
         } bind SettingsNetworkContract.Presenter::class
-        factory {
-            FeatureTogglesPresenter(
-                get(),
-            )
-        } bind FeatureTogglesContract.Presenter::class
-        factory {
-            PushNotificationsPresenter(
-                get(),
-            )
-        } bind PushNotificationsContract.Presenter::class
+        factoryOf(::FeatureTogglesPresenter) bind FeatureTogglesContract.Presenter::class
+        factoryOf(::PushNotificationsPresenter) bind PushNotificationsContract.Presenter::class
     }
 }

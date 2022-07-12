@@ -7,4 +7,27 @@
     <dimen name="ui_kit_button_medium_height">48dp</dimen>
     <dimen name="ui_kit_button_small_height">32dp</dimen>
 
+    <!--  Badge -->
+
+    <dimen name="ui_kit_badge_oval_corner_radius">32dp</dimen>
+    <dimen name="ui_kit_badge_rectangle_corner_radius">5dp</dimen>
+
+    <dimen name="bottom_navigation_height">65dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
+
+    <!-- Skeleton circle values -->
+    <dimen name="ui_kit_skeleton_circle_4">4dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_8">8dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_12">12dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_16">16dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_20">20dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_24">24dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_28">28dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_32">32dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_36">36dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_40">40dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_44">44dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_48">48dp</dimen>
+    <dimen name="ui_kit_skeleton_circle_52">52dp</dimen>
+
 </resources>

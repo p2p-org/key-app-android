@@ -5,7 +5,7 @@ import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.AppFeatureFlags
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
 import timber.log.Timber
 import java.io.InputStream
 import java.security.GeneralSecurityException
@@ -20,12 +20,12 @@ import javax.net.ssl.X509TrustManager
 private const val SSL_CERT_TAG = "SSL_CERT"
 
 class CertificateManager(
-    val appFeatureFlags: AppFeatureFlags,
+    private val sslPinningFeatureToggle: SslPinningFeatureToggle,
     val resources: Resources,
 ) {
 
     fun setCertificate(builder: OkHttpClient.Builder) {
-        if (appFeatureFlags.isSslPinningEnabled) {
+        if (sslPinningFeatureToggle.isFeatureEnabled) {
             try {
                 createCertificate(resources.openRawResource(R.raw.cert)).apply {
                     systemDefaultTrustManager()?.let { trustManager ->
