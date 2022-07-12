@@ -1,4 +1,7 @@
 branch_name="$GITHUB_HEAD_REF"
+if [ -z "$branch_name" ]; then
+  branch_name="$GITHUB_REF"
+fi
 cut_branch_name=$( echo ${branch_name##*/} )
 IFS='-'
 read -r -a array <<< "$cut_branch_name"
