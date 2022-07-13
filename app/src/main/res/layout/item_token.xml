@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="16dp">
 
-            <org.p2p.wallet.common.ui.widget.RoundedImageView
+            <org.p2p.uikit.atoms.UiKitRoundedImageView
                 android:id="@+id/tokenImageView"
                 android:layout_width="32dp"
                 android:layout_height="32dp"

@@ -6,11 +6,11 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.uikit.glide.GlideManager
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.history.repository.local.db.dao.CloseAccountTransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.CreateAccountTransactionsDao

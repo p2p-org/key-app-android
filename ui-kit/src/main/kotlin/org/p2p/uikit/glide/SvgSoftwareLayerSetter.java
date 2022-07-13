@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.glide;
+package org.p2p.uikit.glide;
 
 import android.graphics.drawable.PictureDrawable;
 import android.widget.ImageView;

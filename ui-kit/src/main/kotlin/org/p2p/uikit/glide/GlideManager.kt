@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.glide
+package org.p2p.uikit.glide
 
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
@@ -9,6 +9,7 @@ import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 
 private const val DEFAULT_IMAGE_SIZE = 56
+
 class GlideManager(context: Context) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by lazy {

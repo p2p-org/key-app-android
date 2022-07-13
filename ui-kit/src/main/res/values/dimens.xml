@@ -12,6 +12,9 @@
     <dimen name="ui_kit_badge_oval_corner_radius">32dp</dimen>
     <dimen name="ui_kit_badge_rectangle_corner_radius">5dp</dimen>
 
+    <dimen name="ui_kit_transaction_image_icon_size">18dp</dimen>
+    <dimen name="ui_kit_transaction_image_token_icon_size">28dp</dimen>
+
     <dimen name="bottom_navigation_height">65dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
 
