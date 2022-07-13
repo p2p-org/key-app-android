@@ -25,8 +25,8 @@ class UiKitRoundedImageView @JvmOverloads constructor(
 
     init {
         attrs?.let {
-            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.RoundedImageView)
-            radius = typedArray.getDimension(R.styleable.RoundedImageView_cornerRadius, radius)
+            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.UiKitRoundedImageView)
+            radius = typedArray.getDimension(R.styleable.UiKitRoundedImageView_cornerRadius, radius)
             typedArray.recycle()
         }
     }

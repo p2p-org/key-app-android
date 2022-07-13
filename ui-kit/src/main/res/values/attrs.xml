@@ -26,7 +26,7 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="RoundedImageView">
+    <declare-styleable name="UiKitRoundedImageView">
         <attr name="cornerRadius" />
     </declare-styleable>
 
