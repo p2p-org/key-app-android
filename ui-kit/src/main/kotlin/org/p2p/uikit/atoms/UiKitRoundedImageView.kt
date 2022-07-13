@@ -29,7 +29,6 @@ class UiKitRoundedImageView @JvmOverloads constructor(
             context.obtainStyledAttributes(attrs, R.styleable.UiKitRoundedImageView).use { typedArray ->
                 radius = typedArray.getDimension(R.styleable.UiKitRoundedImageView_cornerRadius, radius)
             }
-
         }
     }
 
