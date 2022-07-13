@@ -8,8 +8,8 @@ jira_ticket_message="https://p2pvalidator.atlassian.net/browse/${array[0]}-${arr
 
 slack_ktlint_message="*The process of creating a new assembly is started (0%)*:
 • *Jira Ticket* - $jira_ticket_message
-• *Upload to Firebase* -:white_check_mark:
-• *Upload to Slack* - :white_check_mark:"
+• *Upload to Firebase* -::athletic_shoe:
+• *Upload to Slack* - :athletic_shoe:"
 SLACK_SEND_MESSAGE_RESPONSE=$(curl \
     -F token="$1" \
     -F channel="$2"\
