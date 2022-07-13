@@ -8,9 +8,6 @@ on:
 jobs:
   android-lint:
     name: "Run ktlint check"
-    needs:
-      - slack-init-message
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,8 +21,6 @@ jobs:
 
   android-unit-tests:
     name: "Run unit tests"
-    needs:
-      - slack-init-message
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -59,7 +54,6 @@ jobs:
     needs:
       - android-lint
       - android-unit-tests
-      - slack-await-message
 
     runs-on: ubuntu-latest
     environment: develop
