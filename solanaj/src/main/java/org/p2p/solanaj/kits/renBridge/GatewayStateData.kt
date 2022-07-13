@@ -5,7 +5,8 @@ import org.p2p.solanaj.utils.ByteUtils
 import java.math.BigInteger
 
 private const val GATEWAY_STATE_DATA_LENGTH = 1 + 20 + 32 + ByteUtils.UINT_64_LENGTH + 1
-class GatewayStateData(private val data: ByteArray) : AbstractData(data, GATEWAY_STATE_DATA_LENGTH) {
+
+class GatewayStateData(data: ByteArray) : AbstractData(data, GATEWAY_STATE_DATA_LENGTH) {
 
     val isInitialized: Boolean = readByte().toInt() != 0
     val renVMAuthority: ByteArray = readBytes(20)

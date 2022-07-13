@@ -56,7 +56,7 @@ class RpcSolanaInteractor(
         val index = this.gatewayRegistryData?.selectors?.indexOf(sHash)
 
         return index?.let { gatewayRegistryData?.gateways?.get(it) }
-            ?: throw IllegalStateException("Gateway not found at index $index")
+            ?: error("Gateway not found at index $index")
     }
 
     fun getSPLTokenPubkey(): PublicKey {

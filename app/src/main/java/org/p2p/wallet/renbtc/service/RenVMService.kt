@@ -55,7 +55,7 @@ class RenVMService : Service(), CoroutineScope {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val action = intent.action
-        Timber.tag(TAG).d("Received new action $action")
+        Timber.tag(TAG).i("Received new action $action")
         when (action) {
             ACTION_CHECK -> checkActiveSession()
             ACTION_NEW_SESSION -> startNewSession()
@@ -78,11 +78,11 @@ class RenVMService : Service(), CoroutineScope {
      * */
     private fun checkActiveSession() {
         if (checkJob?.isActive == true) {
-            Timber.tag(TAG).d("Session is active, skipping check")
+            Timber.tag(TAG).i("Session is active, skipping check")
             return
         }
 
-        Timber.tag(TAG).d("Searching for existing session")
+        Timber.tag(TAG).i("Searching for existing session")
 
         checkJob = launch {
             try {
@@ -107,7 +107,7 @@ class RenVMService : Service(), CoroutineScope {
             return
         }
 
-        Timber.tag(TAG).d("Generating new session")
+        Timber.tag(TAG).i("Generating new session")
 
         renVMJob = launch {
             try {
