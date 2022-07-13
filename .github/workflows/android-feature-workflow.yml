@@ -6,23 +6,6 @@ on:
     branches:
       - develop
 jobs:
-
-  slack-init-message:
-    name: "Send start workflow message to Slack"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - shell: bash
-        run: |
-          cd bash_scripts
-          bash slack_init_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
-      - uses: actions/upload-artifact@v3
-        with:
-          name: timestamp
-          path: bash_scripts/timestamp.txt
-          retention-days: 1
-
   android-lint:
     name: "Run ktlint check"
     needs:
@@ -38,14 +21,6 @@ jobs:
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
-      - uses: actions/download-artifact@v3
-        with:
-          name: timestamp
-      - run: |
-          value=`cat timestamp.txt`
-          cd bash_scripts
-          bash slack_ktlint_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-
 
   android-unit-tests:
     name: "Run unit tests"
@@ -79,23 +54,6 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebug
 
-  slack-await-message:
-    name: "Send Slack await message"
-    needs:
-      - android-lint
-      - android-unit-tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v3
-        with:
-          name: timestamp
-      - shell: bash
-        run: |
-          value=`cat timestamp.txt`
-          cd bash_scripts
-          bash slack_deploy_ready_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-
   android-build-artifacts:
     name: "Run build feature artifacts"
     needs:
@@ -106,14 +64,22 @@ jobs:
     runs-on: ubuntu-latest
     environment: develop
     steps:
-      - uses: actions/checkout@v2
+      - name: "Checkout to the current commit hash"
+        uses: actions/checkout@v2
 
-      - name: Create google-services.json
+      - name: "Send start deploy message to slack"
+        run: |
+          git fetch
+          cd bash_scripts
+          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          cd ..
+
+      - name: "Create Firebase App file"
         uses: ./.github/actions/setup-firebase
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
 
-      - name: Create apikey file
+      - name: "Create apikey.properties"
         uses: ./.github/actions/setup-apikey
         with:
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
@@ -123,38 +89,30 @@ jobs:
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
           amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
 
-      - name: Create and fill cert.pem certificate for SSL pinning
+      - name: "Create cert.pem file"
         env:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
         run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
-      - name: Create and fill sentry.properties
+      - name: "Create sentry.property file"
         uses: ./.github/actions/setup-sentry
         with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
-      - uses: ./.github/actions/setup-gradle
+      - name: "Setup gradle"
+        uses: ./.github/actions/setup-gradle
 
-      - name: Upload artifact to Firebase
+      - name: "Build APK artifact"
+        run: ./gradlew assembleFeature
+
+      - name: "Upload APK to Firebase App Distribution"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew assembleFeature appDistributionUploadFeature
 
-      - uses: actions/download-artifact@v3
-        with:
-          name: timestamp
-
-      - run: |
-          git fetch
-          value=`cat timestamp.txt`
-          cd bash_scripts
-          bash slack_upload_to_slack_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-          bash slack_get_changelog_file.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          bash slack_get_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
-      - name: Upload artifact to Slack
+      - name: "Upload APK to Slack Channel"
         uses: ./.github/actions/setup-slack
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -162,7 +120,16 @@ jobs:
           build-type: "feature"
           artifact-type: "apk"
 
-      - run: |
-          value=`cat timestamp.txt`
+      - name: "Upload changelog, and Jira ticket to slack channel"
+        run: |
           cd bash_scripts
-          bash slack_finish_deploy_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          value=`cat timestamp.txt`
+          bash slack_deploy_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          cd ..
+
+      - name: "Send finish deploy message to slack"
+        run: |
+          cd bash_scripts
+          value=`cat timestamp.txt`
+          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
