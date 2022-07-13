@@ -27,7 +27,7 @@ class NetworkEnvironmentManager(
     private fun loadAvailableEnvironments(): List<NetworkEnvironment> {
         val networksFromRemoteConfig = networkListFeatureToggle.value.map { it.url }
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
-        //Temporary remove for test
+        // Temporary remove for test
         return NetworkEnvironment.values().toList()
     }
 
