@@ -3,6 +3,7 @@ package org.p2p.uikit.atoms
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import androidx.core.content.res.use
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionSwapImageBinding
 import org.p2p.uikit.glide.GlideManager
@@ -19,19 +20,17 @@ class TransactionSwapImageView @JvmOverloads constructor(
     private val binding = inflateViewBinding<WidgetTransactionSwapImageBinding>()
 
     init {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.UiKitTransactionSwapImageView)
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitTransactionSwapImageView).use { typedArray ->
+            val tokenIconSize = typedArray.getDimensionPixelSize(
+                R.styleable.UiKitTransactionSwapImageView_tokenIconSize,
+                resources.getDimensionPixelSize(R.dimen.ui_kit_transaction_image_token_icon_size)
+            )
 
-        val tokenIconSize = typedArray.getDimensionPixelSize(
-            R.styleable.UiKitTransactionSwapImageView_tokenIconSize,
-            resources.getDimensionPixelSize(R.dimen.ui_kit_transaction_image_token_icon_size)
-        )
-
-        with(binding) {
-            sourceImageView.setViewSize(tokenIconSize)
-            destinationImageView.setViewSize(tokenIconSize)
+            with(binding) {
+                sourceImageView.setViewSize(tokenIconSize)
+                destinationImageView.setViewSize(tokenIconSize)
+            }
         }
-
-        typedArray.recycle()
     }
 
     fun setSourceAndDestinationImages(

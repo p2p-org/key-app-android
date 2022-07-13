@@ -15,6 +15,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
@@ -83,8 +84,7 @@ val View.keyboardIsVisible: Boolean
 
 fun View.hideKeyboard() {
     post {
-        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-            .hideSoftInputFromWindow(windowToken, 0)
+        context.getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(windowToken, 0)
     }
 }
 

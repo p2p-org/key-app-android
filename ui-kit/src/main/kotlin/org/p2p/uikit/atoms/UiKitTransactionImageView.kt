@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
+import androidx.core.content.res.use
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionImageBinding
 import org.p2p.uikit.utils.inflateViewBinding
@@ -18,21 +19,19 @@ class UiKitTransactionImageView @JvmOverloads constructor(
     private val binding = inflateViewBinding<WidgetTransactionImageBinding>()
 
     init {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.UiKitTransactionImageView)
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitTransactionImageView).use { typedArray ->
+            val statusIconSize = typedArray.getDimensionPixelSize(
+                R.styleable.UiKitTransactionImageView_statusIconSize,
+                resources.getDimensionPixelSize(R.dimen.ui_kit_transaction_image_icon_size)
+            )
 
-        val statusIconSize = typedArray.getDimensionPixelSize(
-            R.styleable.UiKitTransactionImageView_statusIconSize,
-            resources.getDimensionPixelSize(R.dimen.ui_kit_transaction_image_icon_size)
-        )
-
-        with(binding.transactionStatus) {
-            layoutParams = layoutParams.also {
-                it.height = statusIconSize
-                it.width = statusIconSize
+            with(binding.transactionStatus) {
+                layoutParams = layoutParams.also {
+                    it.height = statusIconSize
+                    it.width = statusIconSize
+                }
             }
         }
-
-        typedArray.recycle()
     }
 
     fun setTransactionIcon(@DrawableRes iconRes: Int) {

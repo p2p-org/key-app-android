@@ -7,6 +7,7 @@ import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.res.use
 import org.p2p.uikit.R
 import org.p2p.wallet.utils.dip
 
@@ -25,9 +26,10 @@ class UiKitRoundedImageView @JvmOverloads constructor(
 
     init {
         attrs?.let {
-            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.UiKitRoundedImageView)
-            radius = typedArray.getDimension(R.styleable.UiKitRoundedImageView_cornerRadius, radius)
-            typedArray.recycle()
+            context.obtainStyledAttributes(attrs, R.styleable.UiKitRoundedImageView).use { typedArray ->
+                radius = typedArray.getDimension(R.styleable.UiKitRoundedImageView_cornerRadius, radius)
+            }
+
         }
     }
 
