@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.ui.widget
+package org.p2p.uikit.atoms
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,10 +7,10 @@ import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
-import org.p2p.wallet.R
+import org.p2p.uikit.R
 import org.p2p.wallet.utils.dip
 
-class RoundedImageView @JvmOverloads constructor(
+class UiKitRoundedImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
