@@ -9,6 +9,7 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.renBridge.BurnDetails
 import org.p2p.solanaj.kits.renBridge.GatewayRegistryData
+import org.p2p.solanaj.kits.renBridge.GatewayStateData
 import org.p2p.solanaj.kits.renBridge.RenProgram
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.programs.TokenProgram
@@ -52,9 +53,9 @@ class RpcSolanaInteractor(
             throw IllegalStateException("Chain not initialized")
         }
         val sHash = Base58.encode(Hash.generateSHash())
-        val index = this.gatewayRegistryData?.selectors?.indexOf(sHash) ?: -1
+        val index = this.gatewayRegistryData?.selectors?.indexOf(sHash)
 
-        return gatewayRegistryData?.gateways?.get(index)
+        return index?.let { gatewayRegistryData?.gateways?.get(it) }
             ?: throw IllegalStateException("Gateway not found at index $index")
     }
 
@@ -67,11 +68,7 @@ class RpcSolanaInteractor(
 
     fun getAssociatedTokenAddress(address: PublicKey?): PublicKey? {
         val mint = getSPLTokenPubkey()
-        var destination: PublicKey? = null
-        if (address != null) {
-            destination = TokenTransaction.getAssociatedTokenAddress(mint, address)
-        }
-        return destination
+        return address?.let { TokenTransaction.getAssociatedTokenAddress(mint, it) }
     }
 
     suspend fun createAssociatedTokenAccount(address: PublicKey, signer: Account): String {
@@ -130,7 +127,7 @@ class RpcSolanaInteractor(
 
         val gatewayInfo = rpcSolanaRepository.getAccountInfo(gatewayAccountId)
         val base64Data = gatewayInfo.value.data?.get(0).orEmpty()
-        val gatewayState = BurnDetails.GatewayStateData.decode(Base64Utils.decode(base64Data))
+        val gatewayState = GatewayStateData.decode(Base64Utils.decode(base64Data))
 
         val secpInstruction = RenProgram.createInstructionWithEthAddress2(
             gatewayState.renVMAuthority, renVMMessage, Arrays.copyOfRange(sig, 0, 64), sig[64] - 27
@@ -197,7 +194,7 @@ class RpcSolanaInteractor(
         val gatewayInfo = rpcSolanaRepository.getAccountInfo(gatewayAccountId)
         val base64Data = gatewayInfo.value.data?.get(0).orEmpty()
 
-        val gatewayState = BurnDetails.GatewayStateData.decode(Base64Utils.decode(base64Data))
+        val gatewayState = GatewayStateData.decode(Base64Utils.decode(base64Data))
 
         val nonceBN = gatewayState.burnCount.add(BigInteger.ONE)
 

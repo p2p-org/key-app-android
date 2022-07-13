@@ -43,7 +43,7 @@ class RpcSolanaRemoteRepository(
     ): List<SignatureInformationResponse> {
         val params = arrayListOf(mintLogAccount.toString(), ConfigObjects.ConfirmedSignFAddr2(limit))
         val rawResult = api.getConfirmedSignatureForAddress(
-            RpcRequest(method = "getConfirmedSignaturesForAddress2", params = params)
+            RpcRequest(method = "getSignaturesForAddress", params = params)
         ).result
 
         return rawResult.map { SignatureInformationResponse(it) }

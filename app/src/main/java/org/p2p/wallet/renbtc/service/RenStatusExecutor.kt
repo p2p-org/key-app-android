@@ -12,7 +12,7 @@ import org.p2p.wallet.receive.renbtc.BTC_DECIMALS
 import org.p2p.wallet.utils.fromLamports
 import timber.log.Timber
 
-private const val ONE_MINUTE_DELAY = 1000L * 60L
+private const val ONE_MINUTE_DELAY = 1000L * 30L
 
 class RenStatusExecutor(
     private val lockAndMint: LockAndMint,
