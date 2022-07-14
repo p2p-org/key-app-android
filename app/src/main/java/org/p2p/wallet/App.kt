@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
 import com.jakewharton.threetenabp.AndroidThreeTen
+import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -125,6 +126,7 @@ class App : Application() {
     private fun setupTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+            Timber.plant(LumberYard.getInstance(this).tree())
         }
         // Always plant this tree
         // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag

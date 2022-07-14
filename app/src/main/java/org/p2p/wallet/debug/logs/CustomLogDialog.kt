@@ -41,11 +41,11 @@ class CustomLogDialog(context: Context) : AlertDialog(context, R.style.Theme_App
 
     override fun onStart() {
         super.onStart()
-        val lumberYard = CustomLumberYard.getInstance(context)
-        logs += lumberYard.getLogEntries()
+        val lumberYard = LumberYard.getInstance(context)
+        logs += lumberYard.bufferedLogs()
         adapter.setLogs(logs)
         logListView.setSelection(logs.size - 1)
-        lumberYard.onLogListener =  { logEntry -> addLogEntry(logEntry) }
+        lumberYard.setOnLogListener { logEntry -> addLogEntry(logEntry) }
     }
 
     private fun addLogEntry(logEntry: LogEntry) {
