@@ -1,5 +1,6 @@
 package org.p2p.uikit.components
 
+import android.graphics.Point
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupWindow
@@ -75,7 +76,7 @@ private fun getTipPosition(popupView: View, anchorView: View): TipPosition {
     val popupLocation = popupView.getLocationOnScreen()
     val anchorLocation = anchorView.getLocationOnScreen()
 
-    return if (popupLocation.second > anchorLocation.second) {
+    return if (popupLocation.y > anchorLocation.y) {
         TipPosition.BOTTOM
     } else {
         TipPosition.TOP
@@ -121,8 +122,8 @@ private fun calculateArrowMargin(
     val popupViewLocation = popupView.getLocationOnScreen()
     val anchorViewLocation = anchorView.getLocationOnScreen()
 
-    val popupLeft = popupViewLocation.first
-    val anchorLeft = anchorViewLocation.first
+    val popupLeft = popupViewLocation.x
+    val anchorLeft = anchorViewLocation.x
 
     val anchorMid = anchorLeft + anchorView.width / 2
     val anchorShiftedMid = anchorMid - popupLeft
@@ -131,8 +132,8 @@ private fun calculateArrowMargin(
     return margin.coerceIn(minMargin, maxMargin)
 }
 
-private fun View.getLocationOnScreen(): Pair<Int, Int> {
+private fun View.getLocationOnScreen(): Point {
     val location = IntArray(2)
     getLocationOnScreen(location)
-    return location[0] to location[1]
+    return Point(location[0], location[1])
 }
