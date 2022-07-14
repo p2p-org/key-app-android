@@ -19,6 +19,9 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.glide.GlideManager
+import org.p2p.uikit.utils.focusAndShowKeyboard
+import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -53,12 +56,9 @@ import org.p2p.wallet.utils.backStackEntryCount
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getClipboardText
-import org.p2p.wallet.utils.getColor
-import org.p2p.wallet.utils.hideKeyboard
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog

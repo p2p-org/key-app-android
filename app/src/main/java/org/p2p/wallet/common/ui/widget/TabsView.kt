@@ -13,9 +13,9 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.core.view.children
 import androidx.core.widget.TextViewCompat
+import org.p2p.uikit.utils.dip
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetTabRadiogroupBinding
-import org.p2p.wallet.utils.dip
 import kotlin.math.max
 
 private const val ANIMATION_DURATION = 200L

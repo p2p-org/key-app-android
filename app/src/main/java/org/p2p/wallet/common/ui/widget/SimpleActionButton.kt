@@ -5,9 +5,9 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
+import org.p2p.uikit.utils.dip
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetActionButtonSimpleBinding
-import org.p2p.wallet.utils.dip
 
 class SimpleActionButton @JvmOverloads constructor(
     context: Context,

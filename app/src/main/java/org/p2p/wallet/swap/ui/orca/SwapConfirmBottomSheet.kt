@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.glide.GlideManager
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -17,7 +18,6 @@ import org.p2p.wallet.swap.model.SwapConfirmData
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import timber.log.Timber

@@ -10,9 +10,9 @@ import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import org.p2p.uikit.utils.dip
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetPinCodeViewBinding
-import org.p2p.wallet.utils.dip
 
 private const val ANIMATION_DURATION = 400L
 private const val DOT_STROKE_WIDTH = 24

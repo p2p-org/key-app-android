@@ -1,15 +1,15 @@
 package org.p2p.wallet.common.ui.widget
 
-import androidx.annotation.AttrRes
-import androidx.annotation.StringRes
-import androidx.core.widget.TextViewCompat
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
+import androidx.annotation.AttrRes
+import androidx.annotation.StringRes
+import androidx.core.widget.TextViewCompat
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetOptionsTextViewBinding
 import org.p2p.wallet.utils.colorFromTheme
-import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
