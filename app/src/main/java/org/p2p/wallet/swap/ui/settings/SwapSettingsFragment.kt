@@ -23,8 +23,8 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.ui.orca.KEY_REQUEST_SWAP
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.focusAndShowKeyboard
+import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.snackbar
 import org.p2p.wallet.utils.viewbinding.viewBinding

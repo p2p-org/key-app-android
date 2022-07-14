@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetOptionsTextViewBinding
 import org.p2p.wallet.utils.colorFromTheme
-import org.p2p.wallet.utils.getColor
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 

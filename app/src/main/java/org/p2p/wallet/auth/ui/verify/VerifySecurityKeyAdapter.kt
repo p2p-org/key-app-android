@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemVerifySecurityKeyBinding
-import org.p2p.wallet.utils.requireContext
+import org.p2p.uikit.utils.requireContext
 
 class VerifySecurityKeyAdapter(private val block: (Int, String) -> Unit) :
     RecyclerView.Adapter<VerifySecurityKeyAdapter.ViewHolder>() {

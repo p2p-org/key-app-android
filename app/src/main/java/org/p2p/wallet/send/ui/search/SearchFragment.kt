@@ -22,8 +22,8 @@ import org.p2p.wallet.send.model.Target
 import org.p2p.wallet.send.ui.main.KEY_REQUEST_SEND
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.focusAndShowKeyboard
+import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs

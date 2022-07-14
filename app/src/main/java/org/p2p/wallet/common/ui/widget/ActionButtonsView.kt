@@ -16,7 +16,7 @@ import com.google.android.flexbox.JustifyContent.SPACE_EVENLY
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemActionButtonBinding
 import org.p2p.wallet.databinding.WidgetTokenActionsBinding
-import org.p2p.wallet.utils.requireContext
+import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.toPx
 

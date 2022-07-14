@@ -14,7 +14,7 @@ import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.attachAdapter
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.scaleMedium
 import org.p2p.wallet.utils.viewbinding.viewBinding

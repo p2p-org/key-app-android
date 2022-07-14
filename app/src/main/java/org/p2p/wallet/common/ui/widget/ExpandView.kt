@@ -15,7 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetExpandViewBinding
-import org.p2p.wallet.utils.dip
+import org.p2p.uikit.utils.dip
 import org.p2p.wallet.utils.emptyString
 
 class ExpandView @JvmOverloads constructor(

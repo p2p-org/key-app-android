@@ -16,11 +16,11 @@ import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutEnd
-import org.p2p.wallet.utils.getColor
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
-import org.p2p.wallet.utils.toast
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone

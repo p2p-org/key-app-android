@@ -34,9 +34,9 @@ import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.focusAndShowKeyboard
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.formatUsd
-import org.p2p.wallet.utils.getColor
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding

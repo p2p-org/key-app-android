@@ -16,7 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSecretKeyBinding
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.showSoftKeyboard
+import org.p2p.uikit.utils.showSoftKeyboard
 
 class SecretKeyViewHolder(
     binding: ItemSecretKeyBinding,

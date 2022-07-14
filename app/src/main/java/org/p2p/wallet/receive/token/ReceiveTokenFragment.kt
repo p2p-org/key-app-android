@@ -23,7 +23,7 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareScreenShot
-import org.p2p.wallet.utils.toast
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.io.File

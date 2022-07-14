@@ -12,7 +12,7 @@ import android.view.animation.OvershootInterpolator
 import com.google.android.material.snackbar.ContentViewCallback
 import org.p2p.wallet.databinding.WidgetSnackbarBinding
 import org.p2p.wallet.utils.NoOp
-import org.p2p.wallet.utils.getString
+import org.p2p.uikit.utils.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val ANIMATION_DURATION = 500L

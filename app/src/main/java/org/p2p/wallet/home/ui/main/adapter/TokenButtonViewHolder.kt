@@ -8,7 +8,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenGroupButtonBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.utils.requireContext
+import org.p2p.uikit.utils.requireContext
 
 class TokenButtonViewHolder(
     binding: ItemTokenGroupButtonBinding,

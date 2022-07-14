@@ -15,8 +15,8 @@ import com.bumptech.glide.Glide
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetQrViewBinding
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.createBitmap
-import org.p2p.wallet.utils.toast
+import org.p2p.uikit.utils.createBitmap
+import org.p2p.uikit.utils.toast
 
 class QrView @JvmOverloads constructor(
     context: Context,

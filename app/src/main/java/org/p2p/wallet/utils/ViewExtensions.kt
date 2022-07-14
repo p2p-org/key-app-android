@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import org.p2p.uikit.utils.dip
+import org.p2p.uikit.utils.findSuitableParent
 import org.p2p.wallet.common.ui.widget.CustomSnackBar
 import org.p2p.wallet.common.ui.widget.SnackBarView
 import org.p2p.wallet.databinding.WidgetBottomSheetSnackbarBinding

@@ -14,8 +14,8 @@ import org.p2p.wallet.databinding.FragmentReceiveListBinding
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.focusAndShowKeyboard
+import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 

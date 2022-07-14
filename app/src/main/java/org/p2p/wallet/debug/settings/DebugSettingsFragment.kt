@@ -16,7 +16,7 @@ import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.settings.SettingsAdapter
 import org.p2p.wallet.utils.addFragment
-import org.p2p.wallet.utils.attachAdapter
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding

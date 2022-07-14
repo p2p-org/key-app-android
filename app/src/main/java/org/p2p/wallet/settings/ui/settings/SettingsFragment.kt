@@ -18,7 +18,7 @@ import org.p2p.wallet.settings.ui.reset.ResetPinFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalanceFragment
 import org.p2p.wallet.utils.addFragment
-import org.p2p.wallet.utils.attachAdapter
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
