@@ -7,6 +7,7 @@ import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
@@ -680,6 +681,14 @@ class SendPresenter(
             )
         } catch (e: CancellationException) {
             Timber.w("Fee calculation is cancelled")
+            return null
+        } catch (e: FeeRelayerInteractor.SwapPoolsNotFound) {
+            Timber.e(e, "Error calculating fees")
+            state.sendFee = null
+            calculateTotal(sendFee = null)
+            view?.hideAccountFeeView()
+            view?.showDetailsError(R.string.send_cannot_send_token_pools_not_found)
+            view?.showButtonText(R.string.main_select_token)
             return null
         } catch (e: Throwable) {
             Timber.e(e, "Error calculating fees")

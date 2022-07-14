@@ -15,6 +15,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
+import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isLessThan
 import org.p2p.wallet.utils.isNotZero
@@ -62,6 +63,10 @@ class FeeRelayerInteractor(
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit(useCache = false)
     }
 
+    class SwapPoolsNotFound(feeInSol: FeeAmount, tradableTopUpPoolsPair: List<OrcaPoolsPair>) : Throwable(
+        "Swap pools not found for feeInSol=${feeInSol.total}; poolsPair size=${tradableTopUpPoolsPair.size}"
+    )
+
     // Calculate needed fee (count in payingToken)
     suspend fun calculateFeeInPayingToken(
         feeInSOL: FeeAmount,
@@ -70,9 +75,7 @@ class FeeRelayerInteractor(
         val tradableTopUpPoolsPair = orcaPoolInteractor.getTradablePoolsPairs(payingFeeTokenMint, WRAPPED_SOL_MINT)
         val topUpPools = orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(feeInSOL.total, tradableTopUpPoolsPair)
 
-        if (topUpPools.isNullOrEmpty()) {
-            throw IllegalStateException("Swap pools not found")
-        }
+        if (topUpPools.isNullOrEmpty()) throw SwapPoolsNotFound(feeInSOL, tradableTopUpPoolsPair)
 
         val transactionFee = topUpPools.getInputAmount(
             minimumAmountOut = feeInSOL.transaction,
