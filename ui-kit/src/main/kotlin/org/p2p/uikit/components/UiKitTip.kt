@@ -72,9 +72,10 @@ fun showTip(
 }
 
 private fun getTipPosition(popupView: View, anchorView: View): TipPosition {
-    val screenView = anchorView.rootView.findViewWithTag<View>("ROOT_VIEW")
+    val popupLocation = popupView.getLocationOnScreen()
+    val anchorLocation = anchorView.getLocationOnScreen()
 
-    return if (screenView.height - anchorView.bottom > popupView.measuredHeight) {
+    return if (popupLocation.second > anchorLocation.second) {
         TipPosition.BOTTOM
     } else {
         TipPosition.TOP
@@ -117,18 +118,21 @@ private fun calculateArrowMargin(
     val minMargin = popupView.resources.getDimension(R.dimen.ui_kit_tip_corner_radius).toInt()
     val maxMargin = popupView.width - minMargin - arrowImageView.width
 
-    val popupViewLocation = IntArray(2)
-    val anchorViewLocation = IntArray(2)
+    val popupViewLocation = popupView.getLocationOnScreen()
+    val anchorViewLocation = anchorView.getLocationOnScreen()
 
-    popupView.getLocationOnScreen(popupViewLocation)
-    anchorView.getLocationOnScreen(anchorViewLocation)
-
-    val popupLeft = popupViewLocation[0]
-    val anchorLeft = anchorViewLocation[0]
+    val popupLeft = popupViewLocation.first
+    val anchorLeft = anchorViewLocation.first
 
     val anchorMid = anchorLeft + anchorView.width / 2
     val anchorShiftedMid = anchorMid - popupLeft
     val margin = anchorShiftedMid - arrowImageView.width / 2
 
     return margin.coerceIn(minMargin, maxMargin)
+}
+
+private fun View.getLocationOnScreen(): Pair<Int, Int> {
+    val location = IntArray(2)
+    getLocationOnScreen(location)
+    return location[0] to location[1]
 }
