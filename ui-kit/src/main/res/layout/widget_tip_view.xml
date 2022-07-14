@@ -10,6 +10,7 @@
         android:id="@+id/arrowImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:elevation="8dp"
         android:rotation="180"
         android:src="@drawable/ic_tip_arrow"
         app:layout_constraintBottom_toTopOf="@id/contentCardView"
@@ -22,7 +23,7 @@
         android:layout_height="wrap_content"
         android:background="@color/snow"
         app:cardCornerRadius="@dimen/ui_kit_tip_corner_radius"
-        app:cardElevation="0dp"
+        app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/arrowImageView">
