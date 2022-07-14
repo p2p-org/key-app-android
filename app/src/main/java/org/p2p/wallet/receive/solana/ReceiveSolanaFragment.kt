@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -28,7 +29,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.showUrlInCustomTabs
-import org.p2p.wallet.utils.toast
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.io.File

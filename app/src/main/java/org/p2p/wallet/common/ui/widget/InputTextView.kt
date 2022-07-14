@@ -9,10 +9,10 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetInputTextViewBinding
 import org.p2p.wallet.utils.LetterInputFilter
-import org.p2p.wallet.utils.focusAndShowKeyboard
 
 class InputTextView @JvmOverloads constructor(
     context: Context,

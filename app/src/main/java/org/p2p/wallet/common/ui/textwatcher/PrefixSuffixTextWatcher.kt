@@ -4,9 +4,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.widget.EditText
+import org.p2p.uikit.utils.getString
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.getString
 import java.lang.ref.WeakReference
 import kotlin.math.max
 import kotlin.properties.Delegates

@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenGroupButtonBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.utils.requireContext
 
 class TokenButtonViewHolder(
     binding: ItemTokenGroupButtonBinding,

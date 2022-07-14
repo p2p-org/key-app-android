@@ -9,7 +9,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.res.use
 import org.p2p.uikit.R
-import org.p2p.wallet.utils.dip
+import org.p2p.uikit.utils.dip
 
 class UiKitRoundedImageView @JvmOverloads constructor(
     context: Context,

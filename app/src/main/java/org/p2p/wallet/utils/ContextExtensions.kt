@@ -15,6 +15,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import java.io.File
