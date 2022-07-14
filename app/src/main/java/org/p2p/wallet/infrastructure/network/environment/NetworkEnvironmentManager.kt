@@ -29,7 +29,6 @@ class NetworkEnvironmentManager(
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
         return NetworkEnvironment.values().filter(isNetworkAvailable)
     }
-
     fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {
         listeners[owner.simpleName.orEmpty()] = listener
     }

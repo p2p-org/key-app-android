@@ -22,11 +22,11 @@ class GatewayRegistryData(private val data: ByteArray) : AbstractData(data, GATE
     val isInitialized: Boolean = readByte().toInt() != 0
     val owner: PublicKey = readPublicKey()
     val count: Int = readUint64().toInt()
+    val selectorsSize = readUint32()
     val selectors = mutableListOf<String>()
     val gateways = mutableListOf<PublicKey>()
 
     init {
-        val selectorsSize = readUint32()
 
         for (i in 0 until selectorsSize) {
             val selector = readBytes(32)
