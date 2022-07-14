@@ -7,7 +7,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsNetworkBinding
@@ -23,11 +23,10 @@ class SettingsNetworkFragment :
     BaseMvpFragment<SettingsNetworkContract.View, SettingsNetworkContract.Presenter>(
         R.layout.fragment_settings_network
     ),
-    RadioGroup.OnCheckedChangeListener,
     SettingsNetworkContract.View {
 
     companion object {
-        fun create(requestKey: String, resultKey: String) = SettingsNetworkFragment().withArgs(
+        fun create(requestKey: String, resultKey: String): SettingsNetworkFragment = SettingsNetworkFragment().withArgs(
             EXTRA_REQUEST_KEY to requestKey,
             EXTRA_RESULT_KEY to resultKey
         )
@@ -58,27 +57,34 @@ class SettingsNetworkFragment :
 
     override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
         val environment = when (checkedId) {
-            R.id.mainnetButton -> Environment.MAINNET
-            R.id.rpcpoolButton -> Environment.RPC_POOL
-            R.id.solanaButton -> Environment.SOLANA
-            R.id.devnetButton -> Environment.DEVNET
-            else -> throw IllegalStateException("No environment found for this id: $checkedId")
+            R.id.mainnetButton -> NetworkEnvironment.MAINNET
+            R.id.rpcpoolButton -> NetworkEnvironment.RPC_POOL
+            R.id.solanaButton -> NetworkEnvironment.SOLANA
+            R.id.devnetButton -> NetworkEnvironment.DEVNET
+            else -> error("No environment found for this id: $checkedId")
         }
         presenter.setNewEnvironment(environment)
     }
 
-    override fun showEnvironment(environment: Environment, isDevnetEnabled: Boolean) {
-        val checkedId = when (environment) {
-            Environment.SOLANA -> R.id.solanaButton
-            Environment.MAINNET -> R.id.mainnetButton
-            Environment.RPC_POOL -> R.id.rpcpoolButton
-            Environment.DEVNET -> R.id.devnetButton
-        }
+    override fun showEnvironment(
+        currentNetwork: NetworkEnvironment,
+        availableNetworks: List<NetworkEnvironment>,
+        isDevnetEnabled: Boolean
+    ) {
+        binding.solanaButton.isVisible = NetworkEnvironment.SOLANA in availableNetworks
+        binding.mainnetButton.isVisible = NetworkEnvironment.MAINNET in availableNetworks
+        binding.rpcpoolButton.isVisible = NetworkEnvironment.RPC_POOL in availableNetworks
+        binding.devnetButton.isVisible = NetworkEnvironment.DEVNET in availableNetworks && isDevnetEnabled
 
-        binding.devnetButton.isVisible = isDevnetEnabled
+        val checkedButtonId = when (currentNetwork) {
+            NetworkEnvironment.SOLANA -> R.id.solanaButton
+            NetworkEnvironment.MAINNET -> R.id.mainnetButton
+            NetworkEnvironment.RPC_POOL -> R.id.rpcpoolButton
+            NetworkEnvironment.DEVNET -> R.id.devnetButton
+        }
         binding.networksGroup.apply {
             setOnCheckedChangeListener(null)
-            check(checkedId)
+            check(checkedButtonId)
             setOnCheckedChangeListener(this@SettingsNetworkFragment)
         }
     }

@@ -2,10 +2,10 @@ package org.p2p.wallet.receive.network
 
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
@@ -29,7 +29,7 @@ class ReceiveNetworkTypePresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val tokenInteractor: TokenInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
-    private val environmentManager: EnvironmentManager,
+    private val environmentManager: NetworkEnvironmentManager,
     networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
@@ -78,8 +78,8 @@ class ReceiveNetworkTypePresenter(
     override fun onBuySelected(isSelected: Boolean) {
         launch {
             try {
-                val mintAddress = when (environmentManager.loadEnvironment()) {
-                    Environment.DEVNET -> Constants.REN_BTC_DEVNET_MINT
+                val mintAddress = when (environmentManager.loadCurrentEnvironment()) {
+                    NetworkEnvironment.DEVNET -> Constants.REN_BTC_DEVNET_MINT
                     else -> Constants.REN_BTC_DEVNET_MINT_ALTERNATE
                 }
                 tokenInteractor.openTokenAccount(mintAddress)

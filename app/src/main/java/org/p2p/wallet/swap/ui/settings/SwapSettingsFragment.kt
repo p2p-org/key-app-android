@@ -11,9 +11,11 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
 import org.p2p.wallet.home.model.Token
@@ -23,8 +25,6 @@ import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
 import org.p2p.wallet.swap.ui.orca.KEY_REQUEST_SWAP
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.attachAdapter
-import org.p2p.wallet.utils.focusAndShowKeyboard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.snackbar
 import org.p2p.wallet.utils.viewbinding.viewBinding

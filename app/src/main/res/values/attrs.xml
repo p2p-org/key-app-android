@@ -5,10 +5,6 @@
         <attr name="keyboard_button_image" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="RoundedImageView">
-        <attr name="cornerRadius" />
-    </declare-styleable>
-
     <declare-styleable name="ShapeImageView">
         <attr name="colorFill" format="color" />
         <attr name="colorStroke" format="color" />
@@ -91,14 +87,6 @@
     <declare-styleable name="ExpandView">
         <attr name="android:text" />
         <attr name="isExpanded" format="boolean" />
-    </declare-styleable>
-
-    <declare-styleable name="TransactionImageView">
-        <attr name="statusIconSize" format="dimension" />
-    </declare-styleable>
-
-    <declare-styleable name="TransactionSwapImageView">
-        <attr name="tokenIconSize" format="dimension" />
     </declare-styleable>
 
 </resources>

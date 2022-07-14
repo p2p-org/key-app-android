@@ -2,8 +2,8 @@ package org.p2p.wallet.history.ui.token.adapter.holders
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
+import org.p2p.uikit.glide.GlideManager
 import org.p2p.wallet.R
-import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.databinding.ItemTransactionSwapBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction

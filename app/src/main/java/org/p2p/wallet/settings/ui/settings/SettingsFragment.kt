@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
@@ -18,7 +19,6 @@ import org.p2p.wallet.settings.ui.reset.ResetPinFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalanceFragment
 import org.p2p.wallet.utils.addFragment
-import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -99,8 +99,9 @@ class SettingsFragment :
 
     private fun onItemClickListener(@StringRes titleResId: Int) {
         when (titleResId) {
-            R.string.settings_username -> presenter.onUsernameClicked()
-
+            R.string.settings_username -> {
+                presenter.onUsernameClicked()
+            }
             R.string.settings_wallet_pin -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.PIN_RESET)
                 replaceFragment(ResetPinFragment.create(REQUEST_KEY, BUNDLE_KEY_IS_PIN_CHANGED))

@@ -81,11 +81,11 @@ class UserInteractor(
     }
 
     private suspend fun updateLocalTokens(cachedTokens: List<Token.Active>, newTokens: List<Token.Active>) {
-        mainLocalRepository.clear()
         val newTokensToCache = newTokens.map { newToken ->
             val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
             newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
         }
+        mainLocalRepository.clear()
         mainLocalRepository.updateTokens(newTokensToCache)
     }
 

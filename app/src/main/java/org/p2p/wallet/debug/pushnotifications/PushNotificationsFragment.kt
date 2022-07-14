@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPushNotificationsBinding
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.settings.SettingsAdapter
-import org.p2p.wallet.utils.attachAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 

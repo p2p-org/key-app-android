@@ -16,13 +16,13 @@ import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.utils.crypto.Base64Utils
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 
 class RpcSolanaRemoteRepository(
     private val api: RpcSolanaApi,
     private val blockHashRepository: RpcBlockhashRepository,
-    private val environmentManager: EnvironmentManager
+    private val environmentManager: NetworkEnvironmentManager
 ) : RpcSolanaRepository {
 
     override suspend fun sendTransaction(transaction: Transaction, signer: Account): String {
@@ -43,7 +43,7 @@ class RpcSolanaRemoteRepository(
     ): List<SignatureInformationResponse> {
         val params = arrayListOf(mintLogAccount.toString(), ConfigObjects.ConfirmedSignFAddr2(limit))
         val rawResult = api.getConfirmedSignatureForAddress(
-            RpcRequest(method = "getConfirmedSignaturesForAddress2", params = params)
+            RpcRequest(method = "getSignaturesForAddress", params = params)
         ).result
 
         return rawResult.map { SignatureInformationResponse(it) }

@@ -4,49 +4,35 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSettingsInfoBinding
 import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
 import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
-import org.p2p.wallet.databinding.ItemSettingsToggleItemBinding
 import org.p2p.wallet.settings.model.SettingsRow
-import org.p2p.wallet.utils.requireContext
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
 class SettingsAdapter(
     private val onSettingsRowClickListener: (titleResId: Int) -> Unit = {},
-    private val onToggleCheckedListener: (toggleId: Int, toggleChecked: Boolean) -> Unit = { _, _ -> },
     private val onLogoutClickListener: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val data = mutableListOf<SettingsRow>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
-        R.layout.item_settings_row_item -> {
-            ViewHolder(parent, onSettingsRowClickListener)
-        }
-        R.layout.item_settings_logout -> {
-            LogoutViewHolder(parent, onLogoutClickListener)
-        }
-        R.layout.item_settings_title -> {
-            TitleViewHolder(parent)
-        }
-        R.layout.item_settings_toggle_item -> {
-            ToggleViewHolder(parent)
-        }
-        R.layout.item_settings_info -> {
-            InfoViewHolder(parent)
-        }
-        else -> throw IllegalStateException("No view found for type $viewType")
+        R.layout.item_settings_row_item -> ViewHolder(parent, onSettingsRowClickListener)
+        R.layout.item_settings_logout -> LogoutViewHolder(parent, onLogoutClickListener)
+        R.layout.item_settings_title -> TitleViewHolder(parent)
+        R.layout.item_settings_info -> InfoViewHolder(parent)
+        else -> error("No view found for type $viewType")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder -> holder.bind(data[position] as SettingsRow.Section)
             is TitleViewHolder -> holder.bind(data[position] as SettingsRow.Title)
-            is ToggleViewHolder -> holder.bind(data[position] as SettingsRow.Toggle)
             is InfoViewHolder -> holder.bind(data[position] as SettingsRow.Info)
             is LogoutViewHolder -> holder.bind()
         }
@@ -60,7 +46,6 @@ class SettingsAdapter(
         when (data[position]) {
             is SettingsRow.Section -> R.layout.item_settings_row_item
             is SettingsRow.Title -> R.layout.item_settings_title
-            is SettingsRow.Toggle -> R.layout.item_settings_toggle_item
             is SettingsRow.Info -> R.layout.item_settings_info
             is SettingsRow.Logout -> R.layout.item_settings_logout
         }
@@ -132,24 +117,6 @@ class SettingsAdapter(
         fun bind(item: SettingsRow.Title) {
             textView.setText(item.titleResId)
             topDivider.isVisible = item.isDivider
-        }
-    }
-
-    inner class ToggleViewHolder(binding: ItemSettingsToggleItemBinding) : RecyclerView.ViewHolder(binding.root) {
-
-        constructor(parent: ViewGroup) : this(
-            parent.inflateViewBinding<ItemSettingsToggleItemBinding>(attachToRoot = false)
-        )
-
-        private val toggle = binding.toggle
-
-        fun bind(item: SettingsRow.Toggle) {
-            toggle.setOnCheckedChangeListener(null)
-            toggle.setText(item.titleResId)
-            toggle.isChecked = item.toggleChecked
-            toggle.setOnCheckedChangeListener { _, isChecked ->
-                onToggleCheckedListener(item.toggleId, isChecked)
-            }
         }
     }
 

@@ -3,6 +3,7 @@ package org.p2p.wallet.send.model
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.Token
@@ -11,7 +12,6 @@ import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.toLamports
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
 
 class SendButton(
     private val sourceToken: Token.Active,
@@ -77,7 +77,7 @@ class SendButton(
                     State.Enabled(
                         textResId = R.string.send_format,
                         iconRes = R.drawable.ic_send_simple,
-                        value = arrayOf("$tokenAmount ${sourceToken.tokenSymbol}"),
+                        value = arrayOf("${tokenAmount.toPlainString()} ${sourceToken.tokenSymbol}"),
                         totalAmountTextColor = availableColor
                     )
             }

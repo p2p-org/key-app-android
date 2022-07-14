@@ -26,6 +26,18 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="UiKitRoundedImageView">
+        <attr name="cornerRadius" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitTransactionImageView">
+        <attr name="statusIconSize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitTransactionSwapImageView">
+        <attr name="tokenIconSize" format="dimension" />
+    </declare-styleable>
+
     <!--  Organisms  -->
 
     <declare-styleable name="UiKitButton">
@@ -38,6 +50,10 @@
         <attr name="sectionText" format="string" />
         <attr name="textIconTint" format="color" />
         <attr name="isCaps" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitSkeletonRectangle">
+        <attr name="isRounded" format="boolean" />
     </declare-styleable>
 
 </resources>

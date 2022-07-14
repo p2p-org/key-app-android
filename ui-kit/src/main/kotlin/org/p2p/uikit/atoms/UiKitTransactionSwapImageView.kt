@@ -1,12 +1,13 @@
-package org.p2p.wallet.common.ui.widget
+package org.p2p.uikit.atoms
 
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import org.p2p.wallet.R
-import org.p2p.wallet.common.glide.GlideManager
-import org.p2p.wallet.databinding.WidgetTransactionSwapImageBinding
-import org.p2p.wallet.utils.viewbinding.inflateViewBinding
+import androidx.core.content.res.use
+import org.p2p.uikit.R
+import org.p2p.uikit.databinding.WidgetTransactionSwapImageBinding
+import org.p2p.uikit.glide.GlideManager
+import org.p2p.uikit.utils.inflateViewBinding
 
 private const val IMAGE_SIZE = 28
 
@@ -19,19 +20,17 @@ class TransactionSwapImageView @JvmOverloads constructor(
     private val binding = inflateViewBinding<WidgetTransactionSwapImageBinding>()
 
     init {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.TransactionSwapImageView)
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitTransactionSwapImageView).use { typedArray ->
+            val tokenIconSize = typedArray.getDimensionPixelSize(
+                R.styleable.UiKitTransactionSwapImageView_tokenIconSize,
+                resources.getDimensionPixelSize(R.dimen.ui_kit_transaction_image_token_icon_size)
+            )
 
-        val tokenIconSize = typedArray.getDimensionPixelSize(
-            R.styleable.TransactionSwapImageView_tokenIconSize,
-            resources.getDimensionPixelSize(R.dimen.history_transaction_image_token_icon_size)
-        )
-
-        with(binding) {
-            sourceImageView.setViewSize(tokenIconSize)
-            destinationImageView.setViewSize(tokenIconSize)
+            with(binding) {
+                sourceImageView.setViewSize(tokenIconSize)
+                destinationImageView.setViewSize(tokenIconSize)
+            }
         }
-
-        typedArray.recycle()
     }
 
     fun setSourceAndDestinationImages(
@@ -47,7 +46,7 @@ class TransactionSwapImageView @JvmOverloads constructor(
         }
     }
 
-    private fun RoundedImageView.setViewSize(tokenIconSize: Int) {
+    private fun UiKitRoundedImageView.setViewSize(tokenIconSize: Int) {
         layoutParams = layoutParams.also { params ->
             params.height = tokenIconSize
             params.width = tokenIconSize
