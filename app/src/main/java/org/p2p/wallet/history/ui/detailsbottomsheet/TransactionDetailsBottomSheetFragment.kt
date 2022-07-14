@@ -7,8 +7,8 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.glide.GlideManager
 import org.p2p.wallet.R
-import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogTransactionDetailsBinding
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -17,6 +17,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.getColor
+import org.p2p.wallet.utils.setStatus
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.toast

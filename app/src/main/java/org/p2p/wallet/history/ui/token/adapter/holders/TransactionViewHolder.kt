@@ -8,6 +8,7 @@ import org.p2p.wallet.databinding.ItemTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.setStatus
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding

@@ -59,6 +59,10 @@ class SecretKeyPresenter(
         }
     }
 
+    override fun requestFocusOnLastKey() {
+        view?.showFocusOnLastKey(keys.size)
+    }
+
     override fun openPrivacyPolicy() {
         val inputStream = resources.assets.open(PRIVACY_POLICY_FILE_FULL)
         val file = fileRepository.savePdf(PRIVACY_POLICY_FILE_NAME, inputStream.readBytes())

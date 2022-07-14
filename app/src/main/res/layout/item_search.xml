@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <org.p2p.wallet.common.ui.widget.RoundedImageView
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/walletImageView"
         android:layout_width="44dp"
         android:layout_height="44dp"

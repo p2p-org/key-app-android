@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.glide.GlideManager
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.glide.GlideManager
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState

@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <org.p2p.wallet.common.ui.widget.TransactionImageView
+            <org.p2p.uikit.atoms.UiKitTransactionImageView
                 android:id="@+id/transactionImageView"
                 android:layout_width="@dimen/history_transaction_details_image_size"
                 android:layout_height="@dimen/history_transaction_details_image_size"
@@ -30,7 +30,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:statusIconSize="@dimen/history_transaction_details_image_icon_size" />
 
-            <org.p2p.wallet.common.ui.widget.TransactionSwapImageView
+            <org.p2p.uikit.atoms.TransactionSwapImageView
                 android:id="@+id/transactionSwapImageView"
                 android:layout_width="@dimen/history_transaction_details_image_size"
                 android:layout_height="@dimen/history_transaction_details_image_size"
