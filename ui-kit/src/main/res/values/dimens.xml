@@ -18,6 +18,10 @@
     <dimen name="bottom_navigation_height">65dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
 
+    <!-- Tip -->
+
+    <dimen name="ui_kit_tip_corner_radius">16dp</dimen>
+
     <!-- Skeleton circle values -->
     <dimen name="ui_kit_skeleton_circle_4">4dp</dimen>
     <dimen name="ui_kit_skeleton_circle_8">8dp</dimen>

@@ -10,19 +10,18 @@
         android:id="@+id/arrowImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
         android:rotation="180"
         android:src="@drawable/ic_tip_arrow"
         app:layout_constraintBottom_toTopOf="@id/contentCardView"
-        app:layout_constraintEnd_toEndOf="@id/contentCardView"
-        app:layout_constraintStart_toStartOf="@id/contentCardView" />
+        app:layout_constraintStart_toStartOf="@id/contentCardView"
+        tools:layout_marginStart="100dp" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/contentCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/snow"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="@dimen/ui_kit_tip_corner_radius"
         app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
