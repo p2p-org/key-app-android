@@ -25,7 +25,6 @@ class SettingsNetworkPresenter(
     override fun setNewEnvironment(newNetwork: NetworkEnvironment) {
         launch {
             try {
-
                 currentNetworkName = newNetwork.name
                 environmentManager.chooseEnvironment(newNetwork)
 

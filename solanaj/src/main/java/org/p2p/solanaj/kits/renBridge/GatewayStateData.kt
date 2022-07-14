@@ -15,6 +15,6 @@ class GatewayStateData(data: ByteArray) : AbstractData(data, GATEWAY_STATE_DATA_
     private val underlyingDecimals: Byte = readByte()
 
     companion object {
-        fun decode(data: ByteArray) = GatewayStateData(data)
+        fun decode(data: ByteArray): GatewayStateData = GatewayStateData(data)
     }
 }
