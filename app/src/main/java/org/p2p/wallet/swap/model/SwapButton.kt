@@ -42,11 +42,11 @@ class SwapButton(
             val isValidDestination = destinationToken != null
 
             return when {
+                !isValidDestination -> State.Disabled(R.string.swap_choose_the_destination)
                 !isValidAmount -> State.Disabled(R.string.main_enter_the_amount)
                 isPairEmpty -> State.Disabled(R.string.swap_cannot_swap_these_tokens)
                 !isEnoughBalance -> State.Disabled(R.string.swap_funds_not_enough)
                 !isEnoughToCoverExpenses -> State.Disabled(R.string.swap_insufficient_funds)
-                !isValidDestination -> State.Disabled(R.string.swap_choose_the_destination)
                 else -> {
                     State.Enabled(
                         textRes = R.string.swap_format,
