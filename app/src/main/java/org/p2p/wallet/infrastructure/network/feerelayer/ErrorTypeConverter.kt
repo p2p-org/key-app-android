@@ -11,6 +11,7 @@ object ErrorTypeConverter {
         return when (error.type) {
             FeeRelayerErrorType.SLIPPAGE_LIMIT -> ErrorCode.SLIPPAGE_LIMIT
             FeeRelayerErrorType.INSUFFICIENT_FUNDS -> ErrorCode.INSUFFICIENT_FUNDS
+            FeeRelayerErrorType.INVALID_BLOCKHASH -> ErrorCode.INVALID_BLOCKHASH
             else -> fromFeeRelayerErrorCode(error.code)
         }
     }
