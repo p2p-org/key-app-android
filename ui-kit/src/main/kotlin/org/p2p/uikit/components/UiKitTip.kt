@@ -17,6 +17,12 @@ private enum class TipPosition {
     BOTTOM
 }
 
+/**
+ * Shows PopupWindow with arrow
+ * PopupWindow appears natively above or under the view
+ * Arrow is shown only on top or bottom of PopupWindow
+ * Arrow is pointing on the center of [anchorView]
+ */
 fun showTip(
     anchorView: View,
     counterText: String,
@@ -38,6 +44,12 @@ fun showTip(
     )
 }
 
+/**
+ * Shows PopupWindow with arrow
+ * PopupWindow appears natively above or under the view
+ * Arrow is shown only on top or bottom of PopupWindow
+ * Arrow is pointing on the center of [anchorView]
+ */
 fun showTip(
     anchorView: View,
     counterText: String,
@@ -72,6 +84,10 @@ fun showTip(
     }
 }
 
+/**
+ * Returns [popupView] position relatively to [anchorView]
+ * Should be called after popupView is drawn!
+ */
 private fun getTipPosition(popupView: View, anchorView: View): TipPosition {
     val popupLocation = popupView.getLocationOnScreen()
     val anchorLocation = anchorView.getLocationOnScreen()
@@ -83,6 +99,10 @@ private fun getTipPosition(popupView: View, anchorView: View): TipPosition {
     }
 }
 
+/**
+ * Set arrow position depending on [tipPosition]
+ * Set arrow margin
+ */
 private fun setupArrow(
     popupBinding: WidgetTipViewBinding,
     tipPosition: TipPosition,
@@ -111,6 +131,9 @@ private fun setupArrow(
     constraintSet.applyTo(constraintLayout)
 }
 
+/**
+ * Evaluate [arrowImageView] margin to set it right in the middle of [anchorView]
+ */
 private fun calculateArrowMargin(
     popupView: View,
     anchorView: View,
@@ -125,10 +148,12 @@ private fun calculateArrowMargin(
     val popupLeft = popupViewLocation.x
     val anchorLeft = anchorViewLocation.x
 
+    // anchorView.width / 2 is added to center the arrowImageView
     val anchorMid = anchorLeft + anchorView.width / 2
     val anchorShiftedMid = anchorMid - popupLeft
     val margin = anchorShiftedMid - arrowImageView.width / 2
 
+    // Arrow margin should not be less then minMargin and bigger then maxMargin to not go beyond popup corner radius
     return margin.coerceIn(minMargin, maxMargin)
 }
 
