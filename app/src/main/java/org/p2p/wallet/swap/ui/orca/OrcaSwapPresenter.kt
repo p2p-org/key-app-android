@@ -204,7 +204,8 @@ class OrcaSwapPresenter(
         val destination = destinationToken ?: return
 
         calculateBestPair()
-        findValidFeePayer(SELECT_FEE_PAYER, destination, desiredFeePayerToken = sourceToken)
+        val strategy = if (isMaxClicked) CORRECT_AMOUNT else SELECT_FEE_PAYER
+        findValidFeePayer(strategy, destination, desiredFeePayerToken = sourceToken)
     }
 
     override fun loadDataForSettings() {
