@@ -94,7 +94,7 @@ class OrcaSwapInteractor(
                 )
             } catch (serverError: ServerException) {
                 if (serverError.errorCode == ErrorCode.INVALID_BLOCKHASH) {
-                    //if something not ok with BLOCKHASH we can retry transaction with a new one
+                    // if something not ok with BLOCKHASH we can retry transaction with a new one
                     swapByFeeRelayer(
                         sourceAddress = fromToken.publicKey,
                         sourceTokenMint = fromToken.mintAddress,
