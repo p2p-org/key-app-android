@@ -95,12 +95,7 @@ jobs:
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
       - name: "Setup signing.properties"
-        uses: ./.github/actions/setup-keystore
-        with:
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-          keystore-password: ${{ secrets.KEYSTORE_PASSWORD }}
-          key-alias: ${{ secrets.KEY_ALIAS }}
-          key-password: ${{ secrets.KEY_PASSWORD }}
+        run: printf "%s" "${{ secrets.KEYSTORE_SECRET }}" -> p2pwallet.jks
 
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
