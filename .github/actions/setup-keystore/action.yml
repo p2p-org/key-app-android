@@ -25,5 +25,5 @@ runs:
         touch signing.properties
         echo "keystorePath=\"p2pwallet.jks\"" >> signing.properties
         echo "keystorePassword=\"${{ inputs.keystore-password }}\"" >> signing.properties
-        echo "keystoreAlias=\"${{ inputs.keystore-alias }}\"" >> signing.properties
+        echo "keystoreAlias=\"${{ inputs.key-alias }}\"" >> signing.properties
         echo "keyPassword=\"${{ inputs.key-password }}\"" >> signing.properties
