@@ -3,10 +3,17 @@ description: "Create jks file"
 inputs:
   keystore-secret:
     required: true
-    description: "Raw value jks"
-  keystore-phrase:
+    description: "jks keystore secret"
+  keystore-password:
     required: true
-    description: "Keystore GPG key passphrase"
+    description: "jks keystore password"
+  key-alias:
+    required: true
+    description: "jks key alias"
+  key-password:
+    required: true
+    description: "jks key password"
+
 
 runs:
   using: composite
@@ -14,5 +21,9 @@ runs:
     - name: Create p2p-wallet.jks
       shell: bash
       run: |
-        echo ${{ inputs.keystore-secret }} -> p2p-wallet.asc
-        gpg -d --passphrase "${{ inputs.keystore-phrase }}" --batch p2p-wallet.asc > p2p-wallet.jks
+        echo ${{ inputs.keystore-secret }} -> p2pwallet.jks
+        touch signing.properties
+        echo "keystorePath=\"p2pwallet.jks\"" >> signing.properties
+        echo "keystorePassword=\"${{ inputs.keystore-password }}\"" >> signing.properties
+        echo "keystoreAlias=\"${{ inputs.keystore-alias }}\"" >> signing.properties
+        echo "keyPassword=\"${{ inputs.key-password }}\"" >> signing.properties
