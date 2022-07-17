@@ -25,7 +25,7 @@ runs:
     - name: Create p2p-wallet.jks
       shell: bash
       run: |
-        echo ${{ inputs.keystore-secret }} -> p2pwallet.jks
+        printf "%s" "${{ inputs.keystore-secret }}" -> p2pwallet.jks
         touch signing.properties
         echo "keystorePath=\"${{ inputs.keystore-path }}\"" >> signing.properties
         echo "keystorePassword=\"${{ inputs.keystore-password }}\"" >> signing.properties
