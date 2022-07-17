@@ -94,9 +94,6 @@ jobs:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
-      - name: "Setup gradle"
-        uses: ./.github/actions/setup-gradle
-
       - name: "Setup signing.properties"
         uses: ./.github/actions/setup-keystore
         with:
@@ -104,6 +101,9 @@ jobs:
           keystore-password: ${{ secrets.KEYSTORE_PASSWORD }}
           key-alias: ${{ secrets.KEY_ALIAS }}
           key-password: ${{ secrets.KEY_PASSWORD }}
+
+      - name: "Setup gradle"
+        uses: ./.github/actions/setup-gradle
 
       - name: "Build Bundle artifact"
         run: ./gradlew assembleRelease bundleRelease
