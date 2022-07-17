@@ -50,7 +50,7 @@ jobs:
         run: ./gradlew testDebug
 
   android-build-artifacts:
-    name: "Run build feature artifacts"
+    name: "Run build release artifacts"
     needs:
       - android-lint
       - android-unit-tests
@@ -105,22 +105,22 @@ jobs:
           key-alias: ${{ secrets.KEY_ALIAS }}
           key-password: ${{ secrets.KEY_PASSWORD }}
 
-      - name: "Build APK artifact"
-        run: ./gradlew assembleFeature
+      - name: "Build Bundle artifact"
+        run: ./gradlew assembleRelease bundleRelease
 
       - name: "Upload APK to Firebase App Distribution"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew assembleFeature appDistributionUploadFeature
+        run: ./gradlew appDistributionUploadRelease
 
       - name: "Upload APK to Slack Channel"
         uses: ./.github/actions/setup-slack
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "feature"
-          artifact-type: "apk"
+          build-type: "release"
+          artifact-type: "bundle"
 
       - name: "Upload changelog, and Jira ticket to slack channel"
         run: |
