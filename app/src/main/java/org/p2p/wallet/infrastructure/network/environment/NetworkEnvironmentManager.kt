@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.solanaj.rpc.RpcEnvironment
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
+import timber.log.Timber
+import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
@@ -84,7 +86,11 @@ class NetworkEnvironmentManager(
         NetworkEnvironment.DEVNET.endpoint -> NetworkEnvironment.DEVNET
         NetworkEnvironment.SOLANA.endpoint -> NetworkEnvironment.SOLANA
         NetworkEnvironment.RPC_POOL.endpoint -> NetworkEnvironment.RPC_POOL
-        else -> error("Unknown endpoint $endpoint")
+        else -> {
+            Timber.e(IllegalArgumentException("Unknown endpoint $endpoint, switching..."))
+            chooseEnvironment(getDefaultAvailableNetwork())
+            getDefaultAvailableNetwork()
+        }
     }
 
     private fun getRpcEnvironmentFromUrl(endpoint: String): RpcEnvironment {
