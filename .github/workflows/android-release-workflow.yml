@@ -132,7 +132,7 @@ jobs:
           build-type: "release"
           artifact-type: "bundle"
 
-      - name: "Upload changelog and Jira ticket to Slack channel"
+      - name: "Upload git changelog and Jira ticket to Slack channel"
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
