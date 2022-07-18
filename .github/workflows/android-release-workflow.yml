@@ -2,9 +2,11 @@ on:
   pull_request:
     branches:
       - main
+      - release/*
   push:
     branches:
       - main
+      - release/*
 jobs:
   android-lint:
     name: "Run ktlint check"
@@ -88,7 +90,7 @@ jobs:
           SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
         run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
-      - name: "Create sentry.property file"
+      - name: "Create sentry.properties file"
         uses: ./.github/actions/setup-sentry
         with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -101,7 +103,7 @@ jobs:
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
 
-      - name: "Build Bundle artifact"
+      - name: "Build APK and AAB artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -120,9 +122,17 @@ jobs:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "release"
+          artifact-type: "apk"
+
+      - name: "Upload Bundle to Slack Channel"
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "release"
           artifact-type: "bundle"
 
-      - name: "Upload changelog, and Jira ticket to slack channel"
+      - name: "Upload changelog and Jira ticket to Slack channel"
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
@@ -130,7 +140,7 @@ jobs:
           bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
-      - name: "Send finish deploy message to slack"
+      - name: "Send finish deploy message to Slack"
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
