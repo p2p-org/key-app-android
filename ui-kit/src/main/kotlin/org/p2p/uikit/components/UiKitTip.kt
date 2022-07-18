@@ -12,6 +12,8 @@ import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTipViewBinding
 import org.p2p.uikit.utils.toPx
 
+private const val POPUP_WINDOW_ELEVATION_DP = 8F
+
 private enum class TipPosition {
     TOP,
     BOTTOM
@@ -21,10 +23,9 @@ private enum class TipPosition {
  * Shows PopupWindow with arrow
  * PopupWindow appears natively above or under the view
  * Arrow is shown only on top or bottom of PopupWindow
- * Arrow is pointing on the center of [anchorView]
+ * Arrow is pointing on the center of view
  */
-fun showTip(
-    anchorView: View,
+fun View.showTip(
     counterText: String,
     @StringRes title: Int,
     @StringRes buttonNextTitle: Int = R.string.tip_button_next_title,
@@ -32,15 +33,13 @@ fun showTip(
     onNextClick: () -> Unit,
     onSkipClick: () -> Unit
 ) {
-    val context = anchorView.context
     showTip(
-        anchorView,
-        counterText,
-        context.getString(title),
-        context.getString(buttonNextTitle),
-        context.getString(buttonSkipTitle),
-        onNextClick,
-        onSkipClick
+        counterText = counterText,
+        title = context.getString(title),
+        buttonNextTitle = context.getString(buttonNextTitle),
+        buttonSkipTitle = context.getString(buttonSkipTitle),
+        onNextClick = onNextClick,
+        onSkipClick = onSkipClick
     )
 }
 
@@ -48,10 +47,9 @@ fun showTip(
  * Shows PopupWindow with arrow
  * PopupWindow appears natively above or under the view
  * Arrow is shown only on top or bottom of PopupWindow
- * Arrow is pointing on the center of [anchorView]
+ * Arrow is pointing on the center of view
  */
-fun showTip(
-    anchorView: View,
+fun View.showTip(
     counterText: String,
     title: String,
     buttonNextTitle: String,
@@ -59,7 +57,7 @@ fun showTip(
     onNextClick: () -> Unit,
     onSkipClick: () -> Unit
 ) {
-    val binding = WidgetTipViewBinding.inflate(LayoutInflater.from(anchorView.context)).apply {
+    val binding = WidgetTipViewBinding.inflate(LayoutInflater.from(context)).apply {
         countTextView.text = counterText
         titleTextView.text = title
         nextButton.text = buttonNextTitle
@@ -72,13 +70,18 @@ fun showTip(
 
     val popupView = binding.root
 
-    val popupWindow = PopupWindow(popupView, popupView.measuredWidth, popupView.measuredHeight, true).apply {
-        elevation = 8f.toPx()
-        showAsDropDown(anchorView)
+    val popupWindow = PopupWindow(
+        popupView,
+        popupView.measuredWidth,
+        popupView.measuredHeight,
+        true
+    ).apply {
+        elevation = POPUP_WINDOW_ELEVATION_DP.toPx()
+        showAsDropDown(this@showTip)
     }.apply {
         contentView.post {
-            val tipGravity = getTipPosition(popupView, anchorView)
-            val arrowMargin = calculateArrowMargin(popupView, anchorView, binding.arrowImageView)
+            val tipGravity = getTipPosition(popupView, this@showTip)
+            val arrowMargin = calculateArrowMargin(popupView, this@showTip, binding.arrowImageView)
             setupArrow(binding, tipGravity, arrowMargin)
         }
     }
