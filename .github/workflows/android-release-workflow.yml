@@ -97,10 +97,15 @@ jobs:
       - name: "Setup signing.properties"
         run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2p-wallet.jks
 
+
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
 
       - name: "Build Bundle artifact"
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease bundleRelease
 
       - name: "Upload APK to Firebase App Distribution"
