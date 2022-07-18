@@ -1,8 +1,9 @@
-package org.p2p.uikit.atoms
+package org.p2p.uikit.components
 
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.ViewGroup
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.google.android.material.button.MaterialButton
 import org.p2p.uikit.R
@@ -41,7 +42,10 @@ class UiKitButton @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.UiKitButton).use { typedArray ->
             val defaultColor = context.getColor(R.color.icons_night)
             val iconTint = typedArray.getColor(R.styleable.UiKitButton_iconTint, defaultColor)
-            val height = typedArray.getDimension(R.styleable.UiKitButton_android_layout_height, -1f)
+            val height = typedArray.getLayoutDimension(
+                R.styleable.UiKitButton_android_layout_height,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
             val smallButtonHeight = resources.getDimension(R.dimen.ui_kit_button_small_height)
             val loaderRadius = if (height > smallButtonHeight) {
                 LOADER_RADIUS_LARGE.toPx()

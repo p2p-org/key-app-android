@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/arrowImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:rotation="180"
+        android:src="@drawable/ic_tip_arrow"
+        app:layout_constraintBottom_toTopOf="@id/contentCardView"
+        app:layout_constraintStart_toStartOf="@id/contentCardView"
+        tools:layout_marginStart="100dp" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/contentCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/snow"
+        app:cardCornerRadius="@dimen/ui_kit_tip_corner_radius"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/arrowImageView">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+                android:textColor="@color/text_night"
+                app:layout_constraintEnd_toStartOf="@id/countTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Hi there! 👋\nAs needed, we will guide you through the main functions." />
+
+            <TextView
+                android:id="@+id/countTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Caps"
+                android:textColor="@color/text_mountain"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1/5" />
+
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/skipAllButton"
+                style="@style/UiKit.Atoms.Button.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/ui_kit_button_small_height"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="12dp"
+                android:textColor="@color/text_night"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/titleTextView"
+                tools:text="Skip all" />
+
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/nextButton"
+                style="@style/UiKit.Atoms.Button.Small"
+                android:layout_width="135dp"
+                android:layout_height="@dimen/ui_kit_button_small_height"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:textColor="@color/text_night"
+                app:backgroundTint="@color/lime"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/skipAllButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/titleTextView"
+                tools:text="Next" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
