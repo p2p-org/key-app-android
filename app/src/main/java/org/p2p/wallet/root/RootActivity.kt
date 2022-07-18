@@ -10,8 +10,6 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
-import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
-import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.FragmentLoggingLifecycleListener
@@ -19,7 +17,6 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
@@ -50,10 +47,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
         setContentView(R.layout.activity_root)
 
-        if (savedInstanceState == null) {
-            presenter.openRootScreen()
-        }
-
         presenter.loadPricesAndBids()
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
@@ -75,14 +68,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
             )
             Timber.w(findFragmentError)
         }
-    }
-
-    override fun navigateToOnboarding() {
-        replaceFragment(OnboardingFragment())
-    }
-
-    override fun navigateToSignIn() {
-        replaceFragment(SignInPinFragment.create())
     }
 
     override fun showToast(message: Int) {
