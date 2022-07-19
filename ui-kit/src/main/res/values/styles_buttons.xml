@@ -42,4 +42,19 @@
         <item name="backgroundTint">@color/text_button_background_color_selector</item>
     </style>
 
+    <style name="UiKit.Components.Button.Large.Outlined">
+        <item name="strokeWidth">2dp</item>
+        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+    </style>
+
+    <style name="UiKit.Components.Button.Medium.Outlined">
+        <item name="strokeWidth">2dp</item>
+        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+    </style>
+
+    <style name="UiKit.Components.Button.Small.Outlined">
+        <item name="strokeWidth">1dp</item>
+        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+    </style>
+
 </resources>
