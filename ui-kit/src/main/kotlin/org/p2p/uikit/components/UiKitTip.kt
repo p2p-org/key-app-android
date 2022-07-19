@@ -13,6 +13,7 @@ import androidx.core.view.updateLayoutParams
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTipViewBinding
 import org.p2p.uikit.utils.context
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.uikit.utils.toPx
 
 private const val POPUP_WINDOW_ELEVATION_DP = 8F
@@ -54,6 +55,10 @@ enum class TipColor(
 
 data class TipConfig(
     val tipColor: TipColor,
+    val counterText: String,
+    @StringRes val title: Int,
+    @StringRes val buttonNextTitle: Int = R.string.tip_button_next_title,
+    @StringRes val buttonSkipTitle: Int = R.string.tip_button_skip_all_title,
     val withArrow: Boolean = true
 )
 
@@ -65,44 +70,14 @@ data class TipConfig(
  */
 fun View.showTip(
     tipConfig: TipConfig,
-    counterText: String,
-    @StringRes title: Int,
-    @StringRes buttonNextTitle: Int = R.string.tip_button_next_title,
-    @StringRes buttonSkipTitle: Int = R.string.tip_button_skip_all_title,
-    onNextClick: () -> Unit,
-    onSkipClick: () -> Unit
-) {
-    showTip(
-        tipConfig = tipConfig,
-        counterText = counterText,
-        title = context.getString(title),
-        buttonNextTitle = context.getString(buttonNextTitle),
-        buttonSkipTitle = context.getString(buttonSkipTitle),
-        onNextClick = onNextClick,
-        onSkipClick = onSkipClick
-    )
-}
-
-/**
- * Shows PopupWindow with arrow
- * PopupWindow appears natively above or under the view
- * Arrow is shown only on top or bottom of PopupWindow
- * Arrow is pointing on the center of view
- */
-fun View.showTip(
-    tipConfig: TipConfig,
-    counterText: String,
-    title: String,
-    buttonNextTitle: String,
-    buttonSkipTitle: String,
     onNextClick: () -> Unit,
     onSkipClick: () -> Unit
 ) {
     val binding = WidgetTipViewBinding.inflate(LayoutInflater.from(context)).apply {
-        countTextView.text = counterText
-        titleTextView.text = title
-        nextButton.text = buttonNextTitle
-        skipAllButton.text = buttonSkipTitle
+        countTextView.text = tipConfig.counterText
+        titleTextView.setText(tipConfig.title)
+        nextButton.setText(tipConfig.buttonNextTitle)
+        skipAllButton.setText(tipConfig.buttonSkipTitle)
         nextButton.setOnClickListener { onNextClick() }
         skipAllButton.setOnClickListener { onSkipClick() }
         arrowImageView.isVisible = tipConfig.withArrow
@@ -135,10 +110,10 @@ fun View.showTip(
 private fun setupTipColors(binding: WidgetTipViewBinding, tipColor: TipColor) = with(binding) {
     contentCardView.setCardBackgroundColor(context.getColor(tipColor.backgroundColor))
     arrowImageView.setColorFilter(context.getColor(tipColor.backgroundColor))
-    titleTextView.setTextColor(context.getColor(tipColor.titleTextColor))
     nextButton.setBackgroundColor(context.getColor(tipColor.buttonColor))
-    nextButton.setTextColor(context.getColor(tipColor.buttonNextTextColor))
-    skipAllButton.setTextColor(context.getColor(tipColor.buttonSkipTextColor))
+    titleTextView.setTextColorRes(tipColor.titleTextColor)
+    nextButton.setTextColorRes(tipColor.buttonNextTextColor)
+    skipAllButton.setTextColorRes(tipColor.buttonSkipTextColor)
 }
 
 /**
