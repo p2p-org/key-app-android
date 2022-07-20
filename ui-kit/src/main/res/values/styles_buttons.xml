@@ -10,51 +10,54 @@
     </style>
 
     <style name="UiKit.Components.Button.Large">
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">@dimen/ui_kit_button_large_corner_radius</item>
         <item name="android:paddingHorizontal">20dp</item>
         <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Text2</item>
+        <item name="android:foreground">@drawable/ripple_button_large</item>
         <item name="iconSize">16dp</item>
     </style>
 
     <style name="UiKit.Components.Button.Medium">
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">@dimen/ui_kit_button_large_corner_radius</item>
         <item name="android:paddingHorizontal">20dp</item>
         <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Text2</item>
+        <item name="android:foreground">@drawable/ripple_button_large</item>
         <item name="iconSize">16dp</item>
     </style>
 
     <style name="UiKit.Components.Button.Small">
-        <item name="cornerRadius">8dp</item>
+        <item name="cornerRadius">@dimen/ui_kit_button_small_corner_radius</item>
         <item name="android:paddingHorizontal">16dp</item>
         <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Text4</item>
+        <item name="android:foreground">@drawable/ripple_button_large</item>
         <item name="iconSize">10dp</item>
     </style>
 
     <style name="UiKit.Components.Button.Large.Text">
-        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+        <item name="backgroundTint">@color/transparent</item>
     </style>
 
     <style name="UiKit.Components.Button.Medium.Text">
-        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+        <item name="backgroundTint">@color/transparent</item>
     </style>
 
     <style name="UiKit.Components.Button.Small.Text">
-        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+        <item name="backgroundTint">@color/transparent</item>
     </style>
 
     <style name="UiKit.Components.Button.Large.Outlined">
         <item name="strokeWidth">2dp</item>
-        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+        <item name="backgroundTint">@color/transparent</item>
     </style>
 
     <style name="UiKit.Components.Button.Medium.Outlined">
         <item name="strokeWidth">2dp</item>
-        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+        <item name="backgroundTint">@color/transparent</item>
     </style>
 
     <style name="UiKit.Components.Button.Small.Outlined">
         <item name="strokeWidth">1dp</item>
-        <item name="backgroundTint">@color/text_button_background_color_selector</item>
+        <item name="backgroundTint">@color/transparent</item>
     </style>
 
 </resources>
