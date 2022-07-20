@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.common.glide.SvgSoftwareLayerSetter
+import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 
 sealed class DrawableContainer : Parcelable {
 

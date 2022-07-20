@@ -1,7 +1,7 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
-import android.net.Uri
 import com.google.gson.Gson
+import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -11,25 +11,25 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerError
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.RpcConstants
 import timber.log.Timber
 import java.io.IOException
 
 private const val TAG = "RpcInterceptor"
 
-open class RpcInterceptor(
+class RpcInterceptor(
     private val gson: Gson,
-    environmentManager: EnvironmentManager
+    environmentManager: NetworkEnvironmentManager
 ) : Interceptor {
 
-    private var currentEnvironment = environmentManager.loadEnvironment()
+    private var currentEnvironment = environmentManager.loadCurrentEnvironment()
 
     init {
         environmentManager.addEnvironmentListener(this::class) { newEnvironment ->
@@ -54,22 +54,11 @@ open class RpcInterceptor(
         val json = getRequestJson(request)
         val url = request.url
         Timber.tag("____________").d(json.toString())
-        val key = RpcConstants.REQUEST_METHOD_KEY
-        val historyEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS
-        val signaturesEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_SIGNATURES
-        val environmentUrl =
-            if (json?.getString(key) == historyEndpoint || json?.getString(key) == signaturesEndpoint) {
-                Environment.RPC_POOL
-            } else {
-                currentEnvironment
-            }
 
-        val httpUrl = url.newBuilder()
-            .host(getBaseUrl(environmentUrl))
-            .build()
+        val networkEnvironmentForRequest = getValidatedNetworkEnvironment(json)
 
         return request.newBuilder()
-            .url(httpUrl)
+            .url(createRpcUrl(url, networkEnvironmentForRequest))
             .build()
     }
 
@@ -94,12 +83,28 @@ open class RpcInterceptor(
         return json
     }
 
-    private fun getBaseUrl(environment: Environment): String {
-        var uri = Uri.parse(environment.endpoint)
-        if (environment == Environment.RPC_POOL) {
-            uri = uri.buildUpon().encodedPath(BuildConfig.rpcPoolApiKey).build()
+    private fun getValidatedNetworkEnvironment(requestJson: JSONObject?): NetworkEnvironment {
+        val methodKey = RpcConstants.REQUEST_METHOD_KEY
+        val historyEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS
+        val signaturesEndpoint = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_SIGNATURES
+        return if (
+            requestJson?.getString(methodKey) == historyEndpoint ||
+            requestJson?.getString(methodKey) == signaturesEndpoint
+        ) {
+            NetworkEnvironment.RPC_POOL
+        } else {
+            currentEnvironment
         }
-        return uri.host ?: throw IllegalStateException("Host cannot be null ${uri.host}")
+    }
+
+    private fun createRpcUrl(originalUrl: HttpUrl, networkEnvironment: NetworkEnvironment): HttpUrl {
+        return if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
+            originalUrl.newBuilder()
+                .addEncodedPathSegment(BuildConfig.rpcPoolApiKey)
+                .build()
+        } else {
+            originalUrl
+        }
     }
 
     private fun handleResponse(response: Response): Response {

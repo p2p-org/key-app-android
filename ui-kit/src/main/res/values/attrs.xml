@@ -1,20 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--  Button  -->
+    <!-- Atoms -->
+
+    <declare-styleable name="UiKitStartAmountView">
+        <attr name="icon" />
+        <attr name="title" />
+        <attr name="subtitleColor" format="color" />
+        <attr name="subtitle" format="string" />
+        <attr name="subSubtitle" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitEndAmountView">
+        <attr name="icon" />
+        <attr name="usdAmount" format="string" />
+        <attr name="tokenAmount" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitBadgeView">
+        <attr name="hasStroke" format="boolean" />
+        <attr name="android:textColor" />
+        <attr name="shape" format="enum">
+            <enum name="oval" value="0" />
+            <enum name="rectangle" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="UiKitRoundedImageView">
+        <attr name="cornerRadius" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitTransactionImageView">
+        <attr name="statusIconSize" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitTransactionSwapImageView">
+        <attr name="tokenIconSize" format="dimension" />
+    </declare-styleable>
+
+    <!--  Organisms  -->
 
     <declare-styleable name="UiKitButton">
         <attr name="android:layout_height" />
         <attr name="iconTint" />
     </declare-styleable>
 
-    <!--  Section Header  -->
-
     <declare-styleable name="UiKitSectionHeader">
         <attr name="withIcon" format="boolean" />
         <attr name="sectionText" format="string" />
         <attr name="textIconTint" format="color" />
         <attr name="isCaps" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitSkeletonRectangle">
+        <attr name="isRounded" format="boolean" />
     </declare-styleable>
 
 </resources>

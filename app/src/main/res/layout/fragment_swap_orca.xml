@@ -90,7 +90,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/availableTextView" />
 
-            <org.p2p.wallet.common.ui.widget.RoundedImageView
+            <org.p2p.uikit.atoms.UiKitRoundedImageView
                 android:id="@+id/sourceImageView"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
@@ -221,7 +221,7 @@
                 tools:text="12210.2 USDC"
                 tools:visibility="visible" />
 
-            <org.p2p.wallet.common.ui.widget.RoundedImageView
+            <org.p2p.uikit.atoms.UiKitRoundedImageView
                 android:id="@+id/destinationImageView"
                 android:layout_width="44dp"
                 android:layout_height="44dp"

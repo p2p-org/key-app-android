@@ -2,11 +2,11 @@ package org.p2p.uikit.organisms
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSectionHeaderBinding
+import org.p2p.uikit.utils.inflateViewBinding
 
 class UiKitSectionHeader @JvmOverloads constructor(
     context: Context,
@@ -32,7 +32,7 @@ class UiKitSectionHeader @JvmOverloads constructor(
             field = value
         }
 
-    private val binding = WidgetSectionHeaderBinding.inflate(LayoutInflater.from(context), this)
+    private val binding = inflateViewBinding<WidgetSectionHeaderBinding>()
 
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitSectionHeader).use { typedArray ->

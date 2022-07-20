@@ -18,7 +18,7 @@
             android:layout_gravity="center_vertical"
             android:background="@color/strokeSecondary" />
 
-        <org.p2p.wallet.common.ui.widget.RoundedImageView
+        <org.p2p.uikit.atoms.UiKitRoundedImageView
             android:id="@+id/iconImageView"
             android:layout_width="56dp"
             android:layout_height="56dp"

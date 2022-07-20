@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.whenStateAtLeast
 import kotlinx.coroutines.launch
+import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragmentContract
 import kotlin.reflect.KClass

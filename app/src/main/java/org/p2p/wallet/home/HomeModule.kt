@@ -90,7 +90,7 @@ object HomeModule : InjectionModule {
         /* Cached data exists, therefore creating singleton */
         factory<HomeContract.Presenter> {
             HomePresenter(
-                appFeatureFlags = get(),
+                inAppFeatureFlags = get(),
                 updatesManager = get(),
                 userInteractor = get(),
                 settingsInteractor = get(),

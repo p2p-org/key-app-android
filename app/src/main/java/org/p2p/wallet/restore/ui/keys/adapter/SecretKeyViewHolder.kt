@@ -12,10 +12,11 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSecretKeyBinding
 import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.utils.showSoftKeyboard
+import org.p2p.wallet.utils.Constants
 
 class SecretKeyViewHolder(
     binding: ItemSecretKeyBinding,
@@ -39,10 +40,15 @@ class SecretKeyViewHolder(
     private val keyTextView = binding.keyTextView
     private val keyEditText = binding.keyEditText
 
+    private var textWatcher: SeedPhraseWatcher? = null
+
     @SuppressLint("SetTextI18n")
     fun onBind(item: SecretKey) {
+        textWatcher?.isLastKey = bindingAdapterPosition == Constants.SEED_PHRASE_SIZE_LONG
+
         if (item.text.isEmpty()) {
-            SeedPhraseWatcher.installOn(
+            textWatcher = SeedPhraseWatcher.installOn(
+                isLast = bindingAdapterPosition == Constants.SEED_PHRASE_SIZE_LONG,
                 editText = keyEditText,
                 onKeyAdded = { onKeyAdded(it) },
                 onSeedPhraseInserted = { onSeedPhraseInserted(it) }

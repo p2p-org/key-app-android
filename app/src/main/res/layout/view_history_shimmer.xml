@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginTop="?actionBarSize"
     android:visibility="gone"
     app:shimmer_auto_start="true"
     app:shimmer_base_alpha="1"
+    tools:visibility="visible"
     app:shimmer_base_color="@color/backgroundAppStroke"
     app:shimmer_highlight_alpha="0"
     app:shimmer_highlight_color="@color/backgroundAppStroke">

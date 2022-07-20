@@ -9,9 +9,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
-import org.p2p.solanaj.rpc.Environment
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
-import org.p2p.wallet.infrastructure.network.environment.EnvironmentManager
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.renbtc.model.RenBTCPayment
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
@@ -31,7 +31,7 @@ private const val SESSION_POLLING_DELAY = 5000L
 
 class RenTransactionManager(
     private val renBTCRemoteRepository: RenRemoteRepository,
-    private val environmentManager: EnvironmentManager,
+    private val environmentManager: NetworkEnvironmentManager,
     private val renVMRepository: RenVMRepository,
     private val solanaChain: RpcSolanaInteractor
 ) {
@@ -82,7 +82,7 @@ class RenTransactionManager(
         if (!::lockAndMint.isInitialized) throw IllegalStateException("LockAndMint object is not initialized")
         Timber.tag(REN_TAG).d("Starting blockstream polling")
 
-        val environment = environmentManager.loadEnvironment()
+        val environment = environmentManager.loadCurrentEnvironment()
 
         /* Caching value, since it's being called multiple times inside the loop */
         while (session.isValid) {
@@ -111,7 +111,7 @@ class RenTransactionManager(
         queuedTransactions.clear()
     }
 
-    private fun pollPaymentData(environment: Environment, session: LockAndMint.Session, secretKey: ByteArray) {
+    private fun pollPaymentData(environment: NetworkEnvironment, session: LockAndMint.Session, secretKey: ByteArray) {
         scope.launch {
             Timber.tag(REN_TAG).d("Checking payment data by gateway address")
             try {

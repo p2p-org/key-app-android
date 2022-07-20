@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSwapDetailsBinding
 import org.p2p.wallet.swap.model.Slippage
@@ -13,7 +14,6 @@ import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
 import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.getColor
 import org.p2p.wallet.utils.withTextOrGone
 
 // todo: too complex functions, make it simpler
