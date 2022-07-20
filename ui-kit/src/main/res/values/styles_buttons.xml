@@ -11,14 +11,14 @@
 
     <style name="UiKit.Components.Button.Large">
         <item name="cornerRadius">12dp</item>
-        <item name="android:paddingHorizontal">36dp</item>
+        <item name="android:paddingHorizontal">20dp</item>
         <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Text2</item>
         <item name="iconSize">16dp</item>
     </style>
 
     <style name="UiKit.Components.Button.Medium">
         <item name="cornerRadius">12dp</item>
-        <item name="android:paddingHorizontal">36dp</item>
+        <item name="android:paddingHorizontal">20dp</item>
         <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Text2</item>
         <item name="iconSize">16dp</item>
     </style>
