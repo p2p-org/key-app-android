@@ -10,7 +10,16 @@ jobs:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: "Clone P2P Wallet Repository"
+        uses: actions/checkout@v2
+
+      - name: "Clone P2P UI Kit Repository"
+        uses: actions/checkout@v2
+        with:
+          repository: p2p-org/p2p-wallet-ui-app
+          path: p2p-wallet-ui-app
+          ssh-key: ${{ secrets.SUBMODULE_SSH_KEY }}
+          persist-credentials: false
 
       - uses: ./.github/actions/setup-sentry
         with:

@@ -39,9 +39,10 @@ def initSentry(defaultConfig) {
 }
 
 def initUiKit(defaultConfig) {
-    "git submodule update --init".execute().text.trim()
-    "git submodule update --remote".execute().text.trim()
+    "git submodule sync --recursive".execute().text.trim()
+    " git submodule update --init --recursive".execute().text.trim()
 }
+
 String getVersionBuild() {
     def buildNumberFromCi = System.getenv("CIRCLE_BUILD_NUM")
 
@@ -71,9 +72,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
 
+        initUiKit(it)
         initApiKeys(it)
         initSentry(it)
-        initUiKit(it)
         checkForSslPinning()
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
