@@ -27,4 +27,6 @@
 
     <string name="notificationServiceBaseUrl">https://push-service.wallet.p2p.org/</string>
     <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/</string>
+
+    <string name="googleClientId">553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com</string>
 </resources>
