@@ -1,7 +1,8 @@
 include ':solanaj'
 include ':app'
 rootProject.name = "P2P Wallet"
-addSubfolderProjects("p2p-wallet-ui-app/ui-kit", "module")
+addSubfolderProjects("p2p-wallet-ui-app/ui-kit")
+addSubfolderProjects("p2p-wallet-ui-app/ui-kit-sample")
 
 def addSubfolderProjects(String relativePath, String prefix = "") {
     def nestedDir = file("$rootProject.projectDir/$relativePath")
