@@ -8,12 +8,12 @@ import android.webkit.WebView
 import android.widget.Toast
 import com.google.gson.Gson
 import org.p2p.wallet.auth.model.DeviceShareKey
-import org.p2p.wallet.auth.model.GoogleFlow
+import org.p2p.wallet.auth.model.GoogleAuthFlow
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 
 private const val KEY_DEVICE_SHARE = "KEY_DEVICE_SHARE"
-private const val indexUrl = "file:///android_asset/index.html"
-private const val androidCommunicationChannel = "AndroidCommunicationChannel"
+private const val indexUri = "file:///android_asset/index.html"
+private const val communicationChannel = "AndroidCommunicationChannel"
 
 class WalletAuthManager(
     context: Context,
@@ -25,7 +25,7 @@ class WalletAuthManager(
     private var lastUserId: String? = null
     private var lastIdToken: String? = null
 
-    var flowMode = GoogleFlow.SIGN_IN
+    var flowMode = GoogleAuthFlow.SIGN_IN
 
     private val onboardingWebView = WebView(context).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -38,10 +38,10 @@ class WalletAuthManager(
 
     fun attach() {
         onboardingWebView.apply {
-            loadUrl(indexUrl)
+            loadUrl(indexUri)
             addJavascriptInterface(
                 AndroidCommunicationChannel(context),
-                androidCommunicationChannel
+                communicationChannel
             )
         }
     }
@@ -49,32 +49,33 @@ class WalletAuthManager(
     fun setIdToken(userId: String, idToken: String) {
         lastUserId = userId
         lastIdToken = idToken
-        if (flowMode == GoogleFlow.SIGN_UP) {
+        if (flowMode == GoogleAuthFlow.SIGN_UP) {
             onSignUp(idToken)
         } else {
-            if (hasDeviceShare()) {
-                val deviceShareKey = gson.fromJson(getDeviceShare(), DeviceShareKey::class.java)
-                val restoreDeviceShare = gson.toJson(deviceShareKey.share)
-                onSignIn(idToken, restoreDeviceShare)
-            } else {
-                onSignIn(idToken)
-            }
+            onSignIn(idToken)
         }
     }
 
     fun detach() {
-        onboardingWebView.removeJavascriptInterface(androidCommunicationChannel)
+        onboardingWebView.removeJavascriptInterface(communicationChannel)
     }
 
-    fun onSignUp(idToken: String) {
+    private fun onSignUp(idToken: String) {
         onboardingWebView.evaluateJavascript(
             "new p2pWeb3Auth.AndroidFacade({ useRandomPrivates: true }).triggerSilentSignup('$idToken')",
             null
         )
     }
 
-    fun onSignIn(idToken: String, deviceShare: String? = null) {
-        deviceShare?.let {
+    private fun onSignIn(idToken: String) {
+        val restoreDeviceShare = if (hasDeviceShare()) {
+            val deviceShareKey = gson.fromJson(getDeviceShare(), DeviceShareKey::class.java)
+            gson.toJson(deviceShareKey.share)
+        } else {
+            null
+        }
+
+        restoreDeviceShare?.let {
             onboardingWebView.evaluateJavascript(
                 "new p2pWeb3Auth.AndroidFacade().triggerSignInNoCustom('$idToken', $it)",
                 null
@@ -89,11 +90,11 @@ class WalletAuthManager(
         secureStorage.saveString("${KEY_DEVICE_SHARE}_$lastUserId", deviceShare)
     }
 
-    fun hasDeviceShare() = with(sharedPreferences) {
+    private fun hasDeviceShare(): Boolean = with(sharedPreferences) {
         contains("${KEY_DEVICE_SHARE}_$lastUserId")
     }
 
-    fun getDeviceShare() = secureStorage.getString("${KEY_DEVICE_SHARE}_$lastUserId").orEmpty()
+    private fun getDeviceShare(): String = secureStorage.getString("${KEY_DEVICE_SHARE}_$lastUserId").orEmpty()
 
     inner class AndroidCommunicationChannel(private val context: Context) {
         @JavascriptInterface

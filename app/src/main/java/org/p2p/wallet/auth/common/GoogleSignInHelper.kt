@@ -34,7 +34,7 @@ class GoogleSignInHelper() {
         }
     }
 
-    fun handleSignResult(context: Context, result: ActivityResult): SignInCredential? {
+    fun parseSignInResult(context: Context, result: ActivityResult): SignInCredential? {
         return if (result.resultCode == Activity.RESULT_OK) {
             getSignInClient(context).getSignInCredentialFromIntent(result.data)
         } else {
