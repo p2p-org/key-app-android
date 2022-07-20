@@ -73,6 +73,16 @@ class OrcaSwapInteractor(
         slippage: Slippage
     ): OrcaSwapResult {
 
+        suspend fun swapByFeeRelayer() = swapByFeeRelayer(
+            sourceAddress = fromToken.publicKey,
+            sourceTokenMint = fromToken.mintAddress,
+            destinationAddress = toToken.publicKey,
+            destinationTokenMint = toToken.mintAddress,
+            poolsPair = bestPoolsPair,
+            amount = amount,
+            slippage = slippage.doubleValue,
+        )
+
         return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             swapNative(
                 poolsPair = bestPoolsPair,
@@ -83,27 +93,11 @@ class OrcaSwapInteractor(
             )
         } else {
             try {
-                swapByFeeRelayer(
-                    sourceAddress = fromToken.publicKey,
-                    sourceTokenMint = fromToken.mintAddress,
-                    destinationAddress = toToken.publicKey,
-                    destinationTokenMint = toToken.mintAddress,
-                    poolsPair = bestPoolsPair,
-                    amount = amount,
-                    slippage = slippage.doubleValue,
-                )
+                swapByFeeRelayer()
             } catch (serverError: ServerException) {
                 if (serverError.errorCode == ErrorCode.INVALID_BLOCKHASH) {
                     // if something not ok with BLOCKHASH we can retry transaction with a new one
-                    swapByFeeRelayer(
-                        sourceAddress = fromToken.publicKey,
-                        sourceTokenMint = fromToken.mintAddress,
-                        destinationAddress = toToken.publicKey,
-                        destinationTokenMint = toToken.mintAddress,
-                        poolsPair = bestPoolsPair,
-                        amount = amount,
-                        slippage = slippage.doubleValue,
-                    )
+                    swapByFeeRelayer()
                 } else {
                     throw serverError
                 }
