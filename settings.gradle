@@ -1,4 +1,18 @@
 include ':solanaj'
 include ':app'
-include ':ui-kit'
 rootProject.name = "P2P Wallet"
+addSubfolderProjects("p2p-wallet-ui-app/ui-kit", "module")
+
+def addSubfolderProjects(String relativePath, String prefix = "") {
+    def nestedDir = file("$rootProject.projectDir/$relativePath")
+    if (nestedDir.listFiles().any { it.name == 'build.gradle' }) {
+        def projectDir = nestedDir.name
+        def projectName = projectDir
+        if (!prefix.empty) {
+            projectName = "$prefix-$nestedDir.name"
+        }
+
+        include projectName
+        project(":${projectName}").projectDir = nestedDir
+    }
+}

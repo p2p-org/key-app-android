@@ -37,10 +37,25 @@
         <activity
             android:name="org.p2p.wallet.root.RootActivity"
             android:exported="true"
+            android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/WalletTheme.Launcher"
             android:windowSoftInputMode="adjustPan"
+            tools:ignore="LockedOrientationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name="com.example.p2pwallet.uiapp.root.UiKitActivity"
+            android:exported="true"
+            android:taskAffinity="com.example.p2pwallet.uiapp.root.UiKitActivity"
+            android:label="UiKit P2P Wallet"
+            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
