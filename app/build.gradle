@@ -38,6 +38,10 @@ def initSentry(defaultConfig) {
     defaultConfig.manifestPlaceholders = [SENTRY_DSN: sentryProperties.getOrThrow("auth.dsn")]
 }
 
+def initUiKit(defaultConfig) {
+    "git submodule update --init".execute().text.trim()
+    "git submodule update --remote".execute().text.trim()
+}
 String getVersionBuild() {
     def buildNumberFromCi = System.getenv("CIRCLE_BUILD_NUM")
 
@@ -69,6 +73,7 @@ android {
 
         initApiKeys(it)
         initSentry(it)
+        initUiKit(it)
         checkForSslPinning()
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")

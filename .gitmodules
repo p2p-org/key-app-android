@@ -1,3 +1,4 @@
 [submodule "p2p-wallet-ui-app"]
 	path = p2p-wallet-ui-app
 	url = https://github.com/p2p-org/p2p-wallet-ui-app
+	branch = master
