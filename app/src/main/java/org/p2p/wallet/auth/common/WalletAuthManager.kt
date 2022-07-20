@@ -74,15 +74,10 @@ class WalletAuthManager(
     }
 
     fun onSignIn(idToken: String, deviceShare: String? = null) {
-        deviceShare?.let {
-            onboardingWebView.evaluateJavascript(
-                "new p2pWeb3Auth.AndroidFacade().triggerSignInNoCustom('$idToken', $it)",
-                null
-            )
-        } ?: onboardingWebView.evaluateJavascript(
-            "new p2pWeb3Auth.AndroidFacade().triggerSignInNoDevice('$idToken')",
-            null
-        )
+        deviceShare
+          ?.let { "new p2pWeb3Auth.AndroidFacade().triggerSignInNoCustom('$idToken', $it)" } 
+          ?: "new p2pWeb3Auth.AndroidFacade().triggerSignInNoDevice('$idToken')"
+          ?.also { onboardingWebView.evaluateJavascript(it, null) } 
     }
 
     fun saveDeviceShare(deviceShare: String) {
