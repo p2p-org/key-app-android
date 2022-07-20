@@ -4,12 +4,16 @@ import android.graphics.Point
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupWindow
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTipViewBinding
+import org.p2p.uikit.utils.context
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.uikit.utils.toPx
 
 private const val POPUP_WINDOW_ELEVATION_DP = 8F
@@ -19,29 +23,44 @@ private enum class TipPosition {
     BOTTOM
 }
 
-/**
- * Shows PopupWindow with arrow
- * PopupWindow appears natively above or under the view
- * Arrow is shown only on top or bottom of PopupWindow
- * Arrow is pointing on the center of view
- */
-fun View.showTip(
-    counterText: String,
-    @StringRes title: Int,
-    @StringRes buttonNextTitle: Int = R.string.tip_button_next_title,
-    @StringRes buttonSkipTitle: Int = R.string.tip_button_skip_all_title,
-    onNextClick: () -> Unit,
-    onSkipClick: () -> Unit
+enum class TipColor(
+    @ColorRes val backgroundColor: Int,
+    @ColorRes val titleTextColor: Int,
+    @ColorRes val buttonColor: Int,
+    @ColorRes val buttonNextTextColor: Int,
+    @ColorRes val buttonSkipTextColor: Int
 ) {
-    showTip(
-        counterText = counterText,
-        title = context.getString(title),
-        buttonNextTitle = context.getString(buttonNextTitle),
-        buttonSkipTitle = context.getString(buttonSkipTitle),
-        onNextClick = onNextClick,
-        onSkipClick = onSkipClick
+    SNOW(
+        backgroundColor = R.color.bg_snow,
+        titleTextColor = R.color.text_night,
+        buttonColor = R.color.bg_lime,
+        buttonNextTextColor = R.color.text_night,
+        buttonSkipTextColor = R.color.text_night
+    ),
+    NIGHT(
+        backgroundColor = R.color.bg_night,
+        titleTextColor = R.color.text_snow,
+        buttonColor = R.color.bg_lime,
+        buttonNextTextColor = R.color.text_night,
+        buttonSkipTextColor = R.color.text_lime
+    ),
+    LIME(
+        backgroundColor = R.color.bg_lime,
+        titleTextColor = R.color.text_night,
+        buttonColor = R.color.bg_night,
+        buttonNextTextColor = R.color.text_lime,
+        buttonSkipTextColor = R.color.text_night
     )
 }
+
+data class TipConfig(
+    val tipColor: TipColor,
+    val counterText: String,
+    @StringRes val title: Int,
+    @StringRes val buttonNextTitle: Int = R.string.tip_button_next_title,
+    @StringRes val buttonSkipTitle: Int = R.string.tip_button_skip_all_title,
+    val withArrow: Boolean = true
+)
 
 /**
  * Shows PopupWindow with arrow
@@ -50,21 +69,22 @@ fun View.showTip(
  * Arrow is pointing on the center of view
  */
 fun View.showTip(
-    counterText: String,
-    title: String,
-    buttonNextTitle: String,
-    buttonSkipTitle: String,
+    tipConfig: TipConfig,
     onNextClick: () -> Unit,
     onSkipClick: () -> Unit
 ) {
     val binding = WidgetTipViewBinding.inflate(LayoutInflater.from(context)).apply {
-        countTextView.text = counterText
-        titleTextView.text = title
-        nextButton.text = buttonNextTitle
-        skipAllButton.text = buttonSkipTitle
+        countTextView.text = tipConfig.counterText
+        titleTextView.setText(tipConfig.title)
+        nextButton.setText(tipConfig.buttonNextTitle)
+        skipAllButton.setText(tipConfig.buttonSkipTitle)
         nextButton.setOnClickListener { onNextClick() }
         skipAllButton.setOnClickListener { onSkipClick() }
-    }.apply {
+        arrowImageView.isVisible = tipConfig.withArrow
+
+        setupTipColors(this, tipConfig.tipColor)
+
+        // Measuring root view to access it's width and height
         root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
     }
 
@@ -85,6 +105,15 @@ fun View.showTip(
             setupArrow(binding, tipGravity, arrowMargin)
         }
     }
+}
+
+private fun setupTipColors(binding: WidgetTipViewBinding, tipColor: TipColor) = with(binding) {
+    contentCardView.setCardBackgroundColor(context.getColor(tipColor.backgroundColor))
+    arrowImageView.setColorFilter(context.getColor(tipColor.backgroundColor))
+    nextButton.setBackgroundColor(context.getColor(tipColor.buttonColor))
+    titleTextView.setTextColorRes(tipColor.titleTextColor)
+    nextButton.setTextColorRes(tipColor.buttonNextTextColor)
+    skipAllButton.setTextColorRes(tipColor.buttonSkipTextColor)
 }
 
 /**
