@@ -158,6 +158,10 @@
     <string name="onboarding_terms_text">By continuing, you agree to Key App’s</string>
     <string name="onboarding_terms_button">Terms and Conditions</string>
 
+    <!--Onboarding Slides-->
+    <string name="onboarding_slide_1_title">Welcome \nto Key App</string>
+    <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
+
     <!-- Main -->
     <plurals name="hidden_wallets">
         <item quantity="one">%d hidden wallet</item>
