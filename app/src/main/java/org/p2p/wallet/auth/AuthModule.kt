@@ -46,8 +46,6 @@ object AuthModule {
 
         single { BiometricManager.from(androidContext()) }
 
-        factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
-
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
         factory { AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         factory { AuthRemoteRepository() } bind AuthRepository::class
