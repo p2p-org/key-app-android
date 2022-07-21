@@ -25,6 +25,6 @@ class SliderFragment : BaseFragment(R.layout.fragment_onboarding_slide) {
                 sliderTitle.setText(sliderFragmentArgs.slideTitle)
                 sliderText.setText(sliderFragmentArgs.slideText)
             }
-        } ?: Timber.e("Error on getting SliderFragmentArgs")
+        } ?: Timber.w("Error on getting SliderFragmentArgs")
     }
 }

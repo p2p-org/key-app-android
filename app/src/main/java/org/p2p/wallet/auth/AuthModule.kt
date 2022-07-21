@@ -2,6 +2,7 @@ package org.p2p.wallet.auth
 
 import androidx.biometric.BiometricManager
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -40,10 +41,10 @@ import retrofit2.Retrofit
 object AuthModule {
 
     fun create() = module {
-        single { BiometricManager.from(androidContext()) }
 
-        factory { GoogleSignInHelper() }
-        factory { WalletWeb3AuthManager(get(), get(), get(), get()) }
+        onboardingModule()
+
+        single { BiometricManager.from(androidContext()) }
 
         factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
 
@@ -67,5 +68,12 @@ object AuthModule {
             val api = retrofit.create(UsernameApi::class.java)
             UsernameRemoteRepository(api)
         } bind UsernameRepository::class
+    }
+
+    private fun Module.onboardingModule() {
+        factory { GoogleSignInHelper() }
+        factory { WalletWeb3AuthManager(get(), get(), get(), get()) }
+
+        factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
     }
 }

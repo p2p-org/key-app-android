@@ -40,10 +40,9 @@ class NewOnboardingFragment :
     private val signInHelper: GoogleSignInHelper by inject()
 
     private val googleSignInLauncher = registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) {
-        handleSignResult(it)
-    }
+        ActivityResultContracts.StartIntentSenderForResult(),
+        ::handleSignResult
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,7 +61,9 @@ class NewOnboardingFragment :
         }
     }
 
-    override fun startGoogleFlow() = signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
+    override fun startGoogleFlow() {
+        signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
+    }
 
     private fun handleSignResult(result: ActivityResult) {
         signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->

@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.onboarding
 import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.os.bundleOf
 import org.p2p.wallet.utils.requireInt
 
 private const val ICON_ARG = "sliderIcon"
@@ -14,11 +15,11 @@ data class SliderFragmentArgs(
     @StringRes val slideTitle: Int,
     @StringRes val slideText: Int,
 ) {
-    fun toBundle(): Bundle = Bundle().apply {
-        putInt(ICON_ARG, iconRes)
-        putInt(TITLE_ARG, slideTitle)
-        putInt(TEXT_ARG, slideText)
-    }
+    fun toBundle(): Bundle = bundleOf(
+        ICON_ARG to iconRes,
+        TITLE_ARG to slideTitle,
+        TEXT_ARG to slideText
+    )
 
     companion object {
         @Throws(IllegalArgumentException::class)
