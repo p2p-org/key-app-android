@@ -13,6 +13,7 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.use
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.toPx
 
