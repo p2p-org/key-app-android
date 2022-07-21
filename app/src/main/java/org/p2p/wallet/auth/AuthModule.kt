@@ -6,6 +6,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
+import org.p2p.wallet.auth.gateway.GatewayServiceModule
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -58,5 +59,7 @@ object AuthModule {
             val api = retrofit.create(UsernameApi::class.java)
             UsernameRemoteRepository(api)
         } bind UsernameRepository::class
+
+        includes(GatewayServiceModule.create())
     }
 }
