@@ -42,6 +42,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/onboardingCreateWalletButton"
             style="@style/UiKit.Components.Button.Large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
