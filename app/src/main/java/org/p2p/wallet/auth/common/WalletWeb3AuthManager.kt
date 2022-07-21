@@ -15,7 +15,7 @@ private const val KEY_DEVICE_SHARE = "KEY_DEVICE_SHARE"
 private const val indexUri = "file:///android_asset/index.html"
 private const val communicationChannel = "AndroidCommunicationChannel"
 
-class WalletAuthManager(
+class WalletWeb3AuthManager(
     context: Context,
     private val gson: Gson,
     private val secureStorage: SecureStorageContract,
