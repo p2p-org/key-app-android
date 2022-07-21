@@ -27,4 +27,6 @@ object Constants {
     const val DEVICE_TYPE = "Android"
 
     const val ZERO_AMOUNT = "0"
+
+    const val APP_HASH = "J1y9NEXfoHx"
 }
