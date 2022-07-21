@@ -291,6 +291,9 @@ dependencies {
     implementation "io.sentry:sentry-android-okhttp:$sentryVersion"
     implementation "io.sentry:sentry-android-ndk:$sentryVersion"
 
+    // dots indicator
+    implementation "com.tbuonomo:dotsindicator:4.3"
+
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'
     testImplementation 'androidx.test.ext:junit-ktx:1.1.3'

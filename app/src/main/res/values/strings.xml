@@ -152,6 +152,12 @@
     <string name="auth_fingerprint_login">Fingerprint login</string>
     <string name="auth_fingerprint_login_message">Use your fingerprint for faster easier access to your wallet</string>
 
+    <!--Onboarding-->
+    <string name="onboarding_create_text">Create a new wallet</string>
+    <string name="onboarding_restore_text">I already have a wallet</string>
+    <string name="onboarding_terms_text">By continuing, you agree to Key App’s</string>
+    <string name="onboarding_terms_button">Terms and Conditions</string>
+
     <!-- Main -->
     <plurals name="hidden_wallets">
         <item quantity="one">%d hidden wallet</item>
