@@ -291,6 +291,9 @@ dependencies {
     implementation "io.sentry:sentry-android-okhttp:$sentryVersion"
     implementation "io.sentry:sentry-android-ndk:$sentryVersion"
 
+    // dots indicator
+    implementation "com.tbuonomo:dotsindicator:4.3"
+
     // Google Play Auth
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 

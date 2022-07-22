@@ -2,10 +2,13 @@ package org.p2p.wallet.auth
 
 import androidx.biometric.BiometricManager
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
+import org.p2p.wallet.auth.common.GoogleSignInHelper
+import org.p2p.wallet.auth.common.WalletWeb3AuthManager
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -16,6 +19,8 @@ import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
+import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
+import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
@@ -36,6 +41,9 @@ import retrofit2.Retrofit
 object AuthModule {
 
     fun create() = module {
+
+        onboardingModule()
+
         single { BiometricManager.from(androidContext()) }
 
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
@@ -58,5 +66,12 @@ object AuthModule {
             val api = retrofit.create(UsernameApi::class.java)
             UsernameRemoteRepository(api)
         } bind UsernameRepository::class
+    }
+
+    private fun Module.onboardingModule() {
+        factory { GoogleSignInHelper() }
+        factory { WalletWeb3AuthManager(get(), get(), get(), get()) }
+
+        factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
     }
 }

@@ -27,13 +27,20 @@ class WalletWeb3AuthManager(
 
     var flowMode = GoogleAuthFlow.SIGN_IN
 
-    private val onboardingWebView = WebView(context).apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(true)
+    private val onboardingWebView: WebView
+
+    init {
+        onboardingWebView = WebView(context).apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                WebView.setWebContentsDebuggingEnabled(true)
+            }
+            @Suppress("SAFE_CALL_WILL_CHANGE_NULLABILITY") // fix for tests
+            settings?.apply {
+                javaScriptEnabled = true
+                databaseEnabled = true
+                domStorageEnabled = true
+            }
         }
-        settings.javaScriptEnabled = true
-        settings.databaseEnabled = true
-        settings.domStorageEnabled = true
     }
 
     fun attach() {
