@@ -1,8 +1,9 @@
 package org.p2p.uikit.atoms
 
-import androidx.appcompat.widget.AppCompatImageView
 import android.content.Context
 import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.res.use
 import org.p2p.uikit.R
 
 /**
