@@ -53,7 +53,7 @@ class WalletWeb3AuthManager(
     }
 
     fun setIdToken(userId: String, idToken: String) {
-        //mocks only for testing!
+        // mocks only for testing!
         saveDeviceShareMock(idToken)
         /*lastUserId = userId
         lastIdToken = idToken
@@ -94,7 +94,7 @@ class WalletWeb3AuthManager(
         )
     }
 
-    //TODO remove after QA check screens!
+    // TODO remove after QA check screens!
     private fun saveDeviceShareMock(deviceShare: String) {
         secureStorage.saveString(KEY_DEVICE_SHARE, deviceShare)
     }

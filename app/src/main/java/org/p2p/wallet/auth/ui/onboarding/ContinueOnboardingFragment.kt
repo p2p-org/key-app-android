@@ -24,7 +24,7 @@ class ContinueOnboardingFragment : BaseFragment(R.layout.fragment_continue_onboa
         with(binding) {
             onboardingContinueText.text = getString(R.string.onboarding_continue_subtitle, "test****@gmail.com")
             onboardingContinueButton.setOnClickListener {
-                //TODO PWN-4268 make real implementation and move user to phone number screen
+                // TODO PWN-4268 make real implementation and move user to phone number screen
                 Toast.makeText(context, "In development right now", Toast.LENGTH_SHORT).show()
             }
         }
