@@ -2,9 +2,11 @@ on:
   pull_request:
     branches:
       - develop
+      - feature/*
   push:
     branches:
       - develop
+      - feature/*
 jobs:
   android-lint:
     name: "Run ktlint check"
