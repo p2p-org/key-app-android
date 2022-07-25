@@ -70,6 +70,14 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         }
     }
 
+    override fun navigateToOnboarding() {
+        replaceFragment(OnboardingFragment.create())
+    }
+
+    override fun navigateToSignIn() {
+        replaceFragment(SignInPinFragment.create())
+    }
+
     override fun showToast(message: Int) {
         toast(message)
     }

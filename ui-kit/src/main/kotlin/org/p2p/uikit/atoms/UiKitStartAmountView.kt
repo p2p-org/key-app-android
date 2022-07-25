@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.use
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetStartAmountViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
