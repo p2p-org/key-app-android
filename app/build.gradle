@@ -133,6 +133,7 @@ android {
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             manifestPlaceholders = [SENTRY_ENV: "feature"]
+            matchingFallbacks = ['release']
 
             firebaseAppDistribution {
                 artifactType = "APK"
