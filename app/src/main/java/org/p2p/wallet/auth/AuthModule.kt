@@ -16,6 +16,8 @@ import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
+import org.p2p.wallet.auth.ui.phone.AddNumberContract
+import org.p2p.wallet.auth.ui.phone.AddNumberPresenter
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
@@ -48,7 +50,7 @@ object AuthModule {
         factory { SplashPresenter(get()) } bind SplashContract.Presenter::class
         factory { VerifySecurityKeyPresenter(get(), get(), get()) } bind VerifySecurityKeyContract.Presenter::class
         factory { AuthDonePresenter(get(), get(), get()) } bind AuthDoneContract.Presenter::class
-
+        factory { AddNumberPresenter() } bind AddNumberContract.Presenter::class
         // reserving username
         factory { UsernameInteractor(get(), get(), get(), get()) }
         factory { ReserveUsernamePresenter(get(), get(), get()) } bind ReserveUsernameContract.Presenter::class

@@ -151,7 +151,10 @@
     <string name="auth_choose_correct_words">Choose the correct words</string>
     <string name="auth_fingerprint_login">Fingerprint login</string>
     <string name="auth_fingerprint_login_message">Use your fingerprint for faster easier access to your wallet</string>
-
+    <string name="auth_step_2">Step 2 of 3</string>
+    <string name="auth_add_number_title">What’s your number? 🤙</string>
+    <string name="auth_add_number_message">Add a phone to protect your account</string>
+    <string name="auth_enter_number_to_continue">Enter the number to continue</string>
     <!-- Main -->
     <plurals name="hidden_wallets">
         <item quantity="one">%d hidden wallet</item>
@@ -589,4 +592,5 @@
     <string name="receive_token_list_not_found">If there is a token named \"%s\", we don\'t recommend sending it to your Solana address since it will most likely be lost forever.</string>
     <string name="search_menu">Search</string>
     <string name="search_for_a_token">Search for a token</string>
+    <string name="auth_country_code">Country Code</string>
 </resources>
