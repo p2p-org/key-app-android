@@ -21,6 +21,9 @@ enum class ErrorCode(val messageRes: Int = DEFAULT_MESSAGE_RES) {
     @SerializedName("7")
     INSUFFICIENT_FUNDS(R.string.error_insufficient_funds),
 
+    @SerializedName("8")
+    INVALID_BLOCKHASH(R.string.error_invalid_blockhash),
+
     @SerializedName("404")
     BAD_REQUEST,
 
