@@ -63,7 +63,7 @@ class NewOnboardingFragment :
 
     override fun startGoogleFlow() {
         presenter.setIdToken("test", "Qa Test")
-        //signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
+        // signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
 
     private fun handleSignResult(result: ActivityResult) {
