@@ -78,7 +78,7 @@ class NewOnboardingFragment :
 
     override fun onSameTokenError() {
         setLoadingState(isScreenLoading = false)
-        //TODO
+        // TODO
     }
 
     override fun onSuccessfulSignUp() {

@@ -19,7 +19,7 @@ class NewOnboardingPresenter(
             }
 
             override fun handleError(error: Web3AuthError) {
-                //TODO make logic of error handling
+                // TODO make logic of error handling
                 view.showError(error.errorMessage)
             }
         }
