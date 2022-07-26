@@ -153,6 +153,10 @@
     <string name="auth_fingerprint_login">Fingerprint login</string>
     <string name="auth_fingerprint_login_message">Use your fingerprint for faster easier access to your wallet</string>
 
+    <string name="auth_create_wallet_step_3">Step 3 of 3</string>
+    <string name="auth_create_wallet_set_up_your_pin">Set up your PIN code</string>
+    <string name="auth_create_wallet_confirm_your_pin">Confirm your PIN code</string>
+
     <!-- Main -->
     <plurals name="hidden_wallets">
         <item quantity="one">%d hidden wallet</item>
