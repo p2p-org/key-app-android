@@ -19,7 +19,6 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
@@ -49,10 +48,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         super.onCreate(savedInstanceState)
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
         setContentView(R.layout.activity_root)
-
-        if (savedInstanceState == null) {
-            presenter.openRootScreen()
-        }
 
         presenter.loadPricesAndBids()
         onBackPressedDispatcher.addCallback {
