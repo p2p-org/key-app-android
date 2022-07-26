@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import org.p2p.uikit.R
 
 private const val ANIMATION_DURATION = 400L
-private const val DOT_STROKE_WIDTH = 24
 private const val DOT_DELTA = 12
 
 class UiKitPinCodeView @JvmOverloads constructor(
@@ -57,14 +56,14 @@ class UiKitPinCodeView @JvmOverloads constructor(
         animation.repeatCount = 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationEnd(animation: Animation?) {
-                setDotsColor(null, null)
+                setDotsColor(null)
                 onAnimationFinished()
             }
 
             override fun onAnimationRepeat(animation: Animation?) {}
 
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(R.color.rose, R.color.snow)
+                setDotsColor(R.color.rose)
             }
         })
         startAnimation(animation)
@@ -77,14 +76,11 @@ class UiKitPinCodeView @JvmOverloads constructor(
         animation.repeatCount = 2
         animation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(
-                    R.color.mint,
-                    R.color.snow
-                )
+                setDotsColor(R.color.mint)
             }
 
             override fun onAnimationEnd(animation: Animation?) {
-                setDotsColor(null, null)
+                setDotsColor(null)
                 onAnimationFinished()
             }
 
@@ -112,7 +108,7 @@ class UiKitPinCodeView @JvmOverloads constructor(
         refresh(0)
     }
 
-    private fun setDotsColor(@ColorRes resourceId: Int?, @ColorRes backgroundColor: Int?) {
+    private fun setDotsColor(@ColorRes resourceId: Int?) {
         roundViews.forEach {
             if (resourceId == null) {
                 it.clearColorFilter()
