@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/rain"
+            android:backgroundTint="@color/snow"
             android:text="@string/onboarding_continue_button_text"
             android:textColor="@color/night"
             app:iconTint="@color/night" />
