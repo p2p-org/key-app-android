@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import org.p2p.wallet.auth.model.DeviceShareKey
 import org.p2p.wallet.auth.model.GoogleAuthFlow
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import timber.log.Timber
 
 private const val KEY_DEVICE_SHARE = "KEY_DEVICE_SHARE"
 private const val indexUri = "file:///android_asset/index.html"
@@ -28,6 +29,8 @@ class WalletWeb3AuthManager(
     var flowMode = GoogleAuthFlow.SIGN_IN
 
     private val onboardingWebView: WebView
+
+    var errorHandler: Web3AuthErrorHandler? = null
 
     init {
         onboardingWebView = WebView(context).apply {
@@ -53,15 +56,13 @@ class WalletWeb3AuthManager(
     }
 
     fun setIdToken(userId: String, idToken: String) {
-        // mocks only for testing!
-        saveDeviceShareMock(idToken)
-        /*lastUserId = userId
+        lastUserId = userId
         lastIdToken = idToken
         if (flowMode == GoogleAuthFlow.SIGN_UP) {
             onSignUp(idToken)
         } else {
             onSignIn(idToken)
-        }*/
+        }
     }
 
     fun detach() {
@@ -77,7 +78,7 @@ class WalletWeb3AuthManager(
 
     private fun onSignIn(idToken: String) {
         val restoreDeviceShare = if (hasDeviceShare()) {
-            val deviceShareKey = parseDeviceShare(getDeviceShare())
+            val deviceShareKey = getDeviceShare()
             gson.toJson(deviceShareKey?.share)
         } else {
             null
@@ -92,11 +93,6 @@ class WalletWeb3AuthManager(
             "new p2pWeb3Auth.AndroidFacade().triggerSignInNoDevice('$idToken')",
             null
         )
-    }
-
-    // TODO remove after QA check screens!
-    private fun saveDeviceShareMock(deviceShare: String) {
-        secureStorage.saveString(KEY_DEVICE_SHARE, deviceShare)
     }
 
     fun saveDeviceShare(deviceShare: String) {
@@ -115,7 +111,9 @@ class WalletWeb3AuthManager(
         contains(KEY_DEVICE_SHARE)
     }
 
-    private fun getDeviceShare(): String = secureStorage.getString(KEY_DEVICE_SHARE).orEmpty()
+    fun getDeviceShare(): DeviceShareKey? = secureStorage.getString(KEY_DEVICE_SHARE)?.let { share ->
+        parseDeviceShare(share)
+    }
 
     inner class AndroidCommunicationChannel(private val context: Context) {
         @JavascriptInterface
@@ -135,7 +133,16 @@ class WalletWeb3AuthManager(
 
         @JavascriptInterface
         fun handleError(error: String) {
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            try {
+                val web3AuthError = gson.fromJson(error, Web3AuthError::class.java)
+                errorHandler?.handleError(web3AuthError)
+            } catch (commonError: Error) {
+                Timber.w("error on Web3Auth: $error, $commonError")
+            }
         }
     }
+}
+
+interface Web3AuthErrorHandler {
+    fun handleError(error: Web3AuthError)
 }
