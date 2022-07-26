@@ -63,7 +63,7 @@
             android:id="@+id/onboardingContinueButton"
             style="@style/UiKit.Components.Button.Large"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="8dp"
             android:backgroundTint="@color/rain"
             android:text="@string/onboarding_continue_button_text"
@@ -73,7 +73,7 @@
         <org.p2p.uikit.components.UiKitButton
             style="@style/UiKit.Components.Button.Large.Text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="20dp"
             android:text="Starting screen"
             android:textColor="@color/lime" />
