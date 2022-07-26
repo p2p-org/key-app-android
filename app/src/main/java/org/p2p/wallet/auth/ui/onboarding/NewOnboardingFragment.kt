@@ -31,7 +31,7 @@ class NewOnboardingFragment :
     private val fragments = List(3) { SliderFragment::class }
     private val args = List(3) {
         SliderFragmentArgs(
-            R.drawable.bg_auth_done,
+            R.drawable.onboarding_1_slide,
             R.string.onboarding_slide_1_title,
             R.string.onboarding_slide_1_text,
         ).toBundle()
