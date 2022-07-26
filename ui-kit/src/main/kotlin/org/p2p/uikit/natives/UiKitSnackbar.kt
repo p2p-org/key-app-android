@@ -1,7 +1,9 @@
 package org.p2p.uikit.natives
 
 import android.view.View
+import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
+import org.p2p.uikit.utils.getString
 
 fun interface SnackbarActionButtonClickListener {
     fun onActionButtonClicked(clickedSnackbar: Snackbar)
@@ -11,6 +13,17 @@ fun View.showSnackbarShort(snackbarText: CharSequence) {
     internalMakeSnackbar(
         this,
         text = snackbarText,
+        buttonText = null,
+        buttonAction = null,
+        duration = Snackbar.LENGTH_SHORT
+    )
+        .show()
+}
+
+fun View.showSnackbarShort(@StringRes snackbarTextRes: Int) {
+    internalMakeSnackbar(
+        this,
+        text = getString(snackbarTextRes),
         buttonText = null,
         buttonAction = null,
         duration = Snackbar.LENGTH_SHORT
