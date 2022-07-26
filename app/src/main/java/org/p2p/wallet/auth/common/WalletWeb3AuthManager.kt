@@ -107,9 +107,7 @@ class WalletWeb3AuthManager(
         return gson.fromJson(deviceShare, DeviceShareKey::class.java)
     }
 
-    fun hasDeviceShare(): Boolean = with(sharedPreferences) {
-        contains(KEY_DEVICE_SHARE)
-    }
+    fun hasDeviceShare(): Boolean = sharedPreferences.contains(KEY_DEVICE_SHARE)
 
     fun getDeviceShare(): DeviceShareKey? = secureStorage.getString(KEY_DEVICE_SHARE)?.let { share ->
         parseDeviceShare(share)
