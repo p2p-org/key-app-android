@@ -43,7 +43,7 @@ object FeeRelayerErrorMapper {
         return FeeRelayerError(
             feeRelayerCode ?: code,
             escapeAndCapitalizeFirstCharOfLog(currentLog),
-            typeFromLog(currentLog)
+            currentLog?.let { typeFromLog(it) } ?: typeFromLog(rawError)
         )
     }
 
@@ -52,6 +52,8 @@ object FeeRelayerErrorMapper {
             log?.contains("insufficient funds") == true -> FeeRelayerErrorType.INSUFFICIENT_FUNDS
             log?.contains("insufficient lamports") == true -> FeeRelayerErrorType.INSUFFICIENT_FUNDS
             log?.contains("exceeds desired slippage") == true -> FeeRelayerErrorType.SLIPPAGE_LIMIT
+            log?.contains("Invalid blockhash") == true ||
+                log?.contains("Blockhash not found") == true -> FeeRelayerErrorType.INVALID_BLOCKHASH
             log?.contains("exceeded maximum number of instructions allowed") == true -> {
                 FeeRelayerErrorType.MAXIMUM_NUMBER_OF_INSTRUCTIONS_ALLOWED_EXCEEDED
             }
