@@ -83,13 +83,14 @@ class NewCreatePinFragment :
     }
 
     override fun onAuthFinished() {
-        popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
+        binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_success)
+        binding.pinView.startSuccessAnimation() {
+            popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
+        }
     }
 
     override fun onPinCreated() {
-        binding.pinView.startSuccessAnimation() {}
-        binding.root.showSnackbarShort(R.string.auth_create_pin_code_success)
-        showInfoDialog(
+        fun showInfoDialog() = showInfoDialog(
             titleRes = R.string.auth_fingerprint_login,
             messageRes = R.string.auth_fingerprint_login_message,
             primaryButtonRes = R.string.common_continue,
@@ -98,11 +99,14 @@ class NewCreatePinFragment :
             secondaryCallback = { presenter.createPin(null) },
             isCancelable = false
         )
+
+        binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_success)
+        binding.pinView.startSuccessAnimation() { showInfoDialog() }
     }
 
     override fun showConfirmationError() {
         binding.pinView.startErrorAnimation()
-        binding.root.showSnackbarShort(R.string.auth_pin_codes_match_error)
+        binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_error)
     }
 
     override fun lockPinKeyboard() {
