@@ -8,46 +8,49 @@
     android:layout_height="match_parent"
     android:background="@color/lime">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/onboardingContinueImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:src="@drawable/continue_image"
+        app:layout_constraintBottom_toTopOf="@+id/onboardingContinueTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/onboardingContinueTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="26dp"
+        android:gravity="center"
+        android:text="@string/onboarding_continue_title"
+        android:textColor="@color/night"
+        app:layout_constraintBottom_toTopOf="@+id/onboardingContinueText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/onboardingContinueImage" />
+
+    <TextView
+        android:id="@+id/onboardingContinueText"
+        style="@style/UiKit.TextAppearance.Regular.Title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textColor="@color/night"
         app:layout_constraintBottom_toTopOf="@+id/onboardingContinueBottomContainer"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/onboardingContinueImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:importantForAccessibility="no"
-            android:src="@drawable/continue_image" />
-
-        <TextView
-            android:id="@+id/onboardingContinueTitle"
-            style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="26dp"
-            android:gravity="center"
-            android:text="@string/onboarding_continue_title"
-            android:textColor="@color/night" />
-
-        <TextView
-            android:id="@+id/onboardingContinueText"
-            style="@style/UiKit.TextAppearance.Regular.Title3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:textColor="@color/night"
-            tools:text="@string/onboarding_continue_subtitle" />
-
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/onboardingContinueTitle"
+        tools:text="@string/onboarding_continue_subtitle" />
 
     <LinearLayout
         android:id="@+id/onboardingContinueBottomContainer"

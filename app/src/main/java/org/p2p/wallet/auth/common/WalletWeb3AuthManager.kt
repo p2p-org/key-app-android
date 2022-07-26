@@ -53,15 +53,13 @@ class WalletWeb3AuthManager(
     }
 
     fun setIdToken(userId: String, idToken: String) {
-        // mocks only for testing!
-        saveDeviceShareMock(idToken)
-        /*lastUserId = userId
+        lastUserId = userId
         lastIdToken = idToken
         if (flowMode == GoogleAuthFlow.SIGN_UP) {
             onSignUp(idToken)
         } else {
             onSignIn(idToken)
-        }*/
+        }
     }
 
     fun detach() {
@@ -77,7 +75,7 @@ class WalletWeb3AuthManager(
 
     private fun onSignIn(idToken: String) {
         val restoreDeviceShare = if (hasDeviceShare()) {
-            val deviceShareKey = parseDeviceShare(getDeviceShare())
+            val deviceShareKey = getDeviceShare()
             gson.toJson(deviceShareKey?.share)
         } else {
             null
@@ -94,11 +92,6 @@ class WalletWeb3AuthManager(
         )
     }
 
-    // TODO remove after QA check screens!
-    private fun saveDeviceShareMock(deviceShare: String) {
-        secureStorage.saveString(KEY_DEVICE_SHARE, deviceShare)
-    }
-
     fun saveDeviceShare(deviceShare: String) {
         val share = parseDeviceShare(deviceShare)
         share?.let {
@@ -111,11 +104,11 @@ class WalletWeb3AuthManager(
         return gson.fromJson(deviceShare, DeviceShareKey::class.java)
     }
 
-    fun hasDeviceShare(): Boolean = with(sharedPreferences) {
-        contains(KEY_DEVICE_SHARE)
-    }
+    fun hasDeviceShare(): Boolean = sharedPreferences.contains(KEY_DEVICE_SHARE)
 
-    private fun getDeviceShare(): String = secureStorage.getString(KEY_DEVICE_SHARE).orEmpty()
+    fun getDeviceShare(): DeviceShareKey? = secureStorage.getString(KEY_DEVICE_SHARE)?.let {
+        parseDeviceShare(it)
+    }
 
     inner class AndroidCommunicationChannel(private val context: Context) {
         @JavascriptInterface
