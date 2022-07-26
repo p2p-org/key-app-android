@@ -24,6 +24,8 @@ enum class FeeRelayerErrorType(val stringValue: String) {
 
     SLIPPAGE_LIMIT("SlippageLimit"),
     INSUFFICIENT_FUNDS("InsufficientFunds"),
+    INVALID_BLOCKHASH("Invalid blockhash"),
+
     MAXIMUM_NUMBER_OF_INSTRUCTIONS_ALLOWED_EXCEEDED("MaximumNumberOfInstructionsAllowedExceeded"),
 
     UNKNOWN("UnknownError");
