@@ -71,7 +71,7 @@ class WalletWeb3AuthManager(
 
     private fun onSignUp(idToken: String) {
         onboardingWebView.evaluateJavascript(
-            "new p2pWeb3Auth.AndroidFacade({ useRandomPrivates: true }).triggerSilentSignup('$idToken')",
+            "new p2pWeb3Auth.AndroidFacade({ type: 'signup', useNewEth: false }).triggerSilentSignup('$idToken')",
             null
         )
     }
@@ -86,11 +86,11 @@ class WalletWeb3AuthManager(
 
         restoreDeviceShare?.let {
             onboardingWebView.evaluateJavascript(
-                "new p2pWeb3Auth.AndroidFacade().triggerSignInNoCustom('$idToken', $it)",
+                "new p2pWeb3Auth.AndroidFacade({ type: 'signin' }).triggerSignInNoCustom('$idToken', $it)",
                 null
             )
         } ?: onboardingWebView.evaluateJavascript(
-            "new p2pWeb3Auth.AndroidFacade().triggerSignInNoDevice('$idToken')",
+            "new p2pWeb3Auth.AndroidFacade({ type: 'signin' }).triggerSignInNoDevice('$idToken')",
             null
         )
     }
