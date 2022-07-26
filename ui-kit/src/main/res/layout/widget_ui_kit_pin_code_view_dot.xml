@@ -6,4 +6,4 @@
     android:layout_height="12dp"
     android:layout_margin="12dp"
     tools:ignore="ContentDescription"
-    tools:src="@drawable/ic_dot_full" />
+    tools:src="@drawable/ic_new_dot_full" />

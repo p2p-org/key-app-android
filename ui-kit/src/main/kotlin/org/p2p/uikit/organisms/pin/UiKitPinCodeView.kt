@@ -3,16 +3,15 @@ package org.p2p.uikit.organisms.pin
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.annotation.ColorRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import org.p2p.uikit.R
-import org.p2p.uikit.databinding.WidgetUiKitPinCodeViewBinding
-import org.p2p.uikit.utils.dip
 
 private const val ANIMATION_DURATION = 400L
 private const val DOT_STROKE_WIDTH = 24
@@ -22,7 +21,7 @@ class UiKitPinCodeView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : LinearLayout(context, attrs, defStyleAttr) {
 
     private var roundViews = mutableListOf<ImageView>()
     private var emptyDotDrawableId: Drawable? = null
@@ -31,13 +30,12 @@ class UiKitPinCodeView @JvmOverloads constructor(
     var currentLength: Int = 0
         private set
 
-    private val binding = WidgetUiKitPinCodeViewBinding.inflate(LayoutInflater.from(context), this, true)
-
     init {
         attrs.let {
-            emptyDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_dot_empty)
-            fullDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_dot_full)
+            emptyDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_new_dot_empty)
+            fullDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_new_dot_full)
         }
+        gravity = Gravity.CENTER
     }
 
     fun refresh(pinLength: Int) {
@@ -49,20 +47,6 @@ class UiKitPinCodeView @JvmOverloads constructor(
                 roundViews[i].setImageDrawable(emptyDotDrawableId)
             }
         }
-        showProgress(pinLength)
-    }
-
-    private fun showProgress(length: Int) {
-        val width = when (length) {
-            0 -> 0
-            1 -> DOT_STROKE_WIDTH
-            else -> {
-                DOT_STROKE_WIDTH + (DOT_STROKE_WIDTH + DOT_DELTA) * (length - 1)
-            }
-        }.toInt()
-        val lp = binding.progressView.layoutParams as LayoutParams
-        lp.width = dip(width)
-        binding.progressView.layoutParams = lp
     }
 
     @SuppressWarnings("MagicNumber")
@@ -111,15 +95,15 @@ class UiKitPinCodeView @JvmOverloads constructor(
 
     fun setPinLength(pinLength: Int) {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        binding.container.removeAllViews()
+        removeAllViews()
         val temp = mutableListOf<ImageView>()
         for (i in 0 until pinLength) {
             val roundView = if (i < roundViews.size) {
                 roundViews[i]
             } else {
-                inflater.inflate(R.layout.widget_ui_kit_pin_code_view_dot, binding.container, false) as ImageView
+                inflater.inflate(R.layout.widget_ui_kit_pin_code_view_dot, this, false) as ImageView
             }
-            binding.container.addView(roundView)
+            addView(roundView)
             temp.add(roundView)
         }
         roundViews.clear()
@@ -136,8 +120,5 @@ class UiKitPinCodeView @JvmOverloads constructor(
                 it.setColorFilter(context.getColor(resourceId))
             }
         }
-        val bg = binding.progressView.background.mutate()
-        bg.setTint(context.getColor(backgroundColor ?: R.color.snow))
-        binding.progressView.background = bg
     }
 }
