@@ -30,7 +30,7 @@ class WalletWeb3AuthManager(
 
     private val onboardingWebView: WebView
 
-    var errorHandler: Web3AuthErrorHandler? = null
+    var handler: Web3AuthHandler? = null
 
     init {
         onboardingWebView = WebView(context).apply {
@@ -100,6 +100,7 @@ class WalletWeb3AuthManager(
         share?.let {
             it.userId = lastUserId
             secureStorage.saveString(KEY_DEVICE_SHARE, gson.toJson(it))
+            handler?.onSuccessSignUp()
         }
     }
 
@@ -133,7 +134,7 @@ class WalletWeb3AuthManager(
         fun handleError(error: String) {
             try {
                 val web3AuthError = gson.fromJson(error, Web3AuthError::class.java)
-                errorHandler?.handleError(web3AuthError)
+                handler?.handleError(web3AuthError)
             } catch (commonError: Error) {
                 Timber.w("error on Web3Auth: $error, $commonError")
             }
@@ -141,6 +142,7 @@ class WalletWeb3AuthManager(
     }
 }
 
-interface Web3AuthErrorHandler {
+interface Web3AuthHandler {
+    fun onSuccessSignUp()
     fun handleError(error: Web3AuthError)
 }

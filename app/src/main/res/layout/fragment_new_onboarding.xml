@@ -55,6 +55,7 @@
             app:iconTint="@color/night" />
 
         <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/onboardingRestoreWalletButton"
             style="@style/UiKit.Components.Button.Large.Text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"

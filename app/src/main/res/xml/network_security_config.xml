@@ -7,5 +7,8 @@
     </debug-overrides>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">35.234.120.240:9090</domain>
+
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">192.168.0.108</domain>
     </domain-config>
 </network-security-config>

@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,7 +13,9 @@ import org.p2p.wallet.auth.common.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
+import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewOnboardingFragment :
@@ -54,6 +57,9 @@ class NewOnboardingFragment :
             onboardingCreateWalletButton.setOnClickListener {
                 presenter.onSignUpButtonClicked()
             }
+            onboardingRestoreWalletButton.setOnClickListener {
+                replaceFragment(SecretKeyFragment.create())
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -65,8 +71,35 @@ class NewOnboardingFragment :
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
 
+    override fun showError(error: String) {
+        setLoadingState(isScreenLoading = false)
+        showErrorSnackBar(error)
+    }
+
+    override fun onSameTokenError() {
+        setLoadingState(isScreenLoading = false)
+        //TODO
+    }
+
+    override fun onSuccessfulSignUp() {
+        // TODO PWN-4268 move user to phone number screen
+        setLoadingState(isScreenLoading = false)
+        Toast.makeText(requireContext(), "You are successfully signed in!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setLoadingState(isScreenLoading: Boolean) {
+        with(binding) {
+            onboardingCreateWalletButton.apply {
+                isLoading = isScreenLoading
+                isEnabled = !isScreenLoading
+            }
+            onboardingCreateWalletButton.isEnabled = !isScreenLoading
+        }
+    }
+
     private fun handleSignResult(result: ActivityResult) {
         signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
+            setLoadingState(isScreenLoading = true)
             presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
     }
