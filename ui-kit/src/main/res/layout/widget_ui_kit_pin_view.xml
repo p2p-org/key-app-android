@@ -28,22 +28,10 @@
 
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/messageTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
-        android:textColor="@color/rose"
-        android:visibility="invisible"
-        tools:text="PIN-codes do not match"
-        tools:visibility="visible" />
-
     <org.p2p.uikit.organisms.pin.UiKitNumberKeyboardView
         android:id="@+id/keyboardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="16dp" />
+
 </merge>

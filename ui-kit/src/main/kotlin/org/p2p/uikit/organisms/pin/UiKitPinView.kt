@@ -52,39 +52,24 @@ class UiKitPinView @JvmOverloads constructor(
         }
     }
 
-    fun startErrorAnimation(errorText: String) {
-        with(binding) {
-            messageTextView.setTextColor(context.getColor(R.color.rose))
-            messageTextView.text = errorText
-            messageTextView.isVisible = true
-            pinCodeView.startErrorAnimation {
-                messageTextView.isInvisible = true
-                clearPin()
-            }
+    fun startErrorAnimation() {
+        binding.pinCodeView.startErrorAnimation {
+            clearPin()
         }
     }
 
-    fun startSuccessAnimation(text: String, onAnimationFinished: () -> Unit) {
-        with(binding) {
-            messageTextView.setTextColor(context.getColor(R.color.mint))
-            messageTextView.text = text
-            messageTextView.isVisible = true
-            pinCodeView.startSuccessAnimation {
-                messageTextView.isVisible = true
-                clearPin()
-                onAnimationFinished()
-            }
+    fun startSuccessAnimation(onAnimationFinished: () -> Unit) {
+        binding.pinCodeView.startSuccessAnimation {
+            clearPin()
+            onAnimationFinished()
         }
     }
 
-    fun showLockedState(message: String) {
+    fun showLockedState() {
         with(binding) {
             keyboardView.isEnabled = false
             pinCodeView.isVisible = false
             progressBar.isVisible = false
-
-            messageTextView.isVisible = true
-            messageTextView.text = message
         }
     }
 
@@ -93,9 +78,6 @@ class UiKitPinView @JvmOverloads constructor(
             keyboardView.isEnabled = true
             pinCodeView.isVisible = true
             progressBar.isVisible = true
-
-            messageTextView.isVisible = false
-            messageTextView.text = emptyString()
         }
     }
 
