@@ -130,7 +130,8 @@
             android:id="@+id/additionalRightPinCodeButton"
             android:layout_width="@dimen/ui_kit_number_keyboard_button_size"
             android:layout_height="@dimen/ui_kit_number_keyboard_button_size"
-            app:keyboard_button_image="@drawable/ic_backspace" />
+            app:keyboard_button_image="@drawable/ic_new_backspace"
+            app:keyboard_button_text="" />
 
     </LinearLayout>
 

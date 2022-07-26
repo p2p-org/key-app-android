@@ -38,7 +38,7 @@ class UiKitPinView @JvmOverloads constructor(
         binding.pinCodeView.setPinLength(PIN_CODE_LENGTH)
 
         binding.keyboardView.setLeftButtonVisible(false)
-        binding.keyboardView.setRightButtonDrawable(R.drawable.ic_backspace)
+        binding.keyboardView.setRightButtonDrawable(R.drawable.ic_new_backspace)
 
         binding.keyboardView.onNumberClicked = { number -> onNumberEntered(number) }
 
