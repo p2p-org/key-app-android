@@ -37,7 +37,6 @@ class ContinueOnboardingFragment : BaseFragment(R.layout.fragment_continue_onboa
                 replaceFragment(SecretKeyFragment.create())
             }
             onboardingContinueStartingButton.setOnClickListener {
-                // TODO PWN-4268 make real implementation and move user to phone number screen
                 popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
             }
         }
