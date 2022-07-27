@@ -13,6 +13,7 @@
     <string name="onboarding_continue_title">Let’s continue</string>
     <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nIt\’s only a phone number needed to create a new wallet</string>
     <string name="onboarding_continue_button_text">Continue</string>
+    <string name="onboarding_continue_starting_button_text">Starting screen</string>
 
     <!--Onboarding - WalletFound-->
     <string name="wallet_found_title">A wallet found</string>

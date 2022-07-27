@@ -74,11 +74,12 @@
             app:iconTint="@color/night" />
 
         <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/onboardingContinueStartingButton"
             style="@style/UiKit.Components.Button.Large.Text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="20dp"
-            android:text="Starting screen"
+            android:text="@string/onboarding_continue_starting_button_text"
             android:textColor="@color/lime" />
 
     </LinearLayout>

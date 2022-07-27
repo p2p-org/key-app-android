@@ -2,14 +2,16 @@ package org.p2p.wallet.auth.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.common.WalletWeb3AuthManager
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentContinueOnboardingBinding
+import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class ContinueOnboardingFragment : BaseFragment(R.layout.fragment_continue_onboarding) {
@@ -32,7 +34,11 @@ class ContinueOnboardingFragment : BaseFragment(R.layout.fragment_continue_onboa
             )
             onboardingContinueButton.setOnClickListener {
                 // TODO PWN-4268 make real implementation and move user to phone number screen
-                Toast.makeText(context, "In development right now", Toast.LENGTH_SHORT).show()
+                replaceFragment(SecretKeyFragment.create())
+            }
+            onboardingContinueStartingButton.setOnClickListener {
+                // TODO PWN-4268 make real implementation and move user to phone number screen
+                popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
             }
         }
 
