@@ -25,6 +25,8 @@ import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
+import org.p2p.wallet.auth.ui.pin.select.TouchIdContract
+import org.p2p.wallet.auth.ui.pin.select.TouchIdPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
@@ -54,7 +56,6 @@ object AuthModule {
         factory { FileRepository(get(), get()) }
         factory { SecurityKeyPresenter(get(), get(), get(), get()) } bind SecurityKeyContract.Presenter::class
         factory { CreatePinPresenter(get(), get(), get(), get(), get()) } bind CreatePinContract.Presenter::class
-        factory { NewCreatePinPresenter(get(), get(), get(), get(), get()) } bind NewCreatePinContract.Presenter::class
         factory { SignInPinPresenter(get(), get(), get(), get(), get()) } bind SignInPinContract.Presenter::class
         factory { SplashPresenter(get()) } bind SplashContract.Presenter::class
         factory { VerifySecurityKeyPresenter(get(), get(), get()) } bind VerifySecurityKeyContract.Presenter::class
@@ -76,5 +77,7 @@ object AuthModule {
         factory { WalletWeb3AuthManager(get(), get(), get(), get()) }
 
         factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
+        factory { NewCreatePinPresenter(get(), get()) } bind NewCreatePinContract.Presenter::class
+        factory { TouchIdPresenter(get(), get(), get(), get()) } bind TouchIdContract.Presenter::class
     }
 }
