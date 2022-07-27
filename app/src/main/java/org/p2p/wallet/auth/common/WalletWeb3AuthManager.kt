@@ -93,7 +93,7 @@ class WalletWeb3AuthManager(
         )
     }
 
-    fun saveDeviceShare(deviceShare: String) {
+    private fun saveDeviceShare(deviceShare: String) {
         secureStorage.saveString("${KEY_DEVICE_SHARE}_$lastUserId", deviceShare)
     }
 
@@ -103,7 +103,7 @@ class WalletWeb3AuthManager(
 
     private fun getDeviceShare(): String = secureStorage.getString("${KEY_DEVICE_SHARE}_$lastUserId").orEmpty()
 
-    inner class AndroidCommunicationChannel(private val context: Context) {
+    private inner class AndroidCommunicationChannel(private val context: Context) {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
             saveDeviceShare(msg)

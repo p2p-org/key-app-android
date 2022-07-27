@@ -9,4 +9,13 @@ interface GatewayServiceRepository {
         etheriumPublicKey: String,
         phoneNumber: String
     ): RegisterWalletResponse
+
+    suspend fun confirmRegisterWallet(
+        userPublicKey: String,
+        userPrivateKey: String,
+        etheriumPublicKey: String,
+        thirdShare: String,
+        phoneNumber: String,
+        otpConfirmationCode: String
+    )
 }

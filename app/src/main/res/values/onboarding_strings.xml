@@ -8,4 +8,12 @@
     <!--Onboarding Slides-->
     <string name="onboarding_slide_1_title">Welcome \nto Key App</string>
     <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
+
+    <!-- NewSmsInput -->
+    <string name="onboarding_sms_input_wrong_sms">Incorrect SMS code \uD83D\uDE2C</string>
+    <string name="onboarding_sms_input_resend_sms">Resend SMS</string>
+    <string name="onboarding_sms_input_before_resend_sms">Resend after %1$d sec.</string>
+    <string name="onboarding_sms_input_request_overflow">Too many tries, sms validation blocked for %1$d sec.</string>
+    <string name="onboarding_sms_input_title">The code from SMS</string>
+    <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
 </resources>

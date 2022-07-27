@@ -4,6 +4,10 @@ import org.near.borshj.Borsh
 import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.solanaj.utils.crypto.decodeFromBase58
 import org.p2p.solanaj.utils.crypto.encodeToBase58
+import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
+import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethods
+import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
+import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceErrorResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceResponse
@@ -13,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-private const val PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ss.n x"
+private const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ss.n x"
 
 class GatewayServiceMapper {
     private class RegisterWalletSignatureStruct(
@@ -21,6 +25,14 @@ class GatewayServiceMapper {
         val etheriumId: String,
         val phone: String,
         val channelType: String
+    ) : Borsh
+
+    private class ConfirmRegisterWalletSignatureStruct(
+        val clientId: String,
+        val etheriumId: String,
+        val encryptedShare: String,
+        val phone: String,
+        val phoneConfirmationCode: String
     ) : Borsh
 
     @Throws(GatewayServiceError::class)
@@ -42,6 +54,7 @@ class GatewayServiceMapper {
             -32056 -> GatewayServiceError.SolanaPublicKeyAlreadyExists(error.errorCode, error.errorMessage)
             -32057 -> GatewayServiceError.UserAlreadyExists(error.errorCode, error.errorMessage)
             -32060 -> GatewayServiceError.PhoneNumberNotExists(error.errorCode, error.errorMessage)
+            -32061 -> GatewayServiceError.IncorrectOtpCode(error.errorCode, error.errorMessage)
             else -> {
                 val unknownCodeError = GatewayServiceError.UnknownFailure(error.errorCode, error.errorMessage)
                 Timber.tag("GatewayServiceMapper").e(unknownCodeError)
@@ -49,43 +62,70 @@ class GatewayServiceMapper {
             }
         }
 
-    fun toNetwork(
+    fun toRegisterWalletNetwork(
         userPublicKey: String,
         userPrivateKey: String,
         etheriumPublicKey: String,
         phoneNumber: String,
-        channel: RegisterWalletRequest.OtpMethod
-    ): RegisterWalletRequest {
-        return RegisterWalletRequest.Params(
-            clientPublicKeyB58 = userPublicKey,
+        channel: OtpMethod
+    ): GatewayServiceRequest<RegisterWalletRequest> {
+        return RegisterWalletRequest(
+            clientSolanaPublicKeyB58 = userPublicKey,
             etheriumPublicKeyB58 = etheriumPublicKey,
             userPhone = phoneNumber,
             appHash = Constants.APP_HASH,
             channel = channel,
-            requestSignature = createSignatureField(
+            requestSignature = createSignatureFieldB58(
                 userPublicKey = userPublicKey,
                 solanaPrivateKey = userPrivateKey,
-                etheriumPublicKey = etheriumPublicKey,
-                phoneNumber = phoneNumber,
-                channel = channel.backendName
+                RegisterWalletSignatureStruct(
+                    clientId = userPublicKey,
+                    etheriumId = userPrivateKey,
+                    phone = phoneNumber,
+                    channelType = channel.backendName
+                )
             ),
             timestamp = createTimestampField(),
         )
-            .let { RegisterWalletRequest(it) }
+            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethods.REGISTER_WALLET) }
     }
 
-    @Throws(GatewayServiceError.RequestCreationFailure::class)
-    private fun createSignatureField(
+    fun toConfirmRegisterWalletNetwork(
         userPublicKey: String,
-        solanaPrivateKey: String,
+        userPrivateKey: String,
         etheriumPublicKey: String,
         phoneNumber: String,
-        channel: String
+        otpConfirmationCode: String
+    ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
+        return ConfirmRegisterWalletRequest(
+            clientSolanaPublicKeyB58 = userPublicKey,
+            etheriumPublicKeyB58 = etheriumPublicKey,
+            requestSignature = createSignatureFieldB58(
+                userPublicKey = userPublicKey,
+                solanaPrivateKey = userPrivateKey,
+                ConfirmRegisterWalletSignatureStruct(
+                    clientId = userPublicKey,
+                    etheriumId = userPrivateKey,
+                    phone = phoneNumber,
+                    encryptedShare = TODO(),
+                    phoneConfirmationCode = otpConfirmationCode
+                )
+            ),
+            timestamp = createTimestampField(),
+            encryptedOtpShare = TODO(),
+            encryptedPayloadB64 = TODO(),
+            otpConfirmationCode = otpConfirmationCode
+        )
+            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethods.CONFIRM_REGISTER_WALLET) }
+    }
+
+    private fun createSignatureFieldB58(
+        userPublicKey: String,
+        solanaPrivateKey: String,
+        structToSerialize: Borsh
     ): String {
         try {
-            val signatureStructBytes = Borsh.serialize(
-                RegisterWalletSignatureStruct(userPublicKey, etheriumPublicKey.lowercase(), phoneNumber, channel)
-            )
+            val signatureStructBytes = Borsh.serialize(structToSerialize)
             val userPublicKeyBytes = userPublicKey.decodeFromBase58()
             val solanaPrivateKeyBytes = solanaPrivateKey.decodeFromBase58()
             return TweetNaclFast.Signature(userPublicKeyBytes.copyOf(), solanaPrivateKeyBytes.copyOf())
@@ -101,6 +141,6 @@ class GatewayServiceMapper {
     }
 
     private fun createTimestampField(): String {
-        return SimpleDateFormat(PATTERN_GATEWAY_SERVICE, Locale.getDefault()).format(Date())
+        return SimpleDateFormat(TIMESTAMP_PATTERN_GATEWAY_SERVICE, Locale.getDefault()).format(Date())
     }
 }

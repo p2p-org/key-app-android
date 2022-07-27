@@ -11,6 +11,9 @@ class DebugHttpLoggingLogger(
     private val logTag: String
 ) : HttpLoggingInterceptor.Logger {
     override fun log(message: String) {
+        if (logTag == "SolanaApi") {
+            return
+        }
         if (!message.startsWith('{') && !message.startsWith('[')) {
             Timber.tag(logTag).d(message)
             return
