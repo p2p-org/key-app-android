@@ -54,6 +54,11 @@ sealed class GatewayServiceError : Throwable() {
         override val message: String
     ) : GatewayServiceError()
 
+    class IncorrectOtpCode(
+        override val code: Int,
+        override val message: String
+    ) : GatewayServiceError()
+
     class UnknownFailure(
         override val code: Int,
         override val message: String

@@ -108,7 +108,7 @@ class WalletWeb3AuthManager(
         )
     }
 
-    fun saveDeviceShare(deviceShare: String) {
+    private fun saveDeviceShare(deviceShare: String) {
         if (deviceShareStorage.saveDeviceShare(deviceShare, lastUserId)) {
             handlers.forEach { handler ->
                 handler.onSuccessSignUp()
@@ -139,7 +139,7 @@ class WalletWeb3AuthManager(
         }
     }
 
-    inner class AndroidCommunicationChannel(private val context: Context) {
+    private inner class AndroidCommunicationChannel(private val context: Context) {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
             saveDeviceShare(msg)

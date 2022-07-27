@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.gateway.api.request
 
 import com.google.gson.annotations.SerializedName
 
-data class RegisterWalletRequest(
+data class ConfirmRegisterWalletRequest(
     /**
      * Solana pubkey base58 encoded
      */
@@ -10,15 +10,15 @@ data class RegisterWalletRequest(
     val clientSolanaPublicKeyB58: String,
     @SerializedName("ethereum_id")
     val etheriumPublicKeyB58: String,
-    /**
-     * no “+”, E.164 format
-     */
-    @SerializedName("phone")
-    val userPhone: String,
-    @SerializedName("app_hash")
-    val appHash: String,
-    @SerializedName("channel")
-    val channel: OtpMethod,
+
+    @SerializedName("encrypted_share")
+    val encryptedOtpShare: String,
+
+    @SerializedName("encrypted_payload")
+    val encryptedPayloadB64: String,
+
+    @SerializedName("phone_confirmation_code")
+    val otpConfirmationCode: String,
     @SerializedName("signature")
     val requestSignature: String,
     /**
@@ -27,11 +27,3 @@ data class RegisterWalletRequest(
     @SerializedName("timestamp_device")
     val timestamp: String
 )
-
-enum class OtpMethod(val backendName: String) {
-    @SerializedName("sms")
-    SMS("sms"),
-
-    @SerializedName("call")
-    CALL("call")
-}

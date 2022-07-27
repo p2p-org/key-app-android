@@ -5,6 +5,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -23,8 +24,10 @@ import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
+import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsContract
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsPresenter
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
@@ -89,5 +92,9 @@ object AuthModule {
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
         factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class
+
+        factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
+
+        factoryOf(::NewSmsInputPresenter) bind NewAuthSmsInputContract.Presenter::class
     }
 }
