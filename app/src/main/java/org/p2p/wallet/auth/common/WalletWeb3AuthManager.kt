@@ -26,11 +26,14 @@ class WalletWeb3AuthManager(
     private var lastUserId: String? = null
     private var lastIdToken: String? = null
 
+    val userId: String?
+        get() = lastUserId
+
     var flowMode = GoogleAuthFlow.SIGN_IN
 
     private val onboardingWebView: WebView
 
-    var handler: Web3AuthHandler? = null
+    var handlers: MutableList<Web3AuthHandler> = mutableListOf()
 
     init {
         onboardingWebView = WebView(context).apply {
@@ -65,6 +68,14 @@ class WalletWeb3AuthManager(
         }
     }
 
+    fun addHandler(handler: Web3AuthHandler) {
+        handlers.add(handler)
+    }
+
+    fun removeHandler(handler: Web3AuthHandler) {
+        handlers.remove(handler)
+    }
+
     fun detach() {
         onboardingWebView.removeJavascriptInterface(communicationChannel)
     }
@@ -97,10 +108,12 @@ class WalletWeb3AuthManager(
 
     fun saveDeviceShare(deviceShare: String) {
         val share = parseDeviceShare(deviceShare)
-        share?.let {
-            it.userId = lastUserId
-            secureStorage.saveString(KEY_DEVICE_SHARE, gson.toJson(it))
-            handler?.onSuccessSignUp()
+        share?.let { deviceShare ->
+            deviceShare.userId = lastUserId
+            secureStorage.saveString(KEY_DEVICE_SHARE, gson.toJson(deviceShare))
+            handlers.forEach {
+                it.onSuccessSignUp()
+            }
         }
     }
 
@@ -134,7 +147,9 @@ class WalletWeb3AuthManager(
         fun handleError(error: String) {
             try {
                 val web3AuthError = gson.fromJson(error, Web3AuthError::class.java)
-                handler?.handleError(web3AuthError)
+                handlers.forEach {
+                    it.handleError(web3AuthError)
+                }
             } catch (commonError: Error) {
                 Timber.w("error on Web3Auth: $error, $commonError")
             }

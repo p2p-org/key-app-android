@@ -25,6 +25,8 @@ import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
+import org.p2p.wallet.auth.ui.restore.WalletFoundContract
+import org.p2p.wallet.auth.ui.restore.WalletFoundPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
@@ -69,9 +71,10 @@ object AuthModule {
     }
 
     private fun Module.onboardingModule() {
-        factory { GoogleSignInHelper() }
-        factory { WalletWeb3AuthManager(get(), get(), get(), get()) }
+        single { GoogleSignInHelper() }
+        single { WalletWeb3AuthManager(get(), get(), get(), get()) }
 
         factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
+        factory { WalletFoundPresenter(get()) } bind WalletFoundContract.Presenter::class
     }
 }

@@ -13,4 +13,10 @@
     <string name="onboarding_continue_title">Let’s continue</string>
     <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nIt\’s only a phone number needed to create a new wallet</string>
     <string name="onboarding_continue_button_text">Continue</string>
+
+    <!--Onboarding - WalletFound-->
+    <string name="wallet_found_title">A wallet found</string>
+    <string name="wallet_found_subtitle">Looks like you already have \na wallet with \n%1s</string>
+    <string name="wallet_found_account_button_text">Use another account</string>
+    <string name="wallet_found_restore_button_text">Continue restoring this wallet</string>
 </resources>
