@@ -14,6 +14,7 @@ import org.p2p.wallet.auth.ui.restore.WalletFoundFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
+import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -57,6 +58,11 @@ class NewOnboardingFragment :
             onboardingSliderDotsIndicator.attachTo(onboardingSliderPager)
             onboardingCreateWalletButton.setOnClickListener {
                 presenter.onSignUpButtonClicked()
+            }
+            onboardingCreateWalletButton.setOnLongClickListener {
+                // TODO remove after all onboarding testing completed!
+                replaceFragment(DebugSettingsFragment.create())
+                true
             }
             onboardingRestoreWalletButton.setOnClickListener {
                 replaceFragment(SecretKeyFragment.create())
