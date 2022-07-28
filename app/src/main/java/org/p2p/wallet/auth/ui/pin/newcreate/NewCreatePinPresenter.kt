@@ -31,9 +31,11 @@ class NewCreatePinPresenter(
             return
         }
 
-        view?.lockPinKeyboard()
-
-        view?.onPinCreated(createdPin)
+        view?.apply {
+            lockPinKeyboard()
+            onPinCreated(createdPin)
+            vibrate(VIBRATE_DURATION)
+        }
     }
 
     override fun clearUserData() {

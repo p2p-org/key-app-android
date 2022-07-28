@@ -18,6 +18,8 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
+private const val VIBRATE_DURATION = 10L
+
 class NewCreatePinFragment :
     BaseMvpFragment<NewCreatePinContract.View, NewCreatePinContract.Presenter>(R.layout.fragment_new_create_pin),
     NewCreatePinContract.View {
@@ -35,9 +37,8 @@ class NewCreatePinFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { presenter.clearUserData() }
-            pinView.onPinCompleted = {
-                presenter.setPinCode(it)
-            }
+            pinView.onPinCompleted = { presenter.setPinCode(it) }
+            pinView.onKeyboardClicked = { vibrate(VIBRATE_DURATION) }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

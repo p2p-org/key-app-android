@@ -25,6 +25,7 @@ class UiKitPinView @JvmOverloads constructor(
     var onPinCompleted: ((String) -> Unit)? = null
     var onBiometricClicked: (() -> Unit)? = null
     var onResetClicked: (() -> Unit)? = null
+    var onKeyboardClicked: (() -> Unit)? = null
 
     private var pinCode: String = emptyString()
 
@@ -40,13 +41,17 @@ class UiKitPinView @JvmOverloads constructor(
         binding.keyboardView.setLeftButtonVisible(false)
         binding.keyboardView.setRightButtonDrawable(R.drawable.ic_new_backspace)
 
-        binding.keyboardView.onNumberClicked = { number -> onNumberEntered(number) }
+        binding.keyboardView.onNumberClicked = { number ->
+            onNumberEntered(number)
+            onKeyboardClicked?.invoke()
+        }
 
         binding.keyboardView.onLeftButtonClicked = {
             onBiometricClicked?.invoke()
         }
 
         binding.keyboardView.onRightButtonClicked = {
+            onKeyboardClicked?.invoke()
             pinCode = pinCode.dropLast(1)
             updateDots()
         }
