@@ -49,14 +49,16 @@
                 style="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:autofillHints="smsOTPCode"
                 android:digits="1234567890"
+                android:importantForAutofill="yes"
                 android:includeFontPadding="false"
                 android:padding="6dp"
                 android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/chevronImage"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:hint="000000" />
+                tools:hint="000 000" />
 
             <ImageView
                 android:id="@+id/rightIconImage"
