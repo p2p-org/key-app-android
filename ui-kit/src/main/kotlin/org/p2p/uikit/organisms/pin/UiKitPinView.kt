@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.os.postDelayed
 import androidx.core.view.isInvisible
@@ -12,6 +11,7 @@ import androidx.core.view.isVisible
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetUiKitPinViewBinding
 import org.p2p.uikit.utils.emptyString
+import org.p2p.uikit.utils.inflateViewBinding
 
 private const val PIN_CODE_LENGTH = 6
 private const val DELAY_MS = 50L
@@ -30,7 +30,7 @@ class UiKitPinView @JvmOverloads constructor(
 
     private val pinHandler = Handler(Looper.getMainLooper())
 
-    private val binding = WidgetUiKitPinViewBinding.inflate(LayoutInflater.from(context), this)
+    private val binding = inflateViewBinding<WidgetUiKitPinViewBinding>()
 
     init {
         orientation = VERTICAL

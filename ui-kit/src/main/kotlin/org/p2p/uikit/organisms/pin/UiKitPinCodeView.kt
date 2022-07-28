@@ -15,6 +15,8 @@ import org.p2p.uikit.R
 
 private const val ANIMATION_DURATION = 400L
 private const val DOT_DELTA = 12
+private const val X_DELTA = 4f
+private const val Y_DELTA = 0f
 
 class UiKitPinCodeView @JvmOverloads constructor(
     context: Context,
@@ -30,10 +32,8 @@ class UiKitPinCodeView @JvmOverloads constructor(
         private set
 
     init {
-        attrs.let {
-            emptyDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_new_dot_empty)
-            fullDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_new_dot_full)
-        }
+        emptyDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_new_dot_empty)
+        fullDotDrawableId = ContextCompat.getDrawable(context, R.drawable.ic_new_dot_full)
         gravity = Gravity.CENTER
     }
 
@@ -48,45 +48,47 @@ class UiKitPinCodeView @JvmOverloads constructor(
         }
     }
 
-    @SuppressWarnings("MagicNumber")
     fun startErrorAnimation(onAnimationFinished: () -> Unit) {
-        val animation = TranslateAnimation(-4f, 4f, 0f, 0f)
-        animation.duration = ANIMATION_DURATION
-        animation.repeatMode = Animation.REVERSE
-        animation.repeatCount = 2
-        animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationEnd(animation: Animation?) {
-                setDotsColor(null)
-                onAnimationFinished()
-            }
+        TranslateAnimation(-X_DELTA, X_DELTA, Y_DELTA, Y_DELTA).apply {
+            duration = ANIMATION_DURATION
+            repeatMode = Animation.REVERSE
+            repeatCount = 2
+            setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationEnd(animation: Animation?) {
+                    setDotsColor(null)
+                    onAnimationFinished()
+                }
 
-            override fun onAnimationRepeat(animation: Animation?) {}
+                override fun onAnimationRepeat(animation: Animation?) = Unit
 
-            override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(R.color.rose)
-            }
-        })
-        startAnimation(animation)
+                override fun onAnimationStart(animation: Animation?) {
+                    setDotsColor(R.color.rose)
+                }
+            })
+
+            startAnimation(this)
+        }
     }
 
     fun startSuccessAnimation(onAnimationFinished: () -> Unit) {
-        val animation = TranslateAnimation(0f, 0f, 0f, 0f)
-        animation.duration = 1000L
-        animation.repeatMode = Animation.INFINITE
-        animation.repeatCount = 2
-        animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-                setDotsColor(R.color.mint)
-            }
+        TranslateAnimation(0f, 0f, 0f, 0f).apply {
+            duration = 1000L
+            repeatMode = Animation.INFINITE
+            repeatCount = 2
+            setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
+                    setDotsColor(R.color.mint)
+                }
 
-            override fun onAnimationEnd(animation: Animation?) {
-                setDotsColor(null)
-                onAnimationFinished()
-            }
+                override fun onAnimationEnd(animation: Animation?) {
+                    setDotsColor(null)
+                    onAnimationFinished()
+                }
 
-            override fun onAnimationRepeat(animation: Animation?) {}
-        })
-        startAnimation(animation)
+                override fun onAnimationRepeat(animation: Animation?) = Unit
+            })
+            startAnimation(this)
+        }
     }
 
     fun setPinLength(pinLength: Int) {

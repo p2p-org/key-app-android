@@ -4,13 +4,15 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
+import androidx.core.content.res.use
+import androidx.core.view.isVisible
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetUiKitNumberButtonBinding
+import org.p2p.uikit.utils.getDrawable
+import org.p2p.uikit.utils.inflateViewBinding
 
 class UiKitNumberKeyboardButtonView @JvmOverloads constructor(
     context: Context,
@@ -18,12 +20,10 @@ class UiKitNumberKeyboardButtonView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val binding = WidgetUiKitNumberButtonBinding.inflate(LayoutInflater.from(context), this)
+    private val binding = inflateViewBinding<WidgetUiKitNumberButtonBinding>()
 
     init {
-        attrs?.let {
-            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.UiKitNumberKeyboardButtonView)
-
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitNumberKeyboardButtonView).use { typedArray ->
             val text = typedArray.getString(R.styleable.UiKitNumberKeyboardButtonView_keyboard_button_text)
             if (text != null) {
                 binding.keyboardButtonTextView.text = text
@@ -34,8 +34,6 @@ class UiKitNumberKeyboardButtonView @JvmOverloads constructor(
                 binding.keyboardButtonImageView.setImageDrawable(image)
                 binding.keyboardButtonImageView.visibility = View.VISIBLE
             }
-
-            typedArray.recycle()
         }
 
         setBackgroundResource(R.drawable.bg_new_keyboard_selector)
@@ -45,11 +43,11 @@ class UiKitNumberKeyboardButtonView @JvmOverloads constructor(
 
     fun setIcon(@DrawableRes drawableResId: Int) {
         binding.keyboardButtonImageView.setImageResource(drawableResId)
-        binding.keyboardButtonImageView.visibility = View.VISIBLE
+        binding.keyboardButtonImageView.isVisible = true
     }
 
     fun setPressedColor(color: Int) {
-        val drawable = ContextCompat.getDrawable(context, R.drawable.bg_new_keyboard_pressed) as RippleDrawable
+        val drawable = binding.getDrawable(R.drawable.bg_new_keyboard_pressed) as RippleDrawable
         drawable.setColor(ColorStateList.valueOf(color))
         background = drawable
     }

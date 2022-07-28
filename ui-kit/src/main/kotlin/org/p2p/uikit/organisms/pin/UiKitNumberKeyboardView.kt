@@ -2,13 +2,13 @@ package org.p2p.uikit.organisms.pin
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.core.view.isInvisible
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetUiKitKeyboardBinding
+import org.p2p.uikit.utils.inflateViewBinding
 
 class UiKitNumberKeyboardView @JvmOverloads constructor(
     context: Context,
@@ -22,7 +22,7 @@ class UiKitNumberKeyboardView @JvmOverloads constructor(
 
     private var buttons = mutableListOf<UiKitNumberKeyboardButtonView>()
 
-    private val binding = WidgetUiKitKeyboardBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding = inflateViewBinding<WidgetUiKitKeyboardBinding>()
 
     init {
         initKeyboardButtons()
@@ -67,7 +67,7 @@ class UiKitNumberKeyboardView @JvmOverloads constructor(
                     R.id.sevenPinCodeButton -> '7'
                     R.id.eightPinCodeButton -> '8'
                     R.id.ninePinCodeButton -> '9'
-                    else -> throw IllegalArgumentException("ID does not reference a View inside this View")
+                    else -> throw IllegalArgumentException("${view.id} does not reference a View inside this View")
                 }
 
                 onNumberClicked?.invoke(char)

@@ -56,7 +56,7 @@ class NewCreatePinFragment :
     override fun showCreation() {
         with(binding) {
             pinView.isEnabled = true
-            textViewTitle.text = getString(R.string.auth_create_wallet_set_up_your_pin)
+            textViewTitle.setText(R.string.auth_create_wallet_set_up_your_pin)
             pinView.clearPin()
         }
         analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.PIN_CREATE)

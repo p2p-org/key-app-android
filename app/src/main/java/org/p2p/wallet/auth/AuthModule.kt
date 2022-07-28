@@ -3,6 +3,7 @@ package org.p2p.wallet.auth
 import androidx.biometric.BiometricManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -76,8 +77,8 @@ object AuthModule {
         factory { GoogleSignInHelper() }
         factory { WalletWeb3AuthManager(get(), get(), get(), get()) }
 
-        factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
-        factory { NewCreatePinPresenter(get(), get()) } bind NewCreatePinContract.Presenter::class
-        factory { TouchIdPresenter(get(), get(), get(), get()) } bind TouchIdContract.Presenter::class
+        factoryOf(::NewOnboardingPresenter) bind NewOnboardingContract.Presenter::class
+        factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
+        factoryOf(::TouchIdPresenter) bind TouchIdContract.Presenter::class
     }
 }
