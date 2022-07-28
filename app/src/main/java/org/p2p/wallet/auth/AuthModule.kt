@@ -22,12 +22,12 @@ import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
+import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsContract
+import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsPresenter
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
-import org.p2p.wallet.auth.ui.pin.select.TouchIdContract
-import org.p2p.wallet.auth.ui.pin.select.TouchIdPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
@@ -79,6 +79,6 @@ object AuthModule {
 
         factoryOf(::NewOnboardingPresenter) bind NewOnboardingContract.Presenter::class
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
-        factoryOf(::TouchIdPresenter) bind TouchIdContract.Presenter::class
+        factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class
     }
 }

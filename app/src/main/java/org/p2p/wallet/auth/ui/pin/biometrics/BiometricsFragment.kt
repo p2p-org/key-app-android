@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.ui.pin.select
+package org.p2p.wallet.auth.ui.pin.biometrics
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentTouchIdBinding
+import org.p2p.wallet.databinding.FragmentBiometricsBinding
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -14,21 +14,21 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import javax.crypto.Cipher
 
-class TouchIdFragment :
-    BaseMvpFragment<TouchIdContract.View, TouchIdContract.Presenter>(R.layout.fragment_touch_id),
-    TouchIdContract.View {
+class BiometricsFragment :
+    BaseMvpFragment<BiometricsContract.View, BiometricsContract.Presenter>(R.layout.fragment_biometrics),
+    BiometricsContract.View {
 
     companion object {
         private const val ARG_PIN_CODE = "ARG_PIN_CODE"
 
-        fun create(pinCode: String) = TouchIdFragment().withArgs(
+        fun create(pinCode: String) = BiometricsFragment().withArgs(
             ARG_PIN_CODE to pinCode
         )
     }
 
-    override val presenter: TouchIdContract.Presenter by inject()
+    override val presenter: BiometricsContract.Presenter by inject()
 
-    private val binding: FragmentTouchIdBinding by viewBinding()
+    private val binding: FragmentBiometricsBinding by viewBinding()
     private val pinCode: String by args(ARG_PIN_CODE)
 
     private val biometricWrapper by lazy {

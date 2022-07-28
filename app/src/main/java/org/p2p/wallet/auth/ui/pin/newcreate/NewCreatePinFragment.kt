@@ -6,7 +6,7 @@ import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.pin.select.TouchIdFragment
+import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -71,7 +71,7 @@ class NewCreatePinFragment :
     }
 
     override fun onPinCreated(pinCode: String) {
-        val fragment = TouchIdFragment.create(pinCode)
+        val fragment = BiometricsFragment.create(pinCode)
         binding.pinView.onSuccessPin()
         binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_success) {
             replaceFragment(fragment)

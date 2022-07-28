@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.ui.pin.select
+package org.p2p.wallet.auth.ui.pin.biometrics
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
@@ -11,12 +11,12 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import javax.crypto.Cipher
 
-class TouchIdPresenter(
+class BiometricsPresenter(
     private val analytics: OnboardingAnalytics,
     private val authInteractor: AuthInteractor,
     private val adminAnalytics: AdminAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor
-) : BasePresenter<TouchIdContract.View>(), TouchIdContract.Presenter {
+) : BasePresenter<BiometricsContract.View>(), BiometricsContract.Presenter {
 
     override fun enableBiometric() {
         try {

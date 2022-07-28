@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_lime"
-    tools:context=".auth.ui.pin.select.TouchIdFragment">
+    tools:context=".auth.ui.pin.biometrics.BiometricsFragment">
 
     <ImageView
         android:id="@+id/imageViewLock"
