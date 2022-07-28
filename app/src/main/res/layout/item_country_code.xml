@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="64dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:foreground="?selectableItemBackgroundBorderless"
     android:paddingHorizontal="16dp">
 
 
@@ -13,20 +14,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="🇦🇩"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
-        tools:text = "Armenia"
-        app:layout_constraintStart_toEndOf="@id/emojiTextView"
         android:layout_marginTop="12dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintStart_toEndOf="@id/emojiTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Armenia" />
 
 
     <TextView
@@ -34,15 +35,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
-        app:layout_constraintStart_toEndOf="@id/emojiTextView"
-        tools:text = "+374"
         android:textColor="@color/text_mountain"
-        app:layout_constraintTop_toBottomOf="@id/nameTextView"/>
+        app:layout_constraintStart_toEndOf="@id/emojiTextView"
+        app:layout_constraintTop_toBottomOf="@id/nameTextView"
+        tools:text="+374" />
 
     <View
         android:id="@+id/separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/rain"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/checkImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_done"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/night" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth
 
 import androidx.biometric.BiometricManager
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -18,6 +19,11 @@ import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
 import org.p2p.wallet.auth.ui.phone.AddNumberContract
 import org.p2p.wallet.auth.ui.phone.AddNumberPresenter
+import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryPickerContract
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryPickerPresenter
+import org.p2p.wallet.auth.ui.phone.repository.CountryCodeInMemoryRepository
+import org.p2p.wallet.auth.ui.phone.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
@@ -50,7 +56,7 @@ object AuthModule {
         factory { SplashPresenter(get()) } bind SplashContract.Presenter::class
         factory { VerifySecurityKeyPresenter(get(), get(), get()) } bind VerifySecurityKeyContract.Presenter::class
         factory { AuthDonePresenter(get(), get(), get()) } bind AuthDoneContract.Presenter::class
-        factory { AddNumberPresenter() } bind AddNumberContract.Presenter::class
+
         // reserving username
         factory { UsernameInteractor(get(), get(), get(), get()) }
         factory { ReserveUsernamePresenter(get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
@@ -60,5 +66,17 @@ object AuthModule {
             val api = retrofit.create(UsernameApi::class.java)
             UsernameRemoteRepository(api)
         } bind UsernameRepository::class
+
+        // Add Phone Number
+        factory { AddNumberPresenter(get(), get()) } bind AddNumberContract.Presenter::class
+        factory { CountryPickerPresenter(get()) } bind CountryPickerContract.Presenter::class
+        factory { CountryCodeInMemoryRepository(get()) } bind CountryCodeLocalRepository::class
+        factory {
+            CountryCodeInteractor(
+                phoneUtils = PhoneNumberUtil.createInstance(androidContext()),
+                phoneNumberType = PhoneNumberUtil.PhoneNumberType.MOBILE,
+                countryCodeLocalRepository = get()
+            )
+        }
     }
 }

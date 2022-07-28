@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/closeItem"
-        android:title="@string/common_close_account"
-        android:icon="@drawable/ic_question"
+        android:id="@+id/menu_search_country"
+        android:title="@string/search_menu"
+        app:actionLayout = "@layout/item_country_search_bar"
         app:showAsAction="always" />
 </menu>

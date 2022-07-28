@@ -592,5 +592,5 @@
     <string name="receive_token_list_not_found">If there is a token named \"%s\", we don\'t recommend sending it to your Solana address since it will most likely be lost forever.</string>
     <string name="search_menu">Search</string>
     <string name="search_for_a_token">Search for a token</string>
-    <string name="auth_country_code">Country Code</string>
+    <string name="auth_country_name">Country Name</string>
 </resources>

@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/closeItem"
-        android:title="@string/common_close_account"
-        android:icon="@drawable/ic_question"
+        android:id="@+id/menu_search"
+        android:title="@string/auth_done"
         app:showAsAction="always" />
 </menu>
