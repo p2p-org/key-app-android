@@ -9,6 +9,11 @@
     <string name="onboarding_slide_1_title">Welcome \nto Key App</string>
     <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
 
+    <!--Onboarding - Continue-->
+    <string name="onboarding_continue_title">Let’s continue</string>
+    <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nIt\’s only a phone number needed to create a new wallet</string>
+    <string name="onboarding_continue_button_text">Continue</string>
+
     <!-- NewSmsInput -->
     <string name="onboarding_sms_input_wrong_sms">Incorrect SMS code \uD83D\uDE2C</string>
     <string name="onboarding_sms_invalid_sms_button_text">Enter the code to continue</string>

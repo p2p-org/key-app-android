@@ -55,6 +55,7 @@
     <string name="error_rates_error">Cannot get rates</string>
     <string name="error_take_screenshot">Failed to take a screenshot</string>
     <string name="error_insufficient_funds">Insufficient funds</string>
+    <string name="error_invalid_blockhash">Invalid blockhash</string>
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
 

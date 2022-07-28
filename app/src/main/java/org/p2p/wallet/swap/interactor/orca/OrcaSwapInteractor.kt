@@ -11,6 +11,8 @@ import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.data.ErrorCode
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.wallet.swap.model.Slippage
@@ -71,6 +73,16 @@ class OrcaSwapInteractor(
         slippage: Slippage
     ): OrcaSwapResult {
 
+        suspend fun swapByFeeRelayer() = swapByFeeRelayer(
+            sourceAddress = fromToken.publicKey,
+            sourceTokenMint = fromToken.mintAddress,
+            destinationAddress = toToken.publicKey,
+            destinationTokenMint = toToken.mintAddress,
+            poolsPair = bestPoolsPair,
+            amount = amount,
+            slippage = slippage.doubleValue,
+        )
+
         return if (shouldUseNativeSwap(feePayerToken.mintAddress)) {
             swapNative(
                 poolsPair = bestPoolsPair,
@@ -80,15 +92,16 @@ class OrcaSwapInteractor(
                 slippage = slippage.doubleValue,
             )
         } else {
-            swapByFeeRelayer(
-                sourceAddress = fromToken.publicKey,
-                sourceTokenMint = fromToken.mintAddress,
-                destinationAddress = toToken.publicKey,
-                destinationTokenMint = toToken.mintAddress,
-                poolsPair = bestPoolsPair,
-                amount = amount,
-                slippage = slippage.doubleValue,
-            )
+            try {
+                swapByFeeRelayer()
+            } catch (serverError: ServerException) {
+                if (serverError.errorCode == ErrorCode.INVALID_BLOCKHASH) {
+                    // if something not ok with BLOCKHASH we can retry transaction with a new one
+                    swapByFeeRelayer()
+                } else {
+                    throw serverError
+                }
+            }
         }
     }
 

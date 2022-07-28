@@ -7,14 +7,11 @@ import org.p2p.wallet.common.mvp.MvpView
 interface RootContract {
 
     interface View : MvpView {
-        fun navigateToOnboarding()
-        fun navigateToSignIn()
         fun showToast(@StringRes message: Int)
         fun showToast(message: String)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun openRootScreen()
         fun loadPricesAndBids()
     }
 }
