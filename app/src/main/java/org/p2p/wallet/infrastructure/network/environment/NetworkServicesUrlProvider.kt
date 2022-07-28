@@ -1,12 +1,13 @@
 package org.p2p.wallet.infrastructure.network.environment
 
-import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import org.p2p.wallet.R
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
+private const val KEY_TORUS_BASE_URL = "KEY_TORUS_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
@@ -37,5 +38,18 @@ class NetworkServicesUrlProvider(
 
     fun saveNotificationServiceEnvironment(newUrl: String) {
         sharedPreferences.edit { putString(KEY_NOTIFICATION_SERVICE_BASE_URL, newUrl) }
+    }
+
+    fun loadTorusEnvironment(): TorusEnvironment {
+        val url = sharedPreferences.getString(
+            KEY_TORUS_BASE_URL,
+            context.getString(R.string.torusBaseUrl)
+        ).orEmpty()
+
+        return TorusEnvironment(url)
+    }
+
+    fun saveTorusEnvironment(newUrl: String) {
+        sharedPreferences.edit { putString(KEY_TORUS_BASE_URL, newUrl) }
     }
 }

@@ -9,6 +9,7 @@ import android.widget.Toast
 import com.google.gson.Gson
 import org.p2p.wallet.auth.model.DeviceShareKey
 import org.p2p.wallet.auth.model.GoogleAuthFlow
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import timber.log.Timber
 
@@ -21,7 +22,10 @@ class WalletWeb3AuthManager(
     private val gson: Gson,
     private val secureStorage: SecureStorageContract,
     private val sharedPreferences: SharedPreferences,
+    networkServicesUrlProvider: NetworkServicesUrlProvider,
 ) {
+
+    private val torusUrl = networkServicesUrlProvider.loadTorusEnvironment().baseUrl
 
     private var lastUserId: String? = null
     private var lastIdToken: String? = null
@@ -38,6 +42,7 @@ class WalletWeb3AuthManager(
     init {
         onboardingWebView = WebView(context).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                // TODO PWN-4362 remove or make build related after all onboarding testing completed!
                 WebView.setWebContentsDebuggingEnabled(true)
             }
             settings.apply {
@@ -82,7 +87,7 @@ class WalletWeb3AuthManager(
 
     private fun onSignUp(idToken: String) {
         onboardingWebView.evaluateJavascript(
-            "new p2pWeb3Auth.AndroidFacade({ type: 'signup', useNewEth: false }).triggerSilentSignup('$idToken')",
+            generateFacade("signup", "triggerSilentSignup('$idToken')"),
             null
         )
     }
@@ -97,11 +102,11 @@ class WalletWeb3AuthManager(
 
         restoreDeviceShare?.let {
             onboardingWebView.evaluateJavascript(
-                "new p2pWeb3Auth.AndroidFacade({ type: 'signin' }).triggerSignInNoCustom('$idToken', $it)",
+                generateFacade("signin", "triggerSignInNoCustom('$idToken', $it)"),
                 null
             )
         } ?: onboardingWebView.evaluateJavascript(
-            "new p2pWeb3Auth.AndroidFacade({ type: 'signin' }).triggerSignInNoDevice('$idToken')",
+            generateFacade("signin", "triggerSignInNoDevice('$idToken')"),
             null
         )
     }
@@ -125,6 +130,18 @@ class WalletWeb3AuthManager(
 
     fun getDeviceShare(): DeviceShareKey? = secureStorage.getString(KEY_DEVICE_SHARE)?.let { share ->
         parseDeviceShare(share)
+    }
+
+    private fun generateFacade(type: String, method: String): String {
+        val host = torusUrl
+        return StringBuilder("new p2pWeb3Auth.AndroidFacade({").apply {
+            append("type: '$type', ")
+            append("useNewEth: true, ")
+            append("torusLoginType: 'google', ")
+            append("torusEndpoint: '$host:5051', ")
+            append("metadataEndpoint: '$host:2222'")
+            append("}).$method")
+        }.toString()
     }
 
     inner class AndroidCommunicationChannel(private val context: Context) {

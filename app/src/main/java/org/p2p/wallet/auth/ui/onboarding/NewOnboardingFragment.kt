@@ -60,7 +60,7 @@ class NewOnboardingFragment :
                 presenter.onSignUpButtonClicked()
             }
             onboardingCreateWalletButton.setOnLongClickListener {
-                // TODO remove after all onboarding testing completed!
+                // TODO PWN-4362 remove after all onboarding testing completed!
                 replaceFragment(DebugSettingsFragment.create())
                 true
             }

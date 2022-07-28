@@ -72,7 +72,7 @@ object AuthModule {
 
     private fun Module.onboardingModule() {
         single { GoogleSignInHelper() }
-        single { WalletWeb3AuthManager(get(), get(), get(), get()) }
+        single { WalletWeb3AuthManager(get(), get(), get(), get(), get()) }
 
         factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
         factory { WalletFoundPresenter(get()) } bind WalletFoundContract.Presenter::class
