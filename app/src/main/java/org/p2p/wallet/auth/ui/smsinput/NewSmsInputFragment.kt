@@ -59,10 +59,12 @@ class NewSmsInputFragment :
     }
 
     override fun renderSmsFormatValid() {
+        binding.continueButton.setText(R.string.common_continue)
         binding.continueButton.isEnabled = true
     }
 
     override fun renderSmsFormatInvalid() {
+        binding.continueButton.setText(R.string.onboarding_sms_invalid_sms_button_text)
         binding.continueButton.isEnabled = false
     }
 
@@ -99,6 +101,6 @@ class NewSmsInputFragment :
     }
 
     override fun navigateToPinCreate() {
-        // go to pin create
+        // todo PWN-4362: go to pin create
     }
 }
