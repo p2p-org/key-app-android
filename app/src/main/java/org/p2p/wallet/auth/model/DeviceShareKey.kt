@@ -6,6 +6,7 @@ data class DeviceShareKey(
     @SerializedName("reconstructedETH") val reconstructedKey: String,
     @SerializedName("privateSOL") val privateKey: String,
     @SerializedName("deviceShare") val share: DeviceShare?,
+    @SerializedName("userId") var userId: String?,
 ) {
     data class DeviceShare(
         @SerializedName("share") val share: DeviceLocalShare,

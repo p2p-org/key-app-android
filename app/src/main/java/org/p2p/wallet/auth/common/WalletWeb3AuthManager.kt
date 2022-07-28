@@ -34,8 +34,7 @@ class WalletWeb3AuthManager(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WebView.setWebContentsDebuggingEnabled(true)
             }
-            @Suppress("SAFE_CALL_WILL_CHANGE_NULLABILITY") // fix for tests
-            settings?.apply {
+            settings.apply {
                 javaScriptEnabled = true
                 databaseEnabled = true
                 domStorageEnabled = true
@@ -76,8 +75,8 @@ class WalletWeb3AuthManager(
 
     private fun onSignIn(idToken: String) {
         val restoreDeviceShare = if (hasDeviceShare()) {
-            val deviceShareKey = gson.fromJson(getDeviceShare(), DeviceShareKey::class.java)
-            gson.toJson(deviceShareKey.share)
+            val deviceShareKey = getDeviceShare()
+            gson.toJson(deviceShareKey?.share)
         } else {
             null
         }
@@ -94,14 +93,22 @@ class WalletWeb3AuthManager(
     }
 
     fun saveDeviceShare(deviceShare: String) {
-        secureStorage.saveString("${KEY_DEVICE_SHARE}_$lastUserId", deviceShare)
+        val share = parseDeviceShare(deviceShare)
+        share?.let {
+            it.userId = lastUserId
+            secureStorage.saveString(KEY_DEVICE_SHARE, gson.toJson(it))
+        }
     }
 
-    private fun hasDeviceShare(): Boolean = with(sharedPreferences) {
-        contains("${KEY_DEVICE_SHARE}_$lastUserId")
+    private fun parseDeviceShare(deviceShare: String): DeviceShareKey? {
+        return gson.fromJson(deviceShare, DeviceShareKey::class.java)
     }
 
-    private fun getDeviceShare(): String = secureStorage.getString("${KEY_DEVICE_SHARE}_$lastUserId").orEmpty()
+    fun hasDeviceShare(): Boolean = sharedPreferences.contains(KEY_DEVICE_SHARE)
+
+    fun getDeviceShare(): DeviceShareKey? = secureStorage.getString(KEY_DEVICE_SHARE)?.let {
+        parseDeviceShare(it)
+    }
 
     inner class AndroidCommunicationChannel(private val context: Context) {
         @JavascriptInterface
