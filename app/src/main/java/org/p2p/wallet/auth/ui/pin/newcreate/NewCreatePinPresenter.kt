@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -35,13 +34,6 @@ class NewCreatePinPresenter(
             lockPinKeyboard()
             onPinCreated(createdPin)
             vibrate(VIBRATE_DURATION)
-        }
-    }
-
-    override fun clearUserData() {
-        launch {
-            authLogoutInteractor.onUserLogout()
-            view?.navigateBack()
         }
     }
 }

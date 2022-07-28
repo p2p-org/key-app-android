@@ -18,6 +18,5 @@ interface NewCreatePinContract {
 
     interface Presenter : MvpPresenter<View> {
         fun setPinCode(pinCode: String)
-        fun clearUserData()
     }
 }
