@@ -70,25 +70,8 @@ class UiKitPinCodeView @JvmOverloads constructor(
         }
     }
 
-    fun startSuccessAnimation(onAnimationFinished: () -> Unit) {
-        TranslateAnimation(0f, 0f, 0f, 0f).apply {
-            duration = 1000L
-            repeatMode = Animation.INFINITE
-            repeatCount = 2
-            setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation?) {
-                    setDotsColor(R.color.mint)
-                }
-
-                override fun onAnimationEnd(animation: Animation?) {
-                    setDotsColor(null)
-                    onAnimationFinished()
-                }
-
-                override fun onAnimationRepeat(animation: Animation?) = Unit
-            })
-            startAnimation(this)
-        }
+    fun setSuccessDotsColor() {
+        setDotsColor(R.color.mint)
     }
 
     fun setPinLength(pinLength: Int) {

@@ -20,15 +20,23 @@ fun View.showSnackbarShort(snackbarText: CharSequence) {
         .show()
 }
 
-fun View.showSnackbarShort(@StringRes snackbarTextRes: Int) {
-    internalMakeSnackbar(
+fun View.showSnackbarShort(@StringRes snackbarTextRes: Int, onDismissed: () -> Unit = {}): Snackbar {
+    return internalMakeSnackbar(
         this,
         text = getString(snackbarTextRes),
         buttonText = null,
         buttonAction = null,
         duration = Snackbar.LENGTH_SHORT
-    )
-        .show()
+    ).apply {
+        addCallback(object : Snackbar.Callback() {
+            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                super.onDismissed(transientBottomBar, event)
+                onDismissed()
+            }
+        })
+
+        show()
+    }
 }
 
 fun View.showSnackbarShort(

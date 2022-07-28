@@ -58,11 +58,8 @@ class UiKitPinView @JvmOverloads constructor(
         }
     }
 
-    fun startSuccessAnimation(onAnimationFinished: () -> Unit) {
-        binding.pinCodeView.startSuccessAnimation {
-            clearPin()
-            onAnimationFinished()
-        }
+    fun onSuccessPin() {
+        binding.pinCodeView.setSuccessDotsColor()
     }
 
     fun showLockedState() {

@@ -73,8 +73,10 @@ class NewCreatePinFragment :
 
     override fun onPinCreated(pinCode: String) {
         val fragment = TouchIdFragment.create(pinCode)
-        binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_success)
-        binding.pinView.startSuccessAnimation() { replaceFragment(fragment) }
+        binding.pinView.onSuccessPin()
+        binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_success) {
+            replaceFragment(fragment)
+        }
     }
 
     override fun showConfirmationError() {
