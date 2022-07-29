@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.common
 
-import android.app.Activity
 import android.content.Context
+import android.content.IntentSender.SendIntentException
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -10,6 +10,7 @@ import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
+import com.google.android.gms.common.api.ApiException
 import org.p2p.wallet.R
 import timber.log.Timber
 import java.util.UUID
@@ -30,19 +31,25 @@ class GoogleSignInHelper() {
             signOut()
             getSignInIntent(request)
                 .addOnSuccessListener {
-                    googleSignInLauncher.launch(IntentSenderRequest.Builder(it).build())
+                    try {
+                        googleSignInLauncher.launch(IntentSenderRequest.Builder(it).build())
+                    } catch (e: SendIntentException) {
+                        Timber.w(e, "Error on SignInIntent")
+                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+                    }
                 }.addOnFailureListener {
-                    Timber.w(it, "Error on SignInIntent")
+                    Timber.w(it, "Failure on SignInIntent")
                     Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
                 }
         }
     }
 
     fun parseSignInResult(context: Context, result: ActivityResult): SignInCredential? {
-        return if (result.resultCode == Activity.RESULT_OK) {
+        return try {
             getSignInClient(context).getSignInCredentialFromIntent(result.data)
-        } else {
-            Timber.w("Error on getting Credential from result: $result")
+        } catch (ex: ApiException) {
+            Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
+            Timber.w(ex, "Error on getting Credential from result")
             null
         }
     }
