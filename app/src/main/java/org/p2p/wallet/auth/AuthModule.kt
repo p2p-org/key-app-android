@@ -82,9 +82,9 @@ object AuthModule {
         single { WalletWeb3AuthManager(get(), get(), get(), get()) }
 
         factoryOf(::NewOnboardingPresenter) bind NewOnboardingContract.Presenter::class
+        factoryOf(::NewOnboardingPresenter) bind NewOnboardingContract.Presenter::class
+        factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
         factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class
-        factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
-        factory { WalletFoundPresenter(get()) } bind WalletFoundContract.Presenter::class
     }
 }
