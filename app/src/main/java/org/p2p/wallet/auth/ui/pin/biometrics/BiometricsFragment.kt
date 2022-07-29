@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentBiometricsBinding
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -53,6 +53,6 @@ class BiometricsFragment :
     }
 
     override fun onAuthFinished() {
-        popAndReplaceFragment(AuthDoneFragment.create(), inclusive = true)
+        popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 }
