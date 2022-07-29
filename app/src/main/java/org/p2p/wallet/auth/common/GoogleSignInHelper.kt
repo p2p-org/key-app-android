@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.common
 
 import android.app.Activity
 import android.content.Context
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
@@ -30,6 +31,9 @@ class GoogleSignInHelper() {
             getSignInIntent(request)
                 .addOnSuccessListener {
                     googleSignInLauncher.launch(IntentSenderRequest.Builder(it).build())
+                }.addOnFailureListener {
+                    Timber.w(it, "Error on SignInIntent")
+                    Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
                 }
         }
     }
