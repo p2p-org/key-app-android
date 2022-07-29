@@ -62,4 +62,9 @@
         <attr name="rightIcon" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="UiKitNumberKeyboardButtonView">
+        <attr name="keyboard_button_text" format="string" />
+        <attr name="keyboard_button_image" format="integer" />
+    </declare-styleable>
+
 </resources>
