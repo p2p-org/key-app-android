@@ -13,4 +13,17 @@
     <string name="onboarding_continue_title">Let’s continue</string>
     <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nIt\’s only a phone number needed to create a new wallet</string>
     <string name="onboarding_continue_button_text">Continue</string>
+
+    <!-- Onboarding pin / touch id -->
+    <string name="auth_create_wallet_step_3">Step 3 of 3</string>
+    <string name="auth_create_wallet_set_up_your_pin">Set up your PIN code</string>
+    <string name="auth_create_wallet_confirm_your_pin">Confirm your PIN code</string>
+    <string name="auth_create_wallet_pin_code_error">😬 PINs aren’t matching. Check and try again</string>
+    <string name="auth_create_wallet_pin_code_success">✌️ Yeah, you’ve created the PIN to KeyApp</string>
+
+    <string name="auth_create_wallet_use_touch_id_title">Use Touch ID?</string>
+    <string name="auth_create_wallet_use_touch_id_subtitle">For logging in and verifying transactions</string>
+    <string name="auth_create_wallet_use_touch_id">Use Touch ID</string>
+    <string name="auth_create_wallet_dont_use">Don\'t use</string>
+
 </resources>
