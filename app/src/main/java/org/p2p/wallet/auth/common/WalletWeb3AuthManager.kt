@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.common
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -10,27 +9,25 @@ import com.google.gson.Gson
 import org.p2p.wallet.auth.model.DeviceShareKey
 import org.p2p.wallet.auth.model.GoogleAuthFlow
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
-import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 
-private const val KEY_DEVICE_SHARE = "KEY_DEVICE_SHARE"
 private const val indexUri = "file:///android_asset/index.html"
 private const val communicationChannel = "AndroidCommunicationChannel"
 
 class WalletWeb3AuthManager(
     context: Context,
-    private val gson: Gson,
-    private val secureStorage: SecureStorageContract,
-    private val sharedPreferences: SharedPreferences,
     networkServicesUrlProvider: NetworkServicesUrlProvider,
+    private val gson: Gson,
+    private val deviceShareStorage: DeviceShareStorage,
 ) {
 
     private val torusUrl = networkServicesUrlProvider.loadTorusEnvironment().baseUrl
 
-    private var lastUserId: String? = null
+    private var lastUserId: String = emptyString()
     private var lastIdToken: String? = null
 
-    val userId: String?
+    val userId: String
         get() = lastUserId
 
     var flowMode = GoogleAuthFlow.SIGN_IN
@@ -94,7 +91,7 @@ class WalletWeb3AuthManager(
 
     private fun onSignIn(idToken: String) {
         val restoreDeviceShare = if (hasDeviceShare()) {
-            val deviceShareKey = getDeviceShare()
+            val deviceShareKey = getDeviceShare(lastUserId)
             gson.toJson(deviceShareKey?.share)
         } else {
             null
@@ -112,24 +109,21 @@ class WalletWeb3AuthManager(
     }
 
     fun saveDeviceShare(deviceShare: String) {
-        val share = parseDeviceShare(deviceShare)
-        share?.let { deviceShare ->
-            deviceShare.userId = lastUserId
-            secureStorage.saveString(KEY_DEVICE_SHARE, gson.toJson(deviceShare))
-            handlers.forEach {
-                it.onSuccessSignUp()
+        if (deviceShareStorage.saveDeviceShare(deviceShare, lastUserId)) {
+            handlers.forEach { handler ->
+                handler.onSuccessSignUp()
             }
+        } else {
+            Timber.w("Unable to save device share $deviceShare, $lastIdToken")
         }
     }
 
-    private fun parseDeviceShare(deviceShare: String): DeviceShareKey? {
-        return gson.fromJson(deviceShare, DeviceShareKey::class.java)
-    }
+    fun hasDeviceShare(): Boolean = deviceShareStorage.hasDeviceShare()
 
-    fun hasDeviceShare(): Boolean = sharedPreferences.contains(KEY_DEVICE_SHARE)
+    fun getDeviceShare(userId: String): DeviceShareKey? = deviceShareStorage.getDeviceShare(userId)
 
-    fun getDeviceShare(): DeviceShareKey? = secureStorage.getString(KEY_DEVICE_SHARE)?.let { share ->
-        parseDeviceShare(share)
+    fun getLastDeviceShare(): DeviceShareKey? = deviceShareStorage.getLastDeviceShareUserId()?.let { userId ->
+        deviceShareStorage.getDeviceShare(userId)
     }
 
     private fun generateFacade(type: String, method: String): String {

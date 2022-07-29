@@ -30,7 +30,7 @@ class ContinueOnboardingFragment : BaseFragment(R.layout.fragment_continue_onboa
         with(binding) {
             onboardingContinueText.text = getString(
                 R.string.onboarding_continue_subtitle,
-                walletAuthManager.getDeviceShare()?.userId.orEmpty()
+                walletAuthManager.getLastDeviceShare()?.userId.orEmpty()
             )
             onboardingContinueButton.setOnClickListener {
                 // TODO PWN-4268 make real implementation and move user to phone number screen

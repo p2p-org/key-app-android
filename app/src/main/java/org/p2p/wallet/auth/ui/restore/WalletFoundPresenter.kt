@@ -24,7 +24,7 @@ class WalletFoundPresenter(
         super.attach(view)
         walletAuthManager.attach()
         walletAuthManager.addHandler(web3AuthHandler)
-        view.setUserId(walletAuthManager.userId.orEmpty())
+        view.setUserId(walletAuthManager.userId)
     }
 
     override fun onSignUpButtonClicked() {

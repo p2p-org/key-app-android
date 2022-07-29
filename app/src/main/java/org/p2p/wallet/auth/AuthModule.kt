@@ -7,6 +7,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
+import org.p2p.wallet.auth.common.DeviceShareStorage
 import org.p2p.wallet.auth.common.GoogleSignInHelper
 import org.p2p.wallet.auth.common.WalletWeb3AuthManager
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -72,7 +73,8 @@ object AuthModule {
 
     private fun Module.onboardingModule() {
         single { GoogleSignInHelper() }
-        single { WalletWeb3AuthManager(get(), get(), get(), get(), get()) }
+        single { DeviceShareStorage(get(), get(), get()) }
+        single { WalletWeb3AuthManager(get(), get(), get(), get()) }
 
         factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
         factory { WalletFoundPresenter(get()) } bind WalletFoundContract.Presenter::class
