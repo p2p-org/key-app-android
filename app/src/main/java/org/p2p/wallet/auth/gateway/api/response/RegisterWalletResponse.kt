@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class RegisterWalletResponse(
     /**
-     * Ключ, с помощью которого фронт должен зашифровать шару
+     * Key to encrypt third share
      */
     @SerializedName("server_key")
     val serverKeyForEncryptShare: String
