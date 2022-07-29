@@ -15,6 +15,8 @@ import org.p2p.wallet.R
 import timber.log.Timber
 import java.util.UUID
 
+private const val USER_CANCELED_DIALOG_CODE = 16
+
 class GoogleSignInHelper() {
 
     private fun getSignInClient(context: Context): SignInClient {
@@ -48,7 +50,9 @@ class GoogleSignInHelper() {
         return try {
             getSignInClient(context).getSignInCredentialFromIntent(result.data)
         } catch (ex: ApiException) {
-            Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
+            if (ex.statusCode != USER_CANCELED_DIALOG_CODE) {
+                Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
+            }
             Timber.w(ex, "Error on getting Credential from result")
             null
         }
