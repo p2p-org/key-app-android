@@ -34,4 +34,8 @@
     <string name="onboarding_sms_input_request_overflow">Too many tries, sms validation blocked for %1$d sec.</string>
     <string name="onboarding_sms_input_title">The code from SMS</string>
     <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
+    <string name="onboarding_sms_input_blocked_terms_title">Key App\'s</string>
+    <string name="onboarding_sms_input_blocked_terms_button_title">Starting screen</string>
+    <string name="onboarding_sms_input_blocked_title">It\'s okay to be wrong</string>
+    <string name="onboarding_sms_input_blocked_timer_subtitle">You used 5 incorrect codes.\nFor your safety we freezed account for %s min</string>
 </resources>
