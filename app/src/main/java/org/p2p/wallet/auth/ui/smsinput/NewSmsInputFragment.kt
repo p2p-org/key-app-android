@@ -30,6 +30,7 @@ class NewSmsInputFragment :
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
+                    // TODO PWN-4362 do other action
                     showSuccessSnackBar("help is clicked")
                     return@setOnMenuItemClickListener true
                 }
