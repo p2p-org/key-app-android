@@ -6,10 +6,13 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract.Presenter
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.NewSmsInputBlockedFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewSmsInputFragment :
@@ -30,7 +33,7 @@ class NewSmsInputFragment :
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
-                    // TODO PWN-4362 do other action
+                    // TODO PWN-4362 do other action (unknown at the moment)
                     showSuccessSnackBar("help is clicked")
                     return@setOnMenuItemClickListener true
                 }
@@ -102,6 +105,10 @@ class NewSmsInputFragment :
     }
 
     override fun navigateToPinCreate() {
-        // todo PWN-4362: go to pin create
+        replaceFragment(NewCreatePinFragment.create())
+    }
+
+    override fun navigateToSmsInputBlocked() {
+        replaceFragment(NewSmsInputBlockedFragment.create())
     }
 }

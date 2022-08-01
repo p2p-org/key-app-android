@@ -13,7 +13,7 @@ import org.p2p.uikit.utils.emptyString
 import org.p2p.uikit.utils.inflateViewBinding
 
 private val NO_ICON: Int? = null
-private const val INPUT_MASK = "[000 000]"
+private const val INPUT_MASK = "[000] [000]"
 
 class UiKitFourDigitsLargeInput @JvmOverloads constructor(
     context: Context,
