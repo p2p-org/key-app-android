@@ -13,3 +13,6 @@ object Base58Utils {
 
     fun decodeToString(data: String) = String(decode(data))
 }
+
+fun ByteArray.encodeToBase58(): String = Base58Utils.encode(this)
+fun String.decodeFromBase58(): ByteArray = Base58Utils.decode(this)

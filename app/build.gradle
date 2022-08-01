@@ -202,6 +202,7 @@ android {
 dependencies {
     implementation project(':solanaj')
     implementation project(':ui-kit')
+    implementation files('libs/borshj-0.0.0.jar')
 
     implementation "androidx.appcompat:appcompat:1.4.2"
     implementation "androidx.biometric:biometric:1.1.0"
