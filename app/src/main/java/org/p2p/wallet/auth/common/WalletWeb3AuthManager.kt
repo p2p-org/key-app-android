@@ -34,7 +34,7 @@ class WalletWeb3AuthManager(
 
     private val onboardingWebView: WebView
 
-    var handlers: MutableList<Web3AuthHandler> = mutableListOf()
+    private val handlers: MutableList<Web3AuthHandler> = mutableListOf()
 
     init {
         onboardingWebView = WebView(context).apply {
@@ -90,7 +90,7 @@ class WalletWeb3AuthManager(
     }
 
     private fun onSignIn(idToken: String) {
-        val restoreDeviceShare = if (hasDeviceShare()) {
+        val restoreDeviceShare = if (isDeviceShareSaved()) {
             val deviceShareKey = getDeviceShare(lastUserId)
             gson.toJson(deviceShareKey?.share)
         } else {
@@ -118,9 +118,9 @@ class WalletWeb3AuthManager(
         }
     }
 
-    fun hasDeviceShare(): Boolean = deviceShareStorage.hasDeviceShare()
+    fun isDeviceShareSaved(): Boolean = deviceShareStorage.isDeviceShareSaved()
 
-    fun getDeviceShare(userId: String): DeviceShareKey? = deviceShareStorage.getDeviceShare(userId)
+    private fun getDeviceShare(userId: String): DeviceShareKey? = deviceShareStorage.getDeviceShare(userId)
 
     fun getLastDeviceShare(): DeviceShareKey? = deviceShareStorage.getLastDeviceShareUserId()?.let { userId ->
         deviceShareStorage.getDeviceShare(userId)
@@ -128,14 +128,15 @@ class WalletWeb3AuthManager(
 
     private fun generateFacade(type: String, method: String): String {
         val host = torusUrl
-        return StringBuilder("new p2pWeb3Auth.AndroidFacade({").apply {
+        return buildString {
+            append("new p2pWeb3Auth.AndroidFacade({")
             append("type: '$type', ")
             append("useNewEth: true, ")
             append("torusLoginType: 'google', ")
             append("torusEndpoint: '$host:5051', ")
             append("metadataEndpoint: '$host:2222'")
             append("}).$method")
-        }.toString()
+        }
     }
 
     inner class AndroidCommunicationChannel(private val context: Context) {

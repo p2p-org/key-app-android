@@ -9,21 +9,21 @@
     android:background="@color/lime">
 
     <ImageView
-        android:id="@+id/onboardingContinueImage"
+        android:id="@+id/ImageViewContinueOnboardingIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
         android:src="@drawable/continue_image"
-        app:layout_constraintBottom_toTopOf="@+id/onboardingContinueTitle"
+        app:layout_constraintBottom_toTopOf="@+id/textViewContinueOnboardingTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/onboardingContinueTitle"
+        android:id="@+id/textViewContinueOnboardingTitle"
         style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,13 +32,13 @@
         android:gravity="center"
         android:text="@string/onboarding_continue_title"
         android:textColor="@color/night"
-        app:layout_constraintBottom_toTopOf="@+id/onboardingContinueText"
+        app:layout_constraintBottom_toTopOf="@+id/textViewContinueOnboardingSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/onboardingContinueImage" />
+        app:layout_constraintTop_toBottomOf="@id/ImageViewContinueOnboardingIcon" />
 
     <TextView
-        android:id="@+id/onboardingContinueText"
+        android:id="@+id/textViewContinueOnboardingSubtitle"
         style="@style/UiKit.TextAppearance.Regular.Title3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,14 +46,14 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:textColor="@color/night"
-        app:layout_constraintBottom_toTopOf="@+id/onboardingContinueBottomContainer"
+        app:layout_constraintBottom_toTopOf="@+id/containerBottomContinueOnboarding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/onboardingContinueTitle"
+        app:layout_constraintTop_toBottomOf="@id/textViewContinueOnboardingTitle"
         tools:text="@string/onboarding_continue_subtitle" />
 
     <LinearLayout
-        android:id="@+id/onboardingContinueBottomContainer"
+        android:id="@+id/containerBottomContinueOnboarding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_night_top_rounded"
@@ -63,7 +63,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/onboardingContinueButton"
+            android:id="@+id/buttonContinueOnboarding"
             style="@style/UiKit.Components.Button.Large"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
@@ -74,7 +74,7 @@
             app:iconTint="@color/night" />
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/onboardingContinueStartingButton"
+            android:id="@+id/buttonContinueStarting"
             style="@style/UiKit.Components.Button.Large.Text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"

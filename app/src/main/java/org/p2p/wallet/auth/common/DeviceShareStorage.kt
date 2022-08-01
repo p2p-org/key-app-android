@@ -29,7 +29,7 @@ class DeviceShareStorage(
         return gson.fromJson(deviceShare, DeviceShareKey::class.java)
     }
 
-    fun hasDeviceShare(): Boolean = sharedPreferences.contains(KEY_DEVICE_SHARES)
+    fun isDeviceShareSaved(): Boolean = sharedPreferences.contains(KEY_DEVICE_SHARES)
 
     fun getDeviceShare(userId: String): DeviceShareKey? = getDeviceSharesMap()[userId]
 

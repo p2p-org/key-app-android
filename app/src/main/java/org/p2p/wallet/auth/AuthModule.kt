@@ -4,6 +4,7 @@ import androidx.biometric.BiometricManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -77,9 +78,9 @@ object AuthModule {
     }
 
     private fun Module.onboardingModule() {
-        single { GoogleSignInHelper() }
-        single { DeviceShareStorage(get(), get(), get()) }
-        single { WalletWeb3AuthManager(get(), get(), get(), get()) }
+        singleOf(::GoogleSignInHelper)
+        singleOf(::DeviceShareStorage)
+        singleOf(::WalletWeb3AuthManager)
 
         factoryOf(::NewOnboardingPresenter) bind NewOnboardingContract.Presenter::class
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class

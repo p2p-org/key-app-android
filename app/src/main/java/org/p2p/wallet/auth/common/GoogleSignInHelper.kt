@@ -39,7 +39,8 @@ class GoogleSignInHelper() {
                         Timber.w(e, "Error on SignInIntent")
                         Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
                     }
-                }.addOnFailureListener {
+                }
+                .addOnFailureListener {
                     Timber.w(it, "Failure on SignInIntent")
                     Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
                 }
