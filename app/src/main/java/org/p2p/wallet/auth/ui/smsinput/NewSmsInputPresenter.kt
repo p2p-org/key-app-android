@@ -24,10 +24,13 @@ class NewSmsInputPresenter(
 
     private var smsResendCount = 0
 
+    private var smsIncorrectTries = 0
+
     override fun attach(view: NewAuthSmsInputContract.View) {
         super.attach(view)
 
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
+        // TODO PWN-4362 replace user phone with correct one
         view.initView("+7 999 99 99")
     }
 
@@ -57,11 +60,15 @@ class NewSmsInputPresenter(
 //                    phoneNumber = TODO()
 //                )
 //                view?.navigateToPinCreate()
-
+                smsIncorrectTries++
                 throw GatewayServiceError.IncorrectOtpCode(111, "")
             } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
                 Timber.i(incorrectSms)
-                view?.renderIncorrectSms()
+                if (smsIncorrectTries > 5) {
+                    view?.navigateToSmsInputBlocked()
+                } else {
+                    view?.renderIncorrectSms()
+                }
             } catch (tooManyRequests: GatewayServiceError.TooManyRequests) {
                 Timber.i(tooManyRequests)
                 timerFlow?.cancel()

@@ -14,6 +14,7 @@ interface NewAuthSmsInputContract {
         fun renderSmsTimerState(timerState: Presenter.SmsInputTimerState)
 
         fun navigateToPinCreate()
+        fun navigateToSmsInputBlocked()
         fun renderButtonLoading(isLoading: Boolean)
     }
 
