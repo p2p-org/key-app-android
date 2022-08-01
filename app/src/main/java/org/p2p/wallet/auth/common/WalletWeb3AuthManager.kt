@@ -139,7 +139,7 @@ class WalletWeb3AuthManager(
         }
     }
 
-    inner class AndroidCommunicationChannel(private val context: Context) {
+    private inner class AndroidCommunicationChannel(private val context: Context) {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
             saveDeviceShare(msg)
