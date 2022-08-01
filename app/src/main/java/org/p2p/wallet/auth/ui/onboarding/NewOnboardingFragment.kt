@@ -54,17 +54,17 @@ class NewOnboardingFragment :
         analytics.logSplashViewed()
 
         with(binding) {
-            onboardingSliderPager.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
-            onboardingSliderDotsIndicator.attachTo(onboardingSliderPager)
-            onboardingCreateWalletButton.setOnClickListener {
+            viewPagerOnboardingSlider.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
+            dotsIndicatorOnboardingSlider.attachTo(viewPagerOnboardingSlider)
+            buttonCreateWalletOnboarding.setOnClickListener {
                 presenter.onSignUpButtonClicked()
             }
-            onboardingCreateWalletButton.setOnLongClickListener {
+            buttonCreateWalletOnboarding.setOnLongClickListener {
                 // TODO PWN-4362 remove after all onboarding testing completed!
                 replaceFragment(DebugSettingsFragment.create())
                 true
             }
-            onboardingRestoreWalletButton.setOnClickListener {
+            buttonRestoreWalletOnboarding.setOnClickListener {
                 replaceFragment(SecretKeyFragment.create())
             }
         }
@@ -102,11 +102,11 @@ class NewOnboardingFragment :
 
     private fun setLoadingState(isScreenLoading: Boolean) {
         with(binding) {
-            onboardingCreateWalletButton.apply {
+            buttonCreateWalletOnboarding.apply {
                 isLoading = isScreenLoading
                 isEnabled = !isScreenLoading
             }
-            onboardingCreateWalletButton.isEnabled = !isScreenLoading
+            buttonRestoreWalletOnboarding.isEnabled = !isScreenLoading
         }
     }
 
