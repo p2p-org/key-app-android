@@ -687,7 +687,7 @@ class SendPresenter(
                     recipient = recipient
                 )
             } else {
-                showError()
+                handleError()
                 return null
             }
         } catch (e: CancellationException) {
@@ -695,7 +695,7 @@ class SendPresenter(
             return null
         } catch (e: Throwable) {
             Timber.e(e, "Error calculating fees")
-            showError()
+            handleError()
             return null
         }
 
@@ -713,7 +713,7 @@ class SendPresenter(
         return fees.feeInSol to fees.feeInPayingToken
     }
 
-    private fun showError() {
+    private fun handleError() {
         state.sendFee = null
         calculateTotal(sendFee = null)
         view?.hideAccountFeeView()
