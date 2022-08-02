@@ -1,16 +1,20 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.model.CountryCodeAdapterItem
-import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogCountryPickerBinding
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -22,7 +26,7 @@ private const val EXTRA_RESULT = "EXTRA_RESULT"
 private const val EXTRA_SELECTED_COUNTRY = "EXTRA_SELECTED_COUNTRY"
 
 class CountryPickerDialog :
-    BaseMvpFragment<CountryPickerContract.View, CountryPickerContract.Presenter>(R.layout.dialog_country_picker),
+    BaseMvpBottomSheet<CountryPickerContract.View, CountryPickerContract.Presenter>(R.layout.dialog_country_picker),
     CountryPickerContract.View,
     SearchView.OnQueryTextListener {
 
@@ -34,12 +38,13 @@ class CountryPickerDialog :
         fun create(
             selectedCountry: CountryCode?,
             requestKey: String,
-            resultKey: String
+            resultKey: String,
+            fragmentManager: FragmentManager
         ) = CountryPickerDialog().withArgs(
             EXTRA_SELECTED_COUNTRY to selectedCountry,
             EXTRA_KEY to requestKey,
             EXTRA_RESULT to resultKey
-        )
+        ).show(fragmentManager, CountryPickerDialog::javaClass.name)
     }
 
     private val selectedCountry: CountryCode? by args(EXTRA_SELECTED_COUNTRY)
@@ -59,6 +64,13 @@ class CountryPickerDialog :
                 presenter.onCountrySelected()
             }
         }
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(view.parent as View)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        val layout = requireDialog().findViewById<CoordinatorLayout>(R.id.bottomSheetView)
+        layout.minimumHeight = Resources.getSystem().displayMetrics.heightPixels
+
         presenter.load(selectedCountry)
     }
 
@@ -76,6 +88,7 @@ class CountryPickerDialog :
         val searchView = search.actionView as SearchView
 
         searchView.apply {
+            onActionViewExpanded()
             setOnQueryTextListener(this@CountryPickerDialog)
         }
         searchView.showSoftKeyboard()
@@ -86,13 +99,8 @@ class CountryPickerDialog :
     }
 
     override fun setCountryCode(code: CountryCode) {
-        setFragmentResult(
-            requestKey,
-            Bundle().apply {
-                putParcelable(resultKey, code)
-            }
-        )
-        popBackStack()
+        setFragmentResult(requestKey, Bundle().apply { putParcelable(resultKey, code) })
+        dismissAllowingStateLoss()
     }
 
     private fun onItemClicked(countryCode: CountryCodeAdapterItem) {

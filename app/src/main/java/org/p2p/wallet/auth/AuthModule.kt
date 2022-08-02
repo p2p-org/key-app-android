@@ -73,9 +73,8 @@ object AuthModule {
         factory { CountryCodeInMemoryRepository(get()) } bind CountryCodeLocalRepository::class
         factory {
             CountryCodeInteractor(
-                phoneUtils = PhoneNumberUtil.createInstance(androidContext()),
-                phoneNumberType = PhoneNumberUtil.PhoneNumberType.MOBILE,
-                countryCodeLocalRepository = get()
+                countryCodeLocalRepository = get(),
+                phoneNumberUtil = PhoneNumberUtil.createInstance(androidContext())
             )
         }
     }

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/labelTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Title" />
+
+    <LinearLayout
+        android:id="@+id/inputViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <LinearLayout
+            android:id="@+id/countryPickerView"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/messageTextView">
+
+            <TextView
+                android:id="@+id/emojiTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="🇦🇩" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/ic_arrow_down"
+                app:tint="@color/night" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="+"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1" />
+
+        <EditText
+            android:id="@+id/codeEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:background="@null"
+            android:imeOptions="actionDone"
+            android:inputType="phone"
+            android:maxLength="4"
+            android:minWidth="10dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            tools:text="00" />
+
+        <org.p2p.wallet.auth.ui.phone.maskwatcher.HintEditText
+            android:id="@+id/uikitEditText"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="4dp"
+            android:background="@null"
+            android:imeOptions="actionDone"
+            android:inputType="phone"
+            android:saveEnabled="true"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            android:textCursorDrawable="@drawable/ic_text_cursor"
+            android:textIsSelectable="true"
+            app:layout_constraintTop_toBottomOf="@id/labelTextView" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/holderTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/uikitEditText"
+        app:layout_constraintTop_toBottomOf="@id/uikitEditText"
+        tools:text="PlaceholderText" />
+
+    <TextView
+        android:id="@+id/errorTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_rose"
+        android:visibility="gone"
+        tools:text="Sorry, we don’t know a such country " />
+</LinearLayout>

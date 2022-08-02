@@ -8,7 +8,11 @@ data class CountryCode(
     val nameCode: String,
     val phoneCode: String,
     val name: String,
-    val flagEmoji: String
-) : Parcelable
+    val flagEmoji: String,
+    var mask: String = ""
+) : Parcelable {
+
+    fun getMaskWithoutCountryCode(): String = mask.replace(phoneCode, "")
+}
 
 data class CountryCodeAdapterItem(val country: CountryCode, var isSelected: Boolean)

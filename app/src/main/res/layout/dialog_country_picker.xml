@@ -1,42 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:background="@drawable/bg_app_top_rounded">
+    android:id="@+id/bottomSheetView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <org.p2p.uikit.organisms.UiKitToolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_back"
-        app:navigationIconTint="@color/night"
-        app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+        android:background="@color/bg_snow"
+        app:elevation="0dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        <org.p2p.uikit.organisms.UiKitToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/ic_back"
+            app:navigationIconTint="@color/night"
+            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_app_top_rounded"
         android:orientation="vertical"
-        tools:listitem="@layout/item_country_code"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintBottom_toTopOf="@id/actionButton"/>
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-    <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/actionButton"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_country_code" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/buttonPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/UiKit.Components.Button.Large"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:backgroundTint="@color/night"
-        android:text="@string/common_ok"
-        android:textColor="@color/lime"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="20dp"/>
+        android:layout_gravity="bottom"
+        android:background="@color/bg_snow"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/actionButton"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/night"
+            android:text="@string/common_ok"
+            android:textColor="@color/lime" />
+    </FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

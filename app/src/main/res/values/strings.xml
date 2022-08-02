@@ -56,6 +56,7 @@
     <string name="error_insufficient_funds">Insufficient funds</string>
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
+    <string name="error_country_not_found">Sorry, we don’t know a such country</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
@@ -593,4 +594,5 @@
     <string name="search_menu">Search</string>
     <string name="search_for_a_token">Search for a token</string>
     <string name="auth_country_name">Country Name</string>
+    <string name="auth_fill_your_number">Fill your phone number</string>
 </resources>

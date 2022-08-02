@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:background="@color/bg_snow">
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
@@ -15,8 +15,9 @@
         app:menu="@menu/menu_add_number"
         app:navigationIcon="@drawable/ic_toolbar_back"
         app:navigationIconTint="@color/night"
+
         app:title="@string/auth_step_2"
-        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold" />
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1" />
 
     <TextView
         android:id="@+id/titleTextView"
@@ -38,67 +39,33 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
         app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
-    <LinearLayout
-        android:id="@+id/inputViewContainer"
+
+    <org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextField
+        android:id="@+id/editText"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_rounded_12dp"
-        android:backgroundTint="@color/bg_rain"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/messageTextView">
-
-        <LinearLayout
-            android:id="@+id/countryPickerView"
-            android:layout_width="wrap_content"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/messageTextView">
-
-            <TextView
-                android:id="@+id/emojiTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🇦🇩" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:src="@drawable/ic_arrow_down"
-                app:tint="@color/night" />
-
-        </LinearLayout>
-
-        <org.p2p.wallet.auth.ui.phone.UiKitTextField
-            android:id="@+id/editText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
-            tools:text="+44 7400 123456" />
-    </LinearLayout>
+        android:layout_marginTop="24dp"
+        android:inputType="number"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+        app:layout_constraintTop_toBottomOf="@id/messageTextView" />
 
 
     <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/actionButton"
         style="@style/UiKit.Components.Button.Large.Text"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/night"
-        android:text="@string/common_continue"
-        android:textColor="@color/lime"
-        app:icon="@drawable/ic_arrow_forward"
+        android:backgroundTint="@color/rain"
+        android:enabled="false"
+        android:text="@string/auth_fill_your_number"
+        android:textColor="@color/mountain"
         app:iconGravity="textEnd"
         app:iconTint="@color/lime"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/inputViewContainer"
+        app:layout_constraintTop_toBottomOf="@id/editText"
         app:layout_constraintVertical_bias="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

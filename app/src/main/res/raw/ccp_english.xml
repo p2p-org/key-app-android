@@ -1101,7 +1101,7 @@
         name_code="tv"
         phone_code="688" />
     <country
-        name="Taiwan"
+            name="Taiwan"
         flag_emoji="&#127481;&#127484;"
         name_code="tw"
         phone_code="886" />

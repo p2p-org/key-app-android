@@ -1,31 +1,37 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
-import android.content.res.Resources
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.ui.phone.CountryPickerParsingManager
+import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
 import org.p2p.wallet.auth.ui.phone.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.model.CountryCodeAdapterItem
 import org.p2p.wallet.common.mvp.BasePresenter
 
-class CountryPickerPresenter(resources: Resources) :
+private const val DEFAULT_KEY = ""
+
+class CountryPickerPresenter(
+    private val countryCodeInteractor: CountryCodeInteractor
+) :
     BasePresenter<CountryPickerContract.View>(),
     CountryPickerContract.Presenter {
 
     private var selectedCountry: CountryCode? = null
-
-    private val countries = CountryPickerParsingManager.readCountriesFromXml(resources).map {
-        CountryCodeAdapterItem(country = it, isSelected = false)
+    private val countries = countryCodeInteractor.getCountries().map { CountryCodeAdapterItem(it, false) }
+    private var searchText: String = ""
+    private val searchTextMap = hashMapOf<String, List<CountryCodeAdapterItem>>().apply {
+        put(DEFAULT_KEY, countries)
     }
 
     override fun search(name: String) {
+        searchText = name
         launch {
-            if (name.isEmpty()) {
-                view?.showCountries(countries)
-                return@launch
+            if (searchTextMap.containsKey(searchText)) {
+                val cachedItems = searchTextMap[searchText].orEmpty()
+                view?.showCountries(cachedItems)
+            } else {
+                val searchResult = countries.filter { it.country.name.startsWith(name, ignoreCase = true) }
+                searchTextMap[searchText] = searchResult
+                view?.showCountries(searchResult)
             }
-            val tempCountries = countries
-            val searchResult = tempCountries.filter { it.country.name.startsWith(name) }
-            view?.showCountries(searchResult)
         }
     }
 
@@ -35,14 +41,17 @@ class CountryPickerPresenter(resources: Resources) :
     }
 
     override fun onItemSelected(item: CountryCodeAdapterItem) {
-        countries.forEach {
+        val items = searchTextMap[searchText].orEmpty()
+        items.forEach {
             val country = it.country
             if (country.nameCode.equals(item.country.nameCode, ignoreCase = true)) {
                 it.isSelected = true
                 selectedCountry = country
+            } else {
+                it.isSelected = false
             }
         }
-        view?.showCountries(countries)
+        view?.showCountries(items)
     }
 
     override fun onCountrySelected() {

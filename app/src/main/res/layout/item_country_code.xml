@@ -5,18 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
+    android:background="@color/bg_snow"
     android:foreground="?selectableItemBackgroundBorderless"
     android:paddingHorizontal="16dp">
-
 
     <TextView
         android:id="@+id/emojiTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="🇦🇩"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="🇦🇩" />
 
     <TextView
         android:id="@+id/nameTextView"
@@ -28,7 +28,6 @@
         app:layout_constraintStart_toEndOf="@id/emojiTextView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Armenia" />
-
 
     <TextView
         android:id="@+id/codeTextView"

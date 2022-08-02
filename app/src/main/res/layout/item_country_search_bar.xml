@@ -7,6 +7,7 @@
     app:closeIcon="@drawable/ic_close"
     app:defaultQueryHint="@string/auth_country_name"
     app:layout="@layout/item_search_view"
+    app:iconifiedByDefault="false"
     app:queryBackground="@android:color/transparent"
-    app:searchIcon="@drawable/ic_search"
-    app:searchHintIcon="@null"/>
+    app:searchHintIcon="@null"
+    app:searchIcon="@null"/>
