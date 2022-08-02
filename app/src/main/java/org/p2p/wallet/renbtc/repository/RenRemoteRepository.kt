@@ -11,9 +11,14 @@ class RenRemoteRepository(
     override suspend fun getPaymentData(environment: NetworkEnvironment, gateway: String): List<RenBTCPayment> {
         val response = when (environment) {
             NetworkEnvironment.RPC_POOL,
+            NetworkEnvironment.OLD_RPC_POOL,
             NetworkEnvironment.SOLANA,
-            NetworkEnvironment.MAINNET -> api.getPaymentData(gateway)
-            NetworkEnvironment.DEVNET -> api.getPaymentData("testnet", gateway)
+            NetworkEnvironment.MAINNET -> {
+                api.getPaymentData(gateway)
+            }
+            NetworkEnvironment.DEVNET -> {
+                api.getPaymentData(network = "testnet", gateway = gateway)
+            }
         }
         return response.map { RenBTCPayment(it.transactionHash, it.txIndex, it.amount) }
     }

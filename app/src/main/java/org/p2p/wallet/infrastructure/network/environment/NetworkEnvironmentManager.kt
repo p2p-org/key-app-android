@@ -6,7 +6,6 @@ import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.solanaj.rpc.RpcEnvironment
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
@@ -22,7 +21,7 @@ class NetworkEnvironmentManager(
     }
 
     val availableNetworks: List<NetworkEnvironment>
-        get() = loadAvailableEnvironments()
+        get() = loadAvailableEnvironments() + NetworkEnvironment.RPC_POOL
 
     private var listeners = mutableMapOf<String, EnvironmentManagerListener>()
 
@@ -31,6 +30,7 @@ class NetworkEnvironmentManager(
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
         return NetworkEnvironment.values().filter(isNetworkAvailable)
     }
+
     fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {
         listeners[owner.simpleName.orEmpty()] = listener
     }
@@ -49,10 +49,16 @@ class NetworkEnvironmentManager(
         )
 
     fun loadCurrentEnvironment(): NetworkEnvironment {
-        return sharedPreferences.getString(KEY_BASE_URL, null)
-            ?.let(::getCurrentNetworkFromUrl)
+        val baseUrl = sharedPreferences.getString(KEY_BASE_URL, null)
+        if (baseUrl == NetworkEnvironment.OLD_RPC_POOL.endpoint) {
+            // migrating from old URL to a new one
+            chooseEnvironment(NetworkEnvironment.RPC_POOL)
+            return loadCurrentEnvironment()
+        }
+        return baseUrl?.let(::getCurrentNetworkFromUrl)
             ?.takeIf(availableNetworks::contains)
             ?: getDefaultAvailableNetwork()
+                .also(::chooseEnvironment)
     }
 
     private fun getDefaultAvailableNetwork(): NetworkEnvironment {

@@ -79,7 +79,7 @@ class SettingsNetworkFragment :
         val checkedButtonId = when (currentNetwork) {
             NetworkEnvironment.SOLANA -> R.id.solanaButton
             NetworkEnvironment.MAINNET -> R.id.mainnetButton
-            NetworkEnvironment.RPC_POOL -> R.id.rpcpoolButton
+            NetworkEnvironment.RPC_POOL, NetworkEnvironment.OLD_RPC_POOL -> R.id.rpcpoolButton
             NetworkEnvironment.DEVNET -> R.id.devnetButton
         }
         binding.networksGroup.apply {
