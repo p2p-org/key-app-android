@@ -21,10 +21,12 @@ import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
+import org.p2p.wallet.home.model.HomeBanner
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
+import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
@@ -55,6 +57,23 @@ class HomeFragment :
 
     private val mainAdapter: TokenAdapter by unsafeLazy {
         TokenAdapter(this)
+    }
+
+    private val emptyAdapter: EmptyViewAdapter by unsafeLazy {
+        EmptyViewAdapter(this).apply {
+            setItems(
+                listOf(
+                    HomeBanner(
+                        id = R.id.home_banner_top_up,
+                        titleTextId = R.string.main_banner_title,
+                        subtitleTextId = R.string.main_banner_subtitle,
+                        buttonTextId = R.string.main_banner_button,
+                        drawableRes = R.drawable.ic_banner_image,
+                        backgroundColorRes = R.color.bannerBackgroundColor
+                    )
+                )
+            )
+        }
     }
 
     private val browseAnalytics: BrowseAnalytics by inject()
@@ -169,10 +188,14 @@ class HomeFragment :
 
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            emptyStateLayout.isVisible = isEmpty
-            swipeRefreshLayout.isVisible = !isEmpty
+            actionButtonsView.isVisible = !isEmpty
             balanceTextView.isVisible = !isEmpty
             balanceLabelTextView.isVisible = !isEmpty
+            mainRecyclerView.adapter = if (isEmpty) {
+                emptyAdapter
+            } else {
+                mainAdapter
+            }
         }
     }
 
@@ -184,6 +207,9 @@ class HomeFragment :
 
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
+            R.id.home_banner_top_up -> {
+                presenter.onBuyClicked()
+            }
             R.string.main_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
                 replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP, isSkipStepEnabled = false))
