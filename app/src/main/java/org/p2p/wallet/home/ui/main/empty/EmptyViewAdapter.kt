@@ -3,7 +3,7 @@ package org.p2p.wallet.home.ui.main.empty
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
-import org.p2p.wallet.home.model.HomeBanner
+import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 
@@ -22,7 +22,7 @@ class EmptyViewAdapter(
     }
 
     override fun getItemViewType(position: Int): Int = when (data[position]) {
-        is HomeBanner -> R.layout.item_big_banner
+        is HomeBannerItem -> R.layout.item_big_banner
         else -> throw IllegalStateException("Unknown viewType: ${data[position]}")
     }
 
@@ -31,12 +31,12 @@ class EmptyViewAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
         R.layout.item_big_banner -> BigBannerViewHolder(parent) { bannerId: Int -> listener.onBannerClicked(bannerId) }
         R.layout.item_get_token -> GetTokenViewHolder(parent, listener)
-        else -> throw IllegalStateException("Unknown viewType: $viewType")
+        else -> error("Unknown viewType: $viewType")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is BigBannerViewHolder -> holder.onBind(data[position] as HomeBanner)
+            is BigBannerViewHolder -> holder.onBind(data[position] as HomeBannerItem)
             is GetTokenViewHolder -> holder.onBind(data[position] as HomeElementItem.Shown, isZerosHidden)
         }
     }
