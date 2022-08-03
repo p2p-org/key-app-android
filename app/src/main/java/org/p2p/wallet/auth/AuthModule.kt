@@ -17,6 +17,8 @@ import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
+import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
+import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
@@ -25,6 +27,12 @@ import org.p2p.wallet.auth.ui.done.AuthDonePresenter
 import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
+import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
+import org.p2p.wallet.auth.ui.phone.CountryPickerParser
+import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract
+import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterPresenter
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerContract
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryPickerPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsContract
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsPresenter
