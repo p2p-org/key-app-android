@@ -5,7 +5,7 @@
  *
  * Copyright Nikolai Kudashov, 2013-2018.
  */
-package org.p2p.wallet.auth.ui.phone.maskwatcher
+package org.p2p.wallet.auth.widget
 
 import android.content.Context
 import android.content.res.Resources

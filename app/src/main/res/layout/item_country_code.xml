@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:background="@color/bg_snow"
     android:foreground="?selectableItemBackgroundBorderless"
     android:paddingHorizontal="16dp">
 
@@ -19,7 +18,7 @@
         tools:text="🇦🇩" />
 
     <TextView
-        android:id="@+id/nameTextView"
+        android:id="@+id/textViewCountryName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
@@ -30,13 +29,13 @@
         tools:text="Armenia" />
 
     <TextView
-        android:id="@+id/codeTextView"
+        android:id="@+id/textViewCountryCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
         android:textColor="@color/text_mountain"
         app:layout_constraintStart_toEndOf="@id/emojiTextView"
-        app:layout_constraintTop_toBottomOf="@id/nameTextView"
+        app:layout_constraintTop_toBottomOf="@id/textViewCountryName"
         tools:text="+374" />
 
     <View
@@ -47,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
-        android:id="@+id/checkImageView"
+        android:id="@+id/imageViewCheck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_done"

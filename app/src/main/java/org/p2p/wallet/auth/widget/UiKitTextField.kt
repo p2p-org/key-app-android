@@ -1,16 +1,16 @@
-package org.p2p.wallet.auth.ui.phone
+package org.p2p.wallet.auth.widget
 
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
+import android.text.Editable
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import org.p2p.uikit.utils.dip
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetUikitTextFieldBinding
-import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 open class UiKitTextField @JvmOverloads constructor(
@@ -46,13 +46,13 @@ open class UiKitTextField @JvmOverloads constructor(
         val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitTextField, 0, 0)
         val labelText = styleAttrs.getString(R.styleable.UiKitTextField_labelText).orEmpty()
         if (labelText.isNotEmpty()) {
-            binding.labelTextView.text = labelText
-            binding.labelTextView.isVisible = true
+            binding.textViewLabel.text = labelText
+            binding.textViewLabel.isVisible = true
         }
         val hintText = styleAttrs.getString(R.styleable.UiKitTextField_hintText).orEmpty()
         if (hintText.isNotEmpty()) {
-            binding.holderTextView.text = hintText
-            binding.holderTextView.isVisible = true
+            binding.textViewHint.text = hintText
+            binding.textViewHint.isVisible = true
         }
         val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitTextField_android_textAppearance, -1)
         if (textAppearance != -1) {
@@ -66,6 +66,7 @@ open class UiKitTextField @JvmOverloads constructor(
         if (inputType != -1) {
             binding.uikitEditText.inputType = inputType
         }
+        styleAttrs.recycle()
     }
 
     fun setText(text: String) {
@@ -76,9 +77,9 @@ open class UiKitTextField @JvmOverloads constructor(
         binding.uikitEditText.hint = hint
     }
 
-    fun getText() = binding.uikitEditText.text
+    fun getText(): Editable? = binding.uikitEditText.text
 
-    fun getHint() = binding.uikitEditText.hint
+    fun getHint(): CharSequence? = binding.uikitEditText.hint
 
-    fun length() = binding.uikitEditText.length()
+    fun length(): Int = binding.uikitEditText.length()
 }

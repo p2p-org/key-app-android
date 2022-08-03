@@ -2,10 +2,13 @@ package org.p2p.wallet.auth.ui.phone.maskwatcher
 
 import android.text.TextWatcher
 import android.text.Editable
+import org.p2p.wallet.auth.widget.HintEditText
 import java.lang.StringBuilder
 
-class PhoneTextWatcher(private val phoneField: HintEditText, private val afterTextChanged: (String) -> Unit) :
-    TextWatcher {
+class PhoneNumberTextWatcher(
+    private val phoneField: HintEditText,
+    private val afterTextChanged: (String) -> Unit
+) : TextWatcher {
     private var ignoreOnPhoneChange = false
     private var characterAction = -1
     private var actionPosition = 0
@@ -25,7 +28,7 @@ class PhoneTextWatcher(private val phoneField: HintEditText, private val afterTe
         }
     }
 
-    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) = Unit
 
     override fun afterTextChanged(s: Editable) {
         if (ignoreOnPhoneChange) {

@@ -4,15 +4,15 @@ import android.content.Context
 import android.content.res.Resources
 import android.telephony.TelephonyManager
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
-import org.p2p.wallet.auth.ui.phone.model.CountryCode
-import org.p2p.wallet.auth.ui.phone.repository.CountryCodeLocalRepository
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 
 class CountryCodeInteractor(
     private val countryCodeLocalRepository: CountryCodeLocalRepository,
     private val phoneNumberUtil: PhoneNumberUtil
 ) {
 
-    fun detectLocaleCountry(resources: Resources): CountryCode? {
+    suspend fun detectCountryCodeByLocale(resources: Resources): CountryCode? {
         return try {
             val localeCountryIso = resources.configuration.locale.country
             getCountryForISO(localeCountryIso)
@@ -21,7 +21,7 @@ class CountryCodeInteractor(
         }
     }
 
-    fun detectSimCountry(context: Context): CountryCode? {
+    suspend fun detectCountryCodeBySimCard(context: Context): CountryCode? {
         return try {
             val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
             val simCountryISO = telephonyManager.simCountryIso
@@ -31,7 +31,7 @@ class CountryCodeInteractor(
         }
     }
 
-    fun detectNetworkCountry(context: Context): CountryCode? {
+    suspend fun detectCountryCodeByNetwork(context: Context): CountryCode? {
         return try {
             val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
             val networkCountryIso = telephonyManager.networkCountryIso
@@ -41,33 +41,23 @@ class CountryCodeInteractor(
         }
     }
 
-    private fun getCountryForISO(nameCode: String): CountryCode? {
+    private suspend fun getCountryForISO(nameCode: String): CountryCode? {
         val allCountries = countryCodeLocalRepository.getCountryCodes()
         return allCountries.firstOrNull { it.nameCode.equals(nameCode, ignoreCase = true) }
     }
 
-    fun findCountryForPhoneCode(phoneCode: String): CountryCode? {
+    suspend fun findCountryForPhoneCode(phoneCode: String): CountryCode? {
         val allCountries = countryCodeLocalRepository.getCountryCodes()
         return allCountries.firstOrNull { it.phoneCode == phoneCode }
     }
 
-    fun getCountries() = countryCodeLocalRepository.getCountryCodes()
-
-    fun findCountryForPhoneNumber(phoneNumber: String): CountryCode? {
-        return try {
-            val validateNumber = if (phoneNumber.startsWith("+")) phoneNumber else "+$phoneNumber"
-            val phoneNumber = phoneNumberUtil.parse(validateNumber, null)
-            findCountryForPhoneCode(phoneNumber.countryCode.toString())
-        } catch (e: Exception) {
-            null
-        }
-    }
+    suspend fun getCountries(): List<CountryCode> = countryCodeLocalRepository.getCountryCodes()
 
     fun isValidNumberForRegion(regionCode: String, phoneNumber: String): Boolean {
         return try {
             val phoneNumber = phoneNumberUtil.parse(phoneNumber, null)
             phoneNumberUtil.isValidNumberForRegion(phoneNumber, regionCode)
-        } catch (e: Exception) {
+        } catch (countryNotFound: Exception) {
             return false
         }
     }

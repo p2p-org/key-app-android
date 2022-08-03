@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:closeIcon="@drawable/ic_close"
-    app:defaultQueryHint="@string/auth_country_name"
+    app:defaultQueryHint="@string/onboarding_country_name"
     app:layout="@layout/item_search_view"
     app:iconifiedByDefault="false"
     app:queryBackground="@android:color/transparent"

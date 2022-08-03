@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.ui.phone.model
+package org.p2p.wallet.auth.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -15,4 +15,4 @@ data class CountryCode(
     fun getMaskWithoutCountryCode(): String = mask.replace(phoneCode, "")
 }
 
-data class CountryCodeAdapterItem(val country: CountryCode, var isSelected: Boolean)
+data class CountryCodeItem(val country: CountryCode, var isSelected: Boolean)

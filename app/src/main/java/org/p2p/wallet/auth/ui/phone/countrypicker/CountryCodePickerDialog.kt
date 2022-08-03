@@ -3,21 +3,23 @@ package org.p2p.wallet.auth.ui.phone.countrypicker
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.widget.SearchView
+import androidx.activity.addCallback
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.organisms.UiKitToolbar
-import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.phone.model.CountryCode
-import org.p2p.wallet.auth.ui.phone.model.CountryCodeAdapterItem
+import org.p2p.wallet.auth.widget.SearchView
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.model.CountryCodeItem
+import org.p2p.wallet.auth.ui.phone.maskwatcher.CountryCodeTextWatcher
+import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogCountryPickerBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -26,16 +28,19 @@ private const val EXTRA_RESULT = "EXTRA_RESULT"
 private const val EXTRA_SELECTED_COUNTRY = "EXTRA_SELECTED_COUNTRY"
 
 class CountryPickerDialog :
-    BaseMvpBottomSheet<CountryPickerContract.View, CountryPickerContract.Presenter>(R.layout.dialog_country_picker),
-    CountryPickerContract.View,
-    SearchView.OnQueryTextListener {
+    BaseMvpBottomSheet
+    <CountryCodePickerContract.View, CountryCodePickerContract.Presenter>(R.layout.dialog_country_picker),
+    CountryCodePickerContract.View {
 
-    override val presenter: CountryPickerContract.Presenter by inject()
+    override val presenter: CountryCodePickerContract.Presenter by inject()
     private val binding: DialogCountryPickerBinding by viewBinding()
-    private val adapter = CountryPickerAdapter(::onItemClicked)
+    private val adapter = CountryCodePickerAdapter(::onCountryCodeClicked)
+
+    private lateinit var phoneTextWatcher: PhoneNumberTextWatcher
+    private lateinit var countryCodeWatcher: CountryCodeTextWatcher
 
     companion object {
-        fun create(
+        fun show(
             selectedCountry: CountryCode?,
             requestKey: String,
             resultKey: String,
@@ -55,13 +60,29 @@ class CountryPickerDialog :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener {
-                popBackStack()
+                dismissAllowingStateLoss()
             }
-            inflateSearchMenu(toolbar)
-            recyclerView.adapter = adapter
+            recyclerViewCountryCodes.adapter = adapter
 
-            actionButton.setOnClickListener {
-                presenter.onCountrySelected()
+            buttonActionContinue.setOnClickListener {
+                presenter.onCountryCodeSelected()
+            }
+            searchView.addTextWatcher(
+                CountryCodePickerTextWatcher { searchText ->
+                    presenter.searchByCountryName(searchText)
+                }
+            )
+            searchView.setStateListener(object : SearchView.SearchStateListener {
+                override fun onClosed() {
+                    presenter.searchByCountryName("")
+                }
+            })
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (binding.searchView.isBackPressEnabled()) {
+                dismissAllowingStateLoss()
+            } else {
+                binding.searchView.closeSearch()
             }
         }
 
@@ -74,36 +95,18 @@ class CountryPickerDialog :
         presenter.load(selectedCountry)
     }
 
-    override fun onQueryTextSubmit(query: String?): Boolean = false
-
-    override fun onQueryTextChange(searchText: String): Boolean {
-        presenter.search(searchText)
-        return true
-    }
-
-    private fun inflateSearchMenu(toolbar: UiKitToolbar) {
-        toolbar.inflateMenu(R.menu.menu_search_country)
-
-        val search = toolbar.menu.findItem(R.id.menu_search_country)
-        val searchView = search.actionView as SearchView
-
-        searchView.apply {
-            onActionViewExpanded()
-            setOnQueryTextListener(this@CountryPickerDialog)
-        }
-        searchView.showSoftKeyboard()
-    }
-
-    override fun showCountries(items: List<CountryCodeAdapterItem>) {
+    override fun showCountries(items: List<CountryCodeItem>) {
         adapter.setItems(items)
+        binding.recyclerViewCountryCodes.isVisible = items.isNotEmpty()
+        binding.textViewError.isVisible = items.isEmpty()
     }
 
     override fun setCountryCode(code: CountryCode) {
-        setFragmentResult(requestKey, Bundle().apply { putParcelable(resultKey, code) })
+        setFragmentResult(requestKey, bundleOf(resultKey to code))
         dismissAllowingStateLoss()
     }
 
-    private fun onItemClicked(countryCode: CountryCodeAdapterItem) {
+    private fun onCountryCodeClicked(countryCode: CountryCodeItem) {
         presenter.onItemSelected(countryCode)
     }
 }

@@ -3,14 +3,14 @@ package org.p2p.wallet.auth.ui.phone.countrypicker
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import org.p2p.wallet.auth.ui.phone.model.CountryCodeAdapterItem
+import org.p2p.wallet.auth.model.CountryCodeItem
 import org.p2p.wallet.databinding.ItemCountryCodeBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-class CountryPickerAdapter(private val onItemClickListener: (CountryCodeAdapterItem) -> Unit) :
-    RecyclerView.Adapter<CountryPickerAdapter.ViewHolder>() {
+class CountryCodePickerAdapter(private val onItemClickListener: (CountryCodeItem) -> Unit) :
+    RecyclerView.Adapter<CountryCodePickerAdapter.ViewHolder>() {
 
-    private val data = mutableListOf<CountryCodeAdapterItem>()
+    private val data = mutableListOf<CountryCodeItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(parent.inflateViewBinding(attachToRoot = false), onItemClickListener)
@@ -21,7 +21,7 @@ class CountryPickerAdapter(private val onItemClickListener: (CountryCodeAdapterI
 
     override fun getItemCount(): Int = data.size
 
-    fun setItems(items: List<CountryCodeAdapterItem>) {
+    fun setItems(items: List<CountryCodeItem>) {
         data.clear()
         data.addAll(items)
         notifyDataSetChanged()
@@ -29,18 +29,18 @@ class CountryPickerAdapter(private val onItemClickListener: (CountryCodeAdapterI
 
     class ViewHolder(
         private val binding: ItemCountryCodeBinding,
-        private val onItemClickListener: (CountryCodeAdapterItem) -> Unit
+        private val onItemClickListener: (CountryCodeItem) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun onBind(item: CountryCodeAdapterItem) = with(binding) {
+        fun onBind(item: CountryCodeItem) = with(binding) {
             val country = item.country
             emojiTextView.text = country.flagEmoji
-            nameTextView.text = country.name
-            codeTextView.text = "+${country.phoneCode}"
+            textViewCountryName.text = country.name
+            textViewCountryCode.text = "+${country.phoneCode}"
             itemView.setOnClickListener {
                 onItemClickListener.invoke(item)
             }
-            checkImageView.isVisible = item.isSelected
+            imageViewCheck.isVisible = item.isSelected
         }
     }
 }

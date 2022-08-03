@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_snow">
+    android:background="@color/bg_snow"
+    android:fitsSystemWindows="true">
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
@@ -15,8 +16,7 @@
         app:menu="@menu/menu_add_number"
         app:navigationIcon="@drawable/ic_toolbar_back"
         app:navigationIconTint="@color/night"
-
-        app:title="@string/auth_step_2"
+        app:title="@string/onboarding_step_2"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1" />
 
     <TextView
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="@string/auth_add_number_title"
+        android:text="@string/onboarding_add_number_title"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
@@ -35,13 +35,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="@string/auth_add_number_message"
+        android:text="@string/onboarding_add_number_message"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
         app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
-
-    <org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextField
-        android:id="@+id/editText"
+    <org.p2p.wallet.auth.widget.PhoneNumberTextField
+        android:id="@+id/editTextPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -50,9 +49,8 @@
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
         app:layout_constraintTop_toBottomOf="@id/messageTextView" />
 
-
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/actionButton"
+        android:id="@+id/buttonConfirmPhone"
         style="@style/UiKit.Components.Button.Large.Text"
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -60,12 +58,12 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/rain"
         android:enabled="false"
-        android:text="@string/auth_fill_your_number"
+        android:text="@string/onboarding_fill_your_number"
         android:textColor="@color/mountain"
         app:iconGravity="textEnd"
         app:iconTint="@color/lime"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editText"
+        app:layout_constraintTop_toBottomOf="@id/editTextPhoneNumber"
         app:layout_constraintVertical_bias="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

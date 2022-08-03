@@ -1,8 +1,10 @@
 package org.p2p.wallet.auth.ui.phone
 
 import android.content.res.Resources
+import kotlinx.coroutines.withContext
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.phone.model.CountryCode
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import timber.log.Timber
@@ -10,9 +12,18 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.StringBuilder
 
-object CountryPickerParsingManager {
+class CountryPickerParser(
+    private val resources: Resources,
+    private val dispatchers: CoroutineDispatchers
+) {
 
-    fun readCountriesFromXml(resources: Resources): List<CountryCode> {
+    private val KEY_COUNTRY = "country"
+    private val KEY_NAME_CODE = "name_code"
+    private val KEY_PHONE_CODE = "phone_code"
+    private val KEY_NAME = "name"
+    private val KEY_FLAG_EMOJI = "flag_emoji"
+
+    suspend fun readCountriesFromXml(): List<CountryCode> = withContext(dispatchers.io) {
         val countries = mutableListOf<CountryCode>()
         try {
             val xmlParserFactory = XmlPullParserFactory.newInstance()
@@ -24,24 +35,29 @@ object CountryPickerParsingManager {
             while (event != XmlPullParser.END_DOCUMENT) {
                 val name = xmlParser.name
                 when {
-                    event == XmlPullParser.END_TAG && name.equals("country") -> {
-                        val nameCode = xmlParser.getAttributeValue(null, "name_code").uppercase()
-                        val phoneCode = xmlParser.getAttributeValue(null, "phone_code")
-                        val name = xmlParser.getAttributeValue(null, "name")
-                        val flagEmoji = xmlParser.getAttributeValue(null, "flag_emoji")
+                    event == XmlPullParser.END_TAG && name.equals(KEY_COUNTRY) -> {
+                        val nameCode = xmlParser.getAttributeValue(null, KEY_NAME_CODE).uppercase()
+                        val phoneCode = xmlParser.getAttributeValue(null, KEY_PHONE_CODE)
+                        val name = xmlParser.getAttributeValue(null, KEY_NAME)
+                        val flagEmoji = xmlParser.getAttributeValue(null, KEY_FLAG_EMOJI)
                         countries.add(CountryCode(nameCode, phoneCode, name, flagEmoji))
                     }
                 }
                 event = xmlParser.next()
             }
         } catch (e: Exception) {
-            Timber.e("Error while reading from XML file ")
+            Timber.e("Error while reading from XML file $e ")
         }
-        return countries
+        return@withContext countries
     }
 
-    fun readCountriesMasks(resources: Resources): Map<String, String> {
-        val countryMasks = hashMapOf<String, String>()
+    /**
+     * We have file phone_masks.txt with format countryCode : phone mask
+     * read input stream, and split string by : delimiter
+     * return map of country code - phone mask
+     */
+    fun readCountriesMasks(): Map<String, String> {
+        val countryMasks = mutableMapOf<String, String>()
         try {
             val inputStream = resources.openRawResource(R.raw.phone_masks)
             val streamReader = InputStreamReader(inputStream)
@@ -54,7 +70,7 @@ object CountryPickerParsingManager {
                 }
                 val args = line.split(":")
                 val countryCode = args[0]
-                val countryMask = args[1].replace("#", "0")
+                val countryMask = args[1]
                 countryMasks[countryCode] = countryMask
             } while (line.isNotEmpty())
         } catch (e: Exception) {

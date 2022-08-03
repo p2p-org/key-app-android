@@ -1,21 +1,24 @@
-package org.p2p.wallet.auth.ui.phone.maskwatcher
+package org.p2p.wallet.auth.widget
 
 import android.content.Context
-import android.graphics.Paint
-import android.graphics.Rect
 import android.graphics.drawable.GradientDrawable
+import android.text.Editable
 import android.util.AttributeSet
 import android.view.KeyEvent
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.phone.model.CountryCode
+import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.ui.phone.maskwatcher.CountryCodeTextWatcher
+import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
 import org.p2p.wallet.databinding.WidgetPhoneInputTextFieldBinding
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-private val EMOJI_NO_FLAG = "️\uD83C\uDFF4"
+private const val EMOJI_NO_FLAG = "️\uD83C\uDFF4"
+private const val CORNER_RADIUS = 20f
+private const val STROKE_WIDTH = 1
 
 open class PhoneNumberTextField @JvmOverloads constructor(
     context: Context,
@@ -24,156 +27,153 @@ open class PhoneNumberTextField @JvmOverloads constructor(
 
     protected val binding = inflateViewBinding<WidgetPhoneInputTextFieldBinding>()
 
-    private val hintText: String? = null
-    private var textOffset = 0f
-    private var spaceSize = 0f
-    private var numberSize = 0f
-    private val paint = Paint()
-    private val rect = Rect()
-
     private lateinit var bg: GradientDrawable
     private lateinit var bgDisabled: GradientDrawable
     private lateinit var bgFocused: GradientDrawable
+    private lateinit var phoneTextWatcher: PhoneNumberTextWatcher
+    private lateinit var countryCodeWatcher: CountryCodeTextWatcher
+
     private val bgRed = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
-        cornerRadius = 20f
+        cornerRadius = CORNER_RADIUS
         setColor(context.getColor(R.color.bg_rain))
-        setStroke(1, context.getColor(R.color.bg_rose))
+        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rose))
     }
 
     private val bgGreen = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
-        cornerRadius = 20f
+        cornerRadius = CORNER_RADIUS
         setColor(context.getColor(R.color.bg_rain))
-        setStroke(1, context.getColor(R.color.bg_mint))
+        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_mint))
     }
 
     private val bgNormal = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
-        cornerRadius = 20f
+        cornerRadius = CORNER_RADIUS
         setColor(context.getColor(R.color.rain))
-        setStroke(1, context.getColor(R.color.bg_rain))
+        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
     }
 
     init {
         val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitTextField, 0, 0)
         val labelText = styleAttrs.getString(R.styleable.UiKitTextField_labelText).orEmpty()
         if (labelText.isNotEmpty()) {
-            binding.labelTextView.text = labelText
-            binding.labelTextView.isVisible = true
+            binding.textViewLabel.text = labelText
+            binding.textViewLabel.isVisible = true
         }
         val hintText = styleAttrs.getString(R.styleable.UiKitTextField_hintText).orEmpty()
         if (hintText.isNotEmpty()) {
-            binding.holderTextView.text = hintText
-            binding.holderTextView.isVisible = true
+            binding.textViewHint.text = hintText
+            binding.textViewHint.isVisible = true
         }
         val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitTextField_android_textAppearance, -1)
         if (textAppearance != -1) {
-            binding.uikitEditText.setTextAppearance(textAppearance)
+            binding.editTextPhoneNumber.setTextAppearance(textAppearance)
         }
         val text = styleAttrs.getText(R.styleable.UiKitTextField_android_text)
         if (!text.isNullOrEmpty()) {
-            binding.uikitEditText.setText(text)
+            binding.editTextPhoneNumber.setText(text)
         }
         binding.inputViewContainer.background = bgNormal
         styleAttrs.recycle()
     }
 
     fun setText(text: String) {
-        binding.uikitEditText.setText(text)
+        binding.editTextPhoneNumber.setText(text)
     }
 
     fun setHint(hint: String) {
-        binding.uikitEditText.hint = hint
+        binding.editTextPhoneNumber.hint = hint
     }
 
-    fun getText() = binding.uikitEditText.text
+    val text: Editable?
+        get() = binding.editTextPhoneNumber.text
 
-    fun getHint() = binding.uikitEditText.hint
+    val hint: CharSequence
+        get() = binding.editTextPhoneNumber.hint
 
-    fun length() = binding.uikitEditText.length()
+    val length: Int
+        get() = binding.editTextPhoneNumber.length()
 
-    private lateinit var phoneTextWatcher: PhoneTextWatcher
-    private lateinit var countryCodeWatcher: CountryCodeWatcher
-
-    fun setup(
+    fun setupViewState(
         countryCode: CountryCode?,
         onCountryCodeChanged: (String) -> Unit,
         onPhoneChanged: (String) -> Unit,
         onCountryClickListener: () -> Unit
     ) = with(binding) {
 
-        countryCode?.phoneCode.let { codeEditText.setText(it) }
+        countryCode?.phoneCode.let { editTextCountryCode.setText(it) }
 
         val flagEmoji = countryCode?.flagEmoji ?: EMOJI_NO_FLAG
-        emojiTextView.text = flagEmoji
+        textViewFlagEmoji.text = flagEmoji
 
         val hint = countryCode?.getMaskWithoutCountryCode().orEmpty()
-        uikitEditText.setHintText(hint)
+        editTextPhoneNumber.setHintText(hint)
 
         countryPickerView.setOnClickListener {
             onCountryClickListener.invoke()
         }
 
-        phoneTextWatcher = PhoneTextWatcher(binding.uikitEditText) {
-            val phone = "+${codeEditText.text?.trim()}${it.trim()}"
+        phoneTextWatcher = PhoneNumberTextWatcher(binding.editTextPhoneNumber) {
+            val phone = "+${editTextCountryCode.text?.trim()}${it.trim()}"
             onPhoneChanged.invoke(phone)
         }
-        countryCodeWatcher = CountryCodeWatcher { countryCode ->
+        countryCodeWatcher = CountryCodeTextWatcher { countryCode ->
             onCountryCodeChanged.invoke(countryCode)
         }
-        uikitEditText.addTextChangedListener(phoneTextWatcher)
-        uikitEditText.onEmptyDelete = { moveCursorToCodeField() }
+        editTextPhoneNumber.addTextChangedListener(phoneTextWatcher)
+        editTextPhoneNumber.onEmptyDelete = { moveCursorToCodeField() }
 
-        codeEditText.addTextChangedListener(countryCodeWatcher)
+        editTextCountryCode.addTextChangedListener(countryCodeWatcher)
 
-        val focusView = if (countryCode == null) codeEditText else uikitEditText
+        val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
         focusView.focusAndShowKeyboard()
     }
 
     private fun moveCursorToCodeField() = with(binding) {
-        val currentText = uikitEditText.text.toString()
+        val currentText = editTextPhoneNumber.text.toString()
         if (currentText.isNotEmpty()) return@with
 
-        with(uikitEditText) {
-            uikitEditText.setSelection(uikitEditText.length())
+        with(editTextPhoneNumber) {
+            editTextPhoneNumber.setSelection(editTextPhoneNumber.length())
             setHintText("")
         }
 
-        with(codeEditText) {
-            setSelection(binding.codeEditText.length())
+        with(editTextCountryCode) {
+            setSelection(binding.editTextCountryCode.length())
             dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
             focusAndShowKeyboard()
         }
     }
 
-    fun update(countryCode: CountryCode) = with(binding) {
-        emojiTextView.text = countryCode.flagEmoji
+    fun updateViewState(countryCode: CountryCode?) = with(binding) {
 
-        with(codeEditText) {
+        if (countryCode == null) {
+            showError(getString(R.string.error_country_not_found))
+            textViewFlagEmoji.text = EMOJI_NO_FLAG
+            return@with
+        }
+        textViewFlagEmoji.text = countryCode.flagEmoji
+
+        with(editTextCountryCode) {
             removeTextChangedListener(countryCodeWatcher)
             setText(countryCode.phoneCode)
         }
 
-        with(uikitEditText) {
+        with(editTextPhoneNumber) {
             addTextChangedListener(phoneTextWatcher)
             setHintText(countryCode.getMaskWithoutCountryCode())
             setSelection(length())
             focusAndShowKeyboard()
         }
 
-        codeEditText.addTextChangedListener(countryCodeWatcher)
+        editTextCountryCode.addTextChangedListener(countryCodeWatcher)
         showError(null)
     }
 
-    fun showNoCountry() = with(binding) {
-        emojiTextView.text = EMOJI_NO_FLAG
-        showError(getString(R.string.error_country_not_found))
-    }
-
     fun showError(text: String?) = with(binding) {
-        errorTextView.text = text
-        errorTextView.isVisible = !text.isNullOrEmpty()
+        textViewError.text = text
+        textViewError.isVisible = !text.isNullOrEmpty()
         inputViewContainer.background = if (!text.isNullOrEmpty()) bgRed else bgNormal
     }
 
