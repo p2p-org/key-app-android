@@ -21,7 +21,7 @@ import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.home.model.HomeBanner
+import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
@@ -55,7 +55,7 @@ class HomeFragment :
 
     private lateinit var binding: FragmentHomeBinding
 
-    private val mainAdapter: TokenAdapter by unsafeLazy {
+    private val contentAdapter: TokenAdapter by unsafeLazy {
         TokenAdapter(this)
     }
 
@@ -63,7 +63,7 @@ class HomeFragment :
         EmptyViewAdapter(this).apply {
             setItems(
                 listOf(
-                    HomeBanner(
+                    HomeBannerItem(
                         id = R.id.home_banner_top_up,
                         titleTextId = R.string.main_banner_title,
                         subtitleTextId = R.string.main_banner_subtitle,
@@ -108,7 +108,7 @@ class HomeFragment :
         )
 
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        mainRecyclerView.adapter = mainAdapter
+        mainRecyclerView.adapter = contentAdapter
 
         actionButtonsView.setupActionButtons()
 
@@ -155,7 +155,7 @@ class HomeFragment :
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
-        mainAdapter.setItems(tokens, isZerosHidden, state)
+        contentAdapter.setItems(tokens, isZerosHidden, state)
     }
 
     override fun showTokensForBuy(tokens: List<Token>) {
@@ -194,7 +194,7 @@ class HomeFragment :
             mainRecyclerView.adapter = if (isEmpty) {
                 emptyAdapter
             } else {
-                mainAdapter
+                contentAdapter
             }
         }
     }
