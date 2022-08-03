@@ -14,6 +14,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
+import org.p2p.wallet.common.delegates.ListDelegatesAdapter
+import org.p2p.wallet.common.delegates.buildDelegatesAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
@@ -24,8 +26,10 @@ import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
+import org.p2p.wallet.home.ui.main.adapter.HeaderDelegate
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
-import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
+import org.p2p.wallet.home.ui.main.empty.BigBannerDelegate
+import org.p2p.wallet.home.ui.main.empty.GetTokenDelegate
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
@@ -59,8 +63,18 @@ class HomeFragment :
         TokenAdapter(this)
     }
 
-    private val emptyAdapter: EmptyViewAdapter by unsafeLazy {
-        EmptyViewAdapter(this)
+    private val emptyAdapter: ListDelegatesAdapter<Any> by unsafeLazy {
+        buildDelegatesAdapter {
+            delegates {
+                BigBannerDelegate { buttonId ->
+                    onBannerClicked(buttonId)
+                }
+                GetTokenDelegate { token ->
+                    onPopularTokenClicked(token)
+                }
+                HeaderDelegate()
+            }
+        }
     }
 
     private val browseAnalytics: BrowseAnalytics by inject()
@@ -174,7 +188,7 @@ class HomeFragment :
     }
 
     override fun showEmptyViewData(data: List<Any>) {
-        emptyAdapter.setItems(data)
+        emptyAdapter.updateItems(data)
     }
 
     override fun showActions(items: List<ActionButtonsView.ActionButton>) {

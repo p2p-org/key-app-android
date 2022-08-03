@@ -4,31 +4,33 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
-import android.view.ViewGroup
 import androidx.annotation.ColorRes
-import androidx.recyclerview.widget.RecyclerView
+import org.p2p.wallet.common.delegates.SmartDelegate
 import org.p2p.wallet.databinding.ItemBigBannerBinding
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-class BigBannerViewHolder(
-    parent: ViewGroup,
-    private val binding: ItemBigBannerBinding = parent.inflateViewBinding(attachToRoot = false),
+class BigBannerDelegate(
     private val onBannerButtonClicked: (buttonId: Int) -> Unit,
-) : RecyclerView.ViewHolder(binding.root) {
+) : SmartDelegate<HomeBannerItem, ItemBigBannerBinding>(
+    { parent -> parent.inflateViewBinding(attachToRoot = false) }
+) {
 
-    fun onBind(item: HomeBannerItem) = with(binding) {
-        textViewBannerTitle.setText(item.titleTextId)
-        textViewBannerSubtitle.setText(item.subtitleTextId)
+    override fun onBindViewHolder(
+        holder: ViewHolder<ItemBigBannerBinding>,
+        data: HomeBannerItem
+    ) = with(holder.binding) {
+        textViewBannerTitle.setText(data.titleTextId)
+        textViewBannerSubtitle.setText(data.subtitleTextId)
 
-        imageViewBanner.setImageResource(item.drawableRes)
+        imageViewBanner.setImageResource(data.drawableRes)
 
         buttonBanner.apply {
-            setText(item.buttonTextId)
-            setOnClickListener { onBannerButtonClicked(item.id) }
+            setText(data.buttonTextId)
+            setOnClickListener { onBannerButtonClicked(data.id) }
         }
-        setBackground(item.backgroundColorRes)
+        setBackground(data.backgroundColorRes)
     }
 
     private fun ItemBigBannerBinding.setBackground(@ColorRes backgroundColorRes: Int) {
