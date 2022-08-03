@@ -1,19 +1,26 @@
 package org.p2p.wallet.swap.koin
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
+import android.webkit.WebView
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -54,15 +61,11 @@ import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
+import org.robolectric.fakes.RoboWebSettings
 import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -128,6 +131,9 @@ class CheckModulesTest : KoinTest {
     @Test
     fun verifyKoinApp() {
         mockFirebase()
+
+        mockkConstructor(WebView::class)
+        every { anyConstructed<WebView>().settings }.returns(RoboWebSettings())
 
         checkKoinModules(
             modules = allModules + javaxDefaultModule,

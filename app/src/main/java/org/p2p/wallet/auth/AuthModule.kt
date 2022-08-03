@@ -3,11 +3,15 @@ package org.p2p.wallet.auth
 import androidx.biometric.BiometricManager
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
+import org.p2p.wallet.auth.common.GoogleSignInHelper
+import org.p2p.wallet.auth.common.WalletWeb3AuthManager
+import org.p2p.wallet.auth.gateway.GatewayServiceModule
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -18,20 +22,22 @@ import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
-import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract
-import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterPresenter
-import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
-import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerContract
-import org.p2p.wallet.auth.ui.phone.countrypicker.CountryPickerPresenter
-import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
-import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
-import org.p2p.wallet.auth.ui.phone.CountryPickerParser
+import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract
+import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
+import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
+import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsContract
+import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsPresenter
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.NewAuthSmsInputBlockedContract
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.NewSmsInputBlockedPresenter
 import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
@@ -46,6 +52,9 @@ import retrofit2.Retrofit
 object AuthModule {
 
     fun create() = module {
+
+        onboardingModule()
+
         single { BiometricManager.from(androidContext()) }
 
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
@@ -80,5 +89,20 @@ object AuthModule {
             )
         }
         factory { CountryPickerParser(get(), get()) }
+
+        includes(GatewayServiceModule.create())
+    }
+
+    private fun Module.onboardingModule() {
+        factory { GoogleSignInHelper() }
+        factory { WalletWeb3AuthManager(get(), get(), get(), get()) }
+
+        factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
+
+        factoryOf(::NewSmsInputPresenter) bind NewAuthSmsInputContract.Presenter::class
+        factoryOf(::NewSmsInputBlockedPresenter) bind NewAuthSmsInputBlockedContract.Presenter::class
+
+        factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
+        factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class
     }
 }

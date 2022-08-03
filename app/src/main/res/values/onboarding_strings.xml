@@ -1,0 +1,41 @@
+<resources>
+    <!--Onboarding-->
+    <string name="onboarding_create_text">Create a new wallet</string>
+    <string name="onboarding_restore_text">I already have a wallet</string>
+    <string name="onboarding_terms_text">By continuing, you agree to Key App’s</string>
+    <string name="onboarding_terms_button">Terms and Conditions</string>
+
+    <!--Onboarding Slides-->
+    <string name="onboarding_slide_1_title">Welcome \nto Key App</string>
+    <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
+
+    <!--Onboarding - Continue-->
+    <string name="onboarding_continue_title">Let’s continue</string>
+    <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nIt\’s only a phone number needed to create a new wallet</string>
+    <string name="onboarding_continue_button_text">Continue</string>
+
+    <!-- Onboarding pin / touch id -->
+    <string name="auth_create_wallet_step_3">Step 3 of 3</string>
+    <string name="auth_create_wallet_set_up_your_pin">Set up your PIN code</string>
+    <string name="auth_create_wallet_confirm_your_pin">Confirm your PIN code</string>
+    <string name="auth_create_wallet_pin_code_error">😬 PINs aren’t matching. Check and try again</string>
+    <string name="auth_create_wallet_pin_code_success">✌️ Yeah, you’ve created the PIN to KeyApp</string>
+
+    <string name="auth_create_wallet_use_touch_id_title">Use Touch ID?</string>
+    <string name="auth_create_wallet_use_touch_id_subtitle">For logging in and verifying transactions</string>
+    <string name="auth_create_wallet_use_touch_id">Use Touch ID</string>
+    <string name="auth_create_wallet_dont_use">Don\'t use</string>
+
+    <!-- NewSmsInput -->
+    <string name="onboarding_sms_input_wrong_sms">Incorrect SMS code \uD83D\uDE2C</string>
+    <string name="onboarding_sms_invalid_sms_button_text">Enter the code to continue</string>
+    <string name="onboarding_sms_input_resend_sms">Resend SMS</string>
+    <string name="onboarding_sms_input_before_resend_sms">Resend after %1$d sec.</string>
+    <string name="onboarding_sms_input_request_overflow">Too many tries, sms validation blocked for %1$d sec.</string>
+    <string name="onboarding_sms_input_title">The code from SMS</string>
+    <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
+    <string name="onboarding_sms_input_blocked_terms_title">Key App\'s</string>
+    <string name="onboarding_sms_input_blocked_terms_button_title">Starting screen</string>
+    <string name="onboarding_sms_input_blocked_title">It\'s okay to be wrong</string>
+    <string name="onboarding_sms_input_blocked_timer_subtitle">You used 5 incorrect codes.\nFor your safety we\'ve frozen account for %1$s min</string>
+</resources>

@@ -10,6 +10,7 @@ import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
@@ -18,6 +19,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
+import org.p2p.wallet.infrastructure.network.interceptor.GatewayServiceInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
@@ -88,6 +90,15 @@ object NetworkModule : InjectionModule {
                 baseUrl = url,
                 tag = "NotificationService",
                 interceptor = null
+            )
+        }
+
+        single(named(FACADE_SERVICE_RETROFIT_QUALIFIER)) {
+            getRetrofit(
+                // TODO
+                baseUrl = "https://replace_later.com",
+                tag = "FacadeService",
+                interceptor = GatewayServiceInterceptor()
             )
         }
     }

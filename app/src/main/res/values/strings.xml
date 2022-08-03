@@ -32,6 +32,7 @@
     <string name="common_commas">…</string>
     <string name="common_transaction_details">Transaction details</string>
     <string name="common_error">Error</string>
+    <string name="common_resend">Resend</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -54,6 +55,7 @@
     <string name="error_rates_error">Cannot get rates</string>
     <string name="error_take_screenshot">Failed to take a screenshot</string>
     <string name="error_insufficient_funds">Insufficient funds</string>
+    <string name="error_invalid_blockhash">Invalid blockhash</string>
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
     <string name="error_country_not_found">Sorry, we don’t know a such country</string>
