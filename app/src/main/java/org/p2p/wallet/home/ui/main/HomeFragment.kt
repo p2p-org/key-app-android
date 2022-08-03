@@ -65,15 +65,15 @@ class HomeFragment :
 
     private val emptyAdapter: ListDelegatesAdapter<Any> by unsafeLazy {
         buildDelegatesAdapter {
-            delegates {
+            delegates(
                 BigBannerDelegate { buttonId ->
                     onBannerClicked(buttonId)
-                }
+                },
                 GetTokenDelegate { token ->
                     onPopularTokenClicked(token)
-                }
+                },
                 HeaderDelegate()
-            }
+            )
         }
     }
 
