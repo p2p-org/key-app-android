@@ -129,7 +129,7 @@ class HomePresenter(
                             )
                         }
                         updatedTokens.isNotEmpty() -> {
-                            view?.showEmptyState(isEmpty = false)
+                            view?.showEmptyState(isEmpty = true)
                             showTokensAndBalance()
                         }
                     }
