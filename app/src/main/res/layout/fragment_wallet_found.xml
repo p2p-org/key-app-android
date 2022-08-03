@@ -8,37 +8,49 @@
     android:layout_height="match_parent"
     android:background="@color/lime">
 
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/walletFoundToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_question"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/night"
+        app:title="@string/onboarding_create_text"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/night" />
+
     <ImageView
-        android:id="@+id/imageViewContinueOnboardingIcon"
+        android:id="@+id/walletFoundImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/continue_image"
-        app:layout_constraintBottom_toTopOf="@+id/textViewContinueOnboardingTitle"
+        android:src="@drawable/wallet_found"
+        app:layout_constraintBottom_toTopOf="@+id/walletFoundTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/walletFoundToolbar"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/textViewContinueOnboardingTitle"
+        android:id="@+id/walletFoundTitle"
         style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="26dp"
         android:gravity="center"
-        android:text="@string/onboarding_continue_title"
+        android:text="@string/wallet_found_title"
         android:textColor="@color/night"
-        app:layout_constraintBottom_toTopOf="@+id/textViewContinueOnboardingSubtitle"
+        app:layout_constraintBottom_toTopOf="@+id/walletFoundSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageViewContinueOnboardingIcon" />
+        app:layout_constraintTop_toBottomOf="@id/walletFoundImage" />
 
     <TextView
-        android:id="@+id/textViewContinueOnboardingSubtitle"
+        android:id="@+id/walletFoundSubtitle"
         style="@style/UiKit.TextAppearance.Regular.Title3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,14 +58,14 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:textColor="@color/night"
-        app:layout_constraintBottom_toTopOf="@+id/containerBottomContinueOnboarding"
+        app:layout_constraintBottom_toTopOf="@+id/walletFoundBottomContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewContinueOnboardingTitle"
-        tools:text="@string/onboarding_continue_subtitle" />
+        app:layout_constraintTop_toBottomOf="@id/walletFoundTitle"
+        tools:text="@string/wallet_found_subtitle" />
 
     <LinearLayout
-        android:id="@+id/containerBottomContinueOnboarding"
+        android:id="@+id/walletFoundBottomContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_night_top_rounded"
@@ -63,23 +75,25 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonContinueOnboarding"
+            android:id="@+id/walletFoundAnotherAccountButton"
             style="@style/UiKit.Components.Button.Large"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="8dp"
             android:backgroundTint="@color/snow"
-            android:text="@string/onboarding_continue_button_text"
+            android:text="@string/wallet_found_account_button_text"
             android:textColor="@color/night"
-            app:iconTint="@color/night" />
+            app:icon="@drawable/ic_google_logo"
+            app:iconGravity="textStart"
+            app:iconTint="@null" />
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonContinueStarting"
+            android:id="@+id/walletFoundRestoreButton"
             style="@style/UiKit.Components.Button.Large.Text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="20dp"
-            android:text="@string/onboarding_continue_starting_button_text"
+            android:text="@string/wallet_found_restore_button_text"
             android:textColor="@color/lime" />
 
     </LinearLayout>

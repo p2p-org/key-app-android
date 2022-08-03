@@ -13,6 +13,7 @@ import org.p2p.wallet.debug.feerelayer.DebugFeeRelayerFragment
 import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
+import org.p2p.wallet.debug.torus.DebugTorusFragment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.settings.SettingsAdapter
@@ -83,6 +84,9 @@ class DebugSettingsFragment :
             }
             R.string.settings_notification_service -> {
                 replaceFragment(DebugPushServiceFragment.create())
+            }
+            R.string.settings_torus -> {
+                replaceFragment(DebugTorusFragment.create())
             }
             R.string.debug_settings_logs_title -> {
                 CustomLogDialog(requireContext()).show()

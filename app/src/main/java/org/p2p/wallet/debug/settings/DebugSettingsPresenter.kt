@@ -20,6 +20,7 @@ class DebugSettingsPresenter(
     private var networkName = environmentManager.loadCurrentEnvironment().name
     private val feeRelayerUrl = networkServicesUrlProvider.loadFeeRelayerEnvironment().baseUrl
     private val notificationServiceUrl = networkServicesUrlProvider.loadNotificationServiceEnvironment().baseUrl
+    private val torusUrl = networkServicesUrlProvider.loadTorusEnvironment().baseUrl
 
     override fun loadData() {
         val settings = getMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()
@@ -49,6 +50,11 @@ class DebugSettingsPresenter(
             SettingsRow.Section(
                 titleResId = R.string.settings_fee_relayer,
                 subtitle = feeRelayerUrl,
+                iconRes = R.drawable.ic_network
+            ),
+            SettingsRow.Section(
+                titleResId = R.string.settings_torus,
+                subtitle = torusUrl,
                 iconRes = R.drawable.ic_network
             ),
             SettingsRow.Section(

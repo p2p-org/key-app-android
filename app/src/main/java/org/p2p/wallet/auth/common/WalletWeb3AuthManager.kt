@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.common
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -9,29 +8,38 @@ import android.widget.Toast
 import com.google.gson.Gson
 import org.p2p.wallet.auth.model.DeviceShareKey
 import org.p2p.wallet.auth.model.GoogleAuthFlow
-import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.wallet.utils.emptyString
+import timber.log.Timber
 
-private const val KEY_DEVICE_SHARE = "KEY_DEVICE_SHARE"
 private const val indexUri = "file:///android_asset/index.html"
 private const val communicationChannel = "AndroidCommunicationChannel"
 
 class WalletWeb3AuthManager(
     context: Context,
+    networkServicesUrlProvider: NetworkServicesUrlProvider,
     private val gson: Gson,
-    private val secureStorage: SecureStorageContract,
-    private val sharedPreferences: SharedPreferences,
+    private val deviceShareStorage: DeviceShareStorage,
 ) {
 
-    private var lastUserId: String? = null
+    private val torusUrl = networkServicesUrlProvider.loadTorusEnvironment().baseUrl
+
+    private var lastUserId: String = emptyString()
     private var lastIdToken: String? = null
+
+    val userId: String
+        get() = lastUserId
 
     var flowMode = GoogleAuthFlow.SIGN_IN
 
     private val onboardingWebView: WebView
 
+    private val handlers: MutableList<Web3AuthHandler> = mutableListOf()
+
     init {
         onboardingWebView = WebView(context).apply {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                // TODO PWN-4362 remove or make build related after all onboarding testing completed!
                 WebView.setWebContentsDebuggingEnabled(true)
             }
             settings.apply {
@@ -62,20 +70,28 @@ class WalletWeb3AuthManager(
         }
     }
 
+    fun addHandler(handler: Web3AuthHandler) {
+        handlers.add(handler)
+    }
+
+    fun removeHandler(handler: Web3AuthHandler) {
+        handlers.remove(handler)
+    }
+
     fun detach() {
         onboardingWebView.removeJavascriptInterface(communicationChannel)
     }
 
     private fun onSignUp(idToken: String) {
         onboardingWebView.evaluateJavascript(
-            "new p2pWeb3Auth.AndroidFacade({ useRandomPrivates: true }).triggerSilentSignup('$idToken')",
+            generateFacade("signup", "triggerSilentSignup('$idToken')"),
             null
         )
     }
 
     private fun onSignIn(idToken: String) {
-        val restoreDeviceShare = if (hasDeviceShare()) {
-            val deviceShareKey = getDeviceShare()
+        val restoreDeviceShare = if (isDeviceShareSaved()) {
+            val deviceShareKey = getDeviceShare(lastUserId)
             gson.toJson(deviceShareKey?.share)
         } else {
             null
@@ -83,31 +99,44 @@ class WalletWeb3AuthManager(
 
         restoreDeviceShare?.let {
             onboardingWebView.evaluateJavascript(
-                "new p2pWeb3Auth.AndroidFacade().triggerSignInNoCustom('$idToken', $it)",
+                generateFacade("signin", "triggerSignInNoCustom('$idToken', $it)"),
                 null
             )
         } ?: onboardingWebView.evaluateJavascript(
-            "new p2pWeb3Auth.AndroidFacade().triggerSignInNoDevice('$idToken')",
+            generateFacade("signin", "triggerSignInNoDevice('$idToken')"),
             null
         )
     }
 
     fun saveDeviceShare(deviceShare: String) {
-        val share = parseDeviceShare(deviceShare)
-        share?.let {
-            it.userId = lastUserId
-            secureStorage.saveString(KEY_DEVICE_SHARE, gson.toJson(it))
+        if (deviceShareStorage.saveDeviceShare(deviceShare, lastUserId)) {
+            handlers.forEach { handler ->
+                handler.onSuccessSignUp()
+            }
+        } else {
+            Timber.w("Unable to save device share $deviceShare, $lastIdToken")
         }
     }
 
-    private fun parseDeviceShare(deviceShare: String): DeviceShareKey? {
-        return gson.fromJson(deviceShare, DeviceShareKey::class.java)
+    fun isDeviceShareSaved(): Boolean = deviceShareStorage.isDeviceShareSaved()
+
+    private fun getDeviceShare(userId: String): DeviceShareKey? = deviceShareStorage.getDeviceShare(userId)
+
+    fun getLastDeviceShare(): DeviceShareKey? = deviceShareStorage.getLastDeviceShareUserId()?.let { userId ->
+        deviceShareStorage.getDeviceShare(userId)
     }
 
-    fun hasDeviceShare(): Boolean = sharedPreferences.contains(KEY_DEVICE_SHARE)
-
-    fun getDeviceShare(): DeviceShareKey? = secureStorage.getString(KEY_DEVICE_SHARE)?.let {
-        parseDeviceShare(it)
+    private fun generateFacade(type: String, method: String): String {
+        val host = torusUrl
+        return buildString {
+            append("new p2pWeb3Auth.AndroidFacade({")
+            append("type: '$type', ")
+            append("useNewEth: true, ")
+            append("torusLoginType: 'google', ")
+            append("torusEndpoint: '$host:5051', ")
+            append("metadataEndpoint: '$host:2222'")
+            append("}).$method")
+        }
     }
 
     private inner class AndroidCommunicationChannel(private val context: Context) {
@@ -128,7 +157,19 @@ class WalletWeb3AuthManager(
 
         @JavascriptInterface
         fun handleError(error: String) {
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            try {
+                val web3AuthError = gson.fromJson(error, Web3AuthError::class.java)
+                handlers.forEach {
+                    it.handleError(web3AuthError)
+                }
+            } catch (commonError: Error) {
+                Timber.w("error on Web3Auth: $error, $commonError")
+            }
         }
     }
+}
+
+interface Web3AuthHandler {
+    fun onSuccessSignUp()
+    fun handleError(error: Web3AuthError)
 }

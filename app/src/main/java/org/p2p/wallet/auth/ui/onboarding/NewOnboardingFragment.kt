@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,10 +10,14 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.common.GoogleSignInHelper
+import org.p2p.wallet.auth.ui.restore.WalletFoundFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
+import org.p2p.wallet.debug.settings.DebugSettingsFragment
+import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewOnboardingFragment :
@@ -49,10 +54,18 @@ class NewOnboardingFragment :
         analytics.logSplashViewed()
 
         with(binding) {
-            onboardingSliderPager.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
-            onboardingSliderDotsIndicator.attachTo(onboardingSliderPager)
-            onboardingCreateWalletButton.setOnClickListener {
+            viewPagerOnboardingSlider.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
+            dotsIndicatorOnboardingSlider.attachTo(viewPagerOnboardingSlider)
+            buttonCreateWalletOnboarding.setOnClickListener {
                 presenter.onSignUpButtonClicked()
+            }
+            buttonCreateWalletOnboarding.setOnLongClickListener {
+                // TODO PWN-4362 remove after all onboarding testing completed!
+                replaceFragment(DebugSettingsFragment.create())
+                true
+            }
+            buttonRestoreWalletOnboarding.setOnClickListener {
+                replaceFragment(SecretKeyFragment.create())
             }
         }
 
@@ -65,8 +78,41 @@ class NewOnboardingFragment :
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
 
+    override fun showError(error: String) {
+        view?.post {
+            setLoadingState(isScreenLoading = false)
+            showErrorSnackBar(error)
+        }
+    }
+
+    override fun onSameTokenError() {
+        view?.post {
+            setLoadingState(isScreenLoading = false)
+            replaceFragment(WalletFoundFragment.create())
+        }
+    }
+
+    override fun onSuccessfulSignUp() {
+        view?.post {
+            // TODO PWN-4268 move user to phone number screen
+            setLoadingState(isScreenLoading = false)
+            Toast.makeText(requireContext(), "You are successfully signed in!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setLoadingState(isScreenLoading: Boolean) {
+        with(binding) {
+            buttonCreateWalletOnboarding.apply {
+                isLoading = isScreenLoading
+                isEnabled = !isScreenLoading
+            }
+            buttonRestoreWalletOnboarding.isEnabled = !isScreenLoading
+        }
+    }
+
     private fun handleSignResult(result: ActivityResult) {
         signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
+            setLoadingState(isScreenLoading = true)
             presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
     }

@@ -21,7 +21,7 @@ class OnboardingRootFragment : BaseFragment(R.layout.fragment_root_onboarding) {
 
         if (savedInstanceState == null) {
             replaceFragment(
-                if (authManager.hasDeviceShare()) {
+                if (authManager.isDeviceShareSaved()) {
                     ContinueOnboardingFragment.create()
                 } else {
                     NewOnboardingFragment.create()
