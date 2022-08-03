@@ -6,9 +6,11 @@
     android:id="@id/contentView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#F8F8FA"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
     android:clickable="true"
     android:focusable="true"
+    app:cardBackgroundColor="#F8F8FA"
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp">
 
@@ -34,7 +36,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
-            android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:maxLines="1"
             app:layout_constraintBottom_toTopOf="@id/textViewTotal"
@@ -49,6 +50,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
             android:ellipsize="end"
             android:singleLine="true"
             android:textColor="@color/textIconSecondary"

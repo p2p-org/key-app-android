@@ -8,9 +8,11 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.home.model.Banner
+import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
@@ -21,6 +23,9 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
+import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
@@ -28,7 +33,8 @@ import java.util.concurrent.TimeUnit
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
-private val TOKENS_VALID_FOR_BUY = setOf("SOL", "USDC")
+private val TOKENS_VALID_FOR_BUY = setOf(SOL_SYMBOL, USDC_SYMBOL)
+private val POPULAR_TOKENS = setOf(SOL_SYMBOL, USDC_SYMBOL, REN_BTC_SYMBOL)
 
 class HomePresenter(
     private val inAppFeatureFlags: InAppFeatureFlags,
@@ -38,7 +44,8 @@ class HomePresenter(
     private val usernameInteractor: UsernameInteractor,
     private val environmentManager: NetworkEnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val homeElementItemMapper: HomeElementItemMapper
+    private val homeElementItemMapper: HomeElementItemMapper,
+    private val resourcesProvider: ResourcesProvider
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private data class ViewState(
@@ -105,10 +112,24 @@ class HomePresenter(
                     val isAccountEmpty = updatedTokens.run { size == 1 && first().isSOL && first().isZero }
                     when {
                         isAccountEmpty -> {
+                            val tokensForBuyOrReceive = userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
                             view?.showEmptyState(isEmpty = true)
+                            view?.showEmptyViewData(
+                                listOf(
+                                    HomeBannerItem(
+                                        id = R.id.home_banner_top_up,
+                                        titleTextId = R.string.main_banner_title,
+                                        subtitleTextId = R.string.main_banner_subtitle,
+                                        buttonTextId = R.string.main_banner_button,
+                                        drawableRes = R.drawable.ic_banner_image,
+                                        backgroundColorRes = R.color.bannerBackgroundColor
+                                    ),
+                                    resourcesProvider.getString(R.string.main_popular_tokens_header)
+                                ) + tokensForBuyOrReceive
+                            )
                         }
                         updatedTokens.isNotEmpty() -> {
-                            view?.showEmptyState(isEmpty = true)
+                            view?.showEmptyState(isEmpty = false)
                             showTokensAndBalance()
                         }
                     }
