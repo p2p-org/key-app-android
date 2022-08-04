@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/homeItem"
-        android:icon="@drawable/ic_wallet_main"
+        android:icon="@drawable/ic_main_wallet"
         android:title="@string/common_wallet" />
     <item
         android:id="@+id/historyItem"
-        android:icon="@drawable/ic_history_main"
+        android:icon="@drawable/ic_main_history"
         android:title="@string/common_history" />
 
     <item
@@ -15,10 +15,10 @@
         android:title="" />
     <item
         android:id="@+id/feedbackItem"
-        android:icon="@drawable/ic_feedback_main"
+        android:icon="@drawable/ic_main_feedback"
         android:title="@string/common_feedback" />
     <item
         android:id="@+id/settingsItem"
-        android:icon="@drawable/ic_setting_main"
+        android:icon="@drawable/ic_main_settings"
         android:title="@string/common_settings" />
 </menu>

@@ -15,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottoNavigationView"
+            android:id="@+id/bottomNavigationView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:itemIconTint="@drawable/menu_select_deselect"
@@ -26,7 +26,7 @@
     </FrameLayout>
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/buttonCenterAction"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginBottom="8dp"
