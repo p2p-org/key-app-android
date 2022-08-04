@@ -10,7 +10,6 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
-import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.FragmentLoggingLifecycleListener
@@ -18,7 +17,6 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
@@ -58,7 +56,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         checkForGoogleServices()
         deeplinksManager.mainFragmentManager = supportFragmentManager
         handleDeeplink()
-        replaceFragment(PhoneNumberEnterFragment.create())
     }
 
     private fun logScreenOpenEvent() {

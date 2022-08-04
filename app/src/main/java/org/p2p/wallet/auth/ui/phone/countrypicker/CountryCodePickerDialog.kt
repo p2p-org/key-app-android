@@ -12,7 +12,7 @@ import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.widget.SearchView
+import org.p2p.wallet.auth.widget.AnimatedSearchView
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
 import org.p2p.wallet.auth.ui.phone.maskwatcher.CountryCodeTextWatcher
@@ -20,6 +20,7 @@ import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogCountryPickerBinding
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -27,7 +28,7 @@ private const val EXTRA_KEY = "EXTRA_KEY"
 private const val EXTRA_RESULT = "EXTRA_RESULT"
 private const val EXTRA_SELECTED_COUNTRY = "EXTRA_SELECTED_COUNTRY"
 
-class CountryPickerDialog :
+class CountryCodePickerDialog :
     BaseMvpBottomSheet
     <CountryCodePickerContract.View, CountryCodePickerContract.Presenter>(R.layout.dialog_country_picker),
     CountryCodePickerContract.View {
@@ -45,11 +46,11 @@ class CountryPickerDialog :
             requestKey: String,
             resultKey: String,
             fragmentManager: FragmentManager
-        ) = CountryPickerDialog().withArgs(
+        ) = CountryCodePickerDialog().withArgs(
             EXTRA_SELECTED_COUNTRY to selectedCountry,
             EXTRA_KEY to requestKey,
             EXTRA_RESULT to resultKey
-        ).show(fragmentManager, CountryPickerDialog::javaClass.name)
+        ).show(fragmentManager, CountryCodePickerDialog::javaClass.name)
     }
 
     private val selectedCountry: CountryCode? by args(EXTRA_SELECTED_COUNTRY)
@@ -72,9 +73,9 @@ class CountryPickerDialog :
                     presenter.searchByCountryName(searchText)
                 }
             )
-            searchView.setStateListener(object : SearchView.SearchStateListener {
+            searchView.setStateListener(object : AnimatedSearchView.SearchStateListener {
                 override fun onClosed() {
-                    presenter.searchByCountryName("")
+                    presenter.searchByCountryName(emptyString())
                 }
             })
         }

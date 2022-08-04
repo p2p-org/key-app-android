@@ -12,7 +12,7 @@ import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-class SearchView @JvmOverloads constructor(
+class AnimatedSearchView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : RelativeLayout(context, attrs) {

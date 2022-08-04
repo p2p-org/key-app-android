@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.phone.countrypicker.CountryPickerDialog
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentAddNumberBinding
@@ -30,9 +30,9 @@ class PhoneNumberEnterFragment :
         presenter.load()
     }
 
-    override fun showDefaultCountryCode(countryCode: CountryCode?) {
+    override fun showDefaultCountryCode(country: CountryCode?) {
         binding.editTextPhoneNumber.setupViewState(
-            countryCode = countryCode,
+            countryCode = country,
             onCountryCodeChanged = ::onCountryCodeChanged,
             onPhoneChanged = ::onPhoneChanged,
             onCountryClickListener = ::onCountryClickListener
@@ -48,7 +48,7 @@ class PhoneNumberEnterFragment :
     }
 
     override fun showCountryCodePicker(selectedCountryCode: CountryCode?) {
-        CountryPickerDialog.show(selectedCountryCode, REQUEST_KEY, RESULT_KEY, childFragmentManager)
+        CountryCodePickerDialog.show(selectedCountryCode, REQUEST_KEY, RESULT_KEY, childFragmentManager)
     }
 
     override fun setContinueButtonEnabled(isEnabled: Boolean) = with(binding) {

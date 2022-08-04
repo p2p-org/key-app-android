@@ -67,4 +67,3 @@
 -keep public class org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 -keep public class org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }
--keepresourcefiles assets/io/michaelrocks/libphonenumber/android/**

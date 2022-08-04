@@ -9,7 +9,7 @@ import org.p2p.wallet.utils.emptyString
 
 private const val DEFAULT_KEY = ""
 
-class CountryPickerPresenter(
+class CountryCodePickerPresenter(
     private val countryCodeInteractor: CountryCodeInteractor
 ) :
     BasePresenter<CountryCodePickerContract.View>(),

@@ -30,11 +30,10 @@ import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
 import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
-import org.p2p.wallet.auth.ui.phone.CountryPickerParser
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterPresenter
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerContract
-import org.p2p.wallet.auth.ui.phone.countrypicker.CountryPickerPresenter
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsContract
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsPresenter
@@ -92,21 +91,10 @@ object AuthModule {
 
         // Add Phone Number
         factoryOf(::PhoneNumberEnterPresenter) bind PhoneNumberEnterContract.Presenter::class
-        factory { CountryPickerPresenter(get()) } bind CountryCodePickerContract.Presenter::class
-        single {
-            CountryCodeInMemoryRepository(
-                get(),
-                PhoneNumberUtil.createInstance(androidContext())
-            )
-        } bind CountryCodeLocalRepository::class
-        factory {
-            CountryCodeInteractor(
-                countryCodeLocalRepository = get(),
-                phoneNumberUtil = PhoneNumberUtil.createInstance(androidContext())
-            )
-        }
-        factory { CountryPickerParser(get(), get()) }
-
+        factoryOf(::CountryCodePickerPresenter) bind CountryCodePickerContract.Presenter::class
+        singleOf(::CountryCodeInMemoryRepository) bind CountryCodeLocalRepository::class
+        single { PhoneNumberUtil.createInstance(androidContext()) }
+        factoryOf(::CountryCodeInteractor)
         includes(GatewayServiceModule.create())
     }
 
