@@ -15,64 +15,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
+    <include
+        android:id="@+id/balance"
+        layout="@layout/layout_home_balance"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="0dp">
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="0dp"
-            app:contentScrim="@color/backgroundPrimary"
-            app:expandedTitleGravity="top"
-            app:expandedTitleMarginEnd="48dp"
-            app:expandedTitleMarginStart="48dp"
-            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/backgroundPrimary"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/balanceLabelTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:text="@string/main_balance"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-                    android:textColor="@color/textIconSecondary" />
-
-                <TextView
-                    android:id="@+id/balanceTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold28"
-                    tools:text="$7,730.98" />
-
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/debugButton"
-                android:layout_width="?actionBarSize"
-                android:layout_height="?actionBarSize"
-                android:layout_gravity="end"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/home_debug"
-                android:padding="16dp"
-                android:src="@drawable/ic_home_debug"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="wrap_content" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
