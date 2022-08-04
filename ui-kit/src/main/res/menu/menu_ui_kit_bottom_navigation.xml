@@ -3,22 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/homeItem"
-        android:icon="@drawable/ic_bottom_navigation_wallet"
+        android:icon="@drawable/ic_wallet_main"
         android:title="@string/common_wallet" />
     <item
         android:id="@+id/historyItem"
-        android:icon="@drawable/ic_bottom_navigation_history"
+        android:icon="@drawable/ic_history_main"
         android:title="@string/common_history" />
+
     <item
         android:id="@+id/sendItem"
-        android:icon="@drawable/ic_bottom_navigation_send"
-        android:title="@string/common_send" />
+        android:title="" />
     <item
         android:id="@+id/feedbackItem"
-        android:icon="@drawable/ic_bottom_navigation_feedback"
+        android:icon="@drawable/ic_feedback_main"
         android:title="@string/common_feedback" />
     <item
         android:id="@+id/settingsItem"
-        android:icon="@drawable/ic_bottom_navigation_settings"
+        android:icon="@drawable/ic_setting_main"
         android:title="@string/common_settings" />
 </menu>
