@@ -1,11 +1,12 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
@@ -131,6 +132,14 @@ class HomeFragment :
                 }
             }
         }
+
+        viewNewMainBuyTokenBanner.buttonBuyToken.setOnClickListener {
+            actionButtonsView.onBuyItemClickListener?.invoke()
+        }
+        viewNewMainBuyTokenBanner.imageViewCloseBanner.setOnClickListener {
+            viewNewMainBuyTokenBanner.root.isGone = true
+            // TODO: PWN-4396 - add flag that banner is gone in shared prefs if needed
+        }
     }
 
     private fun ActionButtonsView.setupActionButtons() {
@@ -191,11 +200,8 @@ class HomeFragment :
             actionButtonsView.isVisible = !isEmpty
             balanceTextView.isVisible = !isEmpty
             balanceLabelTextView.isVisible = !isEmpty
-            mainRecyclerView.adapter = if (isEmpty) {
-                emptyAdapter
-            } else {
-                contentAdapter
-            }
+            mainRecyclerView.adapter = if (isEmpty) emptyAdapter else contentAdapter
+            viewNewMainBuyTokenBanner.root.isVisible = !isEmpty
         }
     }
 
