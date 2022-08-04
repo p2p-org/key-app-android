@@ -3,8 +3,4 @@
     <string name="main_banner_title">Top up your account to get started</string>
     <string name="main_banner_subtitle">Make your first deposit or buy with your credit card or Apple Pay</string>
     <string name="main_banner_button">Top up</string>
-
-    <string name="main_buy_token_banner_title">Buy your first token</string>
-    <string name="main_buy_token_banner_subtitle">Stake your token &amp; get reward every day</string>
-    <string name="main_buy_token_banner_button_title">Buy</string>
 </resources>
