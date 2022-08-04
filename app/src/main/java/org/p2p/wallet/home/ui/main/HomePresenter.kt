@@ -70,6 +70,8 @@ class HomePresenter(
             )
         )
 
+        view.showUserAddress(tokenKeyProvider.publicKey)
+
         updatesManager.start()
 
         presenterState = presenterState.copy(

@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -18,6 +19,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
+import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
@@ -32,8 +34,10 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -94,6 +98,8 @@ class HomeFragment :
             color = color
         )
 
+        toolbar.setupToolbar()
+
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.adapter = contentAdapter
 
@@ -120,6 +126,20 @@ class HomeFragment :
         }
     }
 
+    private fun LayoutHomeToolbarBinding.setupToolbar() {
+        textViewAddress.setOnClickListener {
+            val address = textViewAddress.text
+            requireContext().copyToClipBoard(address.toString())
+            val snackbar = binding.root.showSnackbarShort(
+                getString(R.string.home_address_snackbar_text),
+                getString(R.string.common_ok)
+            ) { it.dismiss() }
+        }
+
+        imageViewProfile.setOnClickListener { replaceFragment(SettingsFragment.create()) }
+        imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
+    }
+
     private fun ActionButtonsView.setupActionButtons() {
         onBuyItemClickListener = {
             presenter.onBuyClicked()
@@ -143,6 +163,10 @@ class HomeFragment :
 
     private fun showBuyTokenScreen(token: Token) {
         replaceFragment(BuySolanaFragment.create(token))
+    }
+
+    override fun showUserAddress(publicKey: String) {
+        binding.toolbar.textViewAddress.text = publicKey
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
