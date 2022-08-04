@@ -17,7 +17,7 @@ import org.p2p.uikit.R
  *       app:isRounded="true|false" />
  * ```
  */
-class UiKitSkeletonRectangle(
+class UiKitSkeletonRectangle @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
