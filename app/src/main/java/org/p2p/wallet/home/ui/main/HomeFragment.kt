@@ -92,11 +92,6 @@ class HomeFragment :
         val commonTitle = getString(R.string.app_name)
         val beta = getString(R.string.common_beta)
         val color = getColor(R.color.textIconSecondary)
-        titleTextView.text = SpanUtils.highlightText(
-            commonText = "$commonTitle $beta",
-            highlightedText = beta,
-            color = color
-        )
 
         toolbar.setupToolbar()
 
@@ -117,7 +112,7 @@ class HomeFragment :
         )
 
         if (BuildConfig.DEBUG) {
-            with(debugButton) {
+            with(toolbar.imageViewDebug) {
                 isVisible = true
                 setOnClickListener {
                     replaceFragment(DebugSettingsFragment.create())

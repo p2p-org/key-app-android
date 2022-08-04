@@ -19,7 +19,6 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -37,16 +36,6 @@
                 android:layout_height="wrap_content"
                 android:background="@color/backgroundPrimary"
                 android:orientation="vertical">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/titleTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="16dp"
-                    android:text="@string/app_name"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
 
                 <TextView
                     android:id="@+id/balanceLabelTextView"
