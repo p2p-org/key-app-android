@@ -38,7 +38,7 @@ class PhoneNumberEnterPresenter(
 
     override fun onPhoneChanged(phoneNumber: String) {
         selectedCountryCode?.let {
-            val isValidNumber = countryCodeInteractor.isValidNumberForRegion(it.nameCode, phoneNumber)
+            val isValidNumber = countryCodeInteractor.isValidNumberForRegion(it.phoneCode, phoneNumber)
             view?.setContinueButtonEnabled(isValidNumber)
         }
     }

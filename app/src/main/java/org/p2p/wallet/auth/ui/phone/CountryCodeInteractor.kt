@@ -47,16 +47,22 @@ class CountryCodeInteractor(
     }
 
     suspend fun findCountryForPhoneCode(phoneCode: String): CountryCode? {
-        val allCountries = countryCodeLocalRepository.getCountryCodes()
-        return allCountries.firstOrNull { it.phoneCode == phoneCode }
+        return try {
+            val allCountries = countryCodeLocalRepository.getCountryCodes()
+            val countryCode = allCountries.firstOrNull { it.phoneCode == phoneCode }
+            countryCode
+        } catch (e: Exception) {
+            null
+        }
     }
 
     suspend fun getCountries(): List<CountryCode> = countryCodeLocalRepository.getCountryCodes()
 
-    fun isValidNumberForRegion(regionCode: String, phoneNumber: String): Boolean {
+    fun isValidNumberForRegion(countryCode: String, phoneNumber: String): Boolean {
         return try {
-            val phoneNumber = phoneNumberUtil.parse(phoneNumber, null)
-            phoneNumberUtil.isValidNumberForRegion(phoneNumber, regionCode)
+            val validatePhoneNumber = phoneNumberUtil.parse(phoneNumber, countryCode.uppercase())
+            val isValidNumber = phoneNumberUtil.isValidNumber(validatePhoneNumber)
+            isValidNumber
         } catch (countryNotFound: Exception) {
             return false
         }

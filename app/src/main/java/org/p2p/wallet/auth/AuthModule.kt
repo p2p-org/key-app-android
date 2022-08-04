@@ -5,10 +5,12 @@ import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
+import org.p2p.wallet.auth.common.DeviceShareStorage
 import org.p2p.wallet.auth.common.GoogleSignInHelper
 import org.p2p.wallet.auth.common.WalletWeb3AuthManager
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
@@ -42,6 +44,8 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
+import org.p2p.wallet.auth.ui.restore.WalletFoundContract
+import org.p2p.wallet.auth.ui.restore.WalletFoundPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.inputblocked.NewAuthSmsInputBlockedContract
@@ -89,7 +93,12 @@ object AuthModule {
         // Add Phone Number
         factoryOf(::PhoneNumberEnterPresenter) bind PhoneNumberEnterContract.Presenter::class
         factory { CountryPickerPresenter(get()) } bind CountryCodePickerContract.Presenter::class
-        single { CountryCodeInMemoryRepository(get()) } bind CountryCodeLocalRepository::class
+        single {
+            CountryCodeInMemoryRepository(
+                get(),
+                PhoneNumberUtil.createInstance(androidContext())
+            )
+        } bind CountryCodeLocalRepository::class
         factory {
             CountryCodeInteractor(
                 countryCodeLocalRepository = get(),
@@ -102,10 +111,13 @@ object AuthModule {
     }
 
     private fun Module.onboardingModule() {
-        factory { GoogleSignInHelper() }
-        factory { WalletWeb3AuthManager(get(), get(), get(), get()) }
+        singleOf(::GoogleSignInHelper)
+        singleOf(::DeviceShareStorage)
+        singleOf(::WalletWeb3AuthManager)
 
-        factory { NewOnboardingPresenter(get()) } bind NewOnboardingContract.Presenter::class
+        factoryOf(::NewOnboardingPresenter) bind NewOnboardingContract.Presenter::class
+
+        factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
 
         factoryOf(::NewSmsInputPresenter) bind NewAuthSmsInputContract.Presenter::class
         factoryOf(::NewSmsInputBlockedPresenter) bind NewAuthSmsInputBlockedContract.Presenter::class

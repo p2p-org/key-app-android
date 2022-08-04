@@ -1,19 +1,18 @@
-package org.p2p.wallet.auth.ui.onboarding
+package org.p2p.wallet.auth.ui.restore
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
-interface NewOnboardingContract {
+interface WalletFoundContract {
     interface View : MvpView {
         fun startGoogleFlow()
+        fun setUserId(userId: String)
         fun showError(error: String)
-        fun onSameTokenError()
         fun onSuccessfulSignUp()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun onSignUpButtonClicked()
-        fun onSignInButtonClicked()
         fun setIdToken(userId: String, idToken: String)
     }
 }

@@ -115,7 +115,7 @@ open class PhoneNumberTextField @JvmOverloads constructor(
         }
 
         phoneTextWatcher = PhoneNumberTextWatcher(binding.editTextPhoneNumber) {
-            val phone = "+${editTextCountryCode.text?.trim()}${it.trim()}"
+            val phone = "+${editTextCountryCode.text?.trim()}${it.trim()}".replace(" ", "")
             onPhoneChanged.invoke(phone)
         }
         countryCodeWatcher = CountryCodeTextWatcher { countryCode ->
