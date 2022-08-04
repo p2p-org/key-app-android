@@ -11,6 +11,11 @@ class DebugHttpLoggingLogger(
     private val logTag: String
 ) : HttpLoggingInterceptor.Logger {
     override fun log(message: String) {
+        // ignore SolanaApi logs from network - it's too big to fit in logcat
+        if (logTag == "SolanaApi") {
+            return
+        }
+
         if (!message.startsWith('{') && !message.startsWith('[')) {
             Timber.tag(logTag).d(message)
             return

@@ -67,3 +67,6 @@
 -keep public class org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 -keep public class org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }
+
+-keep class io.intercom.android.** { *; }
+-keep class com.intercom.** { *; }
