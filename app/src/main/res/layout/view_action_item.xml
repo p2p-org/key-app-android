@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/viewActionRoot"
+    android:background="@drawable/bg_main_action_rounded"
+    android:foreground="@drawable/ripple_button_large"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="16dp">
+
+    <ImageView
+        android:id="@+id/imageViewActionIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:importantForAccessibility="no"
+        tools:src="@drawable/action_buy_icon" />
+
+    <TextView
+        android:id="@+id/textViewActionTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:textColor="@color/text_night"
+        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetPointer"
+        tools:text="Buy" />
+
+    <TextView
+        android:id="@+id/textViewActionSubtitle"
+        style="@style/UiKit.TextAppearance.Regular.Text4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/text_night"
+        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetPointer"
+        tools:text="using Apple Pay or bank card" />
+
+</LinearLayout>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@drawable/bg_rounded"
+    android:backgroundTint="@color/backgroundPrimary">
+
+    <View
+        android:id="@+id/viewBottomSheetPointer"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/viewBottomSheetTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/main_actions_title"
+        android:textColor="@color/night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetPointer" />
+
+    <include
+        android:id="@+id/viewBottomSheetActionBuy"
+        layout="@layout/view_action_item"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/viewBottomSheetActionReceive"
+        app:layout_constraintEnd_toStartOf="@+id/viewBottomSheetActionReceive"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetTitle" />
+
+    <include
+        android:id="@+id/viewBottomSheetActionReceive"
+        layout="@layout/view_action_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/viewBottomSheetActionBuy"
+        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetTitle" />
+
+    <include
+        android:id="@+id/viewBottomSheetActionTrade"
+        layout="@layout/view_action_item"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/viewBottomSheetActionSend"
+        app:layout_constraintEnd_toStartOf="@+id/viewBottomSheetActionSend"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetActionBuy" />
+
+    <include
+        android:id="@+id/viewBottomSheetActionSend"
+        layout="@layout/view_action_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/viewBottomSheetActionTrade"
+        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetActionReceive" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
