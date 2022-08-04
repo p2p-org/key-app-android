@@ -143,6 +143,7 @@ android {
             firebaseCrashlytics {
                 mappingFileUploadEnabled true
             }
+            matchingFallbacks = ["release"]
         }
 
         release {
