@@ -6,6 +6,8 @@
     <string name="main_banner_button">Top up</string>
 
     <!-- Home -->
+    <string name="main_address_snackbar_text">Address was copied to clipboard</string>
+    <string name="main_loading">Loading</string>
     <string name="home_address_snackbar_text">Address was copied to clipboard</string>
     <string name="main_popular_tokens_header">Popular coins</string>
     <string name="main_popular_token_action_buy_button">Buy it</string>

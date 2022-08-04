@@ -116,7 +116,7 @@ class HomeFragment :
             val address = textViewAddress.text
             requireContext().copyToClipBoard(address.toString())
             val snackbar = binding.root.showSnackbarShort(
-                getString(R.string.home_address_snackbar_text),
+                getString(R.string.main_address_snackbar_text),
                 getString(R.string.common_ok)
             ) { it.dismiss() }
         }
