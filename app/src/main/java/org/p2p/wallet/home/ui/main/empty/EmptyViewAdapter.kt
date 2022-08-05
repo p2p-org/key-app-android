@@ -22,7 +22,7 @@ class EmptyViewAdapter(
 
     override fun getItemViewType(position: Int): Int = when (data[position]) {
         is HomeBannerItem -> R.layout.item_big_banner
-        is Token -> R.layout.item_get_token
+        is Token -> R.layout.item_popular_token
         is String -> R.layout.item_main_header
         else -> throw IllegalStateException("Unknown viewType: ${data[position]}")
     }
@@ -33,7 +33,7 @@ class EmptyViewAdapter(
         R.layout.item_big_banner -> BigBannerViewHolder(parent) { bannerId: Int ->
             listener.onBannerClicked(bannerId)
         }
-        R.layout.item_get_token -> GetTokenViewHolder(parent) { popularToken ->
+        R.layout.item_popular_token -> PopularTokenViewHolder(parent) { popularToken ->
             listener.onPopularTokenClicked(popularToken)
         }
         R.layout.item_main_header -> HeaderViewHolder(parent)
@@ -43,7 +43,7 @@ class EmptyViewAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is BigBannerViewHolder -> holder.onBind(data[position] as HomeBannerItem)
-            is GetTokenViewHolder -> holder.onBind(data[position] as Token)
+            is PopularTokenViewHolder -> holder.onBind(data[position] as Token)
             is HeaderViewHolder -> holder.onBind(data[position] as String)
         }
     }

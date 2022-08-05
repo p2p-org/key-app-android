@@ -10,16 +10,16 @@ import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemGetTokenBinding
+import org.p2p.wallet.databinding.ItemPopularTokenBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.utils.asUsd
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
-class GetTokenViewHolder(
+class PopularTokenViewHolder(
     parent: ViewGroup,
-    private val binding: ItemGetTokenBinding = parent.inflateViewBinding(attachToRoot = false),
+    private val binding: ItemPopularTokenBinding = parent.inflateViewBinding(attachToRoot = false),
     private val onPopularTokenClicked: (Token) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -27,7 +27,7 @@ class GetTokenViewHolder(
         .`as`(PictureDrawable::class.java)
         .listener(SvgSoftwareLayerSetter())
 
-    companion object {
+    private companion object {
         private const val IMAGE_SIZE = 56
     }
 
