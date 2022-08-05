@@ -16,20 +16,19 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
 
     val binding = inflateViewBinding<WidgetBottomNavigationViewBinding>()
 
-    init {
-        binding.bottomNavigationView.inflateMenu(R.menu.menu_ui_kit_bottom_navigation)
-    }
+    fun getSelectedItemId(): Int = binding.bottomNavigationView.selectedItemId
 
-    var selectedItemId: ScreenTab = getScreenTabByMenuItemId(binding.bottomNavigationView.selectedItemId)
+    fun setSelectedItemId(itemId: Int) {
+        binding.bottomNavigationView.selectedItemId = itemId
+    }
 
     val menu: Menu
         get() = binding.bottomNavigationView.menu
 
     fun setOnItemSelectedListener(block: (ScreenTab) -> Boolean) {
         binding.bottomNavigationView.setOnItemSelectedListener {
-            val screenTabItem = getScreenTabByMenuItemId(it.itemId)
-            block(screenTabItem)
-            return@setOnItemSelectedListener true
+            ScreenTab.fromTabId(it.itemId)?.let { block.invoke(it) }
+            true
         }
     }
 
@@ -37,18 +36,25 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
         binding.buttonCenterAction.setOnClickListener { block.invoke() }
     }
 
-    private fun getScreenTabByMenuItemId(menuItemId: Int): ScreenTab {
-        return when (menuItemId) {
-            R.id.homeItem -> ScreenTab.HOME_SCREEN
-            R.id.historyItem -> ScreenTab.HISTORY_SCREEN
-            R.id.sendItem -> ScreenTab.SEND_SCREEN
-            R.id.feedbackItem -> ScreenTab.FEEDBACK_SCREEN
-            R.id.settingsItem -> ScreenTab.SETTINGS_SCREEN
-            else -> throw IllegalStateException("No screen tab found for menu item = $menuItemId")
-        }
+    fun inflateMenu(menuResId: Int) {
+        binding.bottomNavigationView.inflateMenu(menuResId)
     }
 
-    enum class ScreenTab {
-        HOME_SCREEN, HISTORY_SCREEN, SEND_SCREEN, FEEDBACK_SCREEN, SETTINGS_SCREEN
+    fun setChecked(menuItemId: Int) {
+        binding.bottomNavigationView.menu.findItem(menuItemId).isChecked = true
+    }
+}
+
+enum class ScreenTab(val itemId: Int) {
+    HOME_SCREEN(R.id.homeItem),
+    HISTORY_SCREEN(R.id.historyItem),
+    FEEDBACK_SCREEN(R.id.feedbackItem),
+    SETTINGS_SCREEN(R.id.settingsItem);
+
+    companion object {
+        fun fromTabId(tabId: Int): ScreenTab? {
+            return values()
+                .firstOrNull { it.itemId == tabId }
+        }
     }
 }
