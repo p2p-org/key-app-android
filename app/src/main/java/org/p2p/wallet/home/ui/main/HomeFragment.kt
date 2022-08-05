@@ -137,11 +137,11 @@ class HomeFragment :
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-            buyToken(it)
+            showBuyTokenScreen(it)
         }
     }
 
-    private fun buyToken(token: Token) {
+    private fun showBuyTokenScreen(token: Token) {
         replaceFragment(BuySolanaFragment.create(token))
     }
 
@@ -228,7 +228,7 @@ class HomeFragment :
         if (token.isRenBTC) {
             replaceFragment(ReceiveTokenFragment.create(token as Token.Active))
         } else {
-            buyToken(token)
+            showBuyTokenScreen(token)
         }
     }
 
