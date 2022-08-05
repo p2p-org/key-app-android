@@ -15,7 +15,7 @@ class CountryCodeInteractor(private val countryCodeLocalRepository: CountryCodeL
         countryCodeLocalRepository.detectCountryCodeByNetwork()
 
     fun findCountryForPhoneCode(phoneCode: String): CountryCode? =
-        countryCodeLocalRepository.findCountryCodeForPhoneCode(phoneCode)
+        countryCodeLocalRepository.findCountryCodeByPhoneCode(phoneCode)
 
     suspend fun getCountries(): List<CountryCode> = countryCodeLocalRepository.getCountryCodes()
 

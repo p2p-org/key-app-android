@@ -14,6 +14,7 @@ import org.p2p.wallet.auth.common.DeviceShareStorage
 import org.p2p.wallet.auth.common.GoogleSignInHelper
 import org.p2p.wallet.auth.common.WalletWeb3AuthManager
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
+import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -94,6 +95,7 @@ object AuthModule {
         factoryOf(::CountryCodePickerPresenter) bind CountryCodePickerContract.Presenter::class
         singleOf(::CountryCodeInMemoryRepository) bind CountryCodeLocalRepository::class
         single { PhoneNumberUtil.createInstance(androidContext()) }
+        singleOf(::CountryCodeHelper)
         factoryOf(::CountryCodeInteractor)
         includes(GatewayServiceModule.create())
     }

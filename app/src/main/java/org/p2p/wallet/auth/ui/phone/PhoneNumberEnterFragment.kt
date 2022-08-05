@@ -7,12 +7,13 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentAddNumberBinding
+import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class PhoneNumberEnterFragment :
-    BaseMvpFragment<PhoneNumberEnterContract.View, PhoneNumberEnterContract.Presenter>(R.layout.fragment_add_number),
+    BaseMvpFragment<PhoneNumberEnterContract.View, PhoneNumberEnterContract.Presenter>
+    (R.layout.fragment_phone_number_enter),
     PhoneNumberEnterContract.View {
 
     companion object {
@@ -22,7 +23,7 @@ class PhoneNumberEnterFragment :
     }
 
     override val presenter: PhoneNumberEnterContract.Presenter by inject()
-    private val binding: FragmentAddNumberBinding by viewBinding()
+    private val binding: FragmentPhoneNumberEnterBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)

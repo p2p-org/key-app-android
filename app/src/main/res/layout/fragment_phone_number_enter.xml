@@ -20,7 +20,7 @@
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1" />
 
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/textViewTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -37,7 +37,7 @@
         android:gravity="center"
         android:text="@string/onboarding_add_number_message"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView" />
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
 
     <org.p2p.wallet.auth.widget.PhoneNumberTextField
         android:id="@+id/editTextPhoneNumber"
