@@ -22,7 +22,6 @@ import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
@@ -34,6 +33,7 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
@@ -66,20 +66,7 @@ class HomeFragment :
     }
 
     private val emptyAdapter: EmptyViewAdapter by unsafeLazy {
-        EmptyViewAdapter(this).apply {
-            setItems(
-                listOf(
-                    HomeBannerItem(
-                        id = R.id.home_banner_top_up,
-                        titleTextId = R.string.main_banner_title,
-                        subtitleTextId = R.string.main_banner_subtitle,
-                        buttonTextId = R.string.main_banner_button,
-                        drawableRes = R.drawable.ic_banner_image,
-                        backgroundColorRes = R.color.bannerBackgroundColor
-                    )
-                )
-            )
-        }
+        EmptyViewAdapter(this)
     }
 
     private val browseAnalytics: BrowseAnalytics by inject()
@@ -173,7 +160,7 @@ class HomeFragment :
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
                 result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-                    replaceFragment(BuySolanaFragment.create(it))
+                    showBuyTokenScreen(it)
                 }
             }
             KEY_REQUEST_ACTION -> {
@@ -199,6 +186,10 @@ class HomeFragment :
                 replaceFragment(SendFragment.create())
             }
         }
+    }
+
+    private fun showBuyTokenScreen(token: Token) {
+        replaceFragment(BuySolanaFragment.create(token))
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
@@ -227,6 +218,10 @@ class HomeFragment :
 
     override fun showRefreshing(isRefreshing: Boolean) {
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
+    }
+
+    override fun showEmptyViewData(data: List<Any>) {
+        emptyAdapter.setItems(data)
     }
 
     override fun showActions(items: List<ActionButtonsView.ActionButton>) {
@@ -274,6 +269,14 @@ class HomeFragment :
 
     override fun onTokenClicked(token: Token.Active) {
         replaceFragment(TokenHistoryFragment.create(token))
+    }
+
+    override fun onPopularTokenClicked(token: Token) {
+        if (token.isRenBTC) {
+            replaceFragment(ReceiveTokenFragment.create(token as Token.Active))
+        } else {
+            showBuyTokenScreen(token)
+        }
     }
 
     override fun onHideClicked(token: Token.Active) {

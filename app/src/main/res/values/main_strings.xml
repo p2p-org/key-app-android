@@ -18,4 +18,11 @@
 
     <string name="main_actions_send_title">Send</string>
     <string name="main_actions_send_subtitle">to phone number, username or address</string>
+
+
+    <!--Main Screen Empty-->
+    <string name="main_popular_tokens_header">Popular coins</string>
+
+    <string name="main_popular_token_action_buy_button">Buy it</string>
+    <string name="main_popular_token_action_receive_button">Receive</string>
 </resources>
