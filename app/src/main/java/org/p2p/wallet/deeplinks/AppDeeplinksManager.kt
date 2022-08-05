@@ -38,7 +38,7 @@ class AppDeeplinksManager(private val context: Context) {
 
     private fun Intent.addDeeplinkDataToIntent(notificationType: NotificationType) {
         if (notificationType == NotificationType.RECEIVE) {
-            putExtra(DEEPLINK_MAIN_SCREEN_EXTRA, R.id.itemHistory)
+            putExtra(DEEPLINK_MAIN_SCREEN_EXTRA, R.id.historyItem)
         }
     }
 
