@@ -97,7 +97,8 @@ object HomeModule : InjectionModule {
                 usernameInteractor = get(),
                 environmentManager = get(),
                 tokenKeyProvider = get(),
-                homeElementItemMapper = HomeElementItemMapper()
+                homeElementItemMapper = HomeElementItemMapper(),
+                resourcesProvider = get()
             )
         }
 
