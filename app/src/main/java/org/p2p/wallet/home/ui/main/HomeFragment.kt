@@ -186,16 +186,16 @@ class HomeFragment :
 
     private fun openScreenByMainAction(action: MainAction) {
         when (action) {
-            MainAction.Buy -> {
+            MainAction.BUY -> {
                 presenter.onBuyClicked()
             }
-            MainAction.Receive -> {
+            MainAction.RECEIVE -> {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
-            MainAction.Trade -> {
+            MainAction.TRADE -> {
                 replaceFragment(OrcaSwapFragment.create())
             }
-            MainAction.Send -> {
+            MainAction.SEND -> {
                 replaceFragment(SendFragment.create())
             }
         }

@@ -12,7 +12,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogMainActionsBinding
 import org.p2p.wallet.databinding.ViewActionItemBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
@@ -34,35 +33,37 @@ class MainActionsBottomSheet : BottomSheetDialogFragment() {
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
 
-    private val binding: DialogMainActionsBinding by viewBinding()
+    private lateinit var binding: DialogMainActionsBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.dialog_main_actions, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binding = DialogMainActionsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            viewBottomSheetActionBuy.apply {
-                setResultClickListener(MainAction.Buy)
-                imageViewActionIcon.setImageResource(R.drawable.action_buy_icon)
+            viewActionBuy.apply {
+                setResultClickListener(MainAction.BUY)
+                imageViewAction.setImageResource(R.drawable.action_buy_icon)
                 textViewActionTitle.setText(R.string.main_actions_buy_title)
                 textViewActionSubtitle.setText(R.string.main_actions_buy_subtitle)
             }
-            viewBottomSheetActionReceive.apply {
-                setResultClickListener(MainAction.Receive)
-                imageViewActionIcon.setImageResource(R.drawable.action_receive_icon)
+            viewActionReceive.apply {
+                setResultClickListener(MainAction.RECEIVE)
+                imageViewAction.setImageResource(R.drawable.action_receive_icon)
                 textViewActionTitle.setText(R.string.main_actions_receive_title)
                 textViewActionSubtitle.setText(R.string.main_actions_receive_subtitle)
             }
-            viewBottomSheetActionTrade.apply {
-                setResultClickListener(MainAction.Trade)
-                imageViewActionIcon.setImageResource(R.drawable.action_trade_icon)
+            viewActionTrade.apply {
+                setResultClickListener(MainAction.TRADE)
+                imageViewAction.setImageResource(R.drawable.action_trade_icon)
                 textViewActionTitle.setText(R.string.main_actions_trade_title)
                 textViewActionSubtitle.setText(R.string.main_actions_trade_subtitle)
             }
-            viewBottomSheetActionSend.apply {
-                setResultClickListener(MainAction.Send)
-                imageViewActionIcon.setImageResource(R.drawable.action_send_icon)
+            viewActionSend.apply {
+                setResultClickListener(MainAction.SEND)
+                imageViewAction.setImageResource(R.drawable.action_send_icon)
                 textViewActionTitle.setText(R.string.main_actions_send_title)
                 textViewActionSubtitle.setText(R.string.main_actions_send_subtitle)
             }
@@ -80,5 +81,5 @@ class MainActionsBottomSheet : BottomSheetDialogFragment() {
 }
 
 enum class MainAction {
-    Buy, Receive, Trade, Send
+    BUY, RECEIVE, TRADE, SEND
 }

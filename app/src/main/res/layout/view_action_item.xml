@@ -14,7 +14,7 @@
     android:paddingVertical="16dp">
 
     <ImageView
-        android:id="@+id/imageViewActionIcon"
+        android:id="@+id/imageViewAction"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:importantForAccessibility="no"
@@ -28,7 +28,7 @@
         android:layout_marginTop="12dp"
         android:gravity="center"
         android:textColor="@color/text_night"
-        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetPointer"
+        app:layout_constraintTop_toBottomOf="@id/viewPointer"
         tools:text="Buy" />
 
     <TextView
@@ -39,7 +39,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center_vertical"
         android:textColor="@color/text_night"
-        app:layout_constraintTop_toBottomOf="@id/viewBottomSheetPointer"
+        app:layout_constraintTop_toBottomOf="@id/viewPointer"
         tools:text="using Apple Pay or bank card" />
 
 </LinearLayout>
