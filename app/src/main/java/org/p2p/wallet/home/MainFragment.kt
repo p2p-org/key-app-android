@@ -38,7 +38,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (binding.bottomNavigation.selectedItemId != R.id.homeItem) {
+            if (binding.bottomNavigation.getSelectedItemId() != R.id.homeItem) {
                 navigate(R.id.homeItem)
             } else {
                 requireActivity().finish()
@@ -65,7 +65,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
                     is SettingsFragment -> fragments.put(R.id.settingsItem, fragment)
                 }
             }
-            binding.bottomNavigation.selectedItemId = R.id.homeItem
+            binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
         }
         deeplinksManager.handleSavedDeeplinkIntent()
     }
@@ -78,7 +78,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
     override fun navigate(itemId: Int) {
         if (!fragments.containsKey(itemId)) {
             val fragment = when (ScreenTab.fromTabId(itemId)) {
-
                 ScreenTab.HOME_SCREEN -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_COINS)
                     HomeFragment.create()
@@ -91,12 +90,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.MAIN)
                     SettingsFragment.create()
                 }
-                else -> throw IllegalStateException("No tab found for $itemId")
+                else -> error("No tab found for $itemId")
             }
             fragments[itemId] = fragment
         }
 
-        val prevFragmentId = binding.bottomNavigation.selectedItemId
+        val prevFragmentId = binding.bottomNavigation.getSelectedItemId()
         childFragmentManager.commit(allowStateLoss = false) {
             if (prevFragmentId != itemId) {
                 if (fragments[prevFragmentId] != null && !fragments[prevFragmentId]!!.isAdded) {
@@ -124,7 +123,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
                 }
             }
         }
-        if (binding.bottomNavigation.selectedItemId != itemId) {
+        if (binding.bottomNavigation.getSelectedItemId() != itemId) {
             binding.bottomNavigation.menu.findItem(itemId).isChecked = true
         } else {
             checkAndDismissLastBottomSheet()
