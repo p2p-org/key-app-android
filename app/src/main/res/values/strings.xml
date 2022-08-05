@@ -60,6 +60,7 @@
     <string name="error_invalid_blockhash">Invalid blockhash</string>
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
+    <string name="error_country_not_found">Sorry, we don’t know a such country</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
@@ -594,4 +595,13 @@
     <string name="receive_token_list_not_found">If there is a token named \"%s\", we don\'t recommend sending it to your Solana address since it will most likely be lost forever.</string>
     <string name="search_menu">Search</string>
     <string name="search_for_a_token">Search for a token</string>
+
+
+    <string name="onboarding_search_no_country">‍🏴 Sorry, we don’t know a such country</string>
+    <string name="onboarding_step_2">Step 2 of 3</string>
+    <string name="onboarding_add_number_title">What’s your number? 🤙</string>
+    <string name="onboarding_add_number_message">Add a phone to protect your account</string>
+    <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
+    <string name="onboarding_country_name">Country Name</string>
+    <string name="onboarding_fill_your_number">Fill your phone number</string>
 </resources>
