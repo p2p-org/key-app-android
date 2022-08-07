@@ -88,9 +88,9 @@ class SecretKeyInteractor(
             putString(KEY_DERIVATION_PATH, path.stringValue)
         }
 
-//        if (lookup) {
-//            usernameInteractor.findUsernameByAddress(publicKey)
-//        }
+        if (lookup) {
+            usernameInteractor.findUsernameByAddress(publicKey)
+        }
         adminAnalytics.logPasswordCreated()
     }
 
