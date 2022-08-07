@@ -235,8 +235,4 @@ class HomeFragment :
     override fun onHideClicked(token: Token.Active) {
         presenter.toggleTokenVisibility(token)
     }
-
-    override fun onSendClicked(token: Token.Active) {
-        replaceFragment(SendFragment.create(token))
-    }
 }

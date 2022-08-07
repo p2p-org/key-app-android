@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    android:id="@+id/textViewTitle"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="12sp"
+    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+    tools:text="@string/home_tokens" />
+

@@ -13,8 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        android:textColor="@color/textIconSecondary"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+        android:textColor="@color/text_mountain"
         tools:text="@string/main_hidden_tokens" />
 
     <ImageView

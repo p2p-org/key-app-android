@@ -2,7 +2,6 @@ package org.p2p.wallet.home.ui.main.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
@@ -27,23 +26,17 @@ class TokenButtonViewHolder(
     private val titleTextView = binding.titleTextView
 
     fun onBind(item: HomeElementItem.Action) {
-        val title = requireContext().getString(
-            if (item.isHiddenTokens) R.string.main_hidden_tokens
-            else R.string.main_active_tokens
-        )
+        val title = requireContext().getString(R.string.main_hidden_tokens)
 
         titleTextView.text = title
-        arrowImageView.isVisible = item.isHiddenTokens
 
-        if (item.isHiddenTokens) {
-            val isHidden = item.state is VisibilityState.Hidden
-            val rotationValue = if (isHidden) 0f else 180f
-            arrowImageView
-                .animate()
-                .rotation(rotationValue)
-                .start()
+        val isHidden = item.state is VisibilityState.Hidden
+        val rotationValue = if (isHidden) 0f else 180f
+        arrowImageView
+            .animate()
+            .rotation(rotationValue)
+            .start()
 
-            itemView.setOnClickListener { listener.onToggleClicked() }
-        }
+        itemView.setOnClickListener { listener.onToggleClicked() }
     }
 }
