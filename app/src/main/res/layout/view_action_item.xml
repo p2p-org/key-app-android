@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/textViewActionTitle"
-        style="@style/UiKit.TextAppearance.SemiBold.Title3"
+        style="@style/UiKit.TextAppearance.SemiBold.Text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -33,12 +33,12 @@
 
     <TextView
         android:id="@+id/textViewActionSubtitle"
-        style="@style/UiKit.TextAppearance.Regular.Text4"
+        style="@style/UiKit.TextAppearance.Regular.Label1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center_vertical"
-        android:textColor="@color/text_night"
+        android:textColor="@color/text_mountain"
         app:layout_constraintTop_toBottomOf="@id/viewPointer"
         tools:text="using Apple Pay or bank card" />
 
