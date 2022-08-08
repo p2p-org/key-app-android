@@ -12,10 +12,10 @@ interface TransactionQueueRepository {
     fun getTransactionById(transactionId: String): AppTransaction?
 
     suspend fun emit(transactionId: String, state: TransactionExecutionState)
-    fun getExecutionStateByTransactionId(transactionId: String): Flow<TransactionExecutionState>?
+    fun getExecutionStateByTransactionId(transactionId: String): Flow<TransactionExecutionState>
 
     suspend fun emit(transactionId: String, transactionState: TransactionState)
-    fun getTransactionStateById(transactionId: String): Flow<TransactionState>?
+    fun getTransactionStateById(transactionId: String): Flow<TransactionState>
 
     fun getAllPendingTransactions(): List<AppTransaction>
 }

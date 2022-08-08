@@ -25,21 +25,11 @@ class TransactionManagerImpl(
     }
 
     override fun addInQueue(transactions: List<AppTransaction>) {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-        transactions.forEach { transaction ->
-            val worker = OneTimeWorkRequestBuilder<TransactionWorker>()
-                .setConstraints(constraints)
-                .build()
-            transactionsWorkersIdMap[transaction] = worker.id
-
-            WorkManager.getInstance(context)
-                .enqueueUniqueWork(transaction.serializedTransaction, ExistingWorkPolicy.REPLACE, worker)
-        }
+        transactionQueueRepository.addInQueue(transactions)
+        executeTransactions()
     }
 
-    override fun getTransactionStateFlow(transactionId: String): Flow<TransactionState>? {
+    override fun getTransactionStateFlow(transactionId: String): Flow<TransactionState> {
         return transactionQueueRepository.getTransactionStateById(transactionId)
     }
 
@@ -48,5 +38,18 @@ class TransactionManagerImpl(
     }
 
     override fun executeTransactions() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        transactionQueueRepository.getAllPendingTransactions().forEach {
+            val worker = OneTimeWorkRequestBuilder<TransactionWorker>()
+                .setConstraints(constraints)
+                .build()
+            transactionsWorkersIdMap[it] = worker.id
+
+            WorkManager.getInstance(context)
+                .enqueueUniqueWork(it.serializedTransaction, ExistingWorkPolicy.REPLACE, worker)
+        }
     }
 }
