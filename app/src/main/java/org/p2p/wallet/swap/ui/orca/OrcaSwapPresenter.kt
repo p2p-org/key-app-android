@@ -16,6 +16,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYE
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.swap.analytics.SwapAnalytics
@@ -33,7 +34,6 @@ import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.swap.model.orca.SwapFee
 import org.p2p.wallet.swap.model.orca.SwapPrice
 import org.p2p.wallet.swap.model.orca.SwapTotal
-import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.interactor.TransactionBuilderInteractor
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -54,6 +54,7 @@ import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.UUID
 import kotlin.properties.Delegates
 
 private const val TAG_SWAP = "SWAP_STATE"
@@ -95,6 +96,8 @@ class OrcaSwapPresenter(
     private var isMaxClicked: Boolean = false
 
     private var validationJob: Job? = null
+
+    private lateinit var transactionId: String
 
     override fun loadInitialData() {
         launch {
@@ -286,7 +289,7 @@ class OrcaSwapPresenter(
     override fun swap() {
         val pair = bestPoolPair ?: return
         val destination = destinationToken ?: throw IllegalStateException("Destination is null")
-
+        transactionId = UUID.randomUUID().toString()
         appScope.launch {
             try {
                 logSwapStarted()
@@ -299,7 +302,7 @@ class OrcaSwapPresenter(
                     subTitle = subTitle,
                     transactionId = emptyString()
                 )
-                view?.showProgressDialog(progress)
+                view?.showProgressDialog(transactionId, progress)
                 swapAnalytics.logSwapProcessShown()
                 val result = swapInteractor.swap(
                     fromToken = sourceToken,
@@ -318,7 +321,7 @@ class OrcaSwapPresenter(
                 }
             } catch (serverError: ServerException) {
                 val state = TransactionState.Error(serverError.getErrorMessage(resources).orEmpty())
-                transactionManager.emitTransactionState(state)
+                transactionManager.emitTransactionState(transactionId, state)
             } catch (error: Throwable) {
                 showError(error)
             }
@@ -677,13 +680,13 @@ class OrcaSwapPresenter(
             fromToken = sourceTokenSymbol,
             toToken = destinationTokenSymbol
         )
-        transactionManager.emitTransactionState(state)
+        transactionManager.emitTransactionState(transactionId, state)
     }
 
     private fun showError(error: Throwable) {
         Timber.e(error, "Error swapping tokens")
         view?.showErrorMessage(error)
-        view?.showProgressDialog(null)
+        view?.showProgressDialog(transactionId, null)
     }
 
     private fun logSwapStarted() {

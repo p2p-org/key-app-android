@@ -1,8 +1,6 @@
 package org.p2p.wallet.transaction.interactor
 
-import kotlinx.coroutines.flow.Flow
-import org.p2p.wallet.transaction.TransactionManager
-import org.p2p.wallet.transaction.model.TransactionExecutionState
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 
 class TransactionStatusInteractor(
     private val transactionManager: TransactionManager
@@ -13,7 +11,4 @@ class TransactionStatusInteractor(
     fun onSignatureReceived(signature: String) {
         onSignatureReceived?.invoke(signature)
     }
-
-    fun getTransactionStateFlow(transactionId: String): Flow<TransactionExecutionState>? =
-        transactionManager.getStateFlow(transactionId)
 }

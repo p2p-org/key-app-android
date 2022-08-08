@@ -39,7 +39,6 @@ import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.send.model.Target
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
@@ -66,6 +65,8 @@ import kotlin.properties.Delegates
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import java.util.UUID
 
 class SendPresenter(
     private val sendInteractor: SendInteractor,
@@ -97,6 +98,7 @@ class SendPresenter(
     private var checkAddressJob: Job? = null
     private var feeJob: Job? = null
     private var feePayerJob: Job? = null
+    private lateinit var transactionId: String
 
     override fun setInitialToken(initialToken: Token.Active) {
         state.updateInitialToken(initialToken)
@@ -488,17 +490,18 @@ class SendPresenter(
     private fun sendInSolana(token: Token.Active, address: String) {
         launch {
             try {
+                transactionId = UUID.randomUUID().toString()
                 val destinationAddress = address.toPublicKey()
                 val lamports = state.tokenAmount.toLamports(token.decimals)
 
                 when (val validation = addressInteractor.validateAddress(destinationAddress, token.mintAddress)) {
                     is AddressValidation.WrongWallet -> {
                         view?.showWrongWalletError()
-                        view?.showProgressDialog(null)
+                        view?.showProgressDialog(transactionId, null)
                     }
                     is AddressValidation.Error -> {
                         view?.showErrorMessage(validation.messageRes)
-                        view?.showProgressDialog(null)
+                        view?.showProgressDialog(transactionId, null)
                     }
                     is AddressValidation.Valid -> {
                         handleValidAddress(token, destinationAddress, lamports)
@@ -510,10 +513,10 @@ class SendPresenter(
                 val state = TransactionState.Error(
                     serverError.getErrorMessage(resourcesProvider.resources).orEmpty()
                 )
-                transactionManager.emitTransactionState(state)
+                transactionManager.emitTransactionState(transactionId, state)
             } catch (e: Throwable) {
                 Timber.e(e, "Error sending token")
-                view?.showProgressDialog(null)
+                view?.showProgressDialog(transactionId, null)
                 view?.showErrorMessage(e)
             }
         }
@@ -530,7 +533,7 @@ class SendPresenter(
             subTitle = "${state.tokenAmount.toPlainString()} ${token.tokenSymbol} → $destinationAddressShort",
             transactionId = emptyString()
         )
-        view?.showProgressDialog(data)
+        view?.showProgressDialog(transactionId, data)
 
         val result = sendInteractor.sendTransaction(
             destinationAddress = destinationAddress,
@@ -540,7 +543,7 @@ class SendPresenter(
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.SUCCESS)
         val transaction = buildTransaction(result)
         val transactionState = TransactionState.SendSuccess(transaction, token.tokenSymbol)
-        transactionManager.emitTransactionState(transactionState)
+        transactionManager.emitTransactionState(transactionId, transactionState)
         sendAnalytics.logSendCompleted(state.networkType, state.tokenAmount, token, state.sendFee, state.usdAmount)
     }
 

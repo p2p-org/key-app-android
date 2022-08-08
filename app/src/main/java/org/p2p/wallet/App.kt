@@ -81,6 +81,7 @@ class App : Application() {
             // FIXME
             androidLogger(level = Level.ERROR)
             androidContext(this@App)
+            workManagerFactory()
             modules(
                 listOf(
                     // core modules
@@ -111,7 +112,6 @@ class App : Application() {
                     TransactionManagerModule.create()
                 )
             )
-            workManagerFactory()
         }
     }
 
