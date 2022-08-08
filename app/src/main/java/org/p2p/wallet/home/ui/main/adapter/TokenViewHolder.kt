@@ -39,7 +39,9 @@ class TokenViewHolder(
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) = with(binding) {
         val token = item.token
 
-        hideImageView.isVisible = !token.isSOL
+        root.setLockDrag(token.isSOL)
+        layoutHide.clipToOutline = false
+        layoutHide.clipToPadding = false
 
         if (!token.iconUrl.isNullOrEmpty()) {
             loadImage(tokenImageView, token.iconUrl)
@@ -49,9 +51,8 @@ class TokenViewHolder(
         valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getTotal(includeSymbol = true)
 
-        hideImageView.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
-        hideImageView.setOnClickListener { listener.onHideClicked(token) }
-        sendImageView.setOnClickListener { listener.onSendClicked(token) }
+        imageViewHideToken.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
+        imageViewHideToken.setOnClickListener { listener.onHideClicked(token) }
 
         contentView.setOnClickListener { listener.onTokenClicked(token) }
     }
