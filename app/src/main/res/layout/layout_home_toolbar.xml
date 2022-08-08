@@ -47,9 +47,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_home_address"
             android:drawablePadding="8dp"
-            android:ellipsize="middle"
             android:foreground="@drawable/ripple_address_button"
-            android:maxEms="9"
             android:maxLines="1"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
@@ -60,7 +58,7 @@
             app:layout_constraintEnd_toStartOf="@id/image_view_qr"
             app:layout_constraintStart_toEndOf="@id/image_view_profile"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="3gmXvykAd1nCQQ7MjosaHLf69Xyaqyq1qw2eu1mgPyYXd5G4v1rihhg1CiRw35b9fHzcftGKKEu4mbUeXY2pEX2z" />
+            tools:text="3gmX…EX2z" />
 
         <org.p2p.wallet.common.ui.widget.ShadowView
             android:id="@+id/image_view_debug"

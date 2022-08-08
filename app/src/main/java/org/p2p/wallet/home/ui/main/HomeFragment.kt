@@ -200,8 +200,8 @@ class HomeFragment :
         replaceFragment(BuySolanaFragment.create(token))
     }
 
-    override fun showUserAddress(publicKey: String) {
-        binding.toolbar.textViewAddress.text = publicKey
+    override fun showUserAddress(ellipsizedAddress: String) {
+        binding.toolbar.textViewAddress.text = ellipsizedAddress
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
