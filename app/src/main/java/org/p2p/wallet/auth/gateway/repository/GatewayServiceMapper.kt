@@ -1,9 +1,11 @@
 package org.p2p.wallet.auth.gateway.repository
 
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import org.near.borshj.Borsh
 import org.p2p.solanaj.utils.TweetNaclFast
-import org.p2p.solanaj.utils.crypto.decodeFromBase58
-import org.p2p.solanaj.utils.crypto.encodeToBase58
+import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.solanaj.utils.crypto.encodeToBase64String
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethods
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
@@ -11,7 +13,10 @@ import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceErrorResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceResponse
+import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -19,7 +24,9 @@ import java.util.Locale
 
 private const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ss.n x"
 
-class GatewayServiceMapper {
+class GatewayServiceMapper(
+    private val gson: Gson
+) {
     private class RegisterWalletSignatureStruct(
         val clientId: String,
         val etheriumId: String,
@@ -63,74 +70,84 @@ class GatewayServiceMapper {
         }
 
     fun toRegisterWalletNetwork(
-        userPublicKey: String,
-        userPrivateKey: String,
+        userPublicKey: Base58String,
+        userPrivateKey: Base58String,
         etheriumPublicKey: String,
         phoneNumber: String,
         channel: OtpMethod
     ): GatewayServiceRequest<RegisterWalletRequest> {
+        val signatureField: Base58String = createSignatureField(
+            userPublicKey = userPublicKey,
+            userPrivateKey = userPrivateKey,
+            structToSerialize = RegisterWalletSignatureStruct(
+                clientId = userPublicKey.base58Value,
+                etheriumId = userPrivateKey.base58Value,
+                phone = phoneNumber,
+                channelType = channel.backendName
+            )
+        )
+
         return RegisterWalletRequest(
-            clientSolanaPublicKeyB58 = userPublicKey,
-            etheriumPublicKeyB58 = etheriumPublicKey,
+            clientSolanaPublicKey = userPublicKey,
+            etheriumPublicKey = etheriumPublicKey,
             userPhone = phoneNumber,
             appHash = Constants.APP_HASH,
             channel = channel,
-            requestSignature = createSignatureFieldB58(
-                userPublicKey = userPublicKey,
-                solanaPrivateKey = userPrivateKey,
-                RegisterWalletSignatureStruct(
-                    clientId = userPublicKey,
-                    etheriumId = userPrivateKey,
-                    phone = phoneNumber,
-                    channelType = channel.backendName
-                )
-            ),
             timestamp = createTimestampField(),
+            requestSignature = signatureField.base58Value
         )
             .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethods.REGISTER_WALLET) }
     }
 
     fun toConfirmRegisterWalletNetwork(
-        userPublicKey: String,
-        userPrivateKey: String,
+        userPublicKey: Base58String,
+        userPrivateKey: Base58String,
         etheriumPublicKey: String,
         phoneNumber: String,
+        jsonEncryptedMnemonicPhrase: JsonObject,
+        thirdShare: Web3AuthSignUpResponse.ShareRootDetails.ShareInnerDetails.ShareValue,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
+        val signatureField: Base58String = createSignatureField(
+            userPublicKey = userPublicKey,
+            userPrivateKey = userPrivateKey,
+            structToSerialize = ConfirmRegisterWalletSignatureStruct(
+                clientId = userPublicKey.base58Value,
+                etheriumId = etheriumPublicKey,
+                phone = phoneNumber,
+                encryptedShare = thirdShare.value,
+                phoneConfirmationCode = otpConfirmationCode
+            )
+        )
+
+        val encryptedPayload: Base64String = jsonEncryptedMnemonicPhrase.toString()
+            .toByteArray()
+            .encodeToBase64String()
+
         return ConfirmRegisterWalletRequest(
-            clientSolanaPublicKeyB58 = userPublicKey,
-            etheriumPublicKeyB58 = etheriumPublicKey,
-            requestSignature = createSignatureFieldB58(
-                userPublicKey = userPublicKey,
-                solanaPrivateKey = userPrivateKey,
-                ConfirmRegisterWalletSignatureStruct(
-                    clientId = userPublicKey,
-                    etheriumId = userPrivateKey,
-                    phone = phoneNumber,
-                    encryptedShare = TODO(),
-                    phoneConfirmationCode = otpConfirmationCode
-                )
-            ),
+            clientSolanaPublicKey = userPublicKey.base58Value,
+            etheriumPublicKey = etheriumPublicKey,
             timestamp = createTimestampField(),
-            encryptedOtpShare = TODO(),
-            encryptedPayloadB64 = TODO(),
-            otpConfirmationCode = otpConfirmationCode
+            thirdShare = thirdShare.value,
+            encryptedPayloadB64 = encryptedPayload.base64Value,
+            otpConfirmationCode = otpConfirmationCode,
+            requestSignature = signatureField.base58Value
         )
             .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethods.CONFIRM_REGISTER_WALLET) }
     }
 
-    private fun createSignatureFieldB58(
-        userPublicKey: String,
-        solanaPrivateKey: String,
+    private fun createSignatureField(
+        userPublicKey: Base58String,
+        userPrivateKey: Base58String,
         structToSerialize: Borsh
-    ): String {
+    ): Base58String {
         try {
             val signatureStructBytes = Borsh.serialize(structToSerialize)
-            val userPublicKeyBytes = userPublicKey.decodeFromBase58()
-            val solanaPrivateKeyBytes = solanaPrivateKey.decodeFromBase58()
+            val userPublicKeyBytes = userPublicKey.decodeToBytes()
+            val solanaPrivateKeyBytes = userPrivateKey.decodeToBytes()
             return TweetNaclFast.Signature(userPublicKeyBytes.copyOf(), solanaPrivateKeyBytes.copyOf())
                 .sign(signatureStructBytes)
-                .encodeToBase58()
+                .toBase58Instance()
         } catch (error: Throwable) {
             Timber.e(error)
             throw GatewayServiceError.RequestCreationFailure(

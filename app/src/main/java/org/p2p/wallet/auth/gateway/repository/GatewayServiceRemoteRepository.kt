@@ -1,10 +1,14 @@
 package org.p2p.wallet.auth.gateway.repository
 
+import com.google.gson.JsonObject
 import org.p2p.wallet.auth.gateway.api.GatewayServiceApi
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
+import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.utils.Base58String
 import kotlinx.coroutines.withContext
+import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 
 class GatewayServiceRemoteRepository(
     private val api: GatewayServiceApi,
@@ -13,8 +17,8 @@ class GatewayServiceRemoteRepository(
 ) : GatewayServiceRepository {
 
     override suspend fun registerWalletWithSms(
-        userPublicKey: String,
-        userPrivateKey: String,
+        userPublicKey: Base58String,
+        userPrivateKey: Base58String,
         etheriumPublicKey: String,
         phoneNumber: String
     ): RegisterWalletResponse = withContext(dispatchers.io) {
@@ -30,21 +34,24 @@ class GatewayServiceRemoteRepository(
     }
 
     override suspend fun confirmRegisterWallet(
-        userPublicKey: String,
-        userPrivateKey: String,
+        userPublicKey: Base58String,
+        userPrivateKey: Base58String,
         etheriumPublicKey: String,
-        thirdShare: String,
+        thirdShare: Web3AuthSignUpResponse.ShareRootDetails.ShareInnerDetails.ShareValue,
+        jsonEncryptedMnemonicPhrase: JsonObject,
         phoneNumber: String,
         otpConfirmationCode: String
-    ) {
-        val request = mapper.toRegisterWalletNetwork(
+    ): GatewayServiceStandardResponse {
+        val request = mapper.toConfirmRegisterWalletNetwork(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             etheriumPublicKey = etheriumPublicKey,
+            thirdShare = thirdShare,
+            jsonEncryptedMnemonicPhrase = jsonEncryptedMnemonicPhrase,
             phoneNumber = phoneNumber,
-            channel = OtpMethod.SMS
+            otpConfirmationCode = otpConfirmationCode
         )
-        val response = api.registerWallet(request)
-        mapper.fromNetwork(response)
+        val response = api.confirmRegisterWallet(request)
+        return mapper.fromNetwork(response)
     }
 }

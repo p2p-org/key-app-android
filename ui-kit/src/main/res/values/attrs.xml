@@ -67,10 +67,4 @@
         <attr name="keyboard_button_image" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="UiKitFourDigitsLargeInput">
-        <attr name="leftIcon" format="reference" />
-        <attr name="isChevronVisible" format="boolean" />
-        <attr name="rightIcon" format="reference" />
-    </declare-styleable>
-
 </resources>

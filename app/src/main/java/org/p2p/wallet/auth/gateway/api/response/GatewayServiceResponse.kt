@@ -10,6 +10,11 @@ class GatewayServiceResponse<SuccessBody>(
     val errorBody: GatewayServiceErrorResponse? = null
 )
 
+data class GatewayServiceStandardResponse(
+    @SerializedName("status")
+    val isSuccessful: Boolean
+)
+
 data class GatewayServiceErrorResponse(
     @SerializedName("code")
     val errorCode: Int,

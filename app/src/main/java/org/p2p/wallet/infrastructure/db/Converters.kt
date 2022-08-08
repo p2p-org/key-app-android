@@ -15,7 +15,7 @@ class Converters {
         value?.toString()
 
     @TypeConverter
-    fun base58ToString(value: Base58String?): String? = value?.value
+    fun base58ToString(value: Base58String?): String? = value?.base58Value
 
     @TypeConverter
     fun stringToBase58(value: String?): Base58String? = value?.let { Base58String(it) }

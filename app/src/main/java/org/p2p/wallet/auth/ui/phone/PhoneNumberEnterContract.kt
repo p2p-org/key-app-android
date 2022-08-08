@@ -11,6 +11,7 @@ interface PhoneNumberEnterContract {
         fun onNewCountryDetected(countryCode: CountryCode)
         fun showCountryCodePicker(selectedCountryCode: CountryCode?)
         fun setContinueButtonEnabled(isEnabled: Boolean)
+        fun navigateToSmsInput()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -19,5 +20,6 @@ interface PhoneNumberEnterContract {
         fun onPhoneChanged(phoneNumber: String)
         fun onCountryCodeChanged(newCountry: CountryCode)
         fun onCountryCodeInputClicked()
+        fun submitUserPhoneNumber(phoneNumber: String)
     }
 }

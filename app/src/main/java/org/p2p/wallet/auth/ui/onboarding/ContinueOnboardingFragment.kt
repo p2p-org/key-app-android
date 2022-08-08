@@ -5,13 +5,10 @@ import android.view.View
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.common.WalletWeb3AuthManager
+import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
-import org.p2p.wallet.auth.common.WalletWeb3AuthManager
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentContinueOnboardingBinding
-import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -25,7 +22,7 @@ class ContinueOnboardingFragment : BaseFragment(R.layout.fragment_continue_onboa
 
     private val binding: FragmentContinueOnboardingBinding by viewBinding()
 
-    private val walletAuthManager: WalletWeb3AuthManager by inject()
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,7 +30,7 @@ class ContinueOnboardingFragment : BaseFragment(R.layout.fragment_continue_onboa
         with(binding) {
             textViewContinueOnboardingSubtitle.text = getString(
                 R.string.onboarding_continue_subtitle,
-                walletAuthManager.getLastDeviceShare()?.userId.orEmpty()
+                userSignUpDetailsStorage.getLastSignUpUserDetails()?.userId.orEmpty()
             )
             buttonContinueOnboarding.setOnClickListener {
                 replaceFragment(PhoneNumberEnterFragment.create())

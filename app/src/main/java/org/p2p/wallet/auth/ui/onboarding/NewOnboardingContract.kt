@@ -7,7 +7,7 @@ interface NewOnboardingContract {
     interface View : MvpView {
         fun startGoogleFlow()
         fun showError(error: String)
-        fun onSameTokenError()
+        fun onSameTokenFoundError()
         fun onSuccessfulSignUp()
     }
 

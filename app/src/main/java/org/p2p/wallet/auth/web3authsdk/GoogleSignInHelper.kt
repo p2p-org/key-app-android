@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.common
+package org.p2p.wallet.auth.web3authsdk
 
 import android.content.Context
 import android.content.IntentSender.SendIntentException

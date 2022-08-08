@@ -1,11 +1,15 @@
 package org.p2p.wallet.auth.ui.phone
 
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
+import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 class PhoneNumberEnterPresenter(
-    private val countryCodeInteractor: CountryCodeInteractor
+    private val countryCodeInteractor: CountryCodeInteractor,
+    private val createWalletInteractor: CreateWalletInteractor
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
@@ -49,5 +53,22 @@ class PhoneNumberEnterPresenter(
 
     override fun onCountryCodeInputClicked() {
         view?.showCountryCodePicker(selectedCountryCode)
+    }
+
+    override fun submitUserPhoneNumber(phoneNumber: String) {
+        launch {
+            try {
+                selectedCountryCode?.let {
+                    createWalletInteractor.startCreatingWallet(it.phoneCode + phoneNumber)
+                }
+                view?.navigateToSmsInput()
+            } catch (gatewayError: GatewayServiceError) {
+                Timber.i(gatewayError)
+            } catch (createWalletError: CreateWalletInteractor.CreateWalletFailure) {
+                Timber.i(createWalletError)
+            } catch (error: Throwable) {
+                Timber.i(error)
+            }
+        }
     }
 }
