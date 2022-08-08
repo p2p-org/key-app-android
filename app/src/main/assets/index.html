@@ -28460,7 +28460,7 @@ var AuthProvider = /*#__PURE__*/function () {
                 _context6.next = 5;
                 return serviceProvider.triggerLogin({
                   typeOfLogin: this.authParams.torusLoginType,
-                  verifier: "testTkeyF1",
+                  verifier: "testTketF2",
                   clientId: "553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com"
                 });
 
@@ -28500,7 +28500,7 @@ var AuthProvider = /*#__PURE__*/function () {
                 directAuthSdk = torusServiceProvider.directWeb;
                 decoded = (0,jwt_decode__WEBPACK_IMPORTED_MODULE_7__["default"])(idToken);
                 _context7.next = 9;
-                return directAuthSdk.getTorusKey("testTkeyF1", decoded.email, {
+                return directAuthSdk.getTorusKey("testTketF2", decoded.email, {
                   verifier_id: decoded.email
                 }, idToken);
 

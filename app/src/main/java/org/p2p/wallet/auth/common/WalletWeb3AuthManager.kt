@@ -108,7 +108,7 @@ class WalletWeb3AuthManager(
         )
     }
 
-    private fun saveDeviceShare(deviceShare: String) {
+    fun saveDeviceShare(deviceShare: String) {
         if (deviceShareStorage.saveDeviceShare(deviceShare, lastUserId)) {
             handlers.forEach { handler ->
                 handler.onSuccessSignUp()

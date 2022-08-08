@@ -10,6 +10,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.common.GoogleSignInHelper
+import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
+import org.p2p.wallet.auth.ui.restore.WalletFoundFragment
 import org.p2p.wallet.auth.ui.restore.WalletFoundFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
@@ -86,17 +88,16 @@ class NewOnboardingFragment :
     }
 
     override fun onSameTokenError() {
-        view?.post {
+        requireView().post {
             setLoadingState(isScreenLoading = false)
             replaceFragment(WalletFoundFragment.create())
         }
     }
 
     override fun onSuccessfulSignUp() {
-        view?.post {
-            // TODO PWN-4268 move user to phone number screen
+        requireView().post {
             setLoadingState(isScreenLoading = false)
-            Toast.makeText(requireContext(), "You are successfully signed in!", Toast.LENGTH_SHORT).show()
+            replaceFragment(PhoneNumberEnterFragment.create())
         }
     }
 
