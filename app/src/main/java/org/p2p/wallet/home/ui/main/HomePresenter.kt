@@ -10,7 +10,6 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
@@ -60,15 +59,6 @@ class HomePresenter(
 
     override fun attach(view: HomeContract.View) {
         super.attach(view)
-
-        view.showActions(
-            listOf(
-                ActionButtonsView.ActionButton(R.string.main_buy, R.drawable.ic_plus),
-                ActionButtonsView.ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
-                ActionButtonsView.ActionButton(R.string.main_send, R.drawable.ic_send_medium),
-                ActionButtonsView.ActionButton(R.string.main_swap, R.drawable.ic_swap_medium)
-            )
-        )
 
         view.showUserAddress(tokenKeyProvider.publicKey)
 

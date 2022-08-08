@@ -172,6 +172,7 @@
     <string name="main_all_tokens">All tokens</string>
     <string name="main_no_data">You have no wallets yet</string>
     <string name="main_swap">Swap</string>
+    <string name="main_trade">Trade</string>
     <string name="main_close_account">Close Account</string>
     <string name="main_create_account">Create Account</string>
     <string name="main_transaction">Transaction</string>

@@ -69,17 +69,6 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <org.p2p.wallet.common.ui.widget.ActionButtonsView
-            android:id="@+id/action_buttons_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

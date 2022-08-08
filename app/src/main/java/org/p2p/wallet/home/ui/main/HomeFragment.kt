@@ -15,8 +15,8 @@ import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.databinding.FragmentHomeBinding
+import org.p2p.wallet.databinding.LayoutHomeBalanceBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
@@ -86,16 +86,12 @@ class HomeFragment :
     }
 
     private fun FragmentHomeBinding.setupView() {
-        val commonTitle = getString(R.string.app_name)
-        val beta = getString(R.string.common_beta)
-        val color = getColor(R.color.textIconSecondary)
-
         toolbar.setupToolbar()
 
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.adapter = contentAdapter
 
-        actionButtonsView.setupActionButtons()
+        balance.setupActionButtons()
 
         swipeRefreshLayout.setOnRefreshListener {
             presenter.refreshTokens()
@@ -125,18 +121,34 @@ class HomeFragment :
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
-    private fun ActionButtonsView.setupActionButtons() {
-        onBuyItemClickListener = {
-            presenter.onBuyClicked()
+    private fun LayoutHomeBalanceBinding.setupActionButtons() {
+        actionBuyView.apply {
+            textView.setText(R.string.main_buy)
+            imageButton.setImageResource(R.drawable.ic_plus)
+            imageButton.setOnClickListener {
+                presenter.onBuyClicked()
+            }
         }
-        onReceiveItemClickListener = {
-            replaceFragment(ReceiveSolanaFragment.create(token = null))
+        actionReceiveView.apply {
+            textView.setText(R.string.main_receive)
+            imageButton.setImageResource(R.drawable.ic_receive_simple)
+            imageButton.setOnClickListener {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
         }
-        onSendClickListener = {
-            replaceFragment(SendFragment.create())
+        actionSendView.apply {
+            textView.setText(R.string.main_send)
+            imageButton.setImageResource(R.drawable.ic_send_medium)
+            imageButton.setOnClickListener {
+                replaceFragment(SendFragment.create())
+            }
         }
-        onSwapItemClickListener = {
-            replaceFragment(OrcaSwapFragment.create())
+        actionTradeView.apply {
+            textView.setText(R.string.main_trade)
+            imageButton.setImageResource(R.drawable.ic_swap_medium)
+            imageButton.setOnClickListener {
+                replaceFragment(OrcaSwapFragment.create())
+            }
         }
     }
 
@@ -186,13 +198,9 @@ class HomeFragment :
         emptyAdapter.setItems(data)
     }
 
-    override fun showActions(items: List<ActionButtonsView.ActionButton>) {
-        binding.actionButtonsView.setItems(items)
-    }
-
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            actionButtonsView.isVisible = !isEmpty
+            balance.setActionButtonsVisibility(!isEmpty)
             balance.root.isVisible = !isEmpty
             mainRecyclerView.adapter = if (isEmpty) {
                 emptyAdapter
@@ -200,6 +208,13 @@ class HomeFragment :
                 contentAdapter
             }
         }
+    }
+
+    private fun LayoutHomeBalanceBinding.setActionButtonsVisibility(isVisible: Boolean) {
+        actionBuyView.viewContainer.isVisible = isVisible
+        actionReceiveView.viewContainer.isVisible = isVisible
+        actionSendView.viewContainer.isVisible = isVisible
+        actionTradeView.viewContainer.isVisible = isVisible
     }
 
     override fun onDestroy() {

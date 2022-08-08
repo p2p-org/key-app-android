@@ -8,19 +8,19 @@
     android:layout_height="wrap_content"
     android:foreground="@drawable/ripple_button_large"
     android:gravity="center"
-    android:orientation="vertical"
-    android:padding="2dp">
+    android:orientation="vertical">
 
     <ImageButton
-        android:id="@+id/imageButtonIcon"
+        android:id="@+id/imageButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:background="@drawable/bg_circle_button"
+        android:foreground="@drawable/ripple_button_circle"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_plus" />
 
     <TextView
-        android:id="@+id/textViewButtonValue"
+        android:id="@+id/textView"
         style="@style/UiKit.TextAppearance.SemiBold.Text4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
