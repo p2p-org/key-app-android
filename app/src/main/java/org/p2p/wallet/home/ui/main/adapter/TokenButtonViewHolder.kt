@@ -10,7 +10,7 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
 
 class TokenButtonViewHolder(
-    binding: ItemTokenGroupButtonBinding,
+    private val binding: ItemTokenGroupButtonBinding,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -22,21 +22,15 @@ class TokenButtonViewHolder(
         listener = listener
     )
 
-    private val arrowImageView = binding.arrowImageView
-    private val titleTextView = binding.titleTextView
-
-    fun onBind(item: HomeElementItem.Action) {
+    fun onBind(item: HomeElementItem.Action) = with(binding) {
         val title = requireContext().getString(R.string.main_hidden_tokens)
 
-        titleTextView.text = title
+        textViewTitle.text = title
 
         val isHidden = item.state is VisibilityState.Hidden
-        val rotationValue = if (isHidden) 0f else 180f
-        arrowImageView
-            .animate()
-            .rotation(rotationValue)
-            .start()
+        val iconResId = if (isHidden) R.drawable.ic_token_expose else R.drawable.ic_token_hide
 
+        imageViewTokenState.setImageResource(iconResId)
         itemView.setOnClickListener { listener.onToggleClicked() }
     }
 }
