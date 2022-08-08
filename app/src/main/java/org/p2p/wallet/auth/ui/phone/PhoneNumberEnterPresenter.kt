@@ -63,6 +63,7 @@ class PhoneNumberEnterPresenter(
                 }
                 view?.navigateToSmsInput()
             } catch (gatewayError: GatewayServiceError) {
+                // TODO PWN-4362 - add error handling
                 Timber.i(gatewayError)
             } catch (createWalletError: CreateWalletInteractor.CreateWalletFailure) {
                 Timber.i(createWalletError)

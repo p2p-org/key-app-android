@@ -1,10 +1,8 @@
 package org.p2p.wallet.auth.web3authsdk
 
-import android.content.SharedPreferences
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.auth.interactor.SignUpFlowDataCache
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import kotlin.coroutines.resume
 
 class UserSignUpInteractor(
@@ -41,6 +39,17 @@ class UserSignUpInteractor(
         } finally {
             web3AuthApi.detach()
         }
+    }
+
+    fun continueSignUpUser(): SignUpResult {
+        userSignUpDetailsStorage.getLastSignUpUserDetails()?.let {
+            signUpFlowDataCache.signUpUserId = it.userId
+            signUpFlowDataCache.generateUserAccount(
+                userMnemonicPhrase = it.signUpDetails.mnemonicPhrase.split("")
+            )
+        } ?: return SignUpResult.UserAlreadyExists
+
+        return SignUpResult.SignUpSuccessful
     }
 
     private suspend fun generateDeviceAndThirdShare(idToken: String): Web3AuthSignUpResponse {

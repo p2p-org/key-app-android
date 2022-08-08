@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
 import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.utils.replaceFragment
