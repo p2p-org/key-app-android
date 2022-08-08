@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -16,8 +16,8 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
-import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
+import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
@@ -35,13 +35,14 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import java.math.BigDecimal
-import kotlin.math.absoluteValue
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
@@ -71,7 +72,7 @@ class HomeFragment :
 
     private val browseAnalytics: BrowseAnalytics by inject()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -109,11 +110,8 @@ class HomeFragment :
         val commonTitle = getString(R.string.app_name)
         val beta = getString(R.string.common_beta)
         val color = getColor(R.color.textIconSecondary)
-        titleTextView.text = SpanUtils.highlightText(
-            commonText = "$commonTitle $beta",
-            highlightedText = beta,
-            color = color
-        )
+
+        toolbar.setupToolbar()
 
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.adapter = contentAdapter
@@ -124,21 +122,28 @@ class HomeFragment :
             presenter.refreshTokens()
         }
 
-        appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
-                (actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
-            }
-        )
-
         if (BuildConfig.DEBUG) {
-            with(debugButton) {
+            with(toolbar.imageViewDebug) {
                 isVisible = true
                 setOnClickListener {
                     replaceFragment(DebugSettingsFragment.create())
                 }
             }
         }
+    }
+
+    private fun LayoutHomeToolbarBinding.setupToolbar() {
+        textViewAddress.setOnClickListener {
+            val address = textViewAddress.text
+            requireContext().copyToClipBoard(address.toString())
+            val snackbar = binding.root.showSnackbarShort(
+                getString(R.string.main_address_snackbar_text),
+                getString(R.string.common_ok)
+            ) { it.dismiss() }
+        }
+
+        imageViewProfile.setOnClickListener { replaceFragment(SettingsFragment.create()) }
+        imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
     private fun ActionButtonsView.setupActionButtons() {
@@ -192,6 +197,10 @@ class HomeFragment :
         replaceFragment(BuySolanaFragment.create(token))
     }
 
+    override fun showUserAddress(publicKey: String) {
+        binding.toolbar.textViewAddress.text = publicKey
+    }
+
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
         contentAdapter.setItems(tokens, isZerosHidden, state)
     }
@@ -206,13 +215,13 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal, username: Username?) {
-        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.formatUsd())
+        binding.balance.textViewAmount.text = getString(R.string.main_usd_format, balance.formatUsd())
         if (username == null) {
-            binding.balanceLabelTextView.setText(R.string.main_balance)
+            binding.balance.textViewTitle.setText(R.string.main_balance)
         } else {
             val commonText = username.getFullUsername(requireContext())
             val color = getColor(R.color.textIconPrimary)
-            binding.balanceLabelTextView.text = SpanUtils.highlightText(commonText, username.username, color)
+            binding.balance.textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
         }
     }
 
@@ -231,8 +240,7 @@ class HomeFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             actionButtonsView.isVisible = !isEmpty
-            balanceTextView.isVisible = !isEmpty
-            balanceLabelTextView.isVisible = !isEmpty
+            balance.root.isVisible = !isEmpty
             mainRecyclerView.adapter = if (isEmpty) {
                 emptyAdapter
             } else {

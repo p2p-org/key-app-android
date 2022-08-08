@@ -1,8 +1,14 @@
 <resources>
+
     <!--Main Screen Banner-->
     <string name="main_banner_title">Top up your account to get started</string>
     <string name="main_banner_subtitle">Make your first deposit or buy with your credit card or Apple Pay</string>
     <string name="main_banner_button">Top up</string>
+
+    <!-- Home -->
+    <string name="main_address_snackbar_text">Address was copied to clipboard</string>
+    <string name="main_loading">Loading</string>
+    <string name="home_address_snackbar_text">Address was copied to clipboard</string>
 
     <!--Main Screen Actions-->
     <string name="main_actions_title">Actions</string>
@@ -19,10 +25,8 @@
     <string name="main_actions_send_title">Send</string>
     <string name="main_actions_send_subtitle">to phone number, username or address</string>
 
-
     <!--Main Screen Empty-->
     <string name="main_popular_tokens_header">Popular coins</string>
-
     <string name="main_popular_token_action_buy_button">Buy it</string>
     <string name="main_popular_token_action_receive_button">Receive</string>
 </resources>
