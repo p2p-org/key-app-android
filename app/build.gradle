@@ -274,6 +274,7 @@ dependencies {
     def koinVersion = '3.2.0'
     // https://github.com/InsertKoinIO/koin
     implementation "io.insert-koin:koin-android:$koinVersion"
+    implementation "io.insert-koin:koin-androidx-workmanager:$koinVersion"
 
     // GeeTest
     implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
@@ -298,6 +299,12 @@ dependencies {
 
     // Google Play Auth
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
+
+    def work_version = "2.7.1"
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+    androidTestImplementation "androidx.work:work-testing:$work_version"
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
+
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'

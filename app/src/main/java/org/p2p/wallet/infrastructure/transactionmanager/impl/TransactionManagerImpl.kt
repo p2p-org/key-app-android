@@ -1,0 +1,52 @@
+package org.p2p.wallet.infrastructure.transactionmanager.impl
+
+import android.content.Context
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import kotlinx.coroutines.flow.Flow
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.infrastructure.transactionmanager.repository.TransactionQueueRepository
+import org.p2p.wallet.transaction.model.AppTransaction
+import org.p2p.wallet.transaction.model.TransactionState
+import java.util.UUID
+
+class TransactionManagerImpl(
+    private val context: Context,
+    private val transactionQueueRepository: TransactionQueueRepository
+) : TransactionManager {
+
+    private val transactionsWorkersIdMap = mutableMapOf<AppTransaction, UUID>()
+
+    override fun addInQueue(transaction: AppTransaction) {
+        addInQueue(listOf(transaction))
+    }
+
+    override fun addInQueue(transactions: List<AppTransaction>) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        transactions.forEach { transaction ->
+            val worker = OneTimeWorkRequestBuilder<TransactionWorker>()
+                .setConstraints(constraints)
+                .build()
+            transactionsWorkersIdMap[transaction] = worker.id
+
+            WorkManager.getInstance(context)
+                .enqueueUniqueWork(transaction.serializedTransaction, ExistingWorkPolicy.REPLACE, worker)
+        }
+    }
+
+    override fun getTransactionStateFlow(transactionId: String): Flow<TransactionState>? {
+        return transactionQueueRepository.getTransactionStateById(transactionId)
+    }
+
+    override suspend fun emitTransactionState(transactionId: String, state: TransactionState) {
+        transactionQueueRepository.emit(transactionId, state)
+    }
+
+    override fun executeTransactions() {
+    }
+}
