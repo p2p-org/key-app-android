@@ -1,15 +1,14 @@
 package org.p2p.wallet.restore.interactor
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import android.content.SharedPreferences
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRepository
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
@@ -24,6 +23,7 @@ import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.scaleLong
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlinx.coroutines.withContext
 
 private const val KEY_PHRASES = "KEY_PHRASES"
 private const val KEY_DERIVATION_PATH = "KEY_DERIVATION_PATH"
@@ -35,13 +35,14 @@ class SecretKeyInteractor(
     private val sharedPreferences: SharedPreferences,
     private val usernameInteractor: UsernameInteractor,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
+    private val dispatchers: CoroutineDispatchers,
     private val adminAnalytics: AdminAnalytics
 ) {
 
     private var solRate: BigDecimal? = null
 
     suspend fun getDerivableAccounts(keys: List<String>): List<DerivableAccount> =
-        withContext(Dispatchers.IO) {
+        withContext(dispatchers.io) {
             val paths = listOf(DerivationPath.BIP44CHANGE, DerivationPath.BIP44, DerivationPath.BIP32DEPRECATED)
             val derivableAccounts = mutableMapOf<DerivationPath, List<Account>>()
             paths.forEach { path ->
@@ -53,18 +54,18 @@ class SecretKeyInteractor(
             val balances = if (balanceAccounts.isNotEmpty()) rpcRepository.getBalances(balanceAccounts) else emptyList()
 
             /* Map derivable accounts with balances */
-            val result = derivableAccounts.flatMap { (path, accounts) ->
+            val result: List<DerivableAccount> = derivableAccounts.flatMap { (path, accounts) ->
                 mapDerivableAccounts(accounts, balances, path)
             }
 
-            return@withContext result
+            result
         }
 
     private suspend fun mapDerivableAccounts(
         accounts: List<Account>,
         balances: List<Pair<String, BigInteger>>,
         path: DerivationPath
-    ) = accounts.mapNotNull { account ->
+    ): List<DerivableAccount> = accounts.mapNotNull { account ->
         val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
         val tokenSymbol = TokenSymbol(SOL_SYMBOL)
 
@@ -76,19 +77,23 @@ class SecretKeyInteractor(
         DerivableAccount(path, account, total, total.multiply(exchangeRate))
     }
 
-    suspend fun createAndSaveAccount(path: DerivationPath, keys: List<String>, lookup: Boolean = true) {
-        val account = authRepository.createAccount(path, keys)
+    suspend fun createAndSaveAccount(
+        path: DerivationPath,
+        mnemonicPhrase: List<String>,
+        lookupForUsername: Boolean = true
+    ) {
+        val account = authRepository.createAccount(path, mnemonicPhrase)
         val publicKey = account.publicKey.toBase58()
 
         tokenProvider.secretKey = account.secretKey
         tokenProvider.publicKey = publicKey
 
         sharedPreferences.edit {
-            putString(KEY_PHRASES, keys.joinToString(","))
+            putString(KEY_PHRASES, mnemonicPhrase.joinToString(separator = ","))
             putString(KEY_DERIVATION_PATH, path.stringValue)
         }
 
-        if (lookup) {
+        if (lookupForUsername) {
             usernameInteractor.findUsernameByAddress(publicKey)
         }
         adminAnalytics.logPasswordCreated()

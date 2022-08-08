@@ -41,7 +41,7 @@ class ReserveUsernameFragment :
         fun create(
             mode: ReserveMode,
             isSkipStepEnabled: Boolean = true
-        ) = ReserveUsernameFragment().withArgs(
+        ): ReserveUsernameFragment = ReserveUsernameFragment().withArgs(
             EXTRA_MODE to mode,
             EXTRA_SKIP_STEP_ENABLED to isSkipStepEnabled
         )
@@ -153,38 +153,35 @@ class ReserveUsernameFragment :
 
     private fun initGeetestUtils() {
         gt3GeeTestUtils = GT3GeetestUtils(requireContext())
-        gt3ConfigBean = GT3ConfigBean()
-        gt3ConfigBean?.pattern = 1
-        gt3ConfigBean?.isCanceledOnTouchOutside = false
-        gt3ConfigBean?.lang = null
-        gt3ConfigBean?.timeout = 10000
-        gt3ConfigBean?.webviewTimeout = 10000
-        gt3ConfigBean?.listener = object : GT3Listener() {
-            override fun onDialogResult(result: String) {
-                val username = binding.inputTextView.getText().lowercase()
-                presenter.registerUsername(username, result)
-                gt3GeeTestUtils?.showSuccessDialog()
-            }
+        gt3ConfigBean = GT3ConfigBean().apply {
+            pattern = 1
+            isCanceledOnTouchOutside = false
+            lang = null
+            timeout = 10000
+            webviewTimeout = 10000
+            listener = object : GT3Listener() {
+                override fun onDialogResult(result: String) {
+                    val username = binding.inputTextView.getText().lowercase()
+                    presenter.registerUsername(username, result)
+                    gt3GeeTestUtils?.showSuccessDialog()
+                }
 
-            override fun onReceiveCaptchaCode(p0: Int) {
-            }
+                override fun onReceiveCaptchaCode(p0: Int) = Unit
 
-            override fun onStatistics(p0: String?) {
-            }
+                override fun onStatistics(p0: String?) = Unit
 
-            override fun onClosed(p0: Int) {
-            }
+                override fun onClosed(p0: Int) = Unit
 
-            override fun onSuccess(p0: String?) {
-            }
+                override fun onSuccess(p0: String?) = Unit
 
-            override fun onFailed(p0: GT3ErrorBean?) {
-            }
+                override fun onFailed(p0: GT3ErrorBean?) = Unit
 
-            override fun onButtonClick() {
-                presenter.checkCaptcha()
+                override fun onButtonClick() {
+                    presenter.checkCaptcha()
+                }
             }
         }
+
         gt3GeeTestUtils?.init(gt3ConfigBean)
     }
 

@@ -30,9 +30,7 @@ runs:
         echo "rpcPoolApiKey=\"${{ inputs.rpc-pool-secret }}\"" >> apikey.properties
         echo "moonpayKey=\"${{ inputs.moonpay-secret }}\"" >> apikey.properties
         echo "comparePublicKey=\"${{ inputs.compare-secret }}\"" >> apikey.properties
-        echo "intercomApiKey=\"${{ inputs.intercom-id-secret }}\"" >> apikey.properties
-        echo "intercomAppId=\"${{ inputs.intercom-key-secret }}\"" >> apikey.properties
+        echo "intercomApiKey=\"${{ inputs.intercom-key-secret }}\"" >> apikey.properties
+        echo "intercomAppId=\"${{ inputs.intercom-id-secret }}\"" >> apikey.properties
         echo "amplitudeKey=\"${{ inputs.amplitude-secret }}\"" >> apikey.properties
         echo "apikeys.properties succesfully created"
-
-

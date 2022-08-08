@@ -125,8 +125,8 @@ class VerifySecurityKeyPresenter(
             if (isKeysValid()) {
                 secretKeyInteractor.createAndSaveAccount(
                     path = DerivationPath.BIP44CHANGE,
-                    keys = phrases,
-                    lookup = false
+                    mnemonicPhrase = phrases,
+                    lookupForUsername = false
                 )
                 view?.navigateToReserve()
 
