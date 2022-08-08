@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class TokenAdapter(
     private val listener: OnHomeItemsClickListener
@@ -29,7 +28,7 @@ class TokenAdapter(
         is HomeElementItem.Hidden -> R.layout.item_token_hidden
         is HomeElementItem.Action -> R.layout.item_token_group_button
         is HomeElementItem.Banners -> R.layout.item_banners
-        is HomeElementItem.Title -> R.layout.item_title
+        is HomeElementItem.Title -> R.layout.item_main_header
     }
 
     override fun getItemCount(): Int = data.size
@@ -39,7 +38,7 @@ class TokenAdapter(
         R.layout.item_token_hidden -> TokenHiddenViewHolder(parent, listener)
         R.layout.item_token_group_button -> TokenButtonViewHolder(parent, listener)
         R.layout.item_banners -> BannersViewHolder(parent, listener)
-        R.layout.item_title -> TitleViewHolder(parent.inflateViewBinding(parent.context, attachToRoot = false))
+        R.layout.item_main_header -> HeaderViewHolder(parent)
         else -> throw IllegalStateException("Unknown viewType: $viewType")
     }
 
@@ -49,7 +48,7 @@ class TokenAdapter(
             is TokenHiddenViewHolder -> holder.onBind(data[position] as HomeElementItem.Hidden, isZerosHidden)
             is TokenButtonViewHolder -> holder.onBind(data[position] as HomeElementItem.Action)
             is BannersViewHolder -> holder.onBind(data[position] as HomeElementItem.Banners)
-            is TitleViewHolder -> holder.onBind(data[position] as HomeElementItem.Title)
+            is HeaderViewHolder -> holder.onBind(data[position] as HomeElementItem.Title)
         }
     }
 

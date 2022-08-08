@@ -14,7 +14,7 @@
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Label2" parent="UiKit.TextAppearance.Regular">
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.01</item>
     </style>
 

@@ -56,8 +56,8 @@ class TokenHiddenViewHolder(
         valueTextView withTextOrGone token.getFormattedUsdTotal()
         totalTextView.text = token.getTotal(includeSymbol = true)
 
-        imageViewExpose.setImageResource(token.getVisibilityIcon(isZerosHidden))
-        imageViewExpose.setOnClickListener { listener.onHideClicked(token) }
+        imageViewExposeToken.setImageResource(token.getVisibilityIcon(isZerosHidden))
+        imageViewExposeToken.setOnClickListener { listener.onHideClicked(token) }
 
         contentView.setOnClickListener { listener.onTokenClicked(token) }
 

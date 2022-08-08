@@ -9,7 +9,7 @@
     app:mode="same_level">
 
     <FrameLayout
-        android:id="@+id/frameLayoutHide"
+        android:id="@+id/layoutHide"
         android:layout_width="88dp"
         android:layout_height="match_parent"
         android:layout_gravity="end|center_vertical"
@@ -17,7 +17,7 @@
         android:foreground="?selectableItemBackgroundBorderless">
 
         <ImageView
-            android:id="@+id/imageViewHide"
+            android:id="@+id/imageViewHideToken"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
@@ -89,7 +89,7 @@
                 android:layout_marginHorizontal="12dp"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Label2"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
                 android:textColor="@color/textIconSecondary"
                 app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
                 app:layout_constraintEnd_toStartOf="@id/valueTextView"
