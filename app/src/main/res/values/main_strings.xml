@@ -9,8 +9,24 @@
     <string name="main_address_snackbar_text">Address was copied to clipboard</string>
     <string name="main_loading">Loading</string>
     <string name="home_address_snackbar_text">Address was copied to clipboard</string>
+
+    <!--Main Screen Actions-->
+    <string name="main_actions_title">Actions</string>
+
+    <string name="main_actions_buy_title">Buy</string>
+    <string name="main_actions_buy_subtitle">using Apple Pay or bank card</string>
+
+    <string name="main_actions_receive_title">Receive</string>
+    <string name="main_actions_receive_subtitle">from another wallet or exchange</string>
+
+    <string name="main_actions_trade_title">Trade</string>
+    <string name="main_actions_trade_subtitle">one crypto for another</string>
+
+    <string name="main_actions_send_title">Send</string>
+    <string name="main_actions_send_subtitle">to phone number, username or address</string>
+
+    <!--Main Screen Empty-->
     <string name="main_popular_tokens_header">Popular coins</string>
     <string name="main_popular_token_action_buy_button">Buy it</string>
     <string name="main_popular_token_action_receive_button">Receive</string>
-
 </resources>
