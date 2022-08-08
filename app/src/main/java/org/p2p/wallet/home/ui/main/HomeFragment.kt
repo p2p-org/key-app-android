@@ -16,7 +16,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHomeBinding
-import org.p2p.wallet.databinding.LayoutHomeBalanceBinding
+import org.p2p.wallet.databinding.LayoutActionButtonsBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
@@ -91,7 +91,7 @@ class HomeFragment :
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.adapter = contentAdapter
 
-        balance.setupActionButtons()
+        actionButtons.setupActionButtons()
 
         swipeRefreshLayout.setOnRefreshListener {
             presenter.refreshTokens()
@@ -121,7 +121,7 @@ class HomeFragment :
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
-    private fun LayoutHomeBalanceBinding.setupActionButtons() {
+    private fun LayoutActionButtonsBinding.setupActionButtons() {
         actionBuyView.apply {
             textView.setText(R.string.main_buy)
             imageButton.setImageResource(R.drawable.ic_plus)
@@ -200,7 +200,7 @@ class HomeFragment :
 
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            balance.setActionButtonsVisibility(!isEmpty)
+            actionButtons.setActionButtonsVisibility(!isEmpty)
             balance.root.isVisible = !isEmpty
             mainRecyclerView.adapter = if (isEmpty) {
                 emptyAdapter
@@ -210,7 +210,7 @@ class HomeFragment :
         }
     }
 
-    private fun LayoutHomeBalanceBinding.setActionButtonsVisibility(isVisible: Boolean) {
+    private fun LayoutActionButtonsBinding.setActionButtonsVisibility(isVisible: Boolean) {
         actionBuyView.viewContainer.isVisible = isVisible
         actionReceiveView.viewContainer.isVisible = isVisible
         actionSendView.viewContainer.isVisible = isVisible

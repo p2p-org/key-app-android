@@ -20,17 +20,31 @@
             android:layout_height="wrap_content"
             android:elevation="0dp"
             app:expandedTitleGravity="top"
-            app:expandedTitleMarginEnd="48dp"
-            app:expandedTitleMarginStart="48dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <include
-                android:id="@+id/balance"
-                layout="@layout/layout_home_balance"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_toolbar_height"
-                app:layout_collapseMode="none" />
+                android:orientation="vertical"
+                app:layout_collapseMode="none">
+
+                <include
+                    android:id="@+id/balance"
+                    layout="@layout/layout_home_balance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <include
+                    android:id="@+id/action_buttons"
+                    layout="@layout/layout_action_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="16dp" />
+
+            </LinearLayout>
 
             <include
                 android:id="@+id/toolbar"

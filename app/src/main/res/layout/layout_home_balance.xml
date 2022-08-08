@@ -51,45 +51,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_view_title" />
 
-    <include
-        android:id="@+id/action_buy_view"
-        layout="@layout/item_main_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_amount"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <include
-        android:id="@+id/action_receive_view"
-        layout="@layout/item_main_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toStartOf="@+id/action_send_view"
-        app:layout_constraintStart_toEndOf="@+id/action_buy_view"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_amount" />
-
-    <include
-        android:id="@+id/action_send_view"
-        layout="@layout/item_main_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toStartOf="@+id/action_trade_view"
-        app:layout_constraintStart_toEndOf="@+id/action_receive_view"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_amount" />
-
-    <include
-        android:id="@+id/action_trade_view"
-        layout="@layout/item_main_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_amount" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
