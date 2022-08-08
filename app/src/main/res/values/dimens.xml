@@ -17,5 +17,6 @@
 
     <!-- Home -->
     <dimen name="home_address_button_radius">80dp</dimen>
+    <dimen name="home_toolbar_height">80dp</dimen>
 
 </resources>
