@@ -17,6 +17,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
@@ -24,7 +25,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
+class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
     private val fragments = SparseArrayCompat<Fragment>()
@@ -149,5 +150,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
     private fun showUI() {
         binding.bottomNavigation.menu.clear()
         binding.bottomNavigation.inflateMenu(R.menu.menu_ui_kit_bottom_navigation)
+    }
+
+    override fun setOnCenterActionButtonListener(block: () -> Unit) {
+        binding.bottomNavigation.setOnCenterActionButtonListener(block)
     }
 }

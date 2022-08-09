@@ -1,10 +1,9 @@
 package org.p2p.wallet.auth.interactor
 
+import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import androidx.core.content.edit
 import org.json.JSONObject
-import org.p2p.wallet.auth.model.LookupResult
 import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
@@ -33,11 +32,13 @@ class UsernameInteractor(
         sharedPreferences.edit { putString(KEY_USERNAME, username) }
     }
 
+    @Suppress("UNUSED_PARAMETER", "RedundantSuspendModifier")
     suspend fun findUsernameByAddress(owner: String) {
-        when (val result = usernameRepository.findUsernameByAddress(owner)) {
-            is LookupResult.UsernameFound -> sharedPreferences.edit { putString(KEY_USERNAME, result.username) }
-            is LookupResult.UsernameNotFound -> Unit
-        }
+        // commented due to constant problems with name service PWN-4377
+//        when (val result = usernameRepository.findUsernameByAddress(owner)) {
+//            is LookupResult.UsernameFound -> sharedPreferences.edit { putString(KEY_USERNAME, result.username) }
+//            is LookupResult.UsernameNotFound -> Unit
+//        }
     }
 
     fun usernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)

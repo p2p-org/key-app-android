@@ -26,9 +26,8 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
         get() = binding.bottomNavigationView.menu
 
     fun setOnItemSelectedListener(block: (ScreenTab) -> Boolean) {
-        binding.bottomNavigationView.setOnItemSelectedListener {
-            ScreenTab.fromTabId(it.itemId)?.let { block.invoke(it) }
-            true
+        binding.bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            ScreenTab.fromTabId(menuItem.itemId)?.let { block.invoke(it) } ?: false
         }
     }
 

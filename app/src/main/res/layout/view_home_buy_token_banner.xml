@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/view_banner_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_banner_rounded"
+        android:translationZ="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/text_view_banner_title"
+        style="@style/UiKit.TextAppearance.SemiBold.Text1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/home_buy_token_banner_title"
+        android:textColor="@color/text_snow"
+        app:layout_constraintBottom_toTopOf="@id/text_view_banner_subtitle"
+        app:layout_constraintEnd_toStartOf="@+id/relative_layout"
+        app:layout_constraintStart_toStartOf="@+id/view_banner_background"
+        app:layout_constraintTop_toTopOf="@+id/view_banner_background" />
+
+    <TextView
+        android:id="@+id/text_view_banner_subtitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Text4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/home_buy_token_banner_subtitle"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toBottomOf="@+id/view_banner_background"
+        app:layout_constraintEnd_toStartOf="@+id/relative_layout"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/view_banner_background"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_banner_title" />
+
+    <ImageView
+        android:id="@+id/imageViewCloseBanner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:translationZ="2dp"
+        app:layout_constraintEnd_toEndOf="@+id/relative_layout"
+        app:layout_constraintTop_toTopOf="@+id/view_banner_background"
+        app:srcCompat="@drawable/ic_close_circle_gray_background_white_cross" />
+
+    <RelativeLayout
+        android:id="@+id/relative_layout"
+        android:layout_width="200dp"
+        android:layout_height="0dp"
+        android:translationZ="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/view_banner_background"
+        app:layout_constraintEnd_toEndOf="@+id/view_banner_background"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/image_view_banner"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_banner_image" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/button_buy_token"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_small_height"
+            android:layout_alignStart="@id/image_view_banner"
+            android:layout_alignEnd="@id/image_view_banner"
+            android:layout_alignBottom="@id/image_view_banner"
+            android:layout_marginHorizontal="56dp"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/bg_lime"
+            android:text="@string/home_buy_token_banner_button_title"
+            android:textColor="@color/text_night" />
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
