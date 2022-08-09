@@ -26,8 +26,8 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
+import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
-import org.p2p.wallet.home.ui.main.bottomsheet.MainAction
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
@@ -169,25 +169,25 @@ class HomeFragment :
                 }
             }
             KEY_REQUEST_ACTION -> {
-                (result.getSerializable(KEY_RESULT_ACTION) as? MainAction)?.let {
+                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.let {
                     openScreenByMainAction(it)
                 }
             }
         }
     }
 
-    private fun openScreenByMainAction(action: MainAction) {
+    private fun openScreenByMainAction(action: HomeAction) {
         when (action) {
-            MainAction.BUY -> {
+            HomeAction.BUY -> {
                 presenter.onBuyClicked()
             }
-            MainAction.RECEIVE -> {
+            HomeAction.RECEIVE -> {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
-            MainAction.TRADE -> {
+            HomeAction.TRADE -> {
                 replaceFragment(OrcaSwapFragment.create())
             }
-            MainAction.SEND -> {
+            HomeAction.SEND -> {
                 replaceFragment(SendFragment.create())
             }
         }

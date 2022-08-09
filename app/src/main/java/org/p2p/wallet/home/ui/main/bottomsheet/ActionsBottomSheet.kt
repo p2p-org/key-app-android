@@ -44,25 +44,25 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             viewActionBuy.apply {
-                setResultClickListener(MainAction.BUY)
+                setResultClickListener(HomeAction.BUY)
                 imageViewAction.setImageResource(R.drawable.action_buy_icon)
                 textViewActionTitle.setText(R.string.home_actions_buy_title)
                 textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
             }
             viewActionReceive.apply {
-                setResultClickListener(MainAction.RECEIVE)
+                setResultClickListener(HomeAction.RECEIVE)
                 imageViewAction.setImageResource(R.drawable.action_receive_icon)
                 textViewActionTitle.setText(R.string.home_actions_receive_title)
                 textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
             }
             viewActionTrade.apply {
-                setResultClickListener(MainAction.TRADE)
+                setResultClickListener(HomeAction.TRADE)
                 imageViewAction.setImageResource(R.drawable.action_trade_icon)
                 textViewActionTitle.setText(R.string.home_actions_trade_title)
                 textViewActionSubtitle.setText(R.string.home_actions_trade_subtitle)
             }
             viewActionSend.apply {
-                setResultClickListener(MainAction.SEND)
+                setResultClickListener(HomeAction.SEND)
                 imageViewAction.setImageResource(R.drawable.action_send_icon)
                 textViewActionTitle.setText(R.string.home_actions_send_title)
                 textViewActionSubtitle.setText(R.string.home_actions_send_subtitle)
@@ -72,7 +72,7 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
-    private fun ViewActionItemBinding.setResultClickListener(action: MainAction) {
+    private fun ViewActionItemBinding.setResultClickListener(action: HomeAction) {
         viewActionRoot.setOnClickListener {
             setFragmentResult(requestKey, bundleOf(resultKey to action))
             dismissAllowingStateLoss()
@@ -80,6 +80,6 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
     }
 }
 
-enum class MainAction {
+enum class HomeAction {
     BUY, RECEIVE, TRADE, SEND
 }
