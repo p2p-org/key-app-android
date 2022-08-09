@@ -6,4 +6,4 @@ fun StringBuilder.appendBreakLine() {
     append("\n")
 }
 
-fun String.ellipsizeAddress() = take(4) + "…" + take(4)
+fun String.ellipsizeAddress() = take(4) + "…" + takeLast(4)

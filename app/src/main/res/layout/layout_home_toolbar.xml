@@ -52,7 +52,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
-            android:textColor="@color/text_night"
+            android:textColor="@color/text_mountain"
             app:drawableStartCompat="@drawable/ic_wallet_home"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_view_qr"
