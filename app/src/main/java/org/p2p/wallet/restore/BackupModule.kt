@@ -1,6 +1,7 @@
 package org.p2p.wallet.restore
 
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
@@ -13,17 +14,7 @@ import org.p2p.wallet.restore.ui.keys.SecretKeyPresenter
 object BackupModule : InjectionModule {
 
     override fun create() = module {
-        factory {
-            SecretKeyInteractor(
-                authRepository = get(),
-                rpcRepository = get(),
-                tokenProvider = get(),
-                sharedPreferences = get(),
-                usernameInteractor = get(),
-                tokenPricesRepository = get(),
-                adminAnalytics = get()
-            )
-        }
+        factoryOf(::SecretKeyInteractor)
         factory<SecretKeyContract.Presenter> {
             SecretKeyPresenter(
                 resources = androidContext().resources,
