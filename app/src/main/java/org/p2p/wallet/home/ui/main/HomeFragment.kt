@@ -26,8 +26,8 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
+import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.bottomsheet.MainAction
-import org.p2p.wallet.home.ui.main.bottomsheet.MainActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
@@ -92,7 +92,7 @@ class HomeFragment :
         val centerActionSetter = parentFragment as? CenterActionButtonClickSetter
 
         centerActionSetter?.setOnCenterActionButtonListener {
-            MainActionsBottomSheet.show(
+            HomeActionsBottomSheet.show(
                 fm = childFragmentManager,
                 requestKey = KEY_REQUEST_ACTION,
                 resultKey = KEY_RESULT_ACTION

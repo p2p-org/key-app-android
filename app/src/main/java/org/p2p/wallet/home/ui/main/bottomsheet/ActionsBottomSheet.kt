@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.DialogMainActionsBinding
+import org.p2p.wallet.databinding.DialogHomeActionsBinding
 import org.p2p.wallet.databinding.ViewActionItemBinding
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.withArgs
@@ -17,26 +17,26 @@ import org.p2p.wallet.utils.withArgs
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class MainActionsBottomSheet : BottomSheetDialogFragment() {
+class HomeActionsBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         fun show(
             fm: FragmentManager,
             requestKey: String,
             resultKey: String
-        ) = MainActionsBottomSheet().withArgs(
+        ) = HomeActionsBottomSheet().withArgs(
             EXTRA_REQUEST_KEY to requestKey,
             EXTRA_RESULT_KEY to resultKey
-        ).show(fm, MainActionsBottomSheet::javaClass.name)
+        ).show(fm, HomeActionsBottomSheet::javaClass.name)
     }
 
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
 
-    private lateinit var binding: DialogMainActionsBinding
+    private lateinit var binding: DialogHomeActionsBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogMainActionsBinding.inflate(inflater, container, false)
+        binding = DialogHomeActionsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -46,26 +46,26 @@ class MainActionsBottomSheet : BottomSheetDialogFragment() {
             viewActionBuy.apply {
                 setResultClickListener(MainAction.BUY)
                 imageViewAction.setImageResource(R.drawable.action_buy_icon)
-                textViewActionTitle.setText(R.string.main_actions_buy_title)
-                textViewActionSubtitle.setText(R.string.main_actions_buy_subtitle)
+                textViewActionTitle.setText(R.string.home_actions_buy_title)
+                textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
             }
             viewActionReceive.apply {
                 setResultClickListener(MainAction.RECEIVE)
                 imageViewAction.setImageResource(R.drawable.action_receive_icon)
-                textViewActionTitle.setText(R.string.main_actions_receive_title)
-                textViewActionSubtitle.setText(R.string.main_actions_receive_subtitle)
+                textViewActionTitle.setText(R.string.home_actions_receive_title)
+                textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
             }
             viewActionTrade.apply {
                 setResultClickListener(MainAction.TRADE)
                 imageViewAction.setImageResource(R.drawable.action_trade_icon)
-                textViewActionTitle.setText(R.string.main_actions_trade_title)
-                textViewActionSubtitle.setText(R.string.main_actions_trade_subtitle)
+                textViewActionTitle.setText(R.string.home_actions_trade_title)
+                textViewActionSubtitle.setText(R.string.home_actions_trade_subtitle)
             }
             viewActionSend.apply {
                 setResultClickListener(MainAction.SEND)
                 imageViewAction.setImageResource(R.drawable.action_send_icon)
-                textViewActionTitle.setText(R.string.main_actions_send_title)
-                textViewActionSubtitle.setText(R.string.main_actions_send_subtitle)
+                textViewActionTitle.setText(R.string.home_actions_send_title)
+                textViewActionSubtitle.setText(R.string.home_actions_send_subtitle)
             }
         }
     }
