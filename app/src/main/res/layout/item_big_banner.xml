@@ -28,7 +28,7 @@
         android:backgroundTint="@color/lime"
         android:textColor="@color/night"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="@string/main_banner_button" />
+        tools:text="@string/home_banner_button" />
 
     <TextView
         android:id="@+id/textViewBannerSubtitle"
@@ -42,7 +42,7 @@
         app:layout_constraintBottom_toTopOf="@id/buttonBanner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/main_banner_subtitle" />
+        tools:text="@string/home_banner_subtitle" />
 
     <ImageView
         android:id="@+id/imageViewBanner"
@@ -67,6 +67,6 @@
         app:layout_constraintBottom_toTopOf="@id/textViewBannerSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/main_banner_title" />
+        tools:text="@string/home_banner_title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

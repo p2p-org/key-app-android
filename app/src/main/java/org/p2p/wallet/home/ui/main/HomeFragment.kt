@@ -65,9 +65,9 @@ class HomeFragment :
                 listOf(
                     HomeBannerItem(
                         id = R.id.home_banner_top_up,
-                        titleTextId = R.string.main_banner_title,
-                        subtitleTextId = R.string.main_banner_subtitle,
-                        buttonTextId = R.string.main_banner_button,
+                        titleTextId = R.string.home_banner_title,
+                        subtitleTextId = R.string.home_banner_subtitle,
+                        buttonTextId = R.string.home_banner_button,
                         drawableRes = R.drawable.ic_banner_image,
                         backgroundColorRes = R.color.bannerBackgroundColor
                     )
@@ -123,8 +123,8 @@ class HomeFragment :
             }
         )
 
-        // always hidden. temporary. PWN-4381
-        viewNewMainBuyTokenBanner.root.isVisible = false
+        // hidden. temporary. PWN-4381
+        viewBuyTokenBanner.root.isVisible = false
 
         if (BuildConfig.DEBUG) {
             with(debugButton) {
