@@ -1,11 +1,11 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -121,6 +121,9 @@ class HomeFragment :
         swipeRefreshLayout.setOnRefreshListener {
             presenter.refreshTokens()
         }
+
+        // hidden. temporary. PWN-4381
+        viewBuyTokenBanner.root.isVisible = false
 
         if (BuildConfig.DEBUG) {
             with(toolbar.imageViewDebug) {
@@ -241,11 +244,7 @@ class HomeFragment :
         with(binding) {
             actionButtonsView.isVisible = !isEmpty
             balance.root.isVisible = !isEmpty
-            mainRecyclerView.adapter = if (isEmpty) {
-                emptyAdapter
-            } else {
-                contentAdapter
-            }
+            mainRecyclerView.adapter = if (isEmpty) emptyAdapter else contentAdapter
         }
     }
 
