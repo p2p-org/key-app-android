@@ -8,7 +8,7 @@
     android:padding="16dp">
 
     <View
-        android:id="@+id/viewBannerBackground"
+        android:id="@+id/view_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="60dp"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonBanner"
+        android:id="@+id/button"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ui_kit_button_large_height"
@@ -31,7 +31,7 @@
         tools:text="@string/main_banner_button" />
 
     <TextView
-        android:id="@+id/textViewBannerSubtitle"
+        android:id="@+id/text_view_banner_subtitle"
         style="@style/UiKit.TextAppearance.Regular.Text3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,24 +39,24 @@
         android:layout_marginBottom="20dp"
         android:gravity="center"
         android:textColor="@color/rain"
-        app:layout_constraintBottom_toTopOf="@id/buttonBanner"
+        app:layout_constraintBottom_toTopOf="@id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="@string/main_banner_subtitle" />
 
     <ImageView
-        android:id="@+id/imageViewBanner"
+        android:id="@+id/image_view_banner"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_banner_image"
-        app:layout_constraintBottom_toTopOf="@id/textViewBannerSubtitle"
+        app:layout_constraintBottom_toTopOf="@id/text_view_banner_subtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textViewBannerTitle"
+        android:id="@+id/text_view_banner_title"
         style="@style/UiKit.TextAppearance.SemiBold.Text1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:textColor="@color/snow"
-        app:layout_constraintBottom_toTopOf="@id/textViewBannerSubtitle"
+        app:layout_constraintBottom_toTopOf="@id/text_view_banner_subtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="@string/main_banner_title" />
