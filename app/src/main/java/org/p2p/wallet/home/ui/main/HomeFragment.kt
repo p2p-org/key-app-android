@@ -1,11 +1,11 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -111,7 +111,7 @@ class HomeFragment :
         val beta = getString(R.string.common_beta)
         val color = getColor(R.color.textIconSecondary)
 
-        toolbar.setupToolbar()
+        layoutToolbar.setupToolbar()
 
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.adapter = contentAdapter
@@ -126,7 +126,7 @@ class HomeFragment :
         viewBuyTokenBanner.root.isVisible = false
 
         if (BuildConfig.DEBUG) {
-            with(toolbar.imageViewDebug) {
+            with(layoutToolbar.imageViewDebug) {
                 isVisible = true
                 setOnClickListener {
                     replaceFragment(DebugSettingsFragment.create())
@@ -200,8 +200,8 @@ class HomeFragment :
         replaceFragment(BuySolanaFragment.create(token))
     }
 
-    override fun showUserAddress(publicKey: String) {
-        binding.toolbar.textViewAddress.text = publicKey
+    override fun showUserAddress(ellipsizedAddress: String) {
+        binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
@@ -217,14 +217,14 @@ class HomeFragment :
         )
     }
 
-    override fun showBalance(balance: BigDecimal, username: Username?) {
-        binding.balance.textViewAmount.text = getString(R.string.main_usd_format, balance.formatUsd())
+    override fun showBalance(balance: BigDecimal, username: Username?) = with(binding.layoutBalance) {
+        textViewAmount.text = getString(R.string.main_usd_format, balance.formatUsd())
         if (username == null) {
-            binding.balance.textViewTitle.setText(R.string.main_balance)
+            textViewTitle.setText(R.string.main_balance)
         } else {
             val commonText = username.getFullUsername(requireContext())
             val color = getColor(R.color.textIconPrimary)
-            binding.balance.textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
+            textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
         }
     }
 
@@ -243,7 +243,7 @@ class HomeFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             actionButtonsView.isVisible = !isEmpty
-            balance.root.isVisible = !isEmpty
+            layoutBalance.root.isVisible = !isEmpty
             mainRecyclerView.adapter = if (isEmpty) emptyAdapter else contentAdapter
         }
     }
