@@ -91,7 +91,7 @@ class HomeFragment :
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.adapter = contentAdapter
 
-        actionButtons.setupActionButtons()
+        viewActionButtons.setupActionButtons()
 
         swipeRefreshLayout.setOnRefreshListener {
             presenter.refreshTokens()
@@ -122,31 +122,31 @@ class HomeFragment :
     }
 
     private fun LayoutActionButtonsBinding.setupActionButtons() {
-        actionBuyView.apply {
-            textView.setText(R.string.main_buy)
-            imageButton.setImageResource(R.drawable.ic_plus)
-            imageButton.setOnClickListener {
+        viewActionBuy.apply {
+            textViewButtonTitle.setText(R.string.main_buy)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_plus)
+            imageButtonButtonIcon.setOnClickListener {
                 presenter.onBuyClicked()
             }
         }
-        actionReceiveView.apply {
-            textView.setText(R.string.main_receive)
-            imageButton.setImageResource(R.drawable.ic_receive_simple)
-            imageButton.setOnClickListener {
+        viewActionReceive.apply {
+            textViewButtonTitle.setText(R.string.main_receive)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_receive_simple)
+            imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
         }
-        actionSendView.apply {
-            textView.setText(R.string.main_send)
-            imageButton.setImageResource(R.drawable.ic_send_medium)
-            imageButton.setOnClickListener {
+        viewActionSend.apply {
+            textViewButtonTitle.setText(R.string.main_send)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_send_medium)
+            imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(SendFragment.create())
             }
         }
-        actionTradeView.apply {
-            textView.setText(R.string.main_trade)
-            imageButton.setImageResource(R.drawable.ic_swap_medium)
-            imageButton.setOnClickListener {
+        viewActionTrade.apply {
+            textViewButtonTitle.setText(R.string.main_trade)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
+            imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(OrcaSwapFragment.create())
             }
         }
@@ -180,13 +180,13 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal, username: Username?) {
-        binding.balance.textViewAmount.text = getString(R.string.main_usd_format, balance.formatUsd())
+        binding.viewBalance.textViewAmount.text = getString(R.string.main_usd_format, balance.formatUsd())
         if (username == null) {
-            binding.balance.textViewTitle.setText(R.string.main_balance)
+            binding.viewBalance.textViewTitle.setText(R.string.main_balance)
         } else {
             val commonText = username.getFullUsername(requireContext())
             val color = getColor(R.color.textIconPrimary)
-            binding.balance.textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
+            binding.viewBalance.textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
         }
     }
 
@@ -200,21 +200,14 @@ class HomeFragment :
 
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            actionButtons.setActionButtonsVisibility(!isEmpty)
-            balance.root.isVisible = !isEmpty
+            viewActionButtons.viewRoot.isVisible = !isEmpty
+            viewBalance.root.isVisible = !isEmpty
             mainRecyclerView.adapter = if (isEmpty) {
                 emptyAdapter
             } else {
                 contentAdapter
             }
         }
-    }
-
-    private fun LayoutActionButtonsBinding.setActionButtonsVisibility(isVisible: Boolean) {
-        actionBuyView.viewContainer.isVisible = isVisible
-        actionReceiveView.viewContainer.isVisible = isVisible
-        actionSendView.viewContainer.isVisible = isVisible
-        actionTradeView.viewContainer.isVisible = isVisible
     }
 
     override fun onDestroy() {

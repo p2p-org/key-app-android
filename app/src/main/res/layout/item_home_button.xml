@@ -11,7 +11,7 @@
     android:orientation="vertical">
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/image_button_button_icon"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:background="@drawable/bg_circle_button"
@@ -20,13 +20,13 @@
         android:src="@drawable/ic_plus" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/text_view_button_title"
         style="@style/UiKit.TextAppearance.SemiBold.Text4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:maxLines="1"
-        android:textColor="@color/textIconPrimary"
+        android:textColor="@color/text_night"
         app:autoSizeMaxTextSize="14sp"
         app:autoSizeMinTextSize="8sp"
         app:autoSizeTextType="uniform"

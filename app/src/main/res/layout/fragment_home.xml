@@ -30,13 +30,13 @@
                 app:layout_collapseMode="none">
 
                 <include
-                    android:id="@+id/balance"
+                    android:id="@+id/view_balance"
                     layout="@layout/layout_home_balance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
                 <include
-                    android:id="@+id/action_buttons"
+                    android:id="@+id/view_action_buttons"
                     layout="@layout/layout_action_buttons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
