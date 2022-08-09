@@ -25,7 +25,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <include
-                android:id="@+id/balance"
+                android:id="@+id/layout_balance"
                 layout="@layout/layout_home_balance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
                 app:layout_collapseMode="none" />
 
             <include
-                android:id="@+id/toolbar"
+                android:id="@+id/layout_toolbar"
                 layout="@layout/layout_home_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
