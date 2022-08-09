@@ -8,5 +8,4 @@ interface OnHomeItemsClickListener {
     fun onPopularTokenClicked(token: Token)
     fun onToggleClicked()
     fun onHideClicked(token: Token.Active)
-    fun onSendClicked(token: Token.Active)
 }

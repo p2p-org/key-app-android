@@ -257,6 +257,7 @@
     <string name="home_settings">Settings</string>
     <string name="home_debug">Debug Settings</string>
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
+    <string name="home_tokens">Tokens</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>

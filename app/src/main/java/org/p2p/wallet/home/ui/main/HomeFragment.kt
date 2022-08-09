@@ -1,11 +1,11 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -19,12 +19,15 @@ import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutActionButtonsBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
+import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
+import org.p2p.wallet.home.ui.main.bottomsheet.MainAction
+import org.p2p.wallet.home.ui.main.bottomsheet.MainActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
@@ -43,6 +46,9 @@ import java.math.BigDecimal
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
+
+private const val KEY_RESULT_ACTION = "KEY_RESULT_ACTION"
+private const val KEY_REQUEST_ACTION = "KEY_REQUEST_ACTION"
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
@@ -83,6 +89,21 @@ class HomeFragment :
         )
 
         presenter.subscribeToUserTokensFlow()
+        val centerActionSetter = parentFragment as? CenterActionButtonClickSetter
+
+        centerActionSetter?.setOnCenterActionButtonListener {
+            MainActionsBottomSheet.show(
+                fm = childFragmentManager,
+                requestKey = KEY_REQUEST_ACTION,
+                resultKey = KEY_RESULT_ACTION
+            )
+        }
+
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_ACTION,
+            viewLifecycleOwner,
+            ::onFragmentResult
+        )
     }
 
     private fun FragmentHomeBinding.setupView() {
@@ -96,6 +117,9 @@ class HomeFragment :
         swipeRefreshLayout.setOnRefreshListener {
             presenter.refreshTokens()
         }
+
+        // hidden. temporary. PWN-4381
+        viewBuyTokenBanner.root.isVisible = false
 
         if (BuildConfig.DEBUG) {
             with(toolbar.imageViewDebug) {
@@ -153,8 +177,34 @@ class HomeFragment :
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
-        result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-            showBuyTokenScreen(it)
+        when (requestKey) {
+            KEY_REQUEST_TOKEN -> {
+                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
+                    showBuyTokenScreen(it)
+                }
+            }
+            KEY_REQUEST_ACTION -> {
+                (result.getSerializable(KEY_RESULT_ACTION) as? MainAction)?.let {
+                    openScreenByMainAction(it)
+                }
+            }
+        }
+    }
+
+    private fun openScreenByMainAction(action: MainAction) {
+        when (action) {
+            MainAction.BUY -> {
+                presenter.onBuyClicked()
+            }
+            MainAction.RECEIVE -> {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
+            MainAction.TRADE -> {
+                replaceFragment(OrcaSwapFragment.create())
+            }
+            MainAction.SEND -> {
+                replaceFragment(SendFragment.create())
+            }
         }
     }
 
@@ -200,7 +250,7 @@ class HomeFragment :
 
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            viewActionButtons.viewRoot.isVisible = !isEmpty
+            viewActionButtons.root.isVisible = !isEmpty
             viewBalance.root.isVisible = !isEmpty
             mainRecyclerView.adapter = if (isEmpty) {
                 emptyAdapter
@@ -250,9 +300,5 @@ class HomeFragment :
 
     override fun onHideClicked(token: Token.Active) {
         presenter.toggleTokenVisibility(token)
-    }
-
-    override fun onSendClicked(token: Token.Active) {
-        replaceFragment(SendFragment.create(token))
     }
 }
