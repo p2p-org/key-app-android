@@ -78,6 +78,7 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
+                android:paddingTop="24dp"
                 tools:listitem="@layout/item_token" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
