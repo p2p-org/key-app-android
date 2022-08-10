@@ -1,5 +1,8 @@
 package org.p2p.wallet.send.ui.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
@@ -63,9 +66,6 @@ import java.math.BigInteger
 import java.math.RoundingMode
 import java.util.Locale
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class SendPresenter(
     private val sendInteractor: SendInteractor,
@@ -678,16 +678,24 @@ class SendPresenter(
                 token = sourceToken,
                 recipient = recipient
             )
+        } catch (noPoolsException: IllegalStateException) {
+            val sol = userInteractor.getUserSolToken()
+            if (sol != null) {
+                sendInteractor.calculateFeesForFeeRelayer(
+                    feePayerToken = sol,
+                    token = sourceToken,
+                    recipient = recipient
+                )
+            } else {
+                handleError()
+                return null
+            }
         } catch (e: CancellationException) {
             Timber.w("Fee calculation is cancelled")
             return null
         } catch (e: Throwable) {
             Timber.e(e, "Error calculating fees")
-            state.sendFee = null
-            calculateTotal(sendFee = null)
-            view?.hideAccountFeeView()
-            view?.showDetailsError(R.string.send_cannot_send_token)
-            view?.showButtonText(R.string.main_select_token)
+            handleError()
             return null
         }
 
@@ -703,6 +711,14 @@ class SendPresenter(
         }
 
         return fees.feeInSol to fees.feeInPayingToken
+    }
+
+    private fun handleError() {
+        state.sendFee = null
+        calculateTotal(sendFee = null)
+        view?.hideAccountFeeView()
+        view?.showDetailsError(R.string.send_cannot_send_token)
+        view?.showButtonText(R.string.main_select_token)
     }
 
     internal suspend fun showFeeDetails(
