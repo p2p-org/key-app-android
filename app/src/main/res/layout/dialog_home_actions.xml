@@ -26,7 +26,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="@string/main_actions_title"
+        android:text="@string/home_actions_title"
         android:textColor="@color/text_night"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

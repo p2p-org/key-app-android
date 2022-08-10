@@ -20,20 +20,34 @@
             android:layout_height="wrap_content"
             android:elevation="0dp"
             app:expandedTitleGravity="top"
-            app:expandedTitleMarginEnd="48dp"
-            app:expandedTitleMarginStart="48dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <include
-                android:id="@+id/balance"
-                layout="@layout/layout_home_balance"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_toolbar_height"
-                app:layout_collapseMode="none" />
+                android:orientation="vertical"
+                app:layout_collapseMode="none">
+
+                <include
+                    android:id="@+id/view_balance"
+                    layout="@layout/layout_home_balance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <include
+                    android:id="@+id/view_action_buttons"
+                    layout="@layout/layout_action_buttons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="16dp" />
+
+            </LinearLayout>
 
             <include
-                android:id="@+id/toolbar"
+                android:id="@+id/layout_toolbar"
                 layout="@layout/layout_home_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,12 +66,11 @@
             android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_buy_token_banner">
+            app:layout_constraintTop_toBottomOf="@+id/view_buy_token_banner"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/main_recycler_view"
@@ -69,17 +82,6 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <org.p2p.wallet.common.ui.widget.ActionButtonsView
-            android:id="@+id/action_buttons_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <include
             android:id="@+id/view_buy_token_banner"
             layout="@layout/view_home_buy_token_banner"
@@ -87,7 +89,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/action_buttons_view" />
+            app:layout_constraintTop_toBottomOf="@+id/action_buttons_view"
+            tools:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

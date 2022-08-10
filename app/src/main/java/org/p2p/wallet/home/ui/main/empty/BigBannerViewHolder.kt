@@ -24,7 +24,7 @@ class BigBannerViewHolder(
 
         imageViewBanner.setImageResource(item.drawableRes)
 
-        buttonBanner.apply {
+        button.apply {
             setText(item.buttonTextId)
             setOnClickListener { onBannerButtonClicked(item.id) }
         }
@@ -32,7 +32,7 @@ class BigBannerViewHolder(
     }
 
     private fun ItemBigBannerBinding.setBackground(@ColorRes backgroundColorRes: Int) {
-        when (val background: Drawable = viewBannerBackground.background) {
+        when (val background: Drawable = viewBackground.background) {
             is ShapeDrawable -> {
                 background.paint.color = getColor(backgroundColorRes)
             }

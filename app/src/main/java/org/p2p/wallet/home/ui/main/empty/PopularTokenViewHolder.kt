@@ -12,7 +12,7 @@ import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemPopularTokenBinding
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.utils.asUsd
+import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
@@ -47,7 +47,7 @@ class PopularTokenViewHolder(
         )
 
         val rate = if (token is Token.Active) {
-            token.usdRateOrZero.asUsd()
+            "$ ${token.usdRateOrZero.formatUsd()}"
         } else null
 
         textViewTotal.withTextOrGone(rate)
