@@ -11,9 +11,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.utils.withTextOrGone
+
+private const val VIEW_ALPHA_MAX_VALUE = 0.8f
 
 class TokenViewHolder(
     private val binding: ItemTokenBinding,
@@ -55,6 +58,20 @@ class TokenViewHolder(
         imageViewHideToken.setOnClickListener { listener.onHideClicked(token) }
 
         contentView.setOnClickListener { listener.onTokenClicked(token) }
+
+        root.setSwipeListener(object : SwipeRevealLayout.SwipeListener {
+            override fun onClosed(view: SwipeRevealLayout?) {
+                viewAlpha.alpha = 0f
+            }
+
+            override fun onOpened(view: SwipeRevealLayout?) {
+                viewAlpha.alpha = VIEW_ALPHA_MAX_VALUE
+            }
+
+            override fun onSlide(view: SwipeRevealLayout?, slideOffset: Float) {
+                viewAlpha.alpha = if (slideOffset > VIEW_ALPHA_MAX_VALUE) VIEW_ALPHA_MAX_VALUE else slideOffset
+            }
+        })
     }
 
     private fun loadImage(imageView: ImageView, url: String) {
