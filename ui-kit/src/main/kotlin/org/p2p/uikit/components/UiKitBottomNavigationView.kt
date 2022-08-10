@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.Menu
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetBottomNavigationViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
@@ -12,7 +13,7 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr) {
+) : CoordinatorLayout(context, attrs, defStyleAttr) {
 
     val binding = inflateViewBinding<WidgetBottomNavigationViewBinding>()
 
@@ -31,9 +32,6 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
         }
     }
 
-    fun setOnCenterActionButtonListener(block: () -> Unit) {
-        binding.buttonCenterAction.setOnClickListener { block.invoke() }
-    }
 
     fun inflateMenu(menuResId: Int) {
         binding.bottomNavigationView.inflateMenu(menuResId)
