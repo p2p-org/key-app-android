@@ -46,11 +46,7 @@ class PopularTokenViewHolder(
             }
         )
 
-        val rate = if (token is Token.Active) {
-            "$ ${token.usdRateOrZero.formatUsd()}"
-        } else null
-
-        textViewTotal.withTextOrGone(rate)
+        textViewTotal.withTextOrGone("$ ${token.usdRateOrZero.formatUsd()}")
 
         contentView.setOnClickListener { onPopularTokenClicked(token) }
         textViewValue.setOnClickListener { onPopularTokenClicked(token) }
