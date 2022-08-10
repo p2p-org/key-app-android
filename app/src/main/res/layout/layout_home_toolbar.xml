@@ -14,32 +14,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="20dp"
-        android:paddingBottom="24dp"
         tools:ignore="ContentDescription">
 
-        <org.p2p.wallet.common.ui.widget.ShadowView
+        <View
+            android:id="@+id/view_profile_shadow"
+            android:layout_width="@dimen/home_toolbar_shadow_view_size"
+            android:layout_height="@dimen/home_toolbar_shadow_view_size"
+            android:background="@drawable/bg_circle_with_shadow"
+            app:layout_constraintBottom_toBottomOf="@id/image_view_profile"
+            app:layout_constraintEnd_toEndOf="@id/image_view_profile"
+            app:layout_constraintStart_toStartOf="@id/image_view_profile"
+            app:layout_constraintTop_toTopOf="@id/image_view_profile" />
+
+        <ImageView
             android:id="@+id/image_view_profile"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_circle"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple_circle"
             android:padding="10dp"
+            android:src="@drawable/ic_tennis"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:radius="80dp"
-            app:shadowColor="@color/shadow_color"
-            app:shadowWidth="4dp">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_tennis" />
-
-        </org.p2p.wallet.common.ui.widget.ShadowView>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text_view_address"
@@ -60,14 +62,28 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="3gmX…EX2z" />
 
-        <org.p2p.wallet.common.ui.widget.ShadowView
+        <View
+            android:id="@+id/view_debug_shadow"
+            android:layout_width="@dimen/home_toolbar_shadow_view_size"
+            android:layout_height="@dimen/home_toolbar_shadow_view_size"
+            android:background="@drawable/bg_circle_with_shadow"
+            app:layout_constraintBottom_toBottomOf="@id/image_view_debug"
+            app:layout_constraintEnd_toEndOf="@id/image_view_debug"
+            app:layout_constraintStart_toStartOf="@id/image_view_debug"
+            app:layout_constraintTop_toTopOf="@id/image_view_debug" />
+
+        <ImageView
             android:id="@+id/image_view_debug"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_circle"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple_circle"
             android:padding="10dp"
+            android:src="@drawable/ic_rocket"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -75,39 +91,34 @@
             app:layout_constraintHorizontal_bias="0.8"
             app:layout_constraintStart_toEndOf="@id/text_view_address"
             app:layout_constraintTop_toTopOf="parent"
-            app:radius="80dp"
-            app:shadowColor="@color/shadow_color"
-            app:shadowWidth="4dp"
-            tools:visibility="visible">
+            tools:visibility="visible" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_rocket" />
+        <View
+            android:id="@+id/view_qr_shadow"
+            android:layout_width="@dimen/home_toolbar_shadow_view_size"
+            android:layout_height="@dimen/home_toolbar_shadow_view_size"
+            android:background="@drawable/bg_circle_with_shadow"
+            app:layout_constraintBottom_toBottomOf="@id/image_view_qr"
+            app:layout_constraintEnd_toEndOf="@id/image_view_qr"
+            app:layout_constraintStart_toStartOf="@id/image_view_qr"
+            app:layout_constraintTop_toTopOf="@id/image_view_qr" />
 
-        </org.p2p.wallet.common.ui.widget.ShadowView>
-
-        <org.p2p.wallet.common.ui.widget.ShadowView
+        <ImageView
             android:id="@+id/image_view_qr"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_circle"
             android:clickable="true"
             android:focusable="true"
             android:foreground="@drawable/ripple_circle"
             android:padding="10dp"
+            android:src="@drawable/ic_qr_home"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:radius="80dp"
-            app:shadowColor="@color/shadow_color"
-            app:shadowWidth="4dp">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_qr_home" />
-
-        </org.p2p.wallet.common.ui.widget.ShadowView>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
