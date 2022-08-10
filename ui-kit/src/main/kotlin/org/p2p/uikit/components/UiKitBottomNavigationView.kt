@@ -3,7 +3,6 @@ package org.p2p.uikit.components
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Menu
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetBottomNavigationViewBinding
@@ -31,7 +30,6 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
             ScreenTab.fromTabId(menuItem.itemId)?.let { block.invoke(it) } ?: false
         }
     }
-
 
     fun inflateMenu(menuResId: Int) {
         binding.bottomNavigationView.inflateMenu(menuResId)
