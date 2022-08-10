@@ -6,7 +6,7 @@ import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import kotlin.coroutines.resume
 
 class UserSignUpInteractor(
-    private val web3AuthApi: Web3AuthApiClient,
+    private val web3AuthApi: Web3AuthApi,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     private val signUpFlowDataCache: SignUpFlowDataCache
 ) {
@@ -56,7 +56,7 @@ class UserSignUpInteractor(
         return suspendCancellableCoroutine { continuation ->
             web3AuthApi.triggerSilentSignUp(
                 socialShare = idToken,
-                object : Web3AuthApiClient.Web3AuthSignUpCallback {
+                object : Web3AuthApi.Web3AuthSignUpCallback {
                     override fun onSuccessSignUp(signUpResponse: Web3AuthSignUpResponse) {
                         continuation.resume(signUpResponse)
                     }

@@ -60,6 +60,7 @@ import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
 import org.p2p.wallet.feerelayer.FeeRelayerModule.FEE_RELAYER_QUALIFIER
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
@@ -102,7 +103,7 @@ object AuthModule {
     private fun Module.onboardingModule() {
         singleOf(::GoogleSignInHelper)
         singleOf(::UserSignUpDetailsStorage)
-        single {
+        single<Web3AuthApi> {
             Web3AuthApiClient(
                 context = androidContext(),
                 torusNetwork = get<NetworkServicesUrlProvider>().loadTorusEnvironment(),

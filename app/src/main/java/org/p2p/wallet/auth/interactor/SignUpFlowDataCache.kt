@@ -55,4 +55,10 @@ class SignUpFlowDataCache(
             passphrase = emptyString()
         )
     }
+
+    fun clear() {
+        this.signUpUserId = null
+        this.userAccount = null
+        this.userPhoneNumber = null
+    }
 }

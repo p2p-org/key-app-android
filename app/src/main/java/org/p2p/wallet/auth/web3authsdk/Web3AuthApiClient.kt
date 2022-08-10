@@ -7,6 +7,9 @@ import android.webkit.WebView
 import android.widget.Toast
 import com.google.gson.Gson
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthClientHandler
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSdkInternalError
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSignUpCallback
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
 import org.p2p.wallet.utils.fromJsonReified
 import timber.log.Timber
@@ -18,16 +21,7 @@ class Web3AuthApiClient(
     context: Context,
     private val torusNetwork: TorusEnvironment,
     private val gson: Gson
-) {
-    class Web3AuthSdkInternalError(override val message: String, override val cause: Throwable? = null) : Throwable()
-
-    interface Web3AuthClientHandler {
-        fun handleError(error: Web3AuthErrorResponse)
-    }
-
-    interface Web3AuthSignUpCallback : Web3AuthClientHandler {
-        fun onSuccessSignUp(signUpResponse: Web3AuthSignUpResponse)
-    }
+) : Web3AuthApi {
 
     private var handler: Web3AuthClientHandler? = null
 
@@ -43,7 +37,7 @@ class Web3AuthApiClient(
         }
     }
 
-    fun attach() {
+    override fun attach() {
         onboardingWebView.apply {
             loadUrl(INDEX_HTML_URI)
             addJavascriptInterface(
@@ -53,11 +47,11 @@ class Web3AuthApiClient(
         }
     }
 
-    fun detach() {
+    override fun detach() {
         onboardingWebView.removeJavascriptInterface(JS_COMMUNICATION_CHANNEL_NAME)
     }
 
-    fun triggerSilentSignUp(socialShare: String, handler: Web3AuthSignUpCallback) {
+    override fun triggerSilentSignUp(socialShare: String, handler: Web3AuthSignUpCallback) {
         this.handler = handler
         onboardingWebView.evaluateJavascript(
             generateFacade(type = "signup", jsMethodCall = "triggerSilentSignup('$socialShare')"),
@@ -65,7 +59,7 @@ class Web3AuthApiClient(
         )
     }
 
-    fun triggerSignInNoDevice(socialShare: String) {
+    override fun triggerSignInNoDevice(socialShare: String) {
         if (handler == null) Timber.i("!!! No handler attached for Web3Auth")
         onboardingWebView.evaluateJavascript(
             generateFacade("signin", jsMethodCall = "triggerSignInNoDevice('$socialShare')"),
@@ -73,7 +67,7 @@ class Web3AuthApiClient(
         )
     }
 
-    fun triggerSignInNoCustom(socialShare: String, deviceShare: String) {
+    override fun triggerSignInNoCustom(socialShare: String, deviceShare: String) {
         if (handler == null) Timber.i("!!! No handler attached for Web3Auth")
         onboardingWebView.evaluateJavascript(
             generateFacade(type = "signin", jsMethodCall = "triggerSignInNoCustom('$socialShare', $deviceShare)"),

@@ -1,14 +1,14 @@
 package org.p2p.wallet.auth.gateway.repository
 
 import com.google.gson.JsonObject
+import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.gateway.api.GatewayServiceApi
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
+import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String
-import kotlinx.coroutines.withContext
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 
 class GatewayServiceRemoteRepository(
     private val api: GatewayServiceApi,
@@ -41,7 +41,7 @@ class GatewayServiceRemoteRepository(
         jsonEncryptedMnemonicPhrase: JsonObject,
         phoneNumber: String,
         otpConfirmationCode: String
-    ): GatewayServiceStandardResponse {
+    ): GatewayServiceStandardResponse = withContext(dispatchers.io) {
         val request = mapper.toConfirmRegisterWalletNetwork(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
@@ -52,6 +52,6 @@ class GatewayServiceRemoteRepository(
             otpConfirmationCode = otpConfirmationCode
         )
         val response = api.confirmRegisterWallet(request)
-        return mapper.fromNetwork(response)
+        mapper.fromNetwork(response)
     }
 }

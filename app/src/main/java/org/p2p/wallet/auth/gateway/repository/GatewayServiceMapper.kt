@@ -22,7 +22,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-private const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ss.n x"
+// TODO: PWN-4362 add correct date format
+private const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ss"
 
 class GatewayServiceMapper(
     private val gson: Gson

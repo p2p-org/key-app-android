@@ -57,5 +57,7 @@ class CreateWalletInteractor(
             tokenKeyProvider.secretKey = it.secretKey
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
         } ?: throw CreateWalletFailure("User account is null")
+
+        signUpFlowDataCache.clear()
     }
 }
