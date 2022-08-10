@@ -42,7 +42,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
         android:text="@string/home_buy_token_banner_subtitle"
-        android:textColor="@color/text_mountain"
+        android:textColor="@color/rain"
         app:layout_constraintBottom_toBottomOf="@+id/view_banner_background"
         app:layout_constraintEnd_toStartOf="@+id/relative_layout"
         app:layout_constraintHorizontal_bias="0.0"
