@@ -15,8 +15,8 @@ import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.databinding.FragmentHomeBinding
+import org.p2p.wallet.databinding.LayoutActionButtonsBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
@@ -34,7 +34,6 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
-import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
@@ -50,9 +49,6 @@ private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 
 private const val KEY_RESULT_ACTION = "KEY_RESULT_ACTION"
 private const val KEY_REQUEST_ACTION = "KEY_REQUEST_ACTION"
-
-private const val TOP_UP_REQUEST_KEY = "TOP_UP_REQUEST_KEY"
-private const val TOP_UP_BUNDLE_KEY_SELECTED = "TOP_UP_BUNDLE_KEY_SELECTED"
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
@@ -108,25 +104,15 @@ class HomeFragment :
             viewLifecycleOwner,
             ::onFragmentResult
         )
-
-        childFragmentManager.setFragmentResultListener(
-            TOP_UP_REQUEST_KEY,
-            viewLifecycleOwner,
-            ::onFragmentResult
-        )
     }
 
     private fun FragmentHomeBinding.setupView() {
-        val commonTitle = getString(R.string.app_name)
-        val beta = getString(R.string.common_beta)
-        val color = getColor(R.color.textIconSecondary)
-
         layoutToolbar.setupToolbar()
 
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.adapter = contentAdapter
 
-        actionButtonsView.setupActionButtons()
+        viewActionButtons.setupActionButtons()
 
         swipeRefreshLayout.setOnRefreshListener {
             presenter.refreshTokens()
@@ -159,18 +145,34 @@ class HomeFragment :
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
-    private fun ActionButtonsView.setupActionButtons() {
-        onBuyItemClickListener = {
-            presenter.onBuyClicked()
+    private fun LayoutActionButtonsBinding.setupActionButtons() {
+        viewActionBuy.apply {
+            textViewButtonTitle.setText(R.string.main_buy)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_plus)
+            imageButtonButtonIcon.setOnClickListener {
+                presenter.onBuyClicked()
+            }
         }
-        onReceiveItemClickListener = {
-            replaceFragment(ReceiveSolanaFragment.create(token = null))
+        viewActionReceive.apply {
+            textViewButtonTitle.setText(R.string.main_receive)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_receive_simple)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
         }
-        onSendClickListener = {
-            replaceFragment(SendFragment.create())
+        viewActionSend.apply {
+            textViewButtonTitle.setText(R.string.main_send)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_send_medium)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(SendFragment.create())
+            }
         }
-        onSwapItemClickListener = {
-            replaceFragment(OrcaSwapFragment.create())
+        viewActionTrade.apply {
+            textViewButtonTitle.setText(R.string.main_trade)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(OrcaSwapFragment.create())
+            }
         }
     }
 
@@ -183,23 +185,13 @@ class HomeFragment :
             }
             KEY_REQUEST_ACTION -> {
                 (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.let {
-                    openScreenByMainAction(it)
-                }
-            }
-            TOP_UP_REQUEST_KEY -> {
-                if (result.containsKey(TOP_UP_BUNDLE_KEY_SELECTED)) {
-                    val action = if (result.getBoolean(TOP_UP_BUNDLE_KEY_SELECTED, false)) {
-                        MainAction.BUY
-                    } else {
-                        MainAction.RECEIVE
-                    }
-                    openScreenByMainAction(action)
+                    openScreenByHomeAction(it)
                 }
             }
         }
     }
 
-    private fun openScreenByMainAction(action: HomeAction) {
+    private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
             HomeAction.BUY -> {
                 presenter.onBuyClicked()
@@ -237,14 +229,14 @@ class HomeFragment :
         )
     }
 
-    override fun showBalance(balance: BigDecimal, username: Username?) = with(binding.layoutBalance) {
-        textViewAmount.text = getString(R.string.main_usd_format, balance.formatUsd())
+    override fun showBalance(balance: BigDecimal, username: Username?) {
+        binding.viewBalance.textViewAmount.text = getString(R.string.main_usd_format, balance.formatUsd())
         if (username == null) {
-            textViewTitle.setText(R.string.main_balance)
+            binding.viewBalance.textViewTitle.setText(R.string.main_balance)
         } else {
             val commonText = username.getFullUsername(requireContext())
             val color = getColor(R.color.textIconPrimary)
-            textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
+            binding.viewBalance.textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
         }
     }
 
@@ -256,15 +248,15 @@ class HomeFragment :
         emptyAdapter.setItems(data)
     }
 
-    override fun showActions(items: List<ActionButtonsView.ActionButton>) {
-        binding.actionButtonsView.setItems(items)
-    }
-
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            actionButtonsView.isVisible = !isEmpty
-            layoutBalance.root.isVisible = !isEmpty
-            mainRecyclerView.adapter = if (isEmpty) emptyAdapter else contentAdapter
+            viewActionButtons.root.isVisible = !isEmpty
+            viewBalance.root.isVisible = !isEmpty
+            mainRecyclerView.adapter = if (isEmpty) {
+                emptyAdapter
+            } else {
+                contentAdapter
+            }
         }
     }
 
@@ -303,11 +295,7 @@ class HomeFragment :
             if (token is Token.Active) {
                 replaceFragment(ReceiveTokenFragment.create(token))
             } else {
-                RenBtcTopupBottomSheet.show(
-                    childFragmentManager,
-                    TOP_UP_REQUEST_KEY,
-                    TOP_UP_BUNDLE_KEY_SELECTED
-                )
+                openScreenByHomeAction(HomeAction.RECEIVE)
             }
         } else {
             showBuyTokenScreen(token)
