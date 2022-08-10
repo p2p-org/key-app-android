@@ -18,7 +18,7 @@ interface HomeContract {
         fun showRefreshing(isRefreshing: Boolean)
         fun showEmptyViewData(data: List<Any>)
         fun showEmptyState(isEmpty: Boolean)
-        fun showUserAddress(publicKey: String)
+        fun showUserAddress(ellipsizedAddress: String)
     }
 
     interface Presenter : MvpPresenter<View> {

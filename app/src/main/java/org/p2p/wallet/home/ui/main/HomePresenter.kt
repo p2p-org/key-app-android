@@ -25,6 +25,7 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
+import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
@@ -60,7 +61,7 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
 
-        view.showUserAddress(tokenKeyProvider.publicKey)
+        view.showUserAddress(tokenKeyProvider.publicKey.ellipsizeAddress())
 
         updatesManager.start()
 

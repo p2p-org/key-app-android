@@ -1,11 +1,11 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -107,7 +107,7 @@ class HomeFragment :
     }
 
     private fun FragmentHomeBinding.setupView() {
-        toolbar.setupToolbar()
+        layoutToolbar.setupToolbar()
 
         mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         mainRecyclerView.adapter = contentAdapter
@@ -122,7 +122,7 @@ class HomeFragment :
         viewBuyTokenBanner.root.isVisible = false
 
         if (BuildConfig.DEBUG) {
-            with(toolbar.imageViewDebug) {
+            with(layoutToolbar.imageViewDebug) {
                 isVisible = true
                 setOnClickListener {
                     replaceFragment(DebugSettingsFragment.create())
@@ -212,8 +212,8 @@ class HomeFragment :
         replaceFragment(BuySolanaFragment.create(token))
     }
 
-    override fun showUserAddress(publicKey: String) {
-        binding.toolbar.textViewAddress.text = publicKey
+    override fun showUserAddress(ellipsizedAddress: String) {
+        binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
     }
 
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
