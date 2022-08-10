@@ -34,7 +34,6 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
-import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
@@ -50,9 +49,6 @@ private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 
 private const val KEY_RESULT_ACTION = "KEY_RESULT_ACTION"
 private const val KEY_REQUEST_ACTION = "KEY_REQUEST_ACTION"
-
-private const val TOP_UP_REQUEST_KEY = "TOP_UP_REQUEST_KEY"
-private const val TOP_UP_BUNDLE_KEY_SELECTED = "TOP_UP_BUNDLE_KEY_SELECTED"
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
@@ -105,12 +101,6 @@ class HomeFragment :
 
         childFragmentManager.setFragmentResultListener(
             KEY_REQUEST_ACTION,
-            viewLifecycleOwner,
-            ::onFragmentResult
-        )
-
-        childFragmentManager.setFragmentResultListener(
-            TOP_UP_REQUEST_KEY,
             viewLifecycleOwner,
             ::onFragmentResult
         )
@@ -195,23 +185,13 @@ class HomeFragment :
             }
             KEY_REQUEST_ACTION -> {
                 (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.let {
-                    openScreenByMainAction(it)
-                }
-            }
-            TOP_UP_REQUEST_KEY -> {
-                if (result.containsKey(TOP_UP_BUNDLE_KEY_SELECTED)) {
-                    val action = if (result.getBoolean(TOP_UP_BUNDLE_KEY_SELECTED, false)) {
-                        MainAction.BUY
-                    } else {
-                        MainAction.RECEIVE
-                    }
-                    openScreenByMainAction(action)
+                    openScreenByHomeAction(it)
                 }
             }
         }
     }
 
-    private fun openScreenByMainAction(action: HomeAction) {
+    private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
             HomeAction.BUY -> {
                 presenter.onBuyClicked()
@@ -315,11 +295,7 @@ class HomeFragment :
             if (token is Token.Active) {
                 replaceFragment(ReceiveTokenFragment.create(token))
             } else {
-                RenBtcTopupBottomSheet.show(
-                    childFragmentManager,
-                    TOP_UP_REQUEST_KEY,
-                    TOP_UP_BUNDLE_KEY_SELECTED
-                )
+                openScreenByHomeAction(HomeAction.RECEIVE)
             }
         } else {
             showBuyTokenScreen(token)
