@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.interactor
+package org.p2p.wallet.auth.repository
 
 import com.google.gson.JsonObject
 import org.p2p.solanaj.core.Account
@@ -9,9 +9,13 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
-private val TAG = SignUpFlowDataCache::class.simpleName.orEmpty()
+private val TAG = SignUpFlowDataLocalRepository::class.simpleName.orEmpty()
 
-class SignUpFlowDataCache(
+/**
+ * We're using this class to temporarily keep data that is collected
+ * and generated during the whole Create wallet onboarding flow
+ */
+class SignUpFlowDataLocalRepository(
     private val signUpUserStorage: UserSignUpDetailsStorage
 ) {
 

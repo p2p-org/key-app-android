@@ -1,14 +1,14 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.p2p.wallet.auth.interactor.SignUpFlowDataCache
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import kotlin.coroutines.resume
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
-    private val signUpFlowDataCache: SignUpFlowDataCache
+    private val signUpFlowDataRepository: SignUpFlowDataLocalRepository
 ) {
 
     sealed class SignUpResult {
@@ -20,10 +20,10 @@ class UserSignUpInteractor(
     suspend fun trySignUpNewUser(idToken: String, idTokenOwnerId: String): SignUpResult {
         web3AuthApi.attach()
         return try {
-            signUpFlowDataCache.signUpUserId = idTokenOwnerId
+            signUpFlowDataRepository.signUpUserId = idTokenOwnerId
 
             val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare(idToken)
-            signUpFlowDataCache.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhrase.split(""))
+            signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhrase.split(""))
 
             userSignUpDetailsStorage.save(signUpResponse, idTokenOwnerId)
             SignUpResult.SignUpSuccessful
@@ -43,8 +43,8 @@ class UserSignUpInteractor(
 
     fun continueSignUpUser(): SignUpResult {
         userSignUpDetailsStorage.getLastSignUpUserDetails()?.let {
-            signUpFlowDataCache.signUpUserId = it.userId
-            signUpFlowDataCache.generateUserAccount(
+            signUpFlowDataRepository.signUpUserId = it.userId
+            signUpFlowDataRepository.generateUserAccount(
                 userMnemonicPhrase = it.signUpDetails.mnemonicPhrase.split("")
             )
         } ?: return SignUpResult.UserAlreadyExists

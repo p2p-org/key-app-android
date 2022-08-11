@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
-import org.p2p.wallet.auth.interactor.SignUpFlowDataCache
+import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
-    private val cache: SignUpFlowDataCache
+    private val repository: SignUpFlowDataLocalRepository
 ) : BasePresenter<NewAuthSmsInputContract.View>(), NewAuthSmsInputContract.Presenter {
 
     private var timerFlow: Job? = null
@@ -30,7 +30,7 @@ class NewSmsInputPresenter(
         super.attach(view)
 
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
-        view.initView(cache.userPhoneNumber.orEmpty())
+        view.initView(repository.userPhoneNumber.orEmpty())
     }
 
     override fun onSmsInputChanged(smsCode: String) {
@@ -86,7 +86,7 @@ class NewSmsInputPresenter(
 
                 view?.renderButtonLoading(isLoading = true)
 
-                createWalletInteractor.startCreatingWallet(cache.userPhoneNumber.orEmpty())
+                createWalletInteractor.startCreatingWallet(repository.userPhoneNumber.orEmpty())
             } catch (serverError: GatewayServiceError.TemporaryFailure) {
                 Timber.i(serverError)
                 view?.showErrorMessage(serverError)

@@ -7,7 +7,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
 class ContinueOnboardingPresenter(
-    private val createAccountUseCase: UserSignUpInteractor,
+    private val userSignUpInteractor: UserSignUpInteractor,
     private val signUpDetailsStorage: UserSignUpDetailsStorage
 ) : BasePresenter<ContinueOnboardingContract.View>(), ContinueOnboardingContract.Presenter {
 
@@ -20,7 +20,7 @@ class ContinueOnboardingPresenter(
     override fun continueSignUp() {
         launch {
             try {
-                when (val result = createAccountUseCase.continueSignUpUser()) {
+                when (val result = userSignUpInteractor.continueSignUpUser()) {
                     UserSignUpInteractor.SignUpResult.SignUpSuccessful -> view?.navigateToPhoneNumberEnter()
                     is UserSignUpInteractor.SignUpResult.SignUpFailed -> Timber.w(result.cause)
                 }

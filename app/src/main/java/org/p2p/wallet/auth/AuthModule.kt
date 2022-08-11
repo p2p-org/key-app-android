@@ -15,13 +15,13 @@ import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
-import org.p2p.wallet.auth.interactor.SignUpFlowDataCache
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
@@ -30,6 +30,8 @@ import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingPresenter
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootContract
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootPresenter
 import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterPresenter
@@ -110,9 +112,11 @@ object AuthModule {
                 gson = get()
             )
         }
-        singleOf(::SignUpFlowDataCache)
+        singleOf(::SignUpFlowDataLocalRepository)
         factoryOf(::CreateWalletInteractor)
         factoryOf(::UserSignUpInteractor)
+
+        factoryOf(::OnboardingRootPresenter) bind OnboardingRootContract.Presenter::class
 
         factoryOf(::NewOnboardingPresenter) bind NewOnboardingContract.Presenter::class
         factoryOf(::ContinueOnboardingPresenter) bind ContinueOnboardingContract.Presenter::class

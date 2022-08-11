@@ -6,7 +6,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
 class NewOnboardingPresenter(
-    private val createAccountUseCase: UserSignUpInteractor
+    private val userSignUpInteractor: UserSignUpInteractor
 ) : BasePresenter<NewOnboardingContract.View>(), NewOnboardingContract.Presenter {
 
     override fun onSignUpButtonClicked() {
@@ -19,7 +19,7 @@ class NewOnboardingPresenter(
 
     override fun setIdToken(userId: String, idToken: String) {
         launch {
-            when (val result = createAccountUseCase.trySignUpNewUser(idToken, userId)) {
+            when (val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     view?.onSuccessfulSignUp()
                 }
