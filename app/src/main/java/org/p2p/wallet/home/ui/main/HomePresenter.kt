@@ -12,7 +12,6 @@ import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
-import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
@@ -193,14 +192,6 @@ class HomePresenter(
                     isZerosHidden = isZerosHidden
                 )
             )
-
-            // Adding banners to the main list
-            val banners = getBanners()
-            if (this.size > BANNER_START_INDEX) {
-                add(BANNER_START_INDEX, HomeElementItem.Banners(banners))
-            } else {
-                add(HomeElementItem.Banners(banners))
-            }
         }
 
         view?.showTokens(mappedTokens, isZerosHidden, presenterState.visibilityState)
