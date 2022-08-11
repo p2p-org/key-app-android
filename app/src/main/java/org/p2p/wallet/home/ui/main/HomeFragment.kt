@@ -119,7 +119,7 @@ class HomeFragment :
         }
 
         // hidden. temporary. PWN-4381
-        viewBuyTokenBanner.root.isVisible = true
+        viewBuyTokenBanner.root.isVisible = false
 
         if (BuildConfig.DEBUG) {
             with(layoutToolbar.imageViewDebug) {
