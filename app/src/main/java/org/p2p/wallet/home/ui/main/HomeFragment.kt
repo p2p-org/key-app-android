@@ -139,17 +139,8 @@ class HomeFragment :
             ) { it.dismiss() }
         }
 
-        imageViewProfile.setOnClickListener { openProfile() }
+        imageViewProfile.setOnClickListener { presenter.onProfileClick() }
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
-    }
-
-    private fun openProfile() {
-        val fragment = if (presenter.usernameExists()) {
-            SettingsFragment.create()
-        } else {
-            ReserveUsernameFragment.create(mode = ReserveMode.POP)
-        }
-        replaceFragment(fragment)
     }
 
     private fun LayoutActionButtonsBinding.setupActionButtons() {
@@ -267,10 +258,12 @@ class HomeFragment :
         }
     }
 
-    override fun onDestroy() {
-        /* We are clearing cache only if activity is destroyed */
-        presenter.clearTokensCache()
-        super.onDestroy()
+    override fun navigateToProfile() {
+        replaceFragment(SettingsFragment.create())
+    }
+
+    override fun navigateToReserveUsername() {
+        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP))
     }
 
     override fun onBannerClicked(bannerId: Int) {
@@ -311,5 +304,11 @@ class HomeFragment :
 
     override fun onHideClicked(token: Token.Active) {
         presenter.toggleTokenVisibility(token)
+    }
+
+    override fun onDestroy() {
+        /* We are clearing cache only if activity is destroyed */
+        presenter.clearTokensCache()
+        super.onDestroy()
     }
 }

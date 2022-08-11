@@ -280,7 +280,11 @@ class HomePresenter(
         }
     }
 
-    override fun usernameExists(): Boolean {
-        return usernameInteractor.usernameExists()
+    override fun onProfileClick() {
+        if (usernameInteractor.usernameExists()) {
+            view?.navigateToProfile()
+        } else {
+            view?.navigateToReserveUsername()
+        }
     }
 }

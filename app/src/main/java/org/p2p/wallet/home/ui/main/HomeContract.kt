@@ -19,6 +19,8 @@ interface HomeContract {
         fun showEmptyViewData(data: List<Any>)
         fun showEmptyState(isEmpty: Boolean)
         fun showUserAddress(ellipsizedAddress: String)
+        fun navigateToProfile()
+        fun navigateToReserveUsername()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -28,6 +30,6 @@ interface HomeContract {
         fun toggleTokenVisibility(token: Token.Active)
         fun toggleTokenVisibilityState()
         fun clearTokensCache()
-        fun usernameExists(): Boolean
+        fun onProfileClick()
     }
 }
