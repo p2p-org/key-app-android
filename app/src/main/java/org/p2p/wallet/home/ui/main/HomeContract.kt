@@ -28,6 +28,6 @@ interface HomeContract {
         fun toggleTokenVisibility(token: Token.Active)
         fun toggleTokenVisibilityState()
         fun clearTokensCache()
-        fun hasUsername(): Boolean
+        fun usernameExists(): Boolean
     }
 }

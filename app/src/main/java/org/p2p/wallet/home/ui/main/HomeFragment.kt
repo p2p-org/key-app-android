@@ -144,7 +144,7 @@ class HomeFragment :
     }
 
     private fun openProfile() {
-        val fragment = if (presenter.hasUsername()) {
+        val fragment = if (presenter.usernameExists()) {
             SettingsFragment.create()
         } else {
             ReserveUsernameFragment.create(mode = ReserveMode.POP)
