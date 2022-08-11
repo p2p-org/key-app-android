@@ -250,11 +250,8 @@ class HomeFragment :
         with(binding) {
             viewActionButtons.root.isVisible = !isEmpty
             viewBalance.root.isVisible = !isEmpty
-            homeRecyclerView.adapter = if (isEmpty) {
-                emptyAdapter
-            } else {
-                contentAdapter
-            }
+            val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
+            if (homeRecyclerView.adapter != updatedAdapter) homeRecyclerView.adapter = updatedAdapter
         }
     }
 
