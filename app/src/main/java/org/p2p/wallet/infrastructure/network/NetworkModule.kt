@@ -14,6 +14,7 @@ import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_
 import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
+import org.p2p.wallet.home.model.Base58TypeAdapter
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
@@ -29,6 +30,7 @@ import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SE
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_SOLANA_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
+import org.p2p.wallet.utils.Base58String
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
@@ -49,6 +51,7 @@ object NetworkModule : InjectionModule {
             GsonBuilder()
                 .apply { if (BuildConfig.DEBUG) setPrettyPrinting() }
                 .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
+                .registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
                 .setLenient()
                 .disableHtmlEscaping()
                 .create()

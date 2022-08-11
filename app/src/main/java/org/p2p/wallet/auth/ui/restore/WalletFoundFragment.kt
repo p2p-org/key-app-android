@@ -2,13 +2,13 @@ package org.p2p.wallet.auth.ui.restore
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.common.GoogleSignInHelper
+import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
+import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentWalletFoundBinding
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
@@ -43,7 +43,7 @@ class WalletFoundFragment :
                 popBackStack()
             }
             walletFoundAnotherAccountButton.setOnClickListener {
-                presenter.onSignUpButtonClicked()
+                presenter.useAnotherGoogleAccount()
             }
             walletFoundRestoreButton.setOnClickListener {
                 // TODO make a real restore implementation!
@@ -72,9 +72,8 @@ class WalletFoundFragment :
     }
 
     override fun onSuccessfulSignUp() {
-        // TODO PWN-4268 move user to phone number screen
         setLoadingState(isScreenLoading = false)
-        Toast.makeText(requireContext(), "You are successfully signed in!", Toast.LENGTH_SHORT).show()
+        replaceFragment(PhoneNumberEnterFragment.create())
     }
 
     private fun setLoadingState(isScreenLoading: Boolean) {
@@ -90,7 +89,7 @@ class WalletFoundFragment :
     private fun handleSignResult(result: ActivityResult) {
         signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
             setLoadingState(isScreenLoading = true)
-            presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
+            presenter.setAlternativeIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
     }
 }

@@ -3,6 +3,7 @@ package org.p2p.wallet.infrastructure
 import android.content.Context
 import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -79,7 +80,7 @@ object InfrastructureModule : InjectionModule {
         single { KeyStore.getInstance(ANDROID_KEY_STORE) }
         single { KeyStoreWrapper(encoderDecoder = get(), keyStore = get()) }
 
-        factory { SecureStorage(get(), get()) } bind SecureStorageContract::class
+        factoryOf(::SecureStorage) bind SecureStorageContract::class
 
         single { GlideManager(get()) }
 

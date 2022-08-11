@@ -1,43 +1,33 @@
 package org.p2p.wallet.auth.ui.restore
 
-import org.p2p.wallet.auth.common.WalletWeb3AuthManager
-import org.p2p.wallet.auth.common.Web3AuthError
-import org.p2p.wallet.auth.common.Web3AuthHandler
-import org.p2p.wallet.auth.model.GoogleAuthFlow
+import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
+import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 class WalletFoundPresenter(
-    private val walletAuthManager: WalletWeb3AuthManager,
+    private val userSignUpInteractor: UserSignUpInteractor,
+    private val signUpFlowDataRepository: SignUpFlowDataLocalRepository
 ) : BasePresenter<WalletFoundContract.View>(), WalletFoundContract.Presenter {
-
-    private val web3AuthHandler = object : Web3AuthHandler {
-        override fun onSuccessSignUp() {
-            view?.onSuccessfulSignUp()
-        }
-
-        override fun handleError(error: Web3AuthError) {
-            view?.showError(error.errorMessage)
-        }
-    }
 
     override fun attach(view: WalletFoundContract.View) {
         super.attach(view)
-        walletAuthManager.attach()
-        walletAuthManager.addHandler(web3AuthHandler)
-        view.setUserId(walletAuthManager.userId)
+        view.setUserId(signUpFlowDataRepository.signUpUserId.orEmpty())
     }
 
-    override fun onSignUpButtonClicked() {
-        walletAuthManager.flowMode = GoogleAuthFlow.SIGN_UP
+    override fun useAnotherGoogleAccount() {
         view?.startGoogleFlow()
     }
 
-    override fun setIdToken(userId: String, idToken: String) {
-        walletAuthManager.setIdToken(userId, idToken)
-    }
-
-    override fun detach() {
-        walletAuthManager.removeHandler(web3AuthHandler)
-        super.detach()
+    override fun setAlternativeIdToken(userId: String, idToken: String) {
+        launch {
+            val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)
+            if (result == UserSignUpInteractor.SignUpResult.SignUpSuccessful) {
+                view?.onSuccessfulSignUp()
+            } else {
+                Timber.i(result.toString())
+            }
+        }
     }
 }

@@ -1,54 +1,36 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import org.p2p.wallet.auth.common.WalletWeb3AuthManager
-import org.p2p.wallet.auth.common.Web3AuthError
-import org.p2p.wallet.auth.common.Web3AuthHandler
-import org.p2p.wallet.auth.model.GoogleAuthFlow
+import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
-
-private const val WALLET_FOUND = 1009
+import timber.log.Timber
 
 class NewOnboardingPresenter(
-    private val walletAuthManager: WalletWeb3AuthManager,
+    private val userSignUpInteractor: UserSignUpInteractor
 ) : BasePresenter<NewOnboardingContract.View>(), NewOnboardingContract.Presenter {
 
-    private val web3AuthHandler = object : Web3AuthHandler {
-        override fun onSuccessSignUp() {
-            view?.onSuccessfulSignUp()
-        }
-
-        override fun handleError(error: Web3AuthError) {
-            if (error.errorCode == WALLET_FOUND) {
-                // TODO PWN-4348 make real duplicated token error after this task will be implemented!
-                view?.onSameTokenError()
-            } else {
-                view?.showError(error.errorMessage)
-            }
-        }
-    }
-
-    override fun attach(view: NewOnboardingContract.View) {
-        super.attach(view)
-        walletAuthManager.attach()
-        walletAuthManager.addHandler(web3AuthHandler)
-    }
-
     override fun onSignUpButtonClicked() {
-        walletAuthManager.flowMode = GoogleAuthFlow.SIGN_UP
         view?.startGoogleFlow()
     }
 
     override fun onSignInButtonClicked() {
-        walletAuthManager.flowMode = GoogleAuthFlow.SIGN_IN
         view?.startGoogleFlow()
     }
 
     override fun setIdToken(userId: String, idToken: String) {
-        walletAuthManager.setIdToken(userId, idToken)
-    }
-
-    override fun detach() {
-        walletAuthManager.removeHandler(web3AuthHandler)
-        super.detach()
+        launch {
+            when (val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)) {
+                is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
+                    view?.onSuccessfulSignUp()
+                }
+                is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
+                    Timber.e(result.cause)
+                    result.message?.let { view?.showError(it) }
+                }
+                UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
+                    view?.onSameTokenFoundError()
+                }
+            }
+        }
     }
 }

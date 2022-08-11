@@ -8,7 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.auth.common.GoogleSignInHelper
+import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.restore.WalletFoundFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -65,6 +65,7 @@ class NewOnboardingFragment :
                 true
             }
             buttonRestoreWalletOnboarding.setOnClickListener {
+                // TODO replace with real restore flow
                 replaceFragment(SecretKeyFragment.create())
             }
         }
@@ -85,7 +86,7 @@ class NewOnboardingFragment :
         }
     }
 
-    override fun onSameTokenError() {
+    override fun onSameTokenFoundError() {
         requireView().post {
             setLoadingState(isScreenLoading = false)
             replaceFragment(WalletFoundFragment.create())

@@ -12,7 +12,7 @@ interface WalletFoundContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onSignUpButtonClicked()
-        fun setIdToken(userId: String, idToken: String)
+        fun useAnotherGoogleAccount()
+        fun setAlternativeIdToken(userId: String, idToken: String)
     }
 }

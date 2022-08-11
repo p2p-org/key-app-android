@@ -1,15 +1,16 @@
 package org.p2p.wallet.auth.gateway.api.request
 
 import com.google.gson.annotations.SerializedName
+import org.p2p.wallet.utils.Base58String
 
 data class RegisterWalletRequest(
     /**
      * Solana pubkey base58 encoded
      */
     @SerializedName("client_id")
-    val clientSolanaPublicKeyB58: String,
+    val clientSolanaPublicKey: Base58String,
     @SerializedName("ethereum_id")
-    val etheriumPublicKeyB58: String,
+    val etheriumPublicKey: String,
     /**
      * no “+”, E.164 format
      */

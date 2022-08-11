@@ -1,12 +1,5 @@
 package org.p2p.wallet.auth.ui.smsinput
 
-import org.p2p.wallet.auth.common.WalletWeb3AuthManager
-import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
-import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
-import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract.Presenter.SmsInputTimerState
-import org.p2p.wallet.common.mvp.BasePresenter
-import timber.log.Timber
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -14,10 +7,17 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
+import org.p2p.wallet.auth.interactor.CreateWalletInteractor
+import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
+import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract.Presenter.SmsInputTimerState
+import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 
 class NewSmsInputPresenter(
-    private val gatewayServiceRepository: GatewayServiceRepository,
-    private val web3AuthManager: WalletWeb3AuthManager
+    private val createWalletInteractor: CreateWalletInteractor,
+    private val repository: SignUpFlowDataLocalRepository
 ) : BasePresenter<NewAuthSmsInputContract.View>(), NewAuthSmsInputContract.Presenter {
 
     private var timerFlow: Job? = null
@@ -30,8 +30,7 @@ class NewSmsInputPresenter(
         super.attach(view)
 
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
-        // TODO PWN-4362 replace user phone with correct one
-        view.initView("+7 999 99 99")
+        view.initView(repository.userPhoneNumber.orEmpty())
     }
 
     override fun onSmsInputChanged(smsCode: String) {
@@ -52,16 +51,8 @@ class NewSmsInputPresenter(
             try {
                 view?.renderButtonLoading(isLoading = true)
 
-                delay(2_000)
-//                gatewayServiceRepository.confirmRegisterWallet(
-//                    userPublicKey = TODO(),
-//                    userPrivateKey = TODO(),
-//                    etheriumPublicKey = TODO(),
-//                    phoneNumber = TODO()
-//                )
-//                view?.navigateToPinCreate()
-                smsIncorrectTries++
-                throw GatewayServiceError.IncorrectOtpCode(111, "")
+                createWalletInteractor.finishCreatingWallet(smsCode)
+                view?.navigateToPinCreate()
             } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
                 Timber.i(incorrectSms)
                 if (smsIncorrectTries > 5) {
@@ -95,13 +86,7 @@ class NewSmsInputPresenter(
 
                 view?.renderButtonLoading(isLoading = true)
 
-//                gatewayServiceRepository.registerWallet(
-//                    userPublicKey = TODO(),
-//                    userPrivateKey = TODO(),
-//                    etheriumPublicKey = TODO(),
-//                    phoneNumber = TODO()
-//                )
-//                view?.navigateToPinCreate()
+                createWalletInteractor.startCreatingWallet(repository.userPhoneNumber.orEmpty())
             } catch (serverError: GatewayServiceError.TemporaryFailure) {
                 Timber.i(serverError)
                 view?.showErrorMessage(serverError)

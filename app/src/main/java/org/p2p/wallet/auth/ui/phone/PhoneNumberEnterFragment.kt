@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -27,6 +29,11 @@ class PhoneNumberEnterFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+
+        buttonConfirmPhone.setOnClickListener {
+            presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
+        }
+
         setOnResultListener()
         presenter.load()
     }
@@ -50,6 +57,10 @@ class PhoneNumberEnterFragment :
 
     override fun showCountryCodePicker(selectedCountryCode: CountryCode?) {
         CountryCodePickerDialog.show(selectedCountryCode, REQUEST_KEY, RESULT_KEY, childFragmentManager)
+    }
+
+    override fun navigateToSmsInput() {
+        replaceFragment(NewSmsInputFragment.create())
     }
 
     override fun setContinueButtonEnabled(isEnabled: Boolean) = with(binding) {
