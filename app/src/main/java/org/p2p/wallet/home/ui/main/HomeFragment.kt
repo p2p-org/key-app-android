@@ -263,7 +263,7 @@ class HomeFragment :
     }
 
     override fun navigateToReserveUsername() {
-        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP))
+        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP, isSkipStepEnabled = false))
     }
 
     override fun onBannerClicked(bannerId: Int) {
