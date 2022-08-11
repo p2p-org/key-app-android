@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -139,7 +139,7 @@ class HomeFragment :
             ) { it.dismiss() }
         }
 
-        imageViewProfile.setOnClickListener { replaceFragment(SettingsFragment.create()) }
+        imageViewProfile.setOnClickListener { presenter.onProfileClick() }
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
@@ -258,10 +258,12 @@ class HomeFragment :
         }
     }
 
-    override fun onDestroy() {
-        /* We are clearing cache only if activity is destroyed */
-        presenter.clearTokensCache()
-        super.onDestroy()
+    override fun navigateToProfile() {
+        replaceFragment(SettingsFragment.create())
+    }
+
+    override fun navigateToReserveUsername() {
+        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP, isSkipStepEnabled = false))
     }
 
     override fun onBannerClicked(bannerId: Int) {
@@ -302,5 +304,11 @@ class HomeFragment :
 
     override fun onHideClicked(token: Token.Active) {
         presenter.toggleTokenVisibility(token)
+    }
+
+    override fun onDestroy() {
+        /* We are clearing cache only if activity is destroyed */
+        presenter.clearTokensCache()
+        super.onDestroy()
     }
 }

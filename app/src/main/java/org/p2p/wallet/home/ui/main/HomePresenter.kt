@@ -279,4 +279,12 @@ class HomePresenter(
             )
         }
     }
+
+    override fun onProfileClick() {
+        if (usernameInteractor.usernameExists()) {
+            view?.navigateToProfile()
+        } else {
+            view?.navigateToReserveUsername()
+        }
+    }
 }
