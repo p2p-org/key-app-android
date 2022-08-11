@@ -60,6 +60,8 @@ class HomePresenter(
     override fun attach(view: HomeContract.View) {
         super.attach(view)
 
+        view.showEmptyState(isEmpty = true)
+
         view.showUserAddress(tokenKeyProvider.publicKey.ellipsizeAddress())
 
         updatesManager.start()
@@ -255,7 +257,7 @@ class HomePresenter(
         val usernameExists = presenterState.username != null
 
         val feedbackBanner = Banner(
-            R.string.main_feedback_banner_option,
+            R.string.home_feedback_banner_option,
             R.string.main_feedback_banner_action,
             R.drawable.ic_feedback,
             R.color.backgroundBannerSecondary,
@@ -266,7 +268,7 @@ class HomePresenter(
             listOf(feedbackBanner)
         } else {
             val usernameBanner = Banner(
-                R.string.main_username_banner_option,
+                R.string.home_username_banner_option,
                 R.string.main_username_banner_action,
                 R.drawable.ic_username,
                 R.color.backgroundBanner

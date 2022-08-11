@@ -1,11 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -109,8 +108,7 @@ class HomeFragment :
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
-        mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        mainRecyclerView.adapter = contentAdapter
+        homeRecyclerView.adapter = contentAdapter
 
         viewActionButtons.setupActionButtons()
 
@@ -135,9 +133,9 @@ class HomeFragment :
         textViewAddress.setOnClickListener {
             val address = textViewAddress.text
             requireContext().copyToClipBoard(address.toString())
-            val snackbar = binding.root.showSnackbarShort(
-                getString(R.string.main_address_snackbar_text),
-                getString(R.string.common_ok)
+            binding.root.showSnackbarShort(
+                snackbarText = getString(R.string.home_address_snackbar_text),
+                snackbarActionButtonText = getString(R.string.common_ok)
             ) { it.dismiss() }
         }
 
@@ -147,28 +145,28 @@ class HomeFragment :
 
     private fun LayoutActionButtonsBinding.setupActionButtons() {
         viewActionBuy.apply {
-            textViewButtonTitle.setText(R.string.main_buy)
+            textViewButtonTitle.setText(R.string.home_buy)
             imageButtonButtonIcon.setImageResource(R.drawable.ic_plus)
             imageButtonButtonIcon.setOnClickListener {
                 presenter.onBuyClicked()
             }
         }
         viewActionReceive.apply {
-            textViewButtonTitle.setText(R.string.main_receive)
+            textViewButtonTitle.setText(R.string.home_receive)
             imageButtonButtonIcon.setImageResource(R.drawable.ic_receive_simple)
             imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
         }
         viewActionSend.apply {
-            textViewButtonTitle.setText(R.string.main_send)
+            textViewButtonTitle.setText(R.string.home_send)
             imageButtonButtonIcon.setImageResource(R.drawable.ic_send_medium)
             imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(SendFragment.create())
             }
         }
         viewActionTrade.apply {
-            textViewButtonTitle.setText(R.string.main_trade)
+            textViewButtonTitle.setText(R.string.home_trade)
             imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
             imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(OrcaSwapFragment.create())
@@ -230,9 +228,9 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal, username: Username?) {
-        binding.viewBalance.textViewAmount.text = getString(R.string.main_usd_format, balance.formatUsd())
+        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatUsd())
         if (username == null) {
-            binding.viewBalance.textViewTitle.setText(R.string.main_balance)
+            binding.viewBalance.textViewTitle.setText(R.string.home_balance_title)
         } else {
             val commonText = username.getFullUsername(requireContext())
             val color = getColor(R.color.textIconPrimary)
@@ -252,7 +250,7 @@ class HomeFragment :
         with(binding) {
             viewActionButtons.root.isVisible = !isEmpty
             viewBalance.root.isVisible = !isEmpty
-            mainRecyclerView.adapter = if (isEmpty) {
+            homeRecyclerView.adapter = if (isEmpty) {
                 emptyAdapter
             } else {
                 contentAdapter
@@ -271,11 +269,11 @@ class HomeFragment :
             R.id.home_banner_top_up -> {
                 presenter.onBuyClicked()
             }
-            R.string.main_username_banner_option -> {
+            R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
                 replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP, isSkipStepEnabled = false))
             }
-            R.string.main_feedback_banner_option -> {
+            R.string.home_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
                 IntercomService.showMessenger()
             }
