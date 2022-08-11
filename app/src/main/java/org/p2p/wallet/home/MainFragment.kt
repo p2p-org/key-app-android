@@ -153,6 +153,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
-        binding.bottomNavigation.setOnCenterActionButtonListener(block)
+        binding.buttonCenterAction.setOnClickListener { block.invoke() }
     }
 }

@@ -95,6 +95,8 @@ class TokenAdapter(
                     old.state == new.state
                 old is HomeElementItem.Banners && new is HomeElementItem.Banners ->
                     old.banners.size == new.banners.size
+                old is HomeElementItem.Title && new is HomeElementItem.Title ->
+                    old.titleResId == new.titleResId
                 else -> false
             }
         }
