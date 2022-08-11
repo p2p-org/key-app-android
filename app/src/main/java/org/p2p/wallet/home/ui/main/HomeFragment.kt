@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -250,11 +250,8 @@ class HomeFragment :
         with(binding) {
             viewActionButtons.root.isVisible = !isEmpty
             viewBalance.root.isVisible = !isEmpty
-            homeRecyclerView.adapter = if (isEmpty) {
-                emptyAdapter
-            } else {
-                contentAdapter
-            }
+            val adapter = if (isEmpty) emptyAdapter else contentAdapter
+            if (homeRecyclerView.adapter != adapter) homeRecyclerView.adapter = adapter
         }
     }
 
