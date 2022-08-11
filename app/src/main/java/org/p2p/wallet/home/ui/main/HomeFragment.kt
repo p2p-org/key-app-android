@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -139,8 +139,17 @@ class HomeFragment :
             ) { it.dismiss() }
         }
 
-        imageViewProfile.setOnClickListener { replaceFragment(SettingsFragment.create()) }
+        imageViewProfile.setOnClickListener { openProfile() }
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
+    }
+
+    private fun openProfile() {
+        val fragment = if (presenter.hasUsername()) {
+            SettingsFragment.create()
+        } else {
+            ReserveUsernameFragment.create(mode = ReserveMode.POP)
+        }
+        replaceFragment(fragment)
     }
 
     private fun LayoutActionButtonsBinding.setupActionButtons() {

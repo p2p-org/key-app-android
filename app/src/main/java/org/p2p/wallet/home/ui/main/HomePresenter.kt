@@ -279,4 +279,8 @@ class HomePresenter(
             )
         }
     }
+
+    override fun hasUsername(): Boolean {
+        return usernameInteractor.usernameExists()
+    }
 }
