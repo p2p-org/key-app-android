@@ -33,14 +33,14 @@ class TokenHistoryPresenter(
 
     private val transactions = mutableListOf<HistoryTransaction>()
     private val actions = mutableListOf(
-        ActionButton(R.string.main_receive, R.drawable.ic_receive_simple),
-        ActionButton(R.string.main_send, R.drawable.ic_send_medium),
+        ActionButton(R.string.home_receive, R.drawable.ic_receive_simple),
+        ActionButton(R.string.home_send, R.drawable.ic_send_medium),
         ActionButton(R.string.main_swap, R.drawable.ic_swap_medium)
     )
 
     init {
         if (token.isSOL || token.isUSDC) {
-            actions.add(0, ActionButton(R.string.main_buy, R.drawable.ic_plus))
+            actions.add(0, ActionButton(R.string.home_buy, R.drawable.ic_plus))
         }
     }
 

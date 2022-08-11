@@ -73,11 +73,12 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/main_recycler_view"
+                android:id="@+id/home_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:paddingTop="24dp"
                 tools:listitem="@layout/item_token" />
 
