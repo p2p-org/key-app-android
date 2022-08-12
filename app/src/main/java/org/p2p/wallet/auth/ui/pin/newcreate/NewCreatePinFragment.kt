@@ -34,13 +34,28 @@ class NewCreatePinFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            initToolbar()
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             pinView.onKeyboardClicked = { vibrate(VIBRATE_DURATION) }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
+        }
+    }
+
+    private fun FragmentNewCreatePinBinding.initToolbar() = with(toolbar) {
+        setNavigationOnClickListener { popBackStack() }
+        setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.helpItem -> {
+                    // TODO PWN-4362 open help web view
+                    showSuccessSnackBar("Help menu clicked"); true
+                }
+                else -> {
+                    false
+                }
+            }
         }
     }
 

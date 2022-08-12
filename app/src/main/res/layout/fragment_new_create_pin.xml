@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
+            app:menu="@menu/menu_onboarding_help"
             app:navigationIcon="@drawable/ic_back_night"
             app:title="@string/auth_create_wallet_step_3"
             app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
@@ -27,11 +28,11 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:src="@drawable/ic_lock_new"
-            app:layout_constraintVertical_bias="0.2"
             app:layout_constraintBottom_toTopOf="@+id/textViewTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:layout_constraintVertical_bias="0.2"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
