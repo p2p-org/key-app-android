@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/ic_back"
-            app:title="@string/main_buy" />
+            app:title="@string/home_buy" />
 
         <WebView
             android:id="@+id/webView"
