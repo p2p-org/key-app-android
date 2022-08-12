@@ -63,6 +63,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
+import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -128,7 +130,6 @@ class CheckModulesTest : KoinTest {
     @Test
     fun verifyKoinApp() {
         mockFirebase()
-
         checkKoinModules(
             modules = allModules + javaxDefaultModule,
             appDeclaration = {
@@ -141,7 +142,7 @@ class CheckModulesTest : KoinTest {
                 withInstance(sharedPrefsMock)
                 withInstance(createEmptyActiveToken())
                 withInstance(mockk<SecureStorage>())
-
+                withInstance(mockk<TransactionWorker>())
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
             }
@@ -185,7 +186,8 @@ class CheckModulesTest : KoinTest {
         TransactionModule.create(),
         AnalyticsModule.create(),
         AppModule.create(restartAction = {}),
-        FeatureTogglesModule.create()
+        FeatureTogglesModule.create(),
+        TransactionManagerModule.create()
     )
 
     private fun createEmptyActiveToken(): Token.Active {

@@ -462,9 +462,9 @@ class SendFragment :
         binding.sendButton.setLoading(isLoading)
     }
 
-    override fun showProgressDialog(data: ShowProgress?) {
+    override fun showProgressDialog(transactionId: String, data: ShowProgress?) {
         if (data != null) {
-            ProgressBottomSheet.show(childFragmentManager, data, KEY_REQUEST_SEND)
+            ProgressBottomSheet.show(childFragmentManager, transactionId, data, KEY_REQUEST_SEND)
         } else {
             ProgressBottomSheet.hide(childFragmentManager)
         }

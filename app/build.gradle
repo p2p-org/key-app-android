@@ -210,6 +210,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation("com.google.android.material:material") {
         version { strictly "1.6.1" }
@@ -221,6 +222,9 @@ dependencies {
     def coroutinesVersion = '1.6.1'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    def work_version = "2.7.1"
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 
     // https://github.com/JakeWharton/timber
     implementation "com.jakewharton.timber:timber:5.0.1"
@@ -274,6 +278,7 @@ dependencies {
     def koinVersion = '3.2.0'
     // https://github.com/InsertKoinIO/koin
     implementation "io.insert-koin:koin-android:$koinVersion"
+    implementation "io.insert-koin:koin-androidx-workmanager:$koinVersion"
 
     // GeeTest
     implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
@@ -298,6 +303,9 @@ dependencies {
 
     // Google Play Auth
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
+
+
+
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'

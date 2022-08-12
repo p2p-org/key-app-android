@@ -15,13 +15,14 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogTransactionProgressBinding
-import org.p2p.wallet.transaction.TransactionManager
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import timber.log.Timber
 
 /**
  * Bottom sheet dialog which shows current transaction's state
@@ -30,16 +31,23 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_DATA = "EXTRA_DATA"
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
 const val EXTRA_RESULT_KEY_DISMISS = "EXTRA_RESULT_KEY_DISMISS"
 
 class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
-        fun show(fragmentManager: FragmentManager, data: ShowProgress, requestKey: String) {
+        fun show(
+            fragmentManager: FragmentManager,
+            transactionId: String,
+            data: ShowProgress,
+            requestKey: String
+        ) {
             ProgressBottomSheet()
                 .withArgs(
                     EXTRA_DATA to data,
-                    EXTRA_REQUEST_KEY to requestKey
+                    EXTRA_REQUEST_KEY to requestKey,
+                    EXTRA_TRANSACTION_ID to transactionId
                 )
                 .show(fragmentManager, ProgressBottomSheet::javaClass.name)
         }
@@ -56,6 +64,7 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     private val data: ShowProgress by args(EXTRA_DATA)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val transactionId: String by args(EXTRA_TRANSACTION_ID)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +93,8 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     private fun observeState() {
         lifecycleScope.launchWhenCreated {
-            transactionManager.getTransactionStateFlow().collect { state ->
+            transactionManager.getTransactionStateFlow(transactionId).collect { state ->
+                Timber.tag("_________State").d(state.toString())
                 TransitionManager.beginDelayedTransition(binding.root)
                 when (state) {
                     is TransactionState.Progress -> handleProgress(state)

@@ -43,6 +43,8 @@ import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.koin.androidx.workmanager.koin.workManagerFactory
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 
 class App : Application() {
 
@@ -79,6 +81,7 @@ class App : Application() {
             // FIXME
             androidLogger(level = Level.ERROR)
             androidContext(this@App)
+            workManagerFactory()
             modules(
                 listOf(
                     // core modules
@@ -105,7 +108,8 @@ class App : Application() {
                     SettingsModule.create(),
                     DebugSettingsModule.create(),
                     SwapModule.create(),
-                    HistoryStrategyModule.create()
+                    HistoryStrategyModule.create(),
+                    TransactionManagerModule.create()
                 )
             )
         }
