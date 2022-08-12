@@ -22,7 +22,7 @@ class TransactionQueueRepositoryImpl : TransactionQueueRepository {
         allTransactions.add(transaction)
     }
 
-    override fun addInQueue(transactions: List<AppTransaction>) {
+    override fun replaceTransactionsInQueue(transactions: List<AppTransaction>) {
         allTransactions.clear()
         allTransactions.addAll(transactions)
     }
@@ -43,7 +43,7 @@ class TransactionQueueRepositoryImpl : TransactionQueueRepository {
         if (executionStateMap[transactionId] == null) {
             executionStateMap[transactionId] = MutableStateFlow(TransactionExecutionState.Idle)
         }
-        return executionStateMap[transactionId]!!
+        return executionStateMap.getValue(transactionId)
     }
 
     override suspend fun emit(transactionId: String, transactionState: TransactionState) {
@@ -58,7 +58,7 @@ class TransactionQueueRepositoryImpl : TransactionQueueRepository {
         if (transactionStateMap[transactionId] == null) {
             transactionStateMap[transactionId] = MutableStateFlow(TransactionState.Progress())
         }
-        return transactionStateMap[transactionId]!!
+        return transactionStateMap.getValue(transactionId)
     }
 
     override fun getAllPendingTransactions(): List<AppTransaction> {

@@ -8,7 +8,7 @@ import org.p2p.wallet.transaction.model.TransactionState
 interface TransactionQueueRepository {
 
     fun addInQueue(transaction: AppTransaction)
-    fun addInQueue(transactions: List<AppTransaction>)
+    fun replaceTransactionsInQueue(transactions: List<AppTransaction>)
     fun getTransactionById(transactionId: String): AppTransaction?
 
     suspend fun emit(transactionId: String, state: TransactionExecutionState)

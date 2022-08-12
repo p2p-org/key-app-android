@@ -63,6 +63,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import org.koin.androidx.workmanager.koin.workManagerFactory
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -136,6 +138,7 @@ class CheckModulesTest : KoinTest {
 
                 androidContext(applicationMock)
                 androidContext(contextMock)
+                workManagerFactory()
             },
             parameters = {
                 withInstance(sharedPrefsMock)
@@ -185,7 +188,8 @@ class CheckModulesTest : KoinTest {
         TransactionModule.create(),
         AnalyticsModule.create(),
         AppModule.create(restartAction = {}),
-        FeatureTogglesModule.create()
+        FeatureTogglesModule.create(),
+        TransactionManagerModule.create()
     )
 
     private fun createEmptyActiveToken(): Token.Active {

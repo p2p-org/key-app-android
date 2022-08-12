@@ -25,7 +25,7 @@ class TransactionManagerImpl(
     }
 
     override fun addInQueue(transactions: List<AppTransaction>) {
-        transactionQueueRepository.addInQueue(transactions)
+        transactionQueueRepository.replaceTransactionsInQueue(transactions)
         executeTransactions()
     }
 

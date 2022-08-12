@@ -97,8 +97,6 @@ class OrcaSwapPresenter(
 
     private var validationJob: Job? = null
 
-    private lateinit var transactionId: String
-
     override fun loadInitialData() {
         launch {
             view?.showFullScreenLoading(true)
@@ -289,7 +287,7 @@ class OrcaSwapPresenter(
     override fun swap() {
         val pair = bestPoolPair ?: return
         val destination = destinationToken ?: throw IllegalStateException("Destination is null")
-        transactionId = UUID.randomUUID().toString()
+        val transactionId = UUID.randomUUID().toString()
         appScope.launch {
             try {
                 logSwapStarted()
@@ -314,7 +312,7 @@ class OrcaSwapPresenter(
 
                 when (result) {
                     is OrcaSwapResult.Finished ->
-                        handleSwapResult(destination, result, sourceTokenSymbol, destinationTokenSymbol)
+                        handleSwapResult(transactionId, destination, result, sourceTokenSymbol, destinationTokenSymbol)
                     is OrcaSwapResult.InvalidInfoOrPair,
                     is OrcaSwapResult.InvalidPool ->
                         view?.showErrorMessage(R.string.error_general_message)
@@ -323,7 +321,7 @@ class OrcaSwapPresenter(
                 val state = TransactionState.Error(serverError.getErrorMessage(resources).orEmpty())
                 transactionManager.emitTransactionState(transactionId, state)
             } catch (error: Throwable) {
-                showError(error)
+                showError(transactionId, error)
             }
         }
     }
@@ -662,6 +660,7 @@ class OrcaSwapPresenter(
     }
 
     private suspend fun handleSwapResult(
+        transactionId: String,
         destination: Token,
         data: OrcaSwapResult.Finished,
         sourceTokenSymbol: String,
@@ -683,7 +682,7 @@ class OrcaSwapPresenter(
         transactionManager.emitTransactionState(transactionId, state)
     }
 
-    private fun showError(error: Throwable) {
+    private fun showError(transactionId: String, error: Throwable) {
         Timber.e(error, "Error swapping tokens")
         view?.showErrorMessage(error)
         view?.showProgressDialog(transactionId, null)
