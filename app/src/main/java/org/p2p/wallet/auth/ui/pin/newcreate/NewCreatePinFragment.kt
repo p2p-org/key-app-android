@@ -11,6 +11,8 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
+import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.vibrate
@@ -77,10 +79,9 @@ class NewCreatePinFragment :
     }
 
     override fun onPinCreated(pinCode: String) {
-        val fragment = BiometricsFragment.create(pinCode)
         binding.pinView.onSuccessPin()
         binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_success) {
-            replaceFragment(fragment)
+            presenter.onPinCreated()
         }
     }
 
@@ -95,5 +96,13 @@ class NewCreatePinFragment :
 
     override fun vibrate(duration: Long) {
         requireContext().vibrate(duration)
+    }
+
+    override fun navigateToBiometrics(pinCode: String) {
+        replaceFragment(BiometricsFragment.create(pinCode))
+    }
+
+    override fun navigateToMain() {
+        popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 }

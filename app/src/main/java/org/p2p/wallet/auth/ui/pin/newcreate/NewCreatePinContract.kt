@@ -14,11 +14,14 @@ interface NewCreatePinContract {
         fun vibrate(duration: Long)
         fun showLoading(isLoading: Boolean)
         fun navigateBack()
+        fun navigateToBiometrics(pinCode: String)
+        fun navigateToMain()
     }
 
     interface Presenter : MvpPresenter<View> {
         var pinMode: PinMode
         fun setPinCode(pinCode: String)
         fun onBackPressed()
+        fun onPinCreated()
     }
 }
