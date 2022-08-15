@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -34,7 +35,7 @@ class NewCreatePinFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            initToolbar()
+            toolbar.initToolbar()
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             pinView.onKeyboardClicked = { vibrate(VIBRATE_DURATION) }
         }
@@ -44,7 +45,7 @@ class NewCreatePinFragment :
         }
     }
 
-    private fun FragmentNewCreatePinBinding.initToolbar() = with(toolbar) {
+    private fun UiKitToolbar.initToolbar() {
         setNavigationOnClickListener { popBackStack() }
         setOnMenuItemClickListener {
             when (it.itemId) {
