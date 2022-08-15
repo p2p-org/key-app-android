@@ -8,6 +8,11 @@ import org.p2p.wallet.utils.emptyString
 
 private const val VIBRATE_DURATION = 500L
 
+enum class PinMode {
+    CREATE,
+    CONFIRM
+}
+
 class NewCreatePinPresenter(
     private val authLogoutInteractor: AuthLogoutInteractor,
     private val adminAnalytics: AdminAnalytics
@@ -15,6 +20,8 @@ class NewCreatePinPresenter(
     NewCreatePinContract.Presenter {
 
     private var createdPin = emptyString()
+
+    override var pinMode = PinMode.CREATE
 
     override fun setPinCode(pinCode: String) {
         if (createdPin.isEmpty()) {
@@ -34,6 +41,15 @@ class NewCreatePinPresenter(
             lockPinKeyboard()
             onPinCreated(createdPin)
             vibrate(VIBRATE_DURATION)
+            createdPin = emptyString()
+        }
+    }
+
+    override fun onBackPressed() {
+        createdPin = emptyString()
+        when (pinMode) {
+            PinMode.CREATE -> view?.navigateBack()
+            PinMode.CONFIRM -> view?.showCreation()
         }
     }
 }

@@ -33,14 +33,16 @@ class NewCreatePinFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter.pinMode = PinMode.CREATE
+
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             pinView.onKeyboardClicked = { vibrate(VIBRATE_DURATION) }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            popBackStack()
+            presenter.onBackPressed()
         }
     }
 
@@ -53,6 +55,8 @@ class NewCreatePinFragment :
     }
 
     override fun showCreation() {
+        presenter.pinMode = PinMode.CREATE
+
         with(binding) {
             pinView.isEnabled = true
             textViewTitle.setText(R.string.auth_create_wallet_set_up_your_pin)
@@ -62,6 +66,8 @@ class NewCreatePinFragment :
     }
 
     override fun showConfirmation() {
+        presenter.pinMode = PinMode.CONFIRM
+
         with(binding) {
             pinView.isEnabled = true
             textViewTitle.text = getString(R.string.auth_create_wallet_confirm_your_pin)
