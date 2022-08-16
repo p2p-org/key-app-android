@@ -48,14 +48,12 @@ class NewCreatePinFragment :
     private fun UiKitToolbar.initToolbar() {
         setNavigationOnClickListener { popBackStack() }
         setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.helpItem -> {
-                    // TODO PWN-4362 open help
-                    showSuccessSnackBar("Help menu clicked"); true
-                }
-                else -> {
-                    false
-                }
+            if (it.itemId == R.id.helpItem) {
+                // TODO PWN-4362 open help
+                showSuccessSnackBar("Help menu clicked")
+                true
+            } else {
+                false
             }
         }
     }
