@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -105,109 +105,12 @@ class HomeFragment :
         )
     }
 
-    private fun FragmentHomeBinding.setupView() {
-        layoutToolbar.setupToolbar()
-
-        homeRecyclerView.adapter = contentAdapter
-
-        viewActionButtons.setupActionButtons()
-
-        swipeRefreshLayout.setOnRefreshListener {
-            presenter.refreshTokens()
-        }
-
-        // hidden. temporary. PWN-4381
-        viewBuyTokenBanner.root.isVisible = false
-
-        if (BuildConfig.DEBUG) {
-            with(layoutToolbar.imageViewDebug) {
-                isVisible = true
-                setOnClickListener {
-                    replaceFragment(DebugSettingsFragment.create())
-                }
-            }
-        }
-    }
-
-    private fun LayoutHomeToolbarBinding.setupToolbar() {
-        textViewAddress.setOnClickListener {
-            val address = textViewAddress.text
-            requireContext().copyToClipBoard(address.toString())
-            binding.root.showSnackbarShort(
-                snackbarText = getString(R.string.home_address_snackbar_text),
-                snackbarActionButtonText = getString(R.string.common_ok)
-            ) { it.dismiss() }
-        }
-
-        imageViewProfile.setOnClickListener { presenter.onProfileClick() }
-        imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
-    }
-
-    private fun LayoutActionButtonsBinding.setupActionButtons() {
-        viewActionBuy.apply {
-            textViewButtonTitle.setText(R.string.home_buy)
-            imageButtonButtonIcon.setImageResource(R.drawable.ic_plus)
-            imageButtonButtonIcon.setOnClickListener {
-                presenter.onBuyClicked()
-            }
-        }
-        viewActionReceive.apply {
-            textViewButtonTitle.setText(R.string.home_receive)
-            imageButtonButtonIcon.setImageResource(R.drawable.ic_receive_simple)
-            imageButtonButtonIcon.setOnClickListener {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
-            }
-        }
-        viewActionSend.apply {
-            textViewButtonTitle.setText(R.string.home_send)
-            imageButtonButtonIcon.setImageResource(R.drawable.ic_send_medium)
-            imageButtonButtonIcon.setOnClickListener {
-                replaceFragment(SendFragment.create())
-            }
-        }
-        viewActionTrade.apply {
-            textViewButtonTitle.setText(R.string.home_trade)
-            imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
-            imageButtonButtonIcon.setOnClickListener {
-                replaceFragment(OrcaSwapFragment.create())
-            }
-        }
-    }
-
-    private fun onFragmentResult(requestKey: String, result: Bundle) {
-        when (requestKey) {
-            KEY_REQUEST_TOKEN -> {
-                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-                    showBuyTokenScreen(it)
-                }
-            }
-            KEY_REQUEST_ACTION -> {
-                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.let {
-                    openScreenByHomeAction(it)
-                }
-            }
-        }
-    }
-
-    private fun openScreenByHomeAction(action: HomeAction) {
-        when (action) {
-            HomeAction.BUY -> {
-                presenter.onBuyClicked()
-            }
-            HomeAction.RECEIVE -> {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
-            }
-            HomeAction.TRADE -> {
-                replaceFragment(OrcaSwapFragment.create())
-            }
-            HomeAction.SEND -> {
-                replaceFragment(SendFragment.create())
-            }
-        }
-    }
-
-    private fun showBuyTokenScreen(token: Token) {
-        replaceFragment(BuySolanaFragment.create(token))
+    override fun showAddressCopied(address: String) {
+        requireContext().copyToClipBoard(address)
+        binding.root.showSnackbarShort(
+            snackbarText = getString(R.string.home_address_snackbar_text),
+            snackbarActionButtonText = getString(R.string.common_ok)
+        ) { it.dismiss() }
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
@@ -307,5 +210,102 @@ class HomeFragment :
         /* We are clearing cache only if activity is destroyed */
         presenter.clearTokensCache()
         super.onDestroy()
+    }
+
+    private fun FragmentHomeBinding.setupView() {
+        layoutToolbar.setupToolbar()
+
+        homeRecyclerView.adapter = contentAdapter
+
+        viewActionButtons.setupActionButtons()
+
+        swipeRefreshLayout.setOnRefreshListener {
+            presenter.refreshTokens()
+        }
+
+        // hidden. temporary. PWN-4381
+        viewBuyTokenBanner.root.isVisible = false
+
+        if (BuildConfig.DEBUG) {
+            with(layoutToolbar.imageViewDebug) {
+                isVisible = true
+                setOnClickListener {
+                    replaceFragment(DebugSettingsFragment.create())
+                }
+            }
+        }
+    }
+
+    private fun LayoutHomeToolbarBinding.setupToolbar() {
+        textViewAddress.setOnClickListener { presenter.onAddressClicked() }
+        imageViewProfile.setOnClickListener { presenter.onProfileClick() }
+        imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
+    }
+
+    private fun LayoutActionButtonsBinding.setupActionButtons() {
+        viewActionBuy.apply {
+            textViewButtonTitle.setText(R.string.home_buy)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_plus)
+            imageButtonButtonIcon.setOnClickListener {
+                presenter.onBuyClicked()
+            }
+        }
+        viewActionReceive.apply {
+            textViewButtonTitle.setText(R.string.home_receive)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_receive_simple)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
+        }
+        viewActionSend.apply {
+            textViewButtonTitle.setText(R.string.home_send)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_send_medium)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(SendFragment.create())
+            }
+        }
+        viewActionTrade.apply {
+            textViewButtonTitle.setText(R.string.home_trade)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(OrcaSwapFragment.create())
+            }
+        }
+    }
+
+    private fun onFragmentResult(requestKey: String, result: Bundle) {
+        when (requestKey) {
+            KEY_REQUEST_TOKEN -> {
+                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
+                    showBuyTokenScreen(it)
+                }
+            }
+            KEY_REQUEST_ACTION -> {
+                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.let {
+                    openScreenByHomeAction(it)
+                }
+            }
+        }
+    }
+
+    private fun openScreenByHomeAction(action: HomeAction) {
+        when (action) {
+            HomeAction.BUY -> {
+                presenter.onBuyClicked()
+            }
+            HomeAction.RECEIVE -> {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
+            HomeAction.TRADE -> {
+                replaceFragment(OrcaSwapFragment.create())
+            }
+            HomeAction.SEND -> {
+                replaceFragment(SendFragment.create())
+            }
+        }
+    }
+
+    private fun showBuyTokenScreen(token: Token) {
+        replaceFragment(BuySolanaFragment.create(token))
     }
 }
