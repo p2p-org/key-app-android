@@ -22,7 +22,8 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewOnboardingFragment :
     BaseMvpFragment<NewOnboardingContract.View, NewOnboardingContract.Presenter>(R.layout.fragment_new_onboarding),
-    NewOnboardingContract.View, GoogleSignInHelper.GoogleSignInErrorHandler {
+    NewOnboardingContract.View,
+    GoogleSignInHelper.GoogleSignInErrorHandler {
 
     companion object {
         fun create(): NewOnboardingFragment = NewOnboardingFragment()

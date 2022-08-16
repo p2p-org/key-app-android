@@ -18,7 +18,8 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class WalletFoundFragment :
     BaseMvpFragment<WalletFoundContract.View, WalletFoundContract.Presenter>(R.layout.fragment_wallet_found),
-    WalletFoundContract.View, GoogleSignInHelper.GoogleSignInErrorHandler {
+    WalletFoundContract.View,
+    GoogleSignInHelper.GoogleSignInErrorHandler {
 
     companion object {
         fun create(): WalletFoundFragment = WalletFoundFragment()
