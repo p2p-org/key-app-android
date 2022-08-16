@@ -67,10 +67,12 @@
             android:layout_width="@dimen/home_toolbar_shadow_view_size"
             android:layout_height="@dimen/home_toolbar_shadow_view_size"
             android:background="@drawable/bg_circle_with_shadow"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/image_view_debug"
             app:layout_constraintEnd_toEndOf="@id/image_view_debug"
             app:layout_constraintStart_toStartOf="@id/image_view_debug"
-            app:layout_constraintTop_toTopOf="@id/image_view_debug" />
+            app:layout_constraintTop_toTopOf="@id/image_view_debug"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/image_view_debug"
