@@ -63,4 +63,14 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
                 .setAction(actionResId, block)
         }
     }
+
+    override fun showInfoSnackBar(message: String, iconResId: Int?, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(message)
+                .setAction(actionResId, block)
+            iconResId?.let { icon ->
+                it.setIcon(icon)
+            }
+        }
+    }
 }
