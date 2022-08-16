@@ -37,6 +37,7 @@ class WalletFoundFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        signInHelper.attach(this)
 
         with(binding) {
             walletFoundToolbar.setNavigationOnClickListener {
@@ -54,6 +55,11 @@ class WalletFoundFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
+    }
+
+    override fun onDestroyView() {
+        signInHelper.detach()
+        super.onDestroyView()
     }
 
     override fun startGoogleFlow() {
