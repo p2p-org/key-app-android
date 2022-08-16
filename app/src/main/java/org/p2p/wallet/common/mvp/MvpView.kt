@@ -24,6 +24,6 @@ interface MvpView {
         message: String,
         @DrawableRes iconResId: Int? = null,
         @StringRes actionResId: Int? = null,
-        block: (() -> Unit)? = null
+        actionBlock: (() -> Unit)? = null
     )
 }

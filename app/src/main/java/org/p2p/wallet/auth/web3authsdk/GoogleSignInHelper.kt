@@ -13,7 +13,6 @@ import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.common.api.ApiException
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
-import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.updates.ConnectionStateProvider
 import timber.log.Timber
 import java.util.UUID
@@ -25,14 +24,14 @@ class GoogleSignInHelper(
     private val resourcesProvider: ResourcesProvider
 ) {
 
-    private var view: MvpView? = null
+    private var handler: GoogleSignInErrorHandler? = null
 
     private fun getSignInClient(context: Context): SignInClient {
         return Identity.getSignInClient(context)
     }
 
-    fun attach(mvpView: MvpView) {
-        view = mvpView
+    fun setErrorHandler(errorHandler: GoogleSignInErrorHandler) {
+        handler = errorHandler
     }
 
     fun showSignInDialog(context: Context, googleSignInLauncher: ActivityResultLauncher<IntentSenderRequest>) {
@@ -65,9 +64,9 @@ class GoogleSignInHelper(
         } catch (ex: ApiException) {
             if (ex.statusCode != USER_CANCELED_DIALOG_CODE) {
                 if (connectionStateProvider.hasConnection()) {
-                    view?.showErrorSnackBar(ex.message ?: ex.toString())
+                    handler?.onCommonError(ex.message ?: ex.toString())
                 } else {
-                    view?.showInfoSnackBar(resourcesProvider.getString(R.string.onboarding_offline_error))
+                    handler?.onConnectionError(resourcesProvider.getString(R.string.onboarding_offline_error))
                 }
             }
             Timber.w(ex, "Error on getting Credential from result")
@@ -76,6 +75,11 @@ class GoogleSignInHelper(
     }
 
     fun detach() {
-        view = null
+        handler = null
+    }
+
+    interface GoogleSignInErrorHandler {
+        fun onConnectionError(error: String)
+        fun onCommonError(error: String)
     }
 }

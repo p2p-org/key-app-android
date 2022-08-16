@@ -18,7 +18,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class WalletFoundFragment :
     BaseMvpFragment<WalletFoundContract.View, WalletFoundContract.Presenter>(R.layout.fragment_wallet_found),
-    WalletFoundContract.View {
+    WalletFoundContract.View, GoogleSignInHelper.GoogleSignInErrorHandler {
 
     companion object {
         fun create(): WalletFoundFragment = WalletFoundFragment()
@@ -37,7 +37,7 @@ class WalletFoundFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        signInHelper.attach(this)
+        signInHelper.setErrorHandler(this)
 
         with(binding) {
             walletFoundToolbar.setNavigationOnClickListener {
@@ -97,5 +97,13 @@ class WalletFoundFragment :
             setLoadingState(isScreenLoading = true)
             presenter.setAlternativeIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
+    }
+
+    override fun onConnectionError(error: String) {
+        showInfoSnackBar(error)
+    }
+
+    override fun onCommonError(error: String) {
+        showErrorSnackBar(error)
     }
 }

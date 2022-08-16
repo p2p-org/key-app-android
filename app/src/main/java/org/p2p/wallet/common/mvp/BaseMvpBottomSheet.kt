@@ -80,10 +80,10 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
 
-    override fun showInfoSnackBar(message: String, iconResId: Int?, actionResId: Int?, block: (() -> Unit)?) {
+    override fun showInfoSnackBar(message: String, iconResId: Int?, actionResId: Int?, actionBlock: (() -> Unit)?) {
         snackbar {
             it.setMessage(message)
-                .setAction(actionResId, block)
+                .setAction(actionResId, actionBlock)
             iconResId?.let { icon ->
                 it.setIcon(icon)
             }
