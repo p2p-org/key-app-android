@@ -1,11 +1,13 @@
 package org.p2p.wallet.auth.ui.phone
 
-import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract.View.ContinueButtonState
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
@@ -42,7 +44,13 @@ class PhoneNumberEnterPresenter(
     override fun onPhoneChanged(phoneNumber: String) {
         selectedCountryCode?.let {
             val isValidNumber = countryCodeInteractor.isValidNumberForRegion(it.phoneCode, phoneNumber)
-            view?.setContinueButtonEnabled(isValidNumber)
+            view?.setContinueButtonState(
+                if (isValidNumber) {
+                    ContinueButtonState.ENABLED_TO_CONTINUE
+                } else {
+                    ContinueButtonState.DISABLED_INPUT_IS_EMPTY
+                }
+            )
         }
     }
 
@@ -62,13 +70,16 @@ class PhoneNumberEnterPresenter(
                     createWalletInteractor.startCreatingWallet(it.phoneCode + phoneNumber)
                 }
                 view?.navigateToSmsInput()
+            } catch (tooManyPhoneEnters: GatewayServiceError.SmsDeliverFailed) {
+                view?.showSmsDeliveryFailedForNumber()
+            } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
+                view?.navigateToAccountBlocked()
             } catch (gatewayError: GatewayServiceError) {
-                // TODO PWN-4362 - add error handling
-                Timber.i(gatewayError)
+                view?.showErrorSnackBar(R.string.error_general_message)
             } catch (createWalletError: CreateWalletInteractor.CreateWalletFailure) {
                 Timber.i(createWalletError)
             } catch (error: Throwable) {
-                Timber.i(error)
+                Timber.e(error)
             }
         }
     }
