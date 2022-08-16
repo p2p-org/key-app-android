@@ -50,7 +50,7 @@ class NewCreatePinFragment :
         setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.helpItem -> {
-                    // TODO PWN-4362 open help web view
+                    // TODO PWN-4362 open help
                     showSuccessSnackBar("Help menu clicked"); true
                 }
                 else -> {
