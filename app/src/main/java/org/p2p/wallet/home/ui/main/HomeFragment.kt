@@ -105,6 +105,14 @@ class HomeFragment :
         )
     }
 
+    override fun showAddressCopied(address: String) {
+        requireContext().copyToClipBoard(address)
+        binding.root.showSnackbarShort(
+            snackbarText = getString(R.string.home_address_snackbar_text),
+            snackbarActionButtonText = getString(R.string.common_ok)
+        ) { it.dismiss() }
+    }
+
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
@@ -131,15 +139,7 @@ class HomeFragment :
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
-        textViewAddress.setOnClickListener {
-            val address = textViewAddress.text
-            requireContext().copyToClipBoard(address.toString())
-            binding.root.showSnackbarShort(
-                snackbarText = getString(R.string.home_address_snackbar_text),
-                snackbarActionButtonText = getString(R.string.common_ok)
-            ) { it.dismiss() }
-        }
-
+        textViewAddress.setOnClickListener { presenter.onAddressClicked() }
         imageViewProfile.setOnClickListener { presenter.onProfileClick() }
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }

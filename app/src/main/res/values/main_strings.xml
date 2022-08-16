@@ -1,7 +1,7 @@
 <resources>
     <!--Main Screen Banner-->
     <string name="main_banner_title">Top up your account to get started</string>
-    <string name="main_banner_subtitle">Make your first deposit or buy with your credit card</string>
+    <string name="main_banner_subtitle">Make your first deposit or make a purchase using your credit card or Google Pay</string>
     <string name="main_banner_button">Top up</string>
 
     <!-- Home -->
@@ -12,7 +12,7 @@
     <string name="home_actions_title">Actions</string>
 
     <string name="home_actions_buy_title">Buy</string>
-    <string name="home_actions_buy_subtitle">using Google Pay or bank card</string>
+    <string name="home_actions_buy_subtitle">using Google Pay or credit card</string>
 
     <string name="home_actions_receive_title">Receive</string>
     <string name="home_actions_receive_subtitle">from another wallet or exchange</string>
@@ -27,10 +27,6 @@
     <string name="main_popular_tokens_header">Popular coins</string>
     <string name="main_popular_token_action_buy_button">Buy it</string>
     <string name="main_popular_token_action_receive_button">Receive</string>
-
-    <string name="home_banner_title">Top up your account to get started</string>
-    <string name="home_banner_subtitle">Make your first deposit or buy with your credit card</string>
-    <string name="home_banner_button">Top up</string>
 
     <string name="home_buy_token_banner_title">Buy your first token</string>
     <string name="home_buy_token_banner_subtitle">Stake your token &amp; get reward every day</string>

@@ -21,6 +21,7 @@ interface HomeContract {
         fun showUserAddress(ellipsizedAddress: String)
         fun navigateToProfile()
         fun navigateToReserveUsername()
+        fun showAddressCopied(address: String)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -31,5 +32,6 @@ interface HomeContract {
         fun toggleTokenVisibilityState()
         fun clearTokensCache()
         fun onProfileClick()
+        fun onAddressClicked()
     }
 }
