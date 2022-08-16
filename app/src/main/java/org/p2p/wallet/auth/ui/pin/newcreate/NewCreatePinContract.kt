@@ -19,7 +19,7 @@ interface NewCreatePinContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        var pinMode: PinMode
+        fun setPinMode(pinMode: PinMode)
         fun setPinCode(pinCode: String)
         fun onBackPressed()
         fun onPinCreated()

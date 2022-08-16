@@ -27,8 +27,11 @@ class NewCreatePinPresenter(
     NewCreatePinContract.Presenter {
 
     private var createdPin = emptyString()
+    private var pinMode = PinMode.CREATE
 
-    override var pinMode = PinMode.CREATE
+    override fun setPinMode(pinMode: PinMode) {
+        this.pinMode = pinMode
+    }
 
     override fun setPinCode(pinCode: String) {
         if (createdPin.isEmpty()) {

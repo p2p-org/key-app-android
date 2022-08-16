@@ -35,7 +35,7 @@ class NewCreatePinFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.pinMode = PinMode.CREATE
+        presenter.setPinMode(PinMode.CREATE)
 
         with(binding) {
             toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
@@ -57,7 +57,7 @@ class NewCreatePinFragment :
     }
 
     override fun showCreation() {
-        presenter.pinMode = PinMode.CREATE
+        presenter.setPinMode(PinMode.CREATE)
 
         with(binding) {
             pinView.isEnabled = true
@@ -68,7 +68,7 @@ class NewCreatePinFragment :
     }
 
     override fun showConfirmation() {
-        presenter.pinMode = PinMode.CONFIRM
+        presenter.setPinMode(PinMode.CONFIRM)
 
         with(binding) {
             pinView.isEnabled = true
