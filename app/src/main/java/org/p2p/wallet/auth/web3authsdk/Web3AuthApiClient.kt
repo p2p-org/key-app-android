@@ -69,6 +69,7 @@ class Web3AuthApiClient(
         val useNewUth = true
         val torusLoginType = "google"
         val torusEndpoint = "$host:5051"
+        val torusVerifier = torusNetwork.verifier
         val metadataEndpoint = "$host:2222"
 
         return buildString {
@@ -77,6 +78,7 @@ class Web3AuthApiClient(
             append("useNewEth: $useNewUth, ")
             append("torusLoginType: '$torusLoginType', ")
             append("torusEndpoint: '$torusEndpoint', ")
+            append("torusVerifier: '$torusVerifier', ")
             append("metadataEndpoint: '$metadataEndpoint'")
             append("})")
             append(".$jsMethodCall")
