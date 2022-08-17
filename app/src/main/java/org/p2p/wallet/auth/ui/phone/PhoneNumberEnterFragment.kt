@@ -35,7 +35,6 @@ class PhoneNumberEnterFragment :
         }
 
         setOnResultListener()
-        presenter.load()
     }
 
     override fun showDefaultCountryCode(country: CountryCode?) {

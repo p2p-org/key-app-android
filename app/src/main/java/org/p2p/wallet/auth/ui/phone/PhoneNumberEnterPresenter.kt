@@ -14,7 +14,8 @@ class PhoneNumberEnterPresenter(
 
     private var selectedCountryCode: CountryCode? = null
 
-    override fun load() {
+    override fun attach(view: PhoneNumberEnterContract.View) {
+        super.attach(view)
         launch {
             try {
                 val countryCode: CountryCode? =
