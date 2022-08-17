@@ -24,7 +24,7 @@ class Web3AuthApiClient(
 
     private val onboardingWebView: WebView = WebView(context).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // TODO PWN-4362 remove or make build related after all onboarding testing completed!
+            // TODO PWN-4615 remove or make build related after all onboarding testing completed!
             WebView.setWebContentsDebuggingEnabled(true)
         }
         // loadUrl and addJavascriptInterface is async, so it should be called ASAP
