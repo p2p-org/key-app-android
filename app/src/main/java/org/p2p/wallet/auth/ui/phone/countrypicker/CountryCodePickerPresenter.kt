@@ -1,9 +1,9 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
+import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 
@@ -20,15 +20,15 @@ class CountryCodePickerPresenter(
     private val searchTextMap = hashMapOf<String, List<CountryCodeItem>>()
     private var allCountryCodeItems: List<CountryCodeItem> = listOf()
 
-    override fun searchByCountryName(contryName: String) {
-        searchTextByCountryCode = contryName
+    override fun searchByCountryName(name: String) {
+        searchTextByCountryCode = name
         launch {
             if (searchTextByCountryCode in searchTextMap) {
                 val cachedItems = searchTextMap[searchTextByCountryCode].orEmpty()
                 view?.showCountries(cachedItems)
             } else {
                 val searchResult =
-                    allCountryCodeItems.filter { it.country.name.startsWith(contryName, ignoreCase = true) }
+                    allCountryCodeItems.filter { it.country.name.startsWith(name, ignoreCase = true) }
                 searchTextMap[searchTextByCountryCode] = searchResult
                 view?.showCountries(searchResult)
             }
