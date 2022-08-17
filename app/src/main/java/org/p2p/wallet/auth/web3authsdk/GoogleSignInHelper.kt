@@ -24,14 +24,10 @@ class GoogleSignInHelper(
     private val resourcesProvider: ResourcesProvider
 ) {
 
-    private var handler: GoogleSignInErrorHandler? = null
+    var handler: GoogleSignInErrorHandler? = null
 
     private fun getSignInClient(context: Context): SignInClient {
         return Identity.getSignInClient(context)
-    }
-
-    fun setErrorHandler(errorHandler: GoogleSignInErrorHandler) {
-        handler = errorHandler
     }
 
     fun showSignInDialog(context: Context, googleSignInLauncher: ActivityResultLauncher<IntentSenderRequest>) {
@@ -72,10 +68,6 @@ class GoogleSignInHelper(
             Timber.w(ex, "Error on getting Credential from result")
             null
         }
-    }
-
-    fun detach() {
-        handler = null
     }
 
     interface GoogleSignInErrorHandler {

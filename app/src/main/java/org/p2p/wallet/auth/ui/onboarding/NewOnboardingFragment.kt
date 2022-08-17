@@ -52,7 +52,6 @@ class NewOnboardingFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        signInHelper.setErrorHandler(this)
         analytics.logSplashViewed()
 
         with(binding) {
@@ -75,11 +74,6 @@ class NewOnboardingFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
-    }
-
-    override fun onDestroyView() {
-        signInHelper.detach()
-        super.onDestroyView()
     }
 
     override fun startGoogleFlow() {
@@ -118,9 +112,14 @@ class NewOnboardingFragment :
     }
 
     private fun handleSignResult(result: ActivityResult) {
-        signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
-            setLoadingState(isScreenLoading = true)
-            presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
+        signInHelper.handler = this
+        try {
+            signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
+                setLoadingState(isScreenLoading = true)
+                presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
+            }
+        } finally {
+            signInHelper.handler = null
         }
     }
 
