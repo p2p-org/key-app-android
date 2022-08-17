@@ -85,6 +85,7 @@
             android:textColor="@color/night"
             app:icon="@drawable/ic_google_logo"
             app:iconGravity="textStart"
+            app:iconSize="24dp"
             app:iconTint="@null" />
 
         <org.p2p.uikit.components.UiKitButton
