@@ -2,7 +2,7 @@ package org.p2p.wallet.splash
 
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.utils.replaceFragment
