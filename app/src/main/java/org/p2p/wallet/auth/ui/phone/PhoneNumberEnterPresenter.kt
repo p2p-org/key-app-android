@@ -67,7 +67,7 @@ class PhoneNumberEnterPresenter(
         launch {
             try {
                 selectedCountryCode?.let {
-                    createWalletInteractor.startCreatingWallet(it.phoneCode + phoneNumber)
+                    createWalletInteractor.startCreatingWallet(userPhoneNumber = it.phoneCode + phoneNumber)
                 }
                 view?.navigateToSmsInput()
             } catch (tooManyPhoneEnters: GatewayServiceError.SmsDeliverFailed) {
@@ -77,9 +77,11 @@ class PhoneNumberEnterPresenter(
             } catch (gatewayError: GatewayServiceError) {
                 view?.showErrorSnackBar(R.string.error_general_message)
             } catch (createWalletError: CreateWalletInteractor.CreateWalletFailure) {
-                Timber.i(createWalletError)
+                Timber.e(createWalletError)
+                view?.showErrorSnackBar(R.string.error_general_message)
             } catch (error: Throwable) {
                 Timber.e(error)
+                view?.showErrorSnackBar(R.string.error_general_message)
             }
         }
     }

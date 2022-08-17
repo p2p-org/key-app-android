@@ -44,16 +44,8 @@ class OnboardingGeneralErrorTimerFragment :
         presenter.setSourceScreen(sourceScreen)
     }
 
-    override fun setTitleAndSubtitle(@StringRes titleRes: Int, @StringRes subTitleRes: Int) {
-        binding.textViewErrorTitle.setText(titleRes)
-        binding.textViewErrorSubtitle.setText(subTitleRes)
-    }
-
-    override fun renderTimerBeforeUnblock(formattedTime: String) {
-        binding.textViewErrorSubtitle.text = getString(
-            R.string.onboarding_sms_input_blocked_timer_subtitle,
-            formattedTime
-        )
+    override fun updateSubtitle(@StringRes subTitleRes: Int, formattedTimeLeft: String) {
+        binding.textViewErrorSubtitle.text = getString(subTitleRes, formattedTimeLeft)
     }
 
     override fun navigateToStartingScreen() {

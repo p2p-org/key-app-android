@@ -12,6 +12,8 @@ import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContra
 import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
+import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -34,8 +36,9 @@ class NewSmsInputFragment :
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
-                    // TODO PWN-4362 do other action (unknown at the moment)
-                    showSuccessSnackBar("help is clicked")
+                    // pass empty string as UserId to launch IntercomService as anonymous user
+                    IntercomService.signIn(userId = emptyString())
+                    IntercomService.showMessenger()
                     return@setOnMenuItemClickListener true
                 }
                 false

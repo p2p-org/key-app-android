@@ -10,8 +10,7 @@ interface OnboardingGeneralErrorContract {
             PHONE_NUMBER_ENTER, SMS_INPUT
         }
 
-        fun renderTimerBeforeUnblock(formattedTime: String)
-        fun setTitleAndSubtitle(@StringRes titleRes: Int, @StringRes subTitleRes: Int)
+        fun updateSubtitle(@StringRes subTitleRes: Int, formattedTimeLeft: String)
         fun navigateToStartingScreen()
     }
 
