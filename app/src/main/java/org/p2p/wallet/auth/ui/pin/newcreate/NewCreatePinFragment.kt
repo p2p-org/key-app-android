@@ -12,6 +12,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.vibrate
@@ -49,8 +50,7 @@ class NewCreatePinFragment :
         setNavigationOnClickListener { popBackStack() }
         setOnMenuItemClickListener {
             if (it.itemId == R.id.helpItem) {
-                // TODO PWN-4362 open help
-                showSuccessSnackBar("Help menu clicked")
+                IntercomService.showMessenger()
                 true
             } else {
                 false
