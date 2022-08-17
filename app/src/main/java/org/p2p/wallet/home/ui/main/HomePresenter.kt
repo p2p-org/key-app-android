@@ -1,9 +1,5 @@
 package org.p2p.wallet.home.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
@@ -29,6 +25,10 @@ import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
@@ -82,6 +82,10 @@ class HomePresenter(
         environmentManager.addEnvironmentListener(this::class) {
             refreshTokens()
         }
+    }
+
+    override fun onAddressClicked() {
+        view?.showAddressCopied(tokenKeyProvider.publicKey)
     }
 
     override fun onBuyClicked() {

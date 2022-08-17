@@ -1,16 +1,14 @@
 package org.p2p.wallet.restore.ui.derivable
 
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.ReserveMode.PIN_CODE
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
-import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -84,10 +82,6 @@ class DerivableAccountsFragment :
 
     override fun navigateToCreatePin() {
         replaceFragment(CreatePinFragment.create())
-    }
-
-    override fun navigateToReserveUsername() {
-        replaceFragment(ReserveUsernameFragment.create(PIN_CODE))
     }
 
     override fun showLoading(isLoading: Boolean) {

@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
@@ -105,6 +105,14 @@ class HomeFragment :
         )
     }
 
+    override fun showAddressCopied(address: String) {
+        requireContext().copyToClipBoard(address)
+        binding.root.showSnackbarShort(
+            snackbarText = getString(R.string.home_address_snackbar_text),
+            snackbarActionButtonText = getString(R.string.common_ok)
+        ) { it.dismiss() }
+    }
+
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
@@ -120,9 +128,10 @@ class HomeFragment :
         viewBuyTokenBanner.root.isVisible = false
 
         if (BuildConfig.DEBUG) {
-            with(layoutToolbar.imageViewDebug) {
-                isVisible = true
-                setOnClickListener {
+            with(layoutToolbar) {
+                viewDebugShadow.isVisible = true
+                imageViewDebug.isVisible = true
+                imageViewDebug.setOnClickListener {
                     replaceFragment(DebugSettingsFragment.create())
                 }
             }
@@ -130,15 +139,7 @@ class HomeFragment :
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
-        textViewAddress.setOnClickListener {
-            val address = textViewAddress.text
-            requireContext().copyToClipBoard(address.toString())
-            binding.root.showSnackbarShort(
-                snackbarText = getString(R.string.home_address_snackbar_text),
-                snackbarActionButtonText = getString(R.string.common_ok)
-            ) { it.dismiss() }
-        }
-
+        textViewAddress.setOnClickListener { presenter.onAddressClicked() }
         imageViewProfile.setOnClickListener { presenter.onProfileClick() }
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
