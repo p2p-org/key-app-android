@@ -7,6 +7,9 @@
     <dimen name="ui_kit_button_medium_height">48dp</dimen>
     <dimen name="ui_kit_button_small_height">32dp</dimen>
 
+    <dimen name="ui_kit_button_large_corner_radius">12dp</dimen>
+    <dimen name="ui_kit_button_small_corner_radius">8dp</dimen>
+
     <!--  Badge -->
 
     <dimen name="ui_kit_badge_oval_corner_radius">32dp</dimen>
@@ -17,6 +20,10 @@
 
     <dimen name="bottom_navigation_height">65dp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
+
+    <!-- Tip -->
+
+    <dimen name="ui_kit_tip_corner_radius">16dp</dimen>
 
     <!-- Skeleton circle values -->
     <dimen name="ui_kit_skeleton_circle_4">4dp</dimen>

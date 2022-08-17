@@ -8,19 +8,22 @@
     android:padding="16dp"
     tools:ignore="UseCompoundDrawables">
 
+    <ImageView
+        android:id="@+id/imageViewTokenState"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_token_expose"
+        tools:ignore="ContentDescription" />
+
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-        android:textColor="@color/textIconSecondary"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+        android:textColor="@color/text_mountain"
+        android:layout_marginHorizontal="8dp"
         tools:text="@string/main_hidden_tokens" />
 
-    <ImageView
-        android:id="@+id/arrowImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_arrow_down"
-        tools:ignore="ContentDescription" />
+
 </LinearLayout>

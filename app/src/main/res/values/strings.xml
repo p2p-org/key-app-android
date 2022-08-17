@@ -54,6 +54,7 @@
     <string name="error_rates_error">Cannot get rates</string>
     <string name="error_take_screenshot">Failed to take a screenshot</string>
     <string name="error_insufficient_funds">Insufficient funds</string>
+    <string name="error_invalid_blockhash">Invalid blockhash</string>
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
 
@@ -130,7 +131,7 @@
     <string name="auth_unavailable_name">%1$s is unavailable</string>
     <string name="auth_username_length_error">Enter a name under %d characters</string>
     <string name="auth_username">Your username</string>
-    <string name="auth_your_p2p_username">Your P2P username allows you to receive any token within the Solana network even if it is not included in your wallet list.</string>
+    <string name="auth_your_p2p_username">Your P2P username allows you to receive any token within the Solana network even if it is not included in your wallet token list..</string>
     <string name="auth_copy">Copy</string>
     <string name="auth_share">Share</string>
     <string name="auth_save">Save</string>
@@ -158,19 +159,19 @@
         <item quantity="other">%d hidden wallets</item>
     </plurals>
 
-    <string name="main_username_banner_option">Get your own short crypto address</string>
+    <string name="home_username_banner_option">Get your own short crypto address</string>
     <string name="main_username_banner_action">Reserve your username</string>
-    <string name="main_feedback_banner_option">Suggest ways to improve P2P wallet</string>
+    <string name="home_feedback_banner_option">Suggest ways to improve P2P wallet</string>
     <string name="main_feedback_banner_action">Leave feedback</string>
     <string name="main_combined_token_value">Combined token value</string>
-    <string name="main_receive">Receive</string>
-    <string name="main_send">Send</string>
+    <string name="home_receive">Receive</string>
     <string name="main_transfer">Transfer</string>
-    <string name="main_usd_format">$ %s</string>
+    <string name="home_usd_format">$ %s</string>
     <string name="main_usd_end_format">%s $</string>
     <string name="main_all_tokens">All tokens</string>
     <string name="main_no_data">You have no wallets yet</string>
     <string name="main_swap">Swap</string>
+    <string name="home_trade">Trade</string>
     <string name="main_close_account">Close Account</string>
     <string name="main_create_account">Create Account</string>
     <string name="main_transaction">Transaction</string>
@@ -233,7 +234,7 @@
     <string name="main_transfer_fee">Transfer fee</string>
     <string name="main_correct_address_question">Is this address correct? It doesn\’t have funds.</string>
     <string name="main_correct_address">I’m sure, It’s correct</string>
-    <string name="main_buy">Buy</string>
+    <string name="home_buy">Buy</string>
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
     <string name="main_enter_incorrect_amount">Incorrect amount</string>
@@ -245,9 +246,9 @@
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>
     <string name="main_free_transactions_info"><![CDATA[On the Solana network, the first %1$d transactions in a day are paid by P2P.org. You have <b>%2$d</b> free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.]]></string>
-    <string name="main_balance">Balance</string>
+    <string name="home_balance_title">Balance</string>
     <string name="main_empty_title">Top up your account to get started</string>
-    <string name="main_empty_subtitle">Make your first deposit or buy with your credit card or Google Pay</string>
+    <string name="main_empty_subtitle">Make your first deposit or make a purchase using your credit card or Google Pay</string>
     <string name="home_main">Wallet</string>
     <string name="home_history">History</string>
     <string name="home_send">Send</string>
@@ -255,6 +256,7 @@
     <string name="home_settings">Settings</string>
     <string name="home_debug">Debug Settings</string>
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
+    <string name="home_tokens">Tokens</string>
 
     <!-- receive -->
     <string name="receive_solana">Solana</string>
@@ -297,7 +299,7 @@
     <string name="receive_status_received">Statuses received</string>
     <string name="receive_choose_network_type">Choose the network</string>
     <string name="receive_solana_network">Solana network</string>
-    <string name="receive_solana_network_info">Receive <b>any token</b> within the Solana network even if it is not included in your wallet list.</string>
+    <string name="receive_solana_network_info">Receive <b>any token</b> within the Solana network even if it is not included in your wallet token list.</string>
     <string name="receive_btc_network">Bitcoin network</string>
     <string name="receive_btc_network_info">This address accepts <b>only Bitcoin.</b> You may lose assets by sending another coin.</string>
     <string name="receive_solana_info">The Solana Program Library (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain.\n\nSimilar to ERC-20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications.</string>

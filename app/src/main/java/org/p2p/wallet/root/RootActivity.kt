@@ -78,7 +78,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     }
 
     override fun navigateToOnboarding() {
-        replaceFragment(OnboardingFragment())
+        replaceFragment(OnboardingFragment.create())
     }
 
     override fun navigateToSignIn() {

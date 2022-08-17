@@ -3,6 +3,7 @@ package org.p2p.uikit.organisms
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
+import androidx.core.content.res.use
 import androidx.core.view.isVisible
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSectionHeaderBinding

@@ -2,6 +2,7 @@
 <resources>
     <!--NOTE: use https://chir.ag/projects/name-that-color/ to add colors here in future-->
 
+    <color name="transparent">#00000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="white_50">#80FFFFFF</color>
 
@@ -11,12 +12,14 @@
     <color name="color_green">#2DB533</color>
     <color name="color_green_transparent">#802DB533</color>
 
+    <color name="night">#2B2B2B</color>
+    <color name="night_60">#992B2B2B</color>
+
     <color name="snow">#FFFFFF</color>
     <color name="cloud">#FAFCFF</color>
     <color name="smoke">#F8F9FE</color>
     <color name="rain">#EBEEF5</color>
     <color name="mountain">#6F7D8D</color>
-    <color name="night">#2B2B2B</color>
     <color name="lime">#E4F312</color>
     <color name="sky">#003CFF</color>
     <color name="rose">#EB4A7A</color>

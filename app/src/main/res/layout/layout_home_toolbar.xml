@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:contentInsetStart="0dp">
+
+    <!-- Should have Toolbar as root view to work with AppBarLayout -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        tools:ignore="ContentDescription">
+
+        <View
+            android:id="@+id/view_profile_shadow"
+            android:layout_width="@dimen/home_toolbar_shadow_view_size"
+            android:layout_height="@dimen/home_toolbar_shadow_view_size"
+            android:background="@drawable/bg_circle_with_shadow"
+            app:layout_constraintBottom_toBottomOf="@id/image_view_profile"
+            app:layout_constraintEnd_toEndOf="@id/image_view_profile"
+            app:layout_constraintStart_toStartOf="@id/image_view_profile"
+            app:layout_constraintTop_toTopOf="@id/image_view_profile" />
+
+        <ImageView
+            android:id="@+id/image_view_profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_circle"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/ripple_circle"
+            android:padding="10dp"
+            android:src="@drawable/ic_tennis"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_view_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_home_address"
+            android:drawablePadding="8dp"
+            android:foreground="@drawable/ripple_address_button"
+            android:maxLines="1"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
+            android:textColor="@color/text_mountain"
+            app:drawableStartCompat="@drawable/ic_wallet_home"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/image_view_qr"
+            app:layout_constraintStart_toEndOf="@id/image_view_profile"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="3gmX…EX2z" />
+
+        <View
+            android:id="@+id/view_debug_shadow"
+            android:layout_width="@dimen/home_toolbar_shadow_view_size"
+            android:layout_height="@dimen/home_toolbar_shadow_view_size"
+            android:background="@drawable/bg_circle_with_shadow"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/image_view_debug"
+            app:layout_constraintEnd_toEndOf="@id/image_view_debug"
+            app:layout_constraintStart_toStartOf="@id/image_view_debug"
+            app:layout_constraintTop_toTopOf="@id/image_view_debug"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/image_view_debug"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_circle"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/ripple_circle"
+            android:padding="10dp"
+            android:src="@drawable/ic_rocket"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/image_view_qr"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toEndOf="@id/text_view_address"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/view_qr_shadow"
+            android:layout_width="@dimen/home_toolbar_shadow_view_size"
+            android:layout_height="@dimen/home_toolbar_shadow_view_size"
+            android:background="@drawable/bg_circle_with_shadow"
+            app:layout_constraintBottom_toBottomOf="@id/image_view_qr"
+            app:layout_constraintEnd_toEndOf="@id/image_view_qr"
+            app:layout_constraintStart_toStartOf="@id/image_view_qr"
+            app:layout_constraintTop_toTopOf="@id/image_view_qr" />
+
+        <ImageView
+            android:id="@+id/image_view_qr"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_circle"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/ripple_circle"
+            android:padding="10dp"
+            android:src="@drawable/ic_qr_home"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.appcompat.widget.Toolbar>

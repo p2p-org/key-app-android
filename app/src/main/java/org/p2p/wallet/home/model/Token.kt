@@ -66,10 +66,6 @@ sealed class Token constructor(
         val isZero: Boolean
             get() = total.isZero()
 
-        @IgnoredOnParcel
-        val usdRateOrZero: BigDecimal
-            get() = usdRate ?: BigDecimal.ZERO
-
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
             visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
 
@@ -133,6 +129,10 @@ sealed class Token constructor(
     @IgnoredOnParcel
     val isUSDC: Boolean
         get() = tokenSymbol == USDC_SYMBOL
+
+    @IgnoredOnParcel
+    val usdRateOrZero: BigDecimal
+        get() = usdRate ?: BigDecimal.ZERO
 
     @IgnoredOnParcel
     val isActive: Boolean

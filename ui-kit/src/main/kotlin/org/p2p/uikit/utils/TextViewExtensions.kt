@@ -1,6 +1,7 @@
 package org.p2p.uikit.utils
 
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 
@@ -22,4 +23,8 @@ infix fun TextView.withTextOrInvisible(text: CharSequence?) {
         isInvisible = false
         this.text = text
     }
+}
+
+fun TextView.setTextColorRes(@ColorRes color: Int) {
+    setTextColor(context.getColor(color))
 }

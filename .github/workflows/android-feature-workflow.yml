@@ -2,6 +2,7 @@ on:
   pull_request:
     branches:
       - develop
+      - feature/*
   push:
     branches:
       - develop

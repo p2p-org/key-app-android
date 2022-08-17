@@ -1,8 +1,9 @@
 package org.p2p.uikit.atoms
 
-import androidx.appcompat.widget.AppCompatImageView
 import android.content.Context
 import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.res.use
 import org.p2p.uikit.R
 
 /**
@@ -16,7 +17,7 @@ import org.p2p.uikit.R
  *       app:isRounded="true|false" />
  * ```
  */
-class UiKitSkeletonRectangle(
+class UiKitSkeletonRectangle @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
