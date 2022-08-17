@@ -51,8 +51,6 @@ import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.NewAuthSmsInputBlockedContract
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.NewSmsInputBlockedPresenter
 import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
@@ -64,6 +62,7 @@ import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
+import org.p2p.wallet.auth.web3authsdk.Web3AuthErrorMapper
 import org.p2p.wallet.feerelayer.FeeRelayerModule.FEE_RELAYER_QUALIFIER
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.splash.SplashContract
@@ -105,11 +104,12 @@ object AuthModule {
     private fun Module.onboardingModule() {
         singleOf(::GoogleSignInHelper)
         singleOf(::UserSignUpDetailsStorage)
+        singleOf(::Web3AuthErrorMapper)
         single<Web3AuthApi> {
             Web3AuthApiClient(
                 context = androidContext(),
                 torusNetwork = get<NetworkServicesUrlProvider>().loadTorusEnvironment(),
-                gson = get()
+                mapper = get()
             )
         }
         singleOf(::SignUpFlowDataLocalRepository)
@@ -131,7 +131,6 @@ object AuthModule {
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
 
         factoryOf(::NewSmsInputPresenter) bind NewAuthSmsInputContract.Presenter::class
-        factoryOf(::NewSmsInputBlockedPresenter) bind NewAuthSmsInputBlockedContract.Presenter::class
 
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
         factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class
