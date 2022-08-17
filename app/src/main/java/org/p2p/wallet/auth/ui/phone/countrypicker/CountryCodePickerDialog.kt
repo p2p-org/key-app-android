@@ -12,11 +12,11 @@ import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.widget.AnimatedSearchView
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
 import org.p2p.wallet.auth.ui.phone.maskwatcher.CountryCodeTextWatcher
 import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
+import org.p2p.wallet.auth.widget.AnimatedSearchView
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogCountryPickerBinding
 import org.p2p.wallet.utils.args
@@ -68,14 +68,12 @@ class CountryCodePickerDialog :
             buttonActionContinue.setOnClickListener {
                 presenter.onCountryCodeSelected()
             }
-            searchView.addTextWatcher(
-                CountryCodePickerTextWatcher { searchText ->
-                    presenter.searchByCountryName(searchText)
-                }
-            )
+            searchView.doAfterTextChanged { searchText ->
+                presenter.search(searchText?.toString() ?: emptyString())
+            }
             searchView.setStateListener(object : AnimatedSearchView.SearchStateListener {
                 override fun onClosed() {
-                    presenter.searchByCountryName(emptyString())
+                    presenter.search(emptyString())
                 }
             })
         }

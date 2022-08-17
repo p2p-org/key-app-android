@@ -2,11 +2,13 @@ package org.p2p.wallet.auth.widget
 
 import android.animation.Animator
 import android.content.Context
-import android.widget.RelativeLayout
-import android.view.ViewAnimationUtils
+import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.view.ViewAnimationUtils
+import android.widget.RelativeLayout
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
@@ -82,6 +84,10 @@ class AnimatedSearchView @JvmOverloads constructor(
 
     fun addTextWatcher(textWatcher: TextWatcher?) {
         binding.editText.addTextChangedListener(textWatcher)
+    }
+
+    fun doAfterTextChanged(block: (Editable?) -> Unit) {
+        binding.editText.doAfterTextChanged(block)
     }
 
     fun removeTextWatcher(textWatcher: TextWatcher?) {
