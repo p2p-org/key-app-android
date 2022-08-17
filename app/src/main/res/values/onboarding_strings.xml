@@ -45,4 +45,7 @@
     <string name="onboarding_sms_input_blocked_terms_button_title">Starting screen</string>
     <string name="onboarding_sms_input_blocked_title">It\'s okay to be wrong</string>
     <string name="onboarding_sms_input_blocked_timer_subtitle">You used 5 incorrect codes.\nFor your safety we\'ve frozen account for %1$s min</string>
+
+    <!--Common Errors-->
+    <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
 </resources>

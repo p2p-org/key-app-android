@@ -79,5 +79,15 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
                 .setAction(actionResId, block)
         }
     }
+
+    override fun showInfoSnackBar(message: String, iconResId: Int?, actionResId: Int?, actionBlock: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(message)
+                .setAction(actionResId, actionBlock)
+            iconResId?.let { icon ->
+                it.setIcon(icon)
+            }
+        }
+    }
     //endregion
 }

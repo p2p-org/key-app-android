@@ -8,9 +8,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.restore.WalletFoundFragment
+import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
@@ -22,7 +22,8 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewOnboardingFragment :
     BaseMvpFragment<NewOnboardingContract.View, NewOnboardingContract.Presenter>(R.layout.fragment_new_onboarding),
-    NewOnboardingContract.View {
+    NewOnboardingContract.View,
+    GoogleSignInHelper.GoogleSignInErrorHandler {
 
     companion object {
         fun create(): NewOnboardingFragment = NewOnboardingFragment()
@@ -111,9 +112,22 @@ class NewOnboardingFragment :
     }
 
     private fun handleSignResult(result: ActivityResult) {
-        signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
-            setLoadingState(isScreenLoading = true)
-            presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
+        signInHelper.handler = this
+        try {
+            signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
+                setLoadingState(isScreenLoading = true)
+                presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
+            }
+        } finally {
+            signInHelper.handler = null
         }
+    }
+
+    override fun onConnectionError(error: String) {
+        showInfoSnackBar(error)
+    }
+
+    override fun onCommonError(error: String) {
+        showErrorSnackBar(error)
     }
 }
