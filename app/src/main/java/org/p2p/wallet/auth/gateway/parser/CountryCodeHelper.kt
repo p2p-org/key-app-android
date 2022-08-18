@@ -48,7 +48,7 @@ class CountryCodeHelper(
         } catch (e: Exception) {
             Timber.e(e, "Error while reading from XML file")
         }
-        return countries
+        return countries.sortedBy { it.name }
     }
 
     private fun getMaskForCountryCode(countryCode: String, phoneCode: String): String {
