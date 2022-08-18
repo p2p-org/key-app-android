@@ -58,7 +58,11 @@ class CountryCodePickerPresenter(
 
     override fun load(countryCode: CountryCode?) {
         launch {
-            allCountryCodeItems = countryCodeInteractor.getCountries().map { CountryCodeItem(it, false) }
+            allCountryCodeItems = countryCodeInteractor.getCountries().map {
+                CountryCodeItem(it, isSelected = it.nameCode == countryCode?.nameCode)
+            }.sortedBy {
+                !it.isSelected
+            }
             selectedCountryCode = countryCode
             searchTextMap[DEFAULT_KEY] = allCountryCodeItems
             view?.showCountries(allCountryCodeItems)
