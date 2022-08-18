@@ -10,21 +10,22 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
+class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
     private val fragments = SparseArrayCompat<Fragment>()
@@ -38,8 +39,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (binding.bottomNavigation.selectedItemId != R.id.itemHome) {
-                navigate(R.id.itemHome)
+            if (binding.bottomNavigation.getSelectedItemId() != R.id.homeItem) {
+                navigate(R.id.homeItem)
             } else {
                 requireActivity().finish()
             }
@@ -47,7 +48,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
         deeplinksManager.mainTabsSwitcher = this
         with(binding) {
             bottomNavigation.setOnItemSelectedListener {
-                if (it.itemId == R.id.itemFeedback) {
+                if (it.itemId == R.id.feedbackItem) {
                     IntercomService.showMessenger()
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
                     return@setOnItemSelectedListener false
@@ -60,13 +61,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
         if (fragments.isEmpty) {
             childFragmentManager.fragments.forEach { fragment ->
                 when (fragment) {
-                    is HomeFragment -> fragments.put(R.id.itemHome, fragment)
-                    is HistoryFragment -> fragments.put(R.id.itemHistory, fragment)
-                    is SendFragment -> fragments.put(R.id.itemSend, fragment)
-                    is SettingsFragment -> fragments.put(R.id.itemSettings, fragment)
+                    is HomeFragment -> fragments.put(R.id.homeItem, fragment)
+                    is HistoryFragment -> fragments.put(R.id.historyItem, fragment)
+                    is SettingsFragment -> fragments.put(R.id.settingsItem, fragment)
                 }
             }
-            binding.bottomNavigation.selectedItemId = R.id.itemHome
+            binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
         }
         deeplinksManager.handleSavedDeeplinkIntent()
     }
@@ -78,28 +78,25 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
 
     override fun navigate(itemId: Int) {
         if (!fragments.containsKey(itemId)) {
-            val fragment = when (Tabs.fromTabId(itemId)) {
-                Tabs.HOME -> {
+            val fragment = when (ScreenTab.fromTabId(itemId)) {
+                ScreenTab.HOME_SCREEN -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_COINS)
                     HomeFragment.create()
                 }
-                Tabs.HISTORY -> {
+                ScreenTab.HISTORY_SCREEN -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_HISTORY)
                     HistoryFragment.create()
                 }
-                Tabs.SEND -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.MAIN)
-                    SendFragment.create()
-                }
-                Tabs.SETTINGS -> {
+                ScreenTab.SETTINGS_SCREEN -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.MAIN)
                     SettingsFragment.create()
                 }
+                else -> error("No tab found for $itemId")
             }
             fragments[itemId] = fragment
         }
 
-        val prevFragmentId = binding.bottomNavigation.selectedItemId
+        val prevFragmentId = binding.bottomNavigation.getSelectedItemId()
         childFragmentManager.commit(allowStateLoss = false) {
             if (prevFragmentId != itemId) {
                 if (fragments[prevFragmentId] != null && !fragments[prevFragmentId]!!.isAdded) {
@@ -127,7 +124,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
                 }
             }
         }
-        if (binding.bottomNavigation.selectedItemId != itemId) {
+        if (binding.bottomNavigation.getSelectedItemId() != itemId) {
             binding.bottomNavigation.menu.findItem(itemId).isChecked = true
         } else {
             checkAndDismissLastBottomSheet()
@@ -152,21 +149,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher {
 
     private fun showUI() {
         binding.bottomNavigation.menu.clear()
-        binding.bottomNavigation.inflateMenu(R.menu.main)
+        binding.bottomNavigation.inflateMenu(R.menu.menu_ui_kit_bottom_navigation)
     }
-}
 
-private enum class Tabs(val tabId: Int) {
-    HOME(R.id.itemHome),
-    HISTORY(R.id.itemHistory),
-    SEND(R.id.itemSend),
-    SETTINGS(R.id.itemSettings);
-
-    companion object {
-        fun fromTabId(tabId: Int): Tabs {
-            return values()
-                .firstOrNull { it.tabId == tabId }
-                ?: throw IllegalArgumentException("Unknown tabId=$tabId")
-        }
+    override fun setOnCenterActionButtonListener(block: () -> Unit) {
+        binding.buttonCenterAction.setOnClickListener { block.invoke() }
     }
 }

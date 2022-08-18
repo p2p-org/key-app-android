@@ -89,4 +89,11 @@
         <attr name="isExpanded" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="ShadowView">
+        <attr name="radius" format="dimension" />
+        <attr name="shadowWidth" format="dimension" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="shadowColor" format="color" />
+    </declare-styleable>
+
 </resources>

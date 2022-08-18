@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/main_send"
+        app:title="@string/home_send"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
     <FrameLayout

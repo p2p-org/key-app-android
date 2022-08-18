@@ -63,13 +63,13 @@ class ActionButtonsView @JvmOverloads constructor(
 
     private fun onItemClicked(@StringRes actionResId: Int) {
         when (actionResId) {
-            R.string.main_buy -> {
+            R.string.home_buy -> {
                 onBuyItemClickListener?.invoke()
             }
-            R.string.main_receive -> {
+            R.string.home_receive -> {
                 onReceiveItemClickListener?.invoke()
             }
-            R.string.main_send -> {
+            R.string.home_send -> {
                 onSendClickListener?.invoke()
             }
             R.string.main_swap -> {
