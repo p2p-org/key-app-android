@@ -13,11 +13,6 @@ import timber.log.Timber
 
 private const val VIBRATE_DURATION = 500L
 
-enum class PinMode {
-    CREATE,
-    CONFIRM
-}
-
 class NewCreatePinPresenter(
     private val authLogoutInteractor: AuthLogoutInteractor,
     private val adminAnalytics: AdminAnalytics,
