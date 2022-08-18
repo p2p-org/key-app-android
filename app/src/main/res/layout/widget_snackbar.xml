@@ -33,7 +33,7 @@
             android:maxLines="1"
             android:layout_marginHorizontal="8dp"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
-            android:textColor="@color/textIconButtonPrimary"
+            android:textColor="@color/text_cloud"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/actionImageView"
             app:layout_constraintStart_toEndOf="@id/imageView"
