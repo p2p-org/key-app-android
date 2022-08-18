@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
-        app:title="@string/main_receive"
+        app:title="@string/home_receive"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
     <androidx.core.widget.NestedScrollView

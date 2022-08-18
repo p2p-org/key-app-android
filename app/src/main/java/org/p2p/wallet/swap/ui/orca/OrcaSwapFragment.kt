@@ -312,10 +312,10 @@ class OrcaSwapFragment :
         binding.swapButton.setLoading(isLoading)
     }
 
-    override fun showProgressDialog(data: ShowProgress?) {
+    override fun showProgressDialog(transactionId: String, data: ShowProgress?) {
         if (data != null) {
             analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.PROCESSING)
-            ProgressBottomSheet.show(parentFragmentManager, data, KEY_REQUEST_SWAP)
+            ProgressBottomSheet.show(parentFragmentManager, transactionId, data, KEY_REQUEST_SWAP)
         } else {
             ProgressBottomSheet.hide(parentFragmentManager)
         }

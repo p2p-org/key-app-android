@@ -111,7 +111,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/actionButtonsView">
+            app:layout_constraintTop_toBottomOf="@id/action_buttons_view">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/historyRecyclerView"
@@ -125,6 +125,7 @@
 
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/errorStateLayout"
             android:layout_width="match_parent"
@@ -134,7 +135,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/actionButtonsView">
+            app:layout_constraintTop_toBottomOf="@id/action_buttons_view">
 
             <ImageView
                 android:id="@+id/errorImageView"
@@ -184,7 +185,7 @@
 
 
         <org.p2p.wallet.common.ui.widget.ActionButtonsView
-            android:id="@+id/actionButtonsView"
+            android:id="@+id/action_buttons_view"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginHorizontal="16dp"
@@ -197,7 +198,7 @@
             layout="@layout/view_history_shimmer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/actionButtonsView" />
+            app:layout_constraintTop_toBottomOf="@id/action_buttons_view" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

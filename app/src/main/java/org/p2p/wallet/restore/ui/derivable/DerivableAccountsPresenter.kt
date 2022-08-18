@@ -1,6 +1,5 @@
 package org.p2p.wallet.restore.ui.derivable
 
-import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -11,6 +10,7 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SecretKey
 import timber.log.Timber
 import kotlin.properties.Delegates
+import kotlinx.coroutines.launch
 
 class DerivableAccountsPresenter(
     private val secretKeys: List<SecretKey>,
@@ -62,12 +62,7 @@ class DerivableAccountsPresenter(
                 val keys = secretKeys.map { it.text }
                 secretKeyInteractor.createAndSaveAccount(path, keys)
                 analytics.logWalletRestored(ScreenNames.OnBoarding.IMPORT_MANUAL)
-                val usernameExists = usernameInteractor.usernameExists()
-                if (usernameExists) {
-                    view?.navigateToCreatePin()
-                } else {
-                    view?.navigateToReserveUsername()
-                }
+                view?.navigateToCreatePin()
             } catch (e: Throwable) {
                 Timber.e(e, "Error while creating account and checking username")
                 view?.showErrorMessage(e)

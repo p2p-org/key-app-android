@@ -3,7 +3,9 @@ package org.p2p.wallet.auth.web3authsdk
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
+import org.p2p.wallet.auth.web3authsdk.Web3AuthErrorResponse.ErrorType
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -18,7 +20,6 @@ class UserSignUpInteractor(
     }
 
     suspend fun trySignUpNewUser(idToken: String, idTokenOwnerId: String): SignUpResult {
-        web3AuthApi.attach()
         return try {
             signUpFlowDataRepository.signUpUserId = idTokenOwnerId
 
@@ -28,16 +29,14 @@ class UserSignUpInteractor(
             userSignUpDetailsStorage.save(signUpResponse, idTokenOwnerId)
             SignUpResult.SignUpSuccessful
         } catch (web3AuthError: Web3AuthErrorResponse) {
-            // TODO PWN-4268 do error handling right
-            if (web3AuthError.errorCode == 9999) {
+            // TODO PWN-4362 do error handling right
+            if (web3AuthError.errorType == ErrorType.DUPLICATE_TOKEN) {
                 SignUpResult.UserAlreadyExists
             } else {
                 SignUpResult.SignUpFailed(web3AuthError.errorMessage)
             }
         } catch (error: Exception) {
             SignUpResult.SignUpFailed(error.message, error.cause)
-        } finally {
-            web3AuthApi.detach()
         }
     }
 
@@ -56,13 +55,17 @@ class UserSignUpInteractor(
         return suspendCancellableCoroutine { continuation ->
             web3AuthApi.triggerSilentSignUp(
                 socialShare = idToken,
-                object : Web3AuthApi.Web3AuthSignUpCallback {
+                handler = object : Web3AuthApi.Web3AuthSignUpCallback {
                     override fun onSuccessSignUp(signUpResponse: Web3AuthSignUpResponse) {
                         continuation.resume(signUpResponse)
                     }
 
-                    override fun handleError(error: Web3AuthErrorResponse) {
-                        throw error
+                    override fun handleApiError(error: Web3AuthErrorResponse) {
+                        continuation.resumeWithException(error)
+                    }
+
+                    override fun handleInternalError(internalError: Web3AuthApi.Web3AuthSdkInternalError) {
+                        continuation.resumeWithException(internalError)
                     }
                 }
             )

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textViewHeader"
+        style="@style/UiKit.TextAppearance.SemiBold.Text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/home_tokens"
+        android:textColor="#000000" />
+
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/item_home_token_list_item_shimmer" />
+
+            <include layout="@layout/item_home_token_list_item_shimmer" />
+
+            <include layout="@layout/item_home_token_list_item_shimmer" />
+
+            <include layout="@layout/item_home_token_list_item_shimmer" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/bg_rain" />
+
+
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <include layout="@layout/item_token_group_button" />
+
+</LinearLayout>

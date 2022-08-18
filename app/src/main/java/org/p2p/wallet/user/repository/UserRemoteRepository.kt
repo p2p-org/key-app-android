@@ -13,6 +13,7 @@ import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT
 import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
@@ -34,6 +35,8 @@ class UserRemoteRepository(
         private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
     }
 
+    private val POPULAR_TOKENS = setOf(SOL_SYMBOL, Constants.USDC_SYMBOL, REN_BTC_SYMBOL)
+
     override suspend fun loadAllTokens(): List<TokenData> =
         solanaApi.loadTokenlist()
             .tokens
@@ -53,7 +56,7 @@ class UserRemoteRepository(
             // Get token symbols from user accounts plus SOL
             val tokenSymbols = accounts.mapNotNull {
                 userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
-            } + SOL_SYMBOL
+            } + POPULAR_TOKENS
 
             // Load and save user tokens prices
             if (fetchPrices) {
