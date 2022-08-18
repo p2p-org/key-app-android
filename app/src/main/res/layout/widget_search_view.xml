@@ -54,6 +54,16 @@
             android:paddingEnd="16dp"
             android:textCursorDrawable="@drawable/bg_search_view_cursor" />
 
+        <ImageView
+            android:id="@+id/imageViewErase"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_toolbar_close"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
 </FrameLayout>

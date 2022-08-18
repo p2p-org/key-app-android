@@ -9,6 +9,7 @@ import android.view.ViewAnimationUtils
 import android.widget.RelativeLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
@@ -24,8 +25,14 @@ class AnimatedSearchView @JvmOverloads constructor(
     private var stateListener: SearchStateListener? = null
 
     init {
-        binding.showButtonContainer.setOnClickListener { openSearch() }
-        binding.closeButton.setOnClickListener { closeSearch() }
+        binding.apply {
+            showButtonContainer.setOnClickListener { openSearch() }
+            imageViewErase.setOnClickListener { editText.text.clear() }
+            closeButton.setOnClickListener { closeSearch() }
+            editText.doOnTextChanged { text, _, _, _ ->
+                imageViewErase.isVisible = text?.isNotEmpty() ?: false
+            }
+        }
     }
 
     fun openSearch() = with(binding) {
