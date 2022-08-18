@@ -5,16 +5,16 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
 interface OnboardingGeneralErrorContract {
-    interface View : MvpView {
-        enum class SourceScreen {
-            PHONE_NUMBER_ENTER, SMS_INPUT
-        }
+    enum class SourceScreen {
+        PHONE_NUMBER_ENTER, SMS_INPUT
+    }
 
+    interface View : MvpView {
         fun updateSubtitle(@StringRes subTitleRes: Int, formattedTimeLeft: String)
         fun navigateToStartingScreen()
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setSourceScreen(sourceScreen: View.SourceScreen)
+        fun setSourceScreen(sourceScreen: SourceScreen)
     }
 }

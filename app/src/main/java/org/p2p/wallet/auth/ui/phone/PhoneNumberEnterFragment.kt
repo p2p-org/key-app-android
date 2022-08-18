@@ -3,17 +3,17 @@ package org.p2p.wallet.auth.ui.phone
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract.View.ContinueButtonState
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.View.SourceScreen
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.SourceScreen
 import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class PhoneNumberEnterFragment :
@@ -71,21 +71,21 @@ class PhoneNumberEnterFragment :
         replaceFragment(OnboardingGeneralErrorTimerFragment.create(SourceScreen.PHONE_NUMBER_ENTER))
     }
 
-    override fun setContinueButtonState(state: ContinueButtonState) = with(binding) {
+    override fun setContinueButtonState(state: ContinueButtonState) = with(binding.buttonConfirmPhone) {
         when (state) {
             ContinueButtonState.ENABLED_TO_CONTINUE -> {
-                buttonConfirmPhone.setBackgroundColor(getColor(R.color.night))
-                buttonConfirmPhone.setTextColor(getColor(R.color.lime))
-                buttonConfirmPhone.setText(R.string.common_continue)
-                buttonConfirmPhone.setIconResource(R.drawable.ic_arrow_forward)
-                buttonConfirmPhone.isEnabled = true
+                setBackgroundColor(getColor(R.color.night))
+                setTextColor(getColor(R.color.lime))
+                setText(R.string.common_continue)
+                setIconResource(R.drawable.ic_arrow_forward)
+                isEnabled = true
             }
             ContinueButtonState.DISABLED_INPUT_IS_EMPTY -> {
-                buttonConfirmPhone.setBackgroundColor(getColor(R.color.rain))
-                buttonConfirmPhone.setTextColor(getColor(R.color.mountain))
-                buttonConfirmPhone.setText(R.string.onboarding_fill_your_number)
-                buttonConfirmPhone.icon = null
-                buttonConfirmPhone.isEnabled = false
+                setBackgroundColor(getColor(R.color.rain))
+                setTextColor(getColor(R.color.mountain))
+                setText(R.string.onboarding_fill_your_number)
+                icon = null
+                isEnabled = false
             }
         }
     }

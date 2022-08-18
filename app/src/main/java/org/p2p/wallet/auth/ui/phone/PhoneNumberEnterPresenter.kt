@@ -44,13 +44,12 @@ class PhoneNumberEnterPresenter(
     override fun onPhoneChanged(phoneNumber: String) {
         selectedCountryCode?.let {
             val isValidNumber = countryCodeInteractor.isValidNumberForRegion(it.phoneCode, phoneNumber)
-            view?.setContinueButtonState(
-                if (isValidNumber) {
-                    ContinueButtonState.ENABLED_TO_CONTINUE
-                } else {
-                    ContinueButtonState.DISABLED_INPUT_IS_EMPTY
-                }
-            )
+            val newButtonState = if (isValidNumber) {
+                ContinueButtonState.ENABLED_TO_CONTINUE
+            } else {
+                ContinueButtonState.DISABLED_INPUT_IS_EMPTY
+            }
+            view?.setContinueButtonState(newButtonState)
         }
     }
 
@@ -70,11 +69,14 @@ class PhoneNumberEnterPresenter(
                     createWalletInteractor.startCreatingWallet(userPhoneNumber = it.phoneCode + phoneNumber)
                 }
                 view?.navigateToSmsInput()
-            } catch (tooManyPhoneEnters: GatewayServiceError.SmsDeliverFailed) {
+            } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
+                Timber.i(smsDeliverFailed)
                 view?.showSmsDeliveryFailedForNumber()
             } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
+                Timber.i(tooManyPhoneEnters)
                 view?.navigateToAccountBlocked()
             } catch (gatewayError: GatewayServiceError) {
+                Timber.e(gatewayError)
                 view?.showErrorSnackBar(R.string.error_general_message)
             } catch (createWalletError: CreateWalletInteractor.CreateWalletFailure) {
                 Timber.e(createWalletError)

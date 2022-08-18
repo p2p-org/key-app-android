@@ -7,7 +7,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.Presenter
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.View.SourceScreen
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.SourceScreen
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralTimerErrorBinding
 import org.p2p.wallet.utils.args
@@ -16,13 +16,13 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.View as ContractView
 
+private const val ARG_SOURCE_SCREEN = "ARG_SOURCE_SCREEN"
+
 class OnboardingGeneralErrorTimerFragment :
     BaseMvpFragment<ContractView, Presenter>(R.layout.fragment_onboarding_general_timer_error),
     ContractView {
 
     companion object {
-        private const val ARG_SOURCE_SCREEN = "ARG_SOURCE_SCREEN"
-
         fun create(sourceScreen: SourceScreen): OnboardingGeneralErrorTimerFragment =
             OnboardingGeneralErrorTimerFragment()
                 .withArgs(ARG_SOURCE_SCREEN to sourceScreen)
@@ -49,6 +49,6 @@ class OnboardingGeneralErrorTimerFragment :
     }
 
     override fun navigateToStartingScreen() {
-        popAndReplaceFragment(OnboardingFragment.create(), addToBackStack = false)
+        popAndReplaceFragment(OnboardingFragment.create(), inclusive = true)
     }
 }
