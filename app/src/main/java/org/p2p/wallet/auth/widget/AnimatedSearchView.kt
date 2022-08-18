@@ -28,7 +28,7 @@ class AnimatedSearchView @JvmOverloads constructor(
         binding.closeButton.setOnClickListener { closeSearch() }
     }
 
-    private fun openSearch() = with(binding) {
+    fun openSearch() = with(binding) {
         editText.setText("")
         searchContainer.visibility = VISIBLE
         if (animator != null) animator!!.cancel()

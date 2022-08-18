@@ -63,19 +63,14 @@ class CountryCodePickerDialog :
             toolbar.setNavigationOnClickListener {
                 dismissAllowingStateLoss()
             }
+
             recyclerViewCountryCodes.adapter = adapter
 
             buttonActionContinue.setOnClickListener {
                 presenter.onCountryCodeSelected()
             }
-            searchView.doAfterTextChanged { searchText ->
-                presenter.search(searchText?.toString() ?: emptyString())
-            }
-            searchView.setStateListener(object : AnimatedSearchView.SearchStateListener {
-                override fun onClosed() {
-                    presenter.search(emptyString())
-                }
-            })
+
+            initSearch()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.searchView.isBackPressEnabled()) {
@@ -92,6 +87,20 @@ class CountryCodePickerDialog :
         layout.minimumHeight = Resources.getSystem().displayMetrics.heightPixels
 
         presenter.load(selectedCountry)
+    }
+
+    private fun DialogCountryPickerBinding.initSearch() = with(searchView) {
+        doAfterTextChanged { searchText ->
+            presenter.search(searchText?.toString() ?: emptyString())
+        }
+
+        setStateListener(object : AnimatedSearchView.SearchStateListener {
+            override fun onClosed() {
+                presenter.search(emptyString())
+            }
+        })
+
+        post { openSearch() }
     }
 
     override fun showCountries(items: List<CountryCodeItem>) {
