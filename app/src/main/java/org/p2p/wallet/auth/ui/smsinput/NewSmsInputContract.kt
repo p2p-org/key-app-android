@@ -3,7 +3,7 @@ package org.p2p.wallet.auth.ui.smsinput
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
-interface NewAuthSmsInputContract {
+interface NewSmsInputContract {
     interface View : MvpView {
         fun initView(userPhoneNumber: String)
 
@@ -12,10 +12,11 @@ interface NewAuthSmsInputContract {
         fun renderIncorrectSms()
 
         fun renderSmsTimerState(timerState: Presenter.SmsInputTimerState)
+        fun renderButtonLoading(isLoading: Boolean)
 
         fun navigateToPinCreate()
         fun navigateToSmsInputBlocked()
-        fun renderButtonLoading(isLoading: Boolean)
+        fun navigateToCriticalErrorScreen()
     }
 
     interface Presenter : MvpPresenter<View> {

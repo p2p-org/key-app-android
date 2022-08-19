@@ -6,6 +6,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import timber.log.Timber
 
 class CountryCodeInMemoryRepository(
     private val dispatchers: CoroutineDispatchers,
@@ -18,30 +19,33 @@ class CountryCodeInMemoryRepository(
     override suspend fun getCountryCodes(): List<CountryCode> = allCountryCodes
 
     override suspend fun detectCountryCodeByLocale(): CountryCode? = withContext(dispatchers.io) {
-        return@withContext try {
+        try {
             val localeCountryIso = context.resources.configuration.locale.country
             getCountryForIso(localeCountryIso)
         } catch (e: Exception) {
+            Timber.i(e)
             null
         }
     }
 
     override suspend fun detectCountryCodeByNetwork(): CountryCode? = withContext(dispatchers.io) {
-        return@withContext try {
+        try {
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val networkCountryIso = telephonyManager.networkCountryIso
             getCountryForIso(networkCountryIso)
         } catch (e: Exception) {
+            Timber.i(e)
             null
         }
     }
 
     override suspend fun detectCountryCodeBySimCard(): CountryCode? = withContext(dispatchers.io) {
-        return@withContext try {
+        try {
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val simCountryISO = telephonyManager.simCountryIso
             getCountryForIso(simCountryISO)
         } catch (e: Exception) {
+            Timber.i(e)
             null
         }
     }
@@ -51,6 +55,7 @@ class CountryCodeInMemoryRepository(
             val countryCode = allCountryCodes.firstOrNull { it.phoneCode == phoneCode }
             countryCode
         } catch (e: Exception) {
+            Timber.i(e)
             null
         }
     }
@@ -62,7 +67,7 @@ class CountryCodeInMemoryRepository(
         if (allCountryCodes.isEmpty()) {
             readCountriesFromXml()
         }
-        return@withContext allCountryCodes.firstOrNull { it.nameCode.equals(nameCode, ignoreCase = true) }
+        allCountryCodes.firstOrNull { it.nameCode.equals(nameCode, ignoreCase = true) }
     }
 
     private suspend fun readCountriesFromXml() = withContext(dispatchers.io) {

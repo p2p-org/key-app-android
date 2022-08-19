@@ -1,37 +1,38 @@
-package org.p2p.wallet.auth.ui.smsinput.inputblocked
+package org.p2p.wallet.auth.ui.generalerror.timer
 
 import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.Presenter
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.Presenter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentOnboardingGeneralTimerErrorBinding
+import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.View as ContractView
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.View as ContractView
 
-private const val ARG_SOURCE_SCREEN = "ARG_SOURCE_SCREEN"
+private const val ARG_TIMER_ERROR_TYPE = "ARG_TIMER_ERROR_TYPE"
 
 class OnboardingGeneralErrorTimerFragment :
-    BaseMvpFragment<ContractView, Presenter>(R.layout.fragment_onboarding_general_timer_error),
+    BaseMvpFragment<ContractView, Presenter>(R.layout.fragment_onboarding_general_error_timer),
     ContractView {
 
     companion object {
-        fun create(sourceScreen: GeneralErrorScreenSource): OnboardingGeneralErrorTimerFragment =
+        fun create(sourceScreen: GeneralErrorTimerScreenErrorType): OnboardingGeneralErrorTimerFragment =
             OnboardingGeneralErrorTimerFragment()
-                .withArgs(ARG_SOURCE_SCREEN to sourceScreen)
+                .withArgs(ARG_TIMER_ERROR_TYPE to sourceScreen)
     }
 
-    private val binding: FragmentOnboardingGeneralTimerErrorBinding by viewBinding()
+    private val binding: FragmentOnboardingGeneralErrorTimerBinding by viewBinding()
 
-    override val presenter: Presenter by inject()
+    private val errorType: GeneralErrorTimerScreenErrorType by args(ARG_TIMER_ERROR_TYPE)
 
-    private val sourceScreen: GeneralErrorScreenSource by args(ARG_SOURCE_SCREEN)
+    override val presenter: Presenter by inject { parametersOf(this, errorType) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,8 +40,6 @@ class OnboardingGeneralErrorTimerFragment :
         binding.buttonToStartingScreen.setOnClickListener {
             navigateToStartingScreen()
         }
-
-        presenter.setSourceScreen(sourceScreen)
     }
 
     override fun updateSubtitle(@StringRes subTitleRes: Int, formattedTimeLeft: String) {

@@ -27,6 +27,7 @@ class PhoneNumberEnterPresenter(
 
                 view?.showDefaultCountryCode(countryCode)
             } catch (e: Exception) {
+                Timber.i(e)
                 view?.showErrorMessage(e)
             }
         }
@@ -74,12 +75,9 @@ class PhoneNumberEnterPresenter(
             } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
                 Timber.i(tooManyPhoneEnters)
                 view?.navigateToAccountBlocked()
-            } catch (gatewayError: GatewayServiceError) {
-                Timber.e(gatewayError)
-                view?.showErrorSnackBar(R.string.error_general_message)
-            } catch (createWalletError: CreateWalletInteractor.CreateWalletFailure) {
-                Timber.e(createWalletError)
-                view?.showErrorSnackBar(R.string.error_general_message)
+            } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+                Timber.i(serverError)
+                view?.navigateToCriticalErrorScreen()
             } catch (error: Throwable) {
                 Timber.e(error)
                 view?.showErrorSnackBar(R.string.error_general_message)

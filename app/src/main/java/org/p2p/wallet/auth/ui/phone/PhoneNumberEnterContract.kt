@@ -14,6 +14,7 @@ interface PhoneNumberEnterContract {
         fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState)
         fun showSmsDeliveryFailedForNumber()
         fun navigateToAccountBlocked()
+        fun navigateToCriticalErrorScreen()
     }
 
     interface Presenter : MvpPresenter<View> {

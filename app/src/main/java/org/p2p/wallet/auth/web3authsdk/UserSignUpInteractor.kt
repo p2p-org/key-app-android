@@ -1,11 +1,11 @@
 package org.p2p.wallet.auth.web3authsdk
 
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.web3authsdk.Web3AuthErrorResponse.ErrorType
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -40,14 +40,17 @@ class UserSignUpInteractor(
     }
 
     fun continueSignUpUser(): SignUpResult {
-        userSignUpDetailsStorage.getLastSignUpUserDetails()?.let {
-            signUpFlowDataRepository.signUpUserId = it.userId
+        return userSignUpDetailsStorage.getLastSignUpUserDetails()?.runCatching {
+            signUpFlowDataRepository.signUpUserId = userId
             signUpFlowDataRepository.generateUserAccount(
-                userMnemonicPhrase = it.signUpDetails.mnemonicPhrase.split("")
+                userMnemonicPhrase = signUpDetails.mnemonicPhrase.split("")
             )
-        } ?: return SignUpResult.UserAlreadyExists
-
-        return SignUpResult.SignUpSuccessful
+        }
+            ?.fold(
+                onSuccess = { SignUpResult.SignUpSuccessful },
+                onFailure = { SignUpResult.SignUpFailed("Sign up failed", it) }
+            )
+            ?: SignUpResult.SignUpFailed("Last sign up user is not found")
     }
 
     private suspend fun generateDeviceAndThirdShare(idToken: String): Web3AuthSignUpResponse {

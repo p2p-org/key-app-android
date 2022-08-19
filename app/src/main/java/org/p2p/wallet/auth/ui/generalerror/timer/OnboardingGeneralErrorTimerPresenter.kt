@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.ui.smsinput.inputblocked
+package org.p2p.wallet.auth.ui.generalerror.timer
 
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -17,13 +17,12 @@ import kotlinx.coroutines.flow.onEach
 private const val TIMER_VALUE_FORMAT = "mm:ss"
 private const val START_TIMER_VALUE_MIN = 5
 
-class OnboardingGeneralErrorTimerPresenter :
-    BasePresenter<OnboardingGeneralErrorContract.View>(),
-    OnboardingGeneralErrorContract.Presenter {
+class OnboardingGeneralErrorTimerPresenter(
+    private val errorType: GeneralErrorTimerScreenErrorType
+) : BasePresenter<OnboardingGeneralErrorTimerContract.View>(),
+    OnboardingGeneralErrorTimerContract.Presenter {
 
-    private var sourceScreen = GeneralErrorScreenSource.PHONE_NUMBER_ENTER
-
-    override fun attach(view: OnboardingGeneralErrorContract.View) {
+    override fun attach(view: OnboardingGeneralErrorTimerContract.View) {
         super.attach(view)
 
         createTimerFlow()
@@ -33,23 +32,20 @@ class OnboardingGeneralErrorTimerPresenter :
     }
 
     private fun onTimerValueChanged(timerValue: Long) {
-        val formattedTimerValue = createFormattedTimerValue(secondsLeft = timerValue)
-        val subTitleRes = when (sourceScreen) {
-            GeneralErrorScreenSource.PHONE_NUMBER_ENTER -> {
+        val subTitleRes = when (errorType) {
+            GeneralErrorTimerScreenErrorType.BLOCK_PHONE_NUMBER_ENTER -> {
                 R.string.onboarding_general_error_timer_enter_phone_subtitle
             }
-            GeneralErrorScreenSource.SMS_INPUT -> {
+            GeneralErrorTimerScreenErrorType.BLOCK_SMS_INPUT -> {
                 R.string.onboarding_general_error_timer_sms_input_subtitle
             }
         }
+        val formattedTimerValue = createFormattedTimerValue(secondsLeft = timerValue)
+
         view?.updateSubtitle(
             subTitleRes = subTitleRes,
             formattedTimeLeft = formattedTimerValue
         )
-    }
-
-    override fun setSourceScreen(sourceScreen: GeneralErrorScreenSource) {
-        this.sourceScreen = sourceScreen
     }
 
     private fun createTimerFlow(): Flow<Long> {

@@ -1,5 +1,7 @@
 package org.p2p.wallet.swap.koin
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
@@ -7,8 +9,6 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.webkit.WebView
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -16,11 +16,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -35,6 +30,10 @@ import org.mockito.Mockito
 import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenErrorType
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenErrorType
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
@@ -47,6 +46,8 @@ import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.security.SecureStorage
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
+import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
@@ -66,8 +67,11 @@ import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
-import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
-import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -152,6 +156,8 @@ class CheckModulesTest : KoinTest {
                 withInstance(mockk<TransactionWorker>())
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
+                withParameter<OnboardingGeneralErrorPresenter> { GeneralErrorScreenErrorType.CRITICAL_ERROR }
+                withParameter<OnboardingGeneralErrorTimerPresenter> { GeneralErrorTimerScreenErrorType.BLOCK_PHONE_NUMBER_ENTER }
             }
         )
     }
