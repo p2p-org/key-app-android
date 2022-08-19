@@ -1,0 +1,11 @@
+<resources>
+    <!--Common Restore-->
+    <string name="restore_title">Restoring your wallet</string>
+    <string name="restore_choose_method">Choose\nthe method</string>
+    <string name="restore_continue_with_google">Continue with Google</string>
+    <string name="restore_phone_number">Continue using a phone number</string>
+    <string name="restore_seed_phrase">Use a seed phrase / private key</string>
+
+    <string name="restore_no_wallet_title">No wallet found</string>
+    <string name="restore_no_wallet_subtitle">With s%.\nTry another account or use a phone number</string>
+</resources>

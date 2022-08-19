@@ -1,33 +1,37 @@
-package org.p2p.wallet.auth.ui.restore
+package org.p2p.wallet.auth.ui.restore.common
 
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentWalletFoundBinding
+import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class WalletFoundFragment :
-    BaseMvpFragment<WalletFoundContract.View, WalletFoundContract.Presenter>(R.layout.fragment_wallet_found),
-    WalletFoundContract.View,
+class CommonRestoreFragment :
+    BaseMvpFragment<CommonRestoreContract.View, CommonRestoreContract.Presenter>(
+        R.layout.fragment_common_restore
+    ),
+    CommonRestoreContract.View,
     GoogleSignInHelper.GoogleSignInErrorHandler {
 
     companion object {
-        fun create(): WalletFoundFragment = WalletFoundFragment()
+        fun create(): CommonRestoreFragment = CommonRestoreFragment()
     }
 
-    override val presenter: WalletFoundContract.Presenter by inject()
+    override val presenter: CommonRestoreContract.Presenter by inject { parametersOf(this) }
 
-    private val binding: FragmentWalletFoundBinding by viewBinding()
+    private val binding: FragmentCommonRestoreBinding by viewBinding()
 
     private val signInHelper: GoogleSignInHelper by inject()
 
@@ -39,13 +43,18 @@ class WalletFoundFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            walletFoundToolbar.setNavigationOnClickListener {
+            toolbar.setNavigationOnClickListener {
                 popBackStack()
             }
-            walletFoundAnotherAccountButton.setOnClickListener {
-                presenter.useAnotherGoogleAccount()
+            buttonGoogle.setOnClickListener {
+                presenter.useGoogleAccount()
             }
-            walletFoundRestoreButton.setOnClickListener {
+
+            buttonPhone.setOnClickListener {
+                replaceFragment(PhoneNumberEnterFragment.create())
+            }
+
+            buttonSeed.setOnClickListener {
                 // TODO make a real restore implementation!
                 replaceFragment(SecretKeyFragment.create())
             }
@@ -60,10 +69,6 @@ class WalletFoundFragment :
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
 
-    override fun setUserId(userId: String) {
-        binding.walletFoundSubtitle.text = getString(R.string.wallet_found_subtitle, userId)
-    }
-
     override fun showError(error: String) {
         view?.post {
             setLoadingState(isScreenLoading = false)
@@ -73,16 +78,26 @@ class WalletFoundFragment :
 
     override fun onSuccessfulSignUp() {
         setLoadingState(isScreenLoading = false)
+        // TODO check logic here
         replaceFragment(PhoneNumberEnterFragment.create())
+    }
+
+    override fun onNoTokenFoundError(userId: String) {
+        with(binding) {
+            textViewTitle.text = getString(R.string.restore_no_wallet_title)
+            textViewSubtitle.isVisible = true
+            textViewSubtitle.text = getString(R.string.restore_no_wallet_subtitle, userId)
+        }
     }
 
     private fun setLoadingState(isScreenLoading: Boolean) {
         with(binding) {
-            walletFoundAnotherAccountButton.apply {
+            buttonGoogle.apply {
                 isLoading = isScreenLoading
                 isEnabled = !isScreenLoading
             }
-            walletFoundRestoreButton.isEnabled = !isScreenLoading
+            buttonPhone.isEnabled = !isScreenLoading
+            buttonSeed.isEnabled = !isScreenLoading
         }
     }
 

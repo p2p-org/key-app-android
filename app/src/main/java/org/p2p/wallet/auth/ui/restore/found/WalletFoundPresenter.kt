@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.ui.restore
+package org.p2p.wallet.auth.ui.restore.found
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
