@@ -52,6 +52,7 @@ class NewSmsInputPresenter(
                 view?.renderButtonLoading(isLoading = true)
 
                 createWalletInteractor.finishCreatingWallet(smsCode)
+                createWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
                 Timber.i(incorrectSms)
