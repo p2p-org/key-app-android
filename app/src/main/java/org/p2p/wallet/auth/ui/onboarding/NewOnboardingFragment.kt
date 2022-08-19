@@ -58,8 +58,7 @@ class NewOnboardingFragment :
             viewPagerOnboardingSlider.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
             dotsIndicatorOnboardingSlider.attachTo(viewPagerOnboardingSlider)
             buttonCreateWalletOnboarding.setOnClickListener {
-                // TODO: Replace back to presenter.onSignUpButtonClicked() after QA
-                replaceFragment(PhoneNumberEnterFragment.create())
+                presenter.onSignUpButtonClicked()
             }
             buttonCreateWalletOnboarding.setOnLongClickListener {
                 // TODO PWN-4362 remove after all onboarding testing completed!
