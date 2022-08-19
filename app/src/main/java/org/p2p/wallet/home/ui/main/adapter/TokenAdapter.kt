@@ -12,14 +12,16 @@ import org.p2p.wallet.home.model.HomeElementItem.Shown
 import org.p2p.wallet.home.model.HomeElementItem.Title
 import org.p2p.wallet.home.model.VisibilityState
 
-private const val DIFF_FIELD_TOGGLE_BUTTON = "DIFF_FIELD_TOGGLE_BUTTON"
-private const val DIFF_FIELD_TOKEN_BALANCE = "DIFF_FIELD_TOKEN_BALANCE"
-private const val DIFF_FIELD_HIDDEN_TOKEN_BALANCE = "DIFF_FIELD_HIDDEN_TOKEN_BALANCE"
-private const val DIFF_FIELD_TITLE = "DIFF_FIELD_TITLE"
-
 class TokenAdapter(
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    companion object {
+        const val DIFF_FIELD_TOGGLE_BUTTON = "DIFF_FIELD_TOGGLE_BUTTON"
+        const val DIFF_FIELD_TOKEN_BALANCE = "DIFF_FIELD_TOKEN_BALANCE"
+        const val DIFF_FIELD_HIDDEN_TOKEN_BALANCE = "DIFF_FIELD_HIDDEN_TOKEN_BALANCE"
+        const val DIFF_FIELD_TITLE = "DIFF_FIELD_TITLE"
+    }
 
     private val data = mutableListOf<HomeElementItem>()
 
@@ -30,7 +32,7 @@ class TokenAdapter(
         val old = data.toMutableList()
         data.clear()
         data.addAll(mapGroups(new, state))
-        DiffUtil.calculateDiff(getDiffCallback(old, data)).dispatchUpdatesTo(this)
+        DiffUtil.calculateDiff(TokenAdapterDiffCallback(old, data)).dispatchUpdatesTo(this)
     }
 
     override fun getItemViewType(position: Int): Int = when (data[position]) {
@@ -62,8 +64,9 @@ class TokenAdapter(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
-        val fields = (payloads.firstOrNull() as? Set<*>)?.filterIsInstance<String>()
+        val fields = payloads.firstOrNull() as? Set<String>
 
         if (fields.isNullOrEmpty()) {
             onBindViewHolder(holder, position)
@@ -92,80 +95,5 @@ class TokenAdapter(
         result += hiddenTokens
 
         return result
-    }
-
-    private fun getDiffCallback(
-        oldList: List<HomeElementItem>,
-        newList: List<HomeElementItem>
-    ) = object : DiffUtil.Callback() {
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val old = oldList[oldItemPosition]
-            val new = newList[newItemPosition]
-            return when {
-                old is Shown && new is Shown ->
-                    old.token.publicKey == new.token.publicKey
-                old is Hidden && new is Hidden ->
-                    old.token.publicKey == new.token.publicKey
-                old is Action && new is Action ->
-                    // should pass in contents compare
-                    true
-                else -> old == new
-            }
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val old = oldList[oldItemPosition]
-            val new = newList[newItemPosition]
-            return when {
-                old is Shown && new is Shown ->
-                    old.token.publicKey == new.token.publicKey &&
-                        old.token.mintAddress == new.token.mintAddress &&
-                        old.token.visibility == new.token.visibility &&
-                        old.token.total == new.token.total &&
-                        old.token.totalInUsd == new.token.totalInUsd
-                old is Hidden && new is Hidden ->
-                    old.token.publicKey == new.token.publicKey &&
-                        old.token.mintAddress == new.token.mintAddress &&
-                        old.token.visibility == new.token.visibility &&
-                        old.token.total == new.token.total &&
-                        old.token.totalInUsd == new.token.totalInUsd
-                old is Action && new is Action ->
-                    old.state == new.state
-                old is Banners && new is Banners ->
-                    old.banners.size == new.banners.size
-                old is Title && new is Title ->
-                    old.titleResId == new.titleResId
-                else -> false
-            }
-        }
-
-        override fun getOldListSize(): Int = oldList.size
-
-        override fun getNewListSize(): Int = newList.size
-
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            val old = oldList[oldItemPosition]
-            val new = newList[newItemPosition]
-
-            val fields = mutableSetOf<String>()
-
-            when {
-                old is Shown && new is Shown -> {
-                    if (old.token.total != new.token.total) fields.add(DIFF_FIELD_TOKEN_BALANCE)
-                }
-                old is Hidden && new is Hidden -> {
-                    if (old.token.total != new.token.total) fields.add(DIFF_FIELD_HIDDEN_TOKEN_BALANCE)
-                }
-                old is Action && new is Action -> {
-                    if (old.state != new.state) fields.add(DIFF_FIELD_TOGGLE_BUTTON)
-                }
-                old is Title && new is Title -> {
-                    if (old.titleResId != new.titleResId) fields.add(DIFF_FIELD_TITLE)
-                }
-            }
-
-            return if (fields.isEmpty()) super.getChangePayload(oldItemPosition, newItemPosition) else fields
-        }
     }
 }
