@@ -36,6 +36,7 @@ class SecureStorage(
         saveObject(key, data)
     }
 
+    @Throws(IllegalArgumentException::class)
     override fun <T : Any> getObject(key: String, type: KClass<T>): T? {
         return sharedPreferences.getString(key, null)
             ?.let { keyStoreWrapper.decode(key, it) }
