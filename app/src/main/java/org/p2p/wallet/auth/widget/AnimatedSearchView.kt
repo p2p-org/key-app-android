@@ -30,7 +30,7 @@ class AnimatedSearchView @JvmOverloads constructor(
             imageViewErase.setOnClickListener { editText.text.clear() }
             closeButton.setOnClickListener { closeSearch() }
             editText.doOnTextChanged { text, _, _, _ ->
-                imageViewErase.isVisible = text?.isNotEmpty() ?: false
+                imageViewErase.isVisible = !text.isNullOrEmpty()
             }
         }
     }
