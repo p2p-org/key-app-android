@@ -102,7 +102,7 @@ class GatewayServiceCreateWalletMapper(
         etheriumPublicKey: String,
         phoneNumber: String,
         jsonEncryptedMnemonicPhrase: JsonObject,
-        thirdShare: Web3AuthSignUpResponse.ShareRootDetails.ShareInnerDetails.ShareValue,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
         val signatureField: Base58String = signatureFieldGenerator.generateSignatureField(

@@ -37,7 +37,7 @@ class GatewayServiceRemoteRepository(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         etheriumPublicKey: String,
-        thirdShare: Web3AuthSignUpResponse.ShareRootDetails.ShareInnerDetails.ShareValue,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue,
         jsonEncryptedMnemonicPhrase: JsonObject,
         phoneNumber: String,
         otpConfirmationCode: String

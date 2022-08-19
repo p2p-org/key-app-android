@@ -10,13 +10,13 @@ data class Web3AuthSignUpResponse(
     @SerializedName("privateSOL") val mnemonicPhrase: String,
     // don't care about the type, we need raw json
     @SerializedName("metadata") val encryptedMnemonicPhrase: JsonObject,
-    @SerializedName("deviceShare") val deviceShare: ShareRootDetails?,
-    @SerializedName("customShare") val customThirdShare: ShareRootDetails?,
+    @SerializedName("deviceShare") val deviceShare: ShareDetailsWithMeta?,
+    @SerializedName("customShare") val customThirdShare: ShareDetailsWithMeta?,
 ) {
-    val thirdShare: ShareRootDetails.ShareInnerDetails.ShareValue?
+    val thirdShare: ShareDetailsWithMeta.ShareInnerDetails.ShareValue?
         get() = customThirdShare?.innerShareDetails?.shareValue
 
-    data class ShareRootDetails(
+    data class ShareDetailsWithMeta(
         @SerializedName("share") val innerShareDetails: ShareInnerDetails,
         @SerializedName("p2p") val verifier: Verifier,
     ) {

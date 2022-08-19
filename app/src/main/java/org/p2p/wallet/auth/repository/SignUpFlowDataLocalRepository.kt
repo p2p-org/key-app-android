@@ -39,7 +39,7 @@ class SignUpFlowDataLocalRepository(
     val ethereumPublicKey: String?
         get() = signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey
 
-    val thirdShare: Web3AuthSignUpResponse.ShareRootDetails.ShareInnerDetails.ShareValue?
+    val thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue?
         get() = signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.thirdShare
 
     val encryptedMnemonicPhrase: JsonObject?

@@ -4,9 +4,12 @@ import android.content.Context
 import android.os.Build
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.widget.Toast
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthClientHandler
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSdkInternalError
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSignInCallback
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSignUpCallback
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
 import timber.log.Timber
@@ -17,7 +20,8 @@ private const val INDEX_HTML_URI = "file:///android_asset/index.html"
 class Web3AuthApiClient(
     context: Context,
     private val torusNetwork: TorusEnvironment,
-    private val mapper: Web3AuthErrorMapper
+    private val errorMapper: Web3AuthErrorMapper,
+    private val gson: Gson
 ) : Web3AuthApi {
 
     private var handler: Web3AuthClientHandler? = null
@@ -29,7 +33,7 @@ class Web3AuthApiClient(
         }
         // loadUrl and addJavascriptInterface is async, so it should be called ASAP
         addJavascriptInterface(
-            AndroidCommunicationChannel(context),
+            AndroidCommunicationChannel(),
             JS_COMMUNICATION_CHANNEL_NAME
         )
         loadUrl(INDEX_HTML_URI)
@@ -40,26 +44,70 @@ class Web3AuthApiClient(
         }
     }
 
-    override fun triggerSilentSignUp(socialShare: String, handler: Web3AuthSignUpCallback) {
+    override fun triggerSilentSignUp(
+        socialShare: String,
+        handler: Web3AuthSignUpCallback
+    ) {
         this.handler = handler
         onboardingWebView.evaluateJavascript(
-            generateFacade(type = "signup", jsMethodCall = "triggerSilentSignup('$socialShare')"),
+            generateFacade(
+                type = "signup",
+                jsMethodCall = "triggerSilentSignup('$socialShare')"
+            ),
             null
         )
     }
 
-    override fun triggerSignInNoDevice(socialShare: String) {
-        if (handler == null) Timber.i("!!! No handler attached for Web3Auth")
+    override fun triggerSignInNoDevice(
+        socialShare: String,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        handler: Web3AuthSignInCallback
+    ) {
+        this.handler = handler
+
+        val thirdShareAsJsObject = gson.toJson(thirdShare)
         onboardingWebView.evaluateJavascript(
-            generateFacade("signin", jsMethodCall = "triggerSignInNoDevice('$socialShare')"),
+            generateFacade(
+                type = "signin",
+                jsMethodCall = "triggerSignInNoDevice('$socialShare', $thirdShareAsJsObject)"
+            ),
             null
         )
     }
 
-    override fun triggerSignInNoCustom(socialShare: String, deviceShare: String) {
-        if (handler == null) Timber.i("!!! No handler attached for Web3Auth")
+    override fun triggerSignInNoCustom(
+        socialShare: String,
+        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        handler: Web3AuthSignInCallback
+    ) {
+        this.handler = handler
+        val deviceShareAsJsObject = gson.toJson(deviceShare)
         onboardingWebView.evaluateJavascript(
-            generateFacade(type = "signin", jsMethodCall = "triggerSignInNoCustom('$socialShare', $deviceShare)"),
+            generateFacade(
+                type = "signin",
+                jsMethodCall = "triggerSignInNoCustom('$socialShare', $deviceShareAsJsObject)"
+            ),
+            null
+        )
+    }
+
+    override fun triggerSignInNoTorus(
+        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        encryptedMnemonicPhrase: JsonObject,
+        handler: Web3AuthSignInCallback
+    ) {
+        this.handler = handler
+        val thirdShareAsJsObject = gson.toJson(thirdShare)
+        val deviceShareAsJsObject = gson.toJson(deviceShare)
+
+        val params = "$deviceShareAsJsObject, $thirdShareAsJsObject, $encryptedMnemonicPhrase"
+
+        onboardingWebView.evaluateJavascript(
+            generateFacade(
+                type = "signin",
+                jsMethodCall = "triggerSignInNoCustom($params)"
+            ),
             null
         )
     }
@@ -90,42 +138,51 @@ class Web3AuthApiClient(
     /**
      * All method names should be exact named as the methods in Web3Auth SDK
      */
-    private inner class AndroidCommunicationChannel(private val context: Context) {
+    private inner class AndroidCommunicationChannel {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
-            mapper.fromNetworkSignUp(msg)
-                ?.let { (handler as Web3AuthSignUpCallback).onSuccessSignUp(it) }
-                ?: kotlin.run {
-                    val error = Web3AuthSdkInternalError("triggerSignUp method result parsing failed: $msg")
-                    Timber.e(error)
-                    handler?.handleInternalError(error)
-                }
+            errorMapper.fromNetworkSignUp(msg)
+                ?.let { (handler as? Web3AuthSignUpCallback)?.onSuccessSignUp(it) }
+                ?: handleMapperError(msg)
             handler = null
         }
 
         @JavascriptInterface
         fun handleSignInNoCustomResponse(msg: String) {
-            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+            errorMapper.fromNetworkSignIn(msg)
+                ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
+                ?: handleMapperError(msg)
+            handler = null
         }
 
         @JavascriptInterface
         fun handleSignInNoDeviceResponse(msg: String) {
-            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+            errorMapper.fromNetworkSignIn(msg)
+                ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
+                ?: handleMapperError(msg)
+            handler = null
+        }
+
+        @JavascriptInterface
+        fun handleSignInNoTorusResponse(msg: String) {
+            errorMapper.fromNetworkSignIn(msg)
+                ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
+                ?: handleMapperError(msg)
+            handler = null
         }
 
         @JavascriptInterface
         fun handleError(error: String) {
-            try {
-                handler?.handleApiError(mapper.fromNetworkError(error))
-            } catch (mappingError: Error) {
-                val error = Web3AuthSdkInternalError(
-                    message = "Internal error on Web3Auth: $error, $mappingError",
-                    cause = mappingError
-                )
-                Timber.w(error)
-                handler?.handleInternalError(error)
-            }
+            errorMapper.fromNetworkError(error)
+                ?.let { handler?.handleApiError(it) }
+                ?: handleMapperError(error)
             handler = null
+        }
+
+        private fun handleMapperError(originalResponse: String) {
+            val error = Web3AuthSdkInternalError("Web3Auth SDK method result parsing failed: $originalResponse")
+            Timber.e(error)
+            handler?.handleInternalError(error)
         }
     }
 }

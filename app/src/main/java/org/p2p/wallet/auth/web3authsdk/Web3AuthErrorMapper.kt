@@ -1,19 +1,29 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import com.google.gson.Gson
+import org.p2p.wallet.auth.model.Web3AuthSignInResponse
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.fromJsonReified
 import timber.log.Timber
 
 class Web3AuthErrorMapper(private val gson: Gson) {
     fun fromNetworkSignUp(responseJson: String): Web3AuthSignUpResponse? {
-        return gson.fromJsonReified<Web3AuthSignUpResponse>(responseJson)
+        return kotlin.runCatching { gson.fromJsonReified<Web3AuthSignUpResponse>(responseJson) }
+            .onFailure { Timber.i(it) }
+            .getOrNull()
     }
 
-    fun fromNetworkError(errorResponseJson: String): Web3AuthErrorResponse {
-        return gson.fromJsonReified<Web3AuthErrorResponse>(errorResponseJson)
+    fun fromNetworkSignIn(responseJson: String): Web3AuthSignInResponse? {
+        return kotlin.runCatching { gson.fromJsonReified<Web3AuthSignInResponse>(responseJson) }
+            .onFailure { Timber.i(it) }
+            .getOrNull()
+    }
+
+    fun fromNetworkError(errorResponseJson: String): Web3AuthErrorResponse? {
+        return kotlin.runCatching { gson.fromJsonReified<Web3AuthErrorResponse>(errorResponseJson) }
+            .onFailure { Timber.i(it) }
+            .getOrNull()
             ?.let { createFilledResponseWithErrorType(it) }
-            ?: error("Response mapping failed from: $errorResponseJson")
     }
 
     private fun createFilledResponseWithErrorType(response: Web3AuthErrorResponse): Web3AuthErrorResponse {
