@@ -24,6 +24,7 @@ class KeyStoreWrapper(
         return Hex.encode(bytes)
     }
 
+    @Throws(IllegalArgumentException::class)
     fun decode(keyAlias: String, encoded: String): String {
         val bytes = encoderDecoder.decode(keyAlias, Hex.decode(encoded))
         return String(bytes)

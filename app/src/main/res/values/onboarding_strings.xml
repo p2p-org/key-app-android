@@ -43,8 +43,11 @@
     <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
     <string name="onboarding_sms_input_blocked_terms_title">Key App\'s</string>
     <string name="onboarding_sms_input_blocked_terms_button_title">Starting screen</string>
-    <string name="onboarding_sms_input_blocked_title">It\'s okay to be wrong</string>
-    <string name="onboarding_sms_input_blocked_timer_subtitle">You used 5 incorrect codes.\nFor your safety we\'ve frozen account for %1$s min</string>
+
+    <!-- General error timer -->
+    <string name="onboarding_general_error_timer_title">It\'s okay to be wrong</string>
+    <string name="onboarding_general_error_timer_enter_phone_subtitle">You used too many numbers. For your safety we\'ve frozen account for %1$s min</string>
+    <string name="onboarding_general_error_timer_sms_input_subtitle">You used 5 incorrect codes. For your safety we\'ve frozen account for %1$s min</string>
 
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>

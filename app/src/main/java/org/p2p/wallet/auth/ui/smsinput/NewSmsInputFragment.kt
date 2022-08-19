@@ -8,9 +8,12 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract.Presenter
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.NewSmsInputBlockedFragment
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.GeneralErrorScreenSource
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
+import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -33,8 +36,9 @@ class NewSmsInputFragment :
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
-                    // TODO PWN-4362 do other action (unknown at the moment)
-                    showSuccessSnackBar("help is clicked")
+                    // pass empty string as UserId to launch IntercomService as anonymous user
+                    IntercomService.signIn(userId = emptyString())
+                    IntercomService.showMessenger()
                     return@setOnMenuItemClickListener true
                 }
                 false
@@ -109,6 +113,6 @@ class NewSmsInputFragment :
     }
 
     override fun navigateToSmsInputBlocked() {
-        replaceFragment(NewSmsInputBlockedFragment.create())
+        replaceFragment(OnboardingGeneralErrorTimerFragment.create(GeneralErrorScreenSource.SMS_INPUT))
     }
 }
