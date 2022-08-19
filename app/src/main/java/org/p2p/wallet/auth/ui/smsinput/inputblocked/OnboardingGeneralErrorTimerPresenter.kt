@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.ui.smsinput.inputblocked
 
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.SourceScreen
 import org.p2p.wallet.common.mvp.BasePresenter
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -22,7 +21,7 @@ class OnboardingGeneralErrorTimerPresenter :
     BasePresenter<OnboardingGeneralErrorContract.View>(),
     OnboardingGeneralErrorContract.Presenter {
 
-    private var sourceScreen = SourceScreen.PHONE_NUMBER_ENTER
+    private var sourceScreen = GeneralErrorScreenSource.PHONE_NUMBER_ENTER
 
     override fun attach(view: OnboardingGeneralErrorContract.View) {
         super.attach(view)
@@ -36,10 +35,10 @@ class OnboardingGeneralErrorTimerPresenter :
     private fun onTimerValueChanged(timerValue: Long) {
         val formattedTimerValue = createFormattedTimerValue(secondsLeft = timerValue)
         val subTitleRes = when (sourceScreen) {
-            SourceScreen.PHONE_NUMBER_ENTER -> {
+            GeneralErrorScreenSource.PHONE_NUMBER_ENTER -> {
                 R.string.onboarding_general_error_timer_enter_phone_subtitle
             }
-            SourceScreen.SMS_INPUT -> {
+            GeneralErrorScreenSource.SMS_INPUT -> {
                 R.string.onboarding_general_error_timer_sms_input_subtitle
             }
         }
@@ -49,7 +48,7 @@ class OnboardingGeneralErrorTimerPresenter :
         )
     }
 
-    override fun setSourceScreen(sourceScreen: SourceScreen) {
+    override fun setSourceScreen(sourceScreen: GeneralErrorScreenSource) {
         this.sourceScreen = sourceScreen
     }
 

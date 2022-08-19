@@ -6,17 +6,12 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface PhoneNumberEnterContract {
     interface View : MvpView {
-        enum class ContinueButtonState {
-            ENABLED_TO_CONTINUE,
-            DISABLED_INPUT_IS_EMPTY
-        }
-
         fun showDefaultCountryCode(country: CountryCode?)
         fun update(countryCode: CountryCode?)
         fun onNewCountryDetected(countryCode: CountryCode)
         fun showCountryCodePicker(selectedCountryCode: CountryCode?)
         fun navigateToSmsInput()
-        fun setContinueButtonState(state: ContinueButtonState)
+        fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState)
         fun showSmsDeliveryFailedForNumber()
         fun navigateToAccountBlocked()
     }

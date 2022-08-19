@@ -7,7 +7,6 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.Presenter
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.SourceScreen
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralTimerErrorBinding
 import org.p2p.wallet.utils.args
@@ -23,7 +22,7 @@ class OnboardingGeneralErrorTimerFragment :
     ContractView {
 
     companion object {
-        fun create(sourceScreen: SourceScreen): OnboardingGeneralErrorTimerFragment =
+        fun create(sourceScreen: GeneralErrorScreenSource): OnboardingGeneralErrorTimerFragment =
             OnboardingGeneralErrorTimerFragment()
                 .withArgs(ARG_SOURCE_SCREEN to sourceScreen)
     }
@@ -32,7 +31,7 @@ class OnboardingGeneralErrorTimerFragment :
 
     override val presenter: Presenter by inject()
 
-    private val sourceScreen: SourceScreen by args(ARG_SOURCE_SCREEN)
+    private val sourceScreen: GeneralErrorScreenSource by args(ARG_SOURCE_SCREEN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

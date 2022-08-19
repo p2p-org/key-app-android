@@ -8,7 +8,7 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract.Presenter
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.SourceScreen
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.GeneralErrorScreenSource
 import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
@@ -113,6 +113,6 @@ class NewSmsInputFragment :
     }
 
     override fun navigateToSmsInputBlocked() {
-        replaceFragment(OnboardingGeneralErrorTimerFragment.create(SourceScreen.SMS_INPUT))
+        replaceFragment(OnboardingGeneralErrorTimerFragment.create(GeneralErrorScreenSource.SMS_INPUT))
     }
 }

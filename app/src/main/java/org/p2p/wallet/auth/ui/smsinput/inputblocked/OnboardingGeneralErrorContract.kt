@@ -5,9 +5,6 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
 interface OnboardingGeneralErrorContract {
-    enum class SourceScreen {
-        PHONE_NUMBER_ENTER, SMS_INPUT
-    }
 
     interface View : MvpView {
         fun updateSubtitle(@StringRes subTitleRes: Int, formattedTimeLeft: String)
@@ -15,6 +12,6 @@ interface OnboardingGeneralErrorContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setSourceScreen(sourceScreen: SourceScreen)
+        fun setSourceScreen(sourceScreen: GeneralErrorScreenSource)
     }
 }

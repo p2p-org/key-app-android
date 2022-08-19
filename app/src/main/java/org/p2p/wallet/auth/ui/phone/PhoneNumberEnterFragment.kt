@@ -6,10 +6,9 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract.View.ContinueButtonState
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract.SourceScreen
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.GeneralErrorScreenSource
 import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
@@ -68,24 +67,26 @@ class PhoneNumberEnterFragment :
     }
 
     override fun navigateToAccountBlocked() {
-        replaceFragment(OnboardingGeneralErrorTimerFragment.create(SourceScreen.PHONE_NUMBER_ENTER))
+        replaceFragment(OnboardingGeneralErrorTimerFragment.create(GeneralErrorScreenSource.PHONE_NUMBER_ENTER))
     }
 
-    override fun setContinueButtonState(state: ContinueButtonState) = with(binding.buttonConfirmPhone) {
-        when (state) {
-            ContinueButtonState.ENABLED_TO_CONTINUE -> {
-                setBackgroundColor(getColor(R.color.night))
-                setTextColor(getColor(R.color.lime))
-                setText(R.string.common_continue)
-                setIconResource(R.drawable.ic_arrow_forward)
-                isEnabled = true
-            }
-            ContinueButtonState.DISABLED_INPUT_IS_EMPTY -> {
-                setBackgroundColor(getColor(R.color.rain))
-                setTextColor(getColor(R.color.mountain))
-                setText(R.string.onboarding_fill_your_number)
-                icon = null
-                isEnabled = false
+    override fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState) {
+        with(binding.buttonConfirmPhone) {
+            when (state) {
+                PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE -> {
+                    setBackgroundColor(getColor(R.color.night))
+                    setTextColor(getColor(R.color.lime))
+                    setText(R.string.common_continue)
+                    setIconResource(R.drawable.ic_arrow_forward)
+                    isEnabled = true
+                }
+                PhoneNumberScreenContinueButtonState.DISABLED_INPUT_IS_EMPTY -> {
+                    setBackgroundColor(getColor(R.color.rain))
+                    setTextColor(getColor(R.color.mountain))
+                    setText(R.string.onboarding_fill_your_number)
+                    icon = null
+                    isEnabled = false
+                }
             }
         }
     }

@@ -4,7 +4,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract.View.ContinueButtonState
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlinx.coroutines.launch
@@ -45,9 +44,9 @@ class PhoneNumberEnterPresenter(
         selectedCountryCode?.let {
             val isValidNumber = countryCodeInteractor.isValidNumberForRegion(it.phoneCode, phoneNumber)
             val newButtonState = if (isValidNumber) {
-                ContinueButtonState.ENABLED_TO_CONTINUE
+                PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE
             } else {
-                ContinueButtonState.DISABLED_INPUT_IS_EMPTY
+                PhoneNumberScreenContinueButtonState.DISABLED_INPUT_IS_EMPTY
             }
             view?.setContinueButtonState(newButtonState)
         }
