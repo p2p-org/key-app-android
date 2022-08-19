@@ -20,14 +20,14 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/inputViewContainer"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:layout_marginTop="2dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:layout_marginTop="2dp">
+        android:paddingHorizontal="16dp">
 
         <LinearLayout
             android:id="@+id/countryPickerView"
@@ -35,8 +35,9 @@
             android:layout_height="56dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/messageTextView">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/textViewFlagEmoji"
@@ -54,11 +55,15 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/text_view_plus_sign"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="+"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1" />
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            app:layout_constraintBottom_toBottomOf="@id/countryPickerView"
+            app:layout_constraintStart_toEndOf="@id/countryPickerView"
+            app:layout_constraintTop_toTopOf="@id/countryPickerView" />
 
         <EditText
             android:id="@+id/editTextCountryCode"
@@ -71,11 +76,30 @@
             android:maxLength="4"
             android:minWidth="10dp"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            app:layout_constraintBottom_toBottomOf="@id/text_view_plus_sign"
+            app:layout_constraintStart_toEndOf="@id/text_view_plus_sign"
+            app:layout_constraintTop_toTopOf="@id/text_view_plus_sign"
             tools:text="00" />
+
+        <TextView
+            android:id="@+id/autoSizeHelperTextView"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:autoSizeMaxTextSize="28sp"
+            android:autoSizeMinTextSize="12sp"
+            android:autoSizeTextType="uniform"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/editTextPhoneNumber"
+            app:layout_constraintEnd_toEndOf="@id/editTextPhoneNumber"
+            app:layout_constraintStart_toStartOf="@id/editTextPhoneNumber"
+            app:layout_constraintTop_toTopOf="@id/editTextPhoneNumber" />
 
         <org.p2p.wallet.auth.widget.HintEditText
             android:id="@+id/editTextPhoneNumber"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginStart="4dp"
             android:background="@null"
@@ -85,8 +109,11 @@
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
             android:textCursorDrawable="@drawable/ic_text_cursor"
             android:textIsSelectable="true"
-            app:layout_constraintTop_toBottomOf="@id/textViewLabel" />
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="@id/editTextCountryCode"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/editTextCountryCode"
+            app:layout_constraintTop_toTopOf="@id/editTextCountryCode" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textViewHint"

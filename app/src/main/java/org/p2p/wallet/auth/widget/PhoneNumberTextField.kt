@@ -1,12 +1,14 @@
 package org.p2p.wallet.auth.widget
 
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.KeyEvent
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
+import android.widget.TextView
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
@@ -114,7 +116,18 @@ open class PhoneNumberTextField @JvmOverloads constructor(
             onCountryClickListener.invoke()
         }
 
+        val originalTextSize = editTextPhoneNumber.textSize
+        editTextPhoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, originalTextSize)
+
         phoneTextWatcher = PhoneNumberTextWatcher(binding.editTextPhoneNumber) {
+            // Use invisible auto size textView to handle editText text size
+            autoSizeHelperTextView.setText(it, TextView.BufferType.EDITABLE)
+            val textSize = if (it.isEmpty()) originalTextSize else autoSizeHelperTextView.textSize
+            editTextPhoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+            editTextCountryCode.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+            textViewPlusSign.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+
+            // Invoking callbacks
             val phone = "+${editTextCountryCode.text?.trim()}${it.trim()}".replace(" ", "")
             onPhoneChanged.invoke(phone)
         }

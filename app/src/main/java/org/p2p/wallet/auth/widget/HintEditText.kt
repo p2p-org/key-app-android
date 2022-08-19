@@ -7,6 +7,7 @@
  */
 package org.p2p.wallet.auth.widget
 
+import androidx.appcompat.widget.AppCompatEditText
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Canvas
@@ -15,7 +16,6 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.KeyEvent
-import androidx.appcompat.widget.AppCompatEditText
 
 class HintEditText : AppCompatEditText {
     private var hintText: String? = null
@@ -59,7 +59,7 @@ class HintEditText : AppCompatEditText {
     fun onTextChange() {
         textOffset = if (length() > 0) getPaint().measureText(text, 0, length()) else 0F
         spaceSize = getPaint().measureText(" ")
-        numberSize = getPaint().measureText("1")
+        numberSize = getPaint().measureText("8")
         invalidate()
     }
 

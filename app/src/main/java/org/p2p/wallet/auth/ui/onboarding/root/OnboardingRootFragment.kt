@@ -5,6 +5,7 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
+import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.utils.replaceFragment
 
@@ -19,6 +20,9 @@ class OnboardingRootFragment :
     override val presenter: OnboardingRootContract.Presenter by inject { parametersOf(this) }
 
     override fun navigateToOnboarding() {
+        replaceFragment(PhoneNumberEnterFragment.create())
+        return
+
         replaceFragment(
             target = NewOnboardingFragment.create(),
             containerId = R.id.onboardingRootContainer,
