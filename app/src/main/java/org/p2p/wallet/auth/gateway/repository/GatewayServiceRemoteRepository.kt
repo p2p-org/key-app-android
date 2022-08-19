@@ -12,7 +12,7 @@ import org.p2p.wallet.utils.Base58String
 
 class GatewayServiceRemoteRepository(
     private val api: GatewayServiceApi,
-    private val mapper: GatewayServiceMapper,
+    private val createWalletMapper: GatewayServiceCreateWalletMapper,
     private val dispatchers: CoroutineDispatchers
 ) : GatewayServiceRepository {
 
@@ -22,7 +22,7 @@ class GatewayServiceRemoteRepository(
         etheriumPublicKey: String,
         phoneNumber: String
     ): RegisterWalletResponse = withContext(dispatchers.io) {
-        val request = mapper.toRegisterWalletNetwork(
+        val request = createWalletMapper.toRegisterWalletNetwork(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             etheriumPublicKey = etheriumPublicKey,
@@ -30,7 +30,7 @@ class GatewayServiceRemoteRepository(
             channel = OtpMethod.SMS
         )
         val response = api.registerWallet(request)
-        mapper.fromNetwork(response)
+        createWalletMapper.fromNetwork(response)
     }
 
     override suspend fun confirmRegisterWallet(
@@ -42,7 +42,7 @@ class GatewayServiceRemoteRepository(
         phoneNumber: String,
         otpConfirmationCode: String
     ): GatewayServiceStandardResponse = withContext(dispatchers.io) {
-        val request = mapper.toConfirmRegisterWalletNetwork(
+        val request = createWalletMapper.toConfirmRegisterWalletNetwork(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             etheriumPublicKey = etheriumPublicKey,
@@ -52,6 +52,6 @@ class GatewayServiceRemoteRepository(
             otpConfirmationCode = otpConfirmationCode
         )
         val response = api.confirmRegisterWallet(request)
-        mapper.fromNetwork(response)
+        createWalletMapper.fromNetwork(response)
     }
 }
