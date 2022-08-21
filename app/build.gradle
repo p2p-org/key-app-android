@@ -251,6 +251,10 @@ dependencies {
 
     implementation "com.google.android.gms:play-services-base:18.1.0"
 
+    implementation 'com.airbnb.android:epoxy:5.0.0-beta05'
+
+    implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.2'
+
     // Debug drawer
     def debugDrawerVersion = '0.8.0'
     implementation "io.palaima.debugdrawer:debugdrawer-timber:$debugDrawerVersion"

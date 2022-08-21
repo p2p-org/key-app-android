@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.ui.main.empty
+package org.p2p.wallet.home.ui.main.empty.abramovdelegates
 
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri

@@ -1,12 +1,13 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.appbar.AppBarLayout
+import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.BuildConfig
@@ -23,13 +24,17 @@ import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
+import org.p2p.wallet.home.model.EmptyHomeItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.HeaderDelegate
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
-import org.p2p.wallet.home.ui.main.empty.BigBannerDelegate
-import org.p2p.wallet.home.ui.main.empty.GetTokenDelegate
+import org.p2p.wallet.home.ui.main.empty.abramovdelegates.BigBannerDelegate
+import org.p2p.wallet.home.ui.main.empty.abramovdelegates.GetTokenDelegate
+import org.p2p.wallet.home.ui.main.empty.adapterdelegates.emptyHomeBannerAdapterDelegate
+import org.p2p.wallet.home.ui.main.empty.adapterdelegates.emptyHomePopularTokenAdapterDelegate
+import org.p2p.wallet.home.ui.main.empty.epoxy.HomeEmptyController
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
@@ -76,6 +81,14 @@ class HomeFragment :
             )
         }
     }
+
+    private val emptyAdapter2: ListDelegationAdapter<List<EmptyHomeItem>> = ListDelegationAdapter(
+        emptyHomeBannerAdapterDelegate(::onBannerClicked),
+        emptyHomePopularTokenAdapterDelegate(),
+    )
+
+    // Epoxy way
+    private val emptyController = HomeEmptyController(onBannerClicked = ::onBannerClicked)
 
     private val browseAnalytics: BrowseAnalytics by inject()
 
@@ -187,8 +200,12 @@ class HomeFragment :
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showEmptyViewData(data: List<Any>) {
+    override fun showEmptyViewData(data: List<EmptyHomeItem>) {
         emptyAdapter.updateItems(data)
+
+
+//        emptyController.setData(data)
+//        emptyAdapter2.items = data
     }
 
     override fun showActions(items: List<ActionButtonsView.ActionButton>) {

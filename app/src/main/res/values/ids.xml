@@ -12,4 +12,6 @@
 
     <!--Main Empty State-->
     <item name="home_banner_top_up" type="id" />
+
+    <item name="epoxy_viewbinding" type="id" />
 </resources>

@@ -1,9 +1,5 @@
 package org.p2p.wallet.home.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
@@ -12,6 +8,7 @@ import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.home.model.Banner
+import org.p2p.wallet.home.model.EmptyHomeItem
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
@@ -30,6 +27,10 @@ import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
@@ -114,19 +115,26 @@ class HomePresenter(
                         isAccountEmpty -> {
                             val tokensForBuyOrReceive = userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
                             view?.showEmptyState(isEmpty = true)
-                            view?.showEmptyViewData(
-                                listOf(
-                                    HomeBannerItem(
-                                        id = R.id.home_banner_top_up,
-                                        titleTextId = R.string.main_banner_title,
-                                        subtitleTextId = R.string.main_banner_subtitle,
-                                        buttonTextId = R.string.main_banner_button,
-                                        drawableRes = R.drawable.ic_banner_image,
-                                        backgroundColorRes = R.color.bannerBackgroundColor
-                                    ),
-                                    resourcesProvider.getString(R.string.main_popular_tokens_header)
-                                ) + tokensForBuyOrReceive
+
+                            val items: List<EmptyHomeItem> = listOf(
+                                // order matters on both libs
+                                HomeBannerItem(
+                                    id = R.id.home_banner_top_up,
+                                    titleTextId = R.string.main_banner_title,
+                                    subtitleTextId = R.string.main_banner_subtitle,
+                                    buttonTextId = R.string.main_banner_button,
+                                    drawableRes = R.drawable.ic_banner_image,
+                                    backgroundColorRes = R.color.bannerBackgroundColor
+                                ),
+                                EmptyHomeItem.EmptyHomeTitleItem(
+                                    title = resourcesProvider.getString(R.string.main_popular_tokens_header)
+                                ),
+                                EmptyHomeItem.EmptyHomePopularTokensItem(
+                                    tokens = tokensForBuyOrReceive
+                                ),
+                                *(tokensForBuyOrReceive.map(EmptyHomeItem::EmptyHomePopularOneTokenItem).toTypedArray())
                             )
+                            view?.showEmptyViewData(items)
                         }
                         updatedTokens.isNotEmpty() -> {
                             view?.showEmptyState(isEmpty = false)
