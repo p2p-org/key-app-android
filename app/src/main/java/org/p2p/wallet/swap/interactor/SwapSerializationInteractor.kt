@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.interactor
 
-import org.p2p.wallet.transaction.TransactionManager
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.AppTransaction
 
 class SwapSerializationInteractor(

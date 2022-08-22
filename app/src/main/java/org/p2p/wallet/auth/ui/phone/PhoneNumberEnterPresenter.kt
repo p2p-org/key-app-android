@@ -1,11 +1,12 @@
 package org.p2p.wallet.auth.ui.phone
 
-import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
@@ -43,7 +44,12 @@ class PhoneNumberEnterPresenter(
     override fun onPhoneChanged(phoneNumber: String) {
         selectedCountryCode?.let {
             val isValidNumber = countryCodeInteractor.isValidNumberForRegion(it.phoneCode, phoneNumber)
-            view?.setContinueButtonEnabled(isValidNumber)
+            val newButtonState = if (isValidNumber) {
+                PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE
+            } else {
+                PhoneNumberScreenContinueButtonState.DISABLED_INPUT_IS_EMPTY
+            }
+            view?.setContinueButtonState(newButtonState)
         }
     }
 
@@ -60,16 +66,24 @@ class PhoneNumberEnterPresenter(
         launch {
             try {
                 selectedCountryCode?.let {
-                    createWalletInteractor.startCreatingWallet(it.phoneCode + phoneNumber)
+                    createWalletInteractor.startCreatingWallet(userPhoneNumber = it.phoneCode + phoneNumber)
                 }
                 view?.navigateToSmsInput()
+            } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
+                Timber.i(smsDeliverFailed)
+                view?.showSmsDeliveryFailedForNumber()
+            } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
+                Timber.i(tooManyPhoneEnters)
+                view?.navigateToAccountBlocked()
             } catch (gatewayError: GatewayServiceError) {
-                // TODO PWN-4362 - add error handling
-                Timber.i(gatewayError)
+                Timber.e(gatewayError)
+                view?.showErrorSnackBar(R.string.error_general_message)
             } catch (createWalletError: CreateWalletInteractor.CreateWalletFailure) {
-                Timber.i(createWalletError)
+                Timber.e(createWalletError)
+                view?.showErrorSnackBar(R.string.error_general_message)
             } catch (error: Throwable) {
-                Timber.i(error)
+                Timber.e(error)
+                view?.showErrorSnackBar(R.string.error_general_message)
             }
         }
     }

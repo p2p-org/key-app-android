@@ -2,7 +2,6 @@ package org.p2p.wallet.home.ui.main.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
@@ -11,7 +10,7 @@ import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.VisibilityState
 
 class TokenButtonViewHolder(
-    binding: ItemTokenGroupButtonBinding,
+    private val binding: ItemTokenGroupButtonBinding,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -23,27 +22,15 @@ class TokenButtonViewHolder(
         listener = listener
     )
 
-    private val arrowImageView = binding.arrowImageView
-    private val titleTextView = binding.titleTextView
+    fun onBind(item: HomeElementItem.Action) = with(binding) {
+        val title = requireContext().getString(R.string.main_hidden_tokens)
 
-    fun onBind(item: HomeElementItem.Action) {
-        val title = requireContext().getString(
-            if (item.isHiddenTokens) R.string.main_hidden_tokens
-            else R.string.main_active_tokens
-        )
+        textViewTitle.text = title
 
-        titleTextView.text = title
-        arrowImageView.isVisible = item.isHiddenTokens
+        val isHidden = item.state is VisibilityState.Hidden
+        val iconResId = if (isHidden) R.drawable.ic_token_expose else R.drawable.ic_token_hide
 
-        if (item.isHiddenTokens) {
-            val isHidden = item.state is VisibilityState.Hidden
-            val rotationValue = if (isHidden) 0f else 180f
-            arrowImageView
-                .animate()
-                .rotation(rotationValue)
-                .start()
-
-            itemView.setOnClickListener { listener.onToggleClicked() }
-        }
+        imageViewTokenState.setImageResource(iconResId)
+        itemView.setOnClickListener { listener.onToggleClicked() }
     }
 }

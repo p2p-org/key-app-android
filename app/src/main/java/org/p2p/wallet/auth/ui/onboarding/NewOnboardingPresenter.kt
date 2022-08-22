@@ -1,9 +1,9 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class NewOnboardingPresenter(
     private val userSignUpInteractor: UserSignUpInteractor

@@ -9,13 +9,13 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
-import org.p2p.wallet.auth.ui.restore.WalletFoundFragment
+import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
+import org.p2p.wallet.auth.ui.restore.found.WalletFoundFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -61,13 +61,12 @@ class NewOnboardingFragment :
                 presenter.onSignUpButtonClicked()
             }
             buttonCreateWalletOnboarding.setOnLongClickListener {
-                // TODO PWN-4362 remove after all onboarding testing completed!
+                // TODO PWN-4615 remove after all onboarding testing completed!
                 replaceFragment(DebugSettingsFragment.create())
                 true
             }
             buttonRestoreWalletOnboarding.setOnClickListener {
-                // TODO replace with real restore flow
-                replaceFragment(SecretKeyFragment.create())
+                replaceFragment(CommonRestoreFragment.create())
             }
         }
 

@@ -54,6 +54,7 @@ class EncoderDecoderMarshmallow(
         return cipher.doFinal(data)
     }
 
+    @Throws(IllegalArgumentException::class)
     @Synchronized
     override fun decode(keyAlias: String, encodedData: ByteArray): ByteArray {
         val key = keyStore.getKey(keyAlias, null)
