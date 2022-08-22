@@ -91,8 +91,11 @@ class TokenAdapter(
         val visibleTokens = groups[false].orEmpty()
 
         result += visibleTokens
-        result += Action(state)
-        result += hiddenTokens
+
+        if (hiddenTokens.isNotEmpty()) {
+            result += Action(state)
+            result += hiddenTokens
+        }
 
         return result
     }
