@@ -76,7 +76,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/button_restore_by_google"
+            android:id="@+id/buttonRestoreByGoogle"
             style="@style/UiKit.Components.Button.Large"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
