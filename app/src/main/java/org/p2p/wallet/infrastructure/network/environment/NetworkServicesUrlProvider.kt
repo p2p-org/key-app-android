@@ -8,6 +8,7 @@ import org.p2p.wallet.R
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
 private const val KEY_TORUS_BASE_URL = "KEY_TORUS_BASE_URL"
+private const val KEY_TORUS_BASE_VERIFIER = "KEY_TORUS_BASE_VERIFIER"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
@@ -45,11 +46,23 @@ class NetworkServicesUrlProvider(
             KEY_TORUS_BASE_URL,
             context.getString(R.string.torusBaseUrl)
         ).orEmpty()
-
-        return TorusEnvironment(url)
+        val verifier = sharedPreferences.getString(
+            KEY_TORUS_BASE_VERIFIER,
+            context.getString(R.string.torusFeatureVerifier)
+        ).orEmpty()
+        return TorusEnvironment(url, verifier)
     }
 
-    fun saveTorusEnvironment(newUrl: String) {
-        sharedPreferences.edit { putString(KEY_TORUS_BASE_URL, newUrl) }
+    fun saveTorusEnvironment(newUrl: String?, newVerifier: String?) {
+        newUrl?.let {
+            sharedPreferences.edit {
+                putString(KEY_TORUS_BASE_URL, it)
+            }
+        }
+        newVerifier?.let {
+            sharedPreferences.edit {
+                putString(KEY_TORUS_BASE_VERIFIER, it)
+            }
+        }
     }
 }

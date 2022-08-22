@@ -32,7 +32,7 @@ interface SendContract {
         fun showButtonEnabled(isEnabled: Boolean)
         fun showFullScreenLoading(isLoading: Boolean)
         fun showLoading(isLoading: Boolean)
-        fun showProgressDialog(data: ShowProgress?)
+        fun showProgressDialog(transactionId: String, data: ShowProgress?)
         fun setMaxButtonVisibility(isVisible: Boolean)
         fun setTotalAmountTextColor(@ColorRes textColor: Int)
 

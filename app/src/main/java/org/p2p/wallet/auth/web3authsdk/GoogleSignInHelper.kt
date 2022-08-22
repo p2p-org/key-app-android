@@ -12,12 +12,19 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.common.api.ApiException
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.updates.ConnectionStateProvider
 import timber.log.Timber
 import java.util.UUID
 
 private const val USER_CANCELED_DIALOG_CODE = 16
 
-class GoogleSignInHelper() {
+class GoogleSignInHelper(
+    private val connectionStateProvider: ConnectionStateProvider,
+    private val resourcesProvider: ResourcesProvider
+) {
+
+    var handler: GoogleSignInErrorHandler? = null
 
     private fun getSignInClient(context: Context): SignInClient {
         return Identity.getSignInClient(context)
@@ -52,10 +59,19 @@ class GoogleSignInHelper() {
             getSignInClient(context).getSignInCredentialFromIntent(result.data)
         } catch (ex: ApiException) {
             if (ex.statusCode != USER_CANCELED_DIALOG_CODE) {
-                Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
+                if (connectionStateProvider.hasConnection()) {
+                    handler?.onCommonError(ex.message ?: ex.toString())
+                } else {
+                    handler?.onConnectionError(resourcesProvider.getString(R.string.onboarding_offline_error))
+                }
             }
             Timber.w(ex, "Error on getting Credential from result")
             null
         }
+    }
+
+    interface GoogleSignInErrorHandler {
+        fun onConnectionError(error: String)
+        fun onCommonError(error: String)
     }
 }

@@ -9,6 +9,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
@@ -24,6 +25,7 @@ import org.p2p.wallet.history.HistoryStrategyModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule
@@ -79,6 +81,10 @@ class App : Application() {
             // FIXME
             androidLogger(level = Level.ERROR)
             androidContext(this@App)
+            // uncomment in PWN-4197
+            // workManagerFactory inside calls WorkManager.initialize that causes IllegalStateException
+            // reason: WorkManager.initialize should be called ONLY ONCE but called twice when user logouts
+            // workManagerFactory()
             modules(
                 listOf(
                     // core modules
@@ -105,7 +111,8 @@ class App : Application() {
                     SettingsModule.create(),
                     DebugSettingsModule.create(),
                     SwapModule.create(),
-                    HistoryStrategyModule.create()
+                    HistoryStrategyModule.create(),
+                    TransactionManagerModule.create()
                 )
             )
         }

@@ -1,13 +1,12 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.appbar.AppBarLayout
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -15,31 +14,40 @@ import org.p2p.wallet.auth.model.ReserveMode
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.widget.ActionButtonsView
-import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
+import org.p2p.wallet.databinding.LayoutActionButtonsBinding
+import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
+import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
+import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
+import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
+import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import java.math.BigDecimal
-import kotlin.math.absoluteValue
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
+
+private const val KEY_RESULT_ACTION = "KEY_RESULT_ACTION"
+private const val KEY_REQUEST_ACTION = "KEY_REQUEST_ACTION"
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
@@ -53,13 +61,17 @@ class HomeFragment :
 
     private lateinit var binding: FragmentHomeBinding
 
-    private val mainAdapter: TokenAdapter by unsafeLazy {
+    private val contentAdapter: TokenAdapter by unsafeLazy {
         TokenAdapter(this)
+    }
+
+    private val emptyAdapter: EmptyViewAdapter by unsafeLazy {
+        EmptyViewAdapter(this)
     }
 
     private val browseAnalytics: BrowseAnalytics by inject()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -76,67 +88,135 @@ class HomeFragment :
         )
 
         presenter.subscribeToUserTokensFlow()
+        val centerActionSetter = parentFragment as? CenterActionButtonClickSetter
+
+        centerActionSetter?.setOnCenterActionButtonListener {
+            HomeActionsBottomSheet.show(
+                fm = childFragmentManager,
+                requestKey = KEY_REQUEST_ACTION,
+                resultKey = KEY_RESULT_ACTION
+            )
+        }
+
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_ACTION,
+            viewLifecycleOwner,
+            ::onFragmentResult
+        )
+    }
+
+    override fun showAddressCopied(address: String) {
+        requireContext().copyToClipBoard(address)
+        binding.root.showSnackbarShort(
+            snackbarText = getString(R.string.home_address_snackbar_text),
+            snackbarActionButtonText = getString(R.string.common_ok)
+        ) { it.dismiss() }
     }
 
     private fun FragmentHomeBinding.setupView() {
-        val commonTitle = getString(R.string.app_name)
-        val beta = getString(R.string.common_beta)
-        val color = getColor(R.color.textIconSecondary)
-        titleTextView.text = SpanUtils.highlightText(
-            commonText = "$commonTitle $beta",
-            highlightedText = beta,
-            color = color
-        )
+        layoutToolbar.setupToolbar()
 
-        mainRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        mainRecyclerView.adapter = mainAdapter
+        homeRecyclerView.adapter = contentAdapter
 
-        actionButtonsView.setupActionButtons()
+        viewActionButtons.setupActionButtons()
 
         swipeRefreshLayout.setOnRefreshListener {
             presenter.refreshTokens()
         }
 
-        appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
-                (actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
-            }
-        )
+        // hidden. temporary. PWN-4381
+        viewBuyTokenBanner.root.isVisible = false
 
         if (BuildConfig.DEBUG) {
-            with(debugButton) {
-                isVisible = true
-                setOnClickListener {
+            with(layoutToolbar) {
+                viewDebugShadow.isVisible = true
+                imageViewDebug.isVisible = true
+                imageViewDebug.setOnClickListener {
                     replaceFragment(DebugSettingsFragment.create())
                 }
             }
         }
     }
 
-    private fun ActionButtonsView.setupActionButtons() {
-        onBuyItemClickListener = {
-            presenter.onBuyClicked()
+    private fun LayoutHomeToolbarBinding.setupToolbar() {
+        textViewAddress.setOnClickListener { presenter.onAddressClicked() }
+        imageViewProfile.setOnClickListener { presenter.onProfileClick() }
+        imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
+    }
+
+    private fun LayoutActionButtonsBinding.setupActionButtons() {
+        viewActionBuy.apply {
+            textViewButtonTitle.setText(R.string.home_buy)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_plus)
+            imageButtonButtonIcon.setOnClickListener {
+                presenter.onBuyClicked()
+            }
         }
-        onReceiveItemClickListener = {
-            replaceFragment(ReceiveSolanaFragment.create(token = null))
+        viewActionReceive.apply {
+            textViewButtonTitle.setText(R.string.home_receive)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_receive_simple)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
         }
-        onSendClickListener = {
-            replaceFragment(SendFragment.create())
+        viewActionSend.apply {
+            textViewButtonTitle.setText(R.string.home_send)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_send_medium)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(SendFragment.create())
+            }
         }
-        onSwapItemClickListener = {
-            replaceFragment(OrcaSwapFragment.create())
+        viewActionTrade.apply {
+            textViewButtonTitle.setText(R.string.home_trade)
+            imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
+            imageButtonButtonIcon.setOnClickListener {
+                replaceFragment(OrcaSwapFragment.create())
+            }
         }
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
-        result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-            replaceFragment(BuySolanaFragment.create(it))
+        when (requestKey) {
+            KEY_REQUEST_TOKEN -> {
+                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
+                    showBuyTokenScreen(it)
+                }
+            }
+            KEY_REQUEST_ACTION -> {
+                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.let {
+                    openScreenByHomeAction(it)
+                }
+            }
         }
     }
 
+    private fun openScreenByHomeAction(action: HomeAction) {
+        when (action) {
+            HomeAction.BUY -> {
+                presenter.onBuyClicked()
+            }
+            HomeAction.RECEIVE -> {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
+            HomeAction.TRADE -> {
+                replaceFragment(OrcaSwapFragment.create())
+            }
+            HomeAction.SEND -> {
+                replaceFragment(SendFragment.create())
+            }
+        }
+    }
+
+    private fun showBuyTokenScreen(token: Token) {
+        replaceFragment(BuySolanaFragment.create(token))
+    }
+
+    override fun showUserAddress(ellipsizedAddress: String) {
+        binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
+    }
+
     override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
-        mainAdapter.setItems(tokens, isZerosHidden, state)
+        contentAdapter.setItems(tokens, isZerosHidden, state)
     }
 
     override fun showTokensForBuy(tokens: List<Token>) {
@@ -149,13 +229,13 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal, username: Username?) {
-        binding.balanceTextView.text = getString(R.string.main_usd_format, balance.formatUsd())
+        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatUsd())
         if (username == null) {
-            binding.balanceLabelTextView.setText(R.string.main_balance)
+            binding.viewBalance.textViewTitle.setText(R.string.home_balance_title)
         } else {
             val commonText = username.getFullUsername(requireContext())
             val color = getColor(R.color.textIconPrimary)
-            binding.balanceLabelTextView.text = SpanUtils.highlightText(commonText, username.username, color)
+            binding.viewBalance.textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
         }
     }
 
@@ -163,32 +243,37 @@ class HomeFragment :
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showActions(items: List<ActionButtonsView.ActionButton>) {
-        binding.actionButtonsView.setItems(items)
+    override fun showEmptyViewData(data: List<Any>) {
+        emptyAdapter.setItems(data)
     }
 
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            emptyStateLayout.isVisible = isEmpty
-            swipeRefreshLayout.isVisible = !isEmpty
-            balanceTextView.isVisible = !isEmpty
-            balanceLabelTextView.isVisible = !isEmpty
+            viewActionButtons.root.isVisible = !isEmpty
+            viewBalance.root.isVisible = !isEmpty
+            val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
+            if (homeRecyclerView.adapter != updatedAdapter) homeRecyclerView.adapter = updatedAdapter
         }
     }
 
-    override fun onDestroy() {
-        /* We are clearing cache only if activity is destroyed */
-        presenter.clearTokensCache()
-        super.onDestroy()
+    override fun navigateToProfile() {
+        replaceFragment(SettingsFragment.create())
+    }
+
+    override fun navigateToReserveUsername() {
+        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP, isSkipStepEnabled = false))
     }
 
     override fun onBannerClicked(bannerId: Int) {
         when (bannerId) {
-            R.string.main_username_banner_option -> {
+            R.id.home_banner_top_up -> {
+                presenter.onBuyClicked()
+            }
+            R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
                 replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP, isSkipStepEnabled = false))
             }
-            R.string.main_feedback_banner_option -> {
+            R.string.home_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
                 IntercomService.showMessenger()
             }
@@ -203,11 +288,25 @@ class HomeFragment :
         replaceFragment(TokenHistoryFragment.create(token))
     }
 
+    override fun onPopularTokenClicked(token: Token) {
+        if (token.isRenBTC) {
+            if (token is Token.Active) {
+                replaceFragment(ReceiveTokenFragment.create(token))
+            } else {
+                openScreenByHomeAction(HomeAction.RECEIVE)
+            }
+        } else {
+            showBuyTokenScreen(token)
+        }
+    }
+
     override fun onHideClicked(token: Token.Active) {
         presenter.toggleTokenVisibility(token)
     }
 
-    override fun onSendClicked(token: Token.Active) {
-        replaceFragment(SendFragment.create(token))
+    override fun onDestroy() {
+        /* We are clearing cache only if activity is destroyed */
+        presenter.clearTokensCache()
+        super.onDestroy()
     }
 }

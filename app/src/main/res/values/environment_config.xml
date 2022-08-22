@@ -13,6 +13,10 @@
     <string name="feeRelayerTestBaseUrl">https://test-solana-fee-relayer.wallet.p2p.org/</string>
 
     <string name="torusBaseUrl">http://localhost</string>
+    <string name="torusTestUrl">http://beardict.net</string>
+
+    <string name="torusDebugVerifier">testTkeyD1</string>
+    <string name="torusFeatureVerifier">testTketF2</string>
 
     <string name="node_solana">https://solana-api.projectserum.com/</string>
     <string name="node_mainnet">https://api.mainnet-beta.solana.com/</string>

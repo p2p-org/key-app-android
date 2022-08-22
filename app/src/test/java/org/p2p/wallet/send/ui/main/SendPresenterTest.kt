@@ -29,7 +29,6 @@ import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.transaction.TransactionManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
@@ -39,6 +38,7 @@ import java.math.BigInteger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 
 @ExperimentalCoroutinesApi
 @ExtendWith(SpyOnInjectMockKsExtension::class, CoroutineExtension::class)

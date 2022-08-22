@@ -10,8 +10,10 @@ interface PhoneNumberEnterContract {
         fun update(countryCode: CountryCode?)
         fun onNewCountryDetected(countryCode: CountryCode)
         fun showCountryCodePicker(selectedCountryCode: CountryCode?)
-        fun setContinueButtonEnabled(isEnabled: Boolean)
         fun navigateToSmsInput()
+        fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState)
+        fun showSmsDeliveryFailedForNumber()
+        fun navigateToAccountBlocked()
     }
 
     interface Presenter : MvpPresenter<View> {

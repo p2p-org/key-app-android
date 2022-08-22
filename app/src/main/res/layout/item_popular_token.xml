@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="#F8F8FA"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp">
+
+        <org.p2p.uikit.atoms.UiKitRoundedImageView
+            android:id="@+id/imageViewToken"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginVertical="16dp"
+            app:cornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/textViewName"
+            style="@style/UiKit.TextAppearance.SemiBold.Text2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_night"
+            app:layout_constraintBottom_toTopOf="@id/textViewTotal"
+            app:layout_constraintEnd_toStartOf="@id/textViewValue"
+            app:layout_constraintStart_toEndOf="@id/imageViewToken"
+            app:layout_constraintTop_toTopOf="@id/imageViewToken"
+            tools:text="Solana" />
+
+        <TextView
+            android:id="@+id/textViewTotal"
+            style="@style/UiKit.TextAppearance.Regular.Text2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/text_night"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
+            app:layout_constraintEnd_toStartOf="@id/textViewValue"
+            app:layout_constraintStart_toEndOf="@id/imageViewToken"
+            app:layout_constraintTop_toBottomOf="@id/textViewName"
+            app:layout_constraintVertical_bias="1"
+            tools:text="23.8112 SOL" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/textViewValue"
+            style="@style/UiKit.Components.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:backgroundTint="@color/bg_rain"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
+            android:textColor="@color/text_night"
+            app:layout_constraintBottom_toBottomOf="@id/textViewTotal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textViewName"
+            tools:text="Buy it" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

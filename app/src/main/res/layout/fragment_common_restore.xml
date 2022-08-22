@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lime">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_question"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/night"
+        app:title="@string/restore_title"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/night" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:src="@drawable/image_lock"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="26dp"
+        android:gravity="center"
+        android:text="@string/restore_choose_method"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView" />
+
+    <TextView
+        android:id="@+id/textViewSubtitle"
+        style="@style/UiKit.TextAppearance.Regular.Title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textColor="@color/night"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/containerBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        tools:text="@string/restore_no_wallet_subtitle" />
+
+    <LinearLayout
+        android:id="@+id/containerBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_night_top_rounded"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonRestoreByGoogle"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/snow"
+            android:text="@string/restore_continue_with_google"
+            android:textColor="@color/night"
+            app:icon="@drawable/ic_google_logo"
+            app:iconGravity="textStart"
+            app:iconSize="24dp"
+            app:iconTint="@null" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonPhone"
+            style="@style/UiKit.Components.Button.Large.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="8dp"
+            android:text="@string/restore_phone_number"
+            android:textColor="@color/snow"
+            app:strokeColor="@color/snow" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonSeed"
+            style="@style/UiKit.Components.Button.Large.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:text="@string/restore_seed_phrase"
+            android:textColor="@color/snow"
+            app:strokeColor="@color/snow" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

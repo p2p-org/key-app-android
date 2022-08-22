@@ -1,5 +1,6 @@
 package org.p2p.wallet.common.mvp
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 interface MvpView {
@@ -17,5 +18,12 @@ interface MvpView {
         @StringRes messageResId: Int,
         @StringRes actionResId: Int? = null,
         block: (() -> Unit)? = null
+    )
+
+    fun showInfoSnackBar(
+        message: String,
+        @DrawableRes iconResId: Int? = null,
+        @StringRes actionResId: Int? = null,
+        actionBlock: (() -> Unit)? = null
     )
 }
