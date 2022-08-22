@@ -69,10 +69,10 @@ class NewSmsInputPresenter(
                     .launchIn(this)
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.i(serverError)
-                view?.navigateToCriticalErrorScreen()
+                view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error)
-                view?.showErrorMessage(error)
+                view?.showErrorSnackBar(R.string.error_general_message)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }
@@ -93,7 +93,7 @@ class NewSmsInputPresenter(
                 createWalletInteractor.startCreatingWallet(repository.userPhoneNumber.orEmpty())
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.i(serverError)
-                // navigate to error screen
+                view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error)
                 view?.showErrorMessage(R.string.error_general_message)

@@ -18,7 +18,7 @@ private const val TIMER_VALUE_FORMAT = "mm:ss"
 private const val START_TIMER_VALUE_MIN = 5
 
 class OnboardingGeneralErrorTimerPresenter(
-    private val errorType: GeneralErrorTimerScreenErrorType
+    private val error: GeneralErrorTimerScreenError
 ) : BasePresenter<OnboardingGeneralErrorTimerContract.View>(),
     OnboardingGeneralErrorTimerContract.Presenter {
 
@@ -32,11 +32,11 @@ class OnboardingGeneralErrorTimerPresenter(
     }
 
     private fun onTimerValueChanged(timerValue: Long) {
-        val subTitleRes = when (errorType) {
-            GeneralErrorTimerScreenErrorType.BLOCK_PHONE_NUMBER_ENTER -> {
+        val subTitleRes = when (error) {
+            GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER -> {
                 R.string.onboarding_general_error_timer_enter_phone_subtitle
             }
-            GeneralErrorTimerScreenErrorType.BLOCK_SMS_INPUT -> {
+            GeneralErrorTimerScreenError.BLOCK_SMS_INPUT -> {
                 R.string.onboarding_general_error_timer_sms_input_subtitle
             }
         }

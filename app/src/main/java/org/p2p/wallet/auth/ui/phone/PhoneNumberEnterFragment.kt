@@ -6,11 +6,11 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenErrorType
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenErrorType
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
@@ -71,13 +71,13 @@ class PhoneNumberEnterFragment :
 
     override fun navigateToAccountBlocked() {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenErrorType.BLOCK_PHONE_NUMBER_ENTER)
+            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER)
         )
     }
 
-    override fun navigateToCriticalErrorScreen() {
+    override fun navigateToCriticalErrorScreen(errorCode: Int) {
         popAndReplaceFragment(
-            OnboardingGeneralErrorFragment.create(GeneralErrorScreenErrorType.CRITICAL_ERROR), inclusive = true
+            OnboardingGeneralErrorFragment.create(GeneralErrorScreenError.CriticalError(errorCode)), inclusive = true
         )
     }
 

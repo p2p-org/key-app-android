@@ -23,16 +23,16 @@ class OnboardingGeneralErrorTimerFragment :
     ContractView {
 
     companion object {
-        fun create(sourceScreen: GeneralErrorTimerScreenErrorType): OnboardingGeneralErrorTimerFragment =
+        fun create(sourceScreen: GeneralErrorTimerScreenError): OnboardingGeneralErrorTimerFragment =
             OnboardingGeneralErrorTimerFragment()
                 .withArgs(ARG_TIMER_ERROR_TYPE to sourceScreen)
     }
 
     private val binding: FragmentOnboardingGeneralErrorTimerBinding by viewBinding()
 
-    private val errorType: GeneralErrorTimerScreenErrorType by args(ARG_TIMER_ERROR_TYPE)
+    private val error: GeneralErrorTimerScreenError by args(ARG_TIMER_ERROR_TYPE)
 
-    override val presenter: Presenter by inject { parametersOf(this, errorType) }
+    override val presenter: Presenter by inject { parametersOf(this, error) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

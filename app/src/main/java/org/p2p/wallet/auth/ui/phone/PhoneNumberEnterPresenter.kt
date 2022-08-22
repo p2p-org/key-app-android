@@ -77,7 +77,7 @@ class PhoneNumberEnterPresenter(
                 view?.navigateToAccountBlocked()
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.i(serverError)
-                view?.navigateToCriticalErrorScreen()
+                view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error)
                 view?.showErrorSnackBar(R.string.error_general_message)

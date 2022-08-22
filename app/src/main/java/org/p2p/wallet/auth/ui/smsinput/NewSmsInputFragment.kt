@@ -6,12 +6,12 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenErrorType
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenErrorType
-import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
@@ -114,13 +114,14 @@ class NewSmsInputFragment :
 
     override fun navigateToSmsInputBlocked() {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenErrorType.BLOCK_SMS_INPUT)
+            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenError.BLOCK_SMS_INPUT)
         )
     }
 
-    override fun navigateToCriticalErrorScreen() {
+    override fun navigateToCriticalErrorScreen(errorCode: Int) {
         popAndReplaceFragment(
-            OnboardingGeneralErrorFragment.create(GeneralErrorScreenErrorType.CRITICAL_ERROR), inclusive = true
+            OnboardingGeneralErrorFragment.create(GeneralErrorScreenError.CriticalError(errorCode)),
+            inclusive = true
         )
     }
 

@@ -1,25 +1,32 @@
 package org.p2p.wallet.auth.ui.generalerror
 
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class OnboardingGeneralErrorPresenter(
-    private val errorType: GeneralErrorScreenErrorType
+    private val error: GeneralErrorScreenError,
+    private val resourcesProvider: ResourcesProvider
 ) : BasePresenter<OnboardingGeneralErrorContract.View>(),
     OnboardingGeneralErrorContract.Presenter {
 
     override fun attach(view: OnboardingGeneralErrorContract.View) {
         super.attach(view)
-        val titleRes: Int
-        val subTitleRes: Int
+        val title: String
+        val subTitle: String
 
-        when (errorType) {
-            GeneralErrorScreenErrorType.CRITICAL_ERROR -> {
-                titleRes = R.string.onboarding_general_error_critical_error_title
-                subTitleRes = R.string.onboarding_general_error_critical_error_sub_title
+        when (error) {
+            is GeneralErrorScreenError.CriticalError -> {
+                title = resourcesProvider.getString(
+                    R.string.onboarding_general_error_critical_error_title
+                )
+                subTitle = resourcesProvider.getString(
+                    R.string.onboarding_general_error_critical_error_sub_title,
+                    error.errorCode
+                )
             }
         }
-        view.updateTitle(titleRes = titleRes)
-        view.updateSubtitle(subTitleRes = subTitleRes)
+        view.updateTitle(title)
+        view.updateSubtitle(subTitle)
     }
 }

@@ -30,9 +30,9 @@ import org.mockito.Mockito
 import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenErrorType
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenErrorType
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
@@ -156,8 +156,8 @@ class CheckModulesTest : KoinTest {
                 withInstance(mockk<TransactionWorker>())
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
-                withParameter<OnboardingGeneralErrorPresenter> { GeneralErrorScreenErrorType.CRITICAL_ERROR }
-                withParameter<OnboardingGeneralErrorTimerPresenter> { GeneralErrorTimerScreenErrorType.BLOCK_PHONE_NUMBER_ENTER }
+                withParameter<OnboardingGeneralErrorPresenter> { GeneralErrorScreenError.CriticalError(0) }
+                withParameter<OnboardingGeneralErrorTimerPresenter> { GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER }
             }
         )
     }

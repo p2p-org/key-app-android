@@ -26,7 +26,9 @@ class NewOnboardingPresenter(
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
                     Timber.e(result.cause, result.message)
-                    result.message?.let { view?.showErrorSnackBar(R.string.error_general_message) }
+                    result.message?.let {
+                        view?.showErrorSnackBar(R.string.error_general_message)
+                    }
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onSameTokenFoundError()

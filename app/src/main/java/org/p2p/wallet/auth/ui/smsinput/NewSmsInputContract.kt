@@ -16,7 +16,7 @@ interface NewSmsInputContract {
 
         fun navigateToPinCreate()
         fun navigateToSmsInputBlocked()
-        fun navigateToCriticalErrorScreen()
+        fun navigateToCriticalErrorScreen(errorCode: Int)
     }
 
     interface Presenter : MvpPresenter<View> {
