@@ -44,6 +44,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     protected val resourcesProvider: ResourcesProvider by inject()
 
     protected open val statusBarColor: Int = R.color.backgroundPrimary
+    protected open val navBarColor: Int = R.color.backgroundPrimary
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
@@ -61,7 +62,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         if (analyticsName.isNotEmpty()) {
             analyticsInteractor.logScreenOpenEvent(analyticsName)
         }
-        setStatusBarColor(statusBarColor)
+        setSystemBarsColors(statusBarColor, navBarColor)
     }
 
     override fun overrideEnterAnimation(@AnimRes animation: Int) {
@@ -76,11 +77,12 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
     }
 
-    private fun setStatusBarColor(@ColorRes colorResId: Int) {
+    private fun setSystemBarsColors(@ColorRes colorResId: Int, @ColorRes navBarColor: Int) {
         val window = requireActivity().window ?: return
         with(window) {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             statusBarColor = resourcesProvider.getColor(colorResId)
+            navigationBarColor = resourcesProvider.getColor(navBarColor)
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
