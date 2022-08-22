@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.ui.restore
+package org.p2p.wallet.auth.ui.restore.found
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView

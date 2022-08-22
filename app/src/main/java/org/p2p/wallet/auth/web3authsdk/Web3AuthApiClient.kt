@@ -68,6 +68,7 @@ class Web3AuthApiClient(
         val host = torusNetwork.baseUrl
         val useNewUth = true
         val torusLoginType = "google"
+        val torusNetworkEnv = "testnet"
         val torusEndpoint = "$host:5051"
         val torusVerifier = torusNetwork.verifier
         val metadataEndpoint = "$host:2222"
@@ -76,6 +77,7 @@ class Web3AuthApiClient(
             append("new p2pWeb3Auth.AndroidFacade({")
             append("type: '$type', ")
             append("useNewEth: $useNewUth, ")
+            append("torusNetwork: '$torusNetworkEnv', ")
             append("torusLoginType: '$torusLoginType', ")
             append("torusEndpoint: '$torusEndpoint', ")
             append("torusVerifier: '$torusVerifier', ")
