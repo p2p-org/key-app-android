@@ -18,6 +18,7 @@ import timber.log.Timber
 import java.util.UUID
 
 private const val USER_CANCELED_DIALOG_CODE = 16
+private const val INTERNAL_ERROR_CODE = 8
 
 class GoogleSignInHelper(
     private val connectionStateProvider: ConnectionStateProvider,
@@ -58,7 +59,7 @@ class GoogleSignInHelper(
         return try {
             getSignInClient(context).getSignInCredentialFromIntent(result.data)
         } catch (ex: ApiException) {
-            if (ex.statusCode != USER_CANCELED_DIALOG_CODE) {
+            if (isValidError(ex)) {
                 if (connectionStateProvider.hasConnection()) {
                     handler?.onCommonError(ex.message ?: ex.toString())
                 } else {
@@ -68,6 +69,11 @@ class GoogleSignInHelper(
             Timber.w(ex, "Error on getting Credential from result")
             null
         }
+    }
+
+    private fun isValidError(exception: ApiException): Boolean {
+        return exception.statusCode != USER_CANCELED_DIALOG_CODE &&
+            exception.statusCode != INTERNAL_ERROR_CODE
     }
 
     interface GoogleSignInErrorHandler {
