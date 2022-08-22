@@ -5,7 +5,7 @@ import org.near.borshj.Borsh
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.encodeToBase64String
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
-import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethods
+import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RegisterWalletRequest
@@ -93,7 +93,7 @@ class GatewayServiceCreateWalletMapper(
             timestamp = createTimestampField(),
             requestSignature = signatureField.base58Value
         )
-            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethods.REGISTER_WALLET) }
+            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.REGISTER_WALLET) }
     }
 
     fun toConfirmRegisterWalletNetwork(
@@ -130,7 +130,7 @@ class GatewayServiceCreateWalletMapper(
             otpConfirmationCode = otpConfirmationCode,
             requestSignature = signatureField.base58Value
         )
-            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethods.CONFIRM_REGISTER_WALLET) }
+            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.CONFIRM_REGISTER_WALLET) }
     }
 
     private fun createTimestampField(): String {

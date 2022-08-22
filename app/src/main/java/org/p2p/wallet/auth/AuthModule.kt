@@ -113,7 +113,8 @@ object AuthModule {
             Web3AuthApiClient(
                 context = androidContext(),
                 torusNetwork = get<NetworkServicesUrlProvider>().loadTorusEnvironment(),
-                mapper = get()
+                errorMapper = get(),
+                gson = get()
             )
         }
         singleOf(::SignUpFlowDataLocalRepository)

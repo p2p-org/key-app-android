@@ -1,6 +1,8 @@
 package org.p2p.wallet.auth.gateway.repository
 
 import com.google.gson.JsonObject
+import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
+import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
@@ -23,4 +25,18 @@ interface GatewayServiceRepository {
         phoneNumber: String,
         otpConfirmationCode: String
     ): GatewayServiceStandardResponse
+
+    suspend fun restoreWallet(
+        solanaPublicKey: Base58String,
+        solanaPrivateKey: Base58String,
+        phoneNumber: String,
+        channel: OtpMethod
+    ): GatewayServiceStandardResponse
+
+    suspend fun confirmRestoreWallet(
+        solanaPublicKey: Base58String,
+        solanaPrivateKey: Base58String,
+        phoneNumber: String,
+        otpConfirmationCode: String
+    ): ConfirmRestoreWalletResponse
 }

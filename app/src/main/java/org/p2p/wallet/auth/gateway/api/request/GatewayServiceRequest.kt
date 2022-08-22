@@ -14,5 +14,5 @@ data class GatewayServiceRequest<ParamsBody>(
     val requestId: String = UUID.randomUUID().toString(),
 
     @SerializedName("methodName")
-    val methodName: GatewayServiceJsonRpcMethods
+    val methodName: GatewayServiceJsonRpcMethod
 )

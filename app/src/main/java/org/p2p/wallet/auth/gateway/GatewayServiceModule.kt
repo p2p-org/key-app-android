@@ -9,6 +9,7 @@ import org.p2p.wallet.auth.gateway.repository.GatewayServiceCreateWalletMapper
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRemoteRepository
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRestoreWalletMapper
+import org.p2p.wallet.auth.gateway.repository.GatewayServiceSignatureFieldGenerator
 import org.p2p.wallet.common.di.InjectionModule
 import retrofit2.Retrofit
 import retrofit2.create
@@ -21,6 +22,7 @@ object GatewayServiceModule : InjectionModule {
         single<GatewayServiceApi> { get<Retrofit>(named(FACADE_SERVICE_RETROFIT_QUALIFIER)).create() }
         singleOf(::GatewayServiceCreateWalletMapper)
         singleOf(::GatewayServiceRestoreWalletMapper)
+        singleOf(::GatewayServiceSignatureFieldGenerator)
         singleOf(::GatewayServiceRemoteRepository) bind GatewayServiceRepository::class
     }
 }

@@ -1,6 +1,9 @@
 package org.p2p.wallet.auth.gateway.repository
 
 import org.near.borshj.Borsh
+import org.p2p.wallet.auth.gateway.api.request.ConfirmRestoreWalletRequest
+import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
+import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RestoreWalletRequest
 import org.p2p.wallet.utils.Base58String
@@ -19,12 +22,18 @@ class GatewayServiceRestoreWalletMapper(
         val channelType: String
     ) : Borsh
 
+    private class ConfirmRestoreWalletSignatureStruct(
+        val restoreId: String,
+        val phone: String,
+        val otpConfirmationCode: String
+    ) : Borsh
+
     fun toRestoreWalletNetwork(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         phoneNumber: String,
         channel: OtpMethod
-    ): RestoreWalletRequest {
+    ): GatewayServiceRequest<RestoreWalletRequest> {
         val signatureField = signatureFieldGenerator.generateSignatureField(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
@@ -37,13 +46,40 @@ class GatewayServiceRestoreWalletMapper(
         )
 
         return RestoreWalletRequest(
-            clientSolanaPublicKey = userPublicKey.base58Value,
+            temporarySolanaPublicKey = userPublicKey.base58Value,
             userPhone = phoneNumber,
             appHash = Constants.APP_HASH,
             channelMethod = channel,
             requestSignature = signatureField.base58Value,
             timestamp = createTimestampField()
         )
+            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.RESTORE_WALLET) }
+    }
+
+    fun toConfirmRestoreWalletNetwork(
+        userPublicKey: Base58String,
+        userPrivateKey: Base58String,
+        phoneNumber: String,
+        otpConfirmationCode: String
+    ): GatewayServiceRequest<ConfirmRestoreWalletRequest> {
+        val signatureField = signatureFieldGenerator.generateSignatureField(
+            userPublicKey = userPublicKey,
+            userPrivateKey = userPrivateKey,
+            structToSerialize = ConfirmRestoreWalletSignatureStruct(
+                restoreId = userPublicKey.base58Value,
+                phone = phoneNumber,
+                otpConfirmationCode = otpConfirmationCode
+            )
+        )
+
+        return ConfirmRestoreWalletRequest(
+            temporarySolanaPublicKey = userPublicKey.base58Value,
+            userPhone = phoneNumber,
+            requestSignature = signatureField.base58Value,
+            otpConfirmationCode = otpConfirmationCode,
+            timestamp = createTimestampField()
+        )
+            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.CONFIRM_RESTORE_WALLET) }
     }
 
     private fun createTimestampField(): String {

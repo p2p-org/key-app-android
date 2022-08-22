@@ -2,18 +2,15 @@ package org.p2p.wallet.auth.gateway.api.request
 
 import com.google.gson.annotations.SerializedName
 
-data class RestoreWalletRequest(
+data class ConfirmRestoreWalletRequest(
     @SerializedName("restore_id")
     val temporarySolanaPublicKey: String,
 
     @SerializedName("phone")
     val userPhone: String,
 
-    @SerializedName("app_hash")
-    val appHash: String,
-
-    @SerializedName("channel")
-    val channelMethod: OtpMethod,
+    @SerializedName("phone_confirmation_code")
+    val otpConfirmationCode: String,
 
     @SerializedName("signature")
     val requestSignature: String,
