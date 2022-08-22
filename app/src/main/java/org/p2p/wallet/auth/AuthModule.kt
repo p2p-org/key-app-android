@@ -45,12 +45,16 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
-import org.p2p.wallet.auth.ui.restore.WalletFoundContract
-import org.p2p.wallet.auth.ui.restore.WalletFoundPresenter
+import org.p2p.wallet.auth.ui.restore.common.CommonRestoreContract
+import org.p2p.wallet.auth.ui.restore.common.CommonRestorePresenter
+import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
+import org.p2p.wallet.auth.ui.restore.found.WalletFoundPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerPresenter
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
@@ -120,6 +124,7 @@ object AuthModule {
 
         factoryOf(::NewOnboardingPresenter) bind NewOnboardingContract.Presenter::class
         factoryOf(::ContinueOnboardingPresenter) bind ContinueOnboardingContract.Presenter::class
+        factoryOf(::CommonRestorePresenter) bind CommonRestoreContract.Presenter::class
 
         factoryOf(::PhoneNumberEnterPresenter) bind PhoneNumberEnterContract.Presenter::class
         factoryOf(::CountryCodePickerPresenter) bind CountryCodePickerContract.Presenter::class
@@ -131,6 +136,7 @@ object AuthModule {
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
 
         factoryOf(::NewSmsInputPresenter) bind NewAuthSmsInputContract.Presenter::class
+        factoryOf(::OnboardingGeneralErrorTimerPresenter) bind OnboardingGeneralErrorContract.Presenter::class
 
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
         factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class

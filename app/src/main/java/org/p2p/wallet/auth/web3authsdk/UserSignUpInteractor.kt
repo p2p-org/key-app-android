@@ -29,8 +29,7 @@ class UserSignUpInteractor(
             userSignUpDetailsStorage.save(signUpResponse, idTokenOwnerId)
             SignUpResult.SignUpSuccessful
         } catch (web3AuthError: Web3AuthErrorResponse) {
-            // TODO PWN-4362 do error handling right
-            if (web3AuthError.errorType == ErrorType.DUPLICATE_TOKEN) {
+            if (web3AuthError.errorType == ErrorType.CANNOT_RECONSTRUCT) {
                 SignUpResult.UserAlreadyExists
             } else {
                 SignUpResult.SignUpFailed(web3AuthError.errorMessage)

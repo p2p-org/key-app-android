@@ -38,10 +38,14 @@ class UserSignUpDetailsStorage(
     }
 
     fun getUserSignUpDetailsById(userId: String): SignUpUserDetails? {
-        return secureStorage.getObject(generatePrefsKey(userId), SignUpUserDetails::class)
+        return kotlin.runCatching { secureStorage.getObject(generatePrefsKey(userId), SignUpUserDetails::class) }
+            .onFailure { Timber.i(it) }
+            .getOrNull()
     }
 
     fun getLastSignUpUserDetails(): SignUpUserDetails? {
-        return secureStorage.getObject(KEY_LAST_DEVICE_SHARE_ID, SignUpUserDetails::class)
+        return kotlin.runCatching { secureStorage.getObject(KEY_LAST_DEVICE_SHARE_ID, SignUpUserDetails::class) }
+            .onFailure { Timber.i(it) }
+            .getOrNull()
     }
 }

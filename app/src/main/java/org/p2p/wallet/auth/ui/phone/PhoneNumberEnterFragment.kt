@@ -3,25 +3,28 @@ package org.p2p.wallet.auth.ui.phone
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.GeneralErrorScreenSource
+import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class PhoneNumberEnterFragment :
-    BaseMvpFragment<PhoneNumberEnterContract.View, PhoneNumberEnterContract.Presenter>
-    (R.layout.fragment_phone_number_enter),
+    BaseMvpFragment<PhoneNumberEnterContract.View, PhoneNumberEnterContract.Presenter>(
+        R.layout.fragment_phone_number_enter
+    ),
     PhoneNumberEnterContract.View {
 
     companion object {
         const val REQUEST_KEY = "REQUEST_KEY"
         const val RESULT_KEY = "RESULT_KEY"
-        fun create() = PhoneNumberEnterFragment()
+        fun create(): PhoneNumberEnterFragment = PhoneNumberEnterFragment()
     }
 
     override val presenter: PhoneNumberEnterContract.Presenter by inject()
@@ -63,19 +66,28 @@ class PhoneNumberEnterFragment :
         replaceFragment(NewSmsInputFragment.create())
     }
 
-    override fun setContinueButtonEnabled(isEnabled: Boolean) = with(binding) {
-        if (isEnabled) {
-            buttonConfirmPhone.setBackgroundColor(getColor(R.color.night))
-            buttonConfirmPhone.setTextColor(getColor(R.color.lime))
-            buttonConfirmPhone.setText(R.string.common_continue)
-            buttonConfirmPhone.setIconResource(R.drawable.ic_arrow_forward)
-            buttonConfirmPhone.isEnabled = true
-        } else {
-            buttonConfirmPhone.setBackgroundColor(getColor(R.color.rain))
-            buttonConfirmPhone.setTextColor(getColor(R.color.mountain))
-            buttonConfirmPhone.setText(R.string.onboarding_fill_your_number)
-            buttonConfirmPhone.icon = null
-            buttonConfirmPhone.isEnabled = false
+    override fun navigateToAccountBlocked() {
+        replaceFragment(OnboardingGeneralErrorTimerFragment.create(GeneralErrorScreenSource.PHONE_NUMBER_ENTER))
+    }
+
+    override fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState) {
+        with(binding.buttonConfirmPhone) {
+            when (state) {
+                PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE -> {
+                    setBackgroundColor(getColor(R.color.night))
+                    setTextColor(getColor(R.color.lime))
+                    setText(R.string.common_continue)
+                    setIconResource(R.drawable.ic_arrow_forward)
+                    isEnabled = true
+                }
+                PhoneNumberScreenContinueButtonState.DISABLED_INPUT_IS_EMPTY -> {
+                    setBackgroundColor(getColor(R.color.rain))
+                    setTextColor(getColor(R.color.mountain))
+                    setText(R.string.onboarding_fill_your_number)
+                    icon = null
+                    isEnabled = false
+                }
+            }
         }
     }
 
@@ -85,6 +97,10 @@ class PhoneNumberEnterFragment :
                 presenter.onCountryCodeChanged(it)
             }
         }
+    }
+
+    override fun showSmsDeliveryFailedForNumber() {
+        binding.editTextPhoneNumber.showError(getString(R.string.onboarding_no_sms_for_number))
     }
 
     private fun onCountryCodeChanged(countryCode: String) {
