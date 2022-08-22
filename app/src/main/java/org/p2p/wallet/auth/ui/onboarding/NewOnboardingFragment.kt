@@ -31,6 +31,9 @@ class NewOnboardingFragment :
 
     override val presenter: NewOnboardingContract.Presenter by inject()
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+
     private val binding: FragmentNewOnboardingBinding by viewBinding()
     private val analytics: OnboardingAnalytics by inject()
 
