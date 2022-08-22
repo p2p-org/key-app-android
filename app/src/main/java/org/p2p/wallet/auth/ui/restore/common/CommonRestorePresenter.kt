@@ -21,8 +21,8 @@ class CommonRestorePresenter(
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause)
-                    result.message?.let { view?.showError(it) }
+                    Timber.e(result.cause, result.message)
+                    result.message?.let { view?.showErrorSnackBar(it) }
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onNoTokenFoundError(userId)

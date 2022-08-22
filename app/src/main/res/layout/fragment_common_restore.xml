@@ -27,7 +27,7 @@
         android:layout_marginHorizontal="20dp"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/lock_image"
+        android:src="@drawable/image_lock"
         app:layout_constraintBottom_toTopOf="@+id/textViewTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +43,7 @@
         android:layout_marginTop="26dp"
         android:gravity="center"
         android:text="@string/restore_choose_method"
-        android:textColor="@color/night"
+        android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@+id/textViewSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +76,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonGoogle"
+            android:id="@+id/button_restore_by_google"
             style="@style/UiKit.Components.Button.Large"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"

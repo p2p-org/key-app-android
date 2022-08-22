@@ -46,7 +46,7 @@ class CommonRestoreFragment :
             toolbar.setNavigationOnClickListener {
                 popBackStack()
             }
-            buttonGoogle.setOnClickListener {
+            buttonRestoreByGoogle.setOnClickListener {
                 presenter.useGoogleAccount()
             }
 
@@ -84,7 +84,7 @@ class CommonRestoreFragment :
 
     override fun onNoTokenFoundError(userId: String) {
         with(binding) {
-            imageView.setImageResource(R.drawable.box_image)
+            imageView.setImageResource(R.drawable.image_box)
             textViewTitle.text = getString(R.string.restore_no_wallet_title)
             textViewSubtitle.isVisible = true
             textViewSubtitle.text = getString(R.string.restore_no_wallet_subtitle, userId)
@@ -93,7 +93,7 @@ class CommonRestoreFragment :
 
     private fun setLoadingState(isScreenLoading: Boolean) {
         with(binding) {
-            buttonGoogle.apply {
+            buttonRestoreByGoogle.apply {
                 isLoading = isScreenLoading
                 isEnabled = !isScreenLoading
             }
