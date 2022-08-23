@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,75 +10,76 @@
 
     <TextView
         android:id="@+id/titleTextView"
+        style="@style/UiKit.TextAppearance.SemiBold.Text2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="16dp"
-        android:text="@string/auth_select_derivation_path"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/messageTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="4dp"
-        android:gravity="center"
-        android:paddingHorizontal="20dp"
-        android:text="@string/auth_derivation_path_info"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="@color/textIconPrimary" />
-
-    <View
-        android:id="@+id/dividerView"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_gravity="center_vertical"
-        android:background="@color/strokeSecondary" />
+        android:paddingHorizontal="16dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="12dp"
+        android:text="@string/derivation_path_title" />
 
     <RadioGroup
         android:id="@+id/pathGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:orientation="vertical">
 
         <RadioButton
             android:id="@+id/bip44Button"
+            style="@style/UiKit.TextAppearance.Regular.Text2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="18dp"
             android:layout_marginTop="1dp"
             android:background="@color/backgroundPrimary"
-            android:button="@drawable/button_radio_inset"
-            android:buttonTint="@color/backgroundButtonPrimary"
-            android:padding="12dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:layoutDirection="rtl"
+            android:paddingVertical="14dp"
             android:textColor="@color/textIconPrimary"
+            app:buttonCompat="@drawable/checkbox_selector"
             tools:text="m/44’/501’/0’" />
 
         <RadioButton
             android:id="@+id/bip44ChangeButton"
+            style="@style/UiKit.TextAppearance.Regular.Text2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="18dp"
             android:layout_marginTop="1dp"
             android:background="@color/backgroundPrimary"
-            android:button="@drawable/button_radio_inset"
-            android:buttonTint="@color/backgroundButtonPrimary"
-            android:padding="12dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:layoutDirection="rtl"
+            android:paddingVertical="14dp"
             android:textColor="@color/textIconPrimary"
+            app:buttonCompat="@drawable/checkbox_selector"
             tools:text="m/44’/501’/0’/0’ (Default)" />
 
         <RadioButton
             android:id="@+id/bip32Button"
+            style="@style/UiKit.TextAppearance.Regular.Text2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="18dp"
             android:layout_marginTop="1dp"
             android:background="@color/backgroundPrimary"
-            android:button="@drawable/button_radio_inset"
-            android:buttonTint="@color/backgroundButtonPrimary"
-            android:padding="12dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+            android:layoutDirection="rtl"
+            android:paddingVertical="14dp"
             android:textColor="@color/textIconPrimary"
+            app:buttonCompat="@drawable/checkbox_selector"
             tools:text="m/44’/501’/0’/0/0 (deprecated)" />
+
     </RadioGroup>
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/continueButton"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/derivation_continue_button"
+        android:textColor="@color/text_lime"
+        app:icon="@drawable/ic_arrow_forward"
+        app:iconGravity="textEnd"
+        app:iconTint="@color/text_lime" />
+
 </LinearLayout>

@@ -1,0 +1,7 @@
+<resources>
+    <!--Derivable Accounts-->
+    <string name="derivable_accounts_title">Derivable Accounts</string>
+    <string name="derivation_path_title">Derivation path</string>
+    <string name="derivation_path_info">This is the thing you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
+    <string name="derivation_continue_button">Continue</string>
+</resources>

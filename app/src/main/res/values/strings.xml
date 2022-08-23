@@ -114,11 +114,7 @@
     <string name="auth_done">Done</string>
     <string name="auth_wrong_seed_phrase">The wrong security key or words order</string>
     <string name="auth_wrong_seed_phrase_empty">Seed phrase is empty</string>
-    <string name="auth_derivable_accounts">Derivable accounts</string>
-    <string name="auth_derivable_info">This is what you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
     <string name="auth_select_derivation_path">Select Derivation Path</string>
-    <string name="auth_derivation_path_info">By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet. To use an alternative path, try restoring an existing wallet.</string>
-    <string name="auth_derivation_path">Derivation path</string>
     <string name="auth_reserve_username">Reserve your  username</string>
     <string name="auth_you_can_receive">Username is your public address, which allows you to receive any token even if you don\'t have it in the wallet list.\n\nIt is vital you select the exact username you want, as once set, you cannot change it.</string>
     <string name="auth_you_can_skip">You can also skip this step and reserve a username later.</string>

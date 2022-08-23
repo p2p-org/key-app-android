@@ -40,10 +40,8 @@ class SelectTokenViewHolder(
 
     private val tokenImageView = binding.tokenImageView
     private val wrappedImageView = binding.wrappedImageView
-    private val nameTextView = binding.nameTextView
-    private val symbolTextView = binding.symbolTextView
-    private val usdValueTextView = binding.usdValueTextView
-    private val totalTextView = binding.totalTextView
+    private val startAmountView = binding.startAmountView
+    private val endAmountView = binding.endAmountView
 
     fun onBind(item: Token) {
         if (bindingAdapterPosition == 0) {
@@ -56,21 +54,19 @@ class SelectTokenViewHolder(
             loadImage(tokenImageView, item.iconUrl!!)
         }
 
-        nameTextView.text = item.getFormattedName()
-        symbolTextView.text = item.tokenSymbol.uppercase(Locale.getDefault())
+        startAmountView.title = item.getFormattedName()
+        startAmountView.subtitle = item.tokenSymbol.uppercase(Locale.getDefault())
         wrappedImageView.isVisible = item.isWrapped
         itemView.setOnClickListener { onItemClicked(item) }
 
         when (item) {
             is Token.Active -> {
-                usdValueTextView.text = item.getFormattedUsdTotal()
-                totalTextView.text = item.getFormattedTotal(includeSymbol = true)
-                usdValueTextView.isVisible = true
-                totalTextView.isVisible = true
+                endAmountView.usdAmount = item.getFormattedUsdTotal()
+                endAmountView.tokenAmount = item.getFormattedTotal(includeSymbol = true)
+                endAmountView.isVisible = true
             }
             is Token.Other -> {
-                usdValueTextView.isVisible = false
-                totalTextView.isVisible = false
+                endAmountView.isVisible = false
             }
         }
     }
