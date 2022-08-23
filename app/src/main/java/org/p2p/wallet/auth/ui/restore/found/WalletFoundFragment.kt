@@ -31,6 +31,9 @@ class WalletFoundFragment :
 
     private val signInHelper: GoogleSignInHelper by inject()
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult(),
         ::handleSignResult
