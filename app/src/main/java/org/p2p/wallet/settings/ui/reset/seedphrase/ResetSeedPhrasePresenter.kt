@@ -1,11 +1,9 @@
 package org.p2p.wallet.settings.ui.reset.seedphrase
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.restore.model.SeedPhraseResult
 import kotlin.properties.Delegates
 
 class ResetSeedPhrasePresenter(
@@ -32,18 +30,10 @@ class ResetSeedPhrasePresenter(
     }
 
     override fun verifySeedPhrase() {
-        launch {
-            val resetResult = when (val data = secretKeyInteractor.verifySeedPhrase(keys)) {
-                is SeedPhraseResult.Success -> {
-                    view?.showSuccess(data.secretKeys)
-                    AuthAnalytics.ResetResult.SUCCESS
-                }
-                is SeedPhraseResult.Error -> {
-                    view?.showError(data.message)
-                    AuthAnalytics.ResetResult.ERROR
-                }
-            }
-            authAnalytics.logAuthResetValidated(resetResult)
-        }
+        val validatedKeys = secretKeyInteractor.verifySeedPhrase(keys)
+        val isValid = validatedKeys.none { !it.isValid }
+
+        val resetResult = if (isValid) AuthAnalytics.ResetResult.SUCCESS else AuthAnalytics.ResetResult.ERROR
+        authAnalytics.logAuthResetValidated(resetResult)
     }
 }

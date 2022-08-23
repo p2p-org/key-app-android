@@ -47,4 +47,7 @@
     <dimen name="ui_kit_number_keyboard_button_size">68dp</dimen>
     <dimen name="ui_kit_max_keyboard_width">280dp</dimen>
 
+    <!-- Seed phrase -->
+    <dimen name="ui_kit_seed_phrase_container_min_height">312dp</dimen>
+
 </resources>

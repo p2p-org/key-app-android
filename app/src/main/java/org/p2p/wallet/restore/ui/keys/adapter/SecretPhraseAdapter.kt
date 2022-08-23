@@ -1,7 +1,7 @@
 package org.p2p.wallet.restore.ui.keys.adapter
 
-import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.utils.Constants
 
@@ -36,17 +36,14 @@ class SecretPhraseAdapter(
         }
     }
 
+    fun updateSecretKeys(secretKeys: List<SecretKey>) {
+        clear()
+        addAllSecretKeys(secretKeys)
+    }
+
     fun addSecretKey(secretKey: SecretKey) {
         data.add(secretKey)
         notifyItemInserted(data.size)
-    }
-
-    private fun removeSecretKey(index: Int) {
-        if (index == -1) return
-        data.removeAt(index)
-        notifyDataSetChanged()
-
-        onSeedPhraseChanged(data)
     }
 
     fun clear() {
@@ -57,7 +54,7 @@ class SecretPhraseAdapter(
         onSeedPhraseChanged(data)
     }
 
-    private fun addAllSecretKeys(secretKeys: List<SecretKey>) {
+    fun addAllSecretKeys(secretKeys: List<SecretKey>) {
         secretKeys
             .take(Constants.SEED_PHRASE_SIZE_LONG)
             .forEach { item ->
@@ -79,6 +76,14 @@ class SecretPhraseAdapter(
 
         /* Automatically adding new empty element, so user could continue entering the seed phrase */
         addSecretKey(SecretKey())
+    }
+
+    private fun removeSecretKey(index: Int) {
+        if (index == -1) return
+        data.removeAt(index)
+        notifyDataSetChanged()
+
+        onSeedPhraseChanged(data)
     }
 
     private fun updateSecretKey(secretKey: SecretKey) {

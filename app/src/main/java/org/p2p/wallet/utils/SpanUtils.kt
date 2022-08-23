@@ -1,5 +1,6 @@
 package org.p2p.wallet.utils
 
+import androidx.annotation.ColorInt
 import android.content.Context
 import android.graphics.Typeface
 import android.text.Spannable
@@ -7,15 +8,14 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import androidx.annotation.ColorInt
 import org.p2p.wallet.R
 
 object SpanUtils {
 
     fun highlightText(commonText: String, highlightedText: String, @ColorInt color: Int): SpannableString {
         val span = SpannableString(commonText)
-        val startIndex = commonText.indexOf(highlightedText)
-        val endIndex = startIndex + highlightedText.length
+        val startIndex = commonText.indexOf(highlightedText).coerceAtLeast(0)
+        val endIndex = (startIndex + highlightedText.length).coerceAtMost(commonText.length)
 
         if (startIndex == -1) return span
 

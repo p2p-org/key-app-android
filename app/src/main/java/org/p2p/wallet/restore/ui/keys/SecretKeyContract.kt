@@ -9,10 +9,12 @@ import java.io.File
 interface SecretKeyContract {
 
     interface View : MvpView {
+        fun updateKeys(secretKeys: List<SecretKey>)
         fun showSuccess(secretKeys: List<SecretKey>)
         fun showError(@StringRes messageRes: Int)
         fun showFile(file: File)
-        fun setButtonEnabled(isEnabled: Boolean)
+        fun showSeedPhraseValid(isValid: Boolean)
+        fun showClearButton(isVisible: Boolean)
         fun addFirstKey(key: SecretKey)
         fun showFocusOnLastKey(lastSecretItemIndex: Int)
     }
@@ -20,8 +22,6 @@ interface SecretKeyContract {
     interface Presenter : MvpPresenter<View> {
         fun setNewKeys(keys: List<SecretKey>)
         fun verifySeedPhrase()
-        fun openPrivacyPolicy()
-        fun openTermsOfUse()
         fun load()
         fun requestFocusOnLastKey()
     }

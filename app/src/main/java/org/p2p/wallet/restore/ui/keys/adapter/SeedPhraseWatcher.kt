@@ -41,7 +41,7 @@ class SeedPhraseWatcher(
     private var seedPhrase: SeedPhrase by Delegates.observable(SeedPhrase(null)) { _, oldValue, newValue ->
         if (newValue != oldValue) {
             when (val result = seedPhrase.result) {
-                is KeyResult.KeyAdded -> onKeyAdded(SecretKey(result.text.trim()))
+                is KeyResult.KeyAdded -> onKeyAdded(result.key)
                 is KeyResult.MultipleKeysAdded -> onSeedPhraseInserted(result.keys)
                 else -> Unit
             }
@@ -53,23 +53,18 @@ class SeedPhraseWatcher(
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         val text = s?.toString().orEmpty()
 
-        val splitted = text.split(" ")
-        when {
-            /* First we are checking if there are multiple keys entered */
-            splitted.size > 1 && splitted.last().isNotEmpty() -> {
-                val keys = splitted.map { SecretKey(it.trim()) }
-                val result = KeyResult.MultipleKeysAdded(keys)
-                seedPhrase = SeedPhrase(result)
+        val keys = SeedPhraseUtils.format(text)
+        when (keys.size) {
+            0 -> {
+                Timber.tag("SEED_PHRASE").d("User is typing and not finished yet, doing nothing $text")
             }
-            /* User enters single key here. Checking if he has finished by entering space */
-            text.isNotBlank() && text.endsWith(" ") -> {
-                val result = KeyResult.KeyAdded(text.trim())
+            1 -> {
+                val result = KeyResult.KeyAdded(keys.first())
                 seedPhrase = SeedPhrase(result)
             }
             else -> {
-                Timber
-                    .tag("SEED_PHRASE")
-                    .d("User is typing the word and not finished yet, doing nothing $text")
+                val result = KeyResult.MultipleKeysAdded(keys)
+                seedPhrase = SeedPhrase(result)
             }
         }
     }
@@ -84,6 +79,6 @@ private data class SeedPhrase(
 )
 
 private sealed class KeyResult {
-    data class KeyAdded(val text: String) : KeyResult()
+    data class KeyAdded(val key: SecretKey) : KeyResult()
     data class MultipleKeysAdded(val keys: List<SecretKey>) : KeyResult()
 }

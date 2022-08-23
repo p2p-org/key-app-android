@@ -1,6 +1,5 @@
 package org.p2p.wallet.restore
 
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
@@ -17,9 +16,7 @@ object BackupModule : InjectionModule {
         factoryOf(::SecretKeyInteractor)
         factory<SecretKeyContract.Presenter> {
             SecretKeyPresenter(
-                resources = androidContext().resources,
                 secretKeyInteractor = get(),
-                fileRepository = get()
             )
         }
         factory<DerivableAccountsContract.Presenter> { (secretKeys: List<SecretKey>) ->

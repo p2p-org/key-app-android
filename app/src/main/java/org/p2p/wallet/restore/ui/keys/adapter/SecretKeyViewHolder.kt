@@ -1,22 +1,20 @@
 package org.p2p.wallet.restore.ui.keys.adapter
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import android.annotation.SuppressLint
-import android.graphics.Color
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
+import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSecretKeyBinding
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.SpanUtils
 
 class SecretKeyViewHolder(
     binding: ItemSecretKeyBinding,
@@ -66,15 +64,19 @@ class SecretKeyViewHolder(
     }
 
     fun setKeyCompleted(secretKey: SecretKey) {
-        val span = SpannableString("${bindingAdapterPosition + 1}. ${secretKey.text}")
-        span.setSpan(
-            ForegroundColorSpan(Color.BLACK),
-            span.length - secretKey.text.length,
-            span.length,
-            Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-        )
-        keyTextView.text = span
-        keyTextView.setBackgroundResource(R.drawable.bg_security_key)
+        val wordIndex = bindingAdapterPosition + 1
+        val text = "$wordIndex ${secretKey.text}"
+
+        if (secretKey.isValid) {
+            keyTextView.setTextColor(itemView.getColor(R.color.night))
+            val color = itemView.getColor(R.color.mountain)
+            val spannedText = SpanUtils.highlightText(text, "$wordIndex", color)
+            keyTextView.text = spannedText
+        } else {
+            keyTextView.setTextColor(itemView.getColor(R.color.rose))
+            keyTextView.text = text
+        }
+
         keyTextView.isVisible = true
         keyEditText.isVisible = false
     }

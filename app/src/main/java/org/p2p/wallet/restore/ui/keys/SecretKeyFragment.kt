@@ -1,19 +1,13 @@
 package org.p2p.wallet.restore.ui.keys
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.view.View
-import android.widget.LinearLayout
-import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
@@ -27,23 +21,18 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.widget.ProgressButton
 import org.p2p.wallet.databinding.FragmentSecretKeyBinding
 import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
-import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
-import org.p2p.wallet.utils.getDrawableCompat
+import org.p2p.wallet.restore.ui.keys.adapter.SeedPhraseUtils
+import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
-import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
-
-private const val SEED_PHRASE_SIZE_SHORT = 12
-private const val SEED_PHRASE_SIZE_LONG = 24
 
 class SecretKeyFragment :
     BaseMvpFragment<SecretKeyContract.View, SecretKeyContract.Presenter>(R.layout.fragment_secret_key),
@@ -58,12 +47,7 @@ class SecretKeyFragment :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val phraseAdapter: SecretPhraseAdapter by unsafeLazy {
-        SecretPhraseAdapter(
-            onSeedPhraseChanged = { keys ->
-                clearError()
-                presenter.setNewKeys(keys)
-            }
-        )
+        SecretPhraseAdapter { keys -> presenter.setNewKeys(keys) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,31 +58,42 @@ class SecretKeyFragment :
                 it.hideKeyboard()
                 popBackStack()
             }
+            initKeysList()
 
-            restoreButton.setOnClickListener {
+            continueButton.setOnClickListener {
                 presenter.verifySeedPhrase()
             }
 
-            initKeysList()
-
-            phraseTextView.isVisible = false
-
-            questionTextView.setOnClickListener {
-                replaceFragment(SeedInfoFragment.create())
+            textViewClear.setOnClickListener {
+                phraseAdapter.clear()
             }
 
-            phraseContainer.setOnClickListener { _ ->
+            textViewPaste.setOnClickListener {
+                val seedPhrase = requireContext().getClipboardText(trimmed = true).orEmpty()
+                val keys = SeedPhraseUtils.format(seedPhrase)
+                if (keys.isNotEmpty()) {
+                    phraseAdapter.addAllSecretKeys(keys)
+                }
+            }
+
+            keysRecyclerView.setOnClickListener {
                 presenter.requestFocusOnLastKey()
             }
-            termsAndConditionsTextView.text = buildTermsAndPrivacyText()
-            termsAndConditionsTextView.movementMethod = LinkMovementMethod.getInstance()
+
+            checkClipboard()
         }
+
         presenter.load()
     }
 
     override fun onResume() {
         super.onResume()
         presenter.requestFocusOnLastKey()
+    }
+
+    private fun checkClipboard() {
+        val clipboardData = requireContext().getClipboardText()
+        binding.textViewPaste.isEnabled = !clipboardData.isNullOrBlank()
     }
 
     private fun FragmentSecretKeyBinding.initKeysList() {
@@ -110,12 +105,23 @@ class SecretKeyFragment :
         keysRecyclerView.isVisible = true
     }
 
+    override fun updateKeys(secretKeys: List<SecretKey>) {
+        phraseAdapter.updateSecretKeys(secretKeys)
+    }
+
     override fun showSuccess(secretKeys: List<SecretKey>) {
         replaceFragment(DerivableAccountsFragment.create(secretKeys))
     }
 
-    override fun setButtonEnabled(isEnabled: Boolean) {
-        binding.restoreButton.isEnabled = isEnabled
+    override fun showSeedPhraseValid(isValid: Boolean) {
+        binding.continueButton.isEnabled = isValid
+
+        val text = if (isValid) R.string.seed_phrase_check else R.string.seed_phrase
+        binding.textViewType.text = getString(text)
+    }
+
+    override fun showClearButton(isVisible: Boolean) {
+        binding.textViewClear.isVisible = isVisible
     }
 
     override fun addFirstKey(key: SecretKey) {
@@ -123,10 +129,7 @@ class SecretKeyFragment :
     }
 
     override fun showError(messageRes: Int) = with(binding) {
-        setPhraseContainerError(setError = true)
-        restoreButton.setRestoreButtonErrorState(
-            isError = true, buttonTextRes = messageRes
-        )
+
     }
 
     override fun showFocusOnLastKey(lastSecretItemIndex: Int) {
@@ -135,24 +138,6 @@ class SecretKeyFragment :
         val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }
         secretKeyEditText?.requestFocus()
         secretKeyEditText?.showSoftKeyboard()
-    }
-
-    private fun FragmentSecretKeyBinding.setPhraseContainerError(setError: Boolean) {
-        phraseContainer.background = context.getDrawableCompat(
-            if (setError) R.drawable.bg_red_secondary_stroked else R.drawable.bg_gray_secondary_stroked
-        )
-    }
-
-    private fun ProgressButton.setRestoreButtonErrorState(isError: Boolean, @StringRes buttonTextRes: Int) {
-        setActionText(buttonTextRes)
-        if (isError) {
-            isEnabled = false
-            setStartIcon(iconRes = null)
-        } else {
-            isEnabled =
-                phraseAdapter.itemCount == SEED_PHRASE_SIZE_LONG || phraseAdapter.itemCount == SEED_PHRASE_SIZE_SHORT
-            setStartIcon(iconRes = R.drawable.ic_restore)
-        }
     }
 
     override fun showFile(file: File) {
@@ -173,59 +158,5 @@ class SecretKeyFragment :
             Timber.e(e, "Cannot open file")
             toast(R.string.error_opening_file)
         }
-    }
-
-    private fun clearError() = with(binding) {
-        restoreButton.setRestoreButtonErrorState(
-            isError = false, buttonTextRes = R.string.auth_restore
-        )
-
-        messageTextView.isVisible = true
-        setPhraseContainerError(setError = false)
-    }
-
-    private fun buildTermsAndPrivacyText(): SpannableString {
-        val message = getString(R.string.auth_agree_terms_and_privacy)
-        val span = SpannableString(message)
-
-        /*
-        * Applying clickable span for terms of use
-        * */
-        val clickableTermsOfUse = object : ClickableSpan() {
-            override fun onClick(widget: View) {
-                presenter.openTermsOfUse()
-                analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.TERMS_OF_USE)
-            }
-
-            override fun updateDrawState(ds: TextPaint) {
-                super.updateDrawState(ds)
-                ds.isUnderlineText = false
-            }
-        }
-        val termsOfUse = getString(R.string.auth_terms_of_use)
-        val termsStart = span.indexOf(termsOfUse)
-        val termsEnd = span.indexOf(termsOfUse) + termsOfUse.length
-        span.setSpan(clickableTermsOfUse, termsStart, termsEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-
-        val privacyPolicy = getString(R.string.auth_privacy_policy)
-        /*
-        * Applying clickable span for privacy policy
-        * */
-        val clickablePrivacy = object : ClickableSpan() {
-            override fun onClick(widget: View) {
-                presenter.openPrivacyPolicy()
-            }
-
-            override fun updateDrawState(ds: TextPaint) {
-                super.updateDrawState(ds)
-                ds.isUnderlineText = false
-            }
-        }
-
-        val start = span.indexOf(privacyPolicy)
-        val end = span.indexOf(privacyPolicy) + privacyPolicy.length
-        span.setSpan(clickablePrivacy, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-
-        return span
     }
 }
