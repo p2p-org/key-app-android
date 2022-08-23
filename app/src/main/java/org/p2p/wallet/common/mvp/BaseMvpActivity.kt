@@ -1,9 +1,10 @@
 package org.p2p.wallet.common.mvp
 
-import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.snackbar
 
@@ -52,6 +53,14 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
         snackbar {
             it.setMessage(getString(messageResId))
                 .setIcon(R.drawable.ic_done)
+                .setAction(actionResId, block)
+        }
+    }
+
+    override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(e.getErrorMessage(this))
+                .setIcon(R.drawable.ic_close_red)
                 .setAction(actionResId, block)
         }
     }

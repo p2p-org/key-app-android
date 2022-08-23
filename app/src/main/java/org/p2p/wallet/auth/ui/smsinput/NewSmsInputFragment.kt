@@ -6,21 +6,23 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
-import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract.Presenter
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.GeneralErrorScreenSource
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerFragment
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewSmsInputFragment :
-    BaseMvpFragment<NewAuthSmsInputContract.View, Presenter>(R.layout.fragment_new_sms_input),
-    NewAuthSmsInputContract.View {
+    BaseMvpFragment<NewSmsInputContract.View, Presenter>(R.layout.fragment_new_sms_input),
+    NewSmsInputContract.View {
 
     companion object {
         fun create(): NewSmsInputFragment = NewSmsInputFragment()
@@ -36,8 +38,6 @@ class NewSmsInputFragment :
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
-                    // pass empty string as UserId to launch IntercomService as anonymous user
-                    IntercomService.signIn(userId = emptyString())
                     IntercomService.showMessenger()
                     return@setOnMenuItemClickListener true
                 }
@@ -113,6 +113,15 @@ class NewSmsInputFragment :
     }
 
     override fun navigateToSmsInputBlocked() {
-        replaceFragment(OnboardingGeneralErrorTimerFragment.create(GeneralErrorScreenSource.SMS_INPUT))
+        replaceFragment(
+            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenError.BLOCK_SMS_INPUT)
+        )
+    }
+
+    override fun navigateToCriticalErrorScreen(errorCode: Int) {
+        popAndReplaceFragment(
+            OnboardingGeneralErrorFragment.create(GeneralErrorScreenError.CriticalError(errorCode)),
+            inclusive = true
+        )
     }
 }

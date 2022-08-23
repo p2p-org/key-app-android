@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.onboarding
 
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
@@ -24,8 +25,8 @@ class NewOnboardingPresenter(
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause)
-                    result.message?.let { view?.showError(it) }
+                    Timber.e(result.cause, "Creating new user with device shared failed")
+                    view?.showErrorSnackBar(R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onSameTokenFoundError()

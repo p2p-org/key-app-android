@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -12,6 +13,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -38,13 +40,25 @@ class NewCreatePinFragment :
         presenter.setPinMode(PinMode.CREATE)
 
         with(binding) {
-            toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
+            toolbar.initToolbar()
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             pinView.onKeyboardClicked = { vibrate(VIBRATE_DURATION) }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             presenter.onBackPressed()
+        }
+    }
+
+    private fun UiKitToolbar.initToolbar() {
+        setNavigationOnClickListener { presenter.onBackPressed() }
+        setOnMenuItemClickListener {
+            if (it.itemId == R.id.helpItem) {
+                IntercomService.showMessenger()
+                true
+            } else {
+                false
+            }
         }
     }
 

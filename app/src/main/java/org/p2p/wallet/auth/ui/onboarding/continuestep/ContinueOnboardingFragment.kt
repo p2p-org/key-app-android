@@ -29,6 +29,9 @@ class ContinueOnboardingFragment :
 
     override val presenter: ContinueOnboardingContract.Presenter by inject { parametersOf(this) }
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

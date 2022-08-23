@@ -12,11 +12,11 @@ import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.widget.AnimatedSearchView
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
 import org.p2p.wallet.auth.ui.phone.maskwatcher.CountryCodeTextWatcher
 import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
+import org.p2p.wallet.auth.widget.AnimatedSearchView
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogCountryPickerBinding
 import org.p2p.wallet.utils.args
@@ -63,21 +63,14 @@ class CountryCodePickerDialog :
             toolbar.setNavigationOnClickListener {
                 dismissAllowingStateLoss()
             }
+
             recyclerViewCountryCodes.adapter = adapter
 
             buttonActionContinue.setOnClickListener {
                 presenter.onCountryCodeSelected()
             }
-            searchView.addTextWatcher(
-                CountryCodePickerTextWatcher { searchText ->
-                    presenter.searchByCountryName(searchText)
-                }
-            )
-            searchView.setStateListener(object : AnimatedSearchView.SearchStateListener {
-                override fun onClosed() {
-                    presenter.searchByCountryName(emptyString())
-                }
-            })
+
+            initSearch()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.searchView.isBackPressEnabled()) {
@@ -94,6 +87,20 @@ class CountryCodePickerDialog :
         layout.minimumHeight = Resources.getSystem().displayMetrics.heightPixels
 
         presenter.load(selectedCountry)
+    }
+
+    private fun DialogCountryPickerBinding.initSearch() = with(searchView) {
+        doAfterTextChanged { searchText ->
+            presenter.search(searchText?.toString() ?: emptyString())
+        }
+
+        setStateListener(object : AnimatedSearchView.SearchStateListener {
+            override fun onClosed() {
+                presenter.search(emptyString())
+            }
+        })
+
+        post { openSearch() }
     }
 
     override fun showCountries(items: List<CountryCodeItem>) {

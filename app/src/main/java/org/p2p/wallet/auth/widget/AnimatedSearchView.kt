@@ -2,11 +2,14 @@ package org.p2p.wallet.auth.widget
 
 import android.animation.Animator
 import android.content.Context
-import android.widget.RelativeLayout
-import android.view.ViewAnimationUtils
+import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.view.ViewAnimationUtils
+import android.widget.RelativeLayout
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
@@ -22,18 +25,24 @@ class AnimatedSearchView @JvmOverloads constructor(
     private var stateListener: SearchStateListener? = null
 
     init {
-        binding.showButtonContainer.setOnClickListener { openSearch() }
-        binding.closeButton.setOnClickListener { closeSearch() }
+        binding.apply {
+            relativeLayoutContainer.setOnClickListener { openSearch() }
+            imageViewErase.setOnClickListener { editTextSearch.text.clear() }
+            buttonClose.setOnClickListener { closeSearch() }
+            editTextSearch.doOnTextChanged { text, _, _, _ ->
+                imageViewErase.isVisible = !text.isNullOrEmpty()
+            }
+        }
     }
 
-    private fun openSearch() = with(binding) {
-        editText.setText("")
-        searchContainer.visibility = VISIBLE
+    fun openSearch() = with(binding) {
+        editTextSearch.setText("")
+        relativeLayoutSearchContainer.visibility = VISIBLE
         if (animator != null) animator!!.cancel()
         animator = ViewAnimationUtils.createCircularReveal(
-            searchContainer,
-            searchContainer.width + (showButton.right + showButton.left) / 2,
-            (showButton.top + showButton.bottom) / 2,
+            relativeLayoutSearchContainer,
+            relativeLayoutSearchContainer.width + (buttonShowSearch.right + buttonShowSearch.left) / 2,
+            (buttonShowSearch.top + buttonShowSearch.bottom) / 2,
             0f,
             width
                 .toFloat()
@@ -41,7 +50,7 @@ class AnimatedSearchView @JvmOverloads constructor(
         animator?.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animator: Animator) {}
             override fun onAnimationEnd(animator: Animator) {
-                editText.focusAndShowKeyboard()
+                editTextSearch.focusAndShowKeyboard()
             }
 
             override fun onAnimationCancel(animator: Animator) {}
@@ -53,11 +62,11 @@ class AnimatedSearchView @JvmOverloads constructor(
 
     fun closeSearch() = with(binding) {
         if (animator != null) animator!!.cancel()
-        editText.hideKeyboard()
+        editTextSearch.hideKeyboard()
         animator = ViewAnimationUtils.createCircularReveal(
-            searchContainer,
-            searchContainer.width + (showButton.right + showButton.left) / 2,
-            (showButton.top + showButton.bottom) / 2,
+            buttonShowSearch,
+            relativeLayoutSearchContainer.width + (buttonShowSearch.right + buttonShowSearch.left) / 2,
+            (buttonShowSearch.top + buttonShowSearch.bottom) / 2,
             width.toFloat(), 0f
         )
         animator?.duration = 200
@@ -65,8 +74,8 @@ class AnimatedSearchView @JvmOverloads constructor(
         animator?.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animator: Animator) {}
             override fun onAnimationEnd(animator: Animator) {
-                searchContainer!!.visibility = INVISIBLE
-                editText!!.setText("")
+                relativeLayoutSearchContainer!!.visibility = INVISIBLE
+                editTextSearch!!.setText("")
                 animator.removeAllListeners()
                 if (stateListener != null) stateListener!!.onClosed()
             }
@@ -81,11 +90,15 @@ class AnimatedSearchView @JvmOverloads constructor(
     }
 
     fun addTextWatcher(textWatcher: TextWatcher?) {
-        binding.editText.addTextChangedListener(textWatcher)
+        binding.editTextSearch.addTextChangedListener(textWatcher)
+    }
+
+    fun doAfterTextChanged(block: (Editable?) -> Unit) {
+        binding.editTextSearch.doAfterTextChanged(block)
     }
 
     fun removeTextWatcher(textWatcher: TextWatcher?) {
-        binding.editText.removeTextChangedListener(textWatcher)
+        binding.editTextSearch.removeTextChangedListener(textWatcher)
     }
 
     override fun onDetachedFromWindow() {
@@ -93,7 +106,7 @@ class AnimatedSearchView @JvmOverloads constructor(
         if (animator != null) animator!!.cancel()
     }
 
-    fun isBackPressEnabled(): Boolean = binding.searchContainer.isVisible
+    fun isBackPressEnabled(): Boolean = binding.relativeLayoutSearchContainer.isVisible
 
     interface SearchStateListener {
         fun onClosed()
