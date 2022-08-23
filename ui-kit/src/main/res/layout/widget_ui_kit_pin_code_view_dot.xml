@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="12dp"
     android:layout_height="12dp"
-    android:layout_margin="12dp"
+    android:layout_margin="6dp"
     tools:ignore="ContentDescription"
     tools:src="@drawable/ic_new_dot_full" />
