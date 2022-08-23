@@ -14,10 +14,10 @@ interface PhoneNumberEnterContract {
         fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState)
         fun showSmsDeliveryFailedForNumber()
         fun navigateToAccountBlocked()
+        fun navigateToCriticalErrorScreen(errorCode: Int)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun load()
         fun onCountryCodeChanged(newCountryCode: String)
         fun onPhoneChanged(phoneNumber: String)
         fun onCountryCodeChanged(newCountry: CountryCode)

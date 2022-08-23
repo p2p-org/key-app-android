@@ -20,6 +20,9 @@ class OnboardingRootFragment :
 
     override val presenter: OnboardingRootContract.Presenter by inject { parametersOf(this) }
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+
     override fun navigateToOnboarding() {
         navigateTo(NewOnboardingFragment.create())
     }
