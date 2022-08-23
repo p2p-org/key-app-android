@@ -25,14 +25,14 @@ class HintTextView @JvmOverloads constructor(
      * Thus, the hint is always visible and not visible for integers which are entered
      * */
     fun updateNumber(numberText: String) {
-        val spannableHint = buildString {
+        val updatedHint = buildString {
             append(numberText)
 
             val hintTextLeft = (hintText.length - numberText.length).coerceAtLeast(0)
             append(hintText.takeLast(hintTextLeft))
         }
 
-        text = spannableHint
+        text = updatedHint
 
         hideIfNeeded(numberText)
     }
