@@ -59,7 +59,7 @@ class GoogleSignInHelper(
         return try {
             getSignInClient(context).getSignInCredentialFromIntent(result.data)
         } catch (ex: ApiException) {
-            if (isValidError(ex)) {
+            if (shouldErrorBeHandled(ex)) {
                 if (connectionStateProvider.hasConnection()) {
                     handler?.onCommonError(ex.message ?: ex.toString())
                 } else {
@@ -71,7 +71,7 @@ class GoogleSignInHelper(
         }
     }
 
-    private fun isValidError(exception: ApiException): Boolean {
+    private fun shouldErrorBeHandled(exception: ApiException): Boolean {
         return exception.statusCode != USER_CANCELED_DIALOG_CODE &&
             exception.statusCode != INTERNAL_ERROR_CODE
     }
