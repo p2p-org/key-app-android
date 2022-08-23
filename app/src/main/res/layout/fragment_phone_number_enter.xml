@@ -39,7 +39,7 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
         app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
 
-    <org.p2p.wallet.auth.widget.PhoneNumberTextField
+    <org.p2p.wallet.auth.widget.PhoneNumberInputView
         android:id="@+id/editTextPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

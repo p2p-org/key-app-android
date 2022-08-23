@@ -63,7 +63,8 @@
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
             app:layout_constraintBottom_toBottomOf="@id/countryPickerView"
             app:layout_constraintStart_toEndOf="@id/countryPickerView"
-            app:layout_constraintTop_toTopOf="@id/countryPickerView" />
+            app:layout_constraintTop_toTopOf="@id/countryPickerView"
+            tools:ignore="HardcodedText" />
 
         <EditText
             android:id="@+id/editTextCountryCode"
@@ -97,6 +98,20 @@
             app:layout_constraintStart_toStartOf="@id/editTextPhoneNumber"
             app:layout_constraintTop_toTopOf="@id/editTextPhoneNumber" />
 
+        <org.p2p.wallet.auth.widget.HintTextView
+            android:id="@+id/numberHintTextView"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            android:textColor="@color/night_30"
+            app:layout_constraintBottom_toBottomOf="@id/editTextPhoneNumber"
+            app:layout_constraintEnd_toEndOf="@id/editTextPhoneNumber"
+            app:layout_constraintStart_toStartOf="@id/editTextPhoneNumber"
+            app:layout_constraintTop_toTopOf="@id/editTextPhoneNumber"
+            tools:text="553 43 43 33" />
+
         <org.p2p.wallet.auth.widget.HintEditText
             android:id="@+id/editTextPhoneNumber"
             android:layout_width="0dp"
@@ -112,7 +127,9 @@
             app:layout_constraintBottom_toBottomOf="@id/editTextCountryCode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/editTextCountryCode"
-            app:layout_constraintTop_toTopOf="@id/editTextCountryCode" />
+            app:layout_constraintTop_toTopOf="@id/editTextCountryCode"
+            tools:text="553 43 43 33" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView

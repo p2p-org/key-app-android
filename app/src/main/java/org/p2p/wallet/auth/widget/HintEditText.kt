@@ -72,9 +72,11 @@ class HintEditText : AppCompatEditText {
                 if (hintText!![a] == ' ') {
                     offsetX += spaceSize
                 } else {
-                    rect[offsetX.toInt() + dip(1), top, (offsetX + numberSize).toInt() - dip(1)] = top + dip(2)
-                    canvas.drawRect(rect, paint)
-                    offsetX += numberSize
+//                    val left = offsetX.toInt() + dip(1)
+//                    val right = (offsetX + numberSize).toInt() - dip(1)
+//                    rect[left, top, right] = top + dip(2)
+//                    canvas.drawRect(rect, paint)
+//                    offsetX += numberSize
                 }
             }
         }
