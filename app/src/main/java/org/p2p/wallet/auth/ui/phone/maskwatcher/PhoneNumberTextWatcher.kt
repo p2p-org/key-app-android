@@ -1,9 +1,8 @@
 package org.p2p.wallet.auth.ui.phone.maskwatcher
 
-import android.text.TextWatcher
 import android.text.Editable
+import android.text.TextWatcher
 import org.p2p.wallet.auth.widget.HintEditText
-import java.lang.StringBuilder
 
 class PhoneNumberTextWatcher(
     private val phoneField: HintEditText,
@@ -75,7 +74,6 @@ class PhoneNumberTextWatcher(
         if (start >= 0) {
             phoneField.setSelection(start.coerceAtMost(phoneField.length()))
         }
-        phoneField.onTextChange()
         ignoreOnPhoneChange = false
         afterTextChanged.invoke(s.toString())
     }

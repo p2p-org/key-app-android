@@ -1,9 +1,9 @@
 package org.p2p.wallet.auth.widget
 
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.view.isInvisible
 import android.content.Context
 import android.util.AttributeSet
-import android.view.ViewGroup
 import org.p2p.wallet.utils.emptyString
 
 class HintTextView @JvmOverloads constructor(
@@ -13,45 +13,37 @@ class HintTextView @JvmOverloads constructor(
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
     private var hintText: String = emptyString()
-    private var savedNumberText: String = emptyString()
 
     fun setHintText(hintText: String) {
-        text = hintText
+        // we don't need that symbol in hint because input has no such symbols
+        text = hintText.filterNot { it == '-' }
         this.hintText = hintText
     }
 
-    /*
-    * The number 1 has less width than other numbers
-    * If the hint has 1 but entered number has something else then we'll see some spacing errors
-    *
-    * That's why we are moving the hint position for the space of the number which user entered
-    * */
+    /**
+     * We are updating the hint according to the entered number
+     * Thus, the hint is always visible and not visible for integers which are entered
+     * */
     fun updateNumber(numberText: String) {
-        val isDeletion = numberText.isEmpty() || numberText.length < savedNumberText.length
-        text = hintText.takeLast(hintText.length - numberText.length)
+        val spannableHint = buildString {
+            append(numberText)
 
-        if (isDeletion) {
-            val lastDeletedNumber = savedNumberText.lastOrEmpty()
-            savedNumberText = numberText
-
-            val numberSize = paint.measureText(lastDeletedNumber)
-            val newLayoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply {
-                leftMargin -= numberSize.toInt()
-            }
-
-            layoutParams = newLayoutParams
-        } else {
-            savedNumberText = numberText
-
-            val lastNumber = numberText.lastOrEmpty()
-            val numberSize = paint.measureText(lastNumber)
-            val newLayoutParams = (layoutParams as ViewGroup.MarginLayoutParams).apply {
-                leftMargin += numberSize.toInt()
-            }
-
-            layoutParams = newLayoutParams
+            val hintTextLeft = (hintText.length - numberText.length).coerceAtLeast(0)
+            append(hintText.takeLast(hintTextLeft))
         }
+
+        text = spannableHint
+
+        hideIfNeeded(numberText)
+    }
+
+    /**
+     * If the input is too long, we are resizing the text
+     * Thus, the user can see the hint on the background
+     * Therefore, we are hiding hint if there is too long input
+     * */
+    private fun hideIfNeeded(numberText: String) {
+        val isVisible = numberText.length <= hintText.length
+        isInvisible = !isVisible
     }
 }
-
-private fun String.lastOrEmpty(): String = lastOrNull()?.toString().orEmpty()
