@@ -19,5 +19,8 @@ class OnboardingRootPresenter(
         } else {
             view.navigateToOnboarding()
         }
+
+        // Sign in unidentified user for help messenger in onboarding flow
+        IntercomService.signIn(emptyString())
     }
 }
