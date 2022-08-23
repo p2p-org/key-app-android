@@ -44,7 +44,7 @@ class CountryCodeHelper(
             }
             event = xmlParser.next()
         }
-        resultCountries
+        resultCountries.sortedBy { it.name }
     } catch (error: Exception) {
         Timber.e(error, "Error while reading from XML file")
         emptyList()
