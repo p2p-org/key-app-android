@@ -17,7 +17,7 @@ private const val INDEX_HTML_URI = "file:///android_asset/index.html"
 class Web3AuthApiClient(
     context: Context,
     private val torusNetwork: TorusEnvironment,
-    private val mapper: Web3AuthErrorMapper
+    private val mapper: Web3AuthRepositoryMapper
 ) : Web3AuthApi {
 
     private var handler: Web3AuthClientHandler? = null
