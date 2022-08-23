@@ -8,13 +8,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
-import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -36,12 +37,15 @@ class PhoneNumberEnterFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.toolbar.setNavigationOnClickListener {
+            popBackStack()
+        }
+
         buttonConfirmPhone.setOnClickListener {
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }
 
         setOnResultListener()
-        presenter.load()
     }
 
     override fun showDefaultCountryCode(country: CountryCode?) {
