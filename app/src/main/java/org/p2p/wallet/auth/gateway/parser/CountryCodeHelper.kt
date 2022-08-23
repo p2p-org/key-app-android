@@ -22,33 +22,32 @@ class CountryCodeHelper(
     private val KEY_NAME = "name"
     private val KEY_FLAG_EMOJI = "flag_emoji"
 
-    fun parserCountryCodesFromXmlFile(): List<CountryCode> {
-        val countries = mutableListOf<CountryCode>()
-        try {
-            val xmlParserFactory = XmlPullParserFactory.newInstance()
-            val xmlParser = xmlParserFactory.newPullParser()
-            val inputStream = resources.openRawResource(R.raw.ccp_english)
-            xmlParser.setInput(inputStream, "UTF-8")
+    fun parserCountryCodesFromXmlFile(): List<CountryCode> = try {
+        val resultCountries = mutableListOf<CountryCode>()
+        val xmlParserFactory = XmlPullParserFactory.newInstance()
+        val xmlParser = xmlParserFactory.newPullParser()
+        val inputStream = resources.openRawResource(R.raw.ccp_english)
+        xmlParser.setInput(inputStream, "UTF-8")
 
-            var event = xmlParser.eventType
-            while (event != XmlPullParser.END_DOCUMENT) {
-                val name = xmlParser.name
-                when {
-                    event == XmlPullParser.END_TAG && name.equals(KEY_COUNTRY) -> {
-                        val nameCode = xmlParser.getAttributeValue(null, KEY_NAME_CODE).uppercase()
-                        val phoneCode = xmlParser.getAttributeValue(null, KEY_PHONE_CODE)
-                        val name = xmlParser.getAttributeValue(null, KEY_NAME)
-                        val flagEmoji = xmlParser.getAttributeValue(null, KEY_FLAG_EMOJI)
-                        val mask = getMaskForCountryCode(nameCode, phoneCode)
-                        countries.add(CountryCode(nameCode, phoneCode, name, flagEmoji, mask))
-                    }
+        var event = xmlParser.eventType
+        while (event != XmlPullParser.END_DOCUMENT) {
+            val name = xmlParser.name
+            when {
+                event == XmlPullParser.END_TAG && name.equals(KEY_COUNTRY) -> {
+                    val nameCode = xmlParser.getAttributeValue(null, KEY_NAME_CODE).uppercase()
+                    val phoneCode = xmlParser.getAttributeValue(null, KEY_PHONE_CODE)
+                    val name = xmlParser.getAttributeValue(null, KEY_NAME)
+                    val flagEmoji = xmlParser.getAttributeValue(null, KEY_FLAG_EMOJI)
+                    val mask = getMaskForCountryCode(nameCode, phoneCode)
+                    resultCountries.add(CountryCode(nameCode, phoneCode, name, flagEmoji, mask))
                 }
-                event = xmlParser.next()
             }
-        } catch (e: Exception) {
-            Timber.e(e, "Error while reading from XML file")
+            event = xmlParser.next()
         }
-        return countries.sortedBy { it.name }
+        resultCountries.sortedBy { it.name }
+    } catch (error: Exception) {
+        Timber.e(error, "Error while reading from XML file")
+        emptyList()
     }
 
     private fun getMaskForCountryCode(countryCode: String, phoneCode: String): String {
@@ -58,6 +57,7 @@ class CountryCodeHelper(
                 phoneNumberUtil.format(exampleNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
             internationalFormat.replace("+$phoneCode", emptyString())
         } catch (e: Exception) {
+            Timber.i(e, "Get mask for country code failed")
             countryCodeMask[countryCode].orEmpty()
         }
     }
@@ -67,6 +67,7 @@ class CountryCodeHelper(
             val validatePhoneNumber = phoneNumberUtil.parse(phoneNumber, countryCode.uppercase())
             phoneNumberUtil.isValidNumber(validatePhoneNumber)
         } catch (countryNotFound: Exception) {
+            Timber.i(countryNotFound, "Phone number validation failed")
             return false
         }
     }

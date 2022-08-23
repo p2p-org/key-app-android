@@ -10,6 +10,7 @@ import androidx.annotation.StringRes
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.uikit.utils.keyboardIsVisible
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.snackbar
 
@@ -58,6 +59,14 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
     override fun showErrorSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(message)
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
+        }
+    }
+
+    override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(e.getErrorMessage(requireContext()))
                 .setIcon(R.drawable.ic_close_red)
                 .setAction(actionResId, block)
         }

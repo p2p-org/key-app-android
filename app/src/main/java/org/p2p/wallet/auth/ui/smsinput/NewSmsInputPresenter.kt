@@ -1,5 +1,13 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
+import org.p2p.wallet.auth.interactor.CreateWalletInteractor
+import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
+import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -7,18 +15,11 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
-import org.p2p.wallet.auth.interactor.CreateWalletInteractor
-import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
-import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract.Presenter.SmsInputTimerState
-import org.p2p.wallet.common.mvp.BasePresenter
-import timber.log.Timber
-import kotlin.time.Duration.Companion.seconds
 
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val repository: SignUpFlowDataLocalRepository
-) : BasePresenter<NewAuthSmsInputContract.View>(), NewAuthSmsInputContract.Presenter {
+) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
 
     private var timerFlow: Job? = null
 
@@ -26,7 +27,7 @@ class NewSmsInputPresenter(
 
     private var smsIncorrectTries = 0
 
-    override fun attach(view: NewAuthSmsInputContract.View) {
+    override fun attach(view: NewSmsInputContract.View) {
         super.attach(view)
 
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
@@ -66,9 +67,12 @@ class NewSmsInputPresenter(
                 timerFlow = createSmsInputTimer(timerSeconds = 5)
                     .toRequestsOverflowSmsInputTimer()
                     .launchIn(this)
-            } catch (serverError: GatewayServiceError.TemporaryFailure) {
-                Timber.i(serverError)
-                view?.showErrorMessage(serverError)
+            } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+                Timber.e(serverError)
+                view?.navigateToCriticalErrorScreen(serverError.code)
+            } catch (error: Throwable) {
+                Timber.e(error, "Checking sms value failed")
+                view?.showErrorSnackBar(error)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }
@@ -87,9 +91,12 @@ class NewSmsInputPresenter(
                 view?.renderButtonLoading(isLoading = true)
 
                 createWalletInteractor.startCreatingWallet(repository.userPhoneNumber.orEmpty())
-            } catch (serverError: GatewayServiceError.TemporaryFailure) {
-                Timber.i(serverError)
-                view?.showErrorMessage(serverError)
+            } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+                Timber.e(serverError)
+                view?.navigateToCriticalErrorScreen(serverError.code)
+            } catch (error: Throwable) {
+                Timber.e(error, "Resending sms failed")
+                view?.showErrorSnackBar(R.string.error_general_message)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }

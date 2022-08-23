@@ -1,11 +1,12 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import com.google.gson.Gson
+import org.p2p.wallet.auth.model.Web3AuthErrorResponse
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.fromJsonReified
 import timber.log.Timber
 
-class Web3AuthErrorMapper(private val gson: Gson) {
+class Web3AuthRepositoryMapper(private val gson: Gson) {
     fun fromNetworkSignUp(responseJson: String): Web3AuthSignUpResponse? {
         return gson.fromJsonReified<Web3AuthSignUpResponse>(responseJson)
     }
