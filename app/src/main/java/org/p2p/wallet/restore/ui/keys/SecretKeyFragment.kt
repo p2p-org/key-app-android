@@ -48,8 +48,6 @@ class SecretKeyFragment :
                 presenter.verifySeedPhrase()
             }
 
-            seedPhraseView
-
             seedPhraseView.onSeedPhraseChanged = { keys ->
                 presenter.setNewKeys(keys)
             }
