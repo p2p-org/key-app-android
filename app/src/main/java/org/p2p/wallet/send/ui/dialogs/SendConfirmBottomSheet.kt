@@ -16,8 +16,8 @@ import org.p2p.wallet.databinding.DialogSendConfirmBinding
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.utils.BiometricPromptWrapper
-import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
+import org.p2p.uikit.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs

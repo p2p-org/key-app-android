@@ -1,20 +1,13 @@
 package org.p2p.wallet.restore.ui.keys
 
 import androidx.core.content.FileProvider
-import androidx.core.view.children
-import androidx.core.view.isVisible
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.organisms.seedphrase.SecretKey
 import org.p2p.uikit.utils.hideKeyboard
-import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -22,14 +15,10 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSecretKeyBinding
-import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
-import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
-import org.p2p.wallet.restore.ui.keys.adapter.SeedPhraseUtils
 import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
@@ -46,10 +35,6 @@ class SecretKeyFragment :
     private val binding: FragmentSecretKeyBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val phraseAdapter: SecretPhraseAdapter by unsafeLazy {
-        SecretPhraseAdapter { keys -> presenter.setNewKeys(keys) }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.IMPORT_MANUAL)
@@ -58,25 +43,18 @@ class SecretKeyFragment :
                 it.hideKeyboard()
                 popBackStack()
             }
-            initKeysList()
 
             continueButton.setOnClickListener {
                 presenter.verifySeedPhrase()
             }
 
-            textViewClear.setOnClickListener {
-                phraseAdapter.clear()
+            seedPhraseView
+
+            seedPhraseView.onSeedPhraseChanged = { keys ->
+                presenter.setNewKeys(keys)
             }
 
-            textViewPaste.setOnClickListener {
-                val seedPhrase = requireContext().getClipboardText(trimmed = true).orEmpty()
-                val keys = SeedPhraseUtils.format(seedPhrase)
-                if (keys.isNotEmpty()) {
-                    phraseAdapter.addAllSecretKeys(keys)
-                }
-            }
-
-            keysRecyclerView.setOnClickListener {
+            seedPhraseView.setOnContainerClickListener {
                 presenter.requestFocusOnLastKey()
             }
 
@@ -93,20 +71,11 @@ class SecretKeyFragment :
 
     private fun checkClipboard() {
         val clipboardData = requireContext().getClipboardText()
-        binding.textViewPaste.isEnabled = !clipboardData.isNullOrBlank()
-    }
-
-    private fun FragmentSecretKeyBinding.initKeysList() {
-        keysRecyclerView.layoutManager = FlexboxLayoutManager(requireContext()).also {
-            it.flexDirection = FlexDirection.ROW
-            it.justifyContent = JustifyContent.FLEX_START
-        }
-        keysRecyclerView.attachAdapter(phraseAdapter)
-        keysRecyclerView.isVisible = true
+        binding.seedPhraseView.setPasteEnabled(!clipboardData.isNullOrBlank())
     }
 
     override fun updateKeys(secretKeys: List<SecretKey>) {
-        phraseAdapter.updateSecretKeys(secretKeys)
+        binding.seedPhraseView.updateSecretKeys(secretKeys)
     }
 
     override fun showSuccess(secretKeys: List<SecretKey>) {
@@ -115,29 +84,19 @@ class SecretKeyFragment :
 
     override fun showSeedPhraseValid(isValid: Boolean) {
         binding.continueButton.isEnabled = isValid
-
-        val text = if (isValid) R.string.seed_phrase_check else R.string.seed_phrase
-        binding.textViewType.text = getString(text)
+        binding.seedPhraseView.showSeedPhraseValid(isValid)
     }
 
     override fun showClearButton(isVisible: Boolean) {
-        binding.textViewClear.isVisible = isVisible
+        binding.seedPhraseView.showClearButton(isVisible)
     }
 
     override fun addFirstKey(key: SecretKey) {
-        phraseAdapter.addSecretKey(SecretKey())
-    }
-
-    override fun showError(messageRes: Int) = with(binding) {
-
+        binding.seedPhraseView.addSecretKey(SecretKey())
     }
 
     override fun showFocusOnLastKey(lastSecretItemIndex: Int) {
-        val viewGroup =
-            binding.keysRecyclerView.children.toList().getOrNull(lastSecretItemIndex) as? LinearLayout ?: return
-        val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }
-        secretKeyEditText?.requestFocus()
-        secretKeyEditText?.showSoftKeyboard()
+        binding.seedPhraseView.showFocusOnLastKey(lastSecretItemIndex)
     }
 
     override fun showFile(file: File) {

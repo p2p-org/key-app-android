@@ -7,7 +7,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.restore.model.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SecretKey
 import timber.log.Timber
 import kotlin.properties.Delegates
 import kotlinx.coroutines.launch

@@ -16,7 +16,7 @@ import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogSwapConfirmBinding
 import org.p2p.wallet.swap.model.SwapConfirmData
 import org.p2p.wallet.utils.BiometricPromptWrapper
-import org.p2p.wallet.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs

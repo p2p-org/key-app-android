@@ -1,20 +1,19 @@
-package org.p2p.wallet.restore.ui.keys.adapter
+package org.p2p.uikit.organisms.seedphrase.adapter
 
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import android.annotation.SuppressLint
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import org.p2p.uikit.R
+import org.p2p.uikit.databinding.ItemSecretKeyBinding
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.showSoftKeyboard
-import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemSecretKeyBinding
-import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.SpanUtils
+import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
+import org.p2p.uikit.utils.SpanUtils
 
 class SecretKeyViewHolder(
     binding: ItemSecretKeyBinding,
@@ -40,13 +39,12 @@ class SecretKeyViewHolder(
 
     private var textWatcher: SeedPhraseWatcher? = null
 
-    @SuppressLint("SetTextI18n")
     fun onBind(item: SecretKey) {
-        textWatcher?.isLastKey = bindingAdapterPosition == Constants.SEED_PHRASE_SIZE_LONG
+        textWatcher?.isLastKey = adapterPosition == SEED_PHRASE_SIZE_LONG
 
         if (item.text.isEmpty()) {
             textWatcher = SeedPhraseWatcher.installOn(
-                isLast = bindingAdapterPosition == Constants.SEED_PHRASE_SIZE_LONG,
+                isLast = adapterPosition == SEED_PHRASE_SIZE_LONG,
                 editText = keyEditText,
                 onKeyAdded = { onKeyAdded(it) },
                 onSeedPhraseInserted = { onSeedPhraseInserted(it) }
@@ -64,7 +62,7 @@ class SecretKeyViewHolder(
     }
 
     fun setKeyCompleted(secretKey: SecretKey) {
-        val wordIndex = bindingAdapterPosition + 1
+        val wordIndex = adapterPosition + 1
         val text = "$wordIndex ${secretKey.text}"
 
         if (secretKey.isValid) {
@@ -88,7 +86,7 @@ class SecretKeyViewHolder(
         val isActionDown = event.action == KeyEvent.ACTION_DOWN
         val isEmpty = v.text.toString().isEmpty()
 
-        if (isDeletion && isActionDown && isEmpty && bindingAdapterPosition > 0) {
+        if (isDeletion && isActionDown && isEmpty && adapterPosition > 0) {
             onKeyRemoved()
             return true
         }
@@ -111,6 +109,6 @@ class SecretKeyViewHolder(
 
     private fun onKeyRemoved() {
         /* We don't need to remove text change listener here, because it's already deleted when the key was added */
-        onKeyRemovedListener(bindingAdapterPosition - 1)
+        onKeyRemovedListener(adapterPosition - 1)
     }
 }

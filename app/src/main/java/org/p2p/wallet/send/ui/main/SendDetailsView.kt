@@ -15,7 +15,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSendDetailsBinding
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendTotal
-import org.p2p.wallet.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.withTextOrGone
 

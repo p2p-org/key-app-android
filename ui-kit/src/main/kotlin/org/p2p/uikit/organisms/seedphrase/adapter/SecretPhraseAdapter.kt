@@ -1,9 +1,9 @@
-package org.p2p.wallet.restore.ui.keys.adapter
+package org.p2p.uikit.organisms.seedphrase.adapter
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
-import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.utils.Constants
+import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
 
 class SecretPhraseAdapter(
     private val onSeedPhraseChanged: (List<SecretKey>) -> Unit
@@ -56,7 +56,7 @@ class SecretPhraseAdapter(
 
     fun addAllSecretKeys(secretKeys: List<SecretKey>) {
         secretKeys
-            .take(Constants.SEED_PHRASE_SIZE_LONG)
+            .take(SEED_PHRASE_SIZE_LONG)
             .forEach { item ->
                 /* If there is empty element exists, then we are updating it to the first entered key */
                 val index = data.indexOfFirst { it.text.isEmpty() }

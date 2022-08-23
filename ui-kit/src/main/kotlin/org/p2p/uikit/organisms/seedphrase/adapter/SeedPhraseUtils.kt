@@ -1,7 +1,6 @@
-package org.p2p.wallet.restore.ui.keys.adapter
+package org.p2p.uikit.organisms.seedphrase.adapter
 
-import org.p2p.wallet.restore.model.SecretKey
-import timber.log.Timber
+import org.p2p.uikit.organisms.seedphrase.SecretKey
 
 object SeedPhraseUtils {
 
@@ -17,9 +16,6 @@ object SeedPhraseUtils {
                 listOf(SecretKey(text.trim()))
             }
             else -> {
-                Timber
-                    .tag("SEED_PHRASE")
-                    .d("User is typing the word and not finished yet, doing nothing $text")
                 emptyList()
             }
         }

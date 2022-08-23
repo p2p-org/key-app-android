@@ -1,11 +1,11 @@
-package org.p2p.wallet.restore.ui.keys.adapter
+package org.p2p.uikit.organisms.seedphrase.adapter
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
-import org.p2p.wallet.R
-import org.p2p.wallet.restore.model.SecretKey
-import timber.log.Timber
+import org.p2p.uikit.R
+import org.p2p.uikit.organisms.seedphrase.SecretKey
 import kotlin.properties.Delegates
 
 /**
@@ -56,7 +56,7 @@ class SeedPhraseWatcher(
         val keys = SeedPhraseUtils.format(text)
         when (keys.size) {
             0 -> {
-                Timber.tag("SEED_PHRASE").d("User is typing and not finished yet, doing nothing $text")
+                Log.d("SEED_PHRASE", "User is typing and not finished yet, doing nothing $text")
             }
             1 -> {
                 val result = KeyResult.KeyAdded(keys.first())

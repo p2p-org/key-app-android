@@ -10,7 +10,7 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.restore.model.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SecretKey
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol

@@ -4,7 +4,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
-import org.p2p.wallet.restore.model.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SecretKey
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsContract
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsPresenter
 import org.p2p.wallet.restore.ui.keys.SecretKeyContract

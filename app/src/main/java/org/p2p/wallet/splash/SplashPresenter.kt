@@ -20,6 +20,8 @@ class SplashPresenter(
     }
 
     private fun openRootScreen() {
+        view?.navigateToOnboarding()
+        return
         if (authInteractor.isAuthorized()) {
             view?.navigateToSignIn()
         } else {

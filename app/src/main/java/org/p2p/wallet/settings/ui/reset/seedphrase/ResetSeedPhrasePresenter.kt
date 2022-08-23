@@ -3,7 +3,7 @@ package org.p2p.wallet.settings.ui.reset.seedphrase
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SecretKeyInteractor
-import org.p2p.wallet.restore.model.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SecretKey
 import kotlin.properties.Delegates
 
 class ResetSeedPhrasePresenter(
