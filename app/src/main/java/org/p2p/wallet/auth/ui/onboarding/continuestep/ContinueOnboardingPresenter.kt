@@ -25,7 +25,7 @@ class ContinueOnboardingPresenter(
                     view?.navigateToPhoneNumberEnter()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause, result.message)
+                    Timber.e(result.cause, "Continue sign up failed")
                     view?.showErrorSnackBar(R.string.error_general_message)
                 }
             }

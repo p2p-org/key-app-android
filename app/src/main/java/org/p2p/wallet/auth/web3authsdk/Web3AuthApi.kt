@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.web3authsdk
 
+import org.p2p.wallet.auth.model.Web3AuthErrorResponse
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 
 interface Web3AuthApi {

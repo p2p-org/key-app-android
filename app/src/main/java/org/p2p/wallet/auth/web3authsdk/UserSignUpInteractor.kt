@@ -1,8 +1,9 @@
 package org.p2p.wallet.auth.web3authsdk
 
+import org.p2p.wallet.auth.model.Web3AuthErrorResponse
 import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
-import org.p2p.wallet.auth.web3authsdk.Web3AuthErrorResponse.ErrorType
+import org.p2p.wallet.auth.model.Web3AuthErrorResponse.ErrorType
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -16,7 +17,7 @@ class UserSignUpInteractor(
     sealed class SignUpResult {
         object UserAlreadyExists : SignUpResult()
         object SignUpSuccessful : SignUpResult()
-        class SignUpFailed(val message: String?, val cause: Throwable? = null) : SignUpResult()
+        class SignUpFailed(val cause: Throwable) : SignUpResult()
     }
 
     suspend fun trySignUpNewUser(idToken: String, idTokenOwnerId: String): SignUpResult {
@@ -32,25 +33,26 @@ class UserSignUpInteractor(
             if (web3AuthError.errorType == ErrorType.CANNOT_RECONSTRUCT) {
                 SignUpResult.UserAlreadyExists
             } else {
-                SignUpResult.SignUpFailed(web3AuthError.errorMessage)
+                SignUpResult.SignUpFailed(web3AuthError)
             }
         } catch (error: Exception) {
-            SignUpResult.SignUpFailed(error.message, error.cause)
+            SignUpResult.SignUpFailed(error)
         }
     }
 
     fun continueSignUpUser(): SignUpResult {
-        return userSignUpDetailsStorage.getLastSignUpUserDetails()?.runCatching {
-            signUpFlowDataRepository.signUpUserId = userId
+        return try {
+            val lastUserDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()
+                ?: throw NullPointerException("Last sign up user details (aka device share) not found")
+
+            signUpFlowDataRepository.signUpUserId = lastUserDetails.userId
             signUpFlowDataRepository.generateUserAccount(
-                userMnemonicPhrase = signUpDetails.mnemonicPhrase.split("")
+                userMnemonicPhrase = lastUserDetails.signUpDetails.mnemonicPhrase.split("")
             )
+            SignUpResult.SignUpSuccessful
+        } catch (error: Exception) {
+            SignUpResult.SignUpFailed(error)
         }
-            ?.fold(
-                onSuccess = { SignUpResult.SignUpSuccessful },
-                onFailure = { SignUpResult.SignUpFailed("Sign up failed", it) }
-            )
-            ?: SignUpResult.SignUpFailed("Last sign up user is not found")
     }
 
     private suspend fun generateDeviceAndThirdShare(idToken: String): Web3AuthSignUpResponse {

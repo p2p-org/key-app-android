@@ -16,28 +16,29 @@ class PhoneNumberEnterPresenter(
     private var selectedCountryCode: CountryCode? = null
 
     override fun load() {
-        launch {
-            try {
-                val countryCode: CountryCode? =
-                    countryCodeInteractor.detectCountryCodeBySimCard()
-                        ?: countryCodeInteractor.detectCountryCodeByNetwork()
-                        ?: countryCodeInteractor.detectCountryCodeByLocale()
+        launch { loadDefaultCountryCode() }
+    }
 
-                selectedCountryCode = countryCode
+    private suspend fun loadDefaultCountryCode() {
+        try {
+            val countryCode: CountryCode? =
+                countryCodeInteractor.detectCountryCodeBySimCard()
+                    ?: countryCodeInteractor.detectCountryCodeByNetwork()
+                    ?: countryCodeInteractor.detectCountryCodeByLocale()
 
-                view?.showDefaultCountryCode(countryCode)
-            } catch (e: Exception) {
-                Timber.i(e)
-                view?.showErrorMessage(e)
-            }
+            selectedCountryCode = countryCode
+
+            view?.showDefaultCountryCode(countryCode)
+        } catch (e: Exception) {
+            Timber.e(e, "Loading default country code failed")
+            view?.showErrorSnackBar(R.string.error_general_message)
         }
     }
 
     override fun onCountryCodeChanged(newCountryCode: String) {
         launch {
-            val countryCode = countryCodeInteractor.findCountryForPhoneCode(newCountryCode)
-            selectedCountryCode = countryCode
-            view?.update(countryCode)
+            selectedCountryCode = countryCodeInteractor.findCountryForPhoneCode(newCountryCode)
+            view?.update(selectedCountryCode)
         }
     }
 
@@ -55,7 +56,7 @@ class PhoneNumberEnterPresenter(
 
     override fun onCountryCodeChanged(newCountry: CountryCode) {
         selectedCountryCode = newCountry
-        view?.update(newCountry)
+        view?.update(selectedCountryCode)
     }
 
     override fun onCountryCodeInputClicked() {
@@ -67,8 +68,8 @@ class PhoneNumberEnterPresenter(
             try {
                 selectedCountryCode?.let {
                     createWalletInteractor.startCreatingWallet(userPhoneNumber = it.phoneCode + phoneNumber)
+                    view?.navigateToSmsInput()
                 }
-                view?.navigateToSmsInput()
             } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
                 Timber.i(smsDeliverFailed)
                 view?.showSmsDeliveryFailedForNumber()
@@ -76,10 +77,10 @@ class PhoneNumberEnterPresenter(
                 Timber.i(tooManyPhoneEnters)
                 view?.navigateToAccountBlocked()
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-                Timber.i(serverError)
+                Timber.e(serverError, "Phone number submission failed with critical error")
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
-                Timber.e(error)
+                Timber.e(error, "Phone number submission failed")
                 view?.showErrorSnackBar(R.string.error_general_message)
             }
         }

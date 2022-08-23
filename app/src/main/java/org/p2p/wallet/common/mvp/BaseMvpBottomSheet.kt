@@ -9,6 +9,7 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.snackbar
 
@@ -59,6 +60,14 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
     override fun showErrorSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(message)
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
+        }
+    }
+
+    override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(e.getErrorMessage(requireContext()))
                 .setIcon(R.drawable.ic_close_red)
                 .setAction(actionResId, block)
         }

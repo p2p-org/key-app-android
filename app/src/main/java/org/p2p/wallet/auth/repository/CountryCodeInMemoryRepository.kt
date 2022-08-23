@@ -22,8 +22,8 @@ class CountryCodeInMemoryRepository(
         try {
             val localeCountryIso = context.resources.configuration.locale.country
             getCountryForIso(localeCountryIso)
-        } catch (e: Exception) {
-            Timber.i(e)
+        } catch (error: Exception) {
+            Timber.i(error, "Detecting country code by locale failed")
             null
         }
     }
@@ -33,8 +33,8 @@ class CountryCodeInMemoryRepository(
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val networkCountryIso = telephonyManager.networkCountryIso
             getCountryForIso(networkCountryIso)
-        } catch (e: Exception) {
-            Timber.i(e)
+        } catch (error: Exception) {
+            Timber.i(error, "Detecting country code by network failed")
             null
         }
     }
@@ -44,21 +44,14 @@ class CountryCodeInMemoryRepository(
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val simCountryISO = telephonyManager.simCountryIso
             getCountryForIso(simCountryISO)
-        } catch (e: Exception) {
-            Timber.i(e)
+        } catch (error: Exception) {
+            Timber.i(error, "Detecting country code by sim card failed")
             null
         }
     }
 
-    override fun findCountryCodeByPhoneCode(phoneCode: String): CountryCode? {
-        return try {
-            val countryCode = allCountryCodes.firstOrNull { it.phoneCode == phoneCode }
-            countryCode
-        } catch (e: Exception) {
-            Timber.i(e)
-            null
-        }
-    }
+    override fun findCountryCodeByPhoneCode(phoneCode: String): CountryCode? =
+        allCountryCodes.firstOrNull { it.phoneCode == phoneCode }
 
     override fun isValidNumberForRegion(phoneNumber: String, countryCode: String): Boolean =
         countryCodeHelper.isValidNumberForRegion(phoneNumber, countryCode)
@@ -70,7 +63,7 @@ class CountryCodeInMemoryRepository(
         allCountryCodes.firstOrNull { it.nameCode.equals(nameCode, ignoreCase = true) }
     }
 
-    private suspend fun readCountriesFromXml() = withContext(dispatchers.io) {
+    private suspend fun readCountriesFromXml(): Boolean = withContext(dispatchers.io) {
         allCountryCodes.clear()
         allCountryCodes.addAll(countryCodeHelper.parserCountryCodesFromXmlFile())
     }

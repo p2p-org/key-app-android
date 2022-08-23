@@ -68,11 +68,11 @@ class NewSmsInputPresenter(
                     .toRequestsOverflowSmsInputTimer()
                     .launchIn(this)
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-                Timber.i(serverError)
+                Timber.e(serverError)
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
-                Timber.e(error)
-                view?.showErrorSnackBar(R.string.error_general_message)
+                Timber.e(error, "Checking sms value failed")
+                view?.showErrorSnackBar(error)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }
@@ -92,11 +92,11 @@ class NewSmsInputPresenter(
 
                 createWalletInteractor.startCreatingWallet(repository.userPhoneNumber.orEmpty())
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-                Timber.i(serverError)
+                Timber.e(serverError)
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
-                Timber.e(error)
-                view?.showErrorMessage(R.string.error_general_message)
+                Timber.e(error, "Resending sms failed")
+                view?.showErrorSnackBar(R.string.error_general_message)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }

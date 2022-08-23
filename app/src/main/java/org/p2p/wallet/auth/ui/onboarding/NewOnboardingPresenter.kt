@@ -25,10 +25,8 @@ class NewOnboardingPresenter(
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause, result.message)
-                    result.message?.let {
-                        view?.showErrorSnackBar(R.string.error_general_message)
-                    }
+                    Timber.e(result.cause, "Creating new user with device shared failed")
+                    view?.showErrorSnackBar(R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onSameTokenFoundError()

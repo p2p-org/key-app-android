@@ -124,12 +124,4 @@ class NewSmsInputFragment :
             inclusive = true
         )
     }
-
-    override fun showErrorMessage(messageResId: Int) {
-        showErrorSnackBar(getString(messageResId))
-    }
-
-    override fun showErrorMessage(e: Throwable?) {
-        e?.message?.let { showErrorSnackBar(message = it) }
-    }
 }
