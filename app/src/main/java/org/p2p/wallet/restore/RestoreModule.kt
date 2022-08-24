@@ -16,13 +16,13 @@ object RestoreModule : InjectionModule {
         factoryOf(::SeedPhraseInteractor)
         factory<SeedPhraseContract.Presenter> {
             SecretKeyPresenter(
-                secretKeyInteractor = get(),
+                seedPhraseInteractor = get(),
             )
         }
         factory<DerivableAccountsContract.Presenter> { (secretKeys: List<SeedPhraseKey>) ->
             DerivableAccountsPresenter(
                 secretKeys = secretKeys,
-                secretKeyInteractor = get(),
+                seedPhraseInteractor = get(),
                 usernameInteractor = get(),
                 analytics = get()
             )
