@@ -27,16 +27,18 @@ class SelectDerivableAccountBottomSheet() : BottomSheetDialogFragment() {
             currentPath: DerivationPath,
             requestKey: String,
             resultKey: String
-        ) = SelectDerivableAccountBottomSheet().withArgs(
-            EXTRA_PATH to currentPath,
-            EXTRA_REQUEST_KEY to requestKey,
-            EXTRA_RESULT_KEY to resultKey
-        ).show(fm, SelectDerivableAccountBottomSheet::javaClass.name)
+        ) = SelectDerivableAccountBottomSheet()
+            .withArgs(
+                EXTRA_PATH to currentPath,
+                EXTRA_REQUEST_KEY to requestKey,
+                EXTRA_RESULT_KEY to resultKey
+            )
+            .show(fm, SelectDerivableAccountBottomSheet::javaClass.name)
     }
 
     private val binding: DialogSelectDerivationPathBinding by viewBinding()
 
-    private val path: DerivationPath by args(EXTRA_PATH)
+    private val currentPath: DerivationPath by args(EXTRA_PATH)
 
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
@@ -48,13 +50,13 @@ class SelectDerivableAccountBottomSheet() : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        selectedPath = path
+        selectedPath = currentPath
         with(binding) {
             bip44Button.text = DerivationPath.BIP44.stringValue
             bip44ChangeButton.text = DerivationPath.BIP44CHANGE.stringValue
             bip32Button.text = DerivationPath.BIP32DEPRECATED.stringValue
 
-            when (path) {
+            when (currentPath) {
                 DerivationPath.BIP44CHANGE -> pathGroup.check(R.id.bip44ChangeButton)
                 DerivationPath.BIP44 -> pathGroup.check(R.id.bip44Button)
                 DerivationPath.BIP32DEPRECATED -> pathGroup.check(R.id.bip32Button)
