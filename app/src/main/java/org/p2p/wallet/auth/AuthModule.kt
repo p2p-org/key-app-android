@@ -26,6 +26,8 @@ import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingContract
@@ -51,10 +53,10 @@ import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
-import org.p2p.wallet.auth.ui.smsinput.NewAuthSmsInputContract
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorTimerPresenter
-import org.p2p.wallet.auth.ui.smsinput.inputblocked.OnboardingGeneralErrorContract
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
@@ -62,11 +64,11 @@ import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
-import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
-import org.p2p.wallet.auth.web3authsdk.Web3AuthErrorMapper
+import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.feerelayer.FeeRelayerModule.FEE_RELAYER_QUALIFIER
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.splash.SplashContract
@@ -108,12 +110,12 @@ object AuthModule {
     private fun Module.onboardingModule() {
         singleOf(::GoogleSignInHelper)
         singleOf(::UserSignUpDetailsStorage)
-        singleOf(::Web3AuthErrorMapper)
+        singleOf(::Web3AuthClientMapper)
         single<Web3AuthApi> {
             Web3AuthApiClient(
                 context = androidContext(),
                 torusNetwork = get<NetworkServicesUrlProvider>().loadTorusEnvironment(),
-                errorMapper = get(),
+                mapper = get(),
                 gson = get()
             )
         }
@@ -136,8 +138,9 @@ object AuthModule {
 
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
 
-        factoryOf(::NewSmsInputPresenter) bind NewAuthSmsInputContract.Presenter::class
-        factoryOf(::OnboardingGeneralErrorTimerPresenter) bind OnboardingGeneralErrorContract.Presenter::class
+        factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
+        factoryOf(::OnboardingGeneralErrorTimerPresenter) bind OnboardingGeneralErrorTimerContract.Presenter::class
+        factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
 
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
         factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class

@@ -9,12 +9,10 @@ import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RegisterWalletRequest
-import org.p2p.wallet.auth.gateway.api.response.GatewayServiceErrorResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceResponse
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.Constants
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -22,7 +20,8 @@ import java.util.Locale
 const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
 class GatewayServiceCreateWalletMapper(
-    private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator
+    private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator,
+    private val errorMapper: GatewayServiceErrorMapper
 ) {
     private class RegisterWalletSignatureStruct(
         val clientId: String,
@@ -42,29 +41,10 @@ class GatewayServiceCreateWalletMapper(
     @Throws(GatewayServiceError::class)
     fun <T> fromNetwork(response: GatewayServiceResponse<T>): T {
         if (response.errorBody != null) {
-            throw gatewayServiceError(response.errorBody)
+            throw errorMapper.fromNetwork(response.errorBody)
         }
         return response.result!!
     }
-
-    private fun gatewayServiceError(error: GatewayServiceErrorResponse): GatewayServiceError =
-        when (error.errorCode) {
-            -32050 -> GatewayServiceError.TemporaryFailure(error.errorCode, error.errorMessage)
-            -32051 -> GatewayServiceError.PhoneNumberAlreadyConfirmed(error.errorCode, error.errorMessage)
-            -32052 -> GatewayServiceError.CriticalServiceFailure(error.errorCode, error.errorMessage)
-            -32053 -> GatewayServiceError.TooManyRequests(error.errorCode, error.errorMessage)
-            -32054 -> GatewayServiceError.SmsDeliverFailed(error.errorCode, error.errorMessage)
-            -32055 -> GatewayServiceError.CallDeliverFailed(error.errorCode, error.errorMessage)
-            -32056 -> GatewayServiceError.SolanaPublicKeyAlreadyExists(error.errorCode, error.errorMessage)
-            -32057 -> GatewayServiceError.UserAlreadyExists(error.errorCode, error.errorMessage)
-            -32060 -> GatewayServiceError.PhoneNumberNotExists(error.errorCode, error.errorMessage)
-            -32061 -> GatewayServiceError.IncorrectOtpCode(error.errorCode, error.errorMessage)
-            else -> {
-                val unknownCodeError = GatewayServiceError.UnknownFailure(error.errorCode, error.errorMessage)
-                Timber.tag("GatewayServiceMapper").e(unknownCodeError)
-                unknownCodeError
-            }
-        }
 
     fun toRegisterWalletNetwork(
         userPublicKey: Base58String,

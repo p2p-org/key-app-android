@@ -6,7 +6,7 @@ import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String

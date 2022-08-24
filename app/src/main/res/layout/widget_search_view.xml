@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?actionBarSize">
 
     <RelativeLayout
-        android:id="@+id/showButtonContainer"
+        android:id="@+id/relativeLayoutContainer"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="center|end"
         android:backgroundTint="@color/rain">
 
         <View
-            android:id="@+id/showButton"
+            android:id="@+id/buttonShowSearch"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
@@ -25,16 +24,16 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/searchContainer"
+        android:id="@+id/relativeLayoutSearchContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:visibility="invisible"
         android:background="@color/bg_snow"
+        android:visibility="invisible"
         tools:visibility="visible">
 
         <ImageView
-            android:id="@+id/closeButton"
+            android:id="@+id/buttonClose"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:layout_alignParentStart="true"
@@ -43,16 +42,27 @@
             android:src="@drawable/ic_toolbar_back" />
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/editTextSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toEndOf="@id/closeButton"
+            android:layout_toEndOf="@id/buttonClose"
             android:background="@android:color/transparent"
             android:hint="@string/onboarding_country_name"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp" />
+            android:paddingEnd="16dp"
+            android:textCursorDrawable="@drawable/bg_search_view_cursor" />
+
+        <ImageView
+            android:id="@+id/imageViewErase"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_toolbar_close"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

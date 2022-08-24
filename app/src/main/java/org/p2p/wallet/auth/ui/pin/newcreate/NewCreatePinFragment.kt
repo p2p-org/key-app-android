@@ -5,12 +5,16 @@ import android.view.View
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
+import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.vibrate
@@ -33,14 +37,28 @@ class NewCreatePinFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        presenter.setPinMode(PinMode.CREATE)
+
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.initToolbar()
             pinView.onPinCompleted = { presenter.setPinCode(it) }
             pinView.onKeyboardClicked = { vibrate(VIBRATE_DURATION) }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            popBackStack()
+            presenter.onBackPressed()
+        }
+    }
+
+    private fun UiKitToolbar.initToolbar() {
+        setNavigationOnClickListener { presenter.onBackPressed() }
+        setOnMenuItemClickListener {
+            if (it.itemId == R.id.helpItem) {
+                IntercomService.showMessenger()
+                true
+            } else {
+                false
+            }
         }
     }
 
@@ -53,6 +71,8 @@ class NewCreatePinFragment :
     }
 
     override fun showCreation() {
+        presenter.setPinMode(PinMode.CREATE)
+
         with(binding) {
             pinView.isEnabled = true
             textViewTitle.setText(R.string.auth_create_wallet_set_up_your_pin)
@@ -62,6 +82,8 @@ class NewCreatePinFragment :
     }
 
     override fun showConfirmation() {
+        presenter.setPinMode(PinMode.CONFIRM)
+
         with(binding) {
             pinView.isEnabled = true
             textViewTitle.text = getString(R.string.auth_create_wallet_confirm_your_pin)
@@ -71,10 +93,9 @@ class NewCreatePinFragment :
     }
 
     override fun onPinCreated(pinCode: String) {
-        val fragment = BiometricsFragment.create(pinCode)
         binding.pinView.onSuccessPin()
         binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_success) {
-            replaceFragment(fragment)
+            presenter.onPinCreated()
         }
     }
 
@@ -89,5 +110,13 @@ class NewCreatePinFragment :
 
     override fun vibrate(duration: Long) {
         requireContext().vibrate(duration)
+    }
+
+    override fun navigateToBiometrics(pinCode: String) {
+        replaceFragment(BiometricsFragment.create(pinCode))
+    }
+
+    override fun navigateToMain() {
+        popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 }

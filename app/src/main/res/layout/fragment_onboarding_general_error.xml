@@ -28,7 +28,7 @@
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="@string/onboarding_general_error_timer_title"
+        android:text="@string/onboarding_general_error_critical_error_title"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
         app:layout_constraintBottom_toTopOf="@+id/text_view_error_subtitle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,7 +47,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_view_error_title"
-        tools:text="@string/onboarding_general_error_timer_sms_input_subtitle" />
+        tools:text="@string/onboarding_general_error_critical_error_sub_title" />
 
 
     <LinearLayout
@@ -61,14 +61,25 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/button_to_starting_screen"
+            android:id="@+id/button_report_bug"
             style="@style/UiKit.Components.Button.Large.Outlined"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="18dp"
+            android:backgroundTint="@color/bg_snow"
+            android:text="@string/onboarding_general_error_bug_report_button_title"
+            android:textColor="@color/text_night"
+            app:strokeColor="@color/snow" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/button_to_starting_screen"
+            style="@style/UiKit.Components.Button.Large.Text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="18dp"
             android:backgroundTint="@color/bg_night"
-            android:text="@string/onboarding_sms_input_blocked_terms_button_title"
-            android:textColor="@color/text_snow"
+            android:text="@string/onboarding_general_error_starting_screen_button_title"
+            android:textColor="@color/text_lime"
             app:strokeColor="@color/snow" />
 
         <TextView
@@ -76,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/onboarding_sms_input_blocked_terms_title"
+            android:text="@string/onboarding_general_error_terms_title"
             android:textColor="@color/mountain" />
 
         <TextView

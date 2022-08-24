@@ -1,10 +1,11 @@
 package org.p2p.wallet.auth.ui.onboarding.continuestep
 
-import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class ContinueOnboardingPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
@@ -19,13 +20,14 @@ class ContinueOnboardingPresenter(
 
     override fun continueSignUp() {
         launch {
-            try {
-                when (val result = userSignUpInteractor.continueSignUpUser()) {
-                    UserSignUpInteractor.SignUpResult.SignUpSuccessful -> view?.navigateToPhoneNumberEnter()
-                    is UserSignUpInteractor.SignUpResult.SignUpFailed -> Timber.w(result.cause)
+            when (val result = userSignUpInteractor.continueSignUpUser()) {
+                UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
+                    view?.navigateToPhoneNumberEnter()
                 }
-            } catch (error: Throwable) {
-                Timber.w(error)
+                is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
+                    Timber.e(result.cause, "Continue sign up failed")
+                    view?.showErrorSnackBar(R.string.error_general_message)
+                }
             }
         }
     }

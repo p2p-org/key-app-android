@@ -41,6 +41,7 @@
     <string name="camera_permission_not_granted">Camera permission denied</string>
 
     <string name="menu_question">FAQ</string>
+    <string name="menu_help">Help</string>
 
     <!-- Error messages -->
     <string name="error_title">Error occurred</string>

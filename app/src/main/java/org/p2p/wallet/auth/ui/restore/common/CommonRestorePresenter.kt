@@ -1,7 +1,8 @@
 package org.p2p.wallet.auth.ui.restore.common
 
+import org.p2p.wallet.R
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
@@ -21,8 +22,8 @@ class CommonRestorePresenter(
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause, result.message)
-                    result.message?.let { view?.showErrorSnackBar(it) }
+                    Timber.e(result.cause)
+                    view?.showErrorSnackBar(R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onNoTokenFoundError(userId)

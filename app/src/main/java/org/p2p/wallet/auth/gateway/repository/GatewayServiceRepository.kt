@@ -5,7 +5,7 @@ import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
 
 interface GatewayServiceRepository {

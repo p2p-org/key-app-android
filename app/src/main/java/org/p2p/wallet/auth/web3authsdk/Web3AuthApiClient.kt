@@ -6,11 +6,12 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthClientHandler
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSdkInternalError
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSignInCallback
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSignUpCallback
+import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
 import timber.log.Timber
 
@@ -20,7 +21,7 @@ private const val INDEX_HTML_URI = "file:///android_asset/index.html"
 class Web3AuthApiClient(
     context: Context,
     private val torusNetwork: TorusEnvironment,
-    private val errorMapper: Web3AuthErrorMapper,
+    private val mapper: Web3AuthClientMapper,
     private val gson: Gson
 ) : Web3AuthApi {
 
@@ -141,7 +142,7 @@ class Web3AuthApiClient(
     private inner class AndroidCommunicationChannel {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
-            errorMapper.fromNetworkSignUp(msg)
+            mapper.fromNetworkSignUp(msg)
                 ?.let { (handler as? Web3AuthSignUpCallback)?.onSuccessSignUp(it) }
                 ?: handleMapperError(msg)
             handler = null
@@ -149,7 +150,7 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoCustomResponse(msg: String) {
-            errorMapper.fromNetworkSignIn(msg)
+            mapper.fromNetworkSignIn(msg)
                 ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
                 ?: handleMapperError(msg)
             handler = null
@@ -157,7 +158,7 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoDeviceResponse(msg: String) {
-            errorMapper.fromNetworkSignIn(msg)
+            mapper.fromNetworkSignIn(msg)
                 ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
                 ?: handleMapperError(msg)
             handler = null
@@ -165,7 +166,7 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoTorusResponse(msg: String) {
-            errorMapper.fromNetworkSignIn(msg)
+            mapper.fromNetworkSignIn(msg)
                 ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
                 ?: handleMapperError(msg)
             handler = null
@@ -173,7 +174,7 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleError(error: String) {
-            errorMapper.fromNetworkError(error)
+            mapper.fromNetworkError(error)
                 ?.let { handler?.handleApiError(it) }
                 ?: handleMapperError(error)
             handler = null

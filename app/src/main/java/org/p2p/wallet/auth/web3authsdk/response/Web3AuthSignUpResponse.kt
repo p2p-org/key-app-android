@@ -1,11 +1,11 @@
-package org.p2p.wallet.auth.model
+package org.p2p.wallet.auth.web3authsdk.response
 
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 data class Web3AuthSignUpResponse(
     // Hex string
-    @SerializedName("reconstructedETH") val ethereumPublicKey: String,
+    @SerializedName("ethPublic") val ethereumPublicKey: String,
     // bip39 mnemonic
     @SerializedName("privateSOL") val mnemonicPhrase: String,
     // don't care about the type, we need raw json

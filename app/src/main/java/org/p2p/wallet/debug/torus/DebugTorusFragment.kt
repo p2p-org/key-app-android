@@ -48,7 +48,7 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
                 updateEnvironmentAndRestart(newVerifier = testVerifier)
             }
 
-            releaseUrlButton.setOnClickListener {
+            releaseVerifierButton.setOnClickListener {
                 val releaseVerifier = getString(R.string.torusFeatureVerifier)
                 updateEnvironmentAndRestart(newVerifier = releaseVerifier)
             }

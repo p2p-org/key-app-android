@@ -57,7 +57,7 @@ class CreateWalletInteractor(
         signUpFlowDataRepository.userAccount?.also {
             tokenKeyProvider.secretKey = it.secretKey
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
-        } ?: throw CreateWalletFailure("User account is null")
+        } ?: throw CreateWalletFailure("User account is null, creating a user is failed")
 
         signUpFlowDataRepository.clear()
     }

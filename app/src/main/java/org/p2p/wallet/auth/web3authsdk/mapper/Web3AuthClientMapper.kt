@@ -1,12 +1,13 @@
-package org.p2p.wallet.auth.web3authsdk
+package org.p2p.wallet.auth.web3authsdk.mapper
 
 import com.google.gson.Gson
-import org.p2p.wallet.auth.model.Web3AuthSignInResponse
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.fromJsonReified
 import timber.log.Timber
 
-class Web3AuthErrorMapper(private val gson: Gson) {
+class Web3AuthClientMapper(private val gson: Gson) {
     fun fromNetworkSignUp(responseJson: String): Web3AuthSignUpResponse? {
         return kotlin.runCatching { gson.fromJsonReified<Web3AuthSignUpResponse>(responseJson) }
             .onFailure { Timber.i(it) }

@@ -1,8 +1,9 @@
 package org.p2p.wallet.auth.web3authsdk
 
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import com.google.gson.JsonObject
-import org.p2p.wallet.auth.model.Web3AuthSignInResponse
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 
 interface Web3AuthApi {
     class Web3AuthSdkInternalError(override val message: String, override val cause: Throwable? = null) : Throwable()

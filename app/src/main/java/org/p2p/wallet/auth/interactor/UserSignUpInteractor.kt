@@ -1,11 +1,14 @@
-package org.p2p.wallet.auth.web3authsdk
+package org.p2p.wallet.auth.interactor
 
-import kotlinx.coroutines.suspendCancellableCoroutine
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
-import org.p2p.wallet.auth.web3authsdk.Web3AuthErrorResponse.ErrorType
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse.ErrorType
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -16,7 +19,7 @@ class UserSignUpInteractor(
     sealed class SignUpResult {
         object UserAlreadyExists : SignUpResult()
         object SignUpSuccessful : SignUpResult()
-        class SignUpFailed(val message: String?, val cause: Throwable? = null) : SignUpResult()
+        class SignUpFailed(val cause: Throwable) : SignUpResult()
     }
 
     suspend fun trySignUpNewUser(idToken: String, idTokenOwnerId: String): SignUpResult {
@@ -32,22 +35,26 @@ class UserSignUpInteractor(
             if (web3AuthError.errorType == ErrorType.CANNOT_RECONSTRUCT) {
                 SignUpResult.UserAlreadyExists
             } else {
-                SignUpResult.SignUpFailed(web3AuthError.errorMessage)
+                SignUpResult.SignUpFailed(web3AuthError)
             }
         } catch (error: Exception) {
-            SignUpResult.SignUpFailed(error.message, error.cause)
+            SignUpResult.SignUpFailed(error)
         }
     }
 
     fun continueSignUpUser(): SignUpResult {
-        userSignUpDetailsStorage.getLastSignUpUserDetails()?.let {
-            signUpFlowDataRepository.signUpUserId = it.userId
-            signUpFlowDataRepository.generateUserAccount(
-                userMnemonicPhrase = it.signUpDetails.mnemonicPhrase.split("")
-            )
-        } ?: return SignUpResult.UserAlreadyExists
+        return try {
+            val lastUserDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()
+                ?: throw NullPointerException("Last sign up user details (aka device share) not found")
 
-        return SignUpResult.SignUpSuccessful
+            signUpFlowDataRepository.signUpUserId = lastUserDetails.userId
+            signUpFlowDataRepository.generateUserAccount(
+                userMnemonicPhrase = lastUserDetails.signUpDetails.mnemonicPhrase.split("")
+            )
+            SignUpResult.SignUpSuccessful
+        } catch (error: Exception) {
+            SignUpResult.SignUpFailed(error)
+        }
     }
 
     private suspend fun generateDeviceAndThirdShare(idToken: String): Web3AuthSignUpResponse {
