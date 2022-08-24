@@ -64,11 +64,11 @@ import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
-import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
-import org.p2p.wallet.auth.web3authsdk.Web3AuthRepositoryMapper
+import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.feerelayer.FeeRelayerModule.FEE_RELAYER_QUALIFIER
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.splash.SplashContract
@@ -110,12 +110,13 @@ object AuthModule {
     private fun Module.onboardingModule() {
         singleOf(::GoogleSignInHelper)
         singleOf(::UserSignUpDetailsStorage)
-        singleOf(::Web3AuthRepositoryMapper)
+        singleOf(::Web3AuthClientMapper)
         single<Web3AuthApi> {
             Web3AuthApiClient(
                 context = androidContext(),
                 torusNetwork = get<NetworkServicesUrlProvider>().loadTorusEnvironment(),
-                mapper = get()
+                mapper = get(),
+                gson = get()
             )
         }
         singleOf(::SignUpFlowDataLocalRepository)
