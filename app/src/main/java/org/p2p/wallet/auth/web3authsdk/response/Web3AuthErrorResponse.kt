@@ -30,7 +30,8 @@ data class Web3AuthErrorResponse(
         NO_CUSTOM_SHARE(code = 1015),
         USER_NOT_REGISTERED(code = 1016),
         NO_CUSTOM_METADATA(code = 1017),
-        INVALID_INIT_ARGS(code = 1018);
+        INVALID_INIT_ARGS(code = 1018),
+        NETWORK_ERROR(code = 1666);
 
         companion object {
             fun findByCode(code: Int): ErrorType = values().find { it.code == code } ?: UNDEFINED

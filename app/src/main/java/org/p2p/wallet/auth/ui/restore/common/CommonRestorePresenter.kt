@@ -22,7 +22,7 @@ class CommonRestorePresenter(
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause)
+                    Timber.e(result, "Restoring account failed")
                     view?.showErrorSnackBar(R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {

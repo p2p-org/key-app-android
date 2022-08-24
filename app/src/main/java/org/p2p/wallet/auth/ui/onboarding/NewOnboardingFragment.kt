@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
@@ -82,28 +82,19 @@ class NewOnboardingFragment :
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
 
-    override fun showError(error: String) {
-        view?.post {
-            setLoadingState(isScreenLoading = false)
-            showErrorSnackBar(error)
-        }
-    }
-
     override fun onSameTokenFoundError() {
         requireView().post {
-            setLoadingState(isScreenLoading = false)
             replaceFragment(WalletFoundFragment.create())
         }
     }
 
     override fun onSuccessfulSignUp() {
         requireView().post {
-            setLoadingState(isScreenLoading = false)
             replaceFragment(PhoneNumberEnterFragment.create())
         }
     }
 
-    private fun setLoadingState(isScreenLoading: Boolean) {
+    override fun setButtonLoadingState(isScreenLoading: Boolean) {
         with(binding) {
             buttonCreateWalletOnboarding.apply {
                 isLoading = isScreenLoading
@@ -114,22 +105,19 @@ class NewOnboardingFragment :
     }
 
     private fun handleSignResult(result: ActivityResult) {
-        signInHelper.handler = this
-        try {
-            signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
-                setLoadingState(isScreenLoading = true)
-                presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
-            }
-        } finally {
-            signInHelper.handler = null
+        signInHelper.parseSignInResult(requireContext(), result, errorHandler = this)?.let { credential ->
+            setButtonLoadingState(isScreenLoading = true)
+            presenter.setIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
     }
 
-    override fun onConnectionError(error: String) {
-        showInfoSnackBar(error)
+    override fun onConnectionError() {
+        setButtonLoadingState(isScreenLoading = false)
+        binding.root.showSnackbarShort(R.string.onboarding_offline_error)
     }
 
-    override fun onCommonError(error: String) {
-        showErrorSnackBar(error)
+    override fun onCommonError() {
+        setButtonLoadingState(isScreenLoading = false)
+        binding.root.showSnackbarShort(R.string.error_general_message)
     }
 }

@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.ui.restore.found
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
@@ -69,17 +69,21 @@ class WalletFoundFragment :
 
     override fun showError(error: String) {
         view?.post {
-            setLoadingState(isScreenLoading = false)
             showErrorSnackBar(error)
         }
     }
 
     override fun onSuccessfulSignUp() {
-        setLoadingState(isScreenLoading = false)
-        replaceFragment(PhoneNumberEnterFragment.create())
+        view?.post {
+            replaceFragment(PhoneNumberEnterFragment.create())
+        }
     }
 
-    private fun setLoadingState(isScreenLoading: Boolean) {
+    override fun onSameTokenFoundError() {
+        replaceFragment(create())
+    }
+
+    override fun setLoadingState(isScreenLoading: Boolean) {
         with(binding) {
             walletFoundAnotherAccountButton.apply {
                 isLoading = isScreenLoading
@@ -90,22 +94,19 @@ class WalletFoundFragment :
     }
 
     private fun handleSignResult(result: ActivityResult) {
-        signInHelper.handler = this
-        try {
-            signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
-                setLoadingState(isScreenLoading = true)
-                presenter.setAlternativeIdToken(credential.id, credential.googleIdToken.orEmpty())
-            }
-        } finally {
-            signInHelper.handler = null
+        signInHelper.parseSignInResult(requireContext(), result, errorHandler = this)?.let { credential ->
+            setLoadingState(isScreenLoading = true)
+            presenter.setAlternativeIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
     }
 
-    override fun onConnectionError(error: String) {
-        showInfoSnackBar(error)
+    override fun onCommonError() {
+        setLoadingState(isScreenLoading = false)
+        showUiKitSnackBar(R.string.error_general_message)
     }
 
-    override fun onCommonError(error: String) {
-        showErrorSnackBar(error)
+    override fun onConnectionError() {
+        setLoadingState(isScreenLoading = false)
+        showUiKitSnackBar(getString(R.string.onboarding_offline_error))
     }
 }

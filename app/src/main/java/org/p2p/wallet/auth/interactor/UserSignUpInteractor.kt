@@ -16,10 +16,10 @@ class UserSignUpInteractor(
     private val signUpFlowDataRepository: SignUpFlowDataLocalRepository
 ) {
 
-    sealed class SignUpResult {
-        object UserAlreadyExists : SignUpResult()
-        object SignUpSuccessful : SignUpResult()
-        class SignUpFailed(val cause: Throwable) : SignUpResult()
+    sealed interface SignUpResult {
+        object UserAlreadyExists : SignUpResult
+        object SignUpSuccessful : SignUpResult
+        class SignUpFailed(override val cause: Throwable) : Error(), SignUpResult
     }
 
     suspend fun trySignUpNewUser(idToken: String, idTokenOwnerId: String): SignUpResult {

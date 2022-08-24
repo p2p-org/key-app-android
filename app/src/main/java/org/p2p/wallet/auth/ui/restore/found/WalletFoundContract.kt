@@ -9,6 +9,8 @@ interface WalletFoundContract {
         fun setUserId(userId: String)
         fun showError(error: String)
         fun onSuccessfulSignUp()
+        fun onSameTokenFoundError()
+        fun setLoadingState(isScreenLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

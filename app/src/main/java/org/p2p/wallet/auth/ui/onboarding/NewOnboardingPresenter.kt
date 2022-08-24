@@ -20,18 +20,21 @@ class NewOnboardingPresenter(
 
     override fun setIdToken(userId: String, idToken: String) {
         launch {
+            view?.setButtonLoadingState(isScreenLoading = true)
+
             when (val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause, "Creating new user with device shared failed")
+                    Timber.e(result, "Creating new user with device shared failed")
                     view?.showErrorSnackBar(R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onSameTokenFoundError()
                 }
             }
+            view?.setButtonLoadingState(isScreenLoading = false)
         }
     }
 }
