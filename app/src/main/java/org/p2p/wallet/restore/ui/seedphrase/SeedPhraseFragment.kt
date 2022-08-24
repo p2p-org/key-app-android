@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
@@ -72,11 +72,11 @@ class SeedPhraseFragment :
         binding.seedPhraseView.setPasteEnabled(!clipboardData.isNullOrBlank())
     }
 
-    override fun updateSeedPhrase(seedPhrase: List<SeedPhraseKey>) {
+    override fun updateSeedPhrase(seedPhrase: List<SeedPhraseWord>) {
         binding.seedPhraseView.updateSecretKeys(seedPhrase)
     }
 
-    override fun showSuccess(seedPhrase: List<SeedPhraseKey>) {
+    override fun showSuccess(seedPhrase: List<SeedPhraseWord>) {
         replaceFragment(DerivableAccountsFragment.create(seedPhrase))
     }
 
@@ -89,8 +89,8 @@ class SeedPhraseFragment :
         binding.seedPhraseView.showClearButton(isVisible)
     }
 
-    override fun addFirstKey(key: SeedPhraseKey) {
-        binding.seedPhraseView.addSecretKey(SeedPhraseKey())
+    override fun addFirstKey(key: SeedPhraseWord) {
+        binding.seedPhraseView.addSecretKey(SeedPhraseWord())
     }
 
     override fun showFocusOnLastKey(lastSecretItemIndex: Int) {

@@ -4,7 +4,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsContract
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsPresenter
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseContract
@@ -19,7 +19,7 @@ object RestoreModule : InjectionModule {
                 seedPhraseInteractor = get(),
             )
         }
-        factory<DerivableAccountsContract.Presenter> { (secretKeys: List<SeedPhraseKey>) ->
+        factory<DerivableAccountsContract.Presenter> { (secretKeys: List<SeedPhraseWord>) ->
             DerivableAccountsPresenter(
                 secretKeys = secretKeys,
                 seedPhraseInteractor = get(),

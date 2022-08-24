@@ -5,7 +5,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
 import org.p2p.uikit.R
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import kotlin.properties.Delegates
 
 /**
@@ -14,8 +14,8 @@ import kotlin.properties.Delegates
  * */
 
 class SeedPhraseWatcher(
-    private val onKeyAdded: (SeedPhraseKey) -> Unit,
-    private val onSeedPhraseInserted: (List<SeedPhraseKey>) -> Unit,
+    private val onKeyAdded: (SeedPhraseWord) -> Unit,
+    private val onSeedPhraseInserted: (List<SeedPhraseWord>) -> Unit,
     var isLastKey: Boolean
 ) : TextWatcher {
 
@@ -23,8 +23,8 @@ class SeedPhraseWatcher(
         fun installOn(
             isLast: Boolean,
             editText: EditText,
-            onKeyAdded: (SeedPhraseKey) -> Unit,
-            onSeedPhraseInserted: (List<SeedPhraseKey>) -> Unit
+            onKeyAdded: (SeedPhraseWord) -> Unit,
+            onSeedPhraseInserted: (List<SeedPhraseWord>) -> Unit
         ): SeedPhraseWatcher {
             val seedPhraseWatcher = SeedPhraseWatcher(onKeyAdded, onSeedPhraseInserted, isLast)
             editText.addTextChangedListener(seedPhraseWatcher)
@@ -79,6 +79,6 @@ private data class SeedPhrase(
 )
 
 private sealed class KeyResult {
-    data class KeyAdded(val key: SeedPhraseKey) : KeyResult()
-    data class MultipleKeysAdded(val keys: List<SeedPhraseKey>) : KeyResult()
+    data class KeyAdded(val key: SeedPhraseWord) : KeyResult()
+    data class MultipleKeysAdded(val keys: List<SeedPhraseWord>) : KeyResult()
 }

@@ -2,7 +2,7 @@ package org.p2p.wallet.restore.ui.seedphrase
 
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import kotlin.properties.Delegates
 import kotlinx.coroutines.launch
 
@@ -21,7 +21,7 @@ class SecretKeyPresenter(
     private val seedPhraseInteractor: SeedPhraseInteractor,
 ) : BasePresenter<SeedPhraseContract.View>(), SeedPhraseContract.Presenter {
 
-    private var keys: List<SeedPhraseKey> by Delegates.observable(emptyList()) { _, _, newValue ->
+    private var keys: List<SeedPhraseWord> by Delegates.observable(emptyList()) { _, _, newValue ->
         val newSeedPhraseSize = newValue.size
         val isSeedPhraseValid =
             newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT
@@ -31,7 +31,7 @@ class SecretKeyPresenter(
         view?.showClearButton(isClearButtonVisible)
     }
 
-    override fun setNewKeys(keys: List<SeedPhraseKey>) {
+    override fun setNewKeys(keys: List<SeedPhraseWord>) {
         val filtered = keys.filter { it.text.isNotEmpty() }
         this.keys = filtered.toMutableList()
     }
@@ -45,7 +45,7 @@ class SecretKeyPresenter(
 
     override fun load() {
         if (keys.isEmpty()) {
-            view?.addFirstKey(SeedPhraseKey())
+            view?.addFirstKey(SeedPhraseWord())
         } else {
             keys = keys.toList()
         }

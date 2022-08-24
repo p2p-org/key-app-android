@@ -10,7 +10,7 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
@@ -100,7 +100,7 @@ class SeedPhraseInteractor(
     suspend fun generateSecretKeys(): List<String> =
         authRepository.generatePhrase()
 
-    fun verifySeedPhrase(secretKeys: List<SeedPhraseKey>): List<SeedPhraseKey> {
+    fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): List<SeedPhraseWord> {
         val words = English.INSTANCE.words
         val keys = secretKeys.filter { key -> key.text.isNotEmpty() }
 

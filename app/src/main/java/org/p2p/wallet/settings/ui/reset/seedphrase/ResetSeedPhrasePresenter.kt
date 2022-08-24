@@ -3,7 +3,7 @@ package org.p2p.wallet.settings.ui.reset.seedphrase
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import kotlin.properties.Delegates
 
 class ResetSeedPhrasePresenter(
@@ -16,7 +16,7 @@ class ResetSeedPhrasePresenter(
         private const val SEED_PHRASE_SIZE_LONG = 24
     }
 
-    private var keys: List<SeedPhraseKey> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
+    private var keys: List<SeedPhraseWord> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
         if (oldValue != newValue) {
             val size = newValue.size
             val isVisible = size == SEED_PHRASE_SIZE_LONG || size == SEED_PHRASE_SIZE_SHORT
@@ -24,7 +24,7 @@ class ResetSeedPhrasePresenter(
         }
     }
 
-    override fun setNewKeys(keys: List<SeedPhraseKey>) {
+    override fun setNewKeys(keys: List<SeedPhraseWord>) {
         val filtered = keys.filter { it.text.isNotEmpty() }
         this.keys = ArrayList(filtered)
     }

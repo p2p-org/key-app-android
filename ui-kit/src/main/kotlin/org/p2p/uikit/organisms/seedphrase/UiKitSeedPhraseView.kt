@@ -25,7 +25,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    var onSeedPhraseChanged: ((List<SeedPhraseKey>) -> Unit)? = null
+    var onSeedPhraseChanged: ((List<SeedPhraseWord>) -> Unit)? = null
 
     private val binding = inflateViewBinding<WidgetSeedPhraseViewBinding>()
 
@@ -50,12 +50,12 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         }
     }
 
-    fun updateSecretKeys(secretKeys: List<SeedPhraseKey>) {
+    fun updateSecretKeys(secretKeys: List<SeedPhraseWord>) {
         phraseAdapter.updateSecretKeys(secretKeys)
     }
 
-    fun addSecretKey(seedPhraseKey: SeedPhraseKey) {
-        phraseAdapter.addSecretKey(seedPhraseKey)
+    fun addSecretKey(seedPhraseWord: SeedPhraseWord) {
+        phraseAdapter.addSecretKey(seedPhraseWord)
     }
 
     fun showFocusOnLastKey(lastSecretItemIndex: Int) {
