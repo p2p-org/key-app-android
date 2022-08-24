@@ -1,7 +1,7 @@
-package org.p2p.wallet.auth.web3authsdk
+package org.p2p.wallet.auth.repository
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import timber.log.Timber
 

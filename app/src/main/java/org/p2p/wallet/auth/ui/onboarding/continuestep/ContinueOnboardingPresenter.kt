@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.onboarding.continuestep
 
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlinx.coroutines.launch

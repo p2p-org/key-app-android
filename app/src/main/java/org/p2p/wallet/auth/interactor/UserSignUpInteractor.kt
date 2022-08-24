@@ -1,9 +1,11 @@
-package org.p2p.wallet.auth.web3authsdk
+package org.p2p.wallet.auth.interactor
 
-import org.p2p.wallet.auth.model.Web3AuthErrorResponse
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
-import org.p2p.wallet.auth.model.Web3AuthErrorResponse.ErrorType
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse.ErrorType
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine

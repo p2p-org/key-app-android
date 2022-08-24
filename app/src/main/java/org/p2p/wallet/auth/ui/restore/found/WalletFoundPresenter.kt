@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.ui.restore.found
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
-import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 

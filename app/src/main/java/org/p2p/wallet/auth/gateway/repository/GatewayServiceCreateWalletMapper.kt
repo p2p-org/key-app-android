@@ -1,31 +1,26 @@
 package org.p2p.wallet.auth.gateway.repository
 
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.near.borshj.Borsh
-import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.encodeToBase64String
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
-import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethods
+import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceResponse
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// TODO: PWN-4362 add correct date format
-private const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ss"
+const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
-class GatewayServiceMapper(
-    private val gson: Gson,
+class GatewayServiceCreateWalletMapper(
+    private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator,
     private val errorMapper: GatewayServiceErrorMapper
 ) {
     private class RegisterWalletSignatureStruct(
@@ -58,7 +53,7 @@ class GatewayServiceMapper(
         phoneNumber: String,
         channel: OtpMethod
     ): GatewayServiceRequest<RegisterWalletRequest> {
-        val signatureField: Base58String = createSignatureField(
+        val signatureField: Base58String = signatureFieldGenerator.generateSignatureField(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             structToSerialize = RegisterWalletSignatureStruct(
@@ -78,7 +73,7 @@ class GatewayServiceMapper(
             timestamp = createTimestampField(),
             requestSignature = signatureField.base58Value
         )
-            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethods.REGISTER_WALLET) }
+            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.REGISTER_WALLET) }
     }
 
     fun toConfirmRegisterWalletNetwork(
@@ -87,10 +82,10 @@ class GatewayServiceMapper(
         etheriumPublicKey: String,
         phoneNumber: String,
         jsonEncryptedMnemonicPhrase: JsonObject,
-        thirdShare: Web3AuthSignUpResponse.ShareRootDetails.ShareInnerDetails.ShareValue,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
-        val signatureField: Base58String = createSignatureField(
+        val signatureField: Base58String = signatureFieldGenerator.generateSignatureField(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             structToSerialize = ConfirmRegisterWalletSignatureStruct(
@@ -115,28 +110,7 @@ class GatewayServiceMapper(
             otpConfirmationCode = otpConfirmationCode,
             requestSignature = signatureField.base58Value
         )
-            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethods.CONFIRM_REGISTER_WALLET) }
-    }
-
-    private fun createSignatureField(
-        userPublicKey: Base58String,
-        userPrivateKey: Base58String,
-        structToSerialize: Borsh
-    ): Base58String {
-        try {
-            val signatureStructBytes = Borsh.serialize(structToSerialize)
-            val userPublicKeyBytes = userPublicKey.decodeToBytes()
-            val solanaPrivateKeyBytes = userPrivateKey.decodeToBytes()
-            return TweetNaclFast.Signature(userPublicKeyBytes.copyOf(), solanaPrivateKeyBytes.copyOf())
-                .sign(signatureStructBytes)
-                .toBase58Instance()
-        } catch (error: Throwable) {
-            Timber.e(error)
-            throw GatewayServiceError.RequestCreationFailure(
-                message = "Failed to generate signature field",
-                cause = error
-            )
-        }
+            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.CONFIRM_REGISTER_WALLET) }
     }
 
     private fun createTimestampField(): String {
