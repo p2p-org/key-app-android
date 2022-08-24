@@ -14,7 +14,7 @@ import com.google.android.flexbox.JustifyContent
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSeedPhraseViewBinding
 import org.p2p.uikit.organisms.seedphrase.adapter.SecretPhraseAdapter
-import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseUtils
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseFormatter
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.showSoftKeyboard
@@ -25,7 +25,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    var onSeedPhraseChanged: ((List<SecretKey>) -> Unit)? = null
+    var onSeedPhraseChanged: ((List<SeedPhraseKey>) -> Unit)? = null
 
     private val binding = inflateViewBinding<WidgetSeedPhraseViewBinding>()
 
@@ -45,22 +45,25 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         binding.textViewClear.setOnClickListener { phraseAdapter.clear() }
 
         binding.textViewPaste.setOnClickListener {
-            val keys = SeedPhraseUtils.format(getClipboardText())
+            val keys = SeedPhraseFormatter.format(getClipboardText())
             if (keys.isNotEmpty()) phraseAdapter.addAllSecretKeys(keys)
         }
     }
 
-    fun updateSecretKeys(secretKeys: List<SecretKey>) {
+    fun updateSecretKeys(secretKeys: List<SeedPhraseKey>) {
         phraseAdapter.updateSecretKeys(secretKeys)
     }
 
-    fun addSecretKey(secretKey: SecretKey) {
-        phraseAdapter.addSecretKey(secretKey)
+    fun addSecretKey(seedPhraseKey: SeedPhraseKey) {
+        phraseAdapter.addSecretKey(seedPhraseKey)
     }
 
     fun showFocusOnLastKey(lastSecretItemIndex: Int) {
-        val viewGroup =
-            binding.keysRecyclerView.children.toList().getOrNull(lastSecretItemIndex) as? LinearLayout ?: return
+        val viewGroup = binding.keysRecyclerView.children
+            .toList()
+            .getOrNull(lastSecretItemIndex) as? LinearLayout
+            ?: return
+
         val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }
         secretKeyEditText?.requestFocus()
         secretKeyEditText?.showSoftKeyboard()

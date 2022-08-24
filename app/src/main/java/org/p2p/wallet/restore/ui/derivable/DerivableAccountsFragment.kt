@@ -14,7 +14,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDerivableAccountsBinding
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -29,12 +29,12 @@ class DerivableAccountsFragment :
 
     companion object {
         private const val EXTRA_SECRET_KEYS = "EXTRA_SECRET_KEYS"
-        fun create(secretKeys: List<SecretKey>) = DerivableAccountsFragment().withArgs(
+        fun create(secretKeys: List<SeedPhraseKey>) = DerivableAccountsFragment().withArgs(
             EXTRA_SECRET_KEYS to secretKeys
         )
     }
 
-    private val secretKeys: List<SecretKey> by args(EXTRA_SECRET_KEYS)
+    private val secretKeys: List<SeedPhraseKey> by args(EXTRA_SECRET_KEYS)
     override val presenter: DerivableAccountsContract.Presenter by inject {
         parametersOf(secretKeys)
     }

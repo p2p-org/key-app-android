@@ -1,4 +1,4 @@
-package org.p2p.wallet.restore.ui.keys
+package org.p2p.wallet.restore.ui.seedphrase
 
 import androidx.core.content.FileProvider
 import android.content.ActivityNotFoundException
@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
@@ -14,7 +14,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentSecretKeyBinding
+import org.p2p.wallet.databinding.FragmentSeedPhraseBinding
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.popBackStack
@@ -23,16 +23,16 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 import java.io.File
 
-class SecretKeyFragment :
-    BaseMvpFragment<SecretKeyContract.View, SecretKeyContract.Presenter>(R.layout.fragment_secret_key),
-    SecretKeyContract.View {
+class SeedPhraseFragment :
+    BaseMvpFragment<SeedPhraseContract.View, SeedPhraseContract.Presenter>(R.layout.fragment_seed_phrase),
+    SeedPhraseContract.View {
 
     companion object {
-        fun create(): SecretKeyFragment = SecretKeyFragment()
+        fun create(): SeedPhraseFragment = SeedPhraseFragment()
     }
 
-    override val presenter: SecretKeyContract.Presenter by inject()
-    private val binding: FragmentSecretKeyBinding by viewBinding()
+    override val presenter: SeedPhraseContract.Presenter by inject()
+    private val binding: FragmentSeedPhraseBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,7 +44,7 @@ class SecretKeyFragment :
                 popBackStack()
             }
 
-            continueButton.setOnClickListener {
+            buttonContinue.setOnClickListener {
                 presenter.verifySeedPhrase()
             }
 
@@ -72,16 +72,16 @@ class SecretKeyFragment :
         binding.seedPhraseView.setPasteEnabled(!clipboardData.isNullOrBlank())
     }
 
-    override fun updateKeys(secretKeys: List<SecretKey>) {
-        binding.seedPhraseView.updateSecretKeys(secretKeys)
+    override fun updateSeedPhrase(seedPhrase: List<SeedPhraseKey>) {
+        binding.seedPhraseView.updateSecretKeys(seedPhrase)
     }
 
-    override fun showSuccess(secretKeys: List<SecretKey>) {
-        replaceFragment(DerivableAccountsFragment.create(secretKeys))
+    override fun showSuccess(seedPhrase: List<SeedPhraseKey>) {
+        replaceFragment(DerivableAccountsFragment.create(seedPhrase))
     }
 
     override fun showSeedPhraseValid(isValid: Boolean) {
-        binding.continueButton.isEnabled = isValid
+        binding.buttonContinue.isEnabled = isValid
         binding.seedPhraseView.showSeedPhraseValid(isValid)
     }
 
@@ -89,8 +89,8 @@ class SecretKeyFragment :
         binding.seedPhraseView.showClearButton(isVisible)
     }
 
-    override fun addFirstKey(key: SecretKey) {
-        binding.seedPhraseView.addSecretKey(SecretKey())
+    override fun addFirstKey(key: SeedPhraseKey) {
+        binding.seedPhraseView.addSecretKey(SeedPhraseKey())
     }
 
     override fun showFocusOnLastKey(lastSecretItemIndex: Int) {

@@ -5,7 +5,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
 import org.p2p.uikit.R
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import kotlin.properties.Delegates
 
 /**
@@ -14,8 +14,8 @@ import kotlin.properties.Delegates
  * */
 
 class SeedPhraseWatcher(
-    private val onKeyAdded: (SecretKey) -> Unit,
-    private val onSeedPhraseInserted: (List<SecretKey>) -> Unit,
+    private val onKeyAdded: (SeedPhraseKey) -> Unit,
+    private val onSeedPhraseInserted: (List<SeedPhraseKey>) -> Unit,
     var isLastKey: Boolean
 ) : TextWatcher {
 
@@ -23,8 +23,8 @@ class SeedPhraseWatcher(
         fun installOn(
             isLast: Boolean,
             editText: EditText,
-            onKeyAdded: (SecretKey) -> Unit,
-            onSeedPhraseInserted: (List<SecretKey>) -> Unit
+            onKeyAdded: (SeedPhraseKey) -> Unit,
+            onSeedPhraseInserted: (List<SeedPhraseKey>) -> Unit
         ): SeedPhraseWatcher {
             val seedPhraseWatcher = SeedPhraseWatcher(onKeyAdded, onSeedPhraseInserted, isLast)
             editText.addTextChangedListener(seedPhraseWatcher)
@@ -53,7 +53,7 @@ class SeedPhraseWatcher(
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         val text = s?.toString().orEmpty()
 
-        val keys = SeedPhraseUtils.format(text)
+        val keys = SeedPhraseFormatter.format(text)
         when (keys.size) {
             0 -> {
                 Log.d("SEED_PHRASE", "User is typing and not finished yet, doing nothing $text")
@@ -79,6 +79,6 @@ private data class SeedPhrase(
 )
 
 private sealed class KeyResult {
-    data class KeyAdded(val key: SecretKey) : KeyResult()
-    data class MultipleKeysAdded(val keys: List<SecretKey>) : KeyResult()
+    data class KeyAdded(val key: SeedPhraseKey) : KeyResult()
+    data class MultipleKeysAdded(val keys: List<SeedPhraseKey>) : KeyResult()
 }

@@ -11,22 +11,22 @@ import org.p2p.uikit.R
 import org.p2p.uikit.databinding.ItemSecretKeyBinding
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.showSoftKeyboard
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
 import org.p2p.uikit.utils.SpanUtils
 
 class SecretKeyViewHolder(
     binding: ItemSecretKeyBinding,
     private val onKeyRemovedListener: (Int) -> Unit,
-    private val onUpdateKeyListener: (SecretKey) -> Unit,
-    private val onInsertedListener: (List<SecretKey>) -> Unit
+    private val onUpdateKeyListener: (SeedPhraseKey) -> Unit,
+    private val onInsertedListener: (List<SeedPhraseKey>) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     constructor(
         parent: ViewGroup,
         onKeyRemovedListener: (Int) -> Unit,
-        onKeyAddedListener: (SecretKey) -> Unit,
-        onInsertedListener: (List<SecretKey>) -> Unit
+        onKeyAddedListener: (SeedPhraseKey) -> Unit,
+        onInsertedListener: (List<SeedPhraseKey>) -> Unit
     ) : this(
         binding = ItemSecretKeyBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         onKeyRemovedListener = onKeyRemovedListener,
@@ -39,7 +39,7 @@ class SecretKeyViewHolder(
 
     private var textWatcher: SeedPhraseWatcher? = null
 
-    fun onBind(item: SecretKey) {
+    fun onBind(item: SeedPhraseKey) {
         textWatcher?.isLastKey = adapterPosition == SEED_PHRASE_SIZE_LONG
 
         if (item.text.isEmpty()) {
@@ -61,11 +61,11 @@ class SecretKeyViewHolder(
         }
     }
 
-    fun setKeyCompleted(secretKey: SecretKey) {
+    fun setKeyCompleted(seedPhraseKey: SeedPhraseKey) {
         val wordIndex = adapterPosition + 1
-        val text = "$wordIndex ${secretKey.text}"
+        val text = "$wordIndex ${seedPhraseKey.text}"
 
-        if (secretKey.isValid) {
+        if (seedPhraseKey.isValid) {
             keyTextView.setTextColor(itemView.getColor(R.color.night))
             val color = itemView.getColor(R.color.mountain)
             val spannedText = SpanUtils.highlightText(text, "$wordIndex", color)
@@ -94,17 +94,17 @@ class SecretKeyViewHolder(
         return false
     }
 
-    private fun onSeedPhraseInserted(secretKeys: List<SecretKey>) {
+    private fun onSeedPhraseInserted(seedPhrase: List<SeedPhraseKey>) {
         keyEditText.clearFocus()
         SeedPhraseWatcher.uninstallFrom(keyEditText)
         keyEditText.text = null
-        onInsertedListener(secretKeys)
+        onInsertedListener(seedPhrase)
     }
 
-    private fun onKeyAdded(secretKey: SecretKey) {
+    private fun onKeyAdded(seedPhraseKey: SeedPhraseKey) {
         SeedPhraseWatcher.uninstallFrom(keyEditText)
         keyEditText.text = null
-        onUpdateKeyListener(secretKey)
+        onUpdateKeyListener(seedPhraseKey)
     }
 
     private fun onKeyRemoved() {

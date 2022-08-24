@@ -1,24 +1,24 @@
-package org.p2p.wallet.restore.ui.keys
+package org.p2p.wallet.restore.ui.seedphrase
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import java.io.File
 
-interface SecretKeyContract {
+interface SeedPhraseContract {
 
     interface View : MvpView {
-        fun updateKeys(secretKeys: List<SecretKey>)
-        fun showSuccess(secretKeys: List<SecretKey>)
+        fun updateSeedPhrase(seedPhrase: List<SeedPhraseKey>)
+        fun showSuccess(seedPhrase: List<SeedPhraseKey>)
         fun showFile(file: File)
         fun showSeedPhraseValid(isValid: Boolean)
         fun showClearButton(isVisible: Boolean)
-        fun addFirstKey(key: SecretKey)
+        fun addFirstKey(key: SeedPhraseKey)
         fun showFocusOnLastKey(lastSecretItemIndex: Int)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setNewKeys(keys: List<SecretKey>)
+        fun setNewKeys(keys: List<SeedPhraseKey>)
         fun verifySeedPhrase()
         fun load()
         fun requestFocusOnLastKey()

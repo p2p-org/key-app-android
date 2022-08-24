@@ -4,7 +4,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.utils.replaceFragment
 
 class SplashFragment :
@@ -21,7 +21,7 @@ class SplashFragment :
     override val navBarColor: Int = R.color.bg_lime
 
     override fun navigateToOnboarding() {
-        replaceFragment(SecretKeyFragment.create())
+        replaceFragment(SeedPhraseFragment.create())
 //        replaceFragment(OnboardingRootFragment.create())
     }
 

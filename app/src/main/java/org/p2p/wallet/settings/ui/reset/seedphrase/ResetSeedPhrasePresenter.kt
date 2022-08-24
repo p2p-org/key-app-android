@@ -2,12 +2,12 @@ package org.p2p.wallet.settings.ui.reset.seedphrase
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.restore.interactor.SecretKeyInteractor
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import kotlin.properties.Delegates
 
 class ResetSeedPhrasePresenter(
-    private val secretKeyInteractor: SecretKeyInteractor,
+    private val seedPhraseInteractor: SeedPhraseInteractor,
     private val authAnalytics: AuthAnalytics
 ) : BasePresenter<ResetSeedPhraseContract.View>(), ResetSeedPhraseContract.Presenter {
 
@@ -16,7 +16,7 @@ class ResetSeedPhrasePresenter(
         private const val SEED_PHRASE_SIZE_LONG = 24
     }
 
-    private var keys: List<SecretKey> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
+    private var keys: List<SeedPhraseKey> by Delegates.observable(emptyList()) { _, oldValue, newValue ->
         if (oldValue != newValue) {
             val size = newValue.size
             val isVisible = size == SEED_PHRASE_SIZE_LONG || size == SEED_PHRASE_SIZE_SHORT
@@ -24,13 +24,13 @@ class ResetSeedPhrasePresenter(
         }
     }
 
-    override fun setNewKeys(keys: List<SecretKey>) {
+    override fun setNewKeys(keys: List<SeedPhraseKey>) {
         val filtered = keys.filter { it.text.isNotEmpty() }
         this.keys = ArrayList(filtered)
     }
 
     override fun verifySeedPhrase() {
-        val validatedKeys = secretKeyInteractor.verifySeedPhrase(keys)
+        val validatedKeys = seedPhraseInteractor.verifySeedPhrase(keys)
         val isValid = validatedKeys.none { !it.isValid }
 
         val resetResult = if (isValid) AuthAnalytics.ResetResult.SUCCESS else AuthAnalytics.ResetResult.ERROR

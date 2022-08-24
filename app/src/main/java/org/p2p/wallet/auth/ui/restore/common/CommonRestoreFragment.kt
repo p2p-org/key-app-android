@@ -13,7 +13,7 @@ import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -56,7 +56,7 @@ class CommonRestoreFragment :
 
             buttonSeed.setOnClickListener {
                 // TODO make a real restore implementation!
-                replaceFragment(SecretKeyFragment.create())
+                replaceFragment(SeedPhraseFragment.create())
             }
         }
 

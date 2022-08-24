@@ -1,8 +1,8 @@
-package org.p2p.wallet.restore.ui.keys
+package org.p2p.wallet.restore.ui.seedphrase
 
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.restore.interactor.SecretKeyInteractor
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import kotlin.properties.Delegates
 import kotlinx.coroutines.launch
 
@@ -18,10 +18,10 @@ private const val PRIVACY_POLICY_FILE_FULL = "p2p_privacy_policy.pdf"
 private const val PRIVACY_POLICY_FILE_NAME = "p2p_privacy_policy"
 
 class SecretKeyPresenter(
-    private val secretKeyInteractor: SecretKeyInteractor,
-) : BasePresenter<SecretKeyContract.View>(), SecretKeyContract.Presenter {
+    private val seedPhraseInteractor: SeedPhraseInteractor,
+) : BasePresenter<SeedPhraseContract.View>(), SeedPhraseContract.Presenter {
 
-    private var keys: List<SecretKey> by Delegates.observable(emptyList()) { _, _, newValue ->
+    private var keys: List<SeedPhraseKey> by Delegates.observable(emptyList()) { _, _, newValue ->
         val newSeedPhraseSize = newValue.size
         val isSeedPhraseValid =
             newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT
@@ -31,21 +31,21 @@ class SecretKeyPresenter(
         view?.showClearButton(isClearButtonVisible)
     }
 
-    override fun setNewKeys(keys: List<SecretKey>) {
+    override fun setNewKeys(keys: List<SeedPhraseKey>) {
         val filtered = keys.filter { it.text.isNotEmpty() }
         this.keys = filtered.toMutableList()
     }
 
     override fun verifySeedPhrase() {
         launch {
-            val data = secretKeyInteractor.verifySeedPhrase(keys).also { keys = it }
-            view?.updateKeys(data)
+            val seedPhrase = seedPhraseInteractor.verifySeedPhrase(keys).also { keys = it }
+            view?.updateSeedPhrase(seedPhrase)
         }
     }
 
     override fun load() {
         if (keys.isEmpty()) {
-            view?.addFirstKey(SecretKey())
+            view?.addFirstKey(SeedPhraseKey())
         } else {
             keys = keys.toList()
         }

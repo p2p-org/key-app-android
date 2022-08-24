@@ -25,7 +25,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
@@ -102,7 +102,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     // TODO add another screens
     fun getAnalyticsName(): String = when (this) {
         is CreateWalletFragment -> ScreenNames.OnBoarding.WALLET_CREATE
-        is SecretKeyFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
+        is SeedPhraseFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
         is SecurityKeyFragment -> ScreenNames.OnBoarding.CREATE_MANUAL
         is CreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
         is SeedInfoFragment -> ScreenNames.OnBoarding.SEED_INFO

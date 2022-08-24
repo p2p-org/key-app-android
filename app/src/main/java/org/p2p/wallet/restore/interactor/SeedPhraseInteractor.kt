@@ -10,7 +10,7 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
@@ -26,7 +26,7 @@ import kotlinx.coroutines.withContext
 private const val KEY_PHRASES = "KEY_PHRASES"
 private const val KEY_DERIVATION_PATH = "KEY_DERIVATION_PATH"
 
-class SecretKeyInteractor(
+class SeedPhraseInteractor(
     private val authRepository: AuthRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val tokenProvider: TokenKeyProvider,
@@ -100,7 +100,7 @@ class SecretKeyInteractor(
     suspend fun generateSecretKeys(): List<String> =
         authRepository.generatePhrase()
 
-    fun verifySeedPhrase(secretKeys: List<SecretKey>): List<SecretKey> {
+    fun verifySeedPhrase(secretKeys: List<SeedPhraseKey>): List<SeedPhraseKey> {
         val words = English.INSTANCE.words
         val keys = secretKeys.filter { key -> key.text.isNotEmpty() }
 

@@ -5,16 +5,16 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.restore.interactor.SecretKeyInteractor
+import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.uikit.organisms.seedphrase.SecretKey
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseKey
 import timber.log.Timber
 import kotlin.properties.Delegates
 import kotlinx.coroutines.launch
 
 class DerivableAccountsPresenter(
-    private val secretKeys: List<SecretKey>,
-    private val secretKeyInteractor: SecretKeyInteractor,
+    private val secretKeys: List<SeedPhraseKey>,
+    private val seedPhraseInteractor: SeedPhraseInteractor,
     private val usernameInteractor: UsernameInteractor,
     private val analytics: OnboardingAnalytics
 ) : BasePresenter<DerivableAccountsContract.View>(),
@@ -38,7 +38,7 @@ class DerivableAccountsPresenter(
 
         launch {
             try {
-                val accounts = secretKeyInteractor.getDerivableAccounts(keys)
+                val accounts = seedPhraseInteractor.getDerivableAccounts(keys)
                 allAccounts += accounts
                 filterAccountsByPath(path)
                 if (allAccounts.size > 1) {
@@ -60,7 +60,7 @@ class DerivableAccountsPresenter(
             try {
                 view?.showLoading(true)
                 val keys = secretKeys.map { it.text }
-                secretKeyInteractor.createAndSaveAccount(path, keys)
+                seedPhraseInteractor.createAndSaveAccount(path, keys)
                 analytics.logWalletRestored(ScreenNames.OnBoarding.IMPORT_MANUAL)
                 view?.navigateToCreatePin()
             } catch (e: Throwable) {
