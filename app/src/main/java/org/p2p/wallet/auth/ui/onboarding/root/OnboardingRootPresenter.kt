@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.ui.onboarding.root
 
 import org.p2p.wallet.auth.interactor.AuthInteractor
-import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
