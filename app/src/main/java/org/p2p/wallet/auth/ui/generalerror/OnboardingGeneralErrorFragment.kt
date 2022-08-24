@@ -34,6 +34,9 @@ class OnboardingGeneralErrorFragment :
 
     override val presenter: Presenter by inject { parametersOf(this, screenError) }
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

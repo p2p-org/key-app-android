@@ -35,6 +35,8 @@ class NewCreatePinFragment :
     private val binding: FragmentNewCreatePinBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
+    override val statusBarColor: Int = R.color.bg_lime
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.setPinMode(PinMode.CREATE)

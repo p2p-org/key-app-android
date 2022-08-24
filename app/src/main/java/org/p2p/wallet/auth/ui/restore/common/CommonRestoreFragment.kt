@@ -13,7 +13,9 @@ import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -43,8 +45,15 @@ class CommonRestoreFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener {
-                popBackStack()
+            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setOnMenuItemClickListener {
+                if (it.itemId == R.id.helpItem) {
+                    // pass empty string as UserId to launch IntercomService as anonymous user
+                    IntercomService.signIn(userId = emptyString())
+                    IntercomService.showMessenger()
+                    return@setOnMenuItemClickListener true
+                }
+                false
             }
             buttonRestoreByGoogle.setOnClickListener {
                 presenter.useGoogleAccount()
