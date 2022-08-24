@@ -1,7 +1,9 @@
 package org.p2p.wallet.auth.web3authsdk
 
-import org.p2p.wallet.auth.model.Web3AuthErrorResponse
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
+import com.google.gson.JsonObject
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 
 interface Web3AuthApi {
     class Web3AuthSdkInternalError(override val message: String, override val cause: Throwable? = null) : Throwable()
@@ -15,7 +17,28 @@ interface Web3AuthApi {
         fun onSuccessSignUp(signUpResponse: Web3AuthSignUpResponse)
     }
 
-    fun triggerSilentSignUp(socialShare: String, handler: Web3AuthSignUpCallback)
-    fun triggerSignInNoDevice(socialShare: String)
-    fun triggerSignInNoCustom(socialShare: String, deviceShare: String)
+    interface Web3AuthSignInCallback : Web3AuthClientHandler {
+        fun onSuccessSignIn(signInResponse: Web3AuthSignInResponse)
+    }
+
+    fun triggerSilentSignUp(
+        socialShare: String,
+        handler: Web3AuthSignUpCallback
+    )
+    fun triggerSignInNoTorus(
+        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        encryptedMnemonicPhrase: JsonObject,
+        handler: Web3AuthSignInCallback
+    )
+    fun triggerSignInNoCustom(
+        socialShare: String,
+        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        handler: Web3AuthSignInCallback
+    )
+    fun triggerSignInNoDevice(
+        socialShare: String,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        handler: Web3AuthSignInCallback
+    )
 }

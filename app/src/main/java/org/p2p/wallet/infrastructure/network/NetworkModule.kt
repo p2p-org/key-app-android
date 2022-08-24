@@ -99,7 +99,7 @@ object NetworkModule : InjectionModule {
         single(named(FACADE_SERVICE_RETROFIT_QUALIFIER)) {
             getRetrofit(
                 // TODO
-                baseUrl = "https://replace_later.com",
+                baseUrl = "http://35.234.120.240:9090/",
                 tag = "FacadeService",
                 interceptor = GatewayServiceInterceptor()
             )
