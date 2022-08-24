@@ -13,7 +13,7 @@ interface CountryCodePickerContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun searchByCountryName(name: String)
+        fun search(text: String)
         fun load(countryCode: CountryCode?)
         fun onItemSelected(item: CountryCodeItem)
         fun onCountryCodeSelected()
