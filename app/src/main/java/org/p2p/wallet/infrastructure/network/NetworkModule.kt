@@ -98,8 +98,7 @@ object NetworkModule : InjectionModule {
 
         single(named(FACADE_SERVICE_RETROFIT_QUALIFIER)) {
             getRetrofit(
-                // TODO
-                baseUrl = "http://35.234.120.240:9090/",
+                baseUrl = androidContext().getString(R.string.gatewayServiceTestBaseUrl),
                 tag = "FacadeService",
                 interceptor = GatewayServiceInterceptor()
             )

@@ -45,7 +45,8 @@ class UserSignUpDetailsStorage(
 
     fun getLastSignUpUserDetails(): SignUpUserDetails? {
         return kotlin.runCatching { secureStorage.getObject(KEY_LAST_DEVICE_SHARE_ID, SignUpUserDetails::class) }
-            .onFailure { Timber.i(it) }
+            .onSuccess { Timber.tag(TAG).i("Last sign up user details received!") }
+            .onFailure { Timber.tag(TAG).i(it) }
             .getOrNull()
     }
 }

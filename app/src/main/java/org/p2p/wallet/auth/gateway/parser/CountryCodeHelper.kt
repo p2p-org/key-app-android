@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.gateway.parser
 
 import android.content.res.Resources
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
+import io.michaelrocks.libphonenumber.android.Phonenumber
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.utils.emptyString
@@ -52,9 +53,11 @@ class CountryCodeHelper(
 
     private fun getMaskForCountryCode(countryCode: String, phoneCode: String): String {
         return try {
-            val exampleNumber = phoneNumberUtil.getExampleNumber(countryCode)
-            val internationalFormat =
-                phoneNumberUtil.format(exampleNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
+            val exampleNumber: Phonenumber.PhoneNumber? = phoneNumberUtil.getExampleNumber(countryCode)
+            val internationalFormat = phoneNumberUtil.format(
+                exampleNumber,
+                PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
+            )
             internationalFormat.replace("+$phoneCode", emptyString())
         } catch (e: Exception) {
             Timber.i(e, "Get mask for country code failed")

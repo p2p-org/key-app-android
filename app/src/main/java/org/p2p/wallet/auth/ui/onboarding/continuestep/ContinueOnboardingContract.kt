@@ -7,6 +7,7 @@ interface ContinueOnboardingContract {
     interface View : MvpView {
         fun showUserId(userId: String)
         fun navigateToPhoneNumberEnter()
+        fun setLoadingState(isScreenLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -53,6 +53,15 @@ class ContinueOnboardingFragment :
         replaceFragment(PhoneNumberEnterFragment.create())
     }
 
+    override fun setLoadingState(isScreenLoading: Boolean) {
+        with(binding) {
+            buttonContinueOnboarding.apply {
+                isLoading = isScreenLoading
+                isEnabled = !isScreenLoading
+            }
+        }
+    }
+
     override fun showUserId(userId: String) {
         binding.textViewContinueOnboardingSubtitle.text = getString(R.string.onboarding_continue_subtitle, userId)
     }

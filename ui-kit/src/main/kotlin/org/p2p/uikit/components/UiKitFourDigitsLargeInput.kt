@@ -61,7 +61,7 @@ class UiKitFourDigitsLargeInput @JvmOverloads constructor(
 
     private val onTextChangedListener = object : MaskedTextChangedListener.ValueListener {
         override fun onTextChanged(maskFilled: Boolean, extractedValue: String, formattedValue: String) {
-            listener?.onInputChanged(formattedValue)
+            listener?.onInputChanged(extractedValue)
         }
     }
 

@@ -20,15 +20,22 @@ class ContinueOnboardingPresenter(
 
     override fun continueSignUp() {
         launch {
+            view?.setLoadingState(isScreenLoading = true)
+
             when (val result = userSignUpInteractor.continueSignUpUser()) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     view?.navigateToPhoneNumberEnter()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause, "Continue sign up failed")
-                    view?.showErrorSnackBar(R.string.error_general_message)
+                    Timber.e(result, "Continue sign up failed")
+                    view?.showUiKitSnackBar(R.string.error_general_message)
+                }
+                else -> {
+                    view?.showUiKitSnackBar(R.string.error_general_message)
                 }
             }
+
+            view?.setLoadingState(isScreenLoading = false)
         }
     }
 }

@@ -11,8 +11,9 @@
     <ImageView
         android:id="@+id/image_view_box"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toTopOf="@+id/text_view_error_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -41,14 +42,14 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
         android:gravity="center"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
         app:layout_constraintBottom_toTopOf="@+id/container_bottom_buttons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_view_error_title"
-        tools:text="@string/onboarding_general_error_critical_error_sub_title" />
-
+        tools:text="We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n If you will write us, use error code: %1$s" />
 
     <LinearLayout
         android:id="@+id/container_bottom_buttons"

@@ -3,6 +3,9 @@ package org.p2p.wallet.common.mvp
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
@@ -81,5 +84,41 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
                 it.setIcon(icon)
             }
         }
+    }
+
+    override fun showUiKitSnackBar(message: String, onDismissed: () -> Unit) {
+        val root = findViewById<View>(android.R.id.content) as ViewGroup
+        root.showSnackbarShort(message, onDismissed)
+    }
+
+    override fun showUiKitSnackBar(messageResId: Int, onDismissed: () -> Unit) {
+        val root = findViewById<View>(android.R.id.content) as ViewGroup
+        root.showSnackbarShort(getString(messageResId), onDismissed)
+    }
+
+    override fun showUiKitSnackBar(
+        message: String,
+        actionButtonResId: Int,
+        actionBlock: () -> Unit,
+    ) {
+        val root = findViewById<View>(android.R.id.content) as ViewGroup
+        root.showSnackbarShort(
+            snackbarText = message,
+            actionButtonText = getString(actionButtonResId),
+            actionButtonListener = { actionBlock.invoke() }
+        )
+    }
+
+    override fun showUiKitSnackBar(
+        messageResId: Int,
+        actionButtonResId: Int,
+        actionBlock: () -> Unit,
+    ) {
+        val root = findViewById<View>(android.R.id.content) as ViewGroup
+        root.showSnackbarShort(
+            snackbarText = getString(messageResId),
+            actionButtonText = getString(actionButtonResId),
+            actionButtonListener = { actionBlock.invoke() }
+        )
     }
 }

@@ -109,7 +109,7 @@ class HomeFragment :
         requireContext().copyToClipBoard(address)
         binding.root.showSnackbarShort(
             snackbarText = getString(R.string.home_address_snackbar_text),
-            snackbarActionButtonText = getString(R.string.common_ok)
+            actionButtonText = getString(R.string.common_ok)
         ) { it.dismiss() }
     }
 
