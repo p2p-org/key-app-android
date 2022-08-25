@@ -32,7 +32,8 @@
     <string name="orca_api_base_url">https://orca.wallet.p2p.org/</string>
 
     <string name="notificationServiceBaseUrl">https://push-service.wallet.p2p.org/</string>
-    <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/</string>
+    <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/notifier/</string>
+    <string name="gatewayServiceTestBaseUrl">http://35.234.120.240:9090/gateway/</string>
 
     <string name="googleClientId">553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com</string>
     <!--TODO PWN-4266 migrate googleClientId to CI for secure-->

@@ -13,19 +13,19 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface GatewayServiceApi {
-    @POST
+    @POST("./")
     suspend fun registerWallet(@Body request: GatewayServiceRequest<RegisterWalletRequest>):
         GatewayServiceResponse<RegisterWalletResponse>
 
-    @POST
+    @POST("./")
     suspend fun confirmRegisterWallet(@Body request: GatewayServiceRequest<ConfirmRegisterWalletRequest>):
         GatewayServiceResponse<GatewayServiceStandardResponse>
 
-    @POST
+    @POST("./")
     suspend fun restoreWallet(@Body request: GatewayServiceRequest<RestoreWalletRequest>):
         GatewayServiceResponse<GatewayServiceStandardResponse>
 
-    @POST
+    @POST("./")
     suspend fun confirmRestoreWallet(@Body request: GatewayServiceRequest<ConfirmRestoreWalletRequest>):
         GatewayServiceResponse<ConfirmRestoreWalletResponse>
 }
