@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 private const val TIMER_VALUE_FORMAT = "mm:ss"
-private const val START_TIMER_VALUE_MIN = 5
+private const val START_TIMER_VALUE_MIN = 10
 
 class OnboardingGeneralErrorTimerPresenter(
     private val error: GeneralErrorTimerScreenError
