@@ -30,7 +30,7 @@ class PhoneNumberEnterPresenter(
             selectedCountryCode = countryCode
 
             view?.showDefaultCountryCode(countryCode)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e, "Loading default country code failed")
             view?.showErrorSnackBar(R.string.error_general_message)
         }

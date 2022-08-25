@@ -62,7 +62,7 @@ class NewCreatePinPresenter(
             checkBiometricAvailability()
             // Clear pin in case of returning back
             createdPin = emptyString()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e, "Failed to finish pin creation")
             view?.showErrorMessage(R.string.error_general_message)
         }
