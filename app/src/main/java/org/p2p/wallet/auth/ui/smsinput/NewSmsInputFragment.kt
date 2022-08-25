@@ -15,22 +15,29 @@ import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+
+private const val ARG_PHONE_NUMBER = "ARG_PHONE_NUMBER"
 
 class NewSmsInputFragment :
     BaseMvpFragment<NewSmsInputContract.View, Presenter>(R.layout.fragment_new_sms_input),
     NewSmsInputContract.View {
 
     companion object {
-        fun create(): NewSmsInputFragment = NewSmsInputFragment()
+        fun create(phoneNumber: String): NewSmsInputFragment = NewSmsInputFragment()
+            .withArgs(ARG_PHONE_NUMBER to phoneNumber)
     }
 
-    private val binding: FragmentNewSmsInputBinding by viewBinding()
-
     override val presenter: Presenter by inject { parametersOf(this) }
+
+    private val binding: FragmentNewSmsInputBinding by viewBinding()
+    private val phoneNumber by args(ARG_PHONE_NUMBER, emptyString())
 
     override fun initView(userPhoneNumber: String) {
         with(binding) {
@@ -114,7 +121,10 @@ class NewSmsInputFragment :
 
     override fun navigateToSmsInputBlocked() {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenError.BLOCK_SMS_INPUT)
+            OnboardingGeneralErrorTimerFragment.create(
+                GeneralErrorTimerScreenError.BLOCK_SMS_INPUT,
+                phoneNumber
+            )
         )
     }
 

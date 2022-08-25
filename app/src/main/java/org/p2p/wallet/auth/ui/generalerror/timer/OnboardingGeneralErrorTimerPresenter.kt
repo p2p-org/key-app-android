@@ -1,5 +1,11 @@
 package org.p2p.wallet.auth.ui.generalerror.timer
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import java.text.SimpleDateFormat
@@ -7,12 +13,6 @@ import java.util.Date
 import java.util.Locale
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 
 private const val TIMER_VALUE_FORMAT = "mm:ss"
 private const val START_TIMER_VALUE_MIN = 5
@@ -27,7 +27,7 @@ class OnboardingGeneralErrorTimerPresenter(
 
         createTimerFlow()
             .onEach(::onTimerValueChanged)
-            .onCompletion { this@OnboardingGeneralErrorTimerPresenter.view?.navigateToStartingScreen() }
+            .onCompletion { this@OnboardingGeneralErrorTimerPresenter.view?.navigateToPhoneNumberEnter() }
             .launchIn(this)
     }
 
