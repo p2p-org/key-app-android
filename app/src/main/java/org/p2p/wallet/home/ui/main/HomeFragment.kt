@@ -21,7 +21,6 @@ import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
@@ -212,8 +211,8 @@ class HomeFragment :
         binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
     }
 
-    override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
-        contentAdapter.setItems(tokens, isZerosHidden, state)
+    override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean) {
+        contentAdapter.setItems(tokens, isZerosHidden)
     }
 
     override fun showTokensForBuy(tokens: List<Token>) {

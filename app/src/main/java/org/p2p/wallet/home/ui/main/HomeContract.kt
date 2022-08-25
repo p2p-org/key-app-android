@@ -4,14 +4,13 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import java.math.BigDecimal
 
 interface HomeContract {
 
     interface View : MvpView, OnHomeItemsClickListener {
-        fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState)
+        fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean)
         fun showTokensForBuy(tokens: List<Token>)
         fun showBalance(balance: BigDecimal)
         fun showRefreshing(isRefreshing: Boolean)

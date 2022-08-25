@@ -10,7 +10,6 @@ import org.p2p.wallet.home.model.HomeElementItem.Banners
 import org.p2p.wallet.home.model.HomeElementItem.Hidden
 import org.p2p.wallet.home.model.HomeElementItem.Shown
 import org.p2p.wallet.home.model.HomeElementItem.Title
-import org.p2p.wallet.home.model.VisibilityState
 
 class TokenAdapter(
     private val listener: OnHomeItemsClickListener
@@ -27,11 +26,11 @@ class TokenAdapter(
 
     private var isZerosHidden: Boolean = true
 
-    fun setItems(new: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
+    fun setItems(new: List<HomeElementItem>, isZerosHidden: Boolean) {
         this.isZerosHidden = isZerosHidden
         val old = data.toMutableList()
         data.clear()
-        data.addAll(mapGroups(new, state))
+        data.addAll(new)
         DiffUtil.calculateDiff(TokenAdapterDiffCallback(old, data)).dispatchUpdatesTo(this)
     }
 
@@ -82,21 +81,5 @@ class TokenAdapter(
                 DIFF_FIELD_TITLE -> (holder as HeaderViewHolder).onBind(item as Title)
             }
         }
-    }
-
-    private fun mapGroups(tokens: List<HomeElementItem>, state: VisibilityState): List<HomeElementItem> {
-        val result = mutableListOf<HomeElementItem>(Title(R.string.home_tokens))
-        val groups = tokens.groupBy { it is Hidden }
-        val hiddenTokens = groups[true].orEmpty()
-        val visibleTokens = groups[false].orEmpty()
-
-        result += visibleTokens
-
-        if (hiddenTokens.isNotEmpty()) {
-            result += Action(state)
-            result += hiddenTokens
-        }
-
-        return result
     }
 }

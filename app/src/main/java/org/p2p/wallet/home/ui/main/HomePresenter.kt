@@ -194,7 +194,7 @@ class HomePresenter(
             isZerosHidden = areZerosHidden
         )
 
-        view?.showTokens(mappedTokens, areZerosHidden, state.visibilityState)
+        view?.showTokens(mappedTokens, areZerosHidden)
     }
 
     private fun initialLoadTokens() {
