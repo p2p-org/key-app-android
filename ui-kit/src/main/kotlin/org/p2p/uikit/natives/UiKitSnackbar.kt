@@ -1,7 +1,7 @@
 package org.p2p.uikit.natives
 
-import android.view.View
 import androidx.annotation.StringRes
+import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.uikit.utils.getString
 
@@ -9,7 +9,7 @@ fun interface SnackbarActionButtonClickListener {
     fun onActionButtonClicked(clickedSnackbar: Snackbar)
 }
 
-fun View.showSnackbarShort(snackbarText: CharSequence) {
+fun View.showSnackbarShort(snackbarText: CharSequence, onDismissed: () -> Unit = {}) {
     internalMakeSnackbar(
         this,
         text = snackbarText,
@@ -17,38 +17,32 @@ fun View.showSnackbarShort(snackbarText: CharSequence) {
         buttonAction = null,
         duration = Snackbar.LENGTH_SHORT
     )
+        .addOnDismissedCallback(onDismissed)
         .show()
 }
 
-fun View.showSnackbarShort(@StringRes snackbarTextRes: Int, onDismissed: () -> Unit = {}): Snackbar {
-    return internalMakeSnackbar(
+fun View.showSnackbarShort(@StringRes snackbarTextRes: Int, onDismissed: () -> Unit = {}) {
+    internalMakeSnackbar(
         this,
         text = getString(snackbarTextRes),
         buttonText = null,
         buttonAction = null,
         duration = Snackbar.LENGTH_SHORT
-    ).apply {
-        addCallback(object : Snackbar.Callback() {
-            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                super.onDismissed(transientBottomBar, event)
-                onDismissed()
-            }
-        })
-
-        show()
-    }
+    )
+        .addOnDismissedCallback(onDismissed)
+        .show()
 }
 
 fun View.showSnackbarShort(
     snackbarText: CharSequence,
-    snackbarActionButtonText: CharSequence,
-    snackbarActionButtonListener: SnackbarActionButtonClickListener
+    actionButtonText: CharSequence,
+    actionButtonListener: SnackbarActionButtonClickListener
 ) {
     internalMakeSnackbar(
         this,
         text = snackbarText,
-        buttonText = snackbarActionButtonText,
-        buttonAction = snackbarActionButtonListener,
+        buttonText = actionButtonText,
+        buttonAction = actionButtonListener,
         duration = Snackbar.LENGTH_SHORT
     )
         .show()
@@ -92,4 +86,15 @@ private fun internalMakeSnackbar(
             setAction(buttonText) { buttonAction.onActionButtonClicked(this) }
         }
     }
+}
+
+private fun Snackbar.addOnDismissedCallback(
+    onDismissed: () -> Unit
+): Snackbar {
+    return this.addCallback(object : Snackbar.Callback() {
+        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+            super.onDismissed(transientBottomBar, event)
+            onDismissed()
+        }
+    })
 }

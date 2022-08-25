@@ -67,12 +67,6 @@ class WalletFoundFragment :
         binding.walletFoundSubtitle.text = getString(R.string.wallet_found_subtitle, userId)
     }
 
-    override fun showError(error: String) {
-        view?.post {
-            showErrorSnackBar(error)
-        }
-    }
-
     override fun onSuccessfulSignUp() {
         view?.post {
             replaceFragment(PhoneNumberEnterFragment.create())

@@ -6,23 +6,31 @@ import androidx.annotation.StringRes
 interface MvpView {
     fun showErrorMessage(e: Throwable? = null)
     fun showErrorMessage(@StringRes messageResId: Int)
+
     fun showErrorSnackBar(
         message: String,
         @StringRes actionResId: Int? = null,
         block: (() -> Unit)? = null
     )
+
     fun showErrorSnackBar(
         @StringRes messageResId: Int,
         @StringRes actionResId: Int? = null,
         block: (() -> Unit)? = null
     )
+
     fun showErrorSnackBar(
         e: Throwable,
         @StringRes actionResId: Int? = null,
         block: (() -> Unit)? = null
     )
 
-    fun showSuccessSnackBar(message: String, @StringRes actionResId: Int? = null, block: (() -> Unit)? = null)
+    fun showSuccessSnackBar(
+        message: String,
+        @StringRes actionResId: Int? = null,
+        block: (() -> Unit)? = null
+    )
+
     fun showSuccessSnackBar(
         @StringRes messageResId: Int,
         @StringRes actionResId: Int? = null,
@@ -34,5 +42,25 @@ interface MvpView {
         @DrawableRes iconResId: Int? = null,
         @StringRes actionResId: Int? = null,
         actionBlock: (() -> Unit)? = null
+    )
+
+    // new snackbar
+    fun showUiKitSnackBar(
+        message: String,
+        onDismissed: () -> Unit = {}
+    )
+    fun showUiKitSnackBar(
+        @StringRes messageResId: Int,
+        onDismissed: () -> Unit = {}
+    )
+    fun showUiKitSnackBar(
+        message: String,
+        @StringRes actionButtonResId: Int,
+        actionBlock: (() -> Unit) = {},
+    )
+    fun showUiKitSnackBar(
+        @StringRes messageResId: Int,
+        @StringRes actionButtonResId: Int,
+        actionBlock: (() -> Unit) = {},
     )
 }

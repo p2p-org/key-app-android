@@ -96,13 +96,13 @@ class NewCreatePinFragment :
 
     override fun onPinCreated(pinCode: String) {
         binding.pinView.onSuccessPin()
-        binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_success) {
+        showUiKitSnackBar(R.string.auth_create_wallet_pin_code_success, onDismissed = {
             presenter.onPinCreated()
-        }
+        })
     }
 
     override fun showConfirmationError() {
-        binding.root.showSnackbarShort(R.string.auth_create_wallet_pin_code_error)
+        showUiKitSnackBar(R.string.auth_create_wallet_pin_code_error)
         binding.pinView.startErrorAnimation()
     }
 

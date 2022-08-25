@@ -28,10 +28,10 @@ class ContinueOnboardingPresenter(
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
                     Timber.e(result, "Continue sign up failed")
-                    view?.showErrorSnackBar(R.string.error_general_message)
+                    view?.showUiKitSnackBar(R.string.error_general_message)
                 }
                 else -> {
-                    view?.showErrorSnackBar(R.string.error_general_message)
+                    view?.showUiKitSnackBar(R.string.error_general_message)
                 }
             }
 

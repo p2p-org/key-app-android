@@ -113,11 +113,11 @@ class NewOnboardingFragment :
 
     override fun onConnectionError() {
         setButtonLoadingState(isScreenLoading = false)
-        binding.root.showSnackbarShort(R.string.onboarding_offline_error)
+        showUiKitSnackBar(R.string.onboarding_offline_error)
     }
 
     override fun onCommonError() {
         setButtonLoadingState(isScreenLoading = false)
-        binding.root.showSnackbarShort(R.string.error_general_message)
+        showUiKitSnackBar(R.string.error_general_message)
     }
 }

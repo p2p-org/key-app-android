@@ -46,7 +46,7 @@
     <!-- Error messages -->
     <string name="error_title">Error occurred</string>
     <string name="error_general_title">Unknown error</string>
-    <string name="error_general_message">Something went wrong, try again later</string>
+    <string name="error_general_message">❌ Something went wrong. Please, try again</string>
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
     <string name="error_invalid_transaction">Invalid transaction, please try again</string>
