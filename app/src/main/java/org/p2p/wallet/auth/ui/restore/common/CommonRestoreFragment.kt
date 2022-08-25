@@ -1,11 +1,11 @@
 package org.p2p.wallet.auth.ui.restore.common
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -13,6 +13,8 @@ import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
+import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -43,8 +45,15 @@ class CommonRestoreFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.setNavigationOnClickListener {
-                popBackStack()
+            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setOnMenuItemClickListener {
+                if (it.itemId == R.id.helpItem) {
+                    // pass empty string as UserId to launch IntercomService as anonymous user
+                    IntercomService.signIn(userId = emptyString())
+                    IntercomService.showMessenger()
+                    return@setOnMenuItemClickListener true
+                }
+                false
             }
             buttonRestoreByGoogle.setOnClickListener {
                 presenter.useGoogleAccount()
@@ -108,22 +117,19 @@ class CommonRestoreFragment :
     }
 
     private fun handleSignResult(result: ActivityResult) {
-        signInHelper.handler = this
-        try {
-            signInHelper.parseSignInResult(requireContext(), result)?.let { credential ->
-                setLoadingState(isScreenLoading = true)
-                presenter.setAlternativeIdToken(credential.id, credential.googleIdToken.orEmpty())
-            }
-        } finally {
-            signInHelper.handler = null
+        signInHelper.parseSignInResult(requireContext(), result, errorHandler = this)?.let { credential ->
+            setLoadingState(isScreenLoading = true)
+            presenter.setAlternativeIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
     }
 
-    override fun onConnectionError(error: String) {
-        showInfoSnackBar(error)
+    override fun onConnectionError() {
+        setLoadingState(isScreenLoading = false)
+        showInfoSnackBar(getString(R.string.error_general_message))
     }
 
-    override fun onCommonError(error: String) {
-        showErrorSnackBar(error)
+    override fun onCommonError() {
+        setLoadingState(isScreenLoading = false)
+        showErrorSnackBar(R.string.error_general_message)
     }
 }

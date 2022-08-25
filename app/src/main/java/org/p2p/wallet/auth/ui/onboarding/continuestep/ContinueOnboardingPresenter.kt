@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.onboarding.continuestep
 
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlinx.coroutines.launch
@@ -20,15 +20,22 @@ class ContinueOnboardingPresenter(
 
     override fun continueSignUp() {
         launch {
+            view?.setLoadingState(isScreenLoading = true)
+
             when (val result = userSignUpInteractor.continueSignUpUser()) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     view?.navigateToPhoneNumberEnter()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result.cause, "Continue sign up failed")
-                    view?.showErrorSnackBar(R.string.error_general_message)
+                    Timber.e(result, "Continue sign up failed")
+                    view?.showUiKitSnackBar(R.string.error_general_message)
+                }
+                else -> {
+                    view?.showUiKitSnackBar(R.string.error_general_message)
                 }
             }
+
+            view?.setLoadingState(isScreenLoading = false)
         }
     }
 }

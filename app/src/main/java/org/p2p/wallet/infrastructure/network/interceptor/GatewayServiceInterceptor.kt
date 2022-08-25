@@ -4,7 +4,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 
 private const val HEADER_CHANNEL_ID_NAME = "CHANNEL_ID"
-private const val HEADER_CHANNEL_ID_VALUE = "CHANNEL_ID"
+private const val HEADER_CHANNEL_ID_VALUE = "P2PWALLET_MOBILE"
 
 class GatewayServiceInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

@@ -59,6 +59,22 @@
         If you will write us, use error code: %1$s
     </string>
 
+    <!--Common Restore-->
+    <string name="restore_title">Restoring your wallet</string>
+    <string name="restore_choose_method">Choose\nthe method</string>
+    <string name="restore_continue_with_google">Continue with Google</string>
+    <string name="restore_phone_number">Continue using a phone number</string>
+    <string name="restore_seed_phrase">Use a seed phrase / private key</string>
+
+    <string name="restore_no_wallet_title">No wallet found</string>
+    <string name="restore_no_wallet_subtitle">With %s.\nTry another account or use a phone number</string>
+
+    <!--Derivable Accounts-->
+    <string name="derivable_accounts_title">Derivable Accounts</string>
+    <string name="derivation_path_title">Derivation path</string>
+    <string name="derivation_path_info">This is the thing you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
+    <string name="derivation_continue_button">Continue</string>
+
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
 </resources>

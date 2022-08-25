@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
@@ -48,11 +49,17 @@ class NewSmsInputPresenter(
             return
         }
 
+        if (BuildConfig.DEBUG && smsCode == "111111") {
+            view?.navigateToPinCreate()
+            return
+        }
+
         launch {
             try {
                 view?.renderButtonLoading(isLoading = true)
 
                 createWalletInteractor.finishCreatingWallet(smsCode)
+                createWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
                 Timber.i(incorrectSms)
@@ -72,7 +79,7 @@ class NewSmsInputPresenter(
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error, "Checking sms value failed")
-                view?.showErrorSnackBar(error)
+                view?.showUiKitSnackBar(R.string.error_general_message)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }
@@ -96,7 +103,7 @@ class NewSmsInputPresenter(
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error, "Resending sms failed")
-                view?.showErrorSnackBar(R.string.error_general_message)
+                view?.showUiKitSnackBar(R.string.error_general_message)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }

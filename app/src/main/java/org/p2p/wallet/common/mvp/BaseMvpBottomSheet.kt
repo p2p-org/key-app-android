@@ -8,6 +8,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
@@ -99,4 +100,32 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
     //endregion
+
+    override fun showUiKitSnackBar(message: String, onDismissed: () -> Unit) {
+        val root = requireActivity().findViewById<ViewGroup>(android.R.id.content)
+        root.showSnackbarShort(message)
+    }
+
+    override fun showUiKitSnackBar(messageResId: Int, onDismissed: () -> Unit) {
+        val root = requireActivity().findViewById<View>(android.R.id.content) as ViewGroup
+        root.showSnackbarShort(getString(messageResId))
+    }
+
+    override fun showUiKitSnackBar(message: String, actionButtonResId: Int, actionBlock: () -> Unit) {
+        val root = requireActivity().findViewById<View>(android.R.id.content) as ViewGroup
+        root.showSnackbarShort(
+            snackbarText = message,
+            actionButtonText = getString(actionButtonResId),
+            actionButtonListener = { actionBlock.invoke() }
+        )
+    }
+
+    override fun showUiKitSnackBar(messageResId: Int, actionButtonResId: Int, actionBlock: () -> Unit) {
+        val root = requireActivity().findViewById<View>(android.R.id.content) as ViewGroup
+        root.showSnackbarShort(
+            snackbarText = getString(messageResId),
+            actionButtonText = getString(actionButtonResId),
+            actionButtonListener = { actionBlock.invoke() }
+        )
+    }
 }

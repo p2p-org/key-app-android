@@ -98,8 +98,7 @@ object NetworkModule : InjectionModule {
 
         single(named(FACADE_SERVICE_RETROFIT_QUALIFIER)) {
             getRetrofit(
-                // TODO
-                baseUrl = "https://replace_later.com",
+                baseUrl = androidContext().getString(R.string.gatewayServiceTestBaseUrl),
                 tag = "FacadeService",
                 interceptor = GatewayServiceInterceptor()
             )

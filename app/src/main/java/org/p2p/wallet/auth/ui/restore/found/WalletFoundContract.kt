@@ -7,8 +7,9 @@ interface WalletFoundContract {
     interface View : MvpView {
         fun startGoogleFlow()
         fun setUserId(userId: String)
-        fun showError(error: String)
         fun onSuccessfulSignUp()
+        fun onSameTokenFoundError()
+        fun setLoadingState(isScreenLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

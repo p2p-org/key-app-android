@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.model
+package org.p2p.wallet.auth.web3authsdk.response
 
 import com.google.gson.annotations.SerializedName
 
@@ -10,7 +10,7 @@ data class Web3AuthErrorResponse(
 
     // changes during the mapping
     @Transient val errorType: ErrorType = ErrorType.UNDEFINED
-) : Error(errorMessage) {
+) : Error(errorMessage, Throwable(message = stack)) {
     // https://github.com/p2p-org/web3-auth-sdk-new/blob/main/packages/sdk/src/errors/typeMap.ts
     enum class ErrorType(val code: Int) {
         UNDEFINED(code = -1),
@@ -30,7 +30,8 @@ data class Web3AuthErrorResponse(
         NO_CUSTOM_SHARE(code = 1015),
         USER_NOT_REGISTERED(code = 1016),
         NO_CUSTOM_METADATA(code = 1017),
-        INVALID_INIT_ARGS(code = 1018);
+        INVALID_INIT_ARGS(code = 1018),
+        NETWORK_ERROR(code = 1666);
 
         companion object {
             fun findByCode(code: Int): ErrorType = values().find { it.code == code } ?: UNDEFINED

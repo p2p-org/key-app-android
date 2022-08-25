@@ -1,7 +1,7 @@
-package org.p2p.wallet.auth.web3authsdk
+package org.p2p.wallet.auth.repository
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import timber.log.Timber
 
@@ -45,7 +45,8 @@ class UserSignUpDetailsStorage(
 
     fun getLastSignUpUserDetails(): SignUpUserDetails? {
         return kotlin.runCatching { secureStorage.getObject(KEY_LAST_DEVICE_SHARE_ID, SignUpUserDetails::class) }
-            .onFailure { Timber.i(it) }
+            .onSuccess { Timber.tag(TAG).i("Last sign up user details received!") }
+            .onFailure { Timber.tag(TAG).i(it) }
             .getOrNull()
     }
 }

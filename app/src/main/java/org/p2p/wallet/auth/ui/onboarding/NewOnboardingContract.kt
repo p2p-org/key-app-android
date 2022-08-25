@@ -6,9 +6,9 @@ import org.p2p.wallet.common.mvp.MvpView
 interface NewOnboardingContract {
     interface View : MvpView {
         fun startGoogleFlow()
-        fun showError(error: String)
         fun onSameTokenFoundError()
         fun onSuccessfulSignUp()
+        fun setButtonLoadingState(isScreenLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

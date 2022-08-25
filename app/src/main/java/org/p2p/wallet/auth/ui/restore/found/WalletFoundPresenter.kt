@@ -1,10 +1,11 @@
 package org.p2p.wallet.auth.ui.restore.found
 
-import kotlinx.coroutines.launch
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
-import org.p2p.wallet.auth.web3authsdk.UserSignUpInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class WalletFoundPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
@@ -22,12 +23,21 @@ class WalletFoundPresenter(
 
     override fun setAlternativeIdToken(userId: String, idToken: String) {
         launch {
-            val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)
-            if (result == UserSignUpInteractor.SignUpResult.SignUpSuccessful) {
-                view?.onSuccessfulSignUp()
-            } else {
-                Timber.i(result.toString())
+            view?.setLoadingState(isScreenLoading = true)
+
+            when (val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)) {
+                UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
+                    view?.onSuccessfulSignUp()
+                }
+                is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
+                    Timber.e(result, "Setting alternative user failed")
+                    view?.showUiKitSnackBar(R.string.error_general_message)
+                }
+                UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
+                    view?.onSameTokenFoundError()
+                }
             }
+            view?.setLoadingState(isScreenLoading = false)
         }
     }
 }

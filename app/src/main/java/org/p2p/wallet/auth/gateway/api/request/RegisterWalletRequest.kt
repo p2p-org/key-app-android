@@ -28,11 +28,3 @@ data class RegisterWalletRequest(
     @SerializedName("timestamp_device")
     val timestamp: String
 )
-
-enum class OtpMethod(val backendName: String) {
-    @SerializedName("sms")
-    SMS("sms"),
-
-    @SerializedName("call")
-    CALL("call")
-}

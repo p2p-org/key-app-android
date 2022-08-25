@@ -8,7 +8,11 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenSimpleBinding
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleShort
+
+private const val FULL_ALPHA = 1.0f
+private const val HALF_ALPHA = 0.5f
 
 class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -39,19 +43,28 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             )
         )
 
+        private val root = binding.root
         private val tokenImageView = binding.tokenImageView
-        private val nameTextView = binding.nameTextView
-        private val usdValueTextView = binding.usdValueTextView
-        private val symbolTextView = binding.symbolTextView
-        private val totalTextView = binding.totalTextView
+        private val startAmountView = binding.startAmountView
+        private val endAmountView = binding.endAmountView
 
         @SuppressLint("SetTextI18n")
         fun onBind(account: DerivableAccount) {
-            symbolTextView.text = SOL_SYMBOL
+            val total = account.totalInUsd.scaleShort()
+            val tokenTotal = account.total
+
+            startAmountView.title = SOL_SYMBOL
             tokenImageView.setImageResource(R.drawable.ic_solana_card)
-            nameTextView.text = cutAddress(account.account.publicKey.toBase58())
-            usdValueTextView.text = "${account.totalInUsd.scaleShort()} $"
-            totalTextView.text = "${account.total.toPlainString()} $SOL_SYMBOL"
+            startAmountView.subtitle = cutAddress(account.account.publicKey.toBase58())
+            endAmountView.usdAmount = "$total $"
+
+            endAmountView.tokenAmount = if (tokenTotal.isZero()) {
+                null
+            } else {
+                "${tokenTotal.toPlainString()} $SOL_SYMBOL"
+            }
+
+            root.alpha = if (total.isZero()) HALF_ALPHA else FULL_ALPHA
         }
 
         @Suppress("MagicNumber")

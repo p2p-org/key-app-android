@@ -6,7 +6,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract.Presenter
-import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
+import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorBinding
 import org.p2p.wallet.intercom.IntercomService
@@ -34,6 +34,9 @@ class OnboardingGeneralErrorFragment :
 
     override val presenter: Presenter by inject { parametersOf(this, screenError) }
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -41,7 +44,7 @@ class OnboardingGeneralErrorFragment :
             IntercomService.showMessenger()
         }
         binding.buttonToStartingScreen.setOnClickListener {
-            popAndReplaceFragment(OnboardingFragment.create(), inclusive = true)
+            popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
         }
     }
 

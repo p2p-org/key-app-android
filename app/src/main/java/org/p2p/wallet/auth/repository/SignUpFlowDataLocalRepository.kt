@@ -2,8 +2,7 @@ package org.p2p.wallet.auth.repository
 
 import com.google.gson.JsonObject
 import org.p2p.solanaj.core.Account
-import org.p2p.wallet.auth.model.Web3AuthSignUpResponse
-import org.p2p.wallet.auth.web3authsdk.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
@@ -39,7 +38,7 @@ class SignUpFlowDataLocalRepository(
     val ethereumPublicKey: String?
         get() = signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey
 
-    val thirdShare: Web3AuthSignUpResponse.ShareRootDetails.ShareInnerDetails.ShareValue?
+    val thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue?
         get() = signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.thirdShare
 
     val encryptedMnemonicPhrase: JsonObject?
