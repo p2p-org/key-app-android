@@ -1,18 +1,20 @@
 package org.p2p.wallet.auth.widget
 
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.KeyEvent
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
+import android.widget.TextView
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.maskwatcher.CountryCodeTextWatcher
 import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
-import org.p2p.wallet.databinding.WidgetPhoneInputTextFieldBinding
+import org.p2p.wallet.databinding.WidgetPhoneInputViewBinding
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
@@ -20,16 +22,13 @@ private const val EMOJI_NO_FLAG = "️\uD83C\uDFF4"
 private const val CORNER_RADIUS = 20f
 private const val STROKE_WIDTH = 1
 
-open class PhoneNumberTextField @JvmOverloads constructor(
+open class PhoneNumberInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
-    protected val binding = inflateViewBinding<WidgetPhoneInputTextFieldBinding>()
+    protected val binding = inflateViewBinding<WidgetPhoneInputViewBinding>()
 
-    private lateinit var bg: GradientDrawable
-    private lateinit var bgDisabled: GradientDrawable
-    private lateinit var bgFocused: GradientDrawable
     private lateinit var phoneTextWatcher: PhoneNumberTextWatcher
     private lateinit var countryCodeWatcher: CountryCodeTextWatcher
 
@@ -38,13 +37,6 @@ open class PhoneNumberTextField @JvmOverloads constructor(
         cornerRadius = CORNER_RADIUS
         setColor(context.getColor(R.color.bg_rain))
         setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rose))
-    }
-
-    private val bgGreen = GradientDrawable().apply {
-        shape = GradientDrawable.RECTANGLE
-        cornerRadius = CORNER_RADIUS
-        setColor(context.getColor(R.color.bg_rain))
-        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_mint))
     }
 
     private val bgNormal = GradientDrawable().apply {
@@ -109,13 +101,22 @@ open class PhoneNumberTextField @JvmOverloads constructor(
 
         val hint = countryCode?.getMaskWithoutCountryCode().orEmpty()
         editTextPhoneNumber.setHintText(hint)
+        numberHintTextView.setHintText(hint)
 
         countryPickerView.setOnClickListener {
             onCountryClickListener.invoke()
         }
 
-        phoneTextWatcher = PhoneNumberTextWatcher(binding.editTextPhoneNumber) {
-            val phone = "+${editTextCountryCode.text?.trim()}${it.trim()}".replace(" ", "")
+        val originalTextSize = editTextPhoneNumber.textSize
+        editTextPhoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, originalTextSize)
+
+        phoneTextWatcher = PhoneNumberTextWatcher(binding.editTextPhoneNumber) { phoneNumber ->
+            resizeInputs(phoneNumber, originalTextSize)
+
+            numberHintTextView.updateNumber(phoneNumber)
+
+            // Invoking callbacks
+            val phone = "+${editTextCountryCode.text?.trim()}${phoneNumber.trim()}".replace(" ", "")
             onPhoneChanged.invoke(phone)
         }
         countryCodeWatcher = CountryCodeTextWatcher { countryCode ->
@@ -128,6 +129,19 @@ open class PhoneNumberTextField @JvmOverloads constructor(
 
         val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
         focusView.focusAndShowKeyboard()
+    }
+
+    private fun WidgetPhoneInputViewBinding.resizeInputs(
+        phoneNumber: String,
+        originalTextSize: Float
+    ) {
+        // Use invisible auto size textView to handle editText text size
+        autoSizeHelperTextView.setText(phoneNumber, TextView.BufferType.EDITABLE)
+        val textSize = if (phoneNumber.isEmpty()) originalTextSize else autoSizeHelperTextView.textSize
+        editTextPhoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+        editTextCountryCode.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+        numberHintTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+        textViewPlusSign.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
     }
 
     private fun moveCursorToCodeField() = with(binding) {
@@ -159,6 +173,7 @@ open class PhoneNumberTextField @JvmOverloads constructor(
             removeTextChangedListener(countryCodeWatcher)
             setText(countryCode.phoneCode)
         }
+        numberHintTextView.setHintText(countryCode.getMaskWithoutCountryCode())
 
         with(editTextPhoneNumber) {
             addTextChangedListener(phoneTextWatcher)
