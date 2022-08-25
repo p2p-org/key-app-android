@@ -6,6 +6,7 @@ import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 
 class PhoneNumberEnterPresenter(
@@ -14,6 +15,7 @@ class PhoneNumberEnterPresenter(
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
+    private var lastPhoneNumber: String = emptyString()
 
     override fun attach(view: PhoneNumberEnterContract.View) {
         super.attach(view)
@@ -68,7 +70,11 @@ class PhoneNumberEnterPresenter(
         launch {
             try {
                 selectedCountryCode?.let {
-                    createWalletInteractor.startCreatingWallet(userPhoneNumber = it.phoneCode + phoneNumber)
+                    val userPhoneNumber = it.phoneCode + phoneNumber
+                    if (lastPhoneNumber != userPhoneNumber) {
+                        createWalletInteractor.startCreatingWallet(userPhoneNumber = it.phoneCode + phoneNumber)
+                        lastPhoneNumber = userPhoneNumber
+                    }
                     view?.navigateToSmsInput()
                 }
             } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
