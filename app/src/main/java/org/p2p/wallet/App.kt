@@ -32,7 +32,7 @@ import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.renbtc.RenBtcModule
-import org.p2p.wallet.restore.BackupModule
+import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
@@ -101,7 +101,7 @@ class App : Application() {
                     AuthModule.create(),
                     RootModule.create(),
                     PushNotificationsModule.create(),
-                    BackupModule.create(),
+                    RestoreModule.create(),
                     UserModule.create(),
                     TokenPricesModule.create(),
                     HomeModule.create(),

@@ -1,15 +1,15 @@
-package org.p2p.wallet.restore.ui.keys.adapter
+package org.p2p.uikit.organisms.seedphrase.adapter
 
-import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.utils.Constants
+import android.view.ViewGroup
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
 
 class SecretPhraseAdapter(
-    private val onSeedPhraseChanged: (List<SecretKey>) -> Unit
+    private val onSeedPhraseChanged: (List<SeedPhraseWord>) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val data = mutableListOf<SecretKey>()
+    private val data = mutableListOf<SeedPhraseWord>()
 
     override fun getItemCount(): Int = data.size
 
@@ -32,34 +32,31 @@ class SecretPhraseAdapter(
         }
 
         payloads.forEach { data ->
-            (holder as SecretKeyViewHolder).setKeyCompleted(data as SecretKey)
+            (holder as SecretKeyViewHolder).setKeyCompleted(data as SeedPhraseWord)
         }
     }
 
-    fun addSecretKey(secretKey: SecretKey) {
-        data.add(secretKey)
-        notifyItemInserted(data.size)
+    fun updateSecretKeys(secretKeys: List<SeedPhraseWord>) {
+        clear()
+        addAllSecretKeys(secretKeys)
     }
 
-    private fun removeSecretKey(index: Int) {
-        if (index == -1) return
-        data.removeAt(index)
-        notifyDataSetChanged()
-
-        onSeedPhraseChanged(data)
+    fun addSecretKey(seedPhraseWord: SeedPhraseWord) {
+        data.add(seedPhraseWord)
+        notifyItemInserted(data.size)
     }
 
     fun clear() {
         data.clear()
-        data.add(SecretKey())
+        data.add(SeedPhraseWord())
         notifyDataSetChanged()
 
         onSeedPhraseChanged(data)
     }
 
-    private fun addAllSecretKeys(secretKeys: List<SecretKey>) {
-        secretKeys
-            .take(Constants.SEED_PHRASE_SIZE_LONG)
+    fun addAllSecretKeys(seedPhrase: List<SeedPhraseWord>) {
+        seedPhrase
+            .take(SEED_PHRASE_SIZE_LONG)
             .forEach { item ->
                 /* If there is empty element exists, then we are updating it to the first entered key */
                 val index = data.indexOfFirst { it.text.isEmpty() }
@@ -78,19 +75,27 @@ class SecretPhraseAdapter(
         onSeedPhraseChanged(data)
 
         /* Automatically adding new empty element, so user could continue entering the seed phrase */
-        addSecretKey(SecretKey())
+        addSecretKey(SeedPhraseWord())
     }
 
-    private fun updateSecretKey(secretKey: SecretKey) {
+    private fun removeSecretKey(index: Int) {
+        if (index == -1) return
+        data.removeAt(index)
+        notifyDataSetChanged()
+
+        onSeedPhraseChanged(data)
+    }
+
+    private fun updateSecretKey(seedPhraseWord: SeedPhraseWord) {
         /* Updating current viewHolder, where editText is active */
         val index = data.size - 1
-        notifyItemChanged(index, secretKey)
+        notifyItemChanged(index, seedPhraseWord)
         data.removeAt(index)
-        data.add(index, secretKey)
+        data.add(index, seedPhraseWord)
 
         onSeedPhraseChanged(data)
 
         /* Adding new item, to let user continue entering seed phrase */
-        addSecretKey(SecretKey())
+        addSecretKey(SeedPhraseWord())
     }
 }

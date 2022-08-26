@@ -17,8 +17,8 @@ import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
+import org.p2p.uikit.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack

@@ -20,7 +20,7 @@ import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseFragment
-import org.p2p.wallet.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment

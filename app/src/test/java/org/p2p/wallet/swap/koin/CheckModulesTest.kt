@@ -53,7 +53,7 @@ import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.renbtc.RenBtcModule
-import org.p2p.wallet.restore.BackupModule
+import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.send.model.NetworkType
@@ -180,7 +180,7 @@ class CheckModulesTest : KoinTest {
     private val allModules = listOf(
         AuthModule.create(),
         RootModule.create(),
-        BackupModule.create(),
+        RestoreModule.create(),
         UserModule.create(),
         TokenPricesModule.create(),
         HomeModule.create(),
