@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
@@ -35,6 +36,7 @@ class WalletFoundFragment :
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night
+    override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
 
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult(),
@@ -110,7 +112,7 @@ class WalletFoundFragment :
 
     override fun onCommonError() {
         setLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.error_general_message)
     }
 
     override fun onConnectionError() {

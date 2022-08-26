@@ -1,33 +1,26 @@
 package org.p2p.uikit.natives
 
-import androidx.annotation.StringRes
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
-import org.p2p.uikit.utils.getString
+import org.p2p.uikit.R
+import org.p2p.uikit.utils.getColor
 
 fun interface SnackbarActionButtonClickListener {
     fun onActionButtonClicked(clickedSnackbar: Snackbar)
 }
 
-fun View.showSnackbarShort(snackbarText: CharSequence, onDismissed: () -> Unit = {}) {
+fun View.showSnackbarShort(
+    snackbarText: CharSequence,
+    onDismissed: () -> Unit = {},
+    style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
+) {
     internalMakeSnackbar(
         this,
         text = snackbarText,
         buttonText = null,
         buttonAction = null,
-        duration = Snackbar.LENGTH_SHORT
-    )
-        .addOnDismissedCallback(onDismissed)
-        .show()
-}
-
-fun View.showSnackbarShort(@StringRes snackbarTextRes: Int, onDismissed: () -> Unit = {}) {
-    internalMakeSnackbar(
-        this,
-        text = getString(snackbarTextRes),
-        buttonText = null,
-        buttonAction = null,
-        duration = Snackbar.LENGTH_SHORT
+        duration = Snackbar.LENGTH_SHORT,
+        style = style
     )
         .addOnDismissedCallback(onDismissed)
         .show()
@@ -36,14 +29,16 @@ fun View.showSnackbarShort(@StringRes snackbarTextRes: Int, onDismissed: () -> U
 fun View.showSnackbarShort(
     snackbarText: CharSequence,
     actionButtonText: CharSequence,
-    actionButtonListener: SnackbarActionButtonClickListener
+    actionButtonListener: SnackbarActionButtonClickListener,
+    style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
 ) {
     internalMakeSnackbar(
         this,
         text = snackbarText,
         buttonText = actionButtonText,
         buttonAction = actionButtonListener,
-        duration = Snackbar.LENGTH_SHORT
+        duration = Snackbar.LENGTH_SHORT,
+        style = style
     )
         .show()
 }
@@ -74,16 +69,31 @@ fun View.showSnackbarLong(
         .show()
 }
 
+enum class UiKitSnackbarStyle {
+    BLACK, WHITE
+}
+
 private fun internalMakeSnackbar(
     view: View,
     text: CharSequence,
     buttonText: CharSequence?,
     buttonAction: SnackbarActionButtonClickListener?,
-    duration: Int
+    duration: Int,
+    style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
 ): Snackbar {
     return Snackbar.make(view, text, duration).apply {
         if (buttonText != null && buttonAction != null) {
             setAction(buttonText) { buttonAction.onActionButtonClicked(this) }
+        }
+        when (style) {
+            UiKitSnackbarStyle.BLACK -> {
+                setTextColor(view.getColor(R.color.text_snow))
+                setBackgroundTint(view.getColor(R.color.bg_night))
+            }
+            UiKitSnackbarStyle.WHITE -> {
+                setTextColor(view.getColor(R.color.text_night))
+                setBackgroundTint(view.getColor(R.color.bg_snow))
+            }
         }
     }
 }

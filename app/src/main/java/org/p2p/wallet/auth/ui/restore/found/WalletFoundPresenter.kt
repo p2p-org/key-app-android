@@ -35,7 +35,9 @@ class WalletFoundPresenter(
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
                     Timber.e(result, "Setting alternative user failed")
-                    view?.showUiKitSnackBar(R.string.error_general_message)
+                    view?.showUiKitSnackBar(
+                        messageResId = R.string.error_general_message
+                    )
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onSameTokenFoundError()

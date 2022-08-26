@@ -32,7 +32,7 @@ class NewOnboardingPresenter(
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
                     Timber.e(result, "Creating new user with device shared failed")
-                    view?.showUiKitSnackBar(R.string.error_general_message)
+                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onSameTokenFoundError()

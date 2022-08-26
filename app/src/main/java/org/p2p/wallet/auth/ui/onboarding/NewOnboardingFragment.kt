@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
@@ -33,6 +34,7 @@ class NewOnboardingFragment :
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night
+    override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
 
     private val binding: FragmentNewOnboardingBinding by viewBinding()
     private val analytics: OnboardingAnalytics by inject()
@@ -113,11 +115,11 @@ class NewOnboardingFragment :
 
     override fun onConnectionError() {
         setButtonLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(R.string.onboarding_offline_error)
+        showUiKitSnackBar(messageResId = R.string.onboarding_offline_error)
     }
 
     override fun onCommonError() {
         setButtonLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.error_general_message)
     }
 }

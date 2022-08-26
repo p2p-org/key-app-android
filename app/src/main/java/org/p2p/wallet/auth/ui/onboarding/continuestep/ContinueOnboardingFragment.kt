@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
@@ -31,6 +32,7 @@ class ContinueOnboardingFragment :
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night
+    override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

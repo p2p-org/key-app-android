@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -107,10 +107,11 @@ class HomeFragment :
 
     override fun showAddressCopied(address: String) {
         requireContext().copyToClipBoard(address)
-        binding.root.showSnackbarShort(
-            snackbarText = getString(R.string.home_address_snackbar_text),
-            actionButtonText = getString(R.string.common_ok)
-        ) { it.dismiss() }
+        showUiKitSnackBar(
+            message = getString(R.string.home_address_snackbar_text),
+            actionButtonResId = R.string.common_ok,
+            actionBlock = Snackbar::dismiss
+        )
     }
 
     private fun FragmentHomeBinding.setupView() {

@@ -42,7 +42,7 @@ class PhoneNumberEnterPresenter(
             view?.showDefaultCountryCode(countryCode)
         } catch (e: Exception) {
             Timber.e(e, "Loading default country code failed")
-            view?.showUiKitSnackBar(R.string.error_general_message)
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
     }
 
