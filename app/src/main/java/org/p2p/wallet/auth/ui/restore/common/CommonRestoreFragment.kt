@@ -108,7 +108,7 @@ class CommonRestoreFragment :
     private fun setLoadingState(isScreenLoading: Boolean) {
         with(binding) {
             buttonRestoreByGoogle.apply {
-                isLoading = isScreenLoading
+                isLoadingState = isScreenLoading
                 isEnabled = !isScreenLoading
             }
             buttonPhone.isEnabled = !isScreenLoading

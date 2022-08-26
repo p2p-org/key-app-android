@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
+import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
@@ -11,7 +12,8 @@ import timber.log.Timber
 
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
-    private val createWalletInteractor: CreateWalletInteractor
+    private val createWalletInteractor: CreateWalletInteractor,
+    private val onboardingInteractor: OnboardingInteractor
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
@@ -19,6 +21,12 @@ class PhoneNumberEnterPresenter(
 
     override fun attach(view: PhoneNumberEnterContract.View) {
         super.attach(view)
+
+        when (onboardingInteractor.currentFlow) {
+            OnboardingInteractor.OnboardingFlow.CREATE_WALLET -> view.initCreateWalletViews()
+            OnboardingInteractor.OnboardingFlow.RESTORE_WALLET -> view.initRestoreWalletViews()
+        }
+
         launch { loadDefaultCountryCode() }
     }
 
@@ -34,7 +42,7 @@ class PhoneNumberEnterPresenter(
             view?.showDefaultCountryCode(countryCode)
         } catch (e: Exception) {
             Timber.e(e, "Loading default country code failed")
-            view?.showErrorSnackBar(R.string.error_general_message)
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
     }
 

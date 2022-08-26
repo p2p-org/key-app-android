@@ -17,7 +17,7 @@
 
     <!--Onboarding - WalletFound-->
     <string name="wallet_found_title">A wallet found</string>
-    <string name="wallet_found_subtitle">Looks like you already have \na wallet with \n%1s</string>
+    <string name="wallet_found_subtitle">Looks like you already have\n a wallet with \n%1s</string>
     <string name="wallet_found_account_button_text">Use another account</string>
     <string name="wallet_found_restore_button_text">Continue restoring this wallet</string>
 

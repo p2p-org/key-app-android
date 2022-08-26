@@ -105,7 +105,7 @@ class NewSmsInputFragment :
     }
 
     override fun renderButtonLoading(isLoading: Boolean) {
-        binding.continueButton.isLoading = isLoading
+        binding.continueButton.isLoadingState = isLoading
     }
 
     override fun navigateToPinCreate() {
