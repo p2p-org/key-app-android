@@ -97,7 +97,7 @@ class NewOnboardingFragment :
     override fun setButtonLoadingState(isScreenLoading: Boolean) {
         with(binding) {
             buttonCreateWalletOnboarding.apply {
-                isLoading = isScreenLoading
+                isLoadingState = isScreenLoading
                 isEnabled = !isScreenLoading
             }
             buttonRestoreWalletOnboarding.isEnabled = !isScreenLoading

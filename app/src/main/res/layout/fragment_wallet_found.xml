@@ -9,7 +9,7 @@
     android:background="@color/lime">
 
     <org.p2p.uikit.organisms.UiKitToolbar
-        android:id="@+id/walletFoundToolbar"
+        android:id="@+id/toolbarWalletFound"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +31,7 @@
         app:layout_constraintBottom_toTopOf="@+id/walletFoundTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/walletFoundToolbar"
+        app:layout_constraintTop_toBottomOf="@id/toolbarWalletFound"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
@@ -75,7 +75,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/walletFoundAnotherAccountButton"
+            android:id="@+id/buttonUseAnotherAccount"
             style="@style/UiKit.Components.Button.Large"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
@@ -89,7 +89,7 @@
             app:iconTint="@null" />
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/walletFoundRestoreButton"
+            android:id="@+id/buttonStartRestore"
             style="@style/UiKit.Components.Button.Large.Text"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"

@@ -32,7 +32,7 @@ class OnboardingGeneralErrorFragment :
 
     private val screenError: GeneralErrorScreenError by args(ARG_ERROR_TYPE)
 
-    override val presenter: Presenter by inject { parametersOf(this, screenError) }
+    override val presenter: Presenter by inject { parametersOf(screenError) }
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night

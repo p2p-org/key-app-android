@@ -56,7 +56,7 @@ class ContinueOnboardingFragment :
     override fun setLoadingState(isScreenLoading: Boolean) {
         with(binding) {
             buttonContinueOnboarding.apply {
-                isLoading = isScreenLoading
+                isLoadingState = isScreenLoading
                 isEnabled = !isScreenLoading
             }
         }
