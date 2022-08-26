@@ -15,13 +15,13 @@ import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
+private const val ARG_COUNTRY_CODE = "ARG_COUNTRY_CODE"
 private const val ARG_PHONE_NUMBER = "ARG_PHONE_NUMBER"
 
 class PhoneNumberEnterFragment :
@@ -33,13 +33,18 @@ class PhoneNumberEnterFragment :
     companion object {
         const val REQUEST_KEY = "REQUEST_KEY"
         const val RESULT_KEY = "RESULT_KEY"
-        fun create(phoneNumber: String = emptyString()): PhoneNumberEnterFragment = PhoneNumberEnterFragment()
-            .withArgs(ARG_PHONE_NUMBER to phoneNumber)
+
+        fun create(countryCode: CountryCode? = null, phoneNumber: String? = null): PhoneNumberEnterFragment =
+            PhoneNumberEnterFragment().withArgs(
+                ARG_COUNTRY_CODE to countryCode,
+                ARG_PHONE_NUMBER to phoneNumber
+            )
     }
 
     override val presenter: PhoneNumberEnterContract.Presenter by inject()
     private val binding: FragmentPhoneNumberEnterBinding by viewBinding()
-    private val phoneNumber by args(ARG_PHONE_NUMBER, emptyString())
+    private val phoneNumber by args<String?>(ARG_PHONE_NUMBER, null)
+    private var countryCode by args<CountryCode?>(ARG_COUNTRY_CODE, null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,16 +62,14 @@ class PhoneNumberEnterFragment :
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }
 
-        if (phoneNumber.isNotBlank()) {
-            editTextPhoneNumber.setText(phoneNumber)
-            // TODO: clear hint and move cursor to the end
-            setContinueButtonState(PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE)
-        }
+        phoneNumber?.let { setContinueButtonState(PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE) }
     }
 
-    override fun showDefaultCountryCode(country: CountryCode?) {
+    override fun showDefaultCountryCode(defaultCountryCode: CountryCode?) {
+        countryCode = countryCode ?: defaultCountryCode
         binding.editTextPhoneNumber.setupViewState(
-            countryCode = country,
+            countryCode = countryCode,
+            phoneNumber,
             onCountryCodeChanged = ::onCountryCodeChanged,
             onPhoneChanged = ::onPhoneChanged,
             onCountryClickListener = ::onCountryClickListener
@@ -74,10 +77,12 @@ class PhoneNumberEnterFragment :
     }
 
     override fun update(countryCode: CountryCode?) {
+        this.countryCode = countryCode
         binding.editTextPhoneNumber.updateViewState(countryCode)
     }
 
     override fun onNewCountryDetected(countryCode: CountryCode) {
+        this.countryCode = countryCode
         binding.editTextPhoneNumber.onFoundNewCountry(countryCode)
     }
 
@@ -86,13 +91,19 @@ class PhoneNumberEnterFragment :
     }
 
     override fun navigateToSmsInput() {
-        replaceFragment(NewSmsInputFragment.create(binding.editTextPhoneNumber.text.toString()))
+        replaceFragment(
+            NewSmsInputFragment.create(
+                countryCode,
+                binding.editTextPhoneNumber.text.toString()
+            )
+        )
     }
 
     override fun navigateToAccountBlocked() {
         replaceFragment(
             OnboardingGeneralErrorTimerFragment.create(
                 GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
+                countryCode,
                 binding.editTextPhoneNumber.text.toString()
             )
         )

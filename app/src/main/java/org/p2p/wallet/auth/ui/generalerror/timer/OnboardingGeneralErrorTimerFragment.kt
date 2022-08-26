@@ -6,12 +6,12 @@ import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.Presenter
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -19,6 +19,7 @@ import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerCont
 
 private const val ARG_TIMER_ERROR_TYPE = "ARG_TIMER_ERROR_TYPE"
 private const val ARG_PHONE_NUMBER = "ARG_PHONE_NUMBER"
+private const val ARG_COUNTRY_CODE = "ARG_COUNTRY_CODE"
 
 class OnboardingGeneralErrorTimerFragment :
     BaseMvpFragment<ContractView, Presenter>(R.layout.fragment_onboarding_general_error_timer),
@@ -27,10 +28,12 @@ class OnboardingGeneralErrorTimerFragment :
     companion object {
         fun create(
             sourceScreen: GeneralErrorTimerScreenError,
-            phoneNumber: String
+            countryCode: CountryCode?,
+            phoneNumber: String?
         ): OnboardingGeneralErrorTimerFragment = OnboardingGeneralErrorTimerFragment()
             .withArgs(
                 ARG_TIMER_ERROR_TYPE to sourceScreen,
+                ARG_COUNTRY_CODE to countryCode,
                 ARG_PHONE_NUMBER to phoneNumber
             )
     }
@@ -41,7 +44,9 @@ class OnboardingGeneralErrorTimerFragment :
 
     private val binding: FragmentOnboardingGeneralErrorTimerBinding by viewBinding()
     private val error: GeneralErrorTimerScreenError by args(ARG_TIMER_ERROR_TYPE)
-    private val phoneNumber by args(ARG_PHONE_NUMBER, emptyString())
+
+    private val phoneNumber by args<String?>(ARG_PHONE_NUMBER, null)
+    private val countryCode by args<CountryCode?>(ARG_COUNTRY_CODE, null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,6 +61,8 @@ class OnboardingGeneralErrorTimerFragment :
     }
 
     override fun navigateToPhoneNumberEnter() {
-        popAndReplaceFragment(PhoneNumberEnterFragment.create(phoneNumber), inclusive = true)
+        popAndReplaceFragment(
+            PhoneNumberEnterFragment.create(countryCode, phoneNumber), inclusive = true
+        )
     }
 }

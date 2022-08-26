@@ -1,7 +1,5 @@
 package org.p2p.wallet.auth.widget
 
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
@@ -9,6 +7,8 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
@@ -89,17 +89,19 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun setupViewState(
         countryCode: CountryCode?,
+        phoneNumber: String?,
         onCountryCodeChanged: (String) -> Unit,
         onPhoneChanged: (String) -> Unit,
         onCountryClickListener: () -> Unit
     ) = with(binding) {
 
         countryCode?.phoneCode.let { editTextCountryCode.setText(it) }
+        phoneNumber?.let { editTextPhoneNumber.setText(it) }
 
         val flagEmoji = countryCode?.flagEmoji ?: EMOJI_NO_FLAG
         textViewFlagEmoji.text = flagEmoji
 
-        val hint = countryCode?.getMaskWithoutCountryCode().orEmpty()
+        val hint = phoneNumber ?: countryCode?.getMaskWithoutCountryCode().orEmpty()
         editTextPhoneNumber.setHintText(hint)
         numberHintTextView.setHintText(hint)
 
@@ -129,6 +131,8 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
         val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
         focusView.focusAndShowKeyboard()
+
+        editTextPhoneNumber.setSelection(phoneNumber?.length ?: 0)
     }
 
     private fun WidgetPhoneInputViewBinding.resizeInputs(
