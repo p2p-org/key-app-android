@@ -12,6 +12,8 @@ import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentWalletFoundBinding
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
+import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -42,13 +44,25 @@ class WalletFoundFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            walletFoundToolbar.setNavigationOnClickListener {
-                popBackStack()
+            with(toolbarWalletFound) {
+                setNavigationOnClickListener {
+                    popBackStack()
+                }
+                setOnMenuItemClickListener {
+                    if (it.itemId == R.id.helpItem) {
+                        IntercomService.showMessenger()
+                        true
+                    } else {
+                        false
+                    }
+                }
             }
-            walletFoundAnotherAccountButton.setOnClickListener {
+
+            buttonUseAnotherAccount.setOnClickListener {
                 presenter.useAnotherGoogleAccount()
             }
-            walletFoundRestoreButton.setOnClickListener {
+            buttonStartRestore.setOnClickListener {
+                presenter.startRestoreWallet()
                 // TODO make a real restore implementation!
                 replaceFragment(SeedPhraseFragment.create())
             }
@@ -79,11 +93,11 @@ class WalletFoundFragment :
 
     override fun setLoadingState(isScreenLoading: Boolean) {
         with(binding) {
-            walletFoundAnotherAccountButton.apply {
-                isLoading = isScreenLoading
+            buttonUseAnotherAccount.apply {
+                isLoadingState = isScreenLoading
                 isEnabled = !isScreenLoading
             }
-            walletFoundRestoreButton.isEnabled = !isScreenLoading
+            buttonStartRestore.isEnabled = !isScreenLoading
         }
     }
 

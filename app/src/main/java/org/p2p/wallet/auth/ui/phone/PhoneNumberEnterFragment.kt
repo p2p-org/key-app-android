@@ -37,15 +37,20 @@ class PhoneNumberEnterFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbar.setNavigationOnClickListener {
-            popBackStack()
-        }
-
         buttonConfirmPhone.setOnClickListener {
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }
 
         setOnResultListener()
+    }
+
+    override fun initCreateWalletViews() {
+        binding.toolbar.setNavigationOnClickListener(null)
+        binding.toolbar.navigationIcon = null
+    }
+
+    override fun initRestoreWalletViews() {
+        binding.toolbar.setNavigationOnClickListener { popBackStack() }
     }
 
     override fun showDefaultCountryCode(country: CountryCode?) {
