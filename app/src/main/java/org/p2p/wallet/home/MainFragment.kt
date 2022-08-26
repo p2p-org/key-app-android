@@ -1,13 +1,13 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
@@ -53,6 +53,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
                     return@setOnItemSelectedListener false
                 }
+
+                triggerTokensUpdateIfNeeded()
                 navigate(it.itemId)
                 return@setOnItemSelectedListener true
             }
@@ -154,5 +156,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
         binding.buttonCenterAction.setOnClickListener { block.invoke() }
+    }
+
+    // TODO: this is a dirty hack on how to trigger data update
+    // Find a good solution for tracking the KEY_HIDDEN_ZERO_BALANCE value in SP
+    private fun triggerTokensUpdateIfNeeded() {
+        val fragment = fragments[R.id.homeItem] as? HomeFragment ?: return
+        fragment.updateTokensIfNeeded()
     }
 }

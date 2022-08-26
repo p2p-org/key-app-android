@@ -7,11 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarShort
-import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
-import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHomeBinding
@@ -23,7 +21,6 @@ import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
@@ -36,7 +33,6 @@ import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
@@ -215,8 +211,8 @@ class HomeFragment :
         binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
     }
 
-    override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean, state: VisibilityState) {
-        contentAdapter.setItems(tokens, isZerosHidden, state)
+    override fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean) {
+        contentAdapter.setItems(tokens, isZerosHidden)
     }
 
     override fun showTokensForBuy(tokens: List<Token>) {
@@ -228,15 +224,9 @@ class HomeFragment :
         )
     }
 
-    override fun showBalance(balance: BigDecimal, username: Username?) {
+    override fun showBalance(balance: BigDecimal) {
         binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatUsd())
-        if (username == null) {
-            binding.viewBalance.textViewTitle.setText(R.string.home_balance_title)
-        } else {
-            val commonText = username.getFullUsername(requireContext())
-            val color = getColor(R.color.textIconPrimary)
-            binding.viewBalance.textViewTitle.text = SpanUtils.highlightText(commonText, username.username, color)
-        }
+        binding.viewBalance.textViewTitle.setText(R.string.home_balance_title)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
@@ -308,5 +298,9 @@ class HomeFragment :
         /* We are clearing cache only if activity is destroyed */
         presenter.clearTokensCache()
         super.onDestroy()
+    }
+
+    fun updateTokensIfNeeded() {
+        presenter.updateTokensIfNeeded()
     }
 }
