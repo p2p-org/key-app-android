@@ -50,10 +50,13 @@ class HomePresenter(
     private data class ViewState(
         val tokens: List<Token.Active> = emptyList(),
         val visibilityState: VisibilityState = VisibilityState.Hidden,
-        val username: Username? = null
+        val username: Username? = null,
+        val areZerosHidden: Boolean
     )
 
-    private var state = ViewState()
+    private var state = ViewState(
+        areZerosHidden = settingsInteractor.areZerosHidden()
+    )
 
     private var userTokensFlowJob: Job? = null
 
@@ -283,6 +286,13 @@ class HomePresenter(
             view?.navigateToProfile()
         } else {
             view?.navigateToReserveUsername()
+        }
+    }
+
+    override fun updateTokensIfNeeded() {
+        if (state.areZerosHidden != settingsInteractor.areZerosHidden()) {
+            refreshTokens()
+            state = state.copy(areZerosHidden = settingsInteractor.areZerosHidden())
         }
     }
 }

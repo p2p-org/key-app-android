@@ -299,4 +299,8 @@ class HomeFragment :
         presenter.clearTokensCache()
         super.onDestroy()
     }
+
+    fun updateTokensIfNeeded() {
+        presenter.updateTokensIfNeeded()
+    }
 }
