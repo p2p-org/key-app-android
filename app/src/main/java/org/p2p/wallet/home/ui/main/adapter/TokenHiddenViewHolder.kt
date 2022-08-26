@@ -1,19 +1,18 @@
 package org.p2p.wallet.home.ui.main.adapter
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.databinding.ItemTokenHiddenBinding
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.utils.withTextOrGone
 
 class TokenHiddenViewHolder(
@@ -38,25 +37,24 @@ class TokenHiddenViewHolder(
         .listener(SvgSoftwareLayerSetter())
 
     fun onBind(item: HomeElementItem.Hidden, isZerosHidden: Boolean) = with(binding) {
-        if (item.state is VisibilityState.Hidden) {
-            itemView.isVisible = false
-            return
-        }
-
-        itemView.isVisible = true
         val token = item.token
         if (!token.iconUrl.isNullOrEmpty()) {
             loadImage(tokenImageView, token.iconUrl)
         }
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenName
-        valueTextView withTextOrGone token.getFormattedUsdTotal()
-        totalTextView.text = token.getTotal(includeSymbol = true)
+        bindBalance(item)
 
         imageViewExposeToken.setImageResource(token.getVisibilityIcon(isZerosHidden))
         imageViewExposeToken.setOnClickListener { listener.onHideClicked(token) }
 
         contentView.setOnClickListener { listener.onTokenClicked(token) }
+    }
+
+    fun bindBalance(item: HomeElementItem.Hidden) {
+        val token = item.token
+        binding.valueTextView withTextOrGone token.getFormattedUsdTotal()
+        binding.totalTextView.text = token.getTotal(includeSymbol = true)
     }
 
     private fun loadImage(imageView: ImageView, url: String) {

@@ -7,7 +7,7 @@ class SettingsZeroBalancesPresenter(private val settingsInteractor: SettingsInte
     BasePresenter<SettingsZeroBalanceContract.View>(),
     SettingsZeroBalanceContract.Presenter {
 
-    private var isZeroBalanceHidden = settingsInteractor.isZerosHidden()
+    private var isZeroBalanceHidden = settingsInteractor.areZerosHidden()
     override fun attach(view: SettingsZeroBalanceContract.View) {
         super.attach(view)
         view.showZeroBalances(!isZeroBalanceHidden)
