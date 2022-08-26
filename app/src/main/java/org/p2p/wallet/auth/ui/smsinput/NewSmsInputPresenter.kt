@@ -58,10 +58,6 @@ class NewSmsInputPresenter(
             try {
                 view?.renderButtonLoading(isLoading = true)
 
-                delay(1.seconds.inWholeMilliseconds)
-
-                throw GatewayServiceError.IncorrectOtpCode(0, "")
-
                 createWalletInteractor.finishCreatingWallet(smsCode)
                 createWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
