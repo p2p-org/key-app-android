@@ -65,6 +65,15 @@ class PhoneNumberEnterFragment :
         phoneNumber?.let { setContinueButtonState(PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE) }
     }
 
+    override fun initCreateWalletViews() {
+        binding.toolbar.setNavigationOnClickListener(null)
+        binding.toolbar.navigationIcon = null
+    }
+
+    override fun initRestoreWalletViews() {
+        binding.toolbar.setNavigationOnClickListener { popBackStack() }
+    }
+
     override fun showDefaultCountryCode(defaultCountryCode: CountryCode?) {
         countryCode = countryCode ?: defaultCountryCode
         binding.editTextPhoneNumber.setupViewState(

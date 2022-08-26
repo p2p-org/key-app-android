@@ -1,4 +1,4 @@
-package org.p2p.wallet.restore.ui.keys.adapter
+package org.p2p.uikit.organisms.seedphrase.adapter
 
 import android.view.KeyEvent
 import android.view.View

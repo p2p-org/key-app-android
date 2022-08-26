@@ -1,35 +1,32 @@
-package org.p2p.wallet.restore.ui.keys.adapter
+package org.p2p.uikit.organisms.seedphrase.adapter
 
-import android.annotation.SuppressLint
-import android.graphics.Color
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
+import org.p2p.uikit.R
+import org.p2p.uikit.databinding.ItemSecretKeyBinding
+import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.showSoftKeyboard
-import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemSecretKeyBinding
-import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.utils.Constants
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
+import org.p2p.uikit.utils.SpanUtils
 
 class SecretKeyViewHolder(
     binding: ItemSecretKeyBinding,
     private val onKeyRemovedListener: (Int) -> Unit,
-    private val onUpdateKeyListener: (SecretKey) -> Unit,
-    private val onInsertedListener: (List<SecretKey>) -> Unit
+    private val onUpdateKeyListener: (SeedPhraseWord) -> Unit,
+    private val onInsertedListener: (List<SeedPhraseWord>) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     constructor(
         parent: ViewGroup,
         onKeyRemovedListener: (Int) -> Unit,
-        onKeyAddedListener: (SecretKey) -> Unit,
-        onInsertedListener: (List<SecretKey>) -> Unit
+        onKeyAddedListener: (SeedPhraseWord) -> Unit,
+        onInsertedListener: (List<SeedPhraseWord>) -> Unit
     ) : this(
         binding = ItemSecretKeyBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         onKeyRemovedListener = onKeyRemovedListener,
@@ -42,13 +39,12 @@ class SecretKeyViewHolder(
 
     private var textWatcher: SeedPhraseWatcher? = null
 
-    @SuppressLint("SetTextI18n")
-    fun onBind(item: SecretKey) {
-        textWatcher?.isLastKey = bindingAdapterPosition == Constants.SEED_PHRASE_SIZE_LONG
+    fun onBind(item: SeedPhraseWord) {
+        textWatcher?.isLastKey = adapterPosition == SEED_PHRASE_SIZE_LONG
 
         if (item.text.isEmpty()) {
             textWatcher = SeedPhraseWatcher.installOn(
-                isLast = bindingAdapterPosition == Constants.SEED_PHRASE_SIZE_LONG,
+                isLast = adapterPosition == SEED_PHRASE_SIZE_LONG,
                 editText = keyEditText,
                 onKeyAdded = { onKeyAdded(it) },
                 onSeedPhraseInserted = { onSeedPhraseInserted(it) }
@@ -65,16 +61,20 @@ class SecretKeyViewHolder(
         }
     }
 
-    fun setKeyCompleted(secretKey: SecretKey) {
-        val span = SpannableString("${bindingAdapterPosition + 1}. ${secretKey.text}")
-        span.setSpan(
-            ForegroundColorSpan(Color.BLACK),
-            span.length - secretKey.text.length,
-            span.length,
-            Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-        )
-        keyTextView.text = span
-        keyTextView.setBackgroundResource(R.drawable.bg_security_key)
+    fun setKeyCompleted(seedPhraseWord: SeedPhraseWord) {
+        val wordIndex = adapterPosition + 1
+        val text = "$wordIndex ${seedPhraseWord.text}"
+
+        if (seedPhraseWord.isValid) {
+            keyTextView.setTextColor(itemView.getColor(R.color.night))
+            val color = itemView.getColor(R.color.mountain)
+            val spannedText = SpanUtils.highlightText(text, "$wordIndex", color)
+            keyTextView.text = spannedText
+        } else {
+            keyTextView.setTextColor(itemView.getColor(R.color.rose))
+            keyTextView.text = text
+        }
+
         keyTextView.isVisible = true
         keyEditText.isVisible = false
     }
@@ -86,7 +86,7 @@ class SecretKeyViewHolder(
         val isActionDown = event.action == KeyEvent.ACTION_DOWN
         val isEmpty = v.text.toString().isEmpty()
 
-        if (isDeletion && isActionDown && isEmpty && bindingAdapterPosition > 0) {
+        if (isDeletion && isActionDown && isEmpty && adapterPosition > 0) {
             onKeyRemoved()
             return true
         }
@@ -94,21 +94,21 @@ class SecretKeyViewHolder(
         return false
     }
 
-    private fun onSeedPhraseInserted(secretKeys: List<SecretKey>) {
+    private fun onSeedPhraseInserted(seedPhrase: List<SeedPhraseWord>) {
         keyEditText.clearFocus()
         SeedPhraseWatcher.uninstallFrom(keyEditText)
         keyEditText.text = null
-        onInsertedListener(secretKeys)
+        onInsertedListener(seedPhrase)
     }
 
-    private fun onKeyAdded(secretKey: SecretKey) {
+    private fun onKeyAdded(seedPhraseWord: SeedPhraseWord) {
         SeedPhraseWatcher.uninstallFrom(keyEditText)
         keyEditText.text = null
-        onUpdateKeyListener(secretKey)
+        onUpdateKeyListener(seedPhraseWord)
     }
 
     private fun onKeyRemoved() {
         /* We don't need to remove text change listener here, because it's already deleted when the key was added */
-        onKeyRemovedListener(bindingAdapterPosition - 1)
+        onKeyRemovedListener(adapterPosition - 1)
     }
 }

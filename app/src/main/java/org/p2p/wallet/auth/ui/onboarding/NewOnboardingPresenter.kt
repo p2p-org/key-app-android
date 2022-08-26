@@ -1,13 +1,16 @@
 package org.p2p.wallet.auth.ui.onboarding
 
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.OnboardingInteractor
+import org.p2p.wallet.auth.interactor.OnboardingInteractor.OnboardingFlow
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlinx.coroutines.launch
 
 class NewOnboardingPresenter(
-    private val userSignUpInteractor: UserSignUpInteractor
+    private val userSignUpInteractor: UserSignUpInteractor,
+    private val onboardingInteractor: OnboardingInteractor
 ) : BasePresenter<NewOnboardingContract.View>(), NewOnboardingContract.Presenter {
 
     override fun onSignUpButtonClicked() {
@@ -24,11 +27,12 @@ class NewOnboardingPresenter(
 
             when (val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
+                    onboardingInteractor.currentFlow = OnboardingFlow.CREATE_WALLET
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
                     Timber.e(result, "Creating new user with device shared failed")
-                    view?.showUiKitSnackBar(R.string.error_general_message)
+                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
                     view?.onSameTokenFoundError()

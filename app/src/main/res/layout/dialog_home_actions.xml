@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:background="@drawable/bg_rounded"
+    android:background="@drawable/bg_rounded_small"
     android:backgroundTint="@color/backgroundPrimary">
 
     <View

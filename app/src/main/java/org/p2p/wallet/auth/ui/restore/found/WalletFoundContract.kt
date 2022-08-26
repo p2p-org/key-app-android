@@ -15,5 +15,6 @@ interface WalletFoundContract {
     interface Presenter : MvpPresenter<View> {
         fun useAnotherGoogleAccount()
         fun setAlternativeIdToken(userId: String, idToken: String)
+        fun startRestoreWallet()
     }
 }

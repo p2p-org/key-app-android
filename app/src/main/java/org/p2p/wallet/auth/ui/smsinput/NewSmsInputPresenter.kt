@@ -83,7 +83,7 @@ class NewSmsInputPresenter(
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error, "Checking sms value failed")
-                view?.showUiKitSnackBar(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }
@@ -107,7 +107,7 @@ class NewSmsInputPresenter(
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error, "Resending sms failed")
-                view?.showUiKitSnackBar(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             } finally {
                 view?.renderButtonLoading(isLoading = false)
             }

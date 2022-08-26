@@ -1,8 +1,8 @@
 package org.p2p.wallet.home.ui.main.adapter
 
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenGroupButtonBinding
@@ -24,13 +24,14 @@ class TokenButtonViewHolder(
 
     fun onBind(item: HomeElementItem.Action) = with(binding) {
         val title = requireContext().getString(R.string.main_hidden_tokens)
-
         textViewTitle.text = title
+        bindIcon(item)
+        itemView.setOnClickListener { listener.onToggleClicked() }
+    }
 
+    fun bindIcon(item: HomeElementItem.Action) {
         val isHidden = item.state is VisibilityState.Hidden
         val iconResId = if (isHidden) R.drawable.ic_token_expose else R.drawable.ic_token_hide
-
-        imageViewTokenState.setImageResource(iconResId)
-        itemView.setOnClickListener { listener.onToggleClicked() }
+        binding.imageViewTokenState.setImageResource(iconResId)
     }
 }

@@ -21,8 +21,8 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentResetSeedPhraseBinding
-import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import org.p2p.uikit.organisms.seedphrase.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
@@ -83,7 +83,7 @@ class ResetSeedPhraseFragment :
             phraseTextView.setOnClickListener {
                 phraseTextView.isVisible = false
                 keysRecyclerView.isVisible = true
-                phraseAdapter.addSecretKey(SecretKey())
+                phraseAdapter.addSecretKey(SeedPhraseWord())
             }
 
             messageTextView.text = buildSeedInfoText()
@@ -94,8 +94,8 @@ class ResetSeedPhraseFragment :
         setButtonEnabled(itemsCount != 0)
     }
 
-    override fun showSuccess(secretKeys: List<SecretKey>) {
-        setFragmentResult(requestKey, bundleOf(Pair(resultKey, secretKeys)))
+    override fun showSuccess(seedPhrase: List<SeedPhraseWord>) {
+        setFragmentResult(requestKey, bundleOf(Pair(resultKey, seedPhrase)))
         popBackStack()
     }
 

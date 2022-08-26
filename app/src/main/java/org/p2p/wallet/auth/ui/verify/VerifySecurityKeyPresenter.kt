@@ -6,7 +6,7 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.restore.interactor.SecretKeyInteractor
+import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import kotlin.random.Random
 
 private const val VERIFY_WORDS_COUNT = 4
@@ -14,7 +14,7 @@ private const val GENERATE_WORD_COUNT = 2
 private const val KEY_SIZE = 24
 
 class VerifySecurityKeyPresenter(
-    private val secretKeyInteractor: SecretKeyInteractor,
+    private val seedPhraseInteractor: SeedPhraseInteractor,
     private val onboardingAnalytics: OnboardingAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<VerifySecurityKeyContract.View>(),
@@ -123,7 +123,7 @@ class VerifySecurityKeyPresenter(
         launch {
             view?.showLoading(isLoading = true)
             if (isKeysValid()) {
-                secretKeyInteractor.createAndSaveAccount(
+                seedPhraseInteractor.createAndSaveAccount(
                     path = DerivationPath.BIP44CHANGE,
                     mnemonicPhrase = phrases,
                     lookupForUsername = false

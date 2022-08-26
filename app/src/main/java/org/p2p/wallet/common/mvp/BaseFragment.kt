@@ -12,6 +12,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
@@ -25,7 +26,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
@@ -45,6 +46,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     protected open val statusBarColor: Int = R.color.backgroundPrimary
     protected open val navBarColor: Int = R.color.backgroundPrimary
+    protected open val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
@@ -102,7 +104,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     // TODO add another screens
     fun getAnalyticsName(): String = when (this) {
         is CreateWalletFragment -> ScreenNames.OnBoarding.WALLET_CREATE
-        is SecretKeyFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
+        is SeedPhraseFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
         is SecurityKeyFragment -> ScreenNames.OnBoarding.CREATE_MANUAL
         is CreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
         is SeedInfoFragment -> ScreenNames.OnBoarding.SEED_INFO

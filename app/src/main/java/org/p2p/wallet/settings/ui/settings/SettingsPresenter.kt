@@ -33,7 +33,7 @@ class SettingsPresenter(
             val username = usernameInteractor.getUsername()?.getFullUsername(context).orEmpty()
             val settings = getProfileSettings(username) +
                 getNetworkSettings() +
-                getAppearanceSettings(settingsInteractor.isZerosHidden())
+                getAppearanceSettings(settingsInteractor.areZerosHidden())
             view?.showSettings(settings)
         }
     }

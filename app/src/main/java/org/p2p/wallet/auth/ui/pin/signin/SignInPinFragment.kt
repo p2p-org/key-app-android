@@ -15,7 +15,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.home.MainFragment
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import javax.crypto.Cipher
 
 class SignInPinFragment :
@@ -42,7 +42,7 @@ class SignInPinFragment :
         with(binding) {
             pinView.onBiometricClicked = { presenter.onBiometricSignInRequested() }
             pinView.onPinCompleted = { presenter.signIn(it) }
-            pinView.onResetClicked = { popAndReplaceFragment(SecretKeyFragment.create()) }
+            pinView.onResetClicked = { popAndReplaceFragment(SeedPhraseFragment.create()) }
         }
     }
 

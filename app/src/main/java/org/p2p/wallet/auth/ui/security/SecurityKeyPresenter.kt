@@ -6,14 +6,14 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.restore.interactor.SecretKeyInteractor
+import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import kotlin.properties.Delegates
 
 private const val SECURITY_KEY_IMAGE_NAME = "SecureKey"
 
 class SecurityKeyPresenter(
     private val context: Context,
-    private val secretKeyInteractor: SecretKeyInteractor,
+    private val seedPhraseInteractor: SeedPhraseInteractor,
     private val fileRepository: FileRepository,
     private val onboardingAnalytics: OnboardingAnalytics
 ) : BasePresenter<SecurityKeyContract.View>(), SecurityKeyContract.Presenter {
@@ -35,7 +35,7 @@ class SecurityKeyPresenter(
 
     override fun loadKeys() {
         launch {
-            keys = secretKeyInteractor.generateSecretKeys()
+            keys = seedPhraseInteractor.generateSecretKeys()
             onboardingAnalytics.logBackingUpRenew()
         }
     }

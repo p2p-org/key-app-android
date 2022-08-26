@@ -22,7 +22,7 @@ import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack

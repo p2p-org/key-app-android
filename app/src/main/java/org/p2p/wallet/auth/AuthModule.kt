@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
+import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
@@ -122,6 +123,7 @@ object AuthModule {
         singleOf(::SignUpFlowDataLocalRepository)
         factoryOf(::CreateWalletInteractor)
         factoryOf(::UserSignUpInteractor)
+        factoryOf(::OnboardingInteractor)
 
         factoryOf(::OnboardingRootPresenter) bind OnboardingRootContract.Presenter::class
 

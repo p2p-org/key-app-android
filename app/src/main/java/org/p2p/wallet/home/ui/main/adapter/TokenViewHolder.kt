@@ -1,12 +1,12 @@
 package org.p2p.wallet.home.ui.main.adapter
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
@@ -51,8 +51,8 @@ class TokenViewHolder(
         }
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenName
-        valueTextView withTextOrGone token.getFormattedUsdTotal()
-        totalTextView.text = token.getTotal(includeSymbol = true)
+
+        bindBalance(item)
 
         imageViewHideToken.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
         imageViewHideToken.setOnClickListener { listener.onHideClicked(token) }
@@ -72,6 +72,12 @@ class TokenViewHolder(
                 viewAlpha.alpha = if (slideOffset > VIEW_ALPHA_MAX_VALUE) VIEW_ALPHA_MAX_VALUE else slideOffset
             }
         })
+    }
+
+    fun bindBalance(item: HomeElementItem.Shown) {
+        val token = item.token
+        binding.valueTextView withTextOrGone token.getFormattedUsdTotal()
+        binding.totalTextView.text = token.getTotal(includeSymbol = true)
     }
 
     private fun loadImage(imageView: ImageView, url: String) {

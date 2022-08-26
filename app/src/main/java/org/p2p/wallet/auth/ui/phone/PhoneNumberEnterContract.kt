@@ -6,6 +6,9 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface PhoneNumberEnterContract {
     interface View : MvpView {
+        fun initCreateWalletViews()
+        fun initRestoreWalletViews()
+
         fun showDefaultCountryCode(defaultCountryCode: CountryCode?)
         fun update(countryCode: CountryCode?)
         fun onNewCountryDetected(countryCode: CountryCode)

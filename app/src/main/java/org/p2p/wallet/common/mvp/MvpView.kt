@@ -2,6 +2,7 @@ package org.p2p.wallet.common.mvp
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.google.android.material.snackbar.Snackbar
 
 interface MvpView {
     fun showErrorMessage(e: Throwable? = null)
@@ -16,6 +17,7 @@ interface MvpView {
         @StringRes actionResId: Int? = null,
         block: (() -> Unit)? = null
     )
+
     @Deprecated(
         message = "Old design snackbar, use the UiKit snackbar",
         replaceWith = ReplaceWith("showUiKitSnackbar")
@@ -25,6 +27,7 @@ interface MvpView {
         @StringRes actionResId: Int? = null,
         block: (() -> Unit)? = null
     )
+
     @Deprecated(
         message = "Old design snackbar, use the UiKit snackbar",
         replaceWith = ReplaceWith("showUiKitSnackbar")
@@ -34,6 +37,7 @@ interface MvpView {
         @StringRes actionResId: Int? = null,
         block: (() -> Unit)? = null
     )
+
     @Deprecated(
         message = "Old design snackbar, use the UiKit snackbar",
         replaceWith = ReplaceWith("showUiKitSnackbar")
@@ -43,6 +47,7 @@ interface MvpView {
         @StringRes actionResId: Int? = null,
         block: (() -> Unit)? = null
     )
+
     @Deprecated(
         message = "Old design snackbar, use the UiKit snackbar",
         replaceWith = ReplaceWith("showUiKitSnackbar")
@@ -66,24 +71,10 @@ interface MvpView {
 
     // new snackbar
     fun showUiKitSnackBar(
-        message: String,
-        onDismissed: () -> Unit = {}
-    )
-
-    fun showUiKitSnackBar(
-        @StringRes messageResId: Int,
-        onDismissed: () -> Unit = {}
-    )
-
-    fun showUiKitSnackBar(
-        message: String,
-        @StringRes actionButtonResId: Int,
-        actionBlock: (() -> Unit) = {},
-    )
-
-    fun showUiKitSnackBar(
-        @StringRes messageResId: Int,
-        @StringRes actionButtonResId: Int,
-        actionBlock: (() -> Unit) = {},
+        message: String? = null,
+        @StringRes messageResId: Int? = null,
+        onDismissed: () -> Unit = {},
+        @StringRes actionButtonResId: Int? = null,
+        actionBlock: ((Snackbar) -> Unit)? = null,
     )
 }

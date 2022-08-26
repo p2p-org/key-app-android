@@ -65,7 +65,6 @@
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
-    <string name="auth_manually_restore_key">Manually restore a wallet</string>
     <string name="auth_verify_security_key_title">Verify your security key</string>
     <string name="auth_select_word">Select word #%d</string>
     <string name="auth_onboarding_subtitle">Secure non-custodial bank of the future\nSimple finance for everyone</string>
@@ -113,7 +112,6 @@
     <string name="auth_go_to_wallet">Go to wallet</string>
     <string name="auth_logout">Logout now</string>
     <string name="auth_done">Done</string>
-    <string name="auth_wrong_seed_phrase">The wrong security key or words order</string>
     <string name="auth_wrong_seed_phrase_empty">Seed phrase is empty</string>
     <string name="auth_select_derivation_path">Select Derivation Path</string>
     <string name="auth_reserve_username">Reserve your  username</string>

@@ -14,8 +14,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDerivableAccountsBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.restore.model.SecretKey
 import org.p2p.wallet.restore.ui.derivable.bottomsheet.SelectDerivableAccountBottomSheet
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
@@ -34,12 +34,12 @@ class DerivableAccountsFragment :
 
     companion object {
         private const val EXTRA_SECRET_KEYS = "EXTRA_SECRET_KEYS"
-        fun create(secretKeys: List<SecretKey>) = DerivableAccountsFragment().withArgs(
+        fun create(secretKeys: List<SeedPhraseWord>) = DerivableAccountsFragment().withArgs(
             EXTRA_SECRET_KEYS to secretKeys
         )
     }
 
-    private val secretKeys: List<SecretKey> by args(EXTRA_SECRET_KEYS)
+    private val secretKeys: List<SeedPhraseWord> by args(EXTRA_SECRET_KEYS)
     override val presenter: DerivableAccountsContract.Presenter by inject {
         parametersOf(secretKeys)
     }
@@ -101,7 +101,7 @@ class DerivableAccountsFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.restoreButton.isLoading = isLoading
+        binding.restoreButton.isLoadingState = isLoading
 
         binding.restoreButton.isEnabled = !isLoading
         binding.accountsRecyclerView.isEnabled = !isLoading

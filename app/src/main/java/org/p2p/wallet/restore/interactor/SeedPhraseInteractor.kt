@@ -4,15 +4,13 @@ import androidx.core.content.edit
 import android.content.SharedPreferences
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.restore.model.SeedPhraseResult
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
@@ -28,7 +26,7 @@ import kotlinx.coroutines.withContext
 private const val KEY_PHRASES = "KEY_PHRASES"
 private const val KEY_DERIVATION_PATH = "KEY_DERIVATION_PATH"
 
-class SecretKeyInteractor(
+class SeedPhraseInteractor(
     private val authRepository: AuthRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val tokenProvider: TokenKeyProvider,
@@ -102,16 +100,15 @@ class SecretKeyInteractor(
     suspend fun generateSecretKeys(): List<String> =
         authRepository.generatePhrase()
 
-    fun verifySeedPhrase(secretKeys: List<SecretKey>): SeedPhraseResult {
+    fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): List<SeedPhraseWord> {
         val words = English.INSTANCE.words
-        val data = secretKeys.map { it.text }.filter { it.isNotEmpty() }
+        val keys = secretKeys.filter { key -> key.text.isNotEmpty() }
 
-        val wordNotFound = data.any { !words.contains(it) }
-
-        return if (wordNotFound) {
-            SeedPhraseResult.Error(R.string.auth_wrong_seed_phrase)
-        } else {
-            SeedPhraseResult.Success(secretKeys)
+        val validatedKeys = keys.map { key ->
+            val isValid = words.contains(key.text)
+            key.copy(isValid = isValid)
         }
+
+        return validatedKeys
     }
 }

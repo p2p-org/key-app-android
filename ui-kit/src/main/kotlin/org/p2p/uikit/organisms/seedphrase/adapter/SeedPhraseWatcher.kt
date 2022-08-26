@@ -1,11 +1,11 @@
-package org.p2p.wallet.restore.ui.keys.adapter
+package org.p2p.uikit.organisms.seedphrase.adapter
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
-import org.p2p.wallet.R
-import org.p2p.wallet.restore.model.SecretKey
-import timber.log.Timber
+import org.p2p.uikit.R
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import kotlin.properties.Delegates
 
 /**
@@ -14,8 +14,8 @@ import kotlin.properties.Delegates
  * */
 
 class SeedPhraseWatcher(
-    private val onKeyAdded: (SecretKey) -> Unit,
-    private val onSeedPhraseInserted: (List<SecretKey>) -> Unit,
+    private val onKeyAdded: (SeedPhraseWord) -> Unit,
+    private val onSeedPhraseInserted: (List<SeedPhraseWord>) -> Unit,
     var isLastKey: Boolean
 ) : TextWatcher {
 
@@ -23,8 +23,8 @@ class SeedPhraseWatcher(
         fun installOn(
             isLast: Boolean,
             editText: EditText,
-            onKeyAdded: (SecretKey) -> Unit,
-            onSeedPhraseInserted: (List<SecretKey>) -> Unit
+            onKeyAdded: (SeedPhraseWord) -> Unit,
+            onSeedPhraseInserted: (List<SeedPhraseWord>) -> Unit
         ): SeedPhraseWatcher {
             val seedPhraseWatcher = SeedPhraseWatcher(onKeyAdded, onSeedPhraseInserted, isLast)
             editText.addTextChangedListener(seedPhraseWatcher)
@@ -41,7 +41,7 @@ class SeedPhraseWatcher(
     private var seedPhrase: SeedPhrase by Delegates.observable(SeedPhrase(null)) { _, oldValue, newValue ->
         if (newValue != oldValue) {
             when (val result = seedPhrase.result) {
-                is KeyResult.KeyAdded -> onKeyAdded(SecretKey(result.text.trim()))
+                is KeyResult.KeyAdded -> onKeyAdded(result.key)
                 is KeyResult.MultipleKeysAdded -> onSeedPhraseInserted(result.keys)
                 else -> Unit
             }
@@ -53,23 +53,18 @@ class SeedPhraseWatcher(
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         val text = s?.toString().orEmpty()
 
-        val splitted = text.split(" ")
-        when {
-            /* First we are checking if there are multiple keys entered */
-            splitted.size > 1 && splitted.last().isNotEmpty() -> {
-                val keys = splitted.map { SecretKey(it.trim()) }
-                val result = KeyResult.MultipleKeysAdded(keys)
-                seedPhrase = SeedPhrase(result)
+        val keys = SeedPhraseFormatter.format(text)
+        when (keys.size) {
+            0 -> {
+                Log.d("SEED_PHRASE", "User is typing and not finished yet, doing nothing $text")
             }
-            /* User enters single key here. Checking if he has finished by entering space */
-            text.isNotBlank() && text.endsWith(" ") -> {
-                val result = KeyResult.KeyAdded(text.trim())
+            1 -> {
+                val result = KeyResult.KeyAdded(keys.first())
                 seedPhrase = SeedPhrase(result)
             }
             else -> {
-                Timber
-                    .tag("SEED_PHRASE")
-                    .d("User is typing the word and not finished yet, doing nothing $text")
+                val result = KeyResult.MultipleKeysAdded(keys)
+                seedPhrase = SeedPhrase(result)
             }
         }
     }
@@ -84,6 +79,6 @@ private data class SeedPhrase(
 )
 
 private sealed class KeyResult {
-    data class KeyAdded(val text: String) : KeyResult()
-    data class MultipleKeysAdded(val keys: List<SecretKey>) : KeyResult()
+    data class KeyAdded(val key: SeedPhraseWord) : KeyResult()
+    data class MultipleKeysAdded(val keys: List<SeedPhraseWord>) : KeyResult()
 }
