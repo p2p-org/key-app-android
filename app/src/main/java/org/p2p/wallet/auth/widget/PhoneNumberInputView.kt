@@ -22,6 +22,7 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 private const val EMOJI_NO_FLAG = "️\uD83C\uDFF4"
 private const val CORNER_RADIUS = 20f
 private const val STROKE_WIDTH = 1
+private const val PLUS_SIGN = '+'
 
 open class PhoneNumberInputView @JvmOverloads constructor(
     context: Context,
@@ -93,19 +94,18 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun setupViewState(
         countryCode: CountryCode?,
-        phoneNumber: String?,
         onCountryCodeChanged: (String) -> Unit,
         onPhoneChanged: (String) -> Unit,
         onCountryClickListener: () -> Unit
     ) = with(binding) {
 
         countryCode?.phoneCode.let { editTextCountryCode.setText(it) }
-        phoneNumber?.let { editTextPhoneNumber.setText(it) }
 
         val flagEmoji = countryCode?.flagEmoji ?: EMOJI_NO_FLAG
         textViewFlagEmoji.text = flagEmoji
 
-        val hint = phoneNumber ?: countryCode?.getMaskWithoutCountryCode().orEmpty()
+        val restoredNumber = editTextPhoneNumber.text.toString().orEmpty()
+        val hint = restoredNumber.ifEmpty { countryCode?.getMaskWithoutCountryCode().orEmpty() }
         editTextPhoneNumber.setHintText(hint)
         numberHintTextView.setHintText(hint)
 
@@ -122,7 +122,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
             numberHintTextView.updateNumber(phoneNumber)
 
             // Invoking callbacks
-            val phone = "+${editTextCountryCode.text?.trim()}${phoneNumber.trim()}".replace(" ", "")
+            val phone = phoneNumber.getFullPhoneNumber()
             onPhoneChanged.invoke(phone)
         }
         countryCodeWatcher = CountryCodeTextWatcher { countryCode ->
@@ -136,7 +136,9 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
         focusView.focusAndShowKeyboard()
 
-        editTextPhoneNumber.setSelection(phoneNumber?.length.orZero())
+        editTextPhoneNumber.setSelection(editTextPhoneNumber.text?.length.orZero())
+
+        if (restoredNumber.isNotEmpty()) onPhoneChanged(restoredNumber.getFullPhoneNumber())
     }
 
     private fun WidgetPhoneInputViewBinding.resizeInputs(
@@ -202,5 +204,9 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun onFoundNewCountry(countryCode: CountryCode) = with(binding) {
         // TODO implement if need find country outside the mask
+    }
+
+    private fun String.getFullPhoneNumber(): String {
+        return PLUS_SIGN + binding.editTextCountryCode.text.toString().trim() + this.replace(" ", "")
     }
 }

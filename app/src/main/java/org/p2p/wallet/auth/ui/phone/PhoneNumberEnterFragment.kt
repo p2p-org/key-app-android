@@ -14,15 +14,10 @@ import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
-import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.p2p.wallet.utils.withArgs
-
-private const val ARG_COUNTRY_CODE = "ARG_COUNTRY_CODE"
-private const val ARG_PHONE_NUMBER = "ARG_PHONE_NUMBER"
 
 class PhoneNumberEnterFragment :
     BaseMvpFragment<PhoneNumberEnterContract.View, PhoneNumberEnterContract.Presenter>(
@@ -34,18 +29,12 @@ class PhoneNumberEnterFragment :
         const val REQUEST_KEY = "REQUEST_KEY"
         const val RESULT_KEY = "RESULT_KEY"
 
-        fun create(countryCode: CountryCode? = null, phoneNumber: String? = null): PhoneNumberEnterFragment =
-            PhoneNumberEnterFragment().withArgs(
-                ARG_COUNTRY_CODE to countryCode,
-                ARG_PHONE_NUMBER to phoneNumber
-            )
+        fun create(countryCode: CountryCode? = null, phoneNumber: String? = null) = PhoneNumberEnterFragment()
     }
 
     override val presenter: PhoneNumberEnterContract.Presenter by inject()
 
     private val binding: FragmentPhoneNumberEnterBinding by viewBinding()
-    private val phoneNumber: String? by args(ARG_PHONE_NUMBER, null)
-    private var countryCode: CountryCode? by args(ARG_COUNTRY_CODE, null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,8 +51,6 @@ class PhoneNumberEnterFragment :
         buttonConfirmPhone.setOnClickListener {
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }
-
-        phoneNumber?.let { setContinueButtonState(PhoneNumberScreenContinueButtonState.ENABLED_TO_CONTINUE) }
     }
 
     override fun initCreateWalletViews() {
@@ -76,10 +63,8 @@ class PhoneNumberEnterFragment :
     }
 
     override fun showDefaultCountryCode(defaultCountryCode: CountryCode?) {
-        countryCode = countryCode ?: defaultCountryCode
         binding.editTextPhoneNumber.setupViewState(
-            countryCode = countryCode,
-            phoneNumber,
+            countryCode = defaultCountryCode,
             onCountryCodeChanged = ::onCountryCodeChanged,
             onPhoneChanged = ::onPhoneChanged,
             onCountryClickListener = ::onCountryClickListener
@@ -87,12 +72,10 @@ class PhoneNumberEnterFragment :
     }
 
     override fun update(countryCode: CountryCode?) {
-        this.countryCode = countryCode
         binding.editTextPhoneNumber.updateViewState(countryCode)
     }
 
     override fun onNewCountryDetected(countryCode: CountryCode) {
-        this.countryCode = countryCode
         binding.editTextPhoneNumber.onFoundNewCountry(countryCode)
     }
 
@@ -101,21 +84,12 @@ class PhoneNumberEnterFragment :
     }
 
     override fun navigateToSmsInput() {
-        replaceFragment(
-            NewSmsInputFragment.create(
-                countryCode,
-                binding.editTextPhoneNumber.stringText
-            )
-        )
+        replaceFragment(NewSmsInputFragment.create())
     }
 
     override fun navigateToAccountBlocked() {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(
-                GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
-                countryCode,
-                binding.editTextPhoneNumber.stringText
-            )
+            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER)
         )
     }
 

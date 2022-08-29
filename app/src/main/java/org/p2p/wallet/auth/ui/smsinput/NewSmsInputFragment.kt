@@ -6,7 +6,6 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
@@ -16,33 +15,22 @@ import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.p2p.wallet.utils.withArgs
-
-private const val ARG_PHONE_NUMBER = "ARG_PHONE_NUMBER"
-private const val ARG_COUNTRY_CODE = "ARG_COUNTRY_CODE"
 
 class NewSmsInputFragment :
     BaseMvpFragment<NewSmsInputContract.View, Presenter>(R.layout.fragment_new_sms_input),
     NewSmsInputContract.View {
 
     companion object {
-        fun create(countryCode: CountryCode?, phoneNumber: String?): NewSmsInputFragment = NewSmsInputFragment()
-            .withArgs(
-                ARG_COUNTRY_CODE to countryCode,
-                ARG_PHONE_NUMBER to phoneNumber
-            )
+        fun create() = NewSmsInputFragment()
     }
 
     override val presenter: Presenter by inject { parametersOf(this) }
 
     private val binding: FragmentNewSmsInputBinding by viewBinding()
-    private val phoneNumber: String? by args(ARG_PHONE_NUMBER, null)
-    private val countryCode: CountryCode? by args(ARG_COUNTRY_CODE, null)
 
     override fun initView(userPhoneNumber: String) {
         with(binding) {
@@ -126,11 +114,7 @@ class NewSmsInputFragment :
 
     override fun navigateToSmsInputBlocked() {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(
-                GeneralErrorTimerScreenError.BLOCK_SMS_INPUT,
-                countryCode,
-                phoneNumber
-            )
+            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenError.BLOCK_SMS_INPUT)
         )
     }
 
