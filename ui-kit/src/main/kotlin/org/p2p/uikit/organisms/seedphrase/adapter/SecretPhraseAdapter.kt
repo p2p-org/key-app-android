@@ -48,7 +48,7 @@ class SecretPhraseAdapter(
 
     fun clear() {
         data.clear()
-        data.add(SeedPhraseWord())
+        data.add(SeedPhraseWord.EMPTY_WORD)
         notifyDataSetChanged()
 
         onSeedPhraseChanged(data)
@@ -75,7 +75,7 @@ class SecretPhraseAdapter(
         onSeedPhraseChanged(data)
 
         /* Automatically adding new empty element, so user could continue entering the seed phrase */
-        addSecretKey(SeedPhraseWord())
+        addSecretKey(SeedPhraseWord.EMPTY_WORD)
     }
 
     private fun removeSecretKey(index: Int) {
@@ -96,6 +96,6 @@ class SecretPhraseAdapter(
         onSeedPhraseChanged(data)
 
         /* Adding new item, to let user continue entering seed phrase */
-        addSecretKey(SeedPhraseWord())
+        addSecretKey(SeedPhraseWord.EMPTY_WORD)
     }
 }

@@ -1,8 +1,8 @@
 package org.p2p.wallet.restore.ui.seedphrase
 
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import kotlin.properties.Delegates
 import kotlinx.coroutines.launch
 
@@ -17,11 +17,11 @@ private const val TERMS_OF_SERVICE_FILE_NAME = "p2p_terms_of_service"
 private const val PRIVACY_POLICY_FILE_FULL = "p2p_privacy_policy.pdf"
 private const val PRIVACY_POLICY_FILE_NAME = "p2p_privacy_policy"
 
-class SecretKeyPresenter(
+class SeedPhrasePresenter(
     private val seedPhraseInteractor: SeedPhraseInteractor,
 ) : BasePresenter<SeedPhraseContract.View>(), SeedPhraseContract.Presenter {
 
-    private var keys: List<SeedPhraseWord> by Delegates.observable(emptyList()) { _, _, newValue ->
+    private var currentSeedPhrase: List<SeedPhraseWord> by Delegates.observable(emptyList()) { _, _, newValue ->
         val newSeedPhraseSize = newValue.size
         val isSeedPhraseValid =
             newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT
@@ -31,27 +31,31 @@ class SecretKeyPresenter(
         view?.showClearButton(isClearButtonVisible)
     }
 
-    override fun setNewKeys(keys: List<SeedPhraseWord>) {
-        val filtered = keys.filter { it.text.isNotEmpty() }
-        this.keys = filtered.toMutableList()
+    override fun setNewSeedPhrase(seedPhrase: List<SeedPhraseWord>) {
+        val filteredPhrase = seedPhrase.filter { it.text.isNotEmpty() }
+        this.currentSeedPhrase = filteredPhrase.toMutableList()
     }
 
     override fun verifySeedPhrase() {
         launch {
-            val seedPhrase = seedPhraseInteractor.verifySeedPhrase(keys).also { keys = it }
-            view?.updateSeedPhrase(seedPhrase)
+            currentSeedPhrase = seedPhraseInteractor.verifySeedPhrase(currentSeedPhrase)
+            view?.updateSeedPhrase(currentSeedPhrase)
+
+            if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
+                view?.navigateToDerievableAccounts(currentSeedPhrase)
+            }
         }
     }
 
     override fun load() {
-        if (keys.isEmpty()) {
-            view?.addFirstKey(SeedPhraseWord())
+        if (currentSeedPhrase.isEmpty()) {
+            view?.addFirstKey(SeedPhraseWord.EMPTY_WORD)
         } else {
-            keys = keys.toList()
+            currentSeedPhrase = currentSeedPhrase.toList()
         }
     }
 
-    override fun requestFocusOnLastKey() {
-        view?.showFocusOnLastKey(keys.size)
+    override fun requestFocusOnLastWord() {
+        view?.showFocusOnLastWord(currentSeedPhrase.size)
     }
 }
