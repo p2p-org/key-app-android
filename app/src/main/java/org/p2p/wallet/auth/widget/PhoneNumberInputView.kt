@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.maskwatcher.CountryCodeTextWatcher
 import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
 import org.p2p.wallet.databinding.WidgetPhoneInputViewBinding
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
@@ -135,7 +136,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
         focusView.focusAndShowKeyboard()
 
-        editTextPhoneNumber.setSelection(phoneNumber?.length ?: 0)
+        editTextPhoneNumber.setSelection(phoneNumber?.length.orZero())
     }
 
     private fun WidgetPhoneInputViewBinding.resizeInputs(
