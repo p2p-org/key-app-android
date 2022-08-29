@@ -17,6 +17,8 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
+private const val MAX_SUBMIT_OTP_TRIES_COUNT = 5
+
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val repository: SignUpFlowDataLocalRepository
@@ -63,7 +65,7 @@ class NewSmsInputPresenter(
                 view?.navigateToPinCreate()
             } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
                 Timber.i(incorrectSms)
-                if (++smsIncorrectTries > 5) {
+                if (++smsIncorrectTries > MAX_SUBMIT_OTP_TRIES_COUNT) {
                     view?.navigateToSmsInputBlocked()
                 } else {
                     view?.renderIncorrectSms()
