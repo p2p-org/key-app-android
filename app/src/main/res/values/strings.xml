@@ -593,9 +593,9 @@
     <string name="search_for_a_token">Search for a token</string>
 
 
-    <string name="onboarding_search_no_country">‍🏴 Sorry, we don’t know a such country</string>
+    <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
     <string name="onboarding_step_2">Step 2 of 3</string>
-    <string name="onboarding_add_number_title">What’s your number? 🤙</string>
+    <string name="onboarding_add_number_title">What\'s your number? 🤙</string>
     <string name="onboarding_add_number_message">Add a phone to protect your account</string>
     <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
     <string name="onboarding_country_name">Country Name</string>

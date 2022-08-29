@@ -10,10 +10,11 @@ import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
-import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerDialog
+import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
+import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -71,7 +72,7 @@ class PhoneNumberEnterFragment :
     }
 
     override fun showCountryCodePicker(selectedCountryCode: CountryCode?) {
-        CountryCodePickerDialog.show(selectedCountryCode, REQUEST_KEY, RESULT_KEY, childFragmentManager)
+        addFragment(CountryCodePickerFragment.create(selectedCountryCode, REQUEST_KEY, RESULT_KEY))
     }
 
     override fun navigateToSmsInput() {
@@ -112,10 +113,11 @@ class PhoneNumberEnterFragment :
     }
 
     private fun setOnResultListener() {
-        childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
-            bundle.getParcelable<CountryCode>(RESULT_KEY)?.let {
-                presenter.onCountryCodeChanged(it)
-            }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            bundle.getParcelable<CountryCode>(RESULT_KEY)?.let { presenter.onCountryCodeChanged(it) }
         }
     }
 
