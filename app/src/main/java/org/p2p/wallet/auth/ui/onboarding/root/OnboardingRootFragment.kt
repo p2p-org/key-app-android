@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -23,7 +24,7 @@ class OnboardingRootFragment :
     override val navBarColor: Int = R.color.bg_night
 
     override fun navigateToOnboarding() {
-        navigateTo(NewCreatePinFragment.create())
+        navigateTo(NewOnboardingFragment.create())
     }
 
     override fun navigateToContinueOnboarding() {
