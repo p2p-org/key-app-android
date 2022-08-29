@@ -81,6 +81,9 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     val text: Editable?
         get() = binding.editTextPhoneNumber.text
 
+    val stringText: String?
+        get() = text?.toString()
+
     val hint: CharSequence
         get() = binding.editTextPhoneNumber.hint
 

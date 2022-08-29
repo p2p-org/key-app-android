@@ -103,7 +103,7 @@ class PhoneNumberEnterFragment :
         replaceFragment(
             NewSmsInputFragment.create(
                 countryCode,
-                binding.editTextPhoneNumber.text.toString()
+                binding.editTextPhoneNumber.stringText
             )
         )
     }
@@ -113,7 +113,7 @@ class PhoneNumberEnterFragment :
             OnboardingGeneralErrorTimerFragment.create(
                 GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
                 countryCode,
-                binding.editTextPhoneNumber.text.toString()
+                binding.editTextPhoneNumber.stringText
             )
         )
     }
