@@ -41,8 +41,8 @@ class NewSmsInputFragment :
     override val presenter: Presenter by inject { parametersOf(this) }
 
     private val binding: FragmentNewSmsInputBinding by viewBinding()
-    private val phoneNumber by args<String?>(ARG_PHONE_NUMBER, null)
-    private val countryCode by args<CountryCode?>(ARG_COUNTRY_CODE, null)
+    private val phoneNumber: String? by args(ARG_PHONE_NUMBER, null)
+    private val countryCode: CountryCode? by args(ARG_COUNTRY_CODE, null)
 
     override fun initView(userPhoneNumber: String) {
         with(binding) {

@@ -42,9 +42,10 @@ class PhoneNumberEnterFragment :
     }
 
     override val presenter: PhoneNumberEnterContract.Presenter by inject()
+
     private val binding: FragmentPhoneNumberEnterBinding by viewBinding()
-    private val phoneNumber by args<String?>(ARG_PHONE_NUMBER, null)
-    private var countryCode by args<CountryCode?>(ARG_COUNTRY_CODE, null)
+    private val phoneNumber: String? by args(ARG_PHONE_NUMBER, null)
+    private var countryCode: CountryCode? by args(ARG_COUNTRY_CODE, null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
