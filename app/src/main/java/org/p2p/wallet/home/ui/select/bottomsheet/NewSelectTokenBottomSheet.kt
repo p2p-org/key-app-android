@@ -9,8 +9,9 @@ import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
+import org.p2p.wallet.common.ui.recycler.adapter.DividerItemDecorator
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.ui.select.SelectTokenAdapter
+import org.p2p.wallet.home.ui.select.NewSelectTokenAdapter
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.withArgs
@@ -39,18 +40,17 @@ class NewSelectTokenBottomSheet : BaseDoneBottomSheet() {
     private val buyAnalytics: BuyAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private var selectedToken: Token? = null
-
-    private val tokenAdapter: SelectTokenAdapter by lazy {
-        SelectTokenAdapter {
-            selectedToken = it
-        }
+    private val tokenAdapter: NewSelectTokenAdapter by lazy {
+        NewSelectTokenAdapter()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            recyclerView.addItemDecoration(
+                DividerItemDecorator(requireContext())
+            )
             recyclerView.attachAdapter(tokenAdapter)
             tokenAdapter.setItems(tokens)
         }
@@ -58,7 +58,7 @@ class NewSelectTokenBottomSheet : BaseDoneBottomSheet() {
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
-    override fun getResult(): Any? = selectedToken?.apply {
+    override fun getResult(): Any? = tokenAdapter.selectedItem?.apply {
         buyAnalytics.logBuyTokenChosen(tokenSymbol, analyticsInteractor.getPreviousScreenName())
     }
 }
