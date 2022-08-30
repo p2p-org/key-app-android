@@ -9,18 +9,18 @@ interface SeedPhraseContract {
 
     interface View : MvpView {
         fun updateSeedPhrase(seedPhrase: List<SeedPhraseWord>)
-        fun showSuccess(seedPhrase: List<SeedPhraseWord>)
+        fun navigateToDerievableAccounts(seedPhrase: List<SeedPhraseWord>)
         fun showFile(file: File)
         fun showSeedPhraseValid(isValid: Boolean)
         fun showClearButton(isVisible: Boolean)
-        fun addFirstKey(key: SeedPhraseWord)
-        fun showFocusOnLastKey(lastSecretItemIndex: Int)
+        fun addFirstKey(seedPhraseWord: SeedPhraseWord)
+        fun showFocusOnLastWord(lastSecretItemIndex: Int)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setNewKeys(keys: List<SeedPhraseWord>)
+        fun setNewSeedPhrase(seedPhrase: List<SeedPhraseWord>)
         fun verifySeedPhrase()
         fun load()
-        fun requestFocusOnLastKey()
+        fun requestFocusOnLastWord()
     }
 }
