@@ -4,13 +4,13 @@ import androidx.core.content.edit
 import android.content.SharedPreferences
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
@@ -39,32 +39,33 @@ class SeedPhraseInteractor(
 
     private var solRate: BigDecimal? = null
 
-    suspend fun getDerivableAccounts(keys: List<String>): List<DerivableAccount> =
-        withContext(dispatchers.io) {
-            val paths = listOf(DerivationPath.BIP44CHANGE, DerivationPath.BIP44, DerivationPath.BIP32DEPRECATED)
-            val derivableAccounts = mutableMapOf<DerivationPath, List<Account>>()
-            paths.forEach { path ->
-                val data = authRepository.getDerivableAccounts(path, keys)
-                derivableAccounts += data
-            }
-            /* Loading balances */
-            val balanceAccounts = derivableAccounts.values.flatten().map { it.publicKey.toBase58() }
-            val balances = if (balanceAccounts.isNotEmpty()) rpcRepository.getBalances(balanceAccounts) else emptyList()
-
-            /* Map derivable accounts with balances */
-            val result: List<DerivableAccount> = derivableAccounts.flatMap { (path, accounts) ->
-                mapDerivableAccounts(accounts, balances, path)
-            }
-
-            result
+    suspend fun getDerivableAccounts(keys: List<String>): List<DerivableAccount> = withContext(dispatchers.io) {
+        val paths = listOf(DerivationPath.BIP44CHANGE, DerivationPath.BIP44, DerivationPath.BIP32DEPRECATED)
+        val derivableAccounts = mutableMapOf<DerivationPath, List<Account>>()
+        paths.forEach { path ->
+            val data = authRepository.getDerivableAccounts(path, keys)
+            derivableAccounts += data
         }
+        /* Loading balances */
+        val balanceAccounts = derivableAccounts.values.flatten().map { it.publicKey.toBase58() }
+        val balances = if (balanceAccounts.isNotEmpty()) rpcRepository.getBalances(balanceAccounts) else emptyList()
+
+        /* Map derivable accounts with balances */
+        val result: List<DerivableAccount> = derivableAccounts.flatMap { (path, accounts) ->
+            mapDerivableAccounts(accounts, balances, path)
+        }
+
+        result
+    }
 
     private suspend fun mapDerivableAccounts(
         accounts: List<Account>,
         balances: List<Pair<String, BigInteger>>,
         path: DerivationPath
     ): List<DerivableAccount> = accounts.mapNotNull { account ->
-        val balance = balances.find { it.first == account.publicKey.toBase58() }?.second ?: return@mapNotNull null
+        val balance = balances.find { it.first == account.publicKey.toBase58() }
+            ?.second
+            ?: return@mapNotNull null
         val tokenSymbol = TokenSymbol(SOL_SYMBOL)
 
         val exchangeRate =
@@ -97,8 +98,7 @@ class SeedPhraseInteractor(
         adminAnalytics.logPasswordCreated()
     }
 
-    suspend fun generateSecretKeys(): List<String> =
-        authRepository.generatePhrase()
+    suspend fun generateSecretKeys(): List<String> = authRepository.generatePhrase()
 
     fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): List<SeedPhraseWord> {
         val words = English.INSTANCE.words

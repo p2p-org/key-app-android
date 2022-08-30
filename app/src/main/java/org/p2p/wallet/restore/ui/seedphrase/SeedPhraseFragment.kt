@@ -49,11 +49,11 @@ class SeedPhraseFragment :
             }
 
             seedPhraseView.onSeedPhraseChanged = { keys ->
-                presenter.setNewKeys(keys)
+                presenter.setNewSeedPhrase(keys)
             }
 
             seedPhraseView.setOnContainerClickListener {
-                presenter.requestFocusOnLastKey()
+                presenter.requestFocusOnLastWord()
             }
 
             checkClipboard()
@@ -64,7 +64,7 @@ class SeedPhraseFragment :
 
     override fun onResume() {
         super.onResume()
-        presenter.requestFocusOnLastKey()
+        presenter.requestFocusOnLastWord()
     }
 
     private fun checkClipboard() {
@@ -76,7 +76,7 @@ class SeedPhraseFragment :
         binding.seedPhraseView.updateSecretKeys(seedPhrase)
     }
 
-    override fun showSuccess(seedPhrase: List<SeedPhraseWord>) {
+    override fun navigateToDerievableAccounts(seedPhrase: List<SeedPhraseWord>) {
         replaceFragment(DerivableAccountsFragment.create(seedPhrase))
     }
 
@@ -89,11 +89,11 @@ class SeedPhraseFragment :
         binding.seedPhraseView.showClearButton(isVisible)
     }
 
-    override fun addFirstKey(key: SeedPhraseWord) {
-        binding.seedPhraseView.addSecretKey(SeedPhraseWord())
+    override fun addFirstKey(seedPhraseWord: SeedPhraseWord) {
+        binding.seedPhraseView.addSecretKey(SeedPhraseWord.EMPTY_WORD)
     }
 
-    override fun showFocusOnLastKey(lastSecretItemIndex: Int) {
+    override fun showFocusOnLastWord(lastSecretItemIndex: Int) {
         binding.seedPhraseView.showFocusOnLastKey(lastSecretItemIndex)
     }
 
@@ -105,13 +105,14 @@ class SeedPhraseFragment :
         )
 
         val target = Intent(Intent.ACTION_VIEW)
-        target.setDataAndType(fromFile, "application/pdf")
-        target.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        target.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            .setDataAndType(fromFile, "application/pdf")
+            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
         try {
             startActivity(target)
         } catch (e: ActivityNotFoundException) {
+            Timber.i(file.toString())
             Timber.e(e, "Cannot open file")
             toast(R.string.error_opening_file)
         }
