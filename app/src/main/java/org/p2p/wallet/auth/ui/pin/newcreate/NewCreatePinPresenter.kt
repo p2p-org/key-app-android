@@ -3,7 +3,6 @@ package org.p2p.wallet.auth.ui.pin.newcreate
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
-import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -53,7 +52,7 @@ class NewCreatePinPresenter(
         createdPin = emptyString()
         when (pinMode) {
             PinMode.CREATE -> {
-                if(!isOnBackButtonPressed) {
+                if (!isOnBackButtonPressed) {
                     view?.showUiKitSnackBar(messageResId = R.string.onboarding_lets_finish_last_step)
                     isOnBackButtonPressed = true
                 } else {
