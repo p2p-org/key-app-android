@@ -47,7 +47,6 @@ class NewSelectTokenViewHolder(
         wrappedImageView.isVisible = item.isWrapped
         itemView.setOnClickListener { onItemClicked(item) }
 
-
         when (item) {
             is Token.Active -> {
                 textViewUsdValue.text = item.getFormattedUsdTotal()
