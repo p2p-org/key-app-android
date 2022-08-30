@@ -41,7 +41,7 @@ class UsernameInteractor(
 //        }
     }
 
-    fun usernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)
+    fun isUsernameExists(): Boolean = sharedPreferences.contains(KEY_USERNAME)
 
     fun getUsername(): Username? {
         val username = sharedPreferences.getString(KEY_USERNAME, null)

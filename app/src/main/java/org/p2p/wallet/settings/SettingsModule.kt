@@ -1,5 +1,7 @@
 package org.p2p.wallet.settings
 
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
@@ -15,41 +17,42 @@ import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseContract
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhrasePresenter
 import org.p2p.wallet.settings.ui.security.SecurityContract
 import org.p2p.wallet.settings.ui.security.SecurityPresenter
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsPresenter
 import org.p2p.wallet.settings.ui.settings.SettingsContract
-import org.p2p.wallet.settings.ui.settings.SettingsPresenter
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItemMapper
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalanceContract
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalancesPresenter
 
 object SettingsModule : InjectionModule {
 
     override fun create() = module {
-        factory { SettingsInteractor(get(), get()) }
-        factory { ThemeInteractor(get()) }
+        factoryOf(::SettingsInteractor)
+        factoryOf(::ThemeInteractor)
+        factoryOf(::SettingsItemMapper)
         factory {
+            // holy shit, TODO smth with this dependencies!
             SettingsPresenter(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get()
+                environmentManager = get(),
+                usernameInteractor = get(),
+                authLogoutInteractor = get(),
+                appRestarter = get(),
+                receiveAnalytics = get(),
+                adminAnalytics = get(),
+                browseAnalytics = get(),
+                settingsInteractor = get(),
+                homeLocalRepository = get(),
+                settingsItemMapper = get(),
+                context = androidContext(),
             )
         } bind SettingsContract.Presenter::class
-        factory { SecurityPresenter(get(), get()) } bind SecurityContract.Presenter::class
-        factory { ResetPinPresenter(get(), get(), get()) } bind ResetPinContract.Presenter::class
-        factory { AppearancePresenter(get()) } bind AppearanceContract.Presenter::class
-        factory { ResetSeedPhrasePresenter(get(), get()) } bind ResetSeedPhraseContract.Presenter::class
-        factory {
-            SettingsNetworkPresenter(
-                context = get(),
-                inAppFeatureFlags = get(),
-                mainLocalRepository = get(),
-                environmentManager = get(),
-                analytics = get()
-            )
-        } bind SettingsNetworkContract.Presenter::class
-        factory { SettingsZeroBalancesPresenter(get()) } bind SettingsZeroBalanceContract.Presenter::class
+
+        factoryOf(::SecurityPresenter) bind SecurityContract.Presenter::class
+        factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class
+        factoryOf(::AppearancePresenter) bind AppearanceContract.Presenter::class
+
+        factoryOf(::ResetSeedPhrasePresenter) bind ResetSeedPhraseContract.Presenter::class
+
+        factoryOf(::SettingsNetworkPresenter) bind SettingsNetworkContract.Presenter::class
+        factoryOf(::SettingsZeroBalancesPresenter) bind SettingsZeroBalanceContract.Presenter::class
     }
 }

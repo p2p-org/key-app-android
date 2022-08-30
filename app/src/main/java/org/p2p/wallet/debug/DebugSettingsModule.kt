@@ -12,8 +12,6 @@ import org.p2p.wallet.debug.settings.DebugSettingsContract
 import org.p2p.wallet.debug.settings.DebugSettingsPresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.interactor.ThemeInteractor
-import org.p2p.wallet.settings.ui.network.SettingsNetworkContract
-import org.p2p.wallet.settings.ui.network.SettingsNetworkPresenter
 
 object DebugSettingsModule : InjectionModule {
 
@@ -22,20 +20,13 @@ object DebugSettingsModule : InjectionModule {
         factory { ThemeInteractor(get()) }
         factory {
             DebugSettingsPresenter(
-                get(),
-                get(),
-                get()
+                environmentManager = get(),
+                homeLocalRepository = get(),
+                context = get(),
+                resourcesProvider = get(),
+                networkServicesUrlProvider = get()
             )
         } bind DebugSettingsContract.Presenter::class
-        factory {
-            SettingsNetworkPresenter(
-                context = get(),
-                inAppFeatureFlags = get(),
-                mainLocalRepository = get(),
-                environmentManager = get(),
-                analytics = get()
-            )
-        } bind SettingsNetworkContract.Presenter::class
         factoryOf(::FeatureTogglesPresenter) bind FeatureTogglesContract.Presenter::class
         factoryOf(::PushNotificationsPresenter) bind PushNotificationsContract.Presenter::class
     }

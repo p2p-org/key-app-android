@@ -1,7 +1,7 @@
 package org.p2p.wallet.settings.interactor
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
+import android.content.SharedPreferences
 import org.p2p.wallet.auth.interactor.AuthInteractor
 
 private const val KEY_HIDDEN_ZERO_BALANCE = "KEY_HIDDEN_ZERO_BALANCE"
@@ -13,7 +13,7 @@ class SettingsInteractor(
 ) {
 
     fun setZeroBalanceHidden(isHidden: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_HIDDEN_ZERO_BALANCE, isHidden) }
+        sharedPreferences.edit(commit = true) { putBoolean(KEY_HIDDEN_ZERO_BALANCE, isHidden) }
     }
 
     fun areZerosHidden(): Boolean = sharedPreferences.getBoolean(KEY_HIDDEN_ZERO_BALANCE, true)
@@ -24,7 +24,7 @@ class SettingsInteractor(
     }
 
     fun setBiometricsConfirmationEnabled(isEnable: Boolean) {
-        sharedPreferences.edit {
+        sharedPreferences.edit(commit = true) {
             putBoolean(KEY_CONFIRMATION_REQUIRED, isEnable)
         }
     }

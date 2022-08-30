@@ -26,16 +26,11 @@ private const val TAG = "RpcInterceptor"
 
 class RpcInterceptor(
     private val gson: Gson,
-    environmentManager: NetworkEnvironmentManager
+    private val environmentManager: NetworkEnvironmentManager
 ) : Interceptor {
 
-    private var currentEnvironment = environmentManager.loadCurrentEnvironment()
-
-    init {
-        environmentManager.addEnvironmentListener(this::class) { newEnvironment ->
-            currentEnvironment = newEnvironment
-        }
-    }
+    private val currentEnvironment: NetworkEnvironment
+        get() = environmentManager.loadCurrentEnvironment()
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = createRpcRequest(chain)

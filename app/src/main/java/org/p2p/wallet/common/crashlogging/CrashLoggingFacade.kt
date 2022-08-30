@@ -1,5 +1,6 @@
 package org.p2p.wallet.common.crashlogging
 
+@Deprecated("Do not inject implementations in your code, inject only CrashLogger")
 interface CrashLoggingFacade {
     fun logInformation(information: String)
     fun logThrowable(error: Throwable, message: String? = null)

@@ -9,7 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPushNotificationsBinding
 import org.p2p.wallet.settings.model.SettingsRow
-import org.p2p.wallet.settings.ui.settings.SettingsAdapter
+import org.p2p.wallet.settings.ui.settings.OldSettingsAdapter
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -26,7 +26,7 @@ class PushNotificationsFragment :
     override val presenter: PushNotificationsContract.Presenter by inject()
 
     private val binding: FragmentPushNotificationsBinding by viewBinding()
-    private val adapter = SettingsAdapter(
+    private val adapter = OldSettingsAdapter(
         onSettingsRowClickListener = ::onNotificationClickListener,
     )
 

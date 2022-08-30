@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
+import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -16,8 +17,9 @@ import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
 import org.p2p.wallet.debug.torus.DebugTorusFragment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
-import org.p2p.wallet.settings.ui.settings.SettingsAdapter
+import org.p2p.wallet.settings.ui.settings.OldSettingsAdapter
 import org.p2p.wallet.utils.addFragment
+import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -37,7 +39,7 @@ class DebugSettingsFragment :
     override val presenter: DebugSettingsContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = SettingsAdapter(::onSettingsRowClicked)
+    private val adapter = OldSettingsAdapter(::onSettingsRowClicked)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -98,9 +100,8 @@ class DebugSettingsFragment :
     }
 
     private fun onNetworkChanged(bundle: Bundle) {
-        val networkName = bundle.getString(BUNDLE_KEY_NEW_NETWORK_NAME)
-        if (!networkName.isNullOrEmpty()) {
-            presenter.onNetworkChanged(newName = networkName)
+        bundle.getSerializableOrNull<NetworkEnvironment>(BUNDLE_KEY_NEW_NETWORK_NAME)?.let {
+            presenter.onNetworkChanged(it)
         }
     }
 }
