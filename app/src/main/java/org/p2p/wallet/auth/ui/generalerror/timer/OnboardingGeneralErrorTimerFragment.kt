@@ -23,8 +23,8 @@ class OnboardingGeneralErrorTimerFragment :
     ContractView {
 
     companion object {
-        fun create(sourceScreen: GeneralErrorTimerScreenError) =
-            OnboardingGeneralErrorTimerFragment().withArgs(ARG_TIMER_ERROR_TYPE to sourceScreen)
+        fun create(error: GeneralErrorTimerScreenError) =
+            OnboardingGeneralErrorTimerFragment().withArgs(ARG_TIMER_ERROR_TYPE to error)
     }
 
     override val statusBarColor: Int = R.color.bg_lime
@@ -38,7 +38,7 @@ class OnboardingGeneralErrorTimerFragment :
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonToStartingScreen.setOnClickListener {
-            navigateToPhoneNumberEnter()
+            returnToPhoneNumberEnter()
         }
     }
 
@@ -46,7 +46,7 @@ class OnboardingGeneralErrorTimerFragment :
         binding.textViewErrorSubtitle.text = getString(subTitleRes, formattedTimeLeft)
     }
 
-    override fun navigateToPhoneNumberEnter() {
+    override fun returnToPhoneNumberEnter() {
         popBackStackTo(PhoneNumberEnterFragment::class)
     }
 }

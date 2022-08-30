@@ -27,7 +27,7 @@ class OnboardingGeneralErrorTimerPresenter(
 
         createTimerFlow()
             .onEach(::onTimerValueChanged)
-            .onCompletion { this@OnboardingGeneralErrorTimerPresenter.view?.navigateToPhoneNumberEnter() }
+            .onCompletion { this@OnboardingGeneralErrorTimerPresenter.view?.returnToPhoneNumberEnter() }
             .launchIn(this)
     }
 

@@ -29,7 +29,7 @@ class PhoneNumberEnterFragment :
         const val REQUEST_KEY = "REQUEST_KEY"
         const val RESULT_KEY = "RESULT_KEY"
 
-        fun create(countryCode: CountryCode? = null, phoneNumber: String? = null) = PhoneNumberEnterFragment()
+        fun create() = PhoneNumberEnterFragment()
     }
 
     override val presenter: PhoneNumberEnterContract.Presenter by inject()

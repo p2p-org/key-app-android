@@ -7,7 +7,7 @@ import org.p2p.wallet.common.mvp.MvpView
 interface OnboardingGeneralErrorTimerContract {
     interface View : MvpView {
         fun updateSubtitle(@StringRes subTitleRes: Int, formattedTimeLeft: String)
-        fun navigateToPhoneNumberEnter()
+        fun returnToPhoneNumberEnter()
     }
 
     interface Presenter : MvpPresenter<View>
