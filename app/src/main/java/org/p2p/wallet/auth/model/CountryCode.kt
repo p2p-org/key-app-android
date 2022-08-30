@@ -2,7 +2,6 @@ package org.p2p.wallet.auth.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.utils.emptyString
 
 @Parcelize
 data class CountryCode(
@@ -14,15 +13,7 @@ data class CountryCode(
 ) : Parcelable {
 
     fun getZeroFilledMask(): String {
-        var zeroFilledMask = emptyString()
-        mask.forEach { symbol ->
-            zeroFilledMask += if (symbol.isDigit()) {
-                "0"
-            } else {
-                " "
-            }
-        }
-        return zeroFilledMask
+        return mask.map { symbol -> if (symbol.isDigit()) '0' else ' ' }.joinToString("")
     }
 }
 
