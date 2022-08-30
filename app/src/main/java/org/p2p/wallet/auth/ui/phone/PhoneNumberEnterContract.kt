@@ -9,7 +9,7 @@ interface PhoneNumberEnterContract {
         fun initCreateWalletViews()
         fun initRestoreWalletViews()
 
-        fun showDefaultCountryCode(country: CountryCode?)
+        fun showDefaultCountryCode(defaultCountryCode: CountryCode?)
         fun update(countryCode: CountryCode?)
         fun onNewCountryDetected(countryCode: CountryCode)
         fun showCountryCodePicker(selectedCountryCode: CountryCode?)

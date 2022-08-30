@@ -25,12 +25,12 @@ class NewSmsInputFragment :
     NewSmsInputContract.View {
 
     companion object {
-        fun create(): NewSmsInputFragment = NewSmsInputFragment()
+        fun create() = NewSmsInputFragment()
     }
 
-    private val binding: FragmentNewSmsInputBinding by viewBinding()
-
     override val presenter: Presenter by inject { parametersOf(this) }
+
+    private val binding: FragmentNewSmsInputBinding by viewBinding()
 
     override fun initView(userPhoneNumber: String) {
         with(binding) {
