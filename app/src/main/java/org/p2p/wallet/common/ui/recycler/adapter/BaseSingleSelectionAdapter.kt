@@ -19,6 +19,7 @@ abstract class BaseSingleSelectionAdapter<T, VH : BaseSelectionViewHolder<T>>(
         if (selectedItem != item) {
             selectedItem = item
             onItemClicked(item)
+            notifyDataSetChanged()
         }
     }
 
