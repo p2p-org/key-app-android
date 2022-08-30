@@ -3,7 +3,7 @@ package org.p2p.wallet.auth.gateway.api.request
 import com.google.gson.annotations.SerializedName
 
 data class ConfirmRegisterWalletRequest(
-    @SerializedName("client_id")
+    @SerializedName("solana_pubkey")
     val clientSolanaPublicKey: String,
     @SerializedName("ethereum_id")
     val etheriumPublicKey: String,

@@ -13,7 +13,7 @@ interface GatewayServiceRepository {
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         etheriumPublicKey: String,
-        phoneNumber: String
+        e164PhoneNumber: String
     ): RegisterWalletResponse
 
     suspend fun confirmRegisterWallet(

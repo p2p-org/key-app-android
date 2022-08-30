@@ -40,13 +40,13 @@ class GatewayServiceRemoteRepository(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         etheriumPublicKey: String,
-        phoneNumber: String
+        e164PhoneNumber: String
     ): RegisterWalletResponse = withContext(dispatchers.io) {
         val request = createWalletMapper.toRegisterWalletNetwork(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             etheriumPublicKey = etheriumPublicKey,
-            phoneNumber = phoneNumber,
+            phoneNumber = e164PhoneNumber,
             channel = OtpMethod.SMS
         )
         val response = api.registerWallet(request)
