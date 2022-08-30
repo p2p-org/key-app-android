@@ -1,29 +1,36 @@
 package org.p2p.wallet.home.ui.main
 
+import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
 
 class HomeElementItemMapper {
-    fun mapToItem(
+
+    fun mapToItems(
         tokens: List<Token.Active>,
         visibilityState: VisibilityState,
         isZerosHidden: Boolean
     ): List<HomeElementItem> {
-        return tokens.map { token ->
-            if (token.isSOL) return@map HomeElementItem.Shown(token)
-
-            when (token.visibility) {
-                TokenVisibility.SHOWN -> HomeElementItem.Shown(token)
-                TokenVisibility.HIDDEN -> HomeElementItem.Hidden(token, visibilityState)
-                TokenVisibility.DEFAULT ->
-                    if (isZerosHidden && token.isZero) {
-                        HomeElementItem.Hidden(token, visibilityState)
-                    } else {
-                        HomeElementItem.Shown(token)
-                    }
-            }
+        val groups = tokens.groupBy { token ->
+            token.isDefinitelyHidden(isZerosHidden) && !token.isSOL
         }
+
+        val hiddenTokens = groups[true].orEmpty()
+        val visibleTokens = groups[false].orEmpty()
+
+        val result = mutableListOf<HomeElementItem>(HomeElementItem.Title(R.string.home_tokens))
+
+        result += visibleTokens.map { HomeElementItem.Shown(it) }
+
+        if (hiddenTokens.isNotEmpty()) {
+            result += HomeElementItem.Action(visibilityState)
+        }
+
+        if (visibilityState.isVisible) {
+            result += hiddenTokens.map { HomeElementItem.Hidden(it, visibilityState) }
+        }
+
+        return result
     }
 }

@@ -50,10 +50,13 @@ class HomePresenter(
     private data class ViewState(
         val tokens: List<Token.Active> = emptyList(),
         val visibilityState: VisibilityState = VisibilityState.Hidden,
-        val username: Username? = null
+        val username: Username? = null,
+        val areZerosHidden: Boolean
     )
 
-    private var presenterState = ViewState()
+    private var state = ViewState(
+        areZerosHidden = settingsInteractor.areZerosHidden()
+    )
 
     private var userTokensFlowJob: Job? = null
 
@@ -66,22 +69,21 @@ class HomePresenter(
 
         updatesManager.start()
 
-        presenterState = presenterState.copy(
+        state = state.copy(
             username = usernameInteractor.getUsername(),
             visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
         )
 
-        if (presenterState.tokens.isEmpty()) {
+        if (state.tokens.isEmpty()) {
             initialLoadTokens()
         } else {
             startPollingForTokens()
         }
 
-        IntercomService.signIn(usernameInteractor.getUsername()?.username ?: tokenKeyProvider.publicKey)
+        val userId = usernameInteractor.getUsername()?.username ?: tokenKeyProvider.publicKey
+        IntercomService.signIn(userId)
 
-        environmentManager.addEnvironmentListener(this::class) {
-            refreshTokens()
-        }
+        environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
     }
 
     override fun onAddressClicked() {
@@ -102,7 +104,7 @@ class HomePresenter(
                 // emits two times when local tokens updated: with [] and actual list - strange
                 .collect { updatedTokens ->
                     Timber.d("local tokens change arrived")
-                    presenterState = presenterState.copy(
+                    state = state.copy(
                         tokens = updatedTokens,
                         username = usernameInteractor.getUsername(),
                     )
@@ -161,7 +163,7 @@ class HomePresenter(
             val visibility = when (token.visibility) {
                 TokenVisibility.SHOWN -> TokenVisibility.HIDDEN
                 TokenVisibility.HIDDEN -> TokenVisibility.SHOWN
-                TokenVisibility.DEFAULT -> if (settingsInteractor.isZerosHidden() && token.isZero) {
+                TokenVisibility.DEFAULT -> if (settingsInteractor.areZerosHidden() && token.isZero) {
                     TokenVisibility.SHOWN
                 } else {
                     TokenVisibility.HIDDEN
@@ -173,34 +175,29 @@ class HomePresenter(
     }
 
     override fun toggleTokenVisibilityState() {
-        presenterState = presenterState.run { copy(visibilityState = visibilityState.toggle()) }
-        userInteractor.setHiddenTokensVisibility(presenterState.visibilityState.isVisible)
+        state = state.run { copy(visibilityState = visibilityState.toggle()) }
+        userInteractor.setHiddenTokensVisibility(state.visibilityState.isVisible)
 
         showTokensAndBalance()
     }
 
     override fun clearTokensCache() {
-        presenterState = presenterState.copy(tokens = emptyList())
+        state = state.copy(tokens = emptyList())
     }
 
     private fun showTokensAndBalance() {
-        Timber.d("showing tokens on screen")
         val balance = getUserBalance()
-        view?.showBalance(balance, presenterState.username)
+        view?.showBalance(balance)
 
         /* Mapping elements according to visibility settings */
-        val isZerosHidden = settingsInteractor.isZerosHidden()
-        val mappedTokens = buildList {
-            addAll(
-                homeElementItemMapper.mapToItem(
-                    tokens = presenterState.tokens,
-                    visibilityState = presenterState.visibilityState,
-                    isZerosHidden = isZerosHidden
-                )
-            )
-        }
+        val areZerosHidden = settingsInteractor.areZerosHidden()
+        val mappedTokens = homeElementItemMapper.mapToItems(
+            tokens = state.tokens,
+            visibilityState = state.visibilityState,
+            isZerosHidden = areZerosHidden
+        )
 
-        view?.showTokens(mappedTokens, isZerosHidden, presenterState.visibilityState)
+        view?.showTokens(mappedTokens, areZerosHidden)
     }
 
     private fun initialLoadTokens() {
@@ -252,13 +249,13 @@ class HomePresenter(
     }
 
     private fun getUserBalance(): BigDecimal =
-        presenterState.tokens
+        state.tokens
             .mapNotNull { it.totalInUsd }
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
     private fun getBanners(): List<Banner> {
-        val usernameExists = presenterState.username != null
+        val usernameExists = state.username != null
 
         val feedbackBanner = Banner(
             R.string.home_feedback_banner_option,
@@ -289,6 +286,13 @@ class HomePresenter(
             view?.navigateToProfile()
         } else {
             view?.navigateToReserveUsername()
+        }
+    }
+
+    override fun updateTokensIfNeeded() {
+        if (state.areZerosHidden != settingsInteractor.areZerosHidden()) {
+            refreshTokens()
+            state = state.copy(areZerosHidden = settingsInteractor.areZerosHidden())
         }
     }
 }

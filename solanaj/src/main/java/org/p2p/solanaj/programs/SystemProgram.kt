@@ -25,7 +25,7 @@ object SystemProgram {
         // 4 byte instruction index + 8 bytes lamports
         val data = ByteArray(4 + 8)
         Utils.uint32ToByteArrayLE(PROGRAM_INDEX_TRANSFER.toLong(), data, 0)
-        Utils.uint32ToByteArrayLE(lamports.toLong(), data, 4)
+        Utils.int64ToByteArrayLE(lamports.toLong(), data, 4)
         return TransactionInstruction(PROGRAM_ID, keys, data)
     }
 
