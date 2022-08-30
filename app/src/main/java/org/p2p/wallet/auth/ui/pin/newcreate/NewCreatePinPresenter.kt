@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
@@ -62,15 +61,15 @@ class NewCreatePinPresenter(
             checkBiometricAvailability()
             // Clear pin in case of returning back
             createdPin = emptyString()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e, "Failed to finish pin creation")
-            view?.showErrorMessage(R.string.error_general_message)
+            view?.navigateToMain()
         }
     }
 
     private fun checkBiometricAvailability() {
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
-            view?.navigateToMain()
+            createWalletInteractor.finishAuthFlow()
         } else {
             view?.navigateToBiometrics(createdPin)
         }
