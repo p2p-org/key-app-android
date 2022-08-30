@@ -32,7 +32,7 @@ class NewSelectTokenBottomSheet : BaseDoneBottomSheet() {
             EXTRA_ALL_TOKENS to tokens,
             ARG_REQUEST_KEY to requestKey,
             ARG_RESULT_KEY to resultKey
-        ).show(fm, BaseDoneBottomSheet::javaClass.name)
+        ).show(fm, NewSelectTokenBottomSheet::javaClass.name)
     }
 
     private val tokens: List<Token> by args(EXTRA_ALL_TOKENS)
