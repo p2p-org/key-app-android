@@ -70,7 +70,6 @@ class NewCreatePinPresenter(
 
     private fun checkBiometricAvailability() {
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
-            createWalletInteractor.finishAuthFlow()
             view?.navigateToMain()
         } else {
             view?.navigateToBiometrics(createdPin)
