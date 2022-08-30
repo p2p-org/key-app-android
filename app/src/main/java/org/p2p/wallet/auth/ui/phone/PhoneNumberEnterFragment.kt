@@ -28,20 +28,29 @@ class PhoneNumberEnterFragment :
     companion object {
         const val REQUEST_KEY = "REQUEST_KEY"
         const val RESULT_KEY = "RESULT_KEY"
-        fun create(): PhoneNumberEnterFragment = PhoneNumberEnterFragment()
+
+        fun create() = PhoneNumberEnterFragment()
     }
 
     override val presenter: PhoneNumberEnterContract.Presenter by inject()
+
     private val binding: FragmentPhoneNumberEnterBinding by viewBinding()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.initViews()
+        setOnResultListener()
+    }
+
+    private fun FragmentPhoneNumberEnterBinding.initViews() {
+        toolbar.setNavigationOnClickListener {
+            popBackStack()
+        }
 
         buttonConfirmPhone.setOnClickListener {
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }
-
-        setOnResultListener()
     }
 
     override fun initCreateWalletViews() {
@@ -53,9 +62,9 @@ class PhoneNumberEnterFragment :
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
     }
 
-    override fun showDefaultCountryCode(country: CountryCode?) {
+    override fun showDefaultCountryCode(defaultCountryCode: CountryCode?) {
         binding.editTextPhoneNumber.setupViewState(
-            countryCode = country,
+            countryCode = defaultCountryCode,
             onCountryCodeChanged = ::onCountryCodeChanged,
             onPhoneChanged = ::onPhoneChanged,
             onCountryClickListener = ::onCountryClickListener
