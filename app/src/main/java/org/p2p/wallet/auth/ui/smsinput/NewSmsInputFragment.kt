@@ -109,7 +109,7 @@ class NewSmsInputFragment :
     }
 
     override fun navigateToPinCreate() {
-        replaceFragment(NewCreatePinFragment.create())
+        popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
     }
 
     override fun navigateToSmsInputBlocked() {
