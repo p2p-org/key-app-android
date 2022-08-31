@@ -4,14 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.common.ui.recycler.adapter.DividerItemDecorator
 import org.p2p.wallet.home.ui.select.SelectCurrencyAdapter
-import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
@@ -36,9 +33,6 @@ class SelectCurrencyBottomSheet : BaseDoneBottomSheet() {
         createCurrency("EUR"),
         createCurrency("USD")
     )
-
-    private val buyAnalytics: BuyAnalytics by inject()
-    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val currencyAdapter: SelectCurrencyAdapter by lazy {
         SelectCurrencyAdapter()
