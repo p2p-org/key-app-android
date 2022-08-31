@@ -25,6 +25,8 @@ class SplashFragment :
     }
 
     override fun navigateToSignIn() {
-        replaceFragment(SignInPinFragment.create())
+        replaceFragment(OnboardingRootFragment.create())
+
+//        replaceFragment(SignInPinFragment.create())
     }
 }

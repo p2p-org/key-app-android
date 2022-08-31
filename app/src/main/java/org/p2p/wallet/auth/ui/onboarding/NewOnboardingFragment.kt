@@ -73,6 +73,12 @@ class NewOnboardingFragment :
             buttonRestoreWalletOnboarding.setOnClickListener {
                 replaceFragment(CommonRestoreFragment.create())
             }
+
+            binding.sliderButton.setupView(
+                R.string.common_signin_button_text,
+                R.drawable.ic_key_action,
+                isLight = false
+            )
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
