@@ -7,7 +7,6 @@
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/wrappedImageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="42dp"
@@ -15,7 +14,7 @@
         android:src="@drawable/buy_details_image" />
 
     <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/priceView"
+        android:id="@+id/optionsTextViewPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="36dp"
@@ -23,7 +22,7 @@
         app:optionsLabelText="@string/buy_token_price" />
 
     <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/purchaseCostView"
+        android:id="@+id/optionsTextViewPurchaseCost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="38dp"
@@ -31,7 +30,7 @@
         app:optionsLabelText="@string/buy_token_purchase_cost" />
 
     <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/processingFeeView"
+        android:id="@+id/optionsTextViewProcessingFee"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="38dp"
@@ -39,7 +38,7 @@
         app:optionsLabelText="@string/buy_processing_fee" />
 
     <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/networkFeeView"
+        android:id="@+id/optionsTextViewNetworkFee"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="38dp"
@@ -47,7 +46,7 @@
         app:optionsLabelText="@string/buy_network_fee" />
 
     <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/accountCreationView"
+        android:id="@+id/optionsTextViewAccountCreation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="38dp"
@@ -64,7 +63,7 @@
         app:layout_constraintTop_toBottomOf="@id/payTextView" />
 
     <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/totalView"
+        android:id="@+id/optionsTextViewTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="38dp"

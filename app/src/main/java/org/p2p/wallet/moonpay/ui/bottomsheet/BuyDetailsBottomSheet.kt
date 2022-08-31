@@ -47,31 +47,31 @@ class BuyDetailsBottomSheet : BaseDoneBottomSheet() {
     }
 
     private fun showData(viewData: BuyViewData) = with(binding) {
-        priceView.labelText = getString(R.string.buy_token_price, viewData.tokenSymbol)
-        purchaseCostView.labelText = getString(R.string.buy_token_purchase_cost, viewData.tokenSymbol)
-        accountCreationView.labelText = getString(R.string.buy_account_creation, viewData.tokenSymbol)
+        optionsTextViewPrice.labelText = getString(R.string.buy_token_price, viewData.tokenSymbol)
+        optionsTextViewPurchaseCost.labelText = getString(R.string.buy_token_purchase_cost, viewData.tokenSymbol)
+        optionsTextViewAccountCreation.labelText = getString(R.string.buy_account_creation, viewData.tokenSymbol)
 
-        priceView.setValueText(viewData.priceText)
-        processingFeeView.setValueText(viewData.processingFeeText)
-        networkFeeView.setValueText(viewData.networkFeeText)
-        accountCreationView.setValueText(viewData.accountCreationCostText)
+        optionsTextViewPrice.setValueText(viewData.priceText)
+        optionsTextViewProcessingFee.setValueText(viewData.processingFeeText)
+        optionsTextViewNetworkFee.setValueText(viewData.networkFeeText)
+        optionsTextViewAccountCreation.setValueText(viewData.accountCreationCostText)
         viewData.purchaseCostText?.let {
-            purchaseCostView.setValueText(it)
+            optionsTextViewPurchaseCost.setValueText(it)
         }
 
-        totalView.setValueText(viewData.totalText)
+        optionsTextViewTotal.setValueText(viewData.totalText)
         overrideColors()
     }
 
     private fun overrideColors() = with(binding) {
-        priceView.apply {
+        optionsTextViewPrice.apply {
             setLabelTextColor(getColor(R.color.text_mountain))
             setValueTextColor(getColor(R.color.text_mountain))
         }
-        purchaseCostView.setLabelTextColor(getColor(R.color.text_mountain))
-        accountCreationView.setLabelTextColor(getColor(R.color.text_mountain))
-        processingFeeView.setLabelTextColor(getColor(R.color.text_mountain))
-        networkFeeView.setLabelTextColor(getColor(R.color.text_mountain))
+        optionsTextViewPurchaseCost.setLabelTextColor(getColor(R.color.text_mountain))
+        optionsTextViewAccountCreation.setLabelTextColor(getColor(R.color.text_mountain))
+        optionsTextViewProcessingFee.setLabelTextColor(getColor(R.color.text_mountain))
+        optionsTextViewNetworkFee.setLabelTextColor(getColor(R.color.text_mountain))
     }
 
     override fun getResult(): Any? = null
