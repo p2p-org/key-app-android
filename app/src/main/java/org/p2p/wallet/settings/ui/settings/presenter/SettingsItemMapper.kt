@@ -17,12 +17,13 @@ class SettingsItemMapper(
 ) {
     fun createItems(
         username: Username?,
-        isBiometricConfirmEnabled: Boolean,
-        isZeroBalanceTokenHidden: Boolean
+        isBiometricLoginEnabled: Boolean,
+        isZeroBalanceTokenHidden: Boolean,
+        isBiometricLoginAvailable: Boolean
     ): List<SettingsItem> = buildList {
         Timber.i(isZeroBalanceTokenHidden.toString())
         this += profileBlock(username)
-        this += securityBlock(isBiometricConfirmEnabled)
+        this += securityBlock(isBiometricLoginEnabled, isBiometricLoginAvailable)
         this += appearanceBlock(isZeroBalanceTokenHidden)
         this += appInfoBlock()
     }
@@ -41,7 +42,10 @@ class SettingsItemMapper(
         SettingsSpaceSeparatorItem
     )
 
-    private fun securityBlock(isBiometricAuthEnabled: Boolean): List<SettingsItem> = listOf(
+    private fun securityBlock(
+        isBiometricLoginEnabled: Boolean,
+        isBiometricLoginAvailable: Boolean
+    ): List<SettingsItem> = listOfNotNull(
         SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_security),
         ComplexSettingItem(
             settingNameRes = R.string.settings_item_title_pin,
@@ -56,9 +60,9 @@ class SettingsItemMapper(
         SwitchSettingItem(
             settingNameRes = R.string.settings_item_title_touch_id,
             iconRes = R.drawable.ic_settings_fingerprint,
-            isSwitched = isBiometricAuthEnabled,
+            isSwitched = isBiometricLoginEnabled,
             hasSeparator = false
-        ),
+        ).takeIf { isBiometricLoginAvailable },
         SettingsSpaceSeparatorItem,
     )
 

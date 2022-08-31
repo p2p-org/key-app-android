@@ -43,6 +43,7 @@ object SettingsModule : InjectionModule {
                 homeLocalRepository = get(),
                 settingsItemMapper = get(),
                 context = androidContext(),
+                authInteractor = get()
             )
         } bind SettingsContract.Presenter::class
 

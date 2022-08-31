@@ -10,16 +10,19 @@ import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.settings.adapter.SettingsAdapter
 import org.p2p.wallet.settings.ui.settings.adapter.SettingsItemClickListener
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
+import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.requireSerializable
 import org.p2p.wallet.utils.showInfoDialog
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class SettingsFragment :
@@ -43,6 +46,16 @@ class SettingsFragment :
     private val binding: FragmentSettingsBinding by viewBinding()
 
     private val adapter = SettingsAdapter(this)
+
+    private val biometricWrapper: BiometricPromptWrapper by unsafeLazy {
+        BiometricPromptWrapper(
+            fragment = this,
+            onSuccess = { presenter.onBiometricSignInEnableConfirmed(EncodeCipher(it)) },
+            onError = { message ->
+                message?.let { showUiKitSnackBar(message = it) }
+            }
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -99,9 +112,17 @@ class SettingsFragment :
 
     private fun handleSwitchSetting(setting: SettingsItem.SwitchSettingItem) {
         when (setting.settingNameRes) {
-            R.string.settings_item_title_touch_id -> presenter.changeBiometricConfirmFlag(setting.isSwitched)
-            R.string.settings_item_title_zero_balances -> presenter.changeZeroBalanceHiddenFlag(setting.isSwitched)
+            R.string.settings_item_title_touch_id -> {
+                presenter.onBiometricSignInSwitchChanged(setting.isSwitched)
+            }
+            R.string.settings_item_title_zero_balances -> {
+                presenter.changeZeroBalanceHiddenFlag(setting.isSwitched)
+            }
         }
+    }
+
+    override fun confirmBiometrics(pinCodeCipher: EncodeCipher) {
+        biometricWrapper.authenticate(pinCodeCipher.value)
     }
 
     override fun showSignOutConfirmDialog() {

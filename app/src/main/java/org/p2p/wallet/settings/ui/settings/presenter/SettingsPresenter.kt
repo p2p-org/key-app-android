@@ -2,10 +2,13 @@ package org.p2p.wallet.settings.ui.settings.presenter
 
 import android.content.Context
 import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.AppRestarter
+import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -31,6 +34,7 @@ class SettingsPresenter(
     private val settingsInteractor: SettingsInteractor,
     private val homeLocalRepository: HomeLocalRepository,
     private val settingsItemMapper: SettingsItemMapper,
+    private val authInteractor: AuthInteractor,
     private val context: Context
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
@@ -43,7 +47,8 @@ class SettingsPresenter(
         launch {
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
-                isBiometricConfirmEnabled = settingsInteractor.isBiometricsConfirmationEnabled(),
+                isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
+                isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()
             )
             view?.showSettings(settings)
@@ -55,9 +60,23 @@ class SettingsPresenter(
         loadSettings()
     }
 
-    override fun changeBiometricConfirmFlag(isBiometricConfirmNeeded: Boolean) {
-        settingsInteractor.setBiometricsConfirmationEnabled(isBiometricConfirmNeeded)
-        loadSettings()
+    override fun onBiometricSignInSwitchChanged(isSwitched: Boolean) {
+        if (isSwitched) {
+            view?.confirmBiometrics(authInteractor.getPinEncodeCipher())
+        } else {
+            authInteractor.disableBiometricSignIn()
+            loadSettings()
+        }
+    }
+
+    override fun onBiometricSignInEnableConfirmed(biometricsCipher: EncodeCipher) {
+        try {
+            authInteractor.enableFingerprintSignIn(biometricsCipher)
+            loadSettings()
+        } catch (fingerPrintChangeError: Throwable) {
+            Timber.e(fingerPrintChangeError, "Failed to change biometric login flag")
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+        }
     }
 
     override fun onSignOutClicked() {
