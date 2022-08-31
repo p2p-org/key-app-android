@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 
@@ -13,7 +12,7 @@ class DividerItemDecorator(
     @DrawableRes dividerDrawableRes: Int = R.drawable.list_divider
 ) : RecyclerView.ItemDecoration() {
 
-    private val divider: Drawable = AppCompatResources.getDrawable(context, dividerDrawableRes)!!
+    private val divider: Drawable = context.getDrawable(dividerDrawableRes)!!
 
     override fun onDrawOver(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(canvas, parent, state)
