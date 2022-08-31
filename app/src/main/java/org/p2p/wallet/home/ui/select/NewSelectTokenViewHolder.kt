@@ -19,7 +19,7 @@ import java.util.Locale
 
 class NewSelectTokenViewHolder(
     parent: ViewGroup,
-    binding: ItemNewTokenSimpleBinding = parent.inflateViewBinding(attachToRoot = false),
+    private val binding: ItemNewTokenSimpleBinding = parent.inflateViewBinding(attachToRoot = false),
     private val onItemClicked: (Token) -> Unit
 ) : BaseSelectionViewHolder<Token>(binding.root, onItemClicked) {
 
@@ -31,25 +31,21 @@ class NewSelectTokenViewHolder(
         .`as`(PictureDrawable::class.java)
         .listener(SvgSoftwareLayerSetter())
 
-    private val tokenImageView = binding.tokenImageView
-    private val wrappedImageView = binding.wrappedImageView
-    private val textViewSymbol = binding.textViewSymbol
-    private val textViewUsdValue = binding.textViewUsdValue
-    private val checkItem = binding.imageViewCheck
-
     override fun onBind(item: Token, selectedItem: Token?) {
         super.onBind(item, selectedItem)
-        checkItem.isVisible = item === selectedItem
+        with(binding) {
+            imageViewCheck.isVisible = item == selectedItem
 
-        if (!item.iconUrl.isNullOrEmpty()) {
-            loadImage(tokenImageView, item.iconUrl!!)
+            if (!item.iconUrl.isNullOrEmpty()) {
+                loadImage(tokenImageView, item.iconUrl!!)
+            }
+
+            textViewSymbol.text = item.tokenSymbol.uppercase(Locale.getDefault())
+            wrappedImageView.isVisible = item.isWrapped
+            itemView.setOnClickListener { onItemClicked(item) }
+
+            textViewUsdValue.withTextOrGone("$ ${item.usdRateOrZero.formatUsd()}")
         }
-
-        textViewSymbol.text = item.tokenSymbol.uppercase(Locale.getDefault())
-        wrappedImageView.isVisible = item.isWrapped
-        itemView.setOnClickListener { onItemClicked(item) }
-
-        textViewUsdValue.withTextOrGone("$ ${item.usdRateOrZero.formatUsd()}")
     }
 
     private fun loadImage(imageView: ImageView, url: String) {
