@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Web3AuthSignUpResponse(
     // Hex string
-    @SerializedName("ethPublic") val ethereumPublicKey: String,
+    @SerializedName("ethAddress") val ethereumPublicKey: String,
     // bip39 mnemonic
     @SerializedName("privateSOL") val mnemonicPhrase: String,
     // don't care about the type, we need raw json
