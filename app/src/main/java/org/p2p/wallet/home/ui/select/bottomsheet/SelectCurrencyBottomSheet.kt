@@ -9,6 +9,7 @@ import org.p2p.wallet.common.ui.bottomsheet.BaseRecyclerDoneBottomSheet
 import org.p2p.wallet.common.ui.recycler.adapter.DividerItemDecorator
 import org.p2p.wallet.home.ui.select.SelectCurrencyAdapter
 import org.p2p.wallet.moonpay.model.BuyCurrency
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
@@ -27,13 +28,13 @@ class SelectCurrencyBottomSheet : BaseRecyclerDoneBottomSheet() {
         ).show(fm, SelectCurrencyBottomSheet::javaClass.name)
     }
 
-    private val currency: List<BuyCurrency.Currency> = listOf(
+    private val currenciesToSelect: List<BuyCurrency.Currency> = listOf(
         createCurrency("GBP"),
         createCurrency("EUR"),
         createCurrency("USD")
     )
 
-    private val currencyAdapter: SelectCurrencyAdapter by lazy {
+    private val currencyAdapter: SelectCurrencyAdapter by unsafeLazy {
         SelectCurrencyAdapter()
     }
 
@@ -45,7 +46,7 @@ class SelectCurrencyBottomSheet : BaseRecyclerDoneBottomSheet() {
                 DividerItemDecorator(requireContext())
             )
             recyclerView.attachAdapter(currencyAdapter)
-            currencyAdapter.setItems(currency)
+            currencyAdapter.setItems(currenciesToSelect)
         }
     }
 

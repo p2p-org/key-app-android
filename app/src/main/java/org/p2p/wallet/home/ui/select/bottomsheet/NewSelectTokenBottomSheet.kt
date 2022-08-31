@@ -13,6 +13,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.NewSelectTokenAdapter
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_ALL_TOKENS = "EXTRA_ALL_TOKENS"
@@ -39,7 +40,7 @@ class NewSelectTokenBottomSheet : BaseRecyclerDoneBottomSheet() {
     private val buyAnalytics: BuyAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val tokenAdapter: NewSelectTokenAdapter by lazy {
+    private val tokenAdapter: NewSelectTokenAdapter by unsafeLazy {
         NewSelectTokenAdapter()
     }
 
