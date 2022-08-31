@@ -1,0 +1,5 @@
+<resources>
+    <!--Buy-->
+    <string name="buy_select_token_title">Coin to buy</string>
+    <string name="buy_select_currency_title">Currency</string>
+</resources>

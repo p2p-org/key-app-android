@@ -1,10 +1,15 @@
 package org.p2p.wallet.home.ui.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
@@ -25,10 +30,6 @@ import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
@@ -44,7 +45,8 @@ class HomePresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper,
-    private val resourcesProvider: ResourcesProvider
+    private val resourcesProvider: ResourcesProvider,
+    private val newBuyFeatureToggle: NewBuyFeatureToggle,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private data class ViewState(
@@ -93,7 +95,7 @@ class HomePresenter(
     override fun onBuyClicked() {
         launch {
             val tokensForBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
-            view?.showTokensForBuy(tokensForBuy)
+            view?.showTokensForBuy(tokensForBuy, newBuyFeatureToggle.value)
         }
     }
 
