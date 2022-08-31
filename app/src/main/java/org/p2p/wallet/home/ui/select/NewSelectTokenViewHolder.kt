@@ -40,7 +40,7 @@ class NewSelectTokenViewHolder(
                 loadImage(tokenImageView, item.iconUrl!!)
             }
 
-            textViewSymbol.text = item.tokenSymbol.uppercase(Locale.getDefault())
+            textViewTokenSymbol.text = item.tokenSymbol.uppercase(Locale.getDefault())
             wrappedImageView.isVisible = item.isWrapped
             itemView.setOnClickListener { onItemClicked(item) }
 

@@ -35,7 +35,7 @@
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/textViewSymbol"
+        android:id="@+id/textViewTokenSymbol"
         style="@style/UiKit.TextAppearance.Regular.Text2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -59,8 +59,8 @@
         android:textColor="@color/textIconSecondary"
         app:layout_constraintBottom_toBottomOf="@id/tokenImageView"
         app:layout_constraintEnd_toStartOf="@id/imageViewCheck"
-        app:layout_constraintStart_toStartOf="@id/textViewSymbol"
-        app:layout_constraintTop_toBottomOf="@id/textViewSymbol"
+        app:layout_constraintStart_toStartOf="@id/textViewTokenSymbol"
+        app:layout_constraintTop_toBottomOf="@id/textViewTokenSymbol"
         tools:text="$2,130.78" />
 
     <ImageView

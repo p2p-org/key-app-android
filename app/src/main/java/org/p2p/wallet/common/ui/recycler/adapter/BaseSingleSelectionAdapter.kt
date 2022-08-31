@@ -32,7 +32,9 @@ abstract class BaseSingleSelectionAdapter<T, VH : BaseSelectionViewHolder<T>>(
     override fun onBindViewHolder(
         holder: VH,
         position: Int
-    ) = onBindViewHolder(holder, getItem(position), selectedItem)
+    ) {
+        onBindViewHolder(holder, getItem(position), selectedItem)
+    }
 
     abstract fun onBindViewHolder(
         holder: VH,

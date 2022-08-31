@@ -19,7 +19,7 @@ class SelectCurrencyViewHolder(
         with(binding) {
             imageViewCheck.isVisible = item == selectedItem
 
-            textViewSymbol.text = item.code.uppercase(Locale.getDefault())
+            textViewCurrencySymbol.text = item.code.uppercase(Locale.getDefault())
             itemView.setOnClickListener { onItemClicked(item) }
         }
     }
