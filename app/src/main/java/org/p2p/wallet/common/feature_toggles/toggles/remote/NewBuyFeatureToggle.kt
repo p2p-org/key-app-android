@@ -7,5 +7,5 @@ class NewBuyFeatureToggle(
 ) : BooleanFeatureToggle(valuesProvider) {
     override val featureKey: String = "buy_feature"
     override val featureDescription: String = "Enable new buy feature"
-    override val defaultValue: Boolean = false
+    override val defaultValue: Boolean = true
 }

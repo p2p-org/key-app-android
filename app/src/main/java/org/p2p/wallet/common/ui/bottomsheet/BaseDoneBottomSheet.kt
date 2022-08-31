@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -23,16 +24,25 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
     private val resultKey: String by args(ARG_RESULT_KEY)
     private val requestKey: String by args(ARG_REQUEST_KEY)
 
-    lateinit var binding: DialogBaseDoneBinding
+    lateinit var baseDialogBinding: DialogBaseDoneBinding
 
+    @CallSuper
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogBaseDoneBinding.inflate(inflater, container, false)
-        return binding.root
+        baseDialogBinding = DialogBaseDoneBinding.inflate(inflater, container, false)
+        val innerView = onCreateInnerView(inflater, container, savedInstanceState)
+        baseDialogBinding.viewInner.addView(innerView)
+        return baseDialogBinding.root
     }
+
+    abstract fun onCreateInnerView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding) {
+        with(baseDialogBinding) {
             textViewTitle.text = title
             setDoneClickListener()
         }

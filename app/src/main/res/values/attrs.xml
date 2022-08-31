@@ -70,6 +70,7 @@
         <attr name="optionsValueText" format="string" />
         <attr name="optionsValueTextColor" format="string" />
         <attr name="isBoldValue" format="boolean" />
+        <attr name="isBoldLabel" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="InputTextView">
