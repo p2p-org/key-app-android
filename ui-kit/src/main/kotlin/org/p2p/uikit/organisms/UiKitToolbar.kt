@@ -10,7 +10,7 @@ import org.p2p.uikit.R
 class UiKitToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = R.attr.toolbarStyle
 ) : MaterialToolbar(context, attrs, defStyleAttr) {
 
     private var searchView: SearchView? = null

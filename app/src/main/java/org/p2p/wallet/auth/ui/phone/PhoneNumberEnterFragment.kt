@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.phone
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -57,10 +58,19 @@ class PhoneNumberEnterFragment :
     override fun initCreateWalletViews() {
         binding.toolbar.setNavigationOnClickListener(null)
         binding.toolbar.navigationIcon = null
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            requireActivity().finish()
+        }
     }
 
     override fun initRestoreWalletViews() {
+        binding.toolbar.setNavigationIcon(R.drawable.ic_toolbar_back)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            popBackStack()
+        }
     }
 
     override fun showDefaultCountryCode(defaultCountryCode: CountryCode?) {
