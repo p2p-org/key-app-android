@@ -98,7 +98,8 @@ object HomeModule : InjectionModule {
                 environmentManager = get(),
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper(),
-                resourcesProvider = get()
+                resourcesProvider = get(),
+                newBuyFeatureToggle = get()
             )
         }
 

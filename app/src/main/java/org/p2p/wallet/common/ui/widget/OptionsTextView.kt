@@ -3,13 +3,12 @@ package org.p2p.wallet.common.ui.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
-import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.core.widget.TextViewCompat
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetOptionsTextViewBinding
-import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -47,11 +46,19 @@ class OptionsTextView @JvmOverloads constructor(
         )
         binding.valueTextView.setTextColor(optionsValueTextColor)
 
+        val isBoldLabel = typedArray.getBoolean(R.styleable.OptionsTextView_isBoldLabel, false)
+        if (isBoldLabel) {
+            TextViewCompat.setTextAppearance(
+                binding.labelTextView,
+                R.style.UiKit_TextAppearance_SemiBold_Text3
+            )
+        }
+
         val isBoldValue = typedArray.getBoolean(R.styleable.OptionsTextView_isBoldValue, false)
         if (isBoldValue) {
             TextViewCompat.setTextAppearance(
                 binding.valueTextView,
-                R.style.WalletTheme_TextAppearance_SemiBold16
+                R.style.UiKit_TextAppearance_SemiBold_Text3
             )
         }
 
@@ -60,6 +67,10 @@ class OptionsTextView @JvmOverloads constructor(
 
     fun setLabelText(@StringRes label: Int) {
         binding.labelTextView.setText(label)
+    }
+
+    fun setLabelTextColor(@ColorInt color: Int) {
+        binding.labelTextView.setTextColor(color)
     }
 
     fun setOptionsText(@StringRes label: Int) {
@@ -71,7 +82,7 @@ class OptionsTextView @JvmOverloads constructor(
         binding.valueTextView.text = text
     }
 
-    fun setValueTextColor(@AttrRes colorRes: Int) {
-        binding.valueTextView.setTextColor(colorFromTheme(colorRes))
+    fun setValueTextColor(@ColorInt color: Int) {
+        binding.valueTextView.setTextColor(color)
     }
 }

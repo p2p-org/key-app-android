@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
@@ -25,6 +25,7 @@ import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
+import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
@@ -216,13 +217,23 @@ class HomeFragment :
         contentAdapter.setItems(tokens, isZerosHidden)
     }
 
-    override fun showTokensForBuy(tokens: List<Token>) {
-        SelectTokenBottomSheet.show(
-            fm = childFragmentManager,
-            tokens = tokens,
-            requestKey = KEY_REQUEST_TOKEN,
-            resultKey = KEY_RESULT_TOKEN
-        )
+    override fun showTokensForBuy(tokens: List<Token>, newBuyEnabled: Boolean) {
+        if (newBuyEnabled) {
+            NewSelectTokenBottomSheet.show(
+                fm = childFragmentManager,
+                title = getString(R.string.buy_select_token_title),
+                tokens = tokens,
+                requestKey = KEY_REQUEST_TOKEN,
+                resultKey = KEY_RESULT_TOKEN
+            )
+        } else {
+            SelectTokenBottomSheet.show(
+                fm = childFragmentManager,
+                tokens = tokens,
+                requestKey = KEY_REQUEST_TOKEN,
+                resultKey = KEY_RESULT_TOKEN
+            )
+        }
     }
 
     override fun showBalance(balance: BigDecimal) {
