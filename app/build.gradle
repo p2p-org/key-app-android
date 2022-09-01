@@ -289,9 +289,6 @@ dependencies {
     // GeeTest
     implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
 
-    //https://facebook.github.io/shimmer-android/
-    implementation 'com.facebook.shimmer:shimmer:0.5.0'
-
     // Lottie
     def lottieVersion = '3.5.0'
     implementation "com.airbnb.android:lottie:$lottieVersion"
