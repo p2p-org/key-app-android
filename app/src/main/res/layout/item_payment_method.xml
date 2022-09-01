@@ -13,7 +13,7 @@
         android:id="@+id/textViewFeeAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
         android:textColor="@color/text_night"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -46,19 +46,28 @@
         android:textColor="@color/text_mountain"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewFeeAmount"
-        tools:text="@string/buy_period_google_pay" />
+        tools:text="@string/buy_period_card" />
 
     <TextView
         android:id="@+id/textViewPayingMethod"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:drawablePadding="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewPaymentPeriod"
-        tools:drawableEnd="@drawable/ic_google"
-        tools:text="@string/buy_google_pay_method" />
+        tools:text="@string/buy_method_card" />
+
+    <ImageView
+        android:id="@+id/imageViewMethod"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@id/textViewPayingMethod"
+        app:layout_constraintStart_toEndOf="@id/textViewPayingMethod"
+        app:layout_constraintTop_toTopOf="@id/textViewPayingMethod"
+        app:tint="@color/icons_mountain"
+        tools:src="@drawable/ic_card" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

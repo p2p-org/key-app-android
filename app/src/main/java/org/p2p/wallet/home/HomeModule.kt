@@ -165,7 +165,8 @@ object HomeModule : InjectionModule {
                 minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),
                 maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
-                analyticsInteractor = get()
+                analyticsInteractor = get(),
+                userInteractor = get()
             )
         }
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <org.p2p.uikit.organisms.UiKitToolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarBuy"
         android:layout_width="0dp"
         android:layout_height="@dimen/toolbar_height"
@@ -88,7 +88,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewMethod"
                 tools:itemCount="3"
-                tools:listitem="@layout/item_paying_method" />
+                tools:listitem="@layout/item_payment_method" />
 
             <TextView
                 android:id="@+id/textViewTotalTitle"
@@ -110,7 +110,7 @@
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
                 app:layout_constraintBaseline_toBaselineOf="@id/textViewTotalTitle"
                 app:layout_constraintEnd_toStartOf="@id/imageViewChevron"
-                tools:text="1 405.4 USD" />
+                android:text="1 405.4 USD" />
 
             <ImageView
                 android:id="@+id/imageViewChevron"

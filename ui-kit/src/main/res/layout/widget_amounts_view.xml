@@ -21,7 +21,7 @@
         android:visibility="invisible"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/texViewToken"
+        app:layout_constraintEnd_toStartOf="@+id/textViewToken"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/texViewToken"
+        app:layout_constraintEnd_toStartOf="@+id/textViewToken"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +49,7 @@
         tools:text="100" />
 
     <TextView
-        android:id="@+id/texViewToken"
+        android:id="@+id/textViewToken"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -67,10 +67,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:src="@drawable/ic_arrow_drop_down"
-        app:layout_constraintBottom_toBottomOf="@id/texViewToken"
+        app:layout_constraintBottom_toBottomOf="@id/textViewToken"
         app:layout_constraintEnd_toStartOf="@id/viewSeparator"
-        app:layout_constraintStart_toEndOf="@id/texViewToken"
-        app:layout_constraintTop_toTopOf="@id/texViewToken" />
+        app:layout_constraintStart_toEndOf="@id/textViewToken"
+        app:layout_constraintTop_toTopOf="@id/textViewToken" />
 
     <View
         android:id="@+id/viewSeparator"
@@ -96,7 +96,7 @@
         android:visibility="invisible"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/texViewCurrency"
+        app:layout_constraintEnd_toStartOf="@+id/textViewCurrency"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/viewSeparator"
@@ -116,7 +116,7 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/texViewCurrency"
+        app:layout_constraintEnd_toStartOf="@+id/textViewCurrency"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/viewSeparator"
@@ -124,7 +124,7 @@
         tools:text="100" />
 
     <TextView
-        android:id="@+id/texViewCurrency"
+        android:id="@+id/textViewCurrency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -142,9 +142,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:src="@drawable/ic_arrow_drop_down"
-        app:layout_constraintBottom_toBottomOf="@id/texViewCurrency"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCurrency"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/texViewCurrency"
-        app:layout_constraintTop_toTopOf="@id/texViewCurrency" />
+        app:layout_constraintStart_toEndOf="@id/textViewCurrency"
+        app:layout_constraintTop_toTopOf="@id/textViewCurrency" />
 
 </merge>

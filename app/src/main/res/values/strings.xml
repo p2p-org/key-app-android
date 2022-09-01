@@ -439,14 +439,18 @@
     <string name="buy_total_title">Total</string>
 
     <string name="buy_fee">fee</string>
+    <string name="buy_fee_percent">%s%%</string>
 
     <string name="buy_period_bank_transfer">~17 hours</string>
-    <string name="buy_period_google_pay">instant</string>
     <string name="buy_period_card">1 day</string>
 
-    <string name="buy_bank_transfer_method">Bank transfer</string>
-    <string name="buy_google_pay_method">Google pay</string>
-    <string name="buy_card_method">Card</string>
+    <string name="buy_method_bank_transfer">Bank transfer</string>
+    <string name="buy_method_card">Card</string>
+
+    <string name="buy_tokens_bottom_sheet_title">Coin to buy</string>
+    <string name="buy_currencies_bottom_sheet_title">Currency</string>
+
+    <string name="buy_toolbar_title">Buy %s</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>

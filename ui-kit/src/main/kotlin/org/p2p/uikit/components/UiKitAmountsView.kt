@@ -24,13 +24,13 @@ class UiKitAmountsView @JvmOverloads constructor(
     var token: String? = null
         set(value) {
             field = value
-            binding.texViewToken.text = value
+            binding.textViewToken.text = value
         }
 
     var currency: String? = null
         set(value) {
             field = value
-            binding.texViewCurrency.text = value
+            binding.textViewCurrency.text = value
         }
 
     init {
@@ -56,10 +56,12 @@ class UiKitAmountsView @JvmOverloads constructor(
     }
 
     fun setOnSelectTokenClickListener(onSelectTokenClick: () -> Unit) {
+        binding.textViewToken.setOnClickListener { onSelectTokenClick() }
         binding.imageViewSelectToken.setOnClickListener { onSelectTokenClick() }
     }
 
     fun setOnSelectCurrencyClickListener(onSelectCurrencyClick: () -> Unit) {
+        binding.textViewCurrency.setOnClickListener { onSelectCurrencyClick() }
         binding.imageViewSelectCurrency.setOnClickListener { onSelectCurrencyClick() }
     }
 
