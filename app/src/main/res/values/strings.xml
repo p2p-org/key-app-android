@@ -601,4 +601,5 @@
     <string name="onboarding_country_name">Country name</string>
     <string name="onboarding_fill_your_number">Fill your phone number</string>
     <string name="onboarding_no_sms_for_number">We can\'t send SMS. Change your number, please</string>
+    <string name="onboarding_lets_finish_last_step">Oh, let’s finish the last step!</string>
 </resources>
