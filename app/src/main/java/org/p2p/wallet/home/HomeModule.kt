@@ -23,6 +23,8 @@ import org.p2p.wallet.moonpay.repository.MoonpayRemoteRepository
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.moonpay.ui.BuySolanaContract
 import org.p2p.wallet.moonpay.ui.BuySolanaPresenter
+import org.p2p.wallet.moonpay.ui.new.NewBuyContract
+import org.p2p.wallet.moonpay.ui.new.NewBuyPresenter
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
@@ -148,6 +150,16 @@ object HomeModule : InjectionModule {
         }
         factory<BuySolanaContract.Presenter> { (token: Token) ->
             BuySolanaPresenter(
+                tokenToBuy = token,
+                moonpayRepository = get(),
+                minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),
+                maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
+                buyAnalytics = get(),
+                analyticsInteractor = get()
+            )
+        }
+        factory<NewBuyContract.Presenter> { (token: Token) ->
+            NewBuyPresenter(
                 tokenToBuy = token,
                 moonpayRepository = get(),
                 minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),

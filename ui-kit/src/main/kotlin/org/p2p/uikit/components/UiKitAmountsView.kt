@@ -2,9 +2,13 @@ package org.p2p.uikit.components
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
+import android.widget.EditText
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetAmountsViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
@@ -31,21 +35,44 @@ class UiKitAmountsView @JvmOverloads constructor(
 
     init {
         background = ContextCompat.getDrawable(context, R.drawable.bg_amounts_view)
+
+        with(binding) {
+            val originalTextSize = editTextTokenAmount.textSize
+            editTextTokenAmount.doOnTextChanged { text, _, _, _ ->
+                handleAmountTextChanged(editTextTokenAmount, textViewTokenAutoSizeHelper, text, originalTextSize)
+            }
+            editTextCurrencyAmount.doOnTextChanged { text, _, _, _ ->
+                handleAmountTextChanged(editTextCurrencyAmount, textViewCurrencyAutoSizeHelper, text, originalTextSize)
+            }
+        }
     }
 
-    private fun setOnTokenAmountChangeListener(onTokenAmountChange: (String) -> Unit) {
+    fun setOnTokenAmountChangeListener(onTokenAmountChange: (String) -> Unit) {
         binding.editTextTokenAmount.doAfterTextChanged { onTokenAmountChange(it.toString()) }
     }
 
-    private fun setOnCurrencyAmountChangeListener(onCurrencyAmountChange: (String) -> Unit) {
+    fun setOnCurrencyAmountChangeListener(onCurrencyAmountChange: (String) -> Unit) {
         binding.editTextCurrencyAmount.doAfterTextChanged { onCurrencyAmountChange(it.toString()) }
     }
 
-    private fun setOnSelectTokenClickListener(onSelectTokenClick: () -> Unit) {
+    fun setOnSelectTokenClickListener(onSelectTokenClick: () -> Unit) {
         binding.imageViewSelectToken.setOnClickListener { onSelectTokenClick() }
     }
 
-    private fun setOnSelectCurrencyClickListener(onSelectCurrencyClick: () -> Unit) {
+    fun setOnSelectCurrencyClickListener(onSelectCurrencyClick: () -> Unit) {
         binding.imageViewSelectCurrency.setOnClickListener { onSelectCurrencyClick() }
+    }
+
+    private fun handleAmountTextChanged(
+        editText: EditText,
+        textViewHelper: TextView,
+        text: CharSequence?,
+        originalTextSize: Float
+    ) {
+        textViewHelper.setText(text, TextView.BufferType.EDITABLE)
+        editText.post {
+            val textSize = if (text.isNullOrBlank()) originalTextSize else textViewHelper.textSize
+            editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+        }
     }
 }
