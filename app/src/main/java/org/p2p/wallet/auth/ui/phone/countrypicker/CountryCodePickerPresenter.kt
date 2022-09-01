@@ -16,6 +16,7 @@ class CountryCodePickerPresenter(
     BasePresenter<CountryCodePickerContract.View>(),
     CountryCodePickerContract.Presenter {
 
+    private var selectedCountryCode: CountryCode? = null
     private var searchText: String = emptyString()
     private val searchTextMap = hashMapOf<String, List<CountryCodeItem>>()
     private var allCountryCodeItems: List<CountryCodeItem> = listOf()
@@ -58,7 +59,9 @@ class CountryCodePickerPresenter(
     override fun load(countryCode: CountryCode?) {
         launch {
             allCountryCodeItems = countryCodeInteractor.getCountries()
-                .map { CountryCodeItem(it) }
+                .map { CountryCodeItem(it, isSelected = it.nameCode == countryCode?.nameCode) }
+                .sortedBy { !it.isSelected }
+            selectedCountryCode = countryCode
             searchTextMap[DEFAULT_KEY] = allCountryCodeItems
             view?.showCountries(allCountryCodeItems)
         }

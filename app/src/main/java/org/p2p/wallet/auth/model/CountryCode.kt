@@ -15,4 +15,4 @@ data class CountryCode(
     fun getMaskWithoutCountryCode(): String = mask.replace(phoneCode, "")
 }
 
-data class CountryCodeItem(val country: CountryCode)
+data class CountryCodeItem(val country: CountryCode, var isSelected: Boolean)
