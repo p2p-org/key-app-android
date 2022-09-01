@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_margin="20dp"
+    android:background="@drawable/bg_night_rounded_big"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <TextView
+        android:id="@+id/textViewAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+        android:textColor="@color/text_cloud"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Restore with Google" />
+
+    <View
+        android:id="@+id/viewGradient"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginHorizontal="4dp"
+        android:background="@drawable/bg_lime_gradient_rounded"
+        app:layout_constraintBottom_toBottomOf="@id/shimmerView"
+        app:layout_constraintEnd_toEndOf="@id/shimmerView"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/shimmerView"
+        tools:visibility="visible" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="1"
+        app:shimmer_base_color="@color/snow"
+        app:shimmer_highlight_alpha="0"
+        app:shimmer_highlight_color="@color/snow">
+
+        <FrameLayout
+            android:id="@+id/containerOval"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_oval">
+
+            <ImageView
+                android:id="@+id/imageViewAction"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@color/lime"
+                android:padding="12dp"
+                android:src="@drawable/ic_key_action"
+                app:cornerRadius="32dp"
+                app:tint="@color/night"
+                tools:ignore="ContentDescription" />
+        </FrameLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+</merge>

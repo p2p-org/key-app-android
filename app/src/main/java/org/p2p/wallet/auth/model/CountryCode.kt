@@ -12,7 +12,9 @@ data class CountryCode(
     var mask: String = ""
 ) : Parcelable {
 
-    fun getMaskWithoutCountryCode(): String = mask.replace(phoneCode, "")
+    fun getZeroFilledMask(): String {
+        return mask.map { symbol -> if (symbol.isDigit()) '0' else ' ' }.joinToString("")
+    }
 }
 
-data class CountryCodeItem(val country: CountryCode, var isSelected: Boolean)
+data class CountryCodeItem(val country: CountryCode)

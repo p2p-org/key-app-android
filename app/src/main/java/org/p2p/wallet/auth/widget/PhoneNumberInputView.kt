@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.widget.TextView
+import org.p2p.uikit.utils.emptyString
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import org.p2p.uikit.utils.focusAndShowKeyboard
@@ -98,16 +99,20 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         onPhoneChanged: (String) -> Unit,
         onCountryClickListener: () -> Unit
     ) = with(binding) {
-
         countryCode?.phoneCode.let { editTextCountryCode.setText(it) }
 
         val flagEmoji = countryCode?.flagEmoji ?: EMOJI_NO_FLAG
         textViewFlagEmoji.text = flagEmoji
 
-        val restoredNumber = editTextPhoneNumber.text.toString().orEmpty()
-        val hint = restoredNumber.ifEmpty { countryCode?.getMaskWithoutCountryCode().orEmpty() }
+        val hint = countryCode?.getZeroFilledMask().orEmpty()
+        val restoredNumber = editTextPhoneNumber.text.toString()
+
         editTextPhoneNumber.setHintText(hint)
         numberHintTextView.setHintText(hint)
+
+        if (restoredNumber.isNotEmpty()) {
+            numberHintTextView.updateNumber(restoredNumber)
+        }
 
         countryPickerView.setOnClickListener {
             onCountryClickListener.invoke()
@@ -160,7 +165,8 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
         with(editTextPhoneNumber) {
             editTextPhoneNumber.setSelection(editTextPhoneNumber.length())
-            setHintText("")
+            setHintText(emptyString())
+            numberHintTextView.text = emptyString()
         }
 
         with(editTextCountryCode) {
@@ -171,7 +177,6 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     }
 
     fun updateViewState(countryCode: CountryCode?) = with(binding) {
-
         if (countryCode == null) {
             showError(getString(R.string.error_country_not_found))
             textViewFlagEmoji.text = EMOJI_NO_FLAG
@@ -183,11 +188,13 @@ open class PhoneNumberInputView @JvmOverloads constructor(
             removeTextChangedListener(countryCodeWatcher)
             setText(countryCode.phoneCode)
         }
-        numberHintTextView.setHintText(countryCode.getMaskWithoutCountryCode())
+        val hint = countryCode.getZeroFilledMask()
+        editTextPhoneNumber.setHintText(hint)
+        numberHintTextView.setHintText(hint)
 
         with(editTextPhoneNumber) {
             addTextChangedListener(phoneTextWatcher)
-            setHintText(countryCode.getMaskWithoutCountryCode())
+            setHintText(countryCode.getZeroFilledMask())
             setSelection(length())
             focusAndShowKeyboard()
         }

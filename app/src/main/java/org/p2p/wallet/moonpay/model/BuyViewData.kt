@@ -1,9 +1,12 @@
 package org.p2p.wallet.moonpay.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.utils.asUsd
 import org.p2p.wallet.utils.emptyString
 import java.math.BigDecimal
 
+@Parcelize
 data class BuyViewData(
     val tokenSymbol: String,
     val currencySymbol: String,
@@ -16,7 +19,7 @@ data class BuyViewData(
     val total: BigDecimal,
     val receiveAmountText: String,
     val purchaseCostText: String?,
-) {
+) : Parcelable {
 
     val priceText: String
         get() = price.asUsd()

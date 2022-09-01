@@ -1,13 +1,13 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
-import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
 import org.p2p.wallet.databinding.ItemCountryCodeBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-class CountryCodePickerAdapter(private val onItemClickListener: (CountryCodeItem) -> Unit) :
+class CountryCodePickerAdapter(private val onItemClickListener: (CountryCode) -> Unit) :
     RecyclerView.Adapter<CountryCodePickerAdapter.ViewHolder>() {
 
     private val data = mutableListOf<CountryCodeItem>()
@@ -29,7 +29,7 @@ class CountryCodePickerAdapter(private val onItemClickListener: (CountryCodeItem
 
     class ViewHolder(
         private val binding: ItemCountryCodeBinding,
-        private val onItemClickListener: (CountryCodeItem) -> Unit
+        private val onItemClickListener: (CountryCode) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(item: CountryCodeItem) = with(binding) {
@@ -38,9 +38,8 @@ class CountryCodePickerAdapter(private val onItemClickListener: (CountryCodeItem
             textViewCountryName.text = country.name
             textViewCountryCode.text = "+${country.phoneCode}"
             itemView.setOnClickListener {
-                onItemClickListener.invoke(item)
+                onItemClickListener.invoke(item.country)
             }
-            imageViewCheck.isVisible = item.isSelected
         }
     }
 }

@@ -12,12 +12,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
 private const val MAX_SUBMIT_OTP_TRIES_COUNT = 5
+private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
@@ -65,8 +67,8 @@ class NewSmsInputPresenter(
                 view?.navigateToPinCreate()
             } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
                 Timber.i(incorrectSms)
-                if (++smsIncorrectTries > MAX_SUBMIT_OTP_TRIES_COUNT) {
-                    view?.navigateToSmsInputBlocked()
+                if (++smsIncorrectTries >= MAX_SUBMIT_OTP_TRIES_COUNT) {
+                    view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS)
                 } else {
                     view?.renderIncorrectSms()
                 }
@@ -91,7 +93,10 @@ class NewSmsInputPresenter(
     override fun resendSms() {
         launch {
             try {
-                smsResendCount++
+                if (++smsResendCount >= MAX_RESENT_CLICK_TRIES_COUNT && smsIncorrectTries == 0) {
+                    view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED)
+                    return@launch
+                }
                 timerFlow?.cancel()
                 timerFlow = createSmsInputTimer(timerSeconds = 5 * smsResendCount)
                     .toResendSmsInputTimer()

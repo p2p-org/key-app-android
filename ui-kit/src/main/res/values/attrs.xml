@@ -45,6 +45,11 @@
         <attr name="iconTint" />
     </declare-styleable>
 
+    <declare-styleable name="UiKitSliderButton">
+        <attr name="sliderIcon" format="reference" />
+        <attr name="sliderText" format="string" />
+    </declare-styleable>
+
     <declare-styleable name="UiKitSectionHeader">
         <attr name="withIcon" format="boolean" />
         <attr name="sectionText" format="string" />

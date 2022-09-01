@@ -3,7 +3,6 @@ package org.p2p.wallet.auth.ui.pin.newcreate
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
-import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -14,7 +13,6 @@ import timber.log.Timber
 private const val VIBRATE_DURATION = 500L
 
 class NewCreatePinPresenter(
-    private val authLogoutInteractor: AuthLogoutInteractor,
     private val adminAnalytics: AdminAnalytics,
     private val authInteractor: AuthInteractor,
     private val createWalletInteractor: CreateWalletInteractor
@@ -23,6 +21,7 @@ class NewCreatePinPresenter(
 
     private var createdPin = emptyString()
     private var pinMode = PinMode.CREATE
+    private var navigateBackOnBackPressed = false
 
     override fun setPinMode(pinMode: PinMode) {
         this.pinMode = pinMode
@@ -52,7 +51,14 @@ class NewCreatePinPresenter(
     override fun onBackPressed() {
         createdPin = emptyString()
         when (pinMode) {
-            PinMode.CREATE -> view?.navigateBack()
+            PinMode.CREATE -> {
+                if (!navigateBackOnBackPressed) {
+                    view?.showUiKitSnackBar(messageResId = R.string.onboarding_lets_finish_last_step)
+                    navigateBackOnBackPressed = true
+                } else {
+                    view?.navigateBack()
+                }
+            }
             PinMode.CONFIRM -> view?.showCreation()
         }
     }
@@ -62,16 +68,15 @@ class NewCreatePinPresenter(
             checkBiometricAvailability()
             // Clear pin in case of returning back
             createdPin = emptyString()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e, "Failed to finish pin creation")
-            view?.showErrorMessage(R.string.error_general_message)
+            view?.navigateToMain()
         }
     }
 
     private fun checkBiometricAvailability() {
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
             createWalletInteractor.finishAuthFlow()
-            view?.navigateToMain()
         } else {
             view?.navigateToBiometrics(createdPin)
         }
