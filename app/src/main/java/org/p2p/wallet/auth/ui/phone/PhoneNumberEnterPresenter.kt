@@ -10,6 +10,8 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 
+private const val MAX_PHONE_NUMBER_TRIES = 5
+
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
     private val createWalletInteractor: CreateWalletInteractor,
@@ -18,6 +20,7 @@ class PhoneNumberEnterPresenter(
 
     private var selectedCountryCode: CountryCode? = null
     private var lastPhoneNumber: String = emptyString()
+    private var submitUserPhoneTriesCount = 0
 
     override fun attach(view: PhoneNumberEnterContract.View) {
         super.attach(view)
@@ -77,6 +80,7 @@ class PhoneNumberEnterPresenter(
     override fun submitUserPhoneNumber(phoneNumber: String) {
         launch {
             try {
+                throw GatewayServiceError.SmsDeliverFailed(32053, "Test")
                 selectedCountryCode?.let {
                     val userPhoneNumber = it.phoneCode + phoneNumber
                     if (lastPhoneNumber != userPhoneNumber) {
@@ -86,6 +90,10 @@ class PhoneNumberEnterPresenter(
                     view?.navigateToSmsInput()
                 }
             } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
+                if (++submitUserPhoneTriesCount >= MAX_PHONE_NUMBER_TRIES) {
+                    view?.navigateToAccountBlocked()
+                    return@launch
+                }
                 Timber.i(smsDeliverFailed)
                 view?.showSmsDeliveryFailedForNumber()
             } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {

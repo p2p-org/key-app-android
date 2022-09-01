@@ -24,6 +24,8 @@ class OnboardingGeneralErrorTimerPresenter(
 
     override fun attach(view: OnboardingGeneralErrorTimerContract.View) {
         super.attach(view)
+        // Call this method, to fill emptiness in subtitle, before timer will start count down
+        onTimerValueChanged(START_TIMER_VALUE_MIN.minutes.inWholeSeconds)
 
         createTimerFlow()
             .onEach(::onTimerValueChanged)
@@ -32,24 +34,34 @@ class OnboardingGeneralErrorTimerPresenter(
     }
 
     private fun onTimerValueChanged(timerValue: Long) {
-        val subTitleRes = when (error) {
+        val titleRes: Int
+        val subTitleRes: Int
+        when (error) {
             GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER -> {
-                R.string.onboarding_general_error_timer_enter_phone_subtitle
+                titleRes = R.string.onboarding_general_error_timer_title
+                subTitleRes = R.string.onboarding_general_error_timer_enter_phone_subtitle
             }
-            GeneralErrorTimerScreenError.BLOCK_SMS_INPUT -> {
-                R.string.onboarding_general_error_timer_sms_input_subtitle
+            GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS -> {
+                titleRes = R.string.onboarding_general_error_timer_title
+                subTitleRes = R.string.onboarding_general_error_too_many_wrong_attempts
+            }
+
+            GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED -> {
+                titleRes = R.string.onboarding_general_error_let_breath_title
+                subTitleRes = R.string.onboarding_general_error_retry_button_tries_exceeded
             }
         }
         val formattedTimerValue = createFormattedTimerValue(secondsLeft = timerValue)
 
-        view?.updateSubtitle(
+        view?.updateText(
+            titleRes = titleRes,
             subTitleRes = subTitleRes,
             formattedTimeLeft = formattedTimerValue
         )
     }
 
     private fun createTimerFlow(): Flow<Long> {
-        return (START_TIMER_VALUE_MIN.minutes.inWholeSeconds downTo 0L)
+        return (START_TIMER_VALUE_MIN.minutes.inWholeSeconds - 1 downTo 0L)
             .asSequence()
             .asFlow()
             .onEach { delay(1.seconds.inWholeMilliseconds) }
