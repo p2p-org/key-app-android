@@ -10,6 +10,7 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewOutlineProvider
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSliderButtonBinding
@@ -93,47 +94,55 @@ class UiKitSliderButton @JvmOverloads constructor(
         with(binding) {
             shimmerView.setOnTouchListener { view, event ->
                 return@setOnTouchListener when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        setGradientVisible(isVisible = true)
-                        true
-                    }
-                    MotionEvent.ACTION_MOVE -> {
-                        val lastPosition = measuredWidth - view.width - initialPosition
-                        val imagePosition = (event.rawX - view.width).coerceIn(initialPosition, lastPosition)
-                        view.x = imagePosition
-
-                        val gradientPosition = event.rawX.coerceIn(initialPosition, measuredWidth - initialPosition)
-                        updateGradient(initialPosition, gradientPosition.toInt())
-                        setGradientVisible(isVisible = true)
-                        true
-                    }
-                    MotionEvent.ACTION_UP -> {
-                        val currentPosition = view.x
-                        val lastPosition = measuredWidth - view.width - initialPosition
-
-                        // if user didn't slide fully animating back
-                        if (currentPosition < lastPosition) {
-                            view.animate()
-                                .x(initialPosition)
-                                .setDuration(ANIMATION_SLIDE_BACK_DURATION)
-                                .start()
-
-                            updateGradient(initialPosition, initialPosition.toInt())
-                            setGradientVisible(isVisible = false)
-                        } else {
-                            // user slided till the end
-                            onSlideCompleteListener?.invoke()
-                        }
-                        true
-                    }
+                    MotionEvent.ACTION_DOWN -> onActionDown()
+                    MotionEvent.ACTION_MOVE -> onActionMove(view, initialPosition, event)
+                    MotionEvent.ACTION_UP -> onActionUp(view, initialPosition)
                     // we assume we are handling all events,
                     // otherwise above events are not working correctly
-                    else -> {
-                        true
-                    }
+                    else -> true
                 }
             }
         }
+    }
+
+    private fun onActionUp(view: View, initialPosition: Float): Boolean {
+        val currentPosition = view.x
+        val lastPosition = measuredWidth - view.width - initialPosition
+
+        // if user didn't slide fully animating back
+        if (currentPosition < lastPosition) {
+            view.animate()
+                .x(initialPosition)
+                .setDuration(ANIMATION_SLIDE_BACK_DURATION)
+                .start()
+
+            updateGradient(initialPosition, initialPosition.toInt())
+            setGradientVisible(isVisible = false)
+        } else {
+            // user slided till the end
+            onSlideCompleteListener?.invoke()
+        }
+        return true
+    }
+
+    private fun onActionMove(
+        view: View,
+        initialPosition: Float,
+        event: MotionEvent
+    ): Boolean {
+        val lastPosition = measuredWidth - view.width - initialPosition
+        val imagePosition = (event.rawX - view.width).coerceIn(initialPosition, lastPosition)
+        view.x = imagePosition
+
+        val gradientPosition = event.rawX.coerceIn(initialPosition, measuredWidth - initialPosition)
+        updateGradient(initialPosition, gradientPosition.toInt())
+        setGradientVisible(isVisible = true)
+        return true
+    }
+
+    private fun onActionDown(): Boolean {
+        setGradientVisible(isVisible = true)
+        return true
     }
 
     private fun updateGradient(startPosition: Float, newPositionX: Int) {
