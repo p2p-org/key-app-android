@@ -12,7 +12,7 @@
     <string name="feeRelayerBaseUrl">https://fee-relayer.solana.p2p.org/</string>
     <string name="feeRelayerTestBaseUrl">https://test-solana-fee-relayer.wallet.p2p.org/</string>
 
-    <string name="torusBaseUrl">http://beardict.net</string>
+    <string name="torusBaseUrl">http://localhost</string>
     <string name="torusTestUrl">http://beardict.net</string>
 
     <string name="torusDebugVerifier">testTkeyD1</string>

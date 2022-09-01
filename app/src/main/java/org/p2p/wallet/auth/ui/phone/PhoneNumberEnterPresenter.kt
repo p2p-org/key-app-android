@@ -80,7 +80,6 @@ class PhoneNumberEnterPresenter(
     override fun submitUserPhoneNumber(phoneNumber: String) {
         launch {
             try {
-                throw GatewayServiceError.SmsDeliverFailed(32053, "Test")
                 selectedCountryCode?.let {
                     val userPhoneNumber = it.phoneCode + phoneNumber
                     if (lastPhoneNumber != userPhoneNumber) {
@@ -90,12 +89,12 @@ class PhoneNumberEnterPresenter(
                     view?.navigateToSmsInput()
                 }
             } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
+                Timber.i(smsDeliverFailed)
                 if (++submitUserPhoneTriesCount >= MAX_PHONE_NUMBER_TRIES) {
                     view?.navigateToAccountBlocked()
-                    return@launch
+                } else {
+                    view?.showSmsDeliveryFailedForNumber()
                 }
-                Timber.i(smsDeliverFailed)
-                view?.showSmsDeliveryFailedForNumber()
             } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
                 Timber.i(tooManyPhoneEnters)
                 view?.navigateToAccountBlocked()

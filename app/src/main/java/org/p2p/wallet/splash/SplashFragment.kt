@@ -19,6 +19,7 @@ class SplashFragment :
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_lime
+
     override fun navigateToOnboarding() {
         replaceFragment(OnboardingRootFragment.create())
     }
