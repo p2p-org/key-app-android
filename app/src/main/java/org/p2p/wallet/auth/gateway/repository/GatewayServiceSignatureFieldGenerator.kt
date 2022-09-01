@@ -16,8 +16,8 @@ class GatewayServiceSignatureFieldGenerator {
         val signatureStructBytes = Borsh.serialize(structToSerialize)
         val userPublicKeyBytes = userPublicKey.decodeToBytes()
         val solanaPrivateKeyBytes = userPrivateKey.decodeToBytes()
-        TweetNaclFast.Signature(userPublicKeyBytes.copyOf(), solanaPrivateKeyBytes.copyOf())
-            .sign(signatureStructBytes)
+        TweetNaclFast.Signature(byteArrayOf(), solanaPrivateKeyBytes.copyOf())
+            .detached(signatureStructBytes)
             .toBase58Instance()
     } catch (error: Throwable) {
         Timber.i(error)
