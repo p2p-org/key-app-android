@@ -2,4 +2,5 @@
     <!--Buy-->
     <string name="buy_select_token_title">Coin to buy</string>
     <string name="buy_select_currency_title">Currency</string>
+    <string name="buy_details_title">Transaction details</string>
 </resources>
