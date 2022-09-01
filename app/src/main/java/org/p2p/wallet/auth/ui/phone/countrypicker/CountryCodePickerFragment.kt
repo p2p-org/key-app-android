@@ -58,10 +58,6 @@ class CountryCodePickerFragment :
 
             recyclerViewCountryCodes.adapter = adapter
 
-            buttonActionContinue.setOnClickListener {
-                presenter.onCountryCodeSelected()
-            }
-
             initSearch()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -95,12 +91,8 @@ class CountryCodePickerFragment :
         binding.textViewError.isVisible = items.isEmpty()
     }
 
-    override fun setCountryCode(code: CountryCode) {
+    private fun onCountryCodeClicked(code: CountryCode) {
         setFragmentResult(requestKey, bundleOf(resultKey to code))
         popBackStack()
-    }
-
-    private fun onCountryCodeClicked(countryCode: CountryCodeItem) {
-        presenter.onItemSelected(countryCode)
     }
 }

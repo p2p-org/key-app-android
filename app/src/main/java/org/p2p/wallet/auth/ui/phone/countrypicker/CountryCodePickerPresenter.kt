@@ -1,11 +1,11 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
 import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
+import kotlinx.coroutines.launch
 
 private const val DEFAULT_KEY = ""
 private const val PLUS_SIGN = '+'
@@ -16,7 +16,6 @@ class CountryCodePickerPresenter(
     BasePresenter<CountryCodePickerContract.View>(),
     CountryCodePickerContract.Presenter {
 
-    private var selectedCountryCode: CountryCode? = null
     private var searchText: String = emptyString()
     private val searchTextMap = hashMapOf<String, List<CountryCodeItem>>()
     private var allCountryCodeItems: List<CountryCodeItem> = listOf()
@@ -59,30 +58,9 @@ class CountryCodePickerPresenter(
     override fun load(countryCode: CountryCode?) {
         launch {
             allCountryCodeItems = countryCodeInteractor.getCountries()
-                .map { CountryCodeItem(it, isSelected = it.nameCode == countryCode?.nameCode) }
-                .sortedBy { !it.isSelected }
-            selectedCountryCode = countryCode
+                .map { CountryCodeItem(it) }
             searchTextMap[DEFAULT_KEY] = allCountryCodeItems
             view?.showCountries(allCountryCodeItems)
         }
-    }
-
-    // TODO refactor this method
-    override fun onItemSelected(item: CountryCodeItem) {
-        val countryCodesBySearchText = searchTextMap[searchText].orEmpty()
-        countryCodesBySearchText.forEach {
-            val country = it.country
-            if (country.nameCode.equals(item.country.nameCode, ignoreCase = true)) {
-                it.isSelected = true
-                selectedCountryCode = country
-            } else {
-                it.isSelected = false
-            }
-        }
-        view?.showCountries(countryCodesBySearchText)
-    }
-
-    override fun onCountryCodeSelected() {
-        selectedCountryCode?.let { view?.setCountryCode(it) }
     }
 }
