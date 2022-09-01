@@ -54,20 +54,19 @@ class UiKitSliderButton @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
-    fun setupView(
-        @StringRes textRes: Int,
-        @DrawableRes iconRes: Int,
+    fun setupSlider(
+        @StringRes actionTextRes: Int,
+        @DrawableRes actionIconRes: Int,
         isLight: Boolean
     ) {
         with(binding) {
-            imageViewAction
-            textViewAction.setText(textRes)
-            imageViewAction.setImageResource(iconRes)
-            setLight(isLight)
+            textViewAction.setText(actionTextRes)
+            imageViewAction.setImageResource(actionIconRes)
+            setLightStyle(isLight)
         }
     }
 
-    fun setLight(isLight: Boolean) {
+    fun setLightStyle(isLight: Boolean) {
         val nightColor = getColor(R.color.night)
         val limeColor = getColor(R.color.lime)
         val whiteColor = getColor(R.color.snow)
@@ -92,7 +91,7 @@ class UiKitSliderButton @JvmOverloads constructor(
         val initialPosition = dip(MARGIN_HORIZONTAL_DP).toFloat()
 
         with(binding) {
-            containerOval.setOnTouchListener { view, event ->
+            shimmerView.setOnTouchListener { view, event ->
                 return@setOnTouchListener when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
                         setGradientVisible(isVisible = true)
@@ -129,8 +128,9 @@ class UiKitSliderButton @JvmOverloads constructor(
                     }
                     // we assume we are handling all events,
                     // otherwise above events are not working correctly
-                    else ->
+                    else -> {
                         true
+                    }
                 }
             }
         }

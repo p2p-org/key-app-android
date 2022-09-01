@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-        android:textColor="@color/cloud"
+        android:textColor="@color/text_cloud"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

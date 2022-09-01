@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/contentView"
     android:layout_width="match_parent"
-    android:background="@color/night"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/lime">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerOnboardingSlider"
@@ -34,7 +34,6 @@
     <LinearLayout
         android:id="@+id/containerBottomOnboarding"
         android:layout_width="match_parent"
-        android:visibility="gone"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_night_top_rounded"
         android:orientation="vertical"
@@ -83,10 +82,5 @@
 
     </LinearLayout>
 
-    <org.p2p.uikit.components.UiKitSliderButton
-        android:id="@+id/sliderButton"
-        android:layout_width="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_height="@dimen/ui_kit_button_large_height"
-        android:layout_marginHorizontal="20dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
