@@ -10,6 +10,7 @@ import org.p2p.wallet.databinding.FragmentNewBuyBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
+import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -58,6 +59,33 @@ class NewBuyFragment : BaseMvpFragment<NewBuyContract.View, NewBuyContract.Prese
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.initViews()
+
+        setFragmentResultListener(KEY_REQUEST_TOKEN)
+        setFragmentResultListener(KEY_REQUEST_CURRENCY)
+    }
+
+    private fun setFragmentResultListener(keyResult: String) {
+        childFragmentManager.setFragmentResultListener(
+            keyResult,
+            viewLifecycleOwner,
+            ::onFragmentResult
+        )
+    }
+
+    private fun onFragmentResult(requestKey: String, result: Bundle) {
+        when (requestKey) {
+            KEY_REQUEST_TOKEN -> {
+                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
+                    binding.amountsView.token = it.tokenSymbol
+                }
+            }
+
+            KEY_REQUEST_CURRENCY -> {
+                result.getParcelable<BuyCurrency.Currency>(KEY_RESULT_CURRENCY)?.let {
+                    binding.amountsView.currency = it.code
+                }
+            }
+        }
     }
 
     private fun FragmentNewBuyBinding.initViews() {
