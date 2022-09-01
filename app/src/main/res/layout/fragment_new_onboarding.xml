@@ -5,7 +5,7 @@
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lime">
+    android:background="@color/bg_lime">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerOnboardingSlider"
