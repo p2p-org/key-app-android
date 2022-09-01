@@ -88,7 +88,7 @@ class CommonRestoreFragment :
     override fun onSuccessfulSignUp() {
         setLoadingState(isScreenLoading = false)
         // TODO check logic here
-        replaceFragment(PhoneNumberEnterFragment.create())
+        navigateToEnterPhone()
     }
 
     override fun onNoTokenFoundError(userId: String) {
@@ -131,5 +131,9 @@ class CommonRestoreFragment :
     override fun onCommonError() {
         setLoadingState(isScreenLoading = false)
         showErrorSnackBar(R.string.error_general_message)
+    }
+
+    private fun navigateToEnterPhone() {
+        replaceFragment(PhoneNumberEnterFragment.create())
     }
 }
