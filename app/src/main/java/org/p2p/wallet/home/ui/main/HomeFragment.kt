@@ -31,7 +31,7 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
-import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
@@ -248,7 +248,7 @@ class HomeFragment :
     }
 
     override fun navigateToProfile() {
-        replaceFragment(SettingsFragment.create())
+        replaceFragment(NewSettingsFragment.create())
     }
 
     override fun navigateToReserveUsername() {

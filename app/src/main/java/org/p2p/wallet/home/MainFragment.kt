@@ -22,7 +22,7 @@ import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
@@ -65,7 +65,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 when (fragment) {
                     is HomeFragment -> fragments.put(R.id.homeItem, fragment)
                     is HistoryFragment -> fragments.put(R.id.historyItem, fragment)
-                    is SettingsFragment -> fragments.put(R.id.settingsItem, fragment)
+                    is NewSettingsFragment -> fragments.put(R.id.settingsItem, fragment)
                 }
             }
             binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
@@ -91,7 +91,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 }
                 ScreenTab.SETTINGS_SCREEN -> {
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.MAIN)
-                    SettingsFragment.create()
+                    NewSettingsFragment.create()
                 }
                 else -> error("No tab found for $itemId")
             }

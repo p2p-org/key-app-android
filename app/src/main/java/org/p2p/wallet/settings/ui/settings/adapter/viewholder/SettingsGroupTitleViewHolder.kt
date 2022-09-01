@@ -5,7 +5,7 @@ import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsGroupT
 
 class SettingsGroupTitleViewHolder(
     binding: ItemSettingsGroupTitleBinding,
-) : SettingsViewHolder<ItemSettingsGroupTitleBinding, SettingsGroupTitleItem>(binding) {
+) : NewSettingsViewHolder<ItemSettingsGroupTitleBinding, SettingsGroupTitleItem>(binding) {
     override fun ItemSettingsGroupTitleBinding.bind(item: SettingsGroupTitleItem) {
         settingsGroupTitle.setText(item.groupTitleRes)
     }

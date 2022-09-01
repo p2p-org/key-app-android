@@ -16,14 +16,14 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.settings.ui.settings.SettingsContract
+import org.p2p.wallet.settings.ui.settings.NewSettingsContract
 import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private const val NETWORK_CHANGE_DELAY = 250L
 
-class SettingsPresenter(
+class NewSettingsPresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val usernameInteractor: UsernameInteractor,
     private val authLogoutInteractor: AuthLogoutInteractor,
@@ -36,15 +36,15 @@ class SettingsPresenter(
     private val settingsItemMapper: SettingsItemMapper,
     private val authInteractor: AuthInteractor,
     private val context: Context
-) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
+) : BasePresenter<NewSettingsContract.View>(), NewSettingsContract.Presenter {
 
-    override fun attach(view: SettingsContract.View) {
+    override fun attach(view: NewSettingsContract.View) {
         super.attach(view)
         loadSettings()
     }
 
     private fun loadSettings() {
-        launch {
+        try {
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
@@ -52,6 +52,9 @@ class SettingsPresenter(
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()
             )
             view?.showSettings(settings)
+        } catch (error: Throwable) {
+            Timber.e(error)
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
     }
 
@@ -96,7 +99,7 @@ class SettingsPresenter(
     }
 
     override fun onUsernameSettingClicked() {
-        val isUsernameExists = usernameInteractor.isUsernameExists()
+        val isUsernameExists = usernameInteractor.isUsernameExist()
         if (isUsernameExists) view?.openUsernameScreen() else view?.openReserveUsernameScreen()
         receiveAnalytics.logSettingsUsernameViewed(isUsernameExists)
     }

@@ -17,7 +17,7 @@ import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
 import org.p2p.wallet.debug.torus.DebugTorusFragment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
-import org.p2p.wallet.settings.ui.settings.OldSettingsAdapter
+import org.p2p.wallet.settings.ui.settings.SettingsAdapter
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
@@ -39,7 +39,7 @@ class DebugSettingsFragment :
     override val presenter: DebugSettingsContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = OldSettingsAdapter(::onSettingsRowClicked)
+    private val adapter = SettingsAdapter(::onSettingsRowClicked)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -4,12 +4,12 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.ComplexSettingItem
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.ComplexSettingsItem
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsGroupTitleItem
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsSpaceSeparatorItem
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SignOutButtonItem
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SwitchSettingItem
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.TextSettingItem
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SwitchSettingsItem
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.TextSettingsItem
 import timber.log.Timber
 
 class SettingsItemMapper(
@@ -31,7 +31,7 @@ class SettingsItemMapper(
     private fun profileBlock(username: Username?): List<SettingsItem> = listOf(
         SettingsSpaceSeparatorItem,
         SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_profile),
-        ComplexSettingItem(
+        ComplexSettingsItem(
             settingNameRes = R.string.settings_item_title_username,
             iconRes = R.drawable.ic_settings_user,
             additionalText = username?.getFullUsername(resourcesProvider)
@@ -47,17 +47,17 @@ class SettingsItemMapper(
         isBiometricLoginAvailable: Boolean
     ): List<SettingsItem> = listOfNotNull(
         SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_security),
-        ComplexSettingItem(
+        ComplexSettingsItem(
             settingNameRes = R.string.settings_item_title_pin,
             iconRes = R.drawable.ic_settings_pin,
             hasSeparator = true
         ),
-        ComplexSettingItem(
+        ComplexSettingsItem(
             settingNameRes = R.string.settings_item_title_networks,
             iconRes = R.drawable.ic_settings_network,
             hasSeparator = true
         ),
-        SwitchSettingItem(
+        SwitchSettingsItem(
             settingNameRes = R.string.settings_item_title_touch_id,
             iconRes = R.drawable.ic_settings_fingerprint,
             isSwitched = isBiometricLoginEnabled,
@@ -69,7 +69,7 @@ class SettingsItemMapper(
     private fun appearanceBlock(isZeroBalanceTokenHidden: Boolean): List<SettingsItem> {
         return listOf(
             SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_appearance),
-            SwitchSettingItem(
+            SwitchSettingsItem(
                 settingNameRes = R.string.settings_item_title_zero_balances,
                 iconRes = R.drawable.ic_settings_hidden_eye,
                 isSwitched = isZeroBalanceTokenHidden,
@@ -81,7 +81,7 @@ class SettingsItemMapper(
 
     private fun appInfoBlock(): List<SettingsItem> {
         return listOf(
-            TextSettingItem(
+            TextSettingsItem(
                 settingNameRes = R.string.settings_app_version,
                 iconRes = R.drawable.ic_settings_phone,
                 textValue = BuildConfig.VERSION_NAME,

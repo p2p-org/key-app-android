@@ -14,7 +14,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
-import org.p2p.wallet.settings.ui.settings.adapter.SettingsAdapter
+import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
 import org.p2p.wallet.settings.ui.settings.adapter.SettingsItemClickListener
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
 import org.p2p.wallet.utils.BiometricPromptWrapper
@@ -25,9 +25,9 @@ import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class SettingsFragment :
-    BaseMvpFragment<SettingsContract.View, SettingsContract.Presenter>(R.layout.fragment_settings),
-    SettingsContract.View,
+class NewSettingsFragment :
+    BaseMvpFragment<NewSettingsContract.View, NewSettingsContract.Presenter>(R.layout.fragment_settings),
+    NewSettingsContract.View,
     SettingsItemClickListener {
 
     companion object {
@@ -36,16 +36,16 @@ class SettingsFragment :
         private const val KEY_NEW_NETWORK = "KEY_NEW_NETWORK"
         private const val KEY_PIN_CHANGED = "KEY_PIN_CHANGED"
 
-        fun create(): SettingsFragment = SettingsFragment()
+        fun create(): NewSettingsFragment = NewSettingsFragment()
     }
 
-    override val presenter: SettingsContract.Presenter by inject()
+    override val presenter: NewSettingsContract.Presenter by inject()
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val binding: FragmentSettingsBinding by viewBinding()
 
-    private val adapter = SettingsAdapter(this)
+    private val adapter = NewSettingsAdapter(this)
 
     private val biometricWrapper: BiometricPromptWrapper by unsafeLazy {
         BiometricPromptWrapper(
@@ -85,15 +85,15 @@ class SettingsFragment :
 
     override fun onSettingsItemClicked(clickedSettings: SettingsItem) {
         when (clickedSettings) {
-            is SettingsItem.ComplexSettingItem -> handleNavigationForComplexSetting(clickedSettings)
+            is SettingsItem.ComplexSettingsItem -> handleNavigationForComplexSetting(clickedSettings)
             is SettingsItem.SignOutButtonItem -> presenter.onSignOutClicked()
-            is SettingsItem.SwitchSettingItem -> handleSwitchSetting(clickedSettings)
+            is SettingsItem.SwitchSettingsItem -> handleSwitchSetting(clickedSettings)
             else -> Unit
         }
     }
 
-    private fun handleNavigationForComplexSetting(setting: SettingsItem.ComplexSettingItem) {
-        when (setting.settingNameRes) {
+    private fun handleNavigationForComplexSetting(settings: SettingsItem.ComplexSettingsItem) {
+        when (settings.settingNameRes) {
             R.string.settings_item_title_username -> {
                 presenter.onUsernameSettingClicked()
             }
@@ -110,13 +110,13 @@ class SettingsFragment :
         }
     }
 
-    private fun handleSwitchSetting(setting: SettingsItem.SwitchSettingItem) {
-        when (setting.settingNameRes) {
+    private fun handleSwitchSetting(settings: SettingsItem.SwitchSettingsItem) {
+        when (settings.settingNameRes) {
             R.string.settings_item_title_touch_id -> {
-                presenter.onBiometricSignInSwitchChanged(setting.isSwitched)
+                presenter.onBiometricSignInSwitchChanged(settings.isSwitched)
             }
             R.string.settings_item_title_zero_balances -> {
-                presenter.changeZeroBalanceHiddenFlag(setting.isSwitched)
+                presenter.changeZeroBalanceHiddenFlag(settings.isSwitched)
             }
         }
     }

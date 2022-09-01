@@ -14,7 +14,7 @@ import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 
-class OldSettingsAdapter(
+class SettingsAdapter(
     private val onSettingsRowClickListener: (titleResId: Int) -> Unit = {},
     private val onLogoutClickListener: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

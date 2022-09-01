@@ -7,7 +7,7 @@ import org.p2p.wallet.settings.ui.settings.adapter.SettingsItemClickListener
 class SignOutButtonViewHolder(
     binding: ItemSettingsSignOutBinding,
     private val settingsItemClickListener: SettingsItemClickListener
-) : SettingsViewHolder<ItemSettingsSignOutBinding, SignOutButtonItem>(binding) {
+) : NewSettingsViewHolder<ItemSettingsSignOutBinding, SignOutButtonItem>(binding) {
     override fun ItemSettingsSignOutBinding.bind(item: SignOutButtonItem) {
         root.setOnClickListener { settingsItemClickListener.onSettingsItemClicked(item) }
     }

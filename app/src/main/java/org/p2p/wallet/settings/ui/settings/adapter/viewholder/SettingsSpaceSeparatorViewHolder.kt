@@ -5,6 +5,6 @@ import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsSpaceS
 
 class SettingsSpaceSeparatorViewHolder(
     binding: ItemSettingsSpaceSeparatorBinding
-) : SettingsViewHolder<ItemSettingsSpaceSeparatorBinding, SettingsSpaceSeparatorItem>(binding) {
+) : NewSettingsViewHolder<ItemSettingsSpaceSeparatorBinding, SettingsSpaceSeparatorItem>(binding) {
     override fun ItemSettingsSpaceSeparatorBinding.bind(item: SettingsSpaceSeparatorItem) = Unit
 }

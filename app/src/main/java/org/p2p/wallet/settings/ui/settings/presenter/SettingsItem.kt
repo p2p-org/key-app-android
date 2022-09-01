@@ -8,7 +8,7 @@ sealed interface SettingsItem {
         @StringRes val groupTitleRes: Int
     ) : SettingsItem
 
-    data class TextSettingItem(
+    data class TextSettingsItem(
         @StringRes val settingNameRes: Int,
         @DrawableRes val iconRes: Int,
         val textValue: String,
@@ -17,14 +17,14 @@ sealed interface SettingsItem {
 
     object SignOutButtonItem : SettingsItem
 
-    data class SwitchSettingItem(
+    data class SwitchSettingsItem(
         @StringRes val settingNameRes: Int,
         @DrawableRes val iconRes: Int,
         val isSwitched: Boolean,
         val hasSeparator: Boolean
     ) : SettingsItem
 
-    data class ComplexSettingItem(
+    data class ComplexSettingsItem(
         @StringRes val settingNameRes: Int,
         @DrawableRes val iconRes: Int,
         val additionalText: String? = null,

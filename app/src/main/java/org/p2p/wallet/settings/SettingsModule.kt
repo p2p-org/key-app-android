@@ -17,8 +17,8 @@ import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseContract
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhrasePresenter
 import org.p2p.wallet.settings.ui.security.SecurityContract
 import org.p2p.wallet.settings.ui.security.SecurityPresenter
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsPresenter
-import org.p2p.wallet.settings.ui.settings.SettingsContract
+import org.p2p.wallet.settings.ui.settings.presenter.NewSettingsPresenter
+import org.p2p.wallet.settings.ui.settings.NewSettingsContract
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItemMapper
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalanceContract
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalancesPresenter
@@ -31,7 +31,7 @@ object SettingsModule : InjectionModule {
         factoryOf(::SettingsItemMapper)
         factory {
             // holy shit, TODO smth with this dependencies!
-            SettingsPresenter(
+            NewSettingsPresenter(
                 environmentManager = get(),
                 usernameInteractor = get(),
                 authLogoutInteractor = get(),
@@ -45,7 +45,7 @@ object SettingsModule : InjectionModule {
                 context = androidContext(),
                 authInteractor = get()
             )
-        } bind SettingsContract.Presenter::class
+        } bind NewSettingsContract.Presenter::class
 
         factoryOf(::SecurityPresenter) bind SecurityContract.Presenter::class
         factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class

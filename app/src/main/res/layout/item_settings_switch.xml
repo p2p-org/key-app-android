@@ -27,13 +27,13 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewSettingIcon"
-        app:layout_constraintEnd_toStartOf="@+id/switchChangeSetting"
+        app:layout_constraintEnd_toStartOf="@+id/switchChangeSettings"
         app:layout_constraintStart_toEndOf="@id/imageViewSettingIcon"
         app:layout_constraintTop_toTopOf="@id/imageViewSettingIcon"
         tools:text="Username" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchChangeSetting"
+        android:id="@+id/switchChangeSettings"
         style="@style/UiKit.Native.Switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

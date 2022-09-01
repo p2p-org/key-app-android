@@ -282,7 +282,7 @@ class HomePresenter(
     }
 
     override fun onProfileClick() {
-        if (usernameInteractor.isUsernameExists()) {
+        if (usernameInteractor.isUsernameExist()) {
             view?.navigateToProfile()
         } else {
             view?.navigateToReserveUsername()

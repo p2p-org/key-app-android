@@ -31,7 +31,7 @@ import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
-import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.emptyString
 
@@ -113,7 +113,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
         is AuthDoneFragment -> ScreenNames.OnBoarding.WELCOME_NEW_USERNAME
         is HomeFragment -> ScreenNames.Main.MAIN_COINS
-        is SettingsFragment -> ScreenNames.Settings.MAIN
+        is NewSettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
         is SecurityFragment -> ScreenNames.Settings.SECURITY
         is SettingsNetworkFragment -> ScreenNames.Settings.NETWORK

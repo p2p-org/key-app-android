@@ -6,7 +6,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
 
-interface SettingsContract {
+interface NewSettingsContract {
     interface View : MvpView {
         fun showSettings(settings: List<SettingsItem>)
         fun showSignOutConfirmDialog()

@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
 
-sealed class SettingsViewHolder<VB : ViewBinding, ITEM : SettingsItem>(
+sealed class NewSettingsViewHolder<VB : ViewBinding, ITEM : SettingsItem>(
     private val binding: VB
 ) : RecyclerView.ViewHolder(binding.root) {
 
