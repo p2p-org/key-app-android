@@ -6,7 +6,7 @@ data class ConfirmRegisterWalletRequest(
     @SerializedName("solana_pubkey")
     val clientSolanaPublicKey: String,
     @SerializedName("ethereum_id")
-    val etheriumPublicKey: String,
+    val etheriumAddress: String,
 
     @SerializedName("encrypted_share")
     val thirdShare: String,

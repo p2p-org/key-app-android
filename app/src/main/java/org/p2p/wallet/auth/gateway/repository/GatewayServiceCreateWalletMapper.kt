@@ -27,13 +27,15 @@ class GatewayServiceCreateWalletMapper(
         val clientId: String,
         val etheriumId: String,
         val phone: String,
-        val channelType: String
+        val channelType: String,
+        val appHash: String
     ) : Borsh
 
     private class ConfirmRegisterWalletSignatureStruct(
         val clientId: String,
         val etheriumId: String,
         val encryptedShare: String,
+        val encryptedPayload: ByteArray,
         val phone: String,
         val phoneConfirmationCode: String
     ) : Borsh
@@ -49,7 +51,7 @@ class GatewayServiceCreateWalletMapper(
     fun toRegisterWalletNetwork(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
-        etheriumPublicKey: String,
+        etheriumAddress: String,
         phoneNumber: String,
         channel: OtpMethod
     ): GatewayServiceRequest<RegisterWalletRequest> {
@@ -58,15 +60,16 @@ class GatewayServiceCreateWalletMapper(
             userPrivateKey = userPrivateKey,
             structToSerialize = RegisterWalletSignatureStruct(
                 clientId = userPublicKey.base58Value,
-                etheriumId = userPrivateKey.base58Value,
+                etheriumId = etheriumAddress.lowercase(),
                 phone = phoneNumber,
-                channelType = channel.backendName
+                channelType = channel.backendName,
+                appHash = Constants.APP_HASH
             )
         )
 
         return RegisterWalletRequest(
             clientSolanaPublicKey = userPublicKey,
-            etheriumPublicKey = etheriumPublicKey,
+            etheriumAddress = etheriumAddress,
             userPhone = phoneNumber,
             appHash = Constants.APP_HASH,
             channel = channel,
@@ -79,7 +82,7 @@ class GatewayServiceCreateWalletMapper(
     fun toConfirmRegisterWalletNetwork(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
-        etheriumPublicKey: String,
+        etheriumAddress: String,
         phoneNumber: String,
         jsonEncryptedMnemonicPhrase: JsonObject,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue,
@@ -90,9 +93,10 @@ class GatewayServiceCreateWalletMapper(
             userPrivateKey = userPrivateKey,
             structToSerialize = ConfirmRegisterWalletSignatureStruct(
                 clientId = userPublicKey.base58Value,
-                etheriumId = etheriumPublicKey,
+                etheriumId = etheriumAddress.lowercase(),
                 phone = phoneNumber,
                 encryptedShare = thirdShare.value,
+                encryptedPayload = jsonEncryptedMnemonicPhrase.toString().toByteArray(),
                 phoneConfirmationCode = otpConfirmationCode
             )
         )
@@ -103,7 +107,7 @@ class GatewayServiceCreateWalletMapper(
 
         return ConfirmRegisterWalletRequest(
             clientSolanaPublicKey = userPublicKey.base58Value,
-            etheriumPublicKey = etheriumPublicKey,
+            etheriumAddress = etheriumAddress,
             timestamp = createTimestampField(),
             thirdShare = thirdShare.value,
             encryptedPayloadB64 = encryptedPayload.base64Value,

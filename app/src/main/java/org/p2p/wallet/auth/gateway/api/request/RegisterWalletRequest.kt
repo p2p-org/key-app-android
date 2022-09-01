@@ -10,7 +10,7 @@ data class RegisterWalletRequest(
     @SerializedName("solana_pubkey")
     val clientSolanaPublicKey: Base58String,
     @SerializedName("ethereum_id")
-    val etheriumPublicKey: String,
+    val etheriumAddress: String,
     /**
      * E.164 format
      */

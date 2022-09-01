@@ -23,7 +23,7 @@ class CreateWalletInteractor(
         gatewayServiceRepository.registerWalletWithSms(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
-            etheriumPublicKey = etheriumPublicKey,
+            etheriumAddress = etheriumPublicKey,
             e164PhoneNumber = e164FormatUserPhoneNumber
         )
         signUpFlowDataRepository.userPhoneNumber = e164FormatUserPhoneNumber
@@ -46,7 +46,7 @@ class CreateWalletInteractor(
         gatewayServiceRepository.confirmRegisterWallet(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
-            etheriumPublicKey = etheriumPublicKey,
+            etheriumAddress = etheriumPublicKey,
             thirdShare = thirdShare,
             phoneNumber = phoneNumber,
             jsonEncryptedMnemonicPhrase = encryptedMnemonicPhrase,
