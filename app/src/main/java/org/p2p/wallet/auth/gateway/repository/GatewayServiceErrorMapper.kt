@@ -15,6 +15,7 @@ class GatewayServiceErrorMapper {
             -32052, -32058, -32700, -32600, -32601, -32602, -32603 -> GatewayServiceError.CriticalServiceFailure(
                 error.errorCode, error.errorMessage
             )
+            // PWN-4774 - This error temporary unavailable
             -32053 -> GatewayServiceError.TooManyRequests(
                 error.errorCode, error.errorMessage
             )

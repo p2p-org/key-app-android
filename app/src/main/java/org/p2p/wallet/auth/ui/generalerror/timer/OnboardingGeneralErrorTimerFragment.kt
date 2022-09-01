@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.ui.generalerror.timer
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
+import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -36,17 +36,20 @@ class OnboardingGeneralErrorTimerFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.buttonToStartingScreen.setOnClickListener {
+            returnToPhoneNumberEnter()
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             returnToPhoneNumberEnter()
         }
     }
 
-    override fun updateSubtitle(@StringRes subTitleRes: Int, formattedTimeLeft: String) {
+    override fun updateText(titleRes: Int, subTitleRes: Int, formattedTimeLeft: String) {
+        binding.textViewErrorTitle.text = getString(titleRes)
         binding.textViewErrorSubtitle.text = getString(subTitleRes, formattedTimeLeft)
     }
 
     override fun returnToPhoneNumberEnter() {
-        popBackStackTo(PhoneNumberEnterFragment::class)
+        popBackStackTo(PhoneNumberEnterFragment::class, inclusive = false)
     }
 }

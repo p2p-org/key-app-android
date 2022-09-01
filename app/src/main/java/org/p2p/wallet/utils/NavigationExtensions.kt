@@ -55,7 +55,7 @@ fun <T : Fragment> FragmentActivity.popBackStackTo(target: KClass<T>, inclusive:
         if (backStackEntryCount == 0 || getBackStackEntryAt(0).name == tag && inclusive) {
             finish()
         } else {
-            if (!popBackStackImmediate(tag, flag)) finish()
+            popBackStackImmediate(tag, flag)
         }
     }
 }

@@ -97,7 +97,7 @@ class NewSmsInputFragment :
             }
             is Presenter.SmsInputTimerState.SmsValidationBlocked -> {
                 binding.smsInputComponent.setErrorState(
-                    getString(R.string.onboarding_sms_input_request_overflow, timerState.secondsBeforeUnblock)
+                    getString(R.string.onboarding_sms_input_request_overflow, timerState.secondsBeforeUnlock)
                 )
                 binding.continueButton.isEnabled = false
             }
@@ -112,9 +112,9 @@ class NewSmsInputFragment :
         popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
     }
 
-    override fun navigateToSmsInputBlocked() {
+    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError) {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenError.BLOCK_SMS_INPUT)
+            OnboardingGeneralErrorTimerFragment.create(error)
         )
     }
 

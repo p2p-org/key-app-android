@@ -105,9 +105,14 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         textViewFlagEmoji.text = flagEmoji
 
         val hint = countryCode?.getZeroFilledMask().orEmpty()
-        val restoredNumber = editTextPhoneNumber.text.toString().orEmpty()
+        val restoredNumber = editTextPhoneNumber.text.toString()
+
         editTextPhoneNumber.setHintText(hint)
         numberHintTextView.setHintText(hint)
+
+        if (restoredNumber.isNotEmpty()) {
+            numberHintTextView.updateNumber(restoredNumber)
+        }
 
         countryPickerView.setOnClickListener {
             onCountryClickListener.invoke()
