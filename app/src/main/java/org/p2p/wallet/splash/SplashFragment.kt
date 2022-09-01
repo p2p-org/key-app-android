@@ -1,6 +1,5 @@
 package org.p2p.wallet.splash
 
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment

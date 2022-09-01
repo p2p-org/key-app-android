@@ -21,7 +21,7 @@ class NewCreatePinPresenter(
 
     private var createdPin = emptyString()
     private var pinMode = PinMode.CREATE
-    private var isOnBackButtonPressed = false
+    private var navigateBackOnBackPressed = false
 
     override fun setPinMode(pinMode: PinMode) {
         this.pinMode = pinMode
@@ -52,9 +52,9 @@ class NewCreatePinPresenter(
         createdPin = emptyString()
         when (pinMode) {
             PinMode.CREATE -> {
-                if (!isOnBackButtonPressed) {
+                if (!navigateBackOnBackPressed) {
                     view?.showUiKitSnackBar(messageResId = R.string.onboarding_lets_finish_last_step)
-                    isOnBackButtonPressed = true
+                    navigateBackOnBackPressed = true
                 } else {
                     view?.navigateBack()
                 }
