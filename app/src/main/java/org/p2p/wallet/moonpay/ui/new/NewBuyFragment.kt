@@ -43,7 +43,8 @@ private val PAYMENT_METHODS = listOf(
     )
 )
 
-class NewBuyFragment : BaseMvpFragment<NewBuyContract.View, NewBuyContract.Presenter>(R.layout.fragment_new_buy),
+class NewBuyFragment :
+    BaseMvpFragment<NewBuyContract.View, NewBuyContract.Presenter>(R.layout.fragment_new_buy),
     NewBuyContract.View {
 
     companion object {
