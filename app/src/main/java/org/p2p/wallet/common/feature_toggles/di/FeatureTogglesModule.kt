@@ -9,6 +9,7 @@ import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConf
 import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesSource
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
+import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
@@ -31,6 +32,7 @@ object FeatureTogglesModule : InjectionModule {
 
         factoryOf(::SslPinningFeatureToggle)
         factoryOf(::NewBuyFeatureToggle)
+        factoryOf(::BuyWithTransferFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
     }
 }
