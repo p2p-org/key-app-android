@@ -1,5 +1,6 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
+import android.net.Uri
 import com.google.gson.Gson
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -93,13 +94,17 @@ class RpcInterceptor(
     }
 
     private fun createRpcUrl(originalUrl: HttpUrl, networkEnvironment: NetworkEnvironment): HttpUrl {
-        return if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
-            originalUrl.newBuilder()
-                .addEncodedPathSegment(BuildConfig.rpcPoolApiKey)
-                .build()
-        } else {
-            originalUrl
-        }
+        val uriFromEnvironment = Uri.parse(networkEnvironment.endpoint)
+        val newHost = uriFromEnvironment.host ?: error("Host cannot be null $uriFromEnvironment")
+
+        return originalUrl.newBuilder()
+            .host(newHost)
+            .apply {
+                if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
+                    addEncodedPathSegment(BuildConfig.rpcPoolApiKey)
+                }
+            }
+            .build()
     }
 
     private fun handleResponse(response: Response): Response {
