@@ -7,6 +7,9 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="4dp"
     android:background="@drawable/bg_paying_method"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
     android:padding="12dp">
 
     <TextView
@@ -20,6 +23,7 @@
         tools:text="4,5%" />
 
     <TextView
+        android:id="@+id/textViewFee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -30,10 +34,11 @@
         app:layout_constraintStart_toEndOf="@id/textViewFeeAmount" />
 
     <CheckBox
-        android:id="@+id/checkBoxSelected"
-        style="@style/Widget.Material3.CompoundButton.CheckBox"
+        android:id="@+id/checkBox"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:button="@drawable/bg_checkbox"
+        android:buttonTint="@color/icons_night"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

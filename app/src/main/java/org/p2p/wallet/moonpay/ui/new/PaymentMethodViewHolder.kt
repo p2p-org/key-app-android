@@ -22,10 +22,12 @@ class PaymentMethodViewHolder(
     )
 
     fun bind(method: PaymentMethod) = with(binding) {
-        checkBoxSelected.isSelected = method.isSelected
+        checkBox.isChecked = method.isSelected
         textViewFeeAmount.text = getString(R.string.buy_fee_percent, method.feePercent)
         textViewPaymentPeriod.text = getString(method.paymentPeriodResId)
         textViewPayingMethod.text = getString(method.methodResId)
         imageViewMethod.setImageResource(method.iconResId)
+        checkBox.setOnClickListener { onClickListener(method) }
+        root.setOnClickListener { onClickListener(method) }
     }
 }
