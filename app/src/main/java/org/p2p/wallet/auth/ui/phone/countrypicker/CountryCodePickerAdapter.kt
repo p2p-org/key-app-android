@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import org.p2p.wallet.auth.model.CountryCode
@@ -40,6 +41,7 @@ class CountryCodePickerAdapter(private val onItemClickListener: (CountryCode) ->
             itemView.setOnClickListener {
                 onItemClickListener.invoke(item.country)
             }
+            imageViewCheck.isVisible = item.isSelected
         }
     }
 }
