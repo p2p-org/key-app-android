@@ -28,7 +28,7 @@ import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
@@ -205,7 +205,8 @@ class HomeFragment :
     }
 
     private fun showBuyTokenScreen(token: Token) {
-        replaceFragment(BuySolanaFragment.create(token))
+        // TODO: use feature toggle to switch between old and new buy fragments
+        replaceFragment(NewBuyFragment.create(token))
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
