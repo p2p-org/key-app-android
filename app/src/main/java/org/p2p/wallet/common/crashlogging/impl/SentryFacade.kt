@@ -12,6 +12,7 @@ import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
 
 private const val BREADCRUMB_CATEGORY = "SentryFacade"
 
+@Suppress("DEPRECATION")
 class SentryFacade : CrashLoggingFacade {
 
     override fun logInformation(information: String) {

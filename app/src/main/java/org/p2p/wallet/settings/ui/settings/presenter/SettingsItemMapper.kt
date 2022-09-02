@@ -1,0 +1,92 @@
+package org.p2p.wallet.settings.ui.settings.presenter
+
+import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.ComplexSettingsItem
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsGroupTitleItem
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsSpaceSeparatorItem
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SignOutButtonItem
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SwitchSettingsItem
+import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.TextSettingsItem
+import timber.log.Timber
+
+class SettingsItemMapper(
+    private val resourcesProvider: ResourcesProvider
+) {
+    fun createItems(
+        username: Username?,
+        isBiometricLoginEnabled: Boolean,
+        isZeroBalanceTokenHidden: Boolean,
+        isBiometricLoginAvailable: Boolean
+    ): List<SettingsItem> = buildList {
+        Timber.i(isZeroBalanceTokenHidden.toString())
+        this += profileBlock(username)
+        this += securityBlock(isBiometricLoginEnabled, isBiometricLoginAvailable)
+        this += appearanceBlock(isZeroBalanceTokenHidden)
+        this += appInfoBlock()
+    }
+
+    private fun profileBlock(username: Username?): List<SettingsItem> = listOf(
+        SettingsSpaceSeparatorItem,
+        SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_profile),
+        ComplexSettingsItem(
+            settingNameRes = R.string.settings_item_title_username,
+            iconRes = R.drawable.ic_settings_user,
+            additionalText = username?.getFullUsername(resourcesProvider)
+                ?: resourcesProvider.getString(R.string.settings_item_username_not_reserved),
+            hasSeparator = false
+        ),
+        SignOutButtonItem,
+        SettingsSpaceSeparatorItem
+    )
+
+    private fun securityBlock(
+        isBiometricLoginEnabled: Boolean,
+        isBiometricLoginAvailable: Boolean
+    ): List<SettingsItem> = listOfNotNull(
+        SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_security),
+        ComplexSettingsItem(
+            settingNameRes = R.string.settings_item_title_pin,
+            iconRes = R.drawable.ic_settings_pin,
+            hasSeparator = true
+        ),
+        ComplexSettingsItem(
+            settingNameRes = R.string.settings_item_title_networks,
+            iconRes = R.drawable.ic_settings_network,
+            hasSeparator = true
+        ),
+        SwitchSettingsItem(
+            settingNameRes = R.string.settings_item_title_touch_id,
+            iconRes = R.drawable.ic_settings_fingerprint,
+            isSwitched = isBiometricLoginEnabled,
+            hasSeparator = false
+        ).takeIf { isBiometricLoginAvailable },
+        SettingsSpaceSeparatorItem,
+    )
+
+    private fun appearanceBlock(isZeroBalanceTokenHidden: Boolean): List<SettingsItem> {
+        return listOf(
+            SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_appearance),
+            SwitchSettingsItem(
+                settingNameRes = R.string.settings_item_title_zero_balances,
+                iconRes = R.drawable.ic_settings_hidden_eye,
+                isSwitched = isZeroBalanceTokenHidden,
+                hasSeparator = false
+            ),
+            SettingsSpaceSeparatorItem,
+        )
+    }
+
+    private fun appInfoBlock(): List<SettingsItem> {
+        return listOf(
+            TextSettingsItem(
+                settingNameRes = R.string.settings_app_version,
+                iconRes = R.drawable.ic_settings_phone,
+                textValue = BuildConfig.VERSION_NAME,
+                hasSeparator = false
+            )
+        )
+    }
+}

@@ -1,11 +1,11 @@
 package org.p2p.wallet.settings.ui.network
 
-import android.os.Bundle
-import android.view.View
-import android.widget.RadioGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
+import android.os.Bundle
+import android.view.View
+import android.widget.RadioGroup
 import org.koin.android.ext.android.inject
 import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.R
@@ -16,8 +16,8 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
-private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+private const val ARG_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val ARG_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class SettingsNetworkFragment :
     BaseMvpFragment<SettingsNetworkContract.View, SettingsNetworkContract.Presenter>(
@@ -26,36 +26,38 @@ class SettingsNetworkFragment :
     SettingsNetworkContract.View {
 
     companion object {
-        fun create(requestKey: String, resultKey: String): SettingsNetworkFragment = SettingsNetworkFragment().withArgs(
-            EXTRA_REQUEST_KEY to requestKey,
-            EXTRA_RESULT_KEY to resultKey
-        )
+        fun create(requestKey: String, resultKey: String): SettingsNetworkFragment =
+            SettingsNetworkFragment()
+                .withArgs(
+                    ARG_REQUEST_KEY to requestKey,
+                    ARG_RESULT_KEY to resultKey
+                )
     }
 
     override val presenter: SettingsNetworkContract.Presenter by inject()
 
     private val binding: FragmentSettingsNetworkBinding by viewBinding()
-    private val resultKey: String by args(EXTRA_RESULT_KEY)
-    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+
+    private val resultKey: String by args(ARG_RESULT_KEY)
+    private val requestKey: String by args(ARG_REQUEST_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.attach(this)
+
         with(binding) {
-            networksGroup.setOnCheckedChangeListener(this@SettingsNetworkFragment)
+            networksGroup.setOnCheckedChangeListener(::onCheckedChanged)
 
             primaryButton.setOnClickListener {
-                presenter.save()
+                presenter.confirmNetworkEnvironmentSelected()
             }
 
             secondaryButton.setOnClickListener {
-                popBackStack()
+                close()
             }
         }
-        presenter.loadData()
     }
 
-    override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
+    private fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
         val environment = when (checkedId) {
             R.id.mainnetButton -> NetworkEnvironment.MAINNET
             R.id.rpcpoolButton -> NetworkEnvironment.RPC_POOL
@@ -63,7 +65,7 @@ class SettingsNetworkFragment :
             R.id.devnetButton -> NetworkEnvironment.DEVNET
             else -> error("No environment found for this id: $checkedId")
         }
-        presenter.setNewEnvironment(environment)
+        presenter.onNewEnvironmentSelected(environment)
     }
 
     override fun showEnvironment(
@@ -82,15 +84,19 @@ class SettingsNetworkFragment :
             NetworkEnvironment.RPC_POOL -> R.id.rpcpoolButton
             NetworkEnvironment.DEVNET -> R.id.devnetButton
         }
-        binding.networksGroup.apply {
+        with(binding.networksGroup) {
             setOnCheckedChangeListener(null)
             check(checkedButtonId)
-            setOnCheckedChangeListener(this@SettingsNetworkFragment)
+            setOnCheckedChangeListener(::onCheckedChanged)
         }
     }
 
-    override fun onNetworkChanged(newName: String) {
-        setFragmentResult(requestKey, bundleOf(Pair(resultKey, newName)))
+    override fun closeWithResult(newNetworkEnvironment: NetworkEnvironment) {
+        setFragmentResult(requestKey, bundleOf(resultKey to newNetworkEnvironment))
+        close()
+    }
+
+    override fun close() {
         popBackStack()
     }
 }

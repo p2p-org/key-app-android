@@ -1,12 +1,10 @@
 package org.p2p.wallet.auth.interactor
 
-import android.content.Context
+import androidx.biometric.BiometricManager
+import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.biometric.BiometricManager
-import androidx.core.content.edit
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.HashingUtils
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
@@ -16,6 +14,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import kotlinx.coroutines.withContext
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
 private const val KEY_PIN_CODE_HASH = "KEY_PIN_CODE_HASH"
@@ -37,8 +36,7 @@ class AuthInteractor(
 
     // region signing in
     suspend fun signInByPinCode(pinCode: String): SignInResult = withContext(dispatchers.computation) {
-        val pinSalt = secureStorage.getBytes(KEY_PIN_CODE_SALT)
-            ?: throw IllegalStateException("Pin salt does not exist")
+        val pinSalt = secureStorage.getBytes(KEY_PIN_CODE_SALT) ?: error("Pin salt does not exist")
         val pinHash = HashingUtils.generatePbkdf2Hex(pinCode, pinSalt)
         val currentHash = secureStorage.getString(KEY_PIN_CODE_HASH)
         if (pinHash == currentHash) {
@@ -50,7 +48,7 @@ class AuthInteractor(
 
     suspend fun signInByBiometric(cipher: DecodeCipher): SignInResult = withContext(dispatchers.computation) {
         val pinHash = secureStorage.getString(KEY_PIN_CODE_BIOMETRIC_HASH, cipher)
-            ?: throw IllegalStateException("Pin hash does not exist for biometric sign in")
+            ?: error("Pin hash does not exist for biometric sign in")
 
         if (pinHash.isEmpty()) {
             SignInResult.WrongPin
@@ -97,35 +95,30 @@ class AuthInteractor(
                     BiometricStatus.AVAILABLE
                 }
             }
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
                 BiometricStatus.NO_REGISTERED_BIOMETRIC
-
-            else -> BiometricStatus.NO_HARDWARE
+            }
+            else -> {
+                BiometricStatus.NO_HARDWARE
+            }
         }
 
-    fun getBiometricType(context: Context): BiometricType {
-        val packageManager: PackageManager = context.packageManager
-
+    fun getBiometricType(packageManager: PackageManager): BiometricType {
         // SDK 29 adds FACE and IRIS authentication
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
-                return BiometricType.FACE_ID
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            when {
+                packageManager.hasSystemFeature(PackageManager.FEATURE_FACE) -> BiometricType.FACE_ID
+                packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS) -> BiometricType.IRIS
+                packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT) -> BiometricType.TOUCH_ID
+                else -> BiometricType.NONE
             }
-            if (packageManager.hasSystemFeature(PackageManager.FEATURE_IRIS)) {
-                return BiometricType.IRIS
-            }
-            return if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+        } else {
+            // SDK 23-28 offer FINGERPRINT only
+            if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
                 BiometricType.TOUCH_ID
             } else {
                 BiometricType.NONE
             }
-        }
-
-        // SDK 23-28 offer FINGERPRINT only
-        return if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-            BiometricType.TOUCH_ID
-        } else {
-            BiometricType.NONE
         }
     }
 
