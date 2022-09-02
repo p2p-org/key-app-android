@@ -8,7 +8,7 @@ import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SwitchSettings
 
 class SwitchSettingViewHolder(
     binding: ItemSettingsSwitchBinding,
-    private val onSettingsClicked:  (SettingsItem) -> Unit
+    private val onSettingsClicked: (SettingsItem) -> Unit
 ) : NewSettingsViewHolder<ItemSettingsSwitchBinding, SwitchSettingsItem>(binding) {
     override fun ItemSettingsSwitchBinding.bind(item: SwitchSettingsItem) {
         imageViewSettingIcon.setImageResource(item.iconRes)

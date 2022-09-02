@@ -105,7 +105,7 @@ class NewSettingsFragment :
                         requestKey = REQUEST_KEY,
                         resultKey = RESULT_KEY_NEW_NETWORK
                     ),
-                    enter = 0, 
+                    enter = 0,
                     exit = 0,
                     popEnter = 0,
                     popExit = 0
