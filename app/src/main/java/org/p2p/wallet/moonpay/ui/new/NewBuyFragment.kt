@@ -11,7 +11,9 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.model.BuyCurrency
+import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.PaymentMethod
+import org.p2p.wallet.moonpay.ui.bottomsheet.BuyDetailsBottomSheet
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.getString
@@ -25,6 +27,20 @@ private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 
 private const val KEY_REQUEST_CURRENCY = "KEY_REQUEST_CURRENCY"
 private const val KEY_RESULT_CURRENCY = "KEY_RESULT_CURRENCY"
+
+private val buyViewData = BuyViewData(
+    tokenSymbol = "SOL",
+    currencySymbol = "USD",
+    price = 100f.toBigDecimal(),
+    receiveAmount = 1500.0,
+    5.3f.toBigDecimal(),
+    networkFee = 0.1f.toBigDecimal(),
+    extraFee = 0f.toBigDecimal(),
+    accountCreationCost = 0f.toBigDecimal(),
+    total = 1405.4f.toBigDecimal(),
+    receiveAmountText = "",
+    purchaseCostText = "$1 400"
+)
 
 class NewBuyFragment :
     BaseMvpFragment<NewBuyContract.View, NewBuyContract.Presenter>(R.layout.fragment_new_buy),
@@ -83,6 +99,14 @@ class NewBuyFragment :
 
         amountsView.token = token.tokenSymbol
         amountsView.currency = "USD"
+
+        textViewTotal.setOnClickListener {
+            BuyDetailsBottomSheet.show(
+                childFragmentManager,
+                getString(R.string.buy_transaction_details_bottom_sheet_title),
+                buyViewData
+            )
+        }
 
         buttonBuy.text = getString(R.string.buy_toolbar_title, "SOL")
 

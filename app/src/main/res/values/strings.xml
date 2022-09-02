@@ -449,6 +449,7 @@
 
     <string name="buy_tokens_bottom_sheet_title">Coin to buy</string>
     <string name="buy_currencies_bottom_sheet_title">Currency</string>
+    <string name="buy_transaction_details_bottom_sheet_title">Transaction details</string>
 
     <string name="buy_toolbar_title">Buy %s</string>
 
