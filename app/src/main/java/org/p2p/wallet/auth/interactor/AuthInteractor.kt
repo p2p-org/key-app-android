@@ -26,7 +26,6 @@ private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON
  * If we decide to add pin code validation to the backend, we can remove one type hash
  * and make validation via pin code without decrypting hash
  * */
-// todo: tech-debt, split biometric and pin responsibility to separate classes
 class AuthInteractor(
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorageContract,

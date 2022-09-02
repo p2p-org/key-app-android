@@ -16,8 +16,8 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
-private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+private const val ARG_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val ARG_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class SettingsNetworkFragment :
     BaseMvpFragment<SettingsNetworkContract.View, SettingsNetworkContract.Presenter>(
@@ -29,8 +29,8 @@ class SettingsNetworkFragment :
         fun create(requestKey: String, resultKey: String): SettingsNetworkFragment =
             SettingsNetworkFragment()
                 .withArgs(
-                    EXTRA_REQUEST_KEY to requestKey,
-                    EXTRA_RESULT_KEY to resultKey
+                    ARG_REQUEST_KEY to requestKey,
+                    ARG_RESULT_KEY to resultKey
                 )
     }
 
@@ -38,8 +38,8 @@ class SettingsNetworkFragment :
 
     private val binding: FragmentSettingsNetworkBinding by viewBinding()
 
-    private val resultKey: String by args(EXTRA_RESULT_KEY)
-    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val resultKey: String by args(ARG_RESULT_KEY)
+    private val requestKey: String by args(ARG_REQUEST_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -93,7 +93,7 @@ class SettingsNetworkFragment :
 
     override fun closeWithResult(newNetworkEnvironment: NetworkEnvironment) {
         setFragmentResult(requestKey, bundleOf(resultKey to newNetworkEnvironment))
-        popBackStack()
+        close()
     }
 
     override fun close() {

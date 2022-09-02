@@ -14,7 +14,7 @@ class SettingsInteractor(
 ) {
 
     fun setZeroBalanceHidden(isHidden: Boolean) {
-        sharedPreferences.edit(commit = true) { putBoolean(KEY_HIDDEN_ZERO_BALANCE, isHidden) }
+        sharedPreferences.edit { putBoolean(KEY_HIDDEN_ZERO_BALANCE, isHidden) }
     }
 
     fun areZerosHidden(): Boolean = sharedPreferences.getBoolean(KEY_HIDDEN_ZERO_BALANCE, true)
@@ -25,7 +25,7 @@ class SettingsInteractor(
     }
 
     fun setBiometricsConfirmationEnabled(isEnable: Boolean) {
-        sharedPreferences.edit(commit = true) {
+        sharedPreferences.edit {
             putBoolean(KEY_CONFIRMATION_REQUIRED, isEnable)
         }
     }

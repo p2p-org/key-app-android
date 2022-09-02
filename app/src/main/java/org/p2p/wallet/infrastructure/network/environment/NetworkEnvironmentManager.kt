@@ -32,6 +32,7 @@ class NetworkEnvironmentManager(
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
         return NetworkEnvironment.values().filter(isNetworkAvailable)
     }
+
     fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {
         listeners[owner.simpleName.orEmpty()] = listener
     }
@@ -82,6 +83,8 @@ class NetworkEnvironmentManager(
         listeners.values.forEach { it.onEnvironmentChanged(newEnvironment) }
 
         crashLogger.setCustomKey("network_environment", newEnvironment.endpoint)
+
+        Timber.i("Network changed to ${newEnvironment.endpoint}")
     }
 
     private fun getCurrentNetworkFromUrl(endpoint: String): NetworkEnvironment = when (endpoint) {

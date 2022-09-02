@@ -88,14 +88,9 @@ class NewSettingsPresenter(
     }
 
     override fun onConfirmSignOutClicked() {
-        try {
-            authLogoutInteractor.onUserLogout()
-            adminAnalytics.logSignedOut()
-        } catch (error: Throwable) {
-            Timber.e(error, "Error signing out")
-        } finally {
-            appRestarter.restartApp()
-        }
+        authLogoutInteractor.onUserLogout()
+        adminAnalytics.logSignedOut()
+        appRestarter.restartApp()
     }
 
     override fun onUsernameSettingClicked() {

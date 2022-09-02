@@ -15,7 +15,7 @@ import org.p2p.wallet.settings.ui.settings.adapter.viewholder.TextSettingViewHol
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class NewSettingsAdapter(
-    private val settingsItemClickListener: SettingsItemClickListener
+    private val onSettingsClicked: (SettingsItem) -> Unit
 ) : RecyclerView.Adapter<NewSettingsViewHolder<*, *>>() {
 
     private val items = mutableListOf<SettingsItem>()
@@ -39,13 +39,13 @@ class NewSettingsAdapter(
         R.layout.item_settings_group_title ->
             SettingsGroupTitleViewHolder(parent.inflateViewBindingForViewHolder())
         R.layout.item_settings_complex ->
-            ComplexSettingViewHolder(parent.inflateViewBindingForViewHolder(), settingsItemClickListener)
+            ComplexSettingViewHolder(parent.inflateViewBindingForViewHolder(), onSettingsClicked)
         R.layout.item_settings_space_separator ->
             SettingsSpaceSeparatorViewHolder(parent.inflateViewBindingForViewHolder())
         R.layout.item_settings_sign_out ->
-            SignOutButtonViewHolder(parent.inflateViewBindingForViewHolder(), settingsItemClickListener)
+            SignOutButtonViewHolder(parent.inflateViewBindingForViewHolder(), onSettingsClicked)
         R.layout.item_settings_switch ->
-            SwitchSettingViewHolder(parent.inflateViewBindingForViewHolder(), settingsItemClickListener)
+            SwitchSettingViewHolder(parent.inflateViewBindingForViewHolder(), onSettingsClicked)
         R.layout.item_settings_text_value ->
             TextSettingViewHolder(parent.inflateViewBindingForViewHolder())
         else ->
