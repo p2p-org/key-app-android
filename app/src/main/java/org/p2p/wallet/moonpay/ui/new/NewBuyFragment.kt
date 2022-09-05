@@ -170,9 +170,9 @@ class NewBuyFragment :
     override fun showTotal(viewData: BuyViewData) {
         val focusMode = binding.amountsView.getFocusMode()
         if (focusMode == FocusMode.TOKEN) {
-            binding.amountsView.setCurrencyAmount(viewData.receiveAmount.toString())
+            binding.amountsView.setCurrencyAmount(viewData.receiveAmountText)
         } else {
-            binding.amountsView.setTokenAmount(viewData.receiveAmount.toString())
+            binding.amountsView.setTokenAmount(viewData.receiveAmountText)
         }
         binding.textViewTotal.text = viewData.totalText
     }

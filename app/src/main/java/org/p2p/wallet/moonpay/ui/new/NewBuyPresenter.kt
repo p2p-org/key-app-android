@@ -226,7 +226,7 @@ class NewBuyPresenter(
             extraFee = buyCurrencyInfo.extraFeeAmount.scaleShort(),
             accountCreationCost = null,
             total = buyCurrencyInfo.totalAmount.scaleShort(),
-            receiveAmountText = "$amount $receiveSymbol",
+            receiveAmountText = amount,
             purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.asCurrency(currency) else null
         )
         view?.apply {
