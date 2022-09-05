@@ -12,10 +12,10 @@ class ComplexSettingViewHolder(
 ) : NewSettingsViewHolder<ItemSettingsComplexBinding, ComplexSettingsItem>(binding) {
     override fun ItemSettingsComplexBinding.bind(item: ComplexSettingsItem) {
         imageViewSettingIcon.setImageResource(item.iconRes)
-        textViewSettingName.text = getString(item.settingNameRes)
+        textViewSettingName.text = getString(item.nameRes)
         item.additionalText?.also { textViewSettingValue.text = it }
 
-        imageViewOpenSetting.setOnClickListener {
+        itemView.setOnClickListener {
             onSettingsClicked(item)
         }
 

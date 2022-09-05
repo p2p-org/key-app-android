@@ -24,7 +24,6 @@ class UiKitPinView @JvmOverloads constructor(
 
     var onPinCompleted: ((String) -> Unit)? = null
     var onBiometricClicked: (() -> Unit)? = null
-    var onResetClicked: (() -> Unit)? = null
     var onKeyboardClicked: (() -> Unit)? = null
 
     private var pinCode: String = emptyString()

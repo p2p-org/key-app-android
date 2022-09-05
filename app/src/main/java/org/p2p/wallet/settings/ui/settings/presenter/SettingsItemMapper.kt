@@ -32,7 +32,7 @@ class SettingsItemMapper(
         SettingsSpaceSeparatorItem,
         SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_profile),
         ComplexSettingsItem(
-            settingNameRes = R.string.settings_item_title_username,
+            nameRes = R.string.settings_item_title_username,
             iconRes = R.drawable.ic_settings_user,
             additionalText = username?.getFullUsername(resourcesProvider)
                 ?: resourcesProvider.getString(R.string.settings_item_username_not_reserved),
@@ -48,12 +48,12 @@ class SettingsItemMapper(
     ): List<SettingsItem> = listOfNotNull(
         SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_security),
         ComplexSettingsItem(
-            settingNameRes = R.string.settings_item_title_pin,
+            nameRes = R.string.settings_item_title_pin,
             iconRes = R.drawable.ic_settings_pin,
             hasSeparator = true
         ),
         ComplexSettingsItem(
-            settingNameRes = R.string.settings_item_title_networks,
+            nameRes = R.string.settings_item_title_networks,
             iconRes = R.drawable.ic_settings_network,
             hasSeparator = true
         ),

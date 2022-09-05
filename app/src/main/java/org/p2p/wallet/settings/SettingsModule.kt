@@ -11,14 +11,16 @@ import org.p2p.wallet.settings.ui.appearance.AppearanceContract
 import org.p2p.wallet.settings.ui.appearance.AppearancePresenter
 import org.p2p.wallet.settings.ui.network.SettingsNetworkContract
 import org.p2p.wallet.settings.ui.network.SettingsNetworkPresenter
+import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinContract
+import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinPresenter
 import org.p2p.wallet.settings.ui.reset.ResetPinContract
 import org.p2p.wallet.settings.ui.reset.ResetPinPresenter
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseContract
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhrasePresenter
 import org.p2p.wallet.settings.ui.security.SecurityContract
 import org.p2p.wallet.settings.ui.security.SecurityPresenter
-import org.p2p.wallet.settings.ui.settings.presenter.NewSettingsPresenter
 import org.p2p.wallet.settings.ui.settings.NewSettingsContract
+import org.p2p.wallet.settings.ui.settings.presenter.NewSettingsPresenter
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItemMapper
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalanceContract
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalancesPresenter
@@ -55,5 +57,7 @@ object SettingsModule : InjectionModule {
 
         factoryOf(::SettingsNetworkPresenter) bind SettingsNetworkContract.Presenter::class
         factoryOf(::SettingsZeroBalancesPresenter) bind SettingsZeroBalanceContract.Presenter::class
+
+        factoryOf(::NewResetPinPresenter) bind NewResetPinContract.Presenter::class
     }
 }

@@ -14,6 +14,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
+import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
 import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
 import org.p2p.wallet.utils.BiometricPromptWrapper
@@ -32,12 +33,17 @@ class NewSettingsFragment :
         private const val REQUEST_KEY = "EXTRA_REQUEST_KEY"
 
         private const val RESULT_KEY_NEW_NETWORK = "KEY_NEW_NETWORK"
-        private const val KEY_PIN_CHANGED = "KEY_PIN_CHANGED"
 
         fun create(): NewSettingsFragment = NewSettingsFragment()
     }
 
     override val presenter: NewSettingsContract.Presenter by inject()
+
+    override val navBarColor: Int
+        get() = R.color.bg_snow
+
+    override val statusBarColor: Int
+        get() = R.color.bg_snow
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
@@ -70,9 +76,6 @@ class NewSettingsFragment :
             result.containsKey(RESULT_KEY_NEW_NETWORK) -> {
                 presenter.onNetworkEnvironmentChanged(result.requireSerializable(RESULT_KEY_NEW_NETWORK))
             }
-            result.containsKey(KEY_PIN_CHANGED) -> {
-                // TODO: PWN-4716
-            }
         }
     }
 
@@ -91,12 +94,12 @@ class NewSettingsFragment :
     }
 
     private fun handleNavigationForComplexSetting(settings: SettingsItem.ComplexSettingsItem) {
-        when (settings.settingNameRes) {
+        when (settings.nameRes) {
             R.string.settings_item_title_username -> {
                 presenter.onUsernameSettingClicked()
             }
             R.string.settings_item_title_pin -> {
-                // todo: PWN-4716
+                replaceFragment(NewResetPinIntroFragment.create())
             }
             R.string.settings_item_title_networks -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.NETWORK)
