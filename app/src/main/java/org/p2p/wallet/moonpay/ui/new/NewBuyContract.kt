@@ -17,7 +17,8 @@ interface NewBuyContract {
         fun setContinueButtonEnabled(isEnabled: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showMessage(message: String?)
-        fun showData(viewData: BuyViewData)
+        fun showTotal(total: String)
+        fun showTotalData(viewData: BuyViewData)
         fun navigateToMoonpay(amount: String)
         fun close()
     }
@@ -26,6 +27,7 @@ interface NewBuyContract {
         fun onPaymentMethodSelected(selectedMethod: PaymentMethod)
         fun onSelectTokenClicked()
         fun onSelectCurrencyClicked()
+        fun onTotalClicked()
         fun setToken(token: Token)
         fun setCurrency(currency: BuyCurrency.Currency)
         fun setBuyAmount(amount: String, isDelayEnabled: Boolean = true)

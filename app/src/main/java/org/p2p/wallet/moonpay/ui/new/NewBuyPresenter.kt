@@ -100,6 +100,12 @@ class NewBuyPresenter(
         view?.showCurrency(selectedCurrency)
     }
 
+    override fun onTotalClicked() {
+        currentBuyViewData?.let {
+            view?.showTotalData(it)
+        }
+    }
+
     override fun setToken(token: Token) {
         selectedToken = token
     }
@@ -222,7 +228,7 @@ class NewBuyPresenter(
             purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.asUsd() else null
         )
         view?.apply {
-            showData(data)
+            showTotal(data.totalText)
             currentBuyViewData = data
             showMessage(message = null)
             setContinueButtonEnabled(true)
@@ -266,14 +272,14 @@ class NewBuyPresenter(
             total = BigDecimal.ZERO
         )
         view?.apply {
-            showData(clearedData)
+            showTotal(clearedData.totalText)
             setContinueButtonEnabled(false)
             showMessage(null)
         }
     }
 
     override fun onContinueClicked() {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
     }
 
     override fun detach() {

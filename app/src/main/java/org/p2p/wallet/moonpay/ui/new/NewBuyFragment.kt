@@ -37,20 +37,6 @@ private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_REQUEST_CURRENCY = "KEY_REQUEST_CURRENCY"
 private const val KEY_RESULT_CURRENCY = "KEY_RESULT_CURRENCY"
 
-private val buyViewData = BuyViewData(
-    tokenSymbol = "SOL",
-    currencySymbol = "USD",
-    price = 100f.toBigDecimal(),
-    receiveAmount = 1500.0,
-    5.3f.toBigDecimal(),
-    networkFee = 0.1f.toBigDecimal(),
-    extraFee = 0f.toBigDecimal(),
-    accountCreationCost = 0f.toBigDecimal(),
-    total = 1405.4f.toBigDecimal(),
-    receiveAmountText = "",
-    purchaseCostText = "$ 1 400"
-)
-
 class NewBuyFragment :
     BaseMvpFragment<NewBuyContract.View, NewBuyContract.Presenter>(R.layout.fragment_new_buy),
     NewBuyContract.View {
@@ -127,11 +113,7 @@ class NewBuyFragment :
         amountsView.currency = "USD"
 
         textViewTotal.setOnClickListener {
-            BuyDetailsBottomSheet.show(
-                childFragmentManager,
-                getString(R.string.buy_transaction_details_bottom_sheet_title),
-                buyViewData
-            )
+            presenter.onTotalClicked()
         }
 
         buttonBuy.text = getString(R.string.buy_toolbar_title, "SOL")
@@ -184,8 +166,16 @@ class NewBuyFragment :
         message?.let { binding.buttonBuy.text = it }
     }
 
-    override fun showData(viewData: BuyViewData) {
-        binding.textViewTotal.text = viewData.totalText
+    override fun showTotal(total: String) {
+        binding.textViewTotal.text = total
+    }
+
+    override fun showTotalData(viewData: BuyViewData) {
+        BuyDetailsBottomSheet.show(
+            childFragmentManager,
+            getString(R.string.buy_transaction_details_bottom_sheet_title),
+            viewData
+        )
     }
 
     override fun setContinueButtonEnabled(isEnabled: Boolean) {
