@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface MoonpayApi {
 
-    @GET("currencies/{currencyCode}/buy_quote/")
+    @GET("v3/currencies/{currencyCode}/buy_quote/")
     suspend fun getBuyCurrency(
         @Path("currencyCode") quoteCurrencyCode: String,
         @Query("apiKey") apiKey: String,
@@ -17,9 +17,14 @@ interface MoonpayApi {
         @Query("regionalPricing") regionalPricing: String = "true",
     ): MoonpayBuyCurrencyResponse
 
-    @GET("currencies/{currencyCode}/ask_price/")
+    @GET("v3/currencies/{currencyCode}/ask_price/")
     suspend fun getCurrencyAskPrice(
         @Path("currencyCode") quoteCurrencyCode: String,
         @Query("apiKey") apiKey: String
     ): MoonpayCurrencyResponse
+
+    @GET("v4/ip_address/")
+    suspend fun getIpAddress(
+        @Query("apiKey") apiKey: String
+    ): MoonpayIpAddressResponse
 }

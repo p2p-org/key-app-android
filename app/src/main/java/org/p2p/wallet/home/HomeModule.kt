@@ -18,6 +18,7 @@ import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.moonpay.api.MoonpayApi
+import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.MoonpayRemoteRepository
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
@@ -86,6 +87,7 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get()
             )
         }
+        factoryOf(::PaymentMethodsInteractor)
     }
 
     private fun Module.initPresentationLayer() {
@@ -166,7 +168,8 @@ object HomeModule : InjectionModule {
                 maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
                 analyticsInteractor = get(),
-                userInteractor = get()
+                userInteractor = get(),
+                paymentMethodsInteractor = get()
             )
         }
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
