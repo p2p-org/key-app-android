@@ -97,7 +97,7 @@ class PhoneNumberEnterPresenter(
                 view?.navigateToAccountBlocked()
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.e(serverError, "Phone number submission failed with critical error")
-                view?.navigateToSmsInput()
+                view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error, "Phone number submission failed")
                 view?.showErrorSnackBar(R.string.error_general_message)
