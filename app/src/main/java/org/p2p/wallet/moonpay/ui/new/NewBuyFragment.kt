@@ -2,20 +2,29 @@ package org.p2p.wallet.moonpay.ui.new
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewBuyBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.moonpay.api.MoonpayUrlBuilder
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.bottomsheet.BuyDetailsBottomSheet
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -59,8 +68,18 @@ class NewBuyFragment :
     private val binding: FragmentNewBuyBinding by viewBinding()
     private val adapter: PaymentMethodsAdapter by lazy { PaymentMethodsAdapter(presenter::onPaymentMethodSelected) }
 
+    private var backPressedCallback: OnBackPressedCallback? = null
+
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val tokenKeyProvider: TokenKeyProvider by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        backPressedCallback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            presenter.onBackPressed()
+        }
+
         binding.initViews()
 
         setFragmentResultListener(KEY_REQUEST_TOKEN)
@@ -154,5 +173,46 @@ class NewBuyFragment :
             requestKey = KEY_REQUEST_CURRENCY,
             resultKey = KEY_RESULT_CURRENCY
         )
+    }
+
+    override fun showLoading(isLoading: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun showMessage(message: String?) {
+        binding.buttonBuy.isEnabled = message == null
+        message?.let { binding.buttonBuy.text = it }
+    }
+
+    override fun showData(viewData: BuyViewData) {
+        binding.textViewTotal.text = viewData.totalText
+    }
+
+    override fun setContinueButtonEnabled(isEnabled: Boolean) {
+        binding.buttonBuy.isEnabled = isEnabled
+    }
+
+    override fun navigateToMoonpay(amount: String) {
+        val solSymbol = Constants.SOL_SYMBOL.lowercase()
+        val tokenSymbol = token.tokenSymbol.lowercase()
+        val currencyCode = if (token.isSOL) solSymbol else "${tokenSymbol}_$solSymbol"
+        val url = MoonpayUrlBuilder.build(
+            moonpayWalletDomain = requireContext().getString(R.string.moonpayWalletDomain),
+            moonpayApiKey = BuildConfig.moonpayKey,
+            amount = amount,
+            walletAddress = tokenKeyProvider.publicKey,
+            currencyCode = currencyCode,
+        )
+        analyticsInteractor.logScreenOpenEvent(ScreenNames.Buy.EXTERNAL)
+        requireContext().showUrlInCustomTabs(url)
+    }
+
+    override fun close() {
+        popBackStack()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        backPressedCallback?.remove()
     }
 }

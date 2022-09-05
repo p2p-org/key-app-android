@@ -5,6 +5,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.model.BuyCurrency
+import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.PaymentMethod
 
 interface NewBuyContract {
@@ -13,6 +14,12 @@ interface NewBuyContract {
         fun showTokensToBuy(selectedToken: Token, tokensToBuy: List<Token>)
         fun showCurrency(selectedCurrency: BuyCurrency.Currency)
         fun showPaymentMethods(methods: List<PaymentMethod>)
+        fun setContinueButtonEnabled(isEnabled: Boolean)
+        fun showLoading(isLoading: Boolean)
+        fun showMessage(message: String?)
+        fun showData(viewData: BuyViewData)
+        fun navigateToMoonpay(amount: String)
+        fun close()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -23,5 +30,7 @@ interface NewBuyContract {
         fun setCurrency(currency: BuyCurrency.Currency)
         fun setBuyAmount(amount: String, isDelayEnabled: Boolean = true)
         fun onFocusModeChanged(focusMode: FocusMode)
+        fun onContinueClicked()
+        fun onBackPressed()
     }
 }
