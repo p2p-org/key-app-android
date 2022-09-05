@@ -1,7 +1,7 @@
 package org.p2p.wallet.settings.ui.settings
 
 import android.content.Context
-import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
