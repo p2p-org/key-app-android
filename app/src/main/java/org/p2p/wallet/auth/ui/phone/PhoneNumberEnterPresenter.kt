@@ -82,19 +82,16 @@ class PhoneNumberEnterPresenter(
             try {
                 selectedCountryCode?.let {
                     val userPhoneNumber = it.phoneCode + phoneNumber
-                    if (lastPhoneNumber != userPhoneNumber) {
-                        createWalletInteractor.startCreatingWallet(userPhoneNumber = it.phoneCode + phoneNumber)
-                        lastPhoneNumber = userPhoneNumber
+                    if (createWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
+                        view?.navigateToAccountBlocked()
+                    } else {
+                        createWalletInteractor.startCreatingWallet(userPhoneNumber = userPhoneNumber)
+                        view?.navigateToSmsInput()
                     }
-                    view?.navigateToSmsInput()
                 }
             } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
                 Timber.i(smsDeliverFailed)
-                if (++submitUserPhoneTriesCount >= MAX_PHONE_NUMBER_TRIES) {
-                    view?.navigateToAccountBlocked()
-                } else {
-                    view?.showSmsDeliveryFailedForNumber()
-                }
+                view?.showSmsDeliveryFailedForNumber()
             } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
                 Timber.i(tooManyPhoneEnters)
                 view?.navigateToAccountBlocked()
