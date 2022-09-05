@@ -39,7 +39,7 @@ private val buyViewData = BuyViewData(
     accountCreationCost = 0f.toBigDecimal(),
     total = 1405.4f.toBigDecimal(),
     receiveAmountText = "",
-    purchaseCostText = "$1 400"
+    purchaseCostText = "$ 1 400"
 )
 
 class NewBuyFragment :

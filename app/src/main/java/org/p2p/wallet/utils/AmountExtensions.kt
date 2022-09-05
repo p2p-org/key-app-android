@@ -85,7 +85,7 @@ fun BigInteger.isNotZero() = this.compareTo(BigInteger.ZERO) != 0
 fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 
-fun BigDecimal.asUsd(): String = if (lessThenMinUsd()) "<$0.01" else "$${formatUsd()}"
+fun BigDecimal.asUsd(): String = if (lessThenMinUsd()) "<$ 0.01" else "$ ${formatUsd()}"
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     lessThenMinUsd() -> "(<$0.01)"
     withBraces -> "~($${formatUsd()})"
