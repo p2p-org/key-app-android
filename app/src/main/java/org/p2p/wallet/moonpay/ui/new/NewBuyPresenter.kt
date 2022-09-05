@@ -155,7 +155,7 @@ class NewBuyPresenter(
             val result = moonpayRepository.getBuyCurrencyData(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
-                tokenToBuy = tokenToBuy,
+                tokenToBuy = selectedToken,
                 baseCurrencyCode = baseCurrencyCode
             )
             onBuyCurrencyLoadSuccess(result)
@@ -207,7 +207,7 @@ class NewBuyPresenter(
     }
 
     private fun handleEnteredAmountValid(buyCurrencyInfo: BuyCurrency) {
-        val receiveSymbol = if (isSwappedToToken) selectedCurrency.code else tokenToBuy.tokenSymbol
+        val receiveSymbol = if (isSwappedToToken) selectedCurrency.code else selectedToken.tokenSymbol
         val amount = if (isSwappedToToken) {
             buyCurrencyInfo.totalAmount.formatUsd()
         } else {
