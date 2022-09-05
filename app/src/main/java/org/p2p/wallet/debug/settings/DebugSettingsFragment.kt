@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -15,6 +14,7 @@ import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
 import org.p2p.wallet.debug.torus.DebugTorusFragment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.utils.getSerializableOrNull
@@ -48,10 +48,7 @@ class DebugSettingsFragment :
             }
         }
 
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            REQUEST_KEY,
-            viewLifecycleOwner
-        ) { _, result ->
+        childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, result ->
             when {
                 result.containsKey(BUNDLE_KEY_NEW_NETWORK_NAME) -> {
                     onNetworkChanged(result)
