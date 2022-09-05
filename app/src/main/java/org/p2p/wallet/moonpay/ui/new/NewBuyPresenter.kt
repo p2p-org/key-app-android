@@ -78,7 +78,7 @@ class NewBuyPresenter(
     override fun onBackPressed() {
         buyAnalytics.logBuyGoingBack(
             buySum = currentBuyViewData?.receiveAmount?.toBigDecimal() ?: BigDecimal.ZERO,
-            buyCurrency = tokenToBuy.tokenSymbol,
+            buyCurrency = selectedToken.tokenSymbol,
             buyUSD = currentBuyViewData?.price ?: BigDecimal.ZERO
         )
         view?.close()
@@ -217,7 +217,7 @@ class NewBuyPresenter(
         val currencySymbol = selectedCurrency.code
         val currency = if (currencySymbol == Constants.USD_READABLE_SYMBOL) "$" else currencySymbol
         val data = BuyViewData(
-            tokenSymbol = tokenToBuy.tokenSymbol,
+            tokenSymbol = selectedToken.tokenSymbol,
             currencySymbol = currency,
             price = buyCurrencyInfo.price.scaleShort(),
             receiveAmount = buyCurrencyInfo.receiveAmount,
