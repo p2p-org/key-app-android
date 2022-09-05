@@ -110,6 +110,8 @@ class NewBuyPresenter(
 
     override fun setToken(token: Token) {
         selectedToken = token
+        view?.setContinueButtonEnabled(false)
+        calculateTokens(amount, isDelayEnabled = false)
     }
 
     override fun setCurrency(currency: BuyCurrency.Currency) {
