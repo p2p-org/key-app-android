@@ -4,8 +4,10 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
+import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -26,6 +28,10 @@ class NewBuyPresenter(
 
     private val paymentMethods = mutableListOf<PaymentMethod>()
 
+    private lateinit var tokensToBuy: List<Token>
+    private var selectedCurrency: BuyCurrency.Currency = SelectCurrencyBottomSheet.DEFAULT_CURRENCY
+    private var selectedToken: Token = tokenToBuy
+
     override fun attach(view: NewBuyContract.View) {
         super.attach(view)
         loadTokensToBuy()
@@ -34,8 +40,8 @@ class NewBuyPresenter(
 
     private fun loadTokensToBuy() {
         launch {
-            val tokensToBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
-            view?.initTokensToBuy(tokensToBuy)
+            tokensToBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
+            selectedToken = tokensToBuy.find { it.tokenSymbol == Constants.USDC_SYMBOL } ?: tokenToBuy
         }
     }
 
@@ -53,5 +59,21 @@ class NewBuyPresenter(
         }
 
         view?.showPaymentMethods(paymentMethods)
+    }
+
+    override fun onSelectTokenClicked() {
+        view?.showTokensToBuy(selectedToken, tokensToBuy)
+    }
+
+    override fun onSelectCurrencyClicked() {
+        view?.showCurrency(selectedCurrency)
+    }
+
+    override fun setToken(token: Token) {
+        selectedToken = token
+    }
+
+    override fun setCurrency(currency: BuyCurrency.Currency) {
+        selectedCurrency = currency
     }
 }

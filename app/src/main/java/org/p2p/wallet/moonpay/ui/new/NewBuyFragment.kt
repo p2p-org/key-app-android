@@ -80,12 +80,14 @@ class NewBuyFragment :
             KEY_REQUEST_TOKEN -> {
                 result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
                     binding.amountsView.token = it.tokenSymbol
+                    presenter.setToken(it)
                 }
             }
 
             KEY_REQUEST_CURRENCY -> {
                 result.getParcelable<BuyCurrency.Currency>(KEY_RESULT_CURRENCY)?.let {
                     binding.amountsView.currency = it.code
+                    presenter.setCurrency(it)
                 }
             }
         }
@@ -111,33 +113,36 @@ class NewBuyFragment :
 
         buttonBuy.text = getString(R.string.buy_toolbar_title, "SOL")
 
-        initCurrencies()
+        binding.amountsView.setOnSelectTokenClickListener {
+            presenter.onSelectTokenClicked()
+        }
+        binding.amountsView.setOnSelectCurrencyClickListener {
+            presenter.onSelectCurrencyClicked()
+        }
     }
 
     override fun showPaymentMethods(methods: List<PaymentMethod>) {
         adapter.setItems(methods)
     }
 
-    override fun initTokensToBuy(tokensToBuy: List<Token>) {
-        binding.amountsView.setOnSelectTokenClickListener {
-            NewSelectTokenBottomSheet.show(
-                fm = childFragmentManager,
-                title = getString(R.string.buy_select_token_title),
-                tokens = tokensToBuy,
-                requestKey = KEY_REQUEST_TOKEN,
-                resultKey = KEY_RESULT_TOKEN
-            )
-        }
+    override fun showTokensToBuy(selectedToken: Token, tokensToBuy: List<Token>) {
+        NewSelectTokenBottomSheet.show(
+            fm = childFragmentManager,
+            title = getString(R.string.buy_select_token_title),
+            tokens = tokensToBuy,
+            preselectedToken = selectedToken,
+            requestKey = KEY_REQUEST_TOKEN,
+            resultKey = KEY_RESULT_TOKEN
+        )
     }
 
-    private fun initCurrencies() {
-        binding.amountsView.setOnSelectCurrencyClickListener {
-            SelectCurrencyBottomSheet.show(
-                fm = childFragmentManager,
-                title = getString(R.string.buy_select_currency_title),
-                requestKey = KEY_REQUEST_CURRENCY,
-                resultKey = KEY_RESULT_CURRENCY
-            )
-        }
+    override fun showCurrency(selectedCurrency: BuyCurrency.Currency) {
+        SelectCurrencyBottomSheet.show(
+            fm = childFragmentManager,
+            title = getString(R.string.buy_select_currency_title),
+            preselectedCurrency = selectedCurrency,
+            requestKey = KEY_REQUEST_CURRENCY,
+            resultKey = KEY_RESULT_CURRENCY
+        )
     }
 }

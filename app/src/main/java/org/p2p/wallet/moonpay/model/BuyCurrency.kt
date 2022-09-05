@@ -20,5 +20,13 @@ data class BuyCurrency(
         val code: String,
         val minAmount: BigDecimal,
         val maxAmount: BigDecimal?,
-    ) : Parcelable
+    ) : Parcelable {
+        companion object {
+            fun create(code: String): Currency = Currency(
+                code = code,
+                minAmount = BigDecimal.ZERO,
+                maxAmount = null
+            )
+        }
+    }
 }
