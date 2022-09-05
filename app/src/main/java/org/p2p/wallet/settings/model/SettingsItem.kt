@@ -25,7 +25,7 @@ sealed interface SettingsItem {
     ) : SettingsItem
 
     data class ComplexSettingsItem(
-        @StringRes val settingNameRes: Int,
+        @StringRes val nameRes: Int,
         @DrawableRes val iconRes: Int,
         val additionalText: String? = null,
         val hasSeparator: Boolean

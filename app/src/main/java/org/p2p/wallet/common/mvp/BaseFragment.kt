@@ -79,7 +79,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
     }
 
-    private fun setSystemBarsColors(@ColorRes colorResId: Int, @ColorRes navBarColor: Int) {
+    protected fun setSystemBarsColors(@ColorRes colorResId: Int, @ColorRes navBarColor: Int) {
         val window = requireActivity().window ?: return
         with(window) {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)

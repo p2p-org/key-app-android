@@ -110,7 +110,7 @@
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
     <string name="auth_go_to_wallet">Go to wallet</string>
-    <string name="auth_logout">Logout now</string>
+    <string name="auth_logout">Log out</string>
     <string name="auth_done">Done</string>
     <string name="auth_wrong_seed_phrase_empty">Seed phrase is empty</string>
     <string name="auth_select_derivation_path">Select Derivation Path</string>

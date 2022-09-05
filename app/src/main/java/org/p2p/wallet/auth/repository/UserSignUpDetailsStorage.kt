@@ -49,4 +49,6 @@ class UserSignUpDetailsStorage(
             .onFailure { Timber.tag(TAG).i(it) }
             .getOrNull()
     }
+
+    fun isDeviceShareSaved(): Boolean = getLastSignUpUserDetails() != null
 }
