@@ -18,7 +18,7 @@ class SignUpFlowDataLocalRepository(
     private val signUpUserStorage: UserSignUpDetailsStorage
 ) {
 
-   var userPhoneNumberEnteredCount = 0
+    var userPhoneNumberEnteredCount = 0
 
     var signUpUserId: String? = null
         set(value) {
