@@ -2,7 +2,6 @@ package org.p2p.wallet.auth.gateway.repository
 
 import com.google.gson.JsonObject
 import org.near.borshj.Borsh
-import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.encodeToBase64String
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
@@ -14,7 +13,6 @@ import org.p2p.wallet.auth.gateway.api.response.GatewayServiceResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.toBase58Instance
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -26,11 +24,11 @@ class GatewayServiceCreateWalletMapper(
     private val errorMapper: GatewayServiceErrorMapper
 ) {
     private class RegisterWalletSignatureStruct(
-        val clientId: String,
         val etheriumId: String,
+        val clientId: String,
         val phone: String,
+        val appHash: String,
         val channelType: String,
-        val appHash: String
     ) : Borsh
 
     private class ConfirmRegisterWalletSignatureStruct(
@@ -68,11 +66,6 @@ class GatewayServiceCreateWalletMapper(
                 appHash = Constants.APP_HASH
             )
         )
-        val borsh = Borsh.serialize(userPublicKey.base58Value)
-        Borsh.serialize(etheriumAddress.lowercase()) +
-            Borsh.serialize(phoneNumber) +
-            Borsh.serialize(channel.backendName) +
-            Borsh.serialize(Constants.APP_HASH)
 
         return RegisterWalletRequest(
             clientSolanaPublicKey = userPublicKey,
@@ -81,10 +74,7 @@ class GatewayServiceCreateWalletMapper(
             appHash = Constants.APP_HASH,
             channel = channel,
             timestamp = createTimestampField(),
-            requestSignature = TweetNaclFast.Signature(byteArrayOf(), userPrivateKey.decodeToBytes())
-                .detached(borsh)
-                .toBase58Instance()
-                .base58Value
+            requestSignature = signatureField.base58Value
         )
             .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.REGISTER_WALLET) }
     }
