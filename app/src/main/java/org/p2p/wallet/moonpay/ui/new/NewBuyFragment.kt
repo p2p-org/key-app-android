@@ -182,16 +182,17 @@ class NewBuyFragment :
         binding.buttonBuy.isEnabled = isEnabled
     }
 
-    override fun navigateToMoonpay(amount: String) {
+    override fun navigateToMoonpay(amount: String, selectedToken: Token, selectedCurrency: BuyCurrency.Currency) {
         val solSymbol = Constants.SOL_SYMBOL.lowercase()
-        val tokenSymbol = token.tokenSymbol.lowercase()
-        val currencyCode = if (token.isSOL) solSymbol else "${tokenSymbol}_$solSymbol"
+        val selectedTokenSymbol = selectedToken.tokenSymbol.lowercase()
+        val tokenSymbol = if (token.isSOL) solSymbol else "${selectedTokenSymbol}_$solSymbol"
         val url = MoonpayUrlBuilder.build(
             moonpayWalletDomain = requireContext().getString(R.string.moonpayWalletDomain),
             moonpayApiKey = BuildConfig.moonpayKey,
             amount = amount,
             walletAddress = tokenKeyProvider.publicKey,
-            currencyCode = currencyCode,
+            tokenSymbol = tokenSymbol,
+            currencyCode = selectedCurrency.code.lowercase()
         )
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Buy.EXTERNAL)
         requireContext().showUrlInCustomTabs(url)

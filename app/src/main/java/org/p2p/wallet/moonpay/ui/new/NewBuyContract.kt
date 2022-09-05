@@ -19,7 +19,7 @@ interface NewBuyContract {
         fun showMessage(message: String?)
         fun showTotal(total: String)
         fun showTotalData(viewData: BuyViewData)
-        fun navigateToMoonpay(amount: String)
+        fun navigateToMoonpay(amount: String, selectedToken: Token, selectedCurrency: BuyCurrency.Currency)
         fun close()
     }
 
