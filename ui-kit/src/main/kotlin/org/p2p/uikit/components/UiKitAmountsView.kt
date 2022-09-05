@@ -62,13 +62,13 @@ class UiKitAmountsView @JvmOverloads constructor(
         FocusMode.CURRENCY
     }
 
-    fun setTokenAmount(tokenAmount: String) = with(binding.editTextTokenAmount) {
+    fun setTokenAmount(tokenAmount: String?) = with(binding.editTextTokenAmount) {
         removeTextChangedListener(tokenTextWatcher)
         setText(tokenAmount)
         addTextChangedListener(tokenTextWatcher)
     }
 
-    fun setCurrencyAmount(currencyAmount: String) = with(binding.editTextCurrencyAmount) {
+    fun setCurrencyAmount(currencyAmount: String?) = with(binding.editTextCurrencyAmount) {
         removeTextChangedListener(currencyTextWatcher)
         setText(currencyAmount)
         addTextChangedListener(currencyTextWatcher)

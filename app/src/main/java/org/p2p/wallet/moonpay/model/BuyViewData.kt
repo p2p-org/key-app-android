@@ -18,7 +18,7 @@ data class BuyViewData(
     val extraFee: BigDecimal,
     val accountCreationCost: BigDecimal?,
     val total: BigDecimal,
-    val receiveAmountText: String,
+    val receiveAmountText: String?,
     val purchaseCostText: String?,
 ) : Parcelable {
 

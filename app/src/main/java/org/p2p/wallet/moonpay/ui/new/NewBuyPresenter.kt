@@ -271,7 +271,8 @@ class NewBuyPresenter(
             networkFee = BigDecimal.ZERO,
             extraFee = BigDecimal.ZERO,
             accountCreationCost = null,
-            total = BigDecimal.ZERO
+            total = BigDecimal.ZERO,
+            receiveAmountText = null
         )
         view?.apply {
             showTotal(clearedData)
