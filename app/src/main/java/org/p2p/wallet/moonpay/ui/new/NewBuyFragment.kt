@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.components.FocusMode
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -158,7 +159,7 @@ class NewBuyFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 
     override fun showMessage(message: String?) {
@@ -166,8 +167,14 @@ class NewBuyFragment :
         message?.let { binding.buttonBuy.text = it }
     }
 
-    override fun showTotal(total: String) {
-        binding.textViewTotal.text = total
+    override fun showTotal(viewData: BuyViewData) {
+        val focusMode = binding.amountsView.getFocusMode()
+        if (focusMode == FocusMode.TOKEN) {
+            binding.amountsView.setCurrencyAmount(viewData.receiveAmount.toString())
+        } else {
+            binding.amountsView.setTokenAmount(viewData.receiveAmount.toString())
+        }
+        binding.textViewTotal.text = viewData.totalText
     }
 
     override fun showTotalData(viewData: BuyViewData) {

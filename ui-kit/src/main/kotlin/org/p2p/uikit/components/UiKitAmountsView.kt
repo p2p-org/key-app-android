@@ -1,6 +1,7 @@
 package org.p2p.uikit.components
 
 import android.content.Context
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.EditText
@@ -25,6 +26,9 @@ class UiKitAmountsView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val binding = inflateViewBinding<WidgetAmountsViewBinding>()
+
+    private lateinit var tokenTextWatcher: TextWatcher
+    private lateinit var currencyTextWatcher: TextWatcher
 
     var token: String? = null
         set(value) {
@@ -52,12 +56,31 @@ class UiKitAmountsView @JvmOverloads constructor(
         }
     }
 
+    fun getFocusMode(): FocusMode = if (binding.editTextTokenAmount.hasFocus()) {
+        FocusMode.TOKEN
+    } else {
+        FocusMode.CURRENCY
+    }
+
+    fun setTokenAmount(tokenAmount: String) = with(binding.editTextTokenAmount) {
+        removeTextChangedListener(tokenTextWatcher)
+        setText(tokenAmount)
+        addTextChangedListener(tokenTextWatcher)
+    }
+
+    fun setCurrencyAmount(currencyAmount: String) = with(binding.editTextCurrencyAmount) {
+        removeTextChangedListener(currencyTextWatcher)
+        setText(currencyAmount)
+        addTextChangedListener(currencyTextWatcher)
+    }
+
     fun setOnTokenAmountChangeListener(onTokenAmountChange: (String) -> Unit) {
-        binding.editTextTokenAmount.doAfterTextChanged { onTokenAmountChange(it.toString()) }
+        tokenTextWatcher = binding.editTextTokenAmount.doAfterTextChanged { onTokenAmountChange(it.toString()) }
     }
 
     fun setOnCurrencyAmountChangeListener(onCurrencyAmountChange: (String) -> Unit) {
-        binding.editTextCurrencyAmount.doAfterTextChanged { onCurrencyAmountChange(it.toString()) }
+        currencyTextWatcher =
+            binding.editTextCurrencyAmount.doAfterTextChanged { onCurrencyAmountChange(it.toString()) }
     }
 
     fun setOnSelectTokenClickListener(onSelectTokenClick: () -> Unit) {

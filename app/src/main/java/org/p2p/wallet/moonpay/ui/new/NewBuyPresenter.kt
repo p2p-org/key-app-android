@@ -228,7 +228,7 @@ class NewBuyPresenter(
             purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.asUsd() else null
         )
         view?.apply {
-            showTotal(data.totalText)
+            showTotal(data)
             currentBuyViewData = data
             showMessage(message = null)
             setContinueButtonEnabled(true)
@@ -272,7 +272,7 @@ class NewBuyPresenter(
             total = BigDecimal.ZERO
         )
         view?.apply {
-            showTotal(clearedData.totalText)
+            showTotal(clearedData)
             setContinueButtonEnabled(false)
             showMessage(null)
         }
