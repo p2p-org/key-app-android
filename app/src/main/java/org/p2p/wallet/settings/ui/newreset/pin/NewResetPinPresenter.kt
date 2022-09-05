@@ -42,7 +42,7 @@ class NewResetPinPresenter(
         launch {
             try {
                 onSignInResult(authInteractor.signInByPinCode(pinCode))
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Timber.e(e, "error checking current pin")
                 view?.showIncorrectPinError()
                 view?.vibrate(VIBRATE_DURATION)
@@ -90,7 +90,7 @@ class NewResetPinPresenter(
                 authInteractor.resetPin(createdPin)
                 view?.showMessage(R.string.settings_item_pin_changed)
                 view?.showResetSuccess()
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Timber.e(e, "error setting new pin")
                 view?.showErrorMessage(e)
                 view?.showPinCorrect()
