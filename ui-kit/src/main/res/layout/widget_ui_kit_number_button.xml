@@ -17,7 +17,7 @@
         android:gravity="center"
         android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.LargeTitle"
-        android:textColor="@color/ui_kit_number_keyboard_button_color_selector"
+        android:textColor="@color/ui_kit_number_keyboard_button_color"
         tools:text="1" />
 
     <ImageView
@@ -26,6 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        app:tint="@color/ui_kit_number_keyboard_button_color_selector"
+        app:tint="@color/ui_kit_number_keyboard_button_color"
         tools:ignore="ContentDescription" />
 </merge>

@@ -284,7 +284,7 @@ class HomePresenter(
     }
 
     override fun onProfileClick() {
-        if (usernameInteractor.usernameExists()) {
+        if (usernameInteractor.isUsernameExist()) {
             view?.navigateToProfile()
         } else {
             view?.navigateToReserveUsername()
@@ -296,5 +296,10 @@ class HomePresenter(
             refreshTokens()
             state = state.copy(areZerosHidden = settingsInteractor.areZerosHidden())
         }
+    }
+
+    override fun detach() {
+        environmentManager.removeEnvironmentListener(this::class)
+        super.detach()
     }
 }

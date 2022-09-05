@@ -13,7 +13,7 @@ class BiometricPromptWrapper(
     @StringRes private val titleRes: Int = R.string.auth_quick_access,
     @StringRes private val descriptionRes: Int = R.string.auth_biometric_question,
     @StringRes private val negativeRes: Int = R.string.common_cancel,
-    private val onError: ((CharSequence?) -> Unit)? = null,
+    private val onError: ((String?) -> Unit)? = null,
     private val onSuccess: (Cipher) -> Unit
 ) {
 
@@ -25,6 +25,7 @@ class BiometricPromptWrapper(
                     errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
                         errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON
                 }
+                    ?.toString()
             )
         }
 

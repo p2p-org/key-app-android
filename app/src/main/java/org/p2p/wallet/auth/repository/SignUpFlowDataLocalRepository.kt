@@ -18,6 +18,8 @@ class SignUpFlowDataLocalRepository(
     private val signUpUserStorage: UserSignUpDetailsStorage
 ) {
 
+    var userPhoneNumberEnteredCount = 0
+
     var signUpUserId: String? = null
         set(value) {
             field = value
@@ -47,6 +49,7 @@ class SignUpFlowDataLocalRepository(
     var userPhoneNumber: String? = null
         set(value) {
             field = value
+            ++userPhoneNumberEnteredCount
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.length}")
         }
 

@@ -17,4 +17,4 @@ data class CountryCode(
     }
 }
 
-data class CountryCodeItem(val country: CountryCode)
+data class CountryCodeItem(val country: CountryCode, var isSelected: Boolean)

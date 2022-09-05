@@ -2,7 +2,7 @@ package org.p2p.wallet.user.repository
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Account
-import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers

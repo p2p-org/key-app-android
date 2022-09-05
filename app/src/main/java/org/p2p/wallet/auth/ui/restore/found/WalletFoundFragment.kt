@@ -83,7 +83,7 @@ class WalletFoundFragment :
     }
 
     override fun onSuccessfulSignUp() {
-        view?.post {
+        requireView().post {
             replaceFragment(PhoneNumberEnterFragment.create())
         }
     }

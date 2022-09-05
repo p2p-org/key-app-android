@@ -1,8 +1,8 @@
 package org.p2p.wallet.debug.settings
 
+import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
@@ -14,10 +14,10 @@ import org.p2p.wallet.debug.logs.CustomLogDialog
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
 import org.p2p.wallet.debug.torus.DebugTorusFragment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.settings.model.SettingsRow
-import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
-import org.p2p.wallet.settings.ui.settings.SettingsAdapter
-import org.p2p.wallet.utils.addFragment
+import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
+import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -37,7 +37,7 @@ class DebugSettingsFragment :
     override val presenter: DebugSettingsContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = SettingsAdapter(::onSettingsRowClicked)
+    private val adapter = DebugSettingsAdapter(::onSettingsRowClicked)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,10 +48,7 @@ class DebugSettingsFragment :
             }
         }
 
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            REQUEST_KEY,
-            viewLifecycleOwner
-        ) { _, result ->
+        childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, result ->
             when {
                 result.containsKey(BUNDLE_KEY_NEW_NETWORK_NAME) -> {
                     onNetworkChanged(result)
@@ -71,13 +68,7 @@ class DebugSettingsFragment :
                 replaceFragment(PushNotificationsFragment.create())
             }
             R.string.settings_network -> {
-                addFragment(
-                    SettingsNetworkFragment.create(REQUEST_KEY, BUNDLE_KEY_NEW_NETWORK_NAME),
-                    enter = 0,
-                    exit = 0,
-                    popEnter = 0,
-                    popExit = 0
-                )
+                SettingsNetworkBottomSheet.show(childFragmentManager, REQUEST_KEY, BUNDLE_KEY_NEW_NETWORK_NAME)
             }
             R.string.settings_fee_relayer -> {
                 replaceFragment(DebugFeeRelayerFragment.create())
@@ -98,9 +89,8 @@ class DebugSettingsFragment :
     }
 
     private fun onNetworkChanged(bundle: Bundle) {
-        val networkName = bundle.getString(BUNDLE_KEY_NEW_NETWORK_NAME)
-        if (!networkName.isNullOrEmpty()) {
-            presenter.onNetworkChanged(newName = networkName)
+        bundle.getSerializableOrNull<NetworkEnvironment>(BUNDLE_KEY_NEW_NETWORK_NAME)?.let {
+            presenter.onNetworkChanged(it)
         }
     }
 }
