@@ -151,7 +151,7 @@ class NewBuyPresenter(
 
             view?.showLoading(isLoading = true)
 
-            val baseCurrencyCode = Constants.USD_READABLE_SYMBOL.lowercase()
+            val baseCurrencyCode = selectedCurrency.code.lowercase()
             val result = moonpayRepository.getBuyCurrencyData(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
@@ -207,7 +207,7 @@ class NewBuyPresenter(
     }
 
     private fun handleEnteredAmountValid(buyCurrencyInfo: BuyCurrency) {
-        val receiveSymbol = if (isSwappedToToken) Constants.USD_SYMBOL else tokenToBuy.tokenSymbol
+        val receiveSymbol = if (isSwappedToToken) selectedCurrency.code else tokenToBuy.tokenSymbol
         val amount = if (isSwappedToToken) {
             buyCurrencyInfo.totalAmount.formatUsd()
         } else {
@@ -216,7 +216,7 @@ class NewBuyPresenter(
         val currencyForTokensAmount = buyCurrencyInfo.price * buyCurrencyInfo.receiveAmount.toBigDecimal()
         val data = BuyViewData(
             tokenSymbol = tokenToBuy.tokenSymbol,
-            currencySymbol = Constants.USD_SYMBOL,
+            currencySymbol = selectedCurrency.code,
             price = buyCurrencyInfo.price.scaleShort(),
             receiveAmount = buyCurrencyInfo.receiveAmount,
             processingFee = buyCurrencyInfo.feeAmount.scaleShort(),
@@ -238,7 +238,7 @@ class NewBuyPresenter(
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
         val isCurrencyUsd = loadedBuyCurrency.code == Constants.USD_READABLE_SYMBOL.lowercase()
         val suffixPrefix = if (isCurrencyUsd) {
-            Constants.USD_SYMBOL
+            selectedCurrency.code
         } else {
             loadedBuyCurrency.code.uppercase()
         }
@@ -279,7 +279,7 @@ class NewBuyPresenter(
     }
 
     override fun onContinueClicked() {
-        //TODO("Not yet implemented")
+        // TODO("Not yet implemented")
     }
 
     override fun detach() {
