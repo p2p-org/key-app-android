@@ -3,7 +3,7 @@ package org.p2p.wallet.debug.settings
 import android.content.Context
 import android.os.Build
 import android.util.DisplayMetrics
-import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider

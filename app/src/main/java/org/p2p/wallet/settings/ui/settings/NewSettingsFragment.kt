@@ -14,13 +14,12 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.model.SettingsItem
-import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
+import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
 import org.p2p.wallet.utils.BiometricPromptWrapper
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.requireSerializable
+import org.p2p.wallet.utils.requireParcelable
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -65,17 +64,9 @@ class NewSettingsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            REQUEST_KEY,
-            viewLifecycleOwner,
-            ::handleFragmentResult
-        )
-    }
-
-    private fun handleFragmentResult(requestKey: String, result: Bundle) {
-        when {
-            result.containsKey(RESULT_KEY_NEW_NETWORK) -> {
-                presenter.onNetworkEnvironmentChanged(result.requireSerializable(RESULT_KEY_NEW_NETWORK))
+        childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
+            if (bundle.containsKey(RESULT_KEY_NEW_NETWORK)) {
+                presenter.onNetworkEnvironmentChanged(bundle.requireParcelable(RESULT_KEY_NEW_NETWORK))
             }
         }
     }
@@ -104,15 +95,10 @@ class NewSettingsFragment :
             }
             R.string.settings_item_title_networks -> {
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.NETWORK)
-                addFragment(
-                    target = SettingsNetworkFragment.create(
-                        requestKey = REQUEST_KEY,
-                        resultKey = RESULT_KEY_NEW_NETWORK
-                    ),
-                    enter = 0,
-                    exit = 0,
-                    popEnter = 0,
-                    popExit = 0
+                SettingsNetworkBottomSheet.show(
+                    fm = childFragmentManager,
+                    requestKey = REQUEST_KEY,
+                    resultKey = RESULT_KEY_NEW_NETWORK
                 )
             }
         }

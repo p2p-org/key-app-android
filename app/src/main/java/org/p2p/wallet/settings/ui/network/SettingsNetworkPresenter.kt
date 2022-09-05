@@ -1,6 +1,6 @@
 package org.p2p.wallet.settings.ui.network
 
-import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
@@ -20,10 +20,14 @@ class SettingsNetworkPresenter(
 
     private fun loadEnvironments() {
         Timber.d(environmentManager.availableNetworks.toString())
+        val filteredNetworks = if (inAppFeatureFlags.isDevNetEnabled.featureValue) {
+            environmentManager.availableNetworks
+        } else {
+            environmentManager.availableNetworks.filterNot { it == NetworkEnvironment.DEVNET }
+        }
         view?.showEnvironment(
             currentNetwork = currentSelectedEnvironment,
-            isDevnetEnabled = inAppFeatureFlags.isDevNetEnabled.featureValue,
-            availableNetworks = environmentManager.availableNetworks
+            availableNetworks = filteredNetworks
         )
     }
 
@@ -33,7 +37,7 @@ class SettingsNetworkPresenter(
 
     override fun confirmNetworkEnvironmentSelected() {
         if (currentSelectedEnvironment == environmentManager.loadCurrentEnvironment()) {
-            view?.close()
+            view?.navigateBack()
         } else {
             view?.closeWithResult(currentSelectedEnvironment)
         }
