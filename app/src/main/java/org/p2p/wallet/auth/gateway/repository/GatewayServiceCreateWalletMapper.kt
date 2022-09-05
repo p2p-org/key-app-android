@@ -1,8 +1,9 @@
 package org.p2p.wallet.auth.gateway.repository
 
 import com.google.gson.JsonObject
-import org.near.borshj.Borsh
+import org.near.borshj.BorshBuffer
 import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.solanaj.utils.crypto.encodeToBase64
 import org.p2p.solanaj.utils.crypto.encodeToBase64String
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
@@ -23,22 +24,39 @@ class GatewayServiceCreateWalletMapper(
     private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator,
     private val errorMapper: GatewayServiceErrorMapper
 ) {
-    private class RegisterWalletSignatureStruct(
+    private data class RegisterWalletSignatureStruct(
         val etheriumId: String,
         val clientId: String,
         val phone: String,
         val appHash: String,
         val channelType: String,
-    ) : Borsh
+    ) : BorshSerializable {
+        override fun serializeSelf(): ByteArray =
+            getBorshBuffer()
+                .write(etheriumId, clientId, phone, appHash, channelType) // order is important
+                .toByteArray()
+    }
 
-    private class ConfirmRegisterWalletSignatureStruct(
+    private data class ConfirmRegisterWalletSignatureStruct(
         val clientId: String,
         val etheriumId: String,
         val encryptedShare: String,
-        val encryptedPayload: ByteArray,
+        val encryptedPayloadB64: String,
         val phone: String,
         val phoneConfirmationCode: String
-    ) : Borsh
+    ) : BorshSerializable {
+        override fun serializeSelf(): ByteArray =
+            getBorshBuffer()
+                .write(
+                    etheriumId,
+                    clientId,
+                    encryptedShare,
+                    encryptedPayloadB64,
+                    phone,
+                    phoneConfirmationCode
+                ) // order is important
+                .toByteArray()
+    }
 
     @Throws(GatewayServiceError::class)
     fun <T> fromNetwork(response: GatewayServiceResponse<T>): T {
@@ -56,7 +74,6 @@ class GatewayServiceCreateWalletMapper(
         channel: OtpMethod
     ): GatewayServiceRequest<RegisterWalletRequest> {
         val signatureField: Base58String = signatureFieldGenerator.generateSignatureField(
-            userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             structToSerialize = RegisterWalletSignatureStruct(
                 clientId = userPublicKey.base58Value,
@@ -89,14 +106,13 @@ class GatewayServiceCreateWalletMapper(
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
         val signatureField: Base58String = signatureFieldGenerator.generateSignatureField(
-            userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             structToSerialize = ConfirmRegisterWalletSignatureStruct(
                 clientId = userPublicKey.base58Value,
                 etheriumId = etheriumAddress.lowercase(),
                 phone = phoneNumber,
                 encryptedShare = thirdShare.value,
-                encryptedPayload = jsonEncryptedMnemonicPhrase.toString().toByteArray(),
+                encryptedPayloadB64 = jsonEncryptedMnemonicPhrase.toString().toByteArray().encodeToBase64(),
                 phoneConfirmationCode = otpConfirmationCode
             )
         )

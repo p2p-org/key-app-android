@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.gateway.repository
 
-import org.near.borshj.Borsh
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRestoreWalletRequest
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
@@ -20,13 +19,23 @@ class GatewayServiceRestoreWalletMapper(
         val appHash: String,
         val phone: String,
         val channelType: String
-    ) : Borsh
+    ) : BorshSerializable {
+        override fun serializeSelf(): ByteArray =
+            getBorshBuffer()
+                .write(restoreId, phone, appHash, channelType)
+                .toByteArray()
+    }
 
     private class ConfirmRestoreWalletSignatureStruct(
         val restoreId: String,
         val phone: String,
         val otpConfirmationCode: String
-    ) : Borsh
+    ) : BorshSerializable {
+        override fun serializeSelf(): ByteArray =
+            getBorshBuffer()
+                .write(restoreId, phone, otpConfirmationCode)
+                .toByteArray()
+    }
 
     fun toRestoreWalletNetwork(
         userPublicKey: Base58String,
@@ -35,7 +44,6 @@ class GatewayServiceRestoreWalletMapper(
         channel: OtpMethod
     ): GatewayServiceRequest<RestoreWalletRequest> {
         val signatureField = signatureFieldGenerator.generateSignatureField(
-            userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             structToSerialize = RestoreWalletSignatureStruct(
                 restoreId = userPublicKey.base58Value,
@@ -63,7 +71,6 @@ class GatewayServiceRestoreWalletMapper(
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRestoreWalletRequest> {
         val signatureField = signatureFieldGenerator.generateSignatureField(
-            userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             structToSerialize = ConfirmRestoreWalletSignatureStruct(
                 restoreId = userPublicKey.base58Value,
