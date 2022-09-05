@@ -328,6 +328,8 @@ dependencies {
     testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+    implementation "com.google.android.gms:play-services-auth-blockstore:16.1.0"
+
 
     implementation 'com.github.RedMadRobot:input-mask-android:6.1.0'
     implementation 'io.michaelrocks:libphonenumber-android:8.12.52'
