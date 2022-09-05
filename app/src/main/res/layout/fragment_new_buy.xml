@@ -110,7 +110,7 @@
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
                 app:layout_constraintBaseline_toBaselineOf="@id/textViewTotalTitle"
                 app:layout_constraintEnd_toStartOf="@id/imageViewChevron"
-                android:text="1 405.4 USD" />
+                tools:text="1 405.4 USD" />
 
             <ImageView
                 android:id="@+id/imageViewChevron"
