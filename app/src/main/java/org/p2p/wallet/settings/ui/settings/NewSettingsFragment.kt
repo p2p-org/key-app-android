@@ -13,10 +13,10 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
+import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
-import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.replaceFragment

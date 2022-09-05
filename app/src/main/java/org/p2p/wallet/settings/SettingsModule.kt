@@ -20,8 +20,8 @@ import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhrasePresenter
 import org.p2p.wallet.settings.ui.security.SecurityContract
 import org.p2p.wallet.settings.ui.security.SecurityPresenter
 import org.p2p.wallet.settings.ui.settings.NewSettingsContract
-import org.p2p.wallet.settings.ui.settings.presenter.NewSettingsPresenter
 import org.p2p.wallet.settings.model.SettingsItemMapper
+import org.p2p.wallet.settings.ui.settings.NewSettingsPresenter
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalanceContract
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalancesPresenter
 
