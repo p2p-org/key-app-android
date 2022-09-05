@@ -89,6 +89,7 @@ class NewBuyFragment :
                         val symbol = it.tokenSymbol
                         amountsView.token = symbol
                         toolbarBuy.title = getString(R.string.buy_toolbar_title, symbol)
+                        buttonBuy.text = getString(R.string.buy_toolbar_title, symbol)
                     }
                     presenter.setToken(it)
                 }
@@ -119,18 +120,20 @@ class NewBuyFragment :
 
         buttonBuy.text = getString(R.string.buy_toolbar_title, token.tokenSymbol)
 
-        binding.amountsView.apply {
+        amountsView.apply {
             setOnSelectTokenClickListener { presenter.onSelectTokenClicked() }
             setOnTokenAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
         }
-        binding.amountsView.apply {
+        amountsView.apply {
             setOnSelectCurrencyClickListener { presenter.onSelectCurrencyClicked() }
             setOnCurrencyAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
         }
 
-        binding.amountsView.setOnFocusChangeListener { focusMode ->
+        amountsView.setOnFocusChangeListener { focusMode ->
             presenter.onFocusModeChanged(focusMode)
         }
+
+        buttonBuy.setOnClickListener { presenter.onContinueClicked() }
     }
 
     override fun showPaymentMethods(methods: List<PaymentMethod>) {

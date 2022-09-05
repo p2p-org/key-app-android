@@ -23,8 +23,10 @@ import org.p2p.wallet.utils.asCurrency
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
+import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
 
@@ -110,13 +112,13 @@ class NewBuyPresenter(
     override fun setToken(token: Token) {
         selectedToken = token
         view?.setContinueButtonEnabled(false)
-        calculateTokens(amount, false)
+        calculateTokens(amount, isDelayEnabled = false)
     }
 
     override fun setCurrency(currency: BuyCurrency.Currency) {
         selectedCurrency = currency
         view?.setContinueButtonEnabled(false)
-        calculateTokens(amount, false)
+        calculateTokens(amount, isDelayEnabled = false)
     }
 
     override fun onFocusModeChanged(focusMode: FocusMode) {
@@ -287,7 +289,18 @@ class NewBuyPresenter(
     }
 
     override fun onContinueClicked() {
-        // TODO("Not yet implemented")
+        currentBuyViewData?.let {
+            view?.navigateToMoonpay(amount = it.total.toString(), selectedToken, selectedCurrency)
+            // TODO resolve [buyProvider]
+            // TODO append analytics with selected token and currency
+            buyAnalytics.logBuyContinuing(
+                buyCurrency = it.tokenSymbol,
+                buySum = it.price,
+                buyProvider = "moonpay",
+                buyUSD = it.price.toUsd(it.price).orZero(),
+                lastScreenName = analyticsInteractor.getPreviousScreenName()
+            )
+        }
     }
 
     override fun detach() {
