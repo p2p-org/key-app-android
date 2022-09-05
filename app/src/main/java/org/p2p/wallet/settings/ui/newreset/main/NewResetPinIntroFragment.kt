@@ -6,6 +6,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentNewResetPinIntroBinding
 import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinFragment
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -23,6 +24,7 @@ class NewResetPinIntroFragment : BaseFragment(R.layout.fragment_new_reset_pin_in
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            toolbar.setNavigationOnClickListener { popBackStack() }
             sliderChangePin.onSlideCompleteListener = {
                 replaceFragment(NewResetPinFragment.create())
             }
