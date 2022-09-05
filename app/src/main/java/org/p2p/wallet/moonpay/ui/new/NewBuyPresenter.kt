@@ -18,7 +18,7 @@ import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.asUsd
+import org.p2p.wallet.utils.asCurrency
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.isZero
@@ -214,9 +214,11 @@ class NewBuyPresenter(
             buyCurrencyInfo.receiveAmount.toBigDecimal().formatToken()
         }
         val currencyForTokensAmount = buyCurrencyInfo.price * buyCurrencyInfo.receiveAmount.toBigDecimal()
+        val currencySymbol = selectedCurrency.code
+        val currency = if (currencySymbol == Constants.USD_READABLE_SYMBOL) "$" else currencySymbol
         val data = BuyViewData(
             tokenSymbol = tokenToBuy.tokenSymbol,
-            currencySymbol = selectedCurrency.code,
+            currencySymbol = currency,
             price = buyCurrencyInfo.price.scaleShort(),
             receiveAmount = buyCurrencyInfo.receiveAmount,
             processingFee = buyCurrencyInfo.feeAmount.scaleShort(),
@@ -225,7 +227,7 @@ class NewBuyPresenter(
             accountCreationCost = null,
             total = buyCurrencyInfo.totalAmount.scaleShort(),
             receiveAmountText = "$amount $receiveSymbol",
-            purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.asUsd() else null
+            purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.asCurrency(currency) else null
         )
         view?.apply {
             showTotal(data)
