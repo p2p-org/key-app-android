@@ -43,7 +43,6 @@ class NewBuyPresenter(
     private fun loadTokensToBuy() {
         launch {
             tokensToBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
-            selectedToken = tokensToBuy.find { it.tokenSymbol == Constants.USDC_SYMBOL } ?: tokenToBuy
         }
     }
 

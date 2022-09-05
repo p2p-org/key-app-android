@@ -7,17 +7,19 @@ import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveNetworkTypeBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.renbtc.ui.info.RenBtcBuyBottomSheet
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.renbtc.ui.info.RenBtcInfoBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
+import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
@@ -31,7 +33,7 @@ private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class ReceiveNetworkTypeFragment :
     BaseMvpFragment<ReceiveNetworkTypeContract.View, ReceiveNetworkTypeContract.Presenter>
-    (R.layout.fragment_receive_network_type),
+        (R.layout.fragment_receive_network_type),
     ReceiveNetworkTypeContract.View {
 
     companion object {
@@ -56,6 +58,8 @@ class ReceiveNetworkTypeFragment :
     }
     private val binding: FragmentReceiveNetworkTypeBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
+
     private val networkType: NetworkType by args(EXTRA_NETWORK_TYPE)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
     private val resultKey: String by args(EXTRA_RESULT_KEY)
@@ -85,7 +89,15 @@ class ReceiveNetworkTypeFragment :
 
             if (bundle.containsKey(BUNDLE_KEY_SELECTED_TOKEN)) {
                 val token = bundle.getParcelable<Token>(BUNDLE_KEY_SELECTED_TOKEN)
-                if (token != null) popAndReplaceFragment(BuySolanaFragment.create(token))
+                if (token != null) {
+                    popAndReplaceFragment(
+                        if (newBuyFeatureToggle.value) {
+                            NewBuyFragment.create(token)
+                        } else {
+                            BuySolanaFragment.create(token)
+                        }
+                    )
+                }
             }
         }
         presenter.load()

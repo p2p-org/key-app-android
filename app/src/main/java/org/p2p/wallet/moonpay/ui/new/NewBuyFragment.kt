@@ -79,7 +79,11 @@ class NewBuyFragment :
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
                 result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-                    binding.amountsView.token = it.tokenSymbol
+                    with(binding) {
+                        val symbol = it.tokenSymbol
+                        amountsView.token = symbol
+                        toolbarBuy.title = getString(R.string.buy_toolbar_title, symbol)
+                    }
                     presenter.setToken(it)
                 }
             }
