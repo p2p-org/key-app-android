@@ -13,6 +13,11 @@ import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetAmountsViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
 
+enum class FocusMode {
+    TOKEN,
+    CURRENCY
+}
+
 class UiKitAmountsView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -63,6 +68,16 @@ class UiKitAmountsView @JvmOverloads constructor(
     fun setOnSelectCurrencyClickListener(onSelectCurrencyClick: () -> Unit) {
         binding.textViewCurrency.setOnClickListener { onSelectCurrencyClick() }
         binding.imageViewSelectCurrency.setOnClickListener { onSelectCurrencyClick() }
+    }
+
+    fun setOnFocusChangeListener(onFocusChanged: (focusMode: FocusMode) -> Unit) {
+        binding.editTextTokenAmount.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) onFocusChanged(FocusMode.TOKEN)
+        }
+
+        binding.editTextCurrencyAmount.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) onFocusChanged(FocusMode.CURRENCY)
+        }
     }
 
     private fun handleAmountTextChanged(

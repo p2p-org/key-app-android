@@ -113,11 +113,17 @@ class NewBuyFragment :
 
         buttonBuy.text = getString(R.string.buy_toolbar_title, "SOL")
 
-        binding.amountsView.setOnSelectTokenClickListener {
-            presenter.onSelectTokenClicked()
+        binding.amountsView.apply {
+            setOnSelectTokenClickListener { presenter.onSelectTokenClicked() }
+            setOnTokenAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
         }
-        binding.amountsView.setOnSelectCurrencyClickListener {
-            presenter.onSelectCurrencyClicked()
+        binding.amountsView.apply {
+            setOnSelectCurrencyClickListener { presenter.onSelectCurrencyClicked() }
+            setOnCurrencyAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
+        }
+
+        binding.amountsView.setOnFocusChangeListener { focusMode ->
+            presenter.onFocusModeChanged(focusMode)
         }
     }
 

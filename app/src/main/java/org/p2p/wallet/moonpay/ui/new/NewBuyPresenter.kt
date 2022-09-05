@@ -1,6 +1,7 @@
 package org.p2p.wallet.moonpay.ui.new
 
 import kotlinx.coroutines.launch
+import org.p2p.uikit.components.FocusMode
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
@@ -31,6 +32,7 @@ class NewBuyPresenter(
     private lateinit var tokensToBuy: List<Token>
     private var selectedCurrency: BuyCurrency.Currency = SelectCurrencyBottomSheet.DEFAULT_CURRENCY
     private var selectedToken: Token = tokenToBuy
+    private var isSwappedToToken: Boolean = false
 
     override fun attach(view: NewBuyContract.View) {
         super.attach(view)
@@ -75,5 +77,13 @@ class NewBuyPresenter(
 
     override fun setCurrency(currency: BuyCurrency.Currency) {
         selectedCurrency = currency
+    }
+
+    override fun setBuyAmount(amount: String, isDelayEnabled: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onFocusModeChanged(focusMode: FocusMode) {
+        isSwappedToToken = focusMode == FocusMode.CURRENCY
     }
 }
