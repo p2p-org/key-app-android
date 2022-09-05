@@ -2,7 +2,7 @@ package org.p2p.wallet.settings.ui.settings.adapter.viewholder
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
+import org.p2p.wallet.settings.model.SettingsItem
 
 sealed class NewSettingsViewHolder<VB : ViewBinding, ITEM : SettingsItem>(
     private val binding: VB

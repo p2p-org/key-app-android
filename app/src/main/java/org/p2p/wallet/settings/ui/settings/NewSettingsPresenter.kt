@@ -1,4 +1,4 @@
-package org.p2p.wallet.settings.ui.settings.presenter
+package org.p2p.wallet.settings.ui.settings
 
 import android.content.Context
 import org.p2p.solanaj.rpc.NetworkEnvironment
@@ -16,7 +16,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.settings.ui.settings.NewSettingsContract
+import org.p2p.wallet.settings.model.SettingsItemMapper
 import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -60,7 +60,6 @@ class NewSettingsPresenter(
 
     override fun changeZeroBalanceHiddenFlag(hideValue: Boolean) {
         settingsInteractor.setZeroBalanceHidden(hideValue)
-        loadSettings()
     }
 
     override fun onBiometricSignInSwitchChanged(isSwitched: Boolean) {
@@ -68,7 +67,7 @@ class NewSettingsPresenter(
             view?.confirmBiometrics(authInteractor.getPinEncodeCipher())
         } else {
             authInteractor.disableBiometricSignIn()
-            loadSettings()
+            view?.updateSwitchItem(R.string.settings_item_title_touch_id, isSwitched = false)
         }
     }
 

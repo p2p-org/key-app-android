@@ -4,7 +4,7 @@ import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
+import org.p2p.wallet.settings.model.SettingsItem
 
 interface NewSettingsContract {
     interface View : MvpView {
@@ -13,6 +13,7 @@ interface NewSettingsContract {
         fun openUsernameScreen()
         fun openReserveUsernameScreen()
         fun confirmBiometrics(pinCodeCipher: EncodeCipher)
+        fun updateSwitchItem(switchItemId: Int, isSwitched: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

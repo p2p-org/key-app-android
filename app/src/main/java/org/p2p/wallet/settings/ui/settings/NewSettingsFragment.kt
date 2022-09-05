@@ -16,7 +16,7 @@ import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
+import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.replaceFragment
@@ -57,6 +57,7 @@ class NewSettingsFragment :
             onSuccess = { presenter.onBiometricSignInEnableConfirmed(EncodeCipher(it)) },
             onError = { message ->
                 message?.let { showUiKitSnackBar(message = it) }
+                presenter.onBiometricSignInSwitchChanged(isSwitched = false)
             }
         )
     }
@@ -86,14 +87,14 @@ class NewSettingsFragment :
 
     private fun onSettingsItemClicked(clickedSettings: SettingsItem) {
         when (clickedSettings) {
-            is SettingsItem.ComplexSettingsItem -> handleNavigationForComplexSetting(clickedSettings)
+            is SettingsItem.ComplexSettingsItem -> handleNavigationForComplexItem(clickedSettings)
             is SettingsItem.SignOutButtonItem -> presenter.onSignOutClicked()
-            is SettingsItem.SwitchSettingsItem -> handleSwitchSetting(clickedSettings)
+            is SettingsItem.SwitchSettingsItem -> handleSwitchItem(clickedSettings)
             else -> Unit
         }
     }
 
-    private fun handleNavigationForComplexSetting(settings: SettingsItem.ComplexSettingsItem) {
+    private fun handleNavigationForComplexItem(settings: SettingsItem.ComplexSettingsItem) {
         when (settings.nameRes) {
             R.string.settings_item_title_username -> {
                 presenter.onUsernameSettingClicked()
@@ -117,8 +118,8 @@ class NewSettingsFragment :
         }
     }
 
-    private fun handleSwitchSetting(settings: SettingsItem.SwitchSettingsItem) {
-        when (settings.settingNameRes) {
+    private fun handleSwitchItem(settings: SettingsItem.SwitchSettingsItem) {
+        when (settings.nameRes) {
             R.string.settings_item_title_touch_id -> {
                 presenter.onBiometricSignInSwitchChanged(settings.isSwitched)
             }
@@ -130,6 +131,10 @@ class NewSettingsFragment :
 
     override fun confirmBiometrics(pinCodeCipher: EncodeCipher) {
         biometricWrapper.authenticate(pinCodeCipher.value)
+    }
+
+    override fun updateSwitchItem(switchItemId: Int, isSwitched: Boolean) {
+        adapter.updateSwitchItem(switchItemId, isSwitched)
     }
 
     override fun showSignOutConfirmDialog() {
