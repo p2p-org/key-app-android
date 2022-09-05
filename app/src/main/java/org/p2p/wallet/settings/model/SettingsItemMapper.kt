@@ -1,15 +1,15 @@
-package org.p2p.wallet.settings.ui.settings.presenter
+package org.p2p.wallet.settings.model
 
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.ComplexSettingsItem
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsGroupTitleItem
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsSpaceSeparatorItem
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SignOutButtonItem
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SwitchSettingsItem
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.TextSettingsItem
+import org.p2p.wallet.settings.model.SettingsItem.ComplexSettingsItem
+import org.p2p.wallet.settings.model.SettingsItem.SettingsGroupTitleItem
+import org.p2p.wallet.settings.model.SettingsItem.SettingsSpaceSeparatorItem
+import org.p2p.wallet.settings.model.SettingsItem.SignOutButtonItem
+import org.p2p.wallet.settings.model.SettingsItem.SwitchSettingsItem
+import org.p2p.wallet.settings.model.SettingsItem.TextSettingsItem
 import timber.log.Timber
 
 class SettingsItemMapper(
@@ -58,7 +58,7 @@ class SettingsItemMapper(
             hasSeparator = true
         ),
         SwitchSettingsItem(
-            settingNameRes = R.string.settings_item_title_touch_id,
+            nameRes = R.string.settings_item_title_touch_id,
             iconRes = R.drawable.ic_settings_fingerprint,
             isSwitched = isBiometricLoginEnabled,
             hasSeparator = false
@@ -70,7 +70,7 @@ class SettingsItemMapper(
         return listOf(
             SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_appearance),
             SwitchSettingsItem(
-                settingNameRes = R.string.settings_item_title_zero_balances,
+                nameRes = R.string.settings_item_title_zero_balances,
                 iconRes = R.drawable.ic_settings_hidden_eye,
                 isSwitched = isZeroBalanceTokenHidden,
                 hasSeparator = false

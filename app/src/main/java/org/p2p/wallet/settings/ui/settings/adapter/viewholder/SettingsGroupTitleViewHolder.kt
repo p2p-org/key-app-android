@@ -1,7 +1,7 @@
 package org.p2p.wallet.settings.ui.settings.adapter.viewholder
 
 import org.p2p.wallet.databinding.ItemSettingsGroupTitleBinding
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsGroupTitleItem
+import org.p2p.wallet.settings.model.SettingsItem.SettingsGroupTitleItem
 
 class SettingsGroupTitleViewHolder(
     binding: ItemSettingsGroupTitleBinding,

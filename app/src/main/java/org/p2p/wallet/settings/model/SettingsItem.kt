@@ -1,4 +1,4 @@
-package org.p2p.wallet.settings.ui.settings.presenter
+package org.p2p.wallet.settings.model
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -18,7 +18,7 @@ sealed interface SettingsItem {
     object SignOutButtonItem : SettingsItem
 
     data class SwitchSettingsItem(
-        @StringRes val settingNameRes: Int,
+        @StringRes val nameRes: Int,
         @DrawableRes val iconRes: Int,
         val isSwitched: Boolean,
         val hasSeparator: Boolean

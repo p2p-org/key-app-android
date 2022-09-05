@@ -1,7 +1,7 @@
 package org.p2p.wallet.settings.ui.settings.adapter.viewholder
 
 import org.p2p.wallet.databinding.ItemSettingsSpaceSeparatorBinding
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SettingsSpaceSeparatorItem
+import org.p2p.wallet.settings.model.SettingsItem.SettingsSpaceSeparatorItem
 
 class SettingsSpaceSeparatorViewHolder(
     binding: ItemSettingsSpaceSeparatorBinding

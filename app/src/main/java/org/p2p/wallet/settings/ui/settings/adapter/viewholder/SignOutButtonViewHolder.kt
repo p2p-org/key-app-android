@@ -1,8 +1,8 @@
 package org.p2p.wallet.settings.ui.settings.adapter.viewholder
 
 import org.p2p.wallet.databinding.ItemSettingsSignOutBinding
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem
-import org.p2p.wallet.settings.ui.settings.presenter.SettingsItem.SignOutButtonItem
+import org.p2p.wallet.settings.model.SettingsItem
+import org.p2p.wallet.settings.model.SettingsItem.SignOutButtonItem
 
 class SignOutButtonViewHolder(
     binding: ItemSettingsSignOutBinding,
