@@ -18,15 +18,18 @@ class CreateWalletInteractor(
             ?: throw CreateWalletFailure("User private key is null")
         val etheriumPublicKey = signUpFlowDataRepository.ethereumPublicKey
             ?: throw CreateWalletFailure("User etherium public key is null")
-
-        gatewayServiceRepository.registerWalletWithSms(
-            userPublicKey = userPublicKey,
-            userPrivateKey = userPrivateKey,
-            etheriumPublicKey = etheriumPublicKey,
-            phoneNumber = userPhoneNumber
-        )
+        if (userPhoneNumber != signUpFlowDataRepository.userPhoneNumber) {
+            gatewayServiceRepository.registerWalletWithSms(
+                userPublicKey = userPublicKey,
+                userPrivateKey = userPrivateKey,
+                etheriumPublicKey = etheriumPublicKey,
+                phoneNumber = userPhoneNumber
+            )
+        }
         signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
     }
+
+    fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount
 
     suspend fun finishCreatingWallet(smsCode: String) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey

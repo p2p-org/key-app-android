@@ -18,7 +18,6 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 
-private const val MAX_SUBMIT_OTP_TRIES_COUNT = 5
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
 class NewSmsInputPresenter(
@@ -61,23 +60,15 @@ class NewSmsInputPresenter(
         launch {
             try {
                 view?.renderButtonLoading(isLoading = true)
-
                 createWalletInteractor.finishCreatingWallet(smsCode)
                 createWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
                 Timber.i(incorrectSms)
-                if (++smsIncorrectTries >= MAX_SUBMIT_OTP_TRIES_COUNT) {
-                    view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS)
-                } else {
-                    view?.renderIncorrectSms()
-                }
+                view?.renderIncorrectSms()
             } catch (tooManyRequests: GatewayServiceError.TooManyRequests) {
                 Timber.i(tooManyRequests)
-                timerFlow?.cancel()
-                timerFlow = createSmsInputTimer(timerSeconds = 5)
-                    .toRequestsOverflowSmsInputTimer()
-                    .launchIn(this)
+                view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS)
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.e(serverError)
                 view?.navigateToCriticalErrorScreen(serverError.code)
