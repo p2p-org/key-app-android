@@ -111,13 +111,13 @@ class NewBuyFragment :
         toolbarBuy.setNavigationOnClickListener { popBackStack() }
 
         amountsView.token = token.tokenSymbol
-        amountsView.currency = "USD"
+        amountsView.currency = Constants.USD_READABLE_SYMBOL
 
         textViewTotal.setOnClickListener {
             presenter.onTotalClicked()
         }
 
-        buttonBuy.text = getString(R.string.buy_toolbar_title, "SOL")
+        buttonBuy.text = getString(R.string.buy_toolbar_title, token.tokenSymbol)
 
         binding.amountsView.apply {
             setOnSelectTokenClickListener { presenter.onSelectTokenClicked() }

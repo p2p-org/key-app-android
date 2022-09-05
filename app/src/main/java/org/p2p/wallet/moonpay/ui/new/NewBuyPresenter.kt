@@ -18,6 +18,7 @@ import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.asCurrency
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
@@ -108,10 +109,14 @@ class NewBuyPresenter(
 
     override fun setToken(token: Token) {
         selectedToken = token
+        view?.setContinueButtonEnabled(false)
+        calculateTokens(amount, false)
     }
 
     override fun setCurrency(currency: BuyCurrency.Currency) {
         selectedCurrency = currency
+        view?.setContinueButtonEnabled(false)
+        calculateTokens(amount, false)
     }
 
     override fun onFocusModeChanged(focusMode: FocusMode) {
@@ -215,7 +220,7 @@ class NewBuyPresenter(
         }
         val currencyForTokensAmount = buyCurrencyInfo.price * buyCurrencyInfo.receiveAmount.toBigDecimal()
         val currencySymbol = selectedCurrency.code
-        val currency = if (currencySymbol == Constants.USD_READABLE_SYMBOL) "$" else currencySymbol
+        val currency = if (currencySymbol == Constants.USD_READABLE_SYMBOL) USD_SYMBOL else currencySymbol
         val data = BuyViewData(
             tokenSymbol = selectedToken.tokenSymbol,
             currencySymbol = currency,
