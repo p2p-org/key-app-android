@@ -7,7 +7,7 @@ import org.p2p.wallet.common.mvp.MvpView
 interface NewResetPinContract {
 
     interface View : MvpView {
-        fun showResetSuccess()
+        fun navigateBackToSettings()
         fun showPinCorrect()
         fun showPinConfirmation()
         fun showPinConfirmed()

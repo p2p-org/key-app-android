@@ -21,10 +21,12 @@ class NewForgotPinBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
         fun show(fm: FragmentManager, requestKey: String, resultKey: String) =
-            NewForgotPinBottomSheet().withArgs(
-                EXTRA_REQUEST_KEY to requestKey,
-                EXTRA_RESULT_KEY to resultKey
-            ).show(fm, NewForgotPinBottomSheet::javaClass.name)
+            NewForgotPinBottomSheet()
+                .withArgs(
+                    EXTRA_REQUEST_KEY to requestKey,
+                    EXTRA_RESULT_KEY to resultKey
+                )
+                .show(fm, NewForgotPinBottomSheet::javaClass.name)
     }
 
     private val binding: DialogNewForgotPasswordBinding by viewBinding()

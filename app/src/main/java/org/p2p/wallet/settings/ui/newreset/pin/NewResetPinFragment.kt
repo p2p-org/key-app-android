@@ -76,7 +76,7 @@ class NewResetPinFragment :
         popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
     }
 
-    override fun showResetSuccess() {
+    override fun navigateBackToSettings() {
         popBackStackTo(NewResetPinIntroFragment::class, inclusive = true)
     }
 
