@@ -145,22 +145,24 @@ class NewBuyPresenter(
 
     override fun setCurrency(currency: BuyCurrency.Currency) {
         selectedCurrency = currency
-        validateCurrency()
-        recalculate()
+        if (isValidCurrencyForPay()) {
+            recalculate()
+        }
     }
 
-    private fun validateCurrency() {
+    private fun isValidCurrencyForPay(): Boolean {
         if (selectedPaymentMethod.method == Method.BANK_TRANSFER) {
             if (selectedCurrency.code == Constants.USD_READABLE_SYMBOL) {
                 paymentMethods.find { it.method == Method.CARD }?.let {
                     onPaymentMethodSelected(it)
                 }
-                return
+                return false
             } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
                 view?.showMessage(resourcesProvider.getString(R.string.buy_gbp_error))
-                return
+                return false
             }
         }
+        return true
     }
 
     override fun onFocusModeChanged(focusMode: FocusMode) {
@@ -258,10 +260,12 @@ class NewBuyPresenter(
             ?: true
         val enteredAmountHigherThanMin = enteredAmountBigDecimal >= loadedBuyCurrency.minAmount
 
-        if (enteredAmountHigherThanMin && enteredAmountLowerThanMax) {
-            handleEnteredAmountValid(buyCurrencyInfo)
-        } else {
-            handleEnteredAmountInvalid(loadedBuyCurrency)
+        if (isValidCurrencyForPay()) {
+            if (enteredAmountHigherThanMin && enteredAmountLowerThanMax) {
+                handleEnteredAmountValid(buyCurrencyInfo)
+            } else {
+                handleEnteredAmountInvalid(loadedBuyCurrency)
+            }
         }
     }
 
