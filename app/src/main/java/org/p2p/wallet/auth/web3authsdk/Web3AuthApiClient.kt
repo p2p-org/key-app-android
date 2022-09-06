@@ -6,14 +6,13 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthClientHandler
-import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSdkInternalError
-import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSignInCallback
-import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSignUpCallback
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
-import timber.log.Timber
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
@@ -25,7 +24,7 @@ class Web3AuthApiClient(
     private val gson: Gson
 ) : Web3AuthApi {
 
-    private var handler: Web3AuthClientHandler? = null
+    private var continuation: CancellableContinuation<*>? = null
 
     private val onboardingWebView: WebView = WebView(context).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -45,72 +44,77 @@ class Web3AuthApiClient(
         }
     }
 
-    override fun triggerSilentSignUp(
-        socialShare: String,
-        handler: Web3AuthSignUpCallback
-    ) {
-        this.handler = handler
-        onboardingWebView.evaluateJavascript(
-            generateFacade(
-                type = "signup",
-                jsMethodCall = "triggerSilentSignup('$socialShare')"
-            ),
-            null
-        )
+    override suspend fun triggerSilentSignUp(socialShare: String): Web3AuthSignUpResponse {
+        return suspendCancellableCoroutine {
+            this.continuation = it
+
+            onboardingWebView.evaluateJavascript(
+                generateFacade(
+                    type = "signup",
+                    jsMethodCall = "triggerSilentSignup('$socialShare')"
+                ),
+                null
+            )
+        }
     }
 
-    override fun triggerSignInNoDevice(
+    override suspend fun triggerSignInNoDevice(
         socialShare: String,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
-        handler: Web3AuthSignInCallback
-    ) {
-        this.handler = handler
+    ): Web3AuthSignInResponse {
+        return suspendCancellableCoroutine {
+            this.continuation = it
 
-        val thirdShareAsJsObject = gson.toJson(thirdShare)
-        onboardingWebView.evaluateJavascript(
-            generateFacade(
-                type = "signin",
-                jsMethodCall = "triggerSignInNoDevice('$socialShare', $thirdShareAsJsObject)"
-            ),
-            null
-        )
+            val thirdShareAsJsObject = gson.toJson(thirdShare)
+            onboardingWebView.evaluateJavascript(
+                generateFacade(
+                    type = "signin",
+                    jsMethodCall = "triggerSignInNoDevice('$socialShare', $thirdShareAsJsObject)"
+                ),
+                null
+            )
+        }
     }
 
-    override fun triggerSignInNoCustom(
+    override suspend fun triggerSignInNoCustom(
         socialShare: String,
         deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
-        handler: Web3AuthSignInCallback
-    ) {
-        this.handler = handler
-        val deviceShareAsJsObject = gson.toJson(deviceShare)
-        onboardingWebView.evaluateJavascript(
-            generateFacade(
-                type = "signin",
-                jsMethodCall = "triggerSignInNoCustom('$socialShare', $deviceShareAsJsObject)"
-            ),
-            null
-        )
+    ): Web3AuthSignInResponse {
+        return suspendCancellableCoroutine {
+            this.continuation = it
+
+            val deviceShareAsJsObject = gson.toJson(deviceShare)
+            onboardingWebView.evaluateJavascript(
+                generateFacade(
+                    type = "signin",
+                    jsMethodCall = "triggerSignInNoCustom('$socialShare', $deviceShareAsJsObject)"
+                ),
+                null
+            )
+        }
     }
 
-    override fun triggerSignInNoTorus(
+    override suspend fun triggerSignInNoTorus(
         deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         encryptedMnemonicPhrase: JsonObject,
-        handler: Web3AuthSignInCallback
-    ) {
-        this.handler = handler
-        val thirdShareAsJsObject = gson.toJson(thirdShare)
-        val deviceShareAsJsObject = gson.toJson(deviceShare)
+    ): Web3AuthSignInResponse {
+        return suspendCancellableCoroutine {
+            this.continuation = it
 
-        val params = "$deviceShareAsJsObject, $thirdShareAsJsObject, $encryptedMnemonicPhrase"
+            val thirdShareAsJsObject = gson.toJson(thirdShare)
+            val deviceShareAsJsObject = gson.toJson(deviceShare)
 
-        onboardingWebView.evaluateJavascript(
-            generateFacade(
-                type = "signin",
-                jsMethodCall = "triggerSignInNoCustom($params)"
-            ),
-            null
-        )
+            val params = "$deviceShareAsJsObject, $thirdShareAsJsObject, $encryptedMnemonicPhrase"
+
+            onboardingWebView.evaluateJavascript(
+                generateFacade(
+                    type = "signin",
+                    jsMethodCall = "triggerSignInNoCustom($params)"
+                ),
+                null
+            )
+        }
     }
 
     private fun generateFacade(type: String, jsMethodCall: String): String {
@@ -142,48 +146,37 @@ class Web3AuthApiClient(
     private inner class AndroidCommunicationChannel {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
-            mapper.fromNetworkSignUp(msg)
-                ?.let { (handler as? Web3AuthSignUpCallback)?.onSuccessSignUp(it) }
-                ?: handleMapperError(msg)
-            handler = null
+            (continuation as? CancellableContinuation<Web3AuthSignUpResponse>)
+                ?.resumeWith(mapper.fromNetworkSignUp(msg))
+                ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
         }
 
         @JavascriptInterface
         fun handleSignInNoCustomResponse(msg: String) {
-            mapper.fromNetworkSignIn(msg)
-                ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
-                ?: handleMapperError(msg)
-            handler = null
+            (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
+                ?.resumeWith(mapper.fromNetworkSignIn(msg))
+                ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
         }
 
         @JavascriptInterface
         fun handleSignInNoDeviceResponse(msg: String) {
-            mapper.fromNetworkSignIn(msg)
-                ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
-                ?: handleMapperError(msg)
-            handler = null
+            (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
+                ?.resumeWith(mapper.fromNetworkSignIn(msg))
+                ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
         }
 
         @JavascriptInterface
         fun handleSignInNoTorusResponse(msg: String) {
-            mapper.fromNetworkSignIn(msg)
-                ?.let { (handler as? Web3AuthSignInCallback)?.onSuccessSignIn(it) }
-                ?: handleMapperError(msg)
-            handler = null
+            (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
+                ?.resumeWith(mapper.fromNetworkSignIn(msg))
+                ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
         }
 
         @JavascriptInterface
         fun handleError(error: String) {
-            mapper.fromNetworkError(error)
-                ?.let { handler?.handleApiError(it) }
-                ?: handleMapperError(error)
-            handler = null
-        }
-
-        private fun handleMapperError(originalResponse: String) {
-            val error = Web3AuthSdkInternalError("Web3Auth SDK method result parsing failed: $originalResponse")
-            Timber.e(error)
-            handler?.handleInternalError(error)
+            runCatching<Throwable> { mapper.fromNetworkError(error) }
+                .recover { it }
+                .onSuccess { continuation?.resumeWithException(it) }
         }
     }
 }

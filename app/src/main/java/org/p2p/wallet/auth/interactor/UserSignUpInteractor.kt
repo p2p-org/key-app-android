@@ -6,9 +6,6 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse.ErrorType
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -37,7 +34,7 @@ class UserSignUpInteractor(
             } else {
                 SignUpResult.SignUpFailed(web3AuthError)
             }
-        } catch (error: Exception) {
+        } catch (error: Throwable) {
             SignUpResult.SignUpFailed(error)
         }
     }
@@ -52,29 +49,12 @@ class UserSignUpInteractor(
                 userMnemonicPhrase = lastUserDetails.signUpDetails.mnemonicPhrase.split("")
             )
             SignUpResult.SignUpSuccessful
-        } catch (error: Exception) {
+        } catch (error: Throwable) {
             SignUpResult.SignUpFailed(error)
         }
     }
 
     private suspend fun generateDeviceAndThirdShare(idToken: String): Web3AuthSignUpResponse {
-        return suspendCancellableCoroutine { continuation ->
-            web3AuthApi.triggerSilentSignUp(
-                socialShare = idToken,
-                handler = object : Web3AuthApi.Web3AuthSignUpCallback {
-                    override fun onSuccessSignUp(signUpResponse: Web3AuthSignUpResponse) {
-                        continuation.resume(signUpResponse)
-                    }
-
-                    override fun handleApiError(error: Web3AuthErrorResponse) {
-                        continuation.resumeWithException(error)
-                    }
-
-                    override fun handleInternalError(internalError: Web3AuthApi.Web3AuthSdkInternalError) {
-                        continuation.resumeWithException(internalError)
-                    }
-                }
-            )
-        }
+        return web3AuthApi.triggerSilentSignUp(idToken)
     }
 }

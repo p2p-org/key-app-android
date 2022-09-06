@@ -46,7 +46,7 @@ class CountryCodeHelper(
             event = xmlParser.next()
         }
         resultCountries.sortedBy { it.name }
-    } catch (error: Exception) {
+    } catch (error: Throwable) {
         Timber.e(error, "Error while reading from XML file")
         emptyList()
     }
@@ -59,7 +59,7 @@ class CountryCodeHelper(
                 PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
             )
             internationalFormat.replace("+$phoneCode", emptyString())
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.i(e, "Get mask for country code failed")
             countryCodeMask[countryCode].orEmpty()
         }
@@ -69,7 +69,7 @@ class CountryCodeHelper(
         return try {
             val validatePhoneNumber = phoneNumberUtil.parse(phoneNumber, countryCode.uppercase())
             phoneNumberUtil.isValidNumber(validatePhoneNumber)
-        } catch (countryNotFound: Exception) {
+        } catch (countryNotFound: Throwable) {
             Timber.i(countryNotFound, "Phone number validation failed")
             return false
         }
