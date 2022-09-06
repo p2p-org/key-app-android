@@ -137,6 +137,10 @@ class NewBuyFragment :
         buttonBuy.setOnClickListener { presenter.onContinueClicked() }
     }
 
+    override fun showPreselectedAmount(amount: String) {
+        binding.amountsView.setCurrencyAmount(amount)
+    }
+
     override fun showPaymentMethods(methods: List<PaymentMethod>) {
         adapter.setItems(methods)
     }

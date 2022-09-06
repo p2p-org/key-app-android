@@ -11,6 +11,7 @@ import org.p2p.wallet.moonpay.model.PaymentMethod
 interface NewBuyContract {
 
     interface View : MvpView {
+        fun showPreselectedAmount(amount: String)
         fun showTokensToBuy(selectedToken: Token, tokensToBuy: List<Token>)
         fun showCurrency(selectedCurrency: BuyCurrency.Currency)
         fun setCurrencyCode(selectedCurrencyCode: String)
