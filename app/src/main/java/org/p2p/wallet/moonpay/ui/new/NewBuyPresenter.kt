@@ -172,7 +172,9 @@ class NewBuyPresenter(
     override fun setBuyAmount(amount: String, isDelayEnabled: Boolean) {
         this.amount = amount
         view?.setContinueButtonEnabled(false)
-        calculateTokens(amount, isDelayEnabled)
+        if (isValidCurrencyForPay()) {
+            calculateTokens(amount, isDelayEnabled)
+        }
     }
 
     private fun recalculate() {
@@ -260,12 +262,10 @@ class NewBuyPresenter(
             ?: true
         val enteredAmountHigherThanMin = enteredAmountBigDecimal >= loadedBuyCurrency.minAmount
 
-        if (isValidCurrencyForPay()) {
-            if (enteredAmountHigherThanMin && enteredAmountLowerThanMax) {
-                handleEnteredAmountValid(buyCurrencyInfo)
-            } else {
-                handleEnteredAmountInvalid(loadedBuyCurrency)
-            }
+        if (enteredAmountHigherThanMin && enteredAmountLowerThanMax) {
+            handleEnteredAmountValid(buyCurrencyInfo)
+        } else {
+            handleEnteredAmountInvalid(loadedBuyCurrency)
         }
     }
 
