@@ -286,7 +286,7 @@ class NewBuyPresenter(
         view?.apply {
             showTotal(data)
             currentBuyViewData = data
-            showMessage(message = null)
+            showMessage(message = null, selectedToken.tokenSymbol)
             setContinueButtonEnabled(true)
         }
     }
@@ -331,7 +331,7 @@ class NewBuyPresenter(
         view?.apply {
             showTotal(clearedData)
             setContinueButtonEnabled(false)
-            showMessage(null)
+            showMessage(null, selectedToken.tokenSymbol)
         }
     }
 
