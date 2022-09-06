@@ -51,6 +51,8 @@ class NewBuyPresenter(
 
     private var selectedCurrency: BuyCurrency.Currency = SelectCurrencyBottomSheet.DEFAULT_CURRENCY
     private var selectedToken: Token = tokenToBuy
+    private lateinit var selectedPaymentMethod: PaymentMethod
+    private lateinit var currentAlphaCode: String
 
     private var amount: String = "0"
     private var isSwappedToToken: Boolean = false
@@ -73,7 +75,10 @@ class NewBuyPresenter(
     private fun loadAvailablePaymentMethods() {
         launch {
             // show loading
-            paymentMethods.addAll(paymentMethodsInteractor.getAvailablePaymentMethods())
+            currentAlphaCode = paymentMethodsInteractor.getBankTransferAlphaCode()
+            val availablePaymentMethods = paymentMethodsInteractor.getAvailablePaymentMethods(currentAlphaCode)
+            selectedPaymentMethod = availablePaymentMethods.first { it.isSelected }
+            paymentMethods.addAll(availablePaymentMethods)
             view?.showPaymentMethods(paymentMethods)
         }
     }
@@ -88,9 +93,11 @@ class NewBuyPresenter(
     }
 
     override fun onPaymentMethodSelected(selectedMethod: PaymentMethod) {
+        selectedPaymentMethod = selectedMethod
         paymentMethods.forEach { paymentMethod ->
             paymentMethod.isSelected = paymentMethod.method == selectedMethod.method
         }
+        // TODO validate code and methods!
 
         view?.showPaymentMethods(paymentMethods)
     }
@@ -290,8 +297,12 @@ class NewBuyPresenter(
 
     override fun onContinueClicked() {
         currentBuyViewData?.let {
-            view?.navigateToMoonpay(amount = it.total.toString(), selectedToken, selectedCurrency)
-            // TODO resolve [buyProvider]
+            view?.navigateToMoonpay(
+                amount = it.total.toString(),
+                selectedToken,
+                selectedCurrency,
+                selectedPaymentMethod.paymentType
+            )
             // TODO append analytics with selected token and currency
             buyAnalytics.logBuyContinuing(
                 buyCurrency = it.tokenSymbol,

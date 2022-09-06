@@ -14,5 +14,6 @@ data class PaymentMethod(
     val feePercent: Float,
     @StringRes val paymentPeriodResId: Int,
     @StringRes val methodResId: Int,
-    @DrawableRes val iconResId: Int
+    @DrawableRes val iconResId: Int,
+    var paymentType: String,
 )
