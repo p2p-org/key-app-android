@@ -317,9 +317,16 @@ class NewBuyPresenter(
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
         val isAmountLower = amount.toBigDecimal() < loadedBuyCurrency.minAmount
         val errorMessageRaw = if (isAmountLower) minBuyErrorFormat else maxBuyErrorFormat
+        val maxAmount = loadedBuyCurrency.maxAmount
+        val symbol = selectedCurrency.code.symbolFromCode()
+        val message = if (isAmountLower) {
+            minBuyErrorFormat.format(symbol)
+        } else {
+            maxBuyErrorFormat.format("$symbol $maxAmount")
+        }
         view?.apply {
             setContinueButtonEnabled(false)
-            showMessage(errorMessageRaw.format(selectedCurrency.code.symbolFromCode()))
+            showMessage(message)
             clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
         }
     }
