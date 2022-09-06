@@ -36,7 +36,6 @@ class PaymentMethodsInteractor(
         bankTransferFeatureToggle.value && bankTransferIsAvailable() -> {
             listOf(BANK_TRANSFER_PAYMENT_METHOD, CARD_PAYMENT_METHOD)
         }
-
         else -> {
             listOf(CARD_PAYMENT_METHOD)
         }
@@ -44,6 +43,7 @@ class PaymentMethodsInteractor(
 
     private suspend fun bankTransferIsAvailable(): Boolean = withContext(dispatchers.io) {
         val moonpayIpAddressResponse = repository.getIpAddressData()
-        return@withContext BANK_TRANSFER_ALPHA3_CODES.contains(moonpayIpAddressResponse.alpha3)
+        val alpha3Code = moonpayIpAddressResponse.alpha3
+        return@withContext BANK_TRANSFER_ALPHA3_CODES.contains(alpha3Code)
     }
 }

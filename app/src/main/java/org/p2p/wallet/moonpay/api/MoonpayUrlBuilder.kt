@@ -8,6 +8,7 @@ private const val QUERY_BASE_CURRENCY_CODE = "baseCurrencyCode"
 private const val QUERY_BASE_CURRENCY_AMOUNT = "baseCurrencyAmount"
 private const val QUERY_LOCK_AMOUNT = "lockAmount"
 private const val QUERY_WALLET_ADDRESS = "walletAddress"
+private const val QUERY_PAYMENT_METHOD = "paymentMethod"
 
 object MoonpayUrlBuilder {
     fun build(
@@ -16,9 +17,10 @@ object MoonpayUrlBuilder {
         amount: String,
         walletAddress: String,
         tokenSymbol: String,
-        currencyCode: String
+        currencyCode: String,
+        paymentMethod: String? = null
     ): String {
-        return Uri.Builder()
+        val builder = Uri.Builder()
             .scheme("https")
             .authority(moonpayWalletDomain)
             .appendQueryParameter(QUERY_API_KEY, moonpayApiKey)
@@ -27,6 +29,10 @@ object MoonpayUrlBuilder {
             .appendQueryParameter(QUERY_BASE_CURRENCY_CODE, currencyCode)
             .appendQueryParameter(QUERY_LOCK_AMOUNT, "false")
             .appendQueryParameter(QUERY_WALLET_ADDRESS, walletAddress)
+        paymentMethod?.let {
+            builder.appendQueryParameter(QUERY_PAYMENT_METHOD, it)
+        }
+        return builder
             .build()
             .toString()
     }
