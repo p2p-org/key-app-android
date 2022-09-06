@@ -433,26 +433,6 @@
     <string name="buy_min_error_format">Minimum amount for the purchase is %s</string>
     <string name="buy_max_error_format">Maximum amount for the purchase is %s</string>
 
-    <!-- New Buy -->
-    <string name="buy_buying_title">Buying</string>
-    <string name="buy_method_title">Method</string>
-    <string name="buy_total_title">Total</string>
-
-    <string name="buy_fee">fee</string>
-    <string name="buy_fee_percent">%s%%</string>
-
-    <string name="buy_period_bank_transfer">~17 hours</string>
-    <string name="buy_period_card">1 day</string>
-
-    <string name="buy_method_bank_transfer">Bank transfer</string>
-    <string name="buy_method_card">Card</string>
-
-    <string name="buy_tokens_bottom_sheet_title">Coin to buy</string>
-    <string name="buy_currencies_bottom_sheet_title">Currency</string>
-    <string name="buy_transaction_details_bottom_sheet_title">Transaction details</string>
-
-    <string name="buy_toolbar_title">Buy %s</string>
-
     <!-- details -->
     <string name="details_1h">1H</string>
     <string name="details_4h">4H</string>
