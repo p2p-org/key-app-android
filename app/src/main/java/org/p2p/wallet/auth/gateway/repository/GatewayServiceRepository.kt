@@ -12,14 +12,14 @@ interface GatewayServiceRepository {
     suspend fun registerWalletWithSms(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
-        etheriumPublicKey: String,
-        phoneNumber: String
+        etheriumAddress: String,
+        e164PhoneNumber: String
     ): RegisterWalletResponse
 
     suspend fun confirmRegisterWallet(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
-        etheriumPublicKey: String,
+        etheriumAddress: String,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue,
         jsonEncryptedMnemonicPhrase: JsonObject,
         phoneNumber: String,

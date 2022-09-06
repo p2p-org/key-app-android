@@ -7,4 +7,4 @@ class RestoreWalletPublicKeyError(
         "confirm_restore_wallet is called with different pubkey: " +
             "expected: $expectedPublicKey; actual:$actualPublicKey. " +
             "Regenerate pubkey and call restore_wallet again."
-) : Error()
+) : Throwable()

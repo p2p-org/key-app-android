@@ -19,7 +19,7 @@ class PhoneNumberEnterPresenter(
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
-    private var lastPhoneNumber: String = emptyString()
+    private var lastFullPhoneNumber: String = emptyString()
     private var submitUserPhoneTriesCount = 0
 
     override fun attach(view: PhoneNumberEnterContract.View) {
@@ -81,11 +81,11 @@ class PhoneNumberEnterPresenter(
         launch {
             try {
                 selectedCountryCode?.let {
-                    val userPhoneNumber = it.phoneCode + phoneNumber
                     if (createWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
                         view?.navigateToAccountBlocked()
                     } else {
-                        createWalletInteractor.startCreatingWallet(userPhoneNumber = userPhoneNumber)
+                        val fullUserPhoneNumber = it.phoneCode + phoneNumber
+                        createWalletInteractor.startCreatingWallet(userPhoneNumber = fullUserPhoneNumber)
                         view?.navigateToSmsInput()
                     }
                 }
@@ -100,7 +100,7 @@ class PhoneNumberEnterPresenter(
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error, "Phone number submission failed")
-                view?.showErrorSnackBar(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }

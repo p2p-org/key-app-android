@@ -39,14 +39,14 @@ class GatewayServiceRemoteRepository(
     override suspend fun registerWalletWithSms(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
-        etheriumPublicKey: String,
-        phoneNumber: String
+        etheriumAddress: String,
+        e164PhoneNumber: String
     ): RegisterWalletResponse = withContext(dispatchers.io) {
         val request = createWalletMapper.toRegisterWalletNetwork(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
-            etheriumPublicKey = etheriumPublicKey,
-            phoneNumber = phoneNumber,
+            etheriumAddress = etheriumAddress,
+            phoneNumber = e164PhoneNumber,
             channel = OtpMethod.SMS
         )
         val response = api.registerWallet(request)
@@ -56,7 +56,7 @@ class GatewayServiceRemoteRepository(
     override suspend fun confirmRegisterWallet(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
-        etheriumPublicKey: String,
+        etheriumAddress: String,
         thirdShare: ShareValue,
         jsonEncryptedMnemonicPhrase: JsonObject,
         phoneNumber: String,
@@ -65,7 +65,7 @@ class GatewayServiceRemoteRepository(
         val request = createWalletMapper.toConfirmRegisterWalletNetwork(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
-            etheriumPublicKey = etheriumPublicKey,
+            etheriumAddress = etheriumAddress,
             thirdShare = thirdShare,
             jsonEncryptedMnemonicPhrase = jsonEncryptedMnemonicPhrase,
             phoneNumber = phoneNumber,
