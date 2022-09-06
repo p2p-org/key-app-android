@@ -41,17 +41,21 @@ class PaymentMethodsInteractor(
     fun getAvailablePaymentMethods(alpha3Code: String): List<PaymentMethod> = when {
         bankTransferFeatureToggle.value && bankTransferIsAvailable(alpha3Code) -> {
             listOf(
-                BANK_TRANSFER_PAYMENT_METHOD.also {
-                    it.paymentType = if (alpha3Code == BANK_TRANSFER_UK_CODE) GBP_BANK_TRANSFER
-                    else SEPA_BANK_TRANSFER
-                },
-                CARD_PAYMENT_METHOD
+                BANK_TRANSFER_PAYMENT_METHOD.copy(
+                    paymentType = if (alpha3Code == BANK_TRANSFER_UK_CODE) {
+                        GBP_BANK_TRANSFER
+                    } else {
+                        SEPA_BANK_TRANSFER
+                    },
+                    isSelected = true
+                ),
+                CARD_PAYMENT_METHOD.copy()
             )
         }
         else -> {
-            listOf(CARD_PAYMENT_METHOD)
+            listOf(CARD_PAYMENT_METHOD.copy(isSelected = true))
         }
-    }.apply { first().isSelected = true }
+    }
 
     private fun bankTransferIsAvailable(alpha3Code: String): Boolean = BANK_TRANSFER_ALPHA3_CODES.contains(alpha3Code)
 
