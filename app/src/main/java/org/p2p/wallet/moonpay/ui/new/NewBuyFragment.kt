@@ -202,6 +202,15 @@ class NewBuyFragment :
         binding.buttonBuy.isEnabled = isEnabled
     }
 
+    override fun clearOppositeFieldAndTotal(totalText: String) {
+        when (binding.amountsView.getFocusMode()) {
+            FocusMode.TOKEN -> binding.amountsView.setCurrencyAmount(null)
+            FocusMode.CURRENCY -> binding.amountsView.setTokenAmount(null)
+        }
+
+        binding.textViewTotal.text = totalText
+    }
+
     override fun navigateToMoonpay(
         amount: String,
         selectedToken: Token,

@@ -239,8 +239,11 @@ class NewBuyPresenter(
             }
             is MoonpayBuyResult.MinimumAmountError -> {
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
-                view?.setContinueButtonEnabled(false)
-                view?.showMessage(minBuyErrorFormat.format(selectedCurrency.code.symbolFromCode()))
+                view?.apply {
+                    setContinueButtonEnabled(false)
+                    showMessage(minBuyErrorFormat.format(selectedCurrency.code.symbolFromCode()))
+                    clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
+                }
             }
         }
         buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)
@@ -307,6 +310,7 @@ class NewBuyPresenter(
         view?.apply {
             setContinueButtonEnabled(false)
             showMessage(errorMessageRaw.format(selectedCurrency.code.symbolFromCode()))
+            clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
         }
     }
 

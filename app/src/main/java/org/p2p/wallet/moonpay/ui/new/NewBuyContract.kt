@@ -20,6 +20,7 @@ interface NewBuyContract {
         fun showMessage(message: String?, selectedTokenSymbol: String? = null)
         fun showTotal(viewData: BuyViewData)
         fun showTotalData(viewData: BuyViewData)
+        fun clearOppositeFieldAndTotal(totalText: String)
         fun navigateToMoonpay(
             amount: String,
             selectedToken: Token,
