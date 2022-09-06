@@ -9,11 +9,10 @@ interface SettingsNetworkContract {
     interface View : MvpView {
         fun showEnvironment(currentNetwork: NetworkEnvironment, availableNetworks: List<NetworkEnvironment>)
         fun closeWithResult(newNetworkEnvironment: NetworkEnvironment)
-        fun navigateBack()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun onNewEnvironmentSelected(newNetwork: NetworkEnvironment)
-        fun confirmNetworkEnvironmentSelected()
+        fun finishAndClose()
     }
 }

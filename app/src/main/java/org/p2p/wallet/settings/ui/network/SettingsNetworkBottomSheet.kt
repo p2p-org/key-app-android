@@ -57,7 +57,8 @@ class SettingsNetworkBottomSheet :
             recyclerViewNetworks.attachAdapter(networkAdapter)
 
             buttonDone.setOnClickListener {
-                presenter.confirmNetworkEnvironmentSelected()
+                presenter.finishAndClose()
+                dismissAllowingStateLoss()
             }
         }
     }
@@ -70,12 +71,12 @@ class SettingsNetworkBottomSheet :
         networkAdapter.setItems(availableNetworks)
     }
 
-    override fun closeWithResult(newNetworkEnvironment: NetworkEnvironment) {
-        setFragmentResult(requestKey, bundleOf(resultKey to newNetworkEnvironment))
-        dismissAllowingStateLoss()
+    override fun onPause() {
+        presenter.finishAndClose()
+        super.onPause()
     }
 
-    override fun navigateBack() {
-        dismissAllowingStateLoss()
+    override fun closeWithResult(newNetworkEnvironment: NetworkEnvironment) {
+        setFragmentResult(requestKey, bundleOf(resultKey to newNetworkEnvironment))
     }
 }
