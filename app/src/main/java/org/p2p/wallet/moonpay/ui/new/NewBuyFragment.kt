@@ -24,6 +24,7 @@ import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.bottomsheet.BuyDetailsBottomSheet
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.getString
@@ -165,9 +166,14 @@ class NewBuyFragment :
 //        TODO("Not yet implemented")
     }
 
-    override fun showMessage(message: String?) {
-        binding.buttonBuy.isEnabled = message == null
-        message?.let { binding.buttonBuy.text = it }
+    override fun showMessage(message: String?, selectedTokenSymbol: String?) = with(binding.buttonBuy) {
+        if (message != null) {
+            icon = null
+            text = message
+        } else {
+            icon = context.getDrawableCompat(R.drawable.ic_wallet_home)
+            text = getString(R.string.buy_toolbar_title, selectedTokenSymbol)
+        }
     }
 
     override fun showTotal(viewData: BuyViewData) {
