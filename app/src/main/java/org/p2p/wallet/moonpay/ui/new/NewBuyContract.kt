@@ -13,6 +13,7 @@ interface NewBuyContract {
     interface View : MvpView {
         fun showTokensToBuy(selectedToken: Token, tokensToBuy: List<Token>)
         fun showCurrency(selectedCurrency: BuyCurrency.Currency)
+        fun setCurrencyCode(selectedCurrencyCode: String)
         fun showPaymentMethods(methods: List<PaymentMethod>)
         fun setContinueButtonEnabled(isEnabled: Boolean)
         fun showLoading(isLoading: Boolean)

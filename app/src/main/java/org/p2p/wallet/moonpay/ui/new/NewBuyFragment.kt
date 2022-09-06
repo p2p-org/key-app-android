@@ -97,7 +97,7 @@ class NewBuyFragment :
 
             KEY_REQUEST_CURRENCY -> {
                 result.getParcelable<BuyCurrency.Currency>(KEY_RESULT_CURRENCY)?.let {
-                    binding.amountsView.currency = it.code
+                    setCurrencyCode(it.code)
                     presenter.setCurrency(it)
                 }
             }
@@ -159,6 +159,10 @@ class NewBuyFragment :
             requestKey = KEY_REQUEST_CURRENCY,
             resultKey = KEY_RESULT_CURRENCY
         )
+    }
+
+    override fun setCurrencyCode(selectedCurrencyCode: String) {
+        binding.amountsView.currency = selectedCurrencyCode
     }
 
     override fun showLoading(isLoading: Boolean) {

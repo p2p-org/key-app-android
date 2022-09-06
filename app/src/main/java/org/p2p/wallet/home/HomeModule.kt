@@ -169,7 +169,8 @@ object HomeModule : InjectionModule {
                 buyAnalytics = get(),
                 analyticsInteractor = get(),
                 userInteractor = get(),
-                paymentMethodsInteractor = get()
+                paymentMethodsInteractor = get(),
+                resourcesProvider = get()
             )
         }
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class

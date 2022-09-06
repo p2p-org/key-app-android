@@ -1,12 +1,12 @@
 package org.p2p.wallet.moonpay.interactor
 
-val BANK_TRANSFER_UK_CODE = "BGR"
+const val BANK_TRANSFER_UK_CODE = "GBR"
 
 val BANK_TRANSFER_ALPHA3_CODES = setOf(
     "AND",
     "AUT",
     "BEL",
-    BANK_TRANSFER_UK_CODE,
+    "BGR",
     "HRV",
     "CYP",
     "CZE",
@@ -38,6 +38,6 @@ val BANK_TRANSFER_ALPHA3_CODES = setOf(
     "ESP",
     "SWE",
     "CHE",
-    "GBR",
+    BANK_TRANSFER_UK_CODE,
     "VAT"
 )

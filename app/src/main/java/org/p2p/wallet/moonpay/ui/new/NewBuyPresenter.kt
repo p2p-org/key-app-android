@@ -5,14 +5,19 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.uikit.components.FocusMode
+import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.moonpay.interactor.BANK_TRANSFER_UK_CODE
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
+import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyViewData
+import org.p2p.wallet.moonpay.model.Method
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
@@ -35,14 +40,15 @@ private const val DELAY_IN_MS = 500L
 private val TOKENS_VALID_FOR_BUY = setOf(Constants.SOL_SYMBOL, Constants.USDC_SYMBOL)
 
 class NewBuyPresenter(
-    private val tokenToBuy: Token,
+    tokenToBuy: Token,
     private val moonpayRepository: MoonpayRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
     private val buyAnalytics: BuyAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val userInteractor: UserInteractor,
-    private val paymentMethodsInteractor: PaymentMethodsInteractor
+    private val paymentMethodsInteractor: PaymentMethodsInteractor,
+    private val resourcesProvider: ResourcesProvider,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
 
     private lateinit var tokensToBuy: List<Token>
@@ -80,6 +86,7 @@ class NewBuyPresenter(
             selectedPaymentMethod = availablePaymentMethods.first { it.isSelected }
             paymentMethods.addAll(availablePaymentMethods)
             view?.showPaymentMethods(paymentMethods)
+            validatePaymentMethod()
         }
     }
 
@@ -97,9 +104,19 @@ class NewBuyPresenter(
         paymentMethods.forEach { paymentMethod ->
             paymentMethod.isSelected = paymentMethod.method == selectedMethod.method
         }
-        // TODO validate code and methods!
+        validatePaymentMethod()
 
         view?.showPaymentMethods(paymentMethods)
+    }
+
+    private fun validatePaymentMethod() {
+        if (selectedPaymentMethod.method == Method.BANK_TRANSFER) {
+            if (currentAlphaCode == BANK_TRANSFER_UK_CODE) {
+                selectCurrency(BuyCurrency.Currency.create(Constants.GBP_SYMBOL))
+            } else {
+                selectCurrency(BuyCurrency.Currency.create(Constants.EUR_SYMBOL))
+            }
+        }
     }
 
     override fun onSelectTokenClicked() {
@@ -118,14 +135,32 @@ class NewBuyPresenter(
 
     override fun setToken(token: Token) {
         selectedToken = token
-        view?.setContinueButtonEnabled(false)
-        calculateTokens(amount, isDelayEnabled = false)
+        recalculate()
+    }
+
+    private fun selectCurrency(currency: BuyCurrency.Currency) {
+        view?.setCurrencyCode(currency.code)
+        setCurrency(currency)
     }
 
     override fun setCurrency(currency: BuyCurrency.Currency) {
         selectedCurrency = currency
-        view?.setContinueButtonEnabled(false)
-        calculateTokens(amount, isDelayEnabled = false)
+        validateCurrency()
+        recalculate()
+    }
+
+    private fun validateCurrency() {
+        if (selectedPaymentMethod.method == Method.BANK_TRANSFER) {
+            if (selectedCurrency.code == Constants.USD_READABLE_SYMBOL) {
+                paymentMethods.find { it.method == Method.CARD }?.let {
+                    onPaymentMethodSelected(it)
+                }
+                return
+            } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
+                view?.showMessage(resourcesProvider.getString(R.string.buy_gbp_error))
+                return
+            }
+        }
     }
 
     override fun onFocusModeChanged(focusMode: FocusMode) {
@@ -136,6 +171,11 @@ class NewBuyPresenter(
         this.amount = amount
         view?.setContinueButtonEnabled(false)
         calculateTokens(amount, isDelayEnabled)
+    }
+
+    private fun recalculate() {
+        view?.setContinueButtonEnabled(false)
+        calculateTokens(amount, isDelayEnabled = false)
     }
 
     private fun calculateTokens(amount: String, isDelayEnabled: Boolean) {
@@ -297,11 +337,12 @@ class NewBuyPresenter(
 
     override fun onContinueClicked() {
         currentBuyViewData?.let {
+            val paymentType = getValidPaymentType()
             view?.navigateToMoonpay(
                 amount = it.total.toString(),
                 selectedToken,
                 selectedCurrency,
-                selectedPaymentMethod.paymentType
+                paymentType
             )
             // TODO append analytics with selected token and currency
             buyAnalytics.logBuyContinuing(
@@ -311,6 +352,14 @@ class NewBuyPresenter(
                 buyUSD = it.price.toUsd(it.price).orZero(),
                 lastScreenName = analyticsInteractor.getPreviousScreenName()
             )
+        }
+    }
+
+    fun getValidPaymentType(): String {
+        return if (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
+            SEPA_BANK_TRANSFER
+        } else {
+            selectedPaymentMethod.paymentType
         }
     }
 

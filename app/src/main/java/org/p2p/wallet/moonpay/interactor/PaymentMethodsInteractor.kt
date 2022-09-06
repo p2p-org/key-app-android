@@ -8,8 +8,8 @@ import org.p2p.wallet.moonpay.model.Method
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 
-private const val GBP_BANK_TRANSFER = "gbp_bank_transfer"
-private const val SEPA_BANK_TRANSFER = "sepa_bank_transfer"
+const val GBP_BANK_TRANSFER = "gbp_bank_transfer"
+const val SEPA_BANK_TRANSFER = "sepa_bank_transfer"
 private const val CREDIT_DEBIT_CARD = "credit_debit_card"
 
 private val CARD_PAYMENT_METHOD = PaymentMethod(
