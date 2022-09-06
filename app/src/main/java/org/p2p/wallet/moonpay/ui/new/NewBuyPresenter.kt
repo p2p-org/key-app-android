@@ -304,7 +304,11 @@ class NewBuyPresenter(
             accountCreationCost = null,
             total = buyCurrencyInfo.totalAmount.scaleShort(),
             receiveAmountText = amount,
-            purchaseCostText = if (isSwappedToToken) currencyForTokensAmount.asCurrency(currency) else null
+            purchaseCostText = if (isSwappedToToken) {
+                currencyForTokensAmount.asCurrency(currency)
+            } else {
+                buyCurrencyInfo.receiveAmount.toBigDecimal().asCurrency(currency)
+            }
         )
         view?.apply {
             showTotal(data)
