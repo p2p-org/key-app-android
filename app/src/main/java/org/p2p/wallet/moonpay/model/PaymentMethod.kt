@@ -10,7 +10,7 @@ enum class Method {
 
 data class PaymentMethod(
     val method: Method,
-    var isSelected: Boolean,
+    var isSelected: Boolean = false,
     val feePercent: Float,
     @StringRes val paymentPeriodResId: Int,
     @StringRes val methodResId: Int,
