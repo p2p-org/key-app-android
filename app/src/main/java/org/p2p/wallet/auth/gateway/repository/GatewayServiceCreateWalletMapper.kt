@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.gateway.repository
 
 import com.google.gson.JsonObject
-import org.near.borshj.BorshBuffer
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.encodeToBase64
 import org.p2p.solanaj.utils.crypto.encodeToBase64String
