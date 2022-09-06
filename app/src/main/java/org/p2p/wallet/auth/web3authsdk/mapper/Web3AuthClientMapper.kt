@@ -1,30 +1,39 @@
 package org.p2p.wallet.auth.web3authsdk.mapper
 
 import com.google.gson.Gson
+import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSdkInternalError
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.fromJsonReified
 import timber.log.Timber
 
+private const val INTERNAL_ERROR_MESSAGE = "Web3Auth mapping failed"
+
 class Web3AuthClientMapper(private val gson: Gson) {
-    fun fromNetworkSignUp(responseJson: String): Web3AuthSignUpResponse? {
-        return kotlin.runCatching { gson.fromJsonReified<Web3AuthSignUpResponse>(responseJson) }
-            .onFailure { Timber.i(it) }
-            .getOrNull()
+    fun fromNetworkSignUp(responseJson: String): Result<Web3AuthSignUpResponse> = try {
+        Result.success(gson.fromJsonReified<Web3AuthSignUpResponse>(responseJson)!!)
+    } catch (mappingError: Throwable) {
+        Timber.i(mappingError)
+        Timber.i(responseJson)
+        Result.failure(Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError))
     }
 
-    fun fromNetworkSignIn(responseJson: String): Web3AuthSignInResponse? {
-        return kotlin.runCatching { gson.fromJsonReified<Web3AuthSignInResponse>(responseJson) }
-            .onFailure { Timber.i(it) }
-            .getOrNull()
+    fun fromNetworkSignIn(responseJson: String): Result<Web3AuthSignInResponse> = try {
+        Result.success(gson.fromJsonReified<Web3AuthSignInResponse>(responseJson)!!)
+    } catch (mappingError: Throwable) {
+        Timber.i(mappingError)
+        Timber.i(responseJson)
+        Result.failure(Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError))
     }
 
-    fun fromNetworkError(errorResponseJson: String): Web3AuthErrorResponse? {
-        return kotlin.runCatching { gson.fromJsonReified<Web3AuthErrorResponse>(errorResponseJson) }
-            .onFailure { Timber.i(it) }
-            .getOrNull()
-            ?.let { createFilledResponseWithErrorType(it) }
+    fun fromNetworkError(errorResponseJson: String): Web3AuthErrorResponse = try {
+        val web3AuthError = gson.fromJsonReified<Web3AuthErrorResponse>(errorResponseJson)!!
+        createFilledResponseWithErrorType(web3AuthError)
+    } catch (mappingError: Throwable) {
+        Timber.i(mappingError)
+        Timber.i(errorResponseJson)
+        throw Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError)
     }
 
     private fun createFilledResponseWithErrorType(response: Web3AuthErrorResponse): Web3AuthErrorResponse {

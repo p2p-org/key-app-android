@@ -19,7 +19,7 @@ class PhoneNumberEnterPresenter(
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
-    private var lastPhoneNumber: String = emptyString()
+    private var lastFullPhoneNumber: String = emptyString()
     private var submitUserPhoneTriesCount = 0
 
     override fun attach(view: PhoneNumberEnterContract.View) {
@@ -43,7 +43,7 @@ class PhoneNumberEnterPresenter(
             selectedCountryCode = countryCode
 
             view?.showDefaultCountryCode(countryCode)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Timber.e(e, "Loading default country code failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
@@ -81,20 +81,17 @@ class PhoneNumberEnterPresenter(
         launch {
             try {
                 selectedCountryCode?.let {
-                    val userPhoneNumber = it.phoneCode + phoneNumber
-                    if (lastPhoneNumber != userPhoneNumber) {
-                        createWalletInteractor.startCreatingWallet(userPhoneNumber = it.phoneCode + phoneNumber)
-                        lastPhoneNumber = userPhoneNumber
+                    if (createWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
+                        view?.navigateToAccountBlocked()
+                    } else {
+                        val fullUserPhoneNumber = it.phoneCode + phoneNumber
+                        createWalletInteractor.startCreatingWallet(userPhoneNumber = fullUserPhoneNumber)
+                        view?.navigateToSmsInput()
                     }
-                    view?.navigateToSmsInput()
                 }
             } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
                 Timber.i(smsDeliverFailed)
-                if (++submitUserPhoneTriesCount >= MAX_PHONE_NUMBER_TRIES) {
-                    view?.navigateToAccountBlocked()
-                } else {
-                    view?.showSmsDeliveryFailedForNumber()
-                }
+                view?.showSmsDeliveryFailedForNumber()
             } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
                 Timber.i(tooManyPhoneEnters)
                 view?.navigateToAccountBlocked()
@@ -103,7 +100,7 @@ class PhoneNumberEnterPresenter(
                 view?.navigateToCriticalErrorScreen(serverError.code)
             } catch (error: Throwable) {
                 Timber.e(error, "Phone number submission failed")
-                view?.showErrorSnackBar(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }

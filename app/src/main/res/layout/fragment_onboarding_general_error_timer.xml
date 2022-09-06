@@ -46,8 +46,7 @@
         app:layout_constraintBottom_toTopOf="@+id/container_bottom_buttons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_error_title"
-        tools:text="@string/onboarding_general_error_timer_sms_input_subtitle" />
+        app:layout_constraintTop_toBottomOf="@+id/text_view_error_title" />
 
 
     <LinearLayout

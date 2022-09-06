@@ -22,7 +22,7 @@ class CountryCodeInMemoryRepository(
         try {
             val localeCountryIso = context.resources.configuration.locale.country
             getCountryForIso(localeCountryIso)
-        } catch (error: Exception) {
+        } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by locale failed")
             null
         }
@@ -33,7 +33,7 @@ class CountryCodeInMemoryRepository(
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val networkCountryIso = telephonyManager.networkCountryIso
             getCountryForIso(networkCountryIso)
-        } catch (error: Exception) {
+        } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by network failed")
             null
         }
@@ -44,7 +44,7 @@ class CountryCodeInMemoryRepository(
             val telephonyManager = context.getSystemService(TelephonyManager::class.java)
             val simCountryISO = telephonyManager.simCountryIso
             getCountryForIso(simCountryISO)
-        } catch (error: Exception) {
+        } catch (error: Throwable) {
             Timber.i(error, "Detecting country code by sim card failed")
             null
         }
