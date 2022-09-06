@@ -179,7 +179,7 @@ object HomeModule : InjectionModule {
             NewBuyPresenter(
                 tokenToBuy = token,
                 moonpayRepository = get(named(NEW_BUY_QUALIFIER)),
-                minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),
+                minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_minimal_transaction_format),
                 maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
                 analyticsInteractor = get(),

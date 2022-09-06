@@ -202,13 +202,6 @@ class NewBuyFragment :
         binding.buttonBuy.isEnabled = isEnabled
     }
 
-    override fun showMinAmountErrorMessage(currencySymbol: String) {
-        binding.buttonBuy.apply {
-            icon = null
-            text = getString(R.string.buy_min_amount_error, currencySymbol)
-        }
-    }
-
     override fun navigateToMoonpay(
         amount: String,
         selectedToken: Token,

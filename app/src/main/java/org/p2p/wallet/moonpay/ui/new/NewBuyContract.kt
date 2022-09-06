@@ -18,7 +18,6 @@ interface NewBuyContract {
         fun setContinueButtonEnabled(isEnabled: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showMessage(message: String?, selectedTokenSymbol: String? = null)
-        fun showMinAmountErrorMessage(currencySymbol: String)
         fun showTotal(viewData: BuyViewData)
         fun showTotalData(viewData: BuyViewData)
         fun navigateToMoonpay(

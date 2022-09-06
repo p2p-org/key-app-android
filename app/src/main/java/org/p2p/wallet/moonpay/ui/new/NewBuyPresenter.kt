@@ -158,6 +158,7 @@ class NewBuyPresenter(
                 }
                 return false
             } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
+                view?.setContinueButtonEnabled(false)
                 view?.showMessage(resourcesProvider.getString(R.string.buy_gbp_error))
                 return false
             }
@@ -239,7 +240,7 @@ class NewBuyPresenter(
             is MoonpayBuyResult.MinimumAmountError -> {
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.setContinueButtonEnabled(false)
-                view?.showMinAmountErrorMessage(selectedCurrency.code.symbolFromCode())
+                view?.showMessage(minBuyErrorFormat.format(selectedCurrency.code.symbolFromCode()))
             }
         }
         buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)
@@ -301,14 +302,11 @@ class NewBuyPresenter(
     }
 
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
-        val suffixPrefix = selectedCurrency.code.symbolFromCode()
         val isAmountLower = amount.toBigDecimal() < loadedBuyCurrency.minAmount
-        val amountForFormatter = if (isAmountLower) loadedBuyCurrency.minAmount else loadedBuyCurrency.maxAmount
-        val suffixPrefixWithAmount = "$amountForFormatter $suffixPrefix"
         val errorMessageRaw = if (isAmountLower) minBuyErrorFormat else maxBuyErrorFormat
         view?.apply {
             setContinueButtonEnabled(false)
-            showMessage(errorMessageRaw.format(suffixPrefixWithAmount))
+            showMessage(errorMessageRaw.format(selectedCurrency.code.symbolFromCode()))
         }
     }
 
