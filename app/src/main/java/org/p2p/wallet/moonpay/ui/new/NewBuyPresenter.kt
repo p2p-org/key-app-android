@@ -232,6 +232,11 @@ class NewBuyPresenter(
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
+            is MoonpayBuyResult.MinimumAmountError -> {
+                buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
+                view?.setContinueButtonEnabled(false)
+                view?.showMinAmountErrorMessage(selectedCurrency.code.symbolFromCode())
+            }
         }
         buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)
     }
@@ -292,28 +297,14 @@ class NewBuyPresenter(
     }
 
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
-        val isCurrencyUsd = loadedBuyCurrency.code == Constants.USD_READABLE_SYMBOL.lowercase()
-        val suffixPrefix = if (isCurrencyUsd) {
-            selectedCurrency.code
-        } else {
-            loadedBuyCurrency.code.uppercase()
-        }
+        val suffixPrefix = selectedCurrency.code.symbolFromCode()
         val isAmountLower = amount.toBigDecimal() < loadedBuyCurrency.minAmount
-
         val amountForFormatter = if (isAmountLower) loadedBuyCurrency.minAmount else loadedBuyCurrency.maxAmount
-        val suffixPrefixWithAmount =
-            if (isCurrencyUsd) {
-                "$suffixPrefix$amountForFormatter"
-            } else {
-                "$amountForFormatter $suffixPrefix"
-            }
-
+        val suffixPrefixWithAmount = "$amountForFormatter $suffixPrefix"
         val errorMessageRaw = if (isAmountLower) minBuyErrorFormat else maxBuyErrorFormat
         view?.apply {
             setContinueButtonEnabled(false)
-            showMessage(
-                errorMessageRaw.format(suffixPrefixWithAmount)
-            )
+            showMessage(errorMessageRaw.format(suffixPrefixWithAmount))
         }
     }
 
@@ -361,6 +352,13 @@ class NewBuyPresenter(
         } else {
             selectedPaymentMethod.paymentType
         }
+    }
+
+    private fun String.symbolFromCode() = when (this.lowercase()) {
+        "eur" -> "€"
+        "usd" -> "$"
+        "gbp" -> "£"
+        else -> throw IllegalArgumentException("Unknown currency $this")
     }
 
     override fun detach() {

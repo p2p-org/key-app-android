@@ -24,4 +24,6 @@
     <string name="buy_select_currency_title">Currency</string>
     <string name="buy_details_title">Transaction details</string>
     <string name="buy_gbp_error">GBP transfer isn’t available out of UK</string>
+
+    <string name="buy_min_amount_error">Minimal transaction is %s 30</string>
 </resources>

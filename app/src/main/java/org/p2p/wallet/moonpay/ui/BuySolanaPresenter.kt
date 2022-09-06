@@ -160,6 +160,10 @@ class BuySolanaPresenter(
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
+            is MoonpayBuyResult.MinimumAmountError -> {
+                // May by only in case of new buy
+                throw IllegalArgumentException("MinimumAmountError may be only in case of new buy screen")
+            }
         }
         buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)
     }
