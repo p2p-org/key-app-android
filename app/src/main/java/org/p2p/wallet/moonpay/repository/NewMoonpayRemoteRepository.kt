@@ -19,14 +19,16 @@ class NewMoonpayRemoteRepository(
         baseCurrencyAmount: String?,
         quoteCurrencyAmount: String?,
         tokenToBuy: Token,
-        baseCurrencyCode: String
+        baseCurrencyCode: String,
+        paymentMethod: String,
     ): MoonpayBuyResult = try {
         val response = api.getBuyCurrency(
             quoteCurrencyCode = tokenToBuy.tokenSymbolForMoonPay,
             apiKey = moonpayApiKey,
             baseCurrencyAmount = baseCurrencyAmount,
             quoteCurrencyAmount = quoteCurrencyAmount,
-            baseCurrencyCode = baseCurrencyCode
+            baseCurrencyCode = baseCurrencyCode,
+            paymentMethod = paymentMethod
         )
         if (mapper.isMinimumAmountValid(response)) {
             MoonpayBuyResult.Success(mapper.fromNetworkToDomain(response))

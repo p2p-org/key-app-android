@@ -11,7 +11,8 @@ interface MoonpayRepository {
         baseCurrencyAmount: String?,
         quoteCurrencyAmount: String?,
         tokenToBuy: Token,
-        baseCurrencyCode: String
+        baseCurrencyCode: String,
+        paymentMethod: String,
     ): MoonpayBuyResult
 
     suspend fun getCurrencyAskPrice(tokenToGetPrice: Token): BigDecimal

@@ -224,7 +224,8 @@ class NewBuyPresenter(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = selectedToken,
-                baseCurrencyCode = baseCurrencyCode
+                baseCurrencyCode = baseCurrencyCode,
+                paymentMethod = selectedPaymentMethod.paymentType
             )
             onBuyCurrencyLoadSuccess(result)
         } catch (error: Throwable) {
