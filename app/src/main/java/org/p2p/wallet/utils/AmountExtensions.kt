@@ -61,7 +61,7 @@ fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
     usdRate?.let { this.multiply(it).scaleShort() }
 
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
-    token.usdRate?.let { this.multiply(it).scaleShort() }
+    token.rate?.let { this.multiply(it).scaleShort() }
 
 fun BigDecimal.formatUsd(): String = this.stripTrailingZeros().run {
     if (isZero()) this.toString() else DecimalFormatter.format(this, USD_DECIMALS)

@@ -12,7 +12,6 @@ import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSelectionViewHolder
 import org.p2p.wallet.databinding.ItemNewTokenSimpleBinding
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import java.util.Locale
@@ -44,7 +43,7 @@ class NewSelectTokenViewHolder(
             wrappedImageView.isVisible = item.isWrapped
             itemView.setOnClickListener { onItemClicked(item) }
 
-            textViewUsdValue.withTextOrGone("$ ${item.usdRateOrZero.formatUsd()}")
+            textViewUsdValue.withTextOrGone(item.currencyFormattedRate)
         }
     }
 

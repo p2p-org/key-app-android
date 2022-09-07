@@ -48,12 +48,12 @@ class SwapTotal(
 
     val receiveAtLeastUsd: String?
         get() {
-            val receiveAtLeastUsd = destination.usdRate?.let { receiveAtLeastDecimals.multiply(it) }
+            val receiveAtLeastUsd = destination.rate?.let { receiveAtLeastDecimals.multiply(it) }
             return receiveAtLeastUsd?.formatUsd()
         }
 
     val inputAmountUsd: BigDecimal?
-        get() = sourceToken.usdRate?.let { inputAmount.multiply(it) }
+        get() = sourceToken.rate?.let { inputAmount.multiply(it) }
 
     val approxTotalUsd: String? get() = inputAmountUsd?.let { "(~$it)" }
 

@@ -148,6 +148,12 @@ class NewBuyPresenter(
     }
 
     override fun onSelectTokenClicked() {
+        moonpayQuotesInteractor.getQuotesByCurrency(selectedCurrency.code).forEach { quote ->
+            tokensToBuy.find { it.tokenSymbol == quote.token.tokenSymbol }?.let {
+                it.rate = quote.price
+                it.currency = quote.currency
+            }
+        }
         view?.showTokensToBuy(selectedToken, tokensToBuy)
     }
 
