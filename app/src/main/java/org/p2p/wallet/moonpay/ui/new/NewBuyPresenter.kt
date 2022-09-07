@@ -347,7 +347,6 @@ class NewBuyPresenter(
 
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
         val isAmountLower = amount.toBigDecimal() < loadedBuyCurrency.minAmount
-        val errorMessageRaw = if (isAmountLower) minBuyErrorFormat else maxBuyErrorFormat
         val maxAmount = loadedBuyCurrency.maxAmount
         val symbol = selectedCurrency.code.symbolFromCode()
         val message = if (isAmountLower) {
@@ -400,7 +399,7 @@ class NewBuyPresenter(
         }
     }
 
-    fun getValidPaymentType(): String {
+    private fun getValidPaymentType(): String {
         return if (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
             SEPA_BANK_TRANSFER
         } else {

@@ -16,6 +16,7 @@ interface MoonpayApi {
         @Query("paymentMethod") paymentMethod: String,
         @Query("fixed") fixed: String = "true",
         @Query("regionalPricing") regionalPricing: String = "true",
+        @Query("areFeesIncluded") areFeesIncluded: String = "true"
     ): MoonpayBuyCurrencyResponse
 
     @GET("v3/currencies/{currencyCode}/ask_price/")
