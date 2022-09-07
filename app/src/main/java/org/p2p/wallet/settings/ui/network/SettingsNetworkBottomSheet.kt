@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.FragmentSettingsNetworkBinding
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -56,10 +56,7 @@ class SettingsNetworkBottomSheet :
             recyclerViewNetworks.layoutManager = LinearLayoutManager(requireContext())
             recyclerViewNetworks.attachAdapter(networkAdapter)
 
-            buttonDone.setOnClickListener {
-                presenter.finishAndClose()
-                dismissAllowingStateLoss()
-            }
+            buttonDone.setOnClickListener { dismissAllowingStateLoss() }
         }
     }
 
@@ -71,12 +68,12 @@ class SettingsNetworkBottomSheet :
         networkAdapter.setItems(availableNetworks)
     }
 
-    override fun onPause() {
-        presenter.finishAndClose()
-        super.onPause()
+    override fun dismissBottomSheet() {
+        dismissAllowingStateLoss()
     }
 
     override fun closeWithResult(newNetworkEnvironment: NetworkEnvironment) {
         setFragmentResult(requestKey, bundleOf(resultKey to newNetworkEnvironment))
+        dismissAllowingStateLoss()
     }
 }

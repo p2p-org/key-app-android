@@ -11,7 +11,7 @@ class SettingsNetworkPresenter(
     private val environmentManager: NetworkEnvironmentManager,
 ) : BasePresenter<SettingsNetworkContract.View>(), SettingsNetworkContract.Presenter {
 
-    private var currentSelectedEnvironment: NetworkEnvironment = environmentManager.loadCurrentEnvironment()
+    private var currentEnvironment: NetworkEnvironment = environmentManager.loadCurrentEnvironment()
 
     override fun attach(view: SettingsNetworkContract.View) {
         super.attach(view)
@@ -25,19 +25,18 @@ class SettingsNetworkPresenter(
         } else {
             environmentManager.availableNetworks.filterNot { it == NetworkEnvironment.DEVNET }
         }
+
         view?.showEnvironment(
-            currentNetwork = currentSelectedEnvironment,
+            currentNetwork = currentEnvironment,
             availableNetworks = filteredNetworks
         )
     }
 
     override fun onNewEnvironmentSelected(newNetwork: NetworkEnvironment) {
-        currentSelectedEnvironment = newNetwork
-    }
-
-    override fun finishAndClose() {
-        if (currentSelectedEnvironment != environmentManager.loadCurrentEnvironment()) {
-            view?.closeWithResult(currentSelectedEnvironment)
+        if (newNetwork != currentEnvironment) {
+            view?.closeWithResult(newNetwork)
+        } else {
+            view?.dismissBottomSheet()
         }
     }
 }
