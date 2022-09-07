@@ -63,17 +63,27 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewBuying" />
 
+            <View
+                android:id="@+id/viewSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:background="@color/snow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/amountsView" />
+
             <TextView
                 android:id="@+id/textViewMethod"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/buy_method_title"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
                 android:textColor="@color/text_night"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/amountsView" />
+                app:layout_constraintTop_toBottomOf="@id/viewSeparator" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewMethods"
@@ -107,10 +117,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
+                android:text="$ 0.0"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
                 app:layout_constraintBaseline_toBaselineOf="@id/textViewTotalTitle"
-                app:layout_constraintEnd_toStartOf="@id/imageViewChevron"
-                android:text="$ 0.0" />
+                app:layout_constraintEnd_toStartOf="@id/imageViewChevron" />
 
             <ImageView
                 android:id="@+id/imageViewChevron"
