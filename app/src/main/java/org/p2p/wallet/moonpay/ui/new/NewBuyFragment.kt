@@ -112,9 +112,6 @@ class NewBuyFragment :
         toolbarBuy.setNavigationIcon(R.drawable.ic_toolbar_back)
         toolbarBuy.setNavigationOnClickListener { popBackStack() }
 
-        amountsView.token = token.tokenSymbol
-        amountsView.currency = Constants.USD_READABLE_SYMBOL
-
         textViewTotal.setOnClickListener {
             presenter.onTotalClicked()
         }
@@ -122,23 +119,28 @@ class NewBuyFragment :
         buttonBuy.text = getString(R.string.buy_toolbar_title, token.tokenSymbol)
 
         amountsView.apply {
+            token = this@NewBuyFragment.token.tokenSymbol
+            currency = Constants.USD_READABLE_SYMBOL
+
             setOnSelectTokenClickListener { presenter.onSelectTokenClicked() }
             setOnTokenAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
-        }
-        amountsView.apply {
+
             setOnSelectCurrencyClickListener { presenter.onSelectCurrencyClicked() }
             setOnCurrencyAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
-        }
 
-        amountsView.setOnFocusChangeListener { focusMode ->
-            presenter.onFocusModeChanged(focusMode)
+            setOnFocusChangeListener { focusMode ->
+                presenter.onFocusModeChanged(focusMode)
+            }
         }
 
         buttonBuy.setOnClickListener { presenter.onContinueClicked() }
     }
 
     override fun showPreselectedAmount(amount: String) {
-        binding.amountsView.setCurrencyAmount(amount)
+        binding.amountsView.apply {
+            setCurrencyAmount(amount)
+            requestFocus(FocusMode.CURRENCY)
+        }
     }
 
     override fun showPaymentMethods(methods: List<PaymentMethod>) {

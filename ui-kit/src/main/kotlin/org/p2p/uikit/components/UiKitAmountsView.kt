@@ -13,6 +13,7 @@ import androidx.core.widget.doOnTextChanged
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetAmountsViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
+import org.p2p.uikit.utils.showSoftKeyboard
 
 enum class FocusMode {
     TOKEN,
@@ -100,6 +101,25 @@ class UiKitAmountsView @JvmOverloads constructor(
 
         binding.editTextCurrencyAmount.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) onFocusChanged(FocusMode.CURRENCY)
+        }
+    }
+
+    fun requestFocus(focusMode: FocusMode) {
+        when (focusMode) {
+            FocusMode.CURRENCY -> {
+                binding.editTextCurrencyAmount.apply {
+                    requestFocus()
+                    showSoftKeyboard()
+                    setSelection(text?.length ?: 0)
+                }
+            }
+            FocusMode.TOKEN -> {
+                binding.editTextTokenAmount.apply {
+                    requestFocus()
+                    showSoftKeyboard()
+                    setSelection(text?.length ?: 0)
+                }
+            }
         }
     }
 

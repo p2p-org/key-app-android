@@ -41,7 +41,7 @@ private const val DELAY_IN_MS = 500L
 
 private val TOKENS_VALID_FOR_BUY = setOf(Constants.SOL_SYMBOL, Constants.USDC_SYMBOL)
 
-private const val MIN_FIAT_AMOUNT = 30
+private const val DEFAULT_FIAT_AMOUNT = 40
 
 class NewBuyPresenter(
     tokenToBuy: Token,
@@ -114,8 +114,8 @@ class NewBuyPresenter(
     }
 
     private fun preselectMinimalFiatAmount() {
-        view?.showPreselectedAmount(MIN_FIAT_AMOUNT.toString())
-        setBuyAmount(MIN_FIAT_AMOUNT.toString(), isDelayEnabled = false)
+        view?.showPreselectedAmount(DEFAULT_FIAT_AMOUNT.toString())
+        setBuyAmount(DEFAULT_FIAT_AMOUNT.toString(), isDelayEnabled = false)
     }
 
     override fun onBackPressed() {
