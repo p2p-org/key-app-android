@@ -28,6 +28,10 @@ class MoonpayQuotesInteractor(
         }
     }
 
+    fun getQuotesByCurrency(currency: String): List<MoonpayBuyQuote> {
+        return quotes.filter { it.currency == currency }
+    }
+
     private suspend fun loadQuote(currency: String, token: Token) {
         val response = moonpayRepository.getBuyCurrencyData(
             baseCurrencyAmount = DEFAULT_AMOUNT,
