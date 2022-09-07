@@ -8,6 +8,7 @@ import org.p2p.uikit.components.FocusMode
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
@@ -51,6 +52,7 @@ class NewBuyPresenter(
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
     private val resourcesProvider: ResourcesProvider,
+    bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
 
     private lateinit var tokensToBuy: List<Token>
@@ -65,6 +67,7 @@ class NewBuyPresenter(
     private var amount: String = "0"
     private var isSwappedToToken: Boolean = false
     private var currentBuyViewData: BuyViewData? = null
+    private val currencySelectionEnabled = bankTransferFeatureToggle.value
 
     private var calculationJob: Job? = null
 
@@ -133,7 +136,9 @@ class NewBuyPresenter(
     }
 
     override fun onSelectCurrencyClicked() {
-        view?.showCurrency(selectedCurrency)
+        if (currencySelectionEnabled) {
+            view?.showCurrency(selectedCurrency)
+        }
     }
 
     override fun onTotalClicked() {
