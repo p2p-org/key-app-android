@@ -87,13 +87,14 @@ class NewResetPinPresenter(
     private fun resetPinActually() {
         launch {
             try {
+                view?.showPinCorrect()
+                delay(PIN_ANIMATION_DURATION)
                 authInteractor.resetPin(createdPin)
                 view?.showMessage(R.string.settings_item_pin_changed)
                 view?.navigateBackToSettings()
             } catch (e: Throwable) {
                 Timber.e(e, "Error during new pin reset")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-                view?.showPinCorrect()
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
                 createdPin = emptyString()
