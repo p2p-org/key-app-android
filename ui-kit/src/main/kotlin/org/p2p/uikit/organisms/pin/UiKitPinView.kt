@@ -66,6 +66,10 @@ class UiKitPinView @JvmOverloads constructor(
         binding.pinCodeView.setSuccessDotsColor()
     }
 
+    fun resetDotsColor() {
+        binding.pinCodeView.resetDotsColor()
+    }
+
     fun showLockedState() {
         with(binding) {
             keyboardView.isEnabled = false

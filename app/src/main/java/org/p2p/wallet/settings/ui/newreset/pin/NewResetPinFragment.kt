@@ -82,12 +82,12 @@ class NewResetPinFragment :
 
     override fun showPinCorrect() {
         binding.pinView.onSuccessPin()
-        binding.pinView.clearPin()
     }
 
     override fun showPinConfirmation() {
         binding.contentView.setBackgroundColor(getColor(R.color.bg_lime))
         binding.textViewTitle.setText(R.string.settings_item_create_new_pin_code)
+        binding.pinView.resetDotsColor()
         binding.pinView.clearPin()
         binding.textViewForgotPassword.isVisible = false
 
