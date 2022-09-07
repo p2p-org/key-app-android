@@ -1,11 +1,9 @@
 package org.p2p.wallet.moonpay.repository
 
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.moonpay.api.MoonpayApi
+import org.p2p.wallet.moonpay.api.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.api.MoonpayIpAddressResponse
-import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.utils.Constants
 import java.math.BigDecimal
 
@@ -13,7 +11,7 @@ class NewMoonpayRemoteRepository(
     private val api: MoonpayApi,
     private val moonpayApiKey: String,
     private val mapper: MoonpayApiMapper
-) : MoonpayRepository {
+) : NewMoonpayRepository {
 
     override suspend fun getBuyCurrencyData(
         baseCurrencyAmount: String?,
@@ -21,8 +19,8 @@ class NewMoonpayRemoteRepository(
         tokenToBuy: Token,
         baseCurrencyCode: String,
         paymentMethod: String,
-    ): MoonpayBuyResult = try {
-        val response = api.getBuyCurrency(
+    ): MoonpayBuyCurrencyResponse {
+        return api.getBuyCurrency(
             quoteCurrencyCode = tokenToBuy.tokenSymbolForMoonPay,
             apiKey = moonpayApiKey,
             baseCurrencyAmount = baseCurrencyAmount,
@@ -30,23 +28,6 @@ class NewMoonpayRemoteRepository(
             baseCurrencyCode = baseCurrencyCode,
             paymentMethod = paymentMethod
         )
-        if (mapper.isMinimumAmountValid(response)) {
-            MoonpayBuyResult.Success(mapper.fromNetworkToDomain(response))
-        } else {
-            MoonpayBuyResult.MinimumAmountError
-        }
-    } catch (error: ServerException) {
-        when {
-            mapper.isMinimumAmountException(error) -> {
-                MoonpayBuyResult.MinimumAmountError
-            }
-            error.errorCode == ErrorCode.BAD_REQUEST -> {
-                MoonpayBuyResult.Error(mapper.fromNetworkErrorToDomainMessage(error))
-            }
-            else -> {
-                throw error
-            }
-        }
     }
 
     override suspend fun getCurrencyAskPrice(tokenToGetPrice: Token): BigDecimal {

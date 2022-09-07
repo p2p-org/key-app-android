@@ -18,12 +18,13 @@ import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.moonpay.api.MoonpayApi
-import org.p2p.wallet.moonpay.interactor.MoonpayQuotesInteractor
+import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.MoonpayRemoteRepository
 import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.moonpay.repository.NewMoonpayRemoteRepository
+import org.p2p.wallet.moonpay.repository.NewMoonpayRepository
 import org.p2p.wallet.moonpay.ui.BuySolanaContract
 import org.p2p.wallet.moonpay.ui.BuySolanaPresenter
 import org.p2p.wallet.moonpay.ui.new.NewBuyContract
@@ -52,9 +53,6 @@ object HomeModule : InjectionModule {
 
     const val MOONPAY_QUALIFIER = "api.moonpay.com"
 
-    const val BUY_QUALIFIER = "BUY_QUALIFIER"
-    const val NEW_BUY_QUALIFIER = "NEW_BUY_QUALIFIER"
-
     override fun create() = module {
         initDataLayer()
         initDomainLayer()
@@ -63,12 +61,12 @@ object HomeModule : InjectionModule {
 
     private fun Module.initDataLayer() {
         factory { MoonpayApiMapper() }
-        factory<MoonpayRepository>(named(BUY_QUALIFIER)) {
+        factory<MoonpayRepository>() {
             val api = get<Retrofit>(named(MOONPAY_QUALIFIER)).create(MoonpayApi::class.java)
             val apiKey = BuildConfig.moonpayKey
             MoonpayRemoteRepository(api, apiKey, get())
         }
-        factory<MoonpayRepository>(named(NEW_BUY_QUALIFIER)) {
+        factory<NewMoonpayRepository>() {
             val api = get<Retrofit>(named(MOONPAY_QUALIFIER)).create(MoonpayApi::class.java)
             val apiKey = BuildConfig.moonpayKey
             NewMoonpayRemoteRepository(api, apiKey, get())
@@ -99,15 +97,16 @@ object HomeModule : InjectionModule {
         }
         factory {
             PaymentMethodsInteractor(
-                repository = get(named(NEW_BUY_QUALIFIER)),
+                repository = get(),
                 dispatchers = get(),
                 bankTransferFeatureToggle = get()
             )
         }
         factory {
-            MoonpayQuotesInteractor(
-                moonpayRepository = get(named(BUY_QUALIFIER)),
-                dispatchers = get()
+            MoonpayBuyInteractor(
+                moonpayRepository = get(),
+                dispatchers = get(),
+                moonpayApiMapper = get()
             )
         }
     }
@@ -175,7 +174,7 @@ object HomeModule : InjectionModule {
         factory<BuySolanaContract.Presenter> { (token: Token) ->
             BuySolanaPresenter(
                 tokenToBuy = token,
-                moonpayRepository = get(named(BUY_QUALIFIER)),
+                moonpayRepository = get(),
                 minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),
                 maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
@@ -185,7 +184,6 @@ object HomeModule : InjectionModule {
         factory<NewBuyContract.Presenter> { (token: Token) ->
             NewBuyPresenter(
                 tokenToBuy = token,
-                moonpayRepository = get(named(NEW_BUY_QUALIFIER)),
                 minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_minimal_transaction_format),
                 maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
@@ -194,7 +192,7 @@ object HomeModule : InjectionModule {
                 paymentMethodsInteractor = get(),
                 resourcesProvider = get(),
                 bankTransferFeatureToggle = get(),
-                moonpayQuotesInteractor = get()
+                moonpayBuyInteractor = get()
             )
         }
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class

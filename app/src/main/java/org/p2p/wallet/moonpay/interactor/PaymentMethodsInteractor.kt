@@ -6,7 +6,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatu
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.Method
 import org.p2p.wallet.moonpay.model.PaymentMethod
-import org.p2p.wallet.moonpay.repository.MoonpayRepository
+import org.p2p.wallet.moonpay.repository.NewMoonpayRepository
 
 const val GBP_BANK_TRANSFER = "gbp_bank_transfer"
 const val SEPA_BANK_TRANSFER = "sepa_bank_transfer"
@@ -33,7 +33,7 @@ private val BANK_TRANSFER_PAYMENT_METHOD = PaymentMethod(
 )
 
 class PaymentMethodsInteractor(
-    private val repository: MoonpayRepository,
+    private val repository: NewMoonpayRepository,
     private val dispatchers: CoroutineDispatchers,
     private val bankTransferFeatureToggle: BuyWithTransferFeatureToggle
 ) {

@@ -14,7 +14,8 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.BANK_TRANSFER_UK_CODE
-import org.p2p.wallet.moonpay.interactor.MoonpayQuotesInteractor
+import org.p2p.wallet.moonpay.interactor.DEFAULT_MIN_AMOUNT
+import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
@@ -22,7 +23,6 @@ import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.Method
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.model.PaymentMethod
-import org.p2p.wallet.moonpay.repository.MoonpayRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
@@ -41,11 +41,8 @@ private const val DELAY_IN_MS = 500L
 
 private val TOKENS_VALID_FOR_BUY = setOf(Constants.SOL_SYMBOL, Constants.USDC_SYMBOL)
 
-private const val DEFAULT_FIAT_AMOUNT = 40
-
 class NewBuyPresenter(
     tokenToBuy: Token,
-    private val moonpayRepository: MoonpayRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
     private val buyAnalytics: BuyAnalytics,
@@ -53,7 +50,7 @@ class NewBuyPresenter(
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
     private val resourcesProvider: ResourcesProvider,
-    private val moonpayQuotesInteractor: MoonpayQuotesInteractor,
+    private val moonpayBuyInteractor: MoonpayBuyInteractor,
     bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
 
@@ -109,13 +106,13 @@ class NewBuyPresenter(
     private fun loadMoonpayBuyQuotes() {
         launch {
             val currencyCodes = currenciesToSelect.map { it.code }
-            moonpayQuotesInteractor.loadQuotes(currencyCodes, tokensToBuy)
+            moonpayBuyInteractor.loadQuotes(currencyCodes, tokensToBuy)
         }
     }
 
     private fun preselectMinimalFiatAmount() {
-        view?.showPreselectedAmount(DEFAULT_FIAT_AMOUNT.toString())
-        setBuyAmount(DEFAULT_FIAT_AMOUNT.toString(), isDelayEnabled = false)
+        view?.showPreselectedAmount(DEFAULT_MIN_AMOUNT.toString())
+        setBuyAmount(DEFAULT_MIN_AMOUNT.toString(), isDelayEnabled = false)
     }
 
     override fun onBackPressed() {
@@ -148,7 +145,7 @@ class NewBuyPresenter(
     }
 
     override fun onSelectTokenClicked() {
-        moonpayQuotesInteractor.getQuotesByCurrency(selectedCurrency.code).forEach { quote ->
+        moonpayBuyInteractor.getQuotesByCurrency(selectedCurrency.code).forEach { quote ->
             tokensToBuy.find { it.tokenSymbol == quote.token.tokenSymbol }?.let {
                 it.rate = quote.price
                 it.currency = quote.currency
@@ -247,7 +244,7 @@ class NewBuyPresenter(
             view?.showLoading(isLoading = true)
 
             val baseCurrencyCode = selectedCurrency.code.lowercase()
-            val result = moonpayRepository.getBuyCurrencyData(
+            val result = moonpayBuyInteractor.getMoonpayBuyResult(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = selectedToken,
@@ -278,7 +275,9 @@ class NewBuyPresenter(
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.apply {
                     setContinueButtonEnabled(false)
-                    showMessage(minBuyErrorFormat.format(selectedCurrency.code.symbolFromCode()))
+                    val symbol = selectedCurrency.code.symbolFromCode()
+                    val messageForFormat = "$symbol ${buyResult.minBuyAmount.formatUsd()}"
+                    showMessage(minBuyErrorFormat.format(messageForFormat))
                     clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
                 }
             }
@@ -348,9 +347,10 @@ class NewBuyPresenter(
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
         val isAmountLower = amount.toBigDecimal() < loadedBuyCurrency.minAmount
         val maxAmount = loadedBuyCurrency.maxAmount
+        val minAmount = loadedBuyCurrency.minAmount
         val symbol = selectedCurrency.code.symbolFromCode()
         val message = if (isAmountLower) {
-            minBuyErrorFormat.format(symbol)
+            minBuyErrorFormat.format("$symbol $minAmount")
         } else {
             maxBuyErrorFormat.format("$symbol $maxAmount")
         }
