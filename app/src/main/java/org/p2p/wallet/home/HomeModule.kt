@@ -18,6 +18,7 @@ import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.moonpay.api.MoonpayApi
+import org.p2p.wallet.moonpay.interactor.MoonpayQuotesInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.MoonpayRemoteRepository
@@ -103,6 +104,12 @@ object HomeModule : InjectionModule {
                 bankTransferFeatureToggle = get()
             )
         }
+        factory {
+            MoonpayQuotesInteractor(
+                moonpayRepository = get(named(BUY_QUALIFIER)),
+                dispatchers = get()
+            )
+        }
     }
 
     private fun Module.initPresentationLayer() {
@@ -186,7 +193,8 @@ object HomeModule : InjectionModule {
                 userInteractor = get(),
                 paymentMethodsInteractor = get(),
                 resourcesProvider = get(),
-                bankTransferFeatureToggle = get()
+                bankTransferFeatureToggle = get(),
+                moonpayQuotesInteractor = get()
             )
         }
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class

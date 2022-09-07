@@ -14,6 +14,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.BANK_TRANSFER_UK_CODE
+import org.p2p.wallet.moonpay.interactor.MoonpayQuotesInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
@@ -52,6 +53,7 @@ class NewBuyPresenter(
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
     private val resourcesProvider: ResourcesProvider,
+    private val moonpayQuotesInteractor: MoonpayQuotesInteractor,
     bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
 
@@ -71,6 +73,12 @@ class NewBuyPresenter(
 
     private var calculationJob: Job? = null
 
+    private val currenciesToSelect: List<BuyCurrency.Currency> = listOf(
+        BuyCurrency.Currency.create(Constants.GBP_SYMBOL),
+        BuyCurrency.Currency.create(Constants.EUR_SYMBOL),
+        SelectCurrencyBottomSheet.DEFAULT_CURRENCY
+    )
+
     override fun attach(view: NewBuyContract.View) {
         super.attach(view)
         loadTokensToBuy()
@@ -80,6 +88,7 @@ class NewBuyPresenter(
     private fun loadTokensToBuy() {
         launch {
             tokensToBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
+            loadMoonpayBuyQuotes()
         }
     }
 
@@ -94,6 +103,13 @@ class NewBuyPresenter(
             validatePaymentMethod()
 
             preselectMinimalFiatAmount()
+        }
+    }
+
+    private fun loadMoonpayBuyQuotes() {
+        launch {
+            val currencyCodes = currenciesToSelect.map { it.code }
+            moonpayQuotesInteractor.loadQuotes(currencyCodes, tokensToBuy)
         }
     }
 
@@ -137,7 +153,7 @@ class NewBuyPresenter(
 
     override fun onSelectCurrencyClicked() {
         if (currencySelectionEnabled) {
-            view?.showCurrency(selectedCurrency)
+            view?.showCurrency(currenciesToSelect, selectedCurrency)
         }
     }
 

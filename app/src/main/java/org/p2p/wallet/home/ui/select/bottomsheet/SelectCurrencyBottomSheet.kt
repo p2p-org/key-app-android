@@ -17,6 +17,7 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.withArgs
 
 private const val ARG_SELECTED_CURRENCY = "ARG_SELECTED_CURRENCY"
+private const val ARG_CURRENCIES = "ARG_CURRENCIES"
 
 class SelectCurrencyBottomSheet : BaseRecyclerDoneBottomSheet() {
 
@@ -28,22 +29,19 @@ class SelectCurrencyBottomSheet : BaseRecyclerDoneBottomSheet() {
             fm: FragmentManager,
             title: String,
             preselectedCurrency: BuyCurrency.Currency = DEFAULT_CURRENCY,
+            currencies: List<BuyCurrency.Currency>,
             requestKey: String,
             resultKey: String
         ) = SelectCurrencyBottomSheet().withArgs(
             ARG_TITLE to title,
             ARG_SELECTED_CURRENCY to preselectedCurrency,
+            ARG_CURRENCIES to currencies,
             ARG_REQUEST_KEY to requestKey,
             ARG_RESULT_KEY to resultKey
         ).show(fm, SelectCurrencyBottomSheet::javaClass.name)
     }
 
-    private val currenciesToSelect: List<BuyCurrency.Currency> = listOf(
-        BuyCurrency.Currency.create(Constants.GBP_SYMBOL),
-        BuyCurrency.Currency.create(Constants.EUR_SYMBOL),
-        DEFAULT_CURRENCY
-    )
-
+    private val currenciesToSelect: List<BuyCurrency.Currency> by args(ARG_CURRENCIES)
     private val preselectedCurrency: BuyCurrency.Currency by args(ARG_SELECTED_CURRENCY)
 
     private val currencyAdapter: SelectCurrencyAdapter by unsafeLazy {

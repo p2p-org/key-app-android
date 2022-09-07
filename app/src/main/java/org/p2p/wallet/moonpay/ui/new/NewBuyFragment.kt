@@ -156,11 +156,12 @@ class NewBuyFragment :
         )
     }
 
-    override fun showCurrency(selectedCurrency: BuyCurrency.Currency) {
+    override fun showCurrency(currencies: List<BuyCurrency.Currency>, selectedCurrency: BuyCurrency.Currency) {
         SelectCurrencyBottomSheet.show(
             fm = childFragmentManager,
             title = getString(R.string.buy_select_currency_title),
             preselectedCurrency = selectedCurrency,
+            currencies = currencies,
             requestKey = KEY_REQUEST_CURRENCY,
             resultKey = KEY_RESULT_CURRENCY
         )
