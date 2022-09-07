@@ -432,6 +432,7 @@
     <string name="buy_value_allowed_symbols"> 1234567890.,</string>
     <string name="buy_min_error_format">Minimum amount for the purchase is %s</string>
     <string name="buy_max_error_format">Maximum amount for the purchase is %s</string>
+    <string name="buy_min_amount_error_format">We can\'t process transactions less %s</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>

@@ -1,5 +1,7 @@
 package org.p2p.wallet.moonpay.ui.bottomsheet
 
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +12,12 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogBuyDetailsPartBinding
+import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.withArgs
 
-private const val ARG_BUY_DATA = "ARG_BUY_DATA"
+private const val ARG_BUY_STATE = "ARG_BUY_STATE"
 
 class BuyDetailsBottomSheet : BaseDoneBottomSheet() {
 
@@ -22,20 +25,20 @@ class BuyDetailsBottomSheet : BaseDoneBottomSheet() {
         fun show(
             fm: FragmentManager,
             title: String,
-            buyData: BuyViewData,
+            state: BuyDetailsState,
             requestKey: String = ARG_REQUEST_KEY,
             resultKey: String = ARG_RESULT_KEY
         ) = BuyDetailsBottomSheet().withArgs(
             ARG_TITLE to title,
-            ARG_BUY_DATA to buyData,
+            ARG_BUY_STATE to state,
             ARG_REQUEST_KEY to requestKey,
             ARG_RESULT_KEY to resultKey
         ).show(fm, BuyDetailsBottomSheet::javaClass.name)
     }
 
-    private val buyData: BuyViewData by args(ARG_BUY_DATA)
+    private val state: BuyDetailsState by args(ARG_BUY_STATE)
 
-    lateinit var binding: DialogBuyDetailsPartBinding
+    private lateinit var binding: DialogBuyDetailsPartBinding
 
     override fun onCreateInnerView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogBuyDetailsPartBinding.inflate(inflater, container, false)
@@ -44,7 +47,16 @@ class BuyDetailsBottomSheet : BaseDoneBottomSheet() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showData(buyData)
+        when (val state = state) {
+            is BuyDetailsState.Valid -> showData(state.data)
+            is BuyDetailsState.MinAmountError -> showErrorState(state)
+        }
+    }
+
+    private fun showErrorState(state: BuyDetailsState.MinAmountError) {
+        binding.containerContent.isVisible = false
+        binding.textViewError.isVisible = true
+        binding.textViewError.text = getString(R.string.buy_min_amount_error_format, state.amount)
     }
 
     override fun onStart() {
@@ -56,6 +68,9 @@ class BuyDetailsBottomSheet : BaseDoneBottomSheet() {
     }
 
     private fun showData(viewData: BuyViewData) = with(binding) {
+        binding.containerContent.isVisible = true
+        binding.textViewError.isVisible = false
+
         optionsTextViewPrice.labelText = getString(R.string.buy_token_price, viewData.tokenSymbol)
         optionsTextViewPurchaseCost.labelText = getString(R.string.buy_token_purchase_cost, viewData.tokenSymbol)
         optionsTextViewAccountCreation.labelText = getString(R.string.buy_account_creation, viewData.tokenSymbol)
