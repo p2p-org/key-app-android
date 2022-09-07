@@ -1,11 +1,10 @@
 package org.p2p.wallet.moonpay.ui.bottomsheet
 
-import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.p2p.uikit.utils.getColor

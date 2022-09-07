@@ -19,6 +19,7 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.moonpay.api.MoonpayUrlBuilder
 import org.p2p.wallet.moonpay.model.BuyCurrency
+import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.bottomsheet.BuyDetailsBottomSheet
@@ -201,7 +202,7 @@ class NewBuyFragment :
         BuyDetailsBottomSheet.show(
             childFragmentManager,
             getString(R.string.buy_transaction_details_bottom_sheet_title),
-            viewData
+            BuyDetailsState.Valid(viewData)
         )
     }
 
