@@ -47,10 +47,10 @@ class NewSelectTokenBottomSheet : BaseRecyclerDoneBottomSheet() {
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val tokenAdapter: NewSelectTokenAdapter by unsafeLazy {
-        NewSelectTokenAdapter(preselectedItem = preselectedToken) {
+        NewSelectTokenAdapter(preselectedItem = preselectedToken, onItemClicked = {
             setFragmentResult(requestKey, bundleOf(resultKey to it))
             dismissAllowingStateLoss()
-        }
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
