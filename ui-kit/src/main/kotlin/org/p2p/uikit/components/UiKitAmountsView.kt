@@ -31,13 +31,13 @@ class UiKitAmountsView @JvmOverloads constructor(
     private lateinit var tokenTextWatcher: TextWatcher
     private lateinit var currencyTextWatcher: TextWatcher
 
-    var token: String? = null
+    var tokenSymbol: String? = null
         set(value) {
             field = value
             binding.textViewToken.text = value
         }
 
-    var currency: String? = null
+    var currencyCode: String? = null
         set(value) {
             field = value
             binding.textViewCurrency.text = value

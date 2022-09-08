@@ -92,7 +92,7 @@ class NewBuyFragment :
                 result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
                     with(binding) {
                         val symbol = it.tokenSymbol
-                        amountsView.token = symbol
+                        amountsView.tokenSymbol = symbol
                         toolbarBuy.title = getString(R.string.buy_toolbar_title, symbol)
                         buttonBuy.text = getString(R.string.buy_toolbar_title, symbol)
                     }
@@ -123,8 +123,8 @@ class NewBuyFragment :
         buttonBuy.text = getString(R.string.buy_toolbar_title, token.tokenSymbol)
 
         amountsView.apply {
-            token = this@NewBuyFragment.token.tokenSymbol
-            currency = Constants.USD_READABLE_SYMBOL
+            tokenSymbol = this@NewBuyFragment.token.tokenSymbol
+            currencyCode = Constants.USD_READABLE_SYMBOL
 
             setOnSelectTokenClickListener { presenter.onSelectTokenClicked() }
             setOnTokenAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
@@ -174,7 +174,7 @@ class NewBuyFragment :
     }
 
     override fun setCurrencyCode(selectedCurrencyCode: String) {
-        binding.amountsView.currency = selectedCurrencyCode
+        binding.amountsView.currencyCode = selectedCurrencyCode
     }
 
     override fun showLoading(isLoading: Boolean) {

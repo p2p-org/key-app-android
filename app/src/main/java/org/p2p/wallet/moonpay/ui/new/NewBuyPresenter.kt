@@ -92,14 +92,15 @@ class NewBuyPresenter(
 
     private fun loadAvailablePaymentMethods() {
         launch {
-            // show loading
+            view?.showLoading(isLoading = true)
             currentAlphaCode = paymentMethodsInteractor.getBankTransferAlphaCode()
+
             val availablePaymentMethods = paymentMethodsInteractor.getAvailablePaymentMethods(currentAlphaCode)
             selectedPaymentMethod = availablePaymentMethods.first { it.isSelected }
             paymentMethods.addAll(availablePaymentMethods)
             view?.showPaymentMethods(paymentMethods)
-            validatePaymentMethod()
 
+            validatePaymentMethod()
             preselectMinimalFiatAmount()
         }
     }
