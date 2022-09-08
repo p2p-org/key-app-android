@@ -6,6 +6,7 @@ import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor.RestoreUserResult
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor.RestoreUserWay
@@ -28,6 +29,7 @@ private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletRestoreInteractor: CustomShareRestoreInteractor,
+    private val socialShareRestoreInteractor: SocialShareRestoreInteractor,
     private val userRestoreInteractor: UserRestoreInteractor,
     private val repository: SignUpFlowDataLocalRepository,
     private val onboardingInteractor: OnboardingInteractor,
@@ -99,17 +101,11 @@ class NewSmsInputPresenter(
     private suspend fun finishRestoringCustomShare(smsCode: String) {
         try {
             view?.renderButtonLoading(isLoading = true)
+
             restoreWalletRestoreInteractor.finishRestoreCustomShare(smsCode)
+
             if (userRestoreInteractor.isUserReadyToBeRestored()) {
-                when (val result = userRestoreInteractor.tryRestoreUser(RestoreUserWay.SocialPlusCustomShareWay)) {
-                    RestoreUserResult.RestoreSuccessful -> {
-                        userRestoreInteractor.finishAuthFlow()
-                        view?.navigateToPinCreate()
-                    }
-                    is RestoreUserResult.RestoreFailed -> {
-                        throw result
-                    }
-                }
+                restoreUserWithShares()
             } else {
                 // no social share, requesting now
                 view?.requestGoogleSignIn()
@@ -151,17 +147,21 @@ class NewSmsInputPresenter(
 
     override fun setGoogleSignInToken(userId: String, googleToken: String) {
         launch {
-            when (val result = userRestoreInteractor.tryRestoreUser(RestoreUserWay.SocialPlusCustomShareWay)) {
-                is RestoreUserResult.RestoreSuccessful -> {
-                    userRestoreInteractor.finishAuthFlow()
-                    view?.navigateToPinCreate()
-                }
-                is RestoreUserResult.RestoreFailed -> {
-                    Timber.e(result)
-                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-                }
-            }
+            socialShareRestoreInteractor.restoreSocialShare(googleToken, userId)
+            restoreUserWithShares()
+        }
+    }
 
+    private suspend fun restoreUserWithShares() {
+        when (val result = userRestoreInteractor.tryRestoreUser(RestoreUserWay.SocialPlusCustomShareWay)) {
+            is RestoreUserResult.RestoreSuccessful -> {
+                userRestoreInteractor.finishAuthFlow()
+                view?.navigateToPinCreate()
+            }
+            is RestoreUserResult.RestoreFailed -> {
+                Timber.e(result)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
         }
     }
 
