@@ -15,7 +15,7 @@ import org.p2p.uikit.databinding.WidgetAmountsViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.showSoftKeyboard
 
-enum class FocusMode {
+enum class FocusField {
     TOKEN,
     CURRENCY
 }
@@ -57,10 +57,10 @@ class UiKitAmountsView @JvmOverloads constructor(
         }
     }
 
-    fun getFocusMode(): FocusMode = if (binding.editTextTokenAmount.hasFocus()) {
-        FocusMode.TOKEN
+    fun getFocusField(): FocusField = if (binding.editTextTokenAmount.hasFocus()) {
+        FocusField.TOKEN
     } else {
-        FocusMode.CURRENCY
+        FocusField.CURRENCY
     }
 
     fun setTokenAmount(tokenAmount: String?) = with(binding.editTextTokenAmount) {
@@ -94,26 +94,26 @@ class UiKitAmountsView @JvmOverloads constructor(
         binding.imageViewSelectCurrency.setOnClickListener { onSelectCurrencyClick() }
     }
 
-    fun setOnFocusChangeListener(onFocusChanged: (focusMode: FocusMode) -> Unit) {
+    fun setOnFocusChangeListener(onFocusChanged: (focusField: FocusField) -> Unit) {
         binding.editTextTokenAmount.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) onFocusChanged(FocusMode.TOKEN)
+            if (hasFocus) onFocusChanged(FocusField.TOKEN)
         }
 
         binding.editTextCurrencyAmount.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) onFocusChanged(FocusMode.CURRENCY)
+            if (hasFocus) onFocusChanged(FocusField.CURRENCY)
         }
     }
 
-    fun requestFocus(focusMode: FocusMode) {
-        when (focusMode) {
-            FocusMode.CURRENCY -> {
+    fun requestFocus(focusField: FocusField) {
+        when (focusField) {
+            FocusField.CURRENCY -> {
                 binding.editTextCurrencyAmount.apply {
                     requestFocus()
                     showSoftKeyboard()
                     setSelection(text?.length ?: 0)
                 }
             }
-            FocusMode.TOKEN -> {
+            FocusField.TOKEN -> {
                 binding.editTextTokenAmount.apply {
                     requestFocus()
                     showSoftKeyboard()

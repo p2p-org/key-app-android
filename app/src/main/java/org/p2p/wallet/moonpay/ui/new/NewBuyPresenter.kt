@@ -4,7 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.p2p.uikit.components.FocusMode
+import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -201,8 +201,8 @@ class NewBuyPresenter(
         return true
     }
 
-    override fun onFocusModeChanged(focusMode: FocusMode) {
-        isSwappedToToken = focusMode == FocusMode.TOKEN
+    override fun onFocusFieldChanged(focusField: FocusField) {
+        isSwappedToToken = focusField == FocusField.TOKEN
     }
 
     override fun setBuyAmount(amount: String, isDelayEnabled: Boolean) {

@@ -6,7 +6,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.components.FocusMode
+import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -132,8 +132,8 @@ class NewBuyFragment :
             setOnSelectCurrencyClickListener { presenter.onSelectCurrencyClicked() }
             setOnCurrencyAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
 
-            setOnFocusChangeListener { focusMode ->
-                presenter.onFocusModeChanged(focusMode)
+            setOnFocusChangeListener { focusField ->
+                presenter.onFocusFieldChanged(focusField)
             }
         }
 
@@ -143,7 +143,7 @@ class NewBuyFragment :
     override fun showPreselectedAmount(amount: String) {
         binding.amountsView.apply {
             setCurrencyAmount(amount)
-            requestFocus(FocusMode.CURRENCY)
+            requestFocus(FocusField.CURRENCY)
         }
     }
 
@@ -192,8 +192,8 @@ class NewBuyFragment :
     }
 
     override fun showTotal(viewData: BuyViewData) {
-        val focusMode = binding.amountsView.getFocusMode()
-        if (focusMode == FocusMode.TOKEN) {
+        val focusField = binding.amountsView.getFocusField()
+        if (focusField == FocusField.TOKEN) {
             binding.amountsView.setCurrencyAmount(viewData.receiveAmountText)
         } else {
             binding.amountsView.setTokenAmount(viewData.receiveAmountText)
@@ -214,9 +214,9 @@ class NewBuyFragment :
     }
 
     override fun clearOppositeFieldAndTotal(totalText: String) {
-        when (binding.amountsView.getFocusMode()) {
-            FocusMode.TOKEN -> binding.amountsView.setCurrencyAmount(null)
-            FocusMode.CURRENCY -> binding.amountsView.setTokenAmount(null)
+        when (binding.amountsView.getFocusField()) {
+            FocusField.TOKEN -> binding.amountsView.setCurrencyAmount(null)
+            FocusField.CURRENCY -> binding.amountsView.setTokenAmount(null)
         }
 
         binding.textViewTotal.text = totalText

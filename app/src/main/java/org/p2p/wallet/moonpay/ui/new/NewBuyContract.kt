@@ -1,6 +1,6 @@
 package org.p2p.wallet.moonpay.ui.new
 
-import org.p2p.uikit.components.FocusMode
+import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.home.model.Token
@@ -41,7 +41,7 @@ interface NewBuyContract {
         fun setTokenToBuy(token: Token)
         fun setCurrency(currency: BuyCurrency.Currency)
         fun setBuyAmount(amount: String, isDelayEnabled: Boolean = true)
-        fun onFocusModeChanged(focusMode: FocusMode)
+        fun onFocusFieldChanged(focusField: FocusField)
         fun onContinueClicked()
         fun onBackPressed()
     }
