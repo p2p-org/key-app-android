@@ -28,6 +28,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showUrlInCustomTabs
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -55,7 +56,9 @@ class NewBuyFragment :
 
     private val token: Token by args(EXTRA_TOKEN)
     private val binding: FragmentNewBuyBinding by viewBinding()
-    private val adapter: PaymentMethodsAdapter by lazy { PaymentMethodsAdapter(presenter::onPaymentMethodSelected) }
+    private val adapter: PaymentMethodsAdapter by unsafeLazy {
+        PaymentMethodsAdapter(presenter::onPaymentMethodSelected)
+    }
 
     private var backPressedCallback: OnBackPressedCallback? = null
 
@@ -93,7 +96,7 @@ class NewBuyFragment :
                         toolbarBuy.title = getString(R.string.buy_toolbar_title, symbol)
                         buttonBuy.text = getString(R.string.buy_toolbar_title, symbol)
                     }
-                    presenter.setToken(it)
+                    presenter.setTokenToBuy(it)
                 }
             }
 
@@ -175,7 +178,7 @@ class NewBuyFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-//        TODO("Not yet implemented")
+        // TODO: https://www.figma.com/file/X5oRVw7OmaFfLLiJMqHiBn/Bank-transfer-Android?node-id=183%3A30478
     }
 
     override fun showMessage(message: String?, selectedTokenSymbol: String?) = with(binding.buttonBuy) {

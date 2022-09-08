@@ -38,7 +38,7 @@ interface NewBuyContract {
         fun onSelectTokenClicked()
         fun onSelectCurrencyClicked()
         fun onTotalClicked()
-        fun setToken(token: Token)
+        fun setTokenToBuy(token: Token)
         fun setCurrency(currency: BuyCurrency.Currency)
         fun setBuyAmount(amount: String, isDelayEnabled: Boolean = true)
         fun onFocusModeChanged(focusMode: FocusMode)

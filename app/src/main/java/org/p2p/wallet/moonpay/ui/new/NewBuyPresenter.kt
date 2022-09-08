@@ -167,7 +167,7 @@ class NewBuyPresenter(
         }
     }
 
-    override fun setToken(token: Token) {
+    override fun setTokenToBuy(token: Token) {
         selectedToken = token
         recalculate()
     }
