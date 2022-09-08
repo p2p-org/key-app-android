@@ -14,9 +14,7 @@ import org.p2p.wallet.moonpay.repository.NewMoonpayRepository
 import org.p2p.wallet.utils.isLessThan
 import java.math.BigDecimal
 
-const val DEFAULT_MIN_AMOUNT = 40
-
-private const val DEFAULT_AMOUNT = "1"
+private const val CURRENCY_AMOUNT_FOR_PRICE_REQUEST = "1"
 private const val DEFAULT_PAYMENT_TYPE = "credit_debit_card"
 private val FIAT_CURRENCY_CODES = listOf("eur", "usd", "gbp")
 
@@ -25,6 +23,10 @@ class MoonpayBuyInteractor(
     private val moonpayApiMapper: MoonpayApiMapper,
     private val dispatchers: CoroutineDispatchers
 ) {
+
+    companion object {
+        const val DEFAULT_MIN_BUY_CURRENCY_AMOUNT = 40
+    }
 
     private val quotes = mutableListOf<MoonpayBuyQuote>()
 
@@ -85,12 +87,12 @@ class MoonpayBuyInteractor(
             it.currency.lowercase() == currency.lowercase() && it.token.tokenSymbol == token.tokenSymbol
         }
 
-        return quote?.minAmount ?: DEFAULT_MIN_AMOUNT.toBigDecimal()
+        return quote?.minAmount ?: DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toBigDecimal()
     }
 
     private suspend fun loadQuote(currency: String, token: Token) {
         val response = moonpayRepository.getBuyCurrencyData(
-            baseCurrencyAmount = DEFAULT_AMOUNT,
+            baseCurrencyAmount = CURRENCY_AMOUNT_FOR_PRICE_REQUEST,
             quoteCurrencyAmount = null,
             tokenToBuy = token,
             baseCurrencyCode = currency.lowercase(),

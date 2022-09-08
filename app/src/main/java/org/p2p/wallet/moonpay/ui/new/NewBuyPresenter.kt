@@ -14,8 +14,8 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.BANK_TRANSFER_UK_CODE
-import org.p2p.wallet.moonpay.interactor.DEFAULT_MIN_AMOUNT
 import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor
+import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor.Companion.DEFAULT_MIN_BUY_CURRENCY_AMOUNT
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
@@ -113,8 +113,8 @@ class NewBuyPresenter(
     }
 
     private fun preselectMinimalFiatAmount() {
-        view?.showPreselectedAmount(DEFAULT_MIN_AMOUNT.toString())
-        setBuyAmount(DEFAULT_MIN_AMOUNT.toString(), isDelayEnabled = false)
+        view?.showPreselectedAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString())
+        setBuyAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString(), isDelayEnabled = false)
     }
 
     override fun onBackPressed() {
