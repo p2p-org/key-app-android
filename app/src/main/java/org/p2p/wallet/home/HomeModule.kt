@@ -2,12 +2,8 @@ package org.p2p.wallet.home
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
@@ -17,26 +13,12 @@ import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
-import org.p2p.wallet.moonpay.api.MoonpayApi
-import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor
-import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
-import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
-import org.p2p.wallet.moonpay.repository.MoonpayRemoteRepository
-import org.p2p.wallet.moonpay.repository.MoonpayRepository
-import org.p2p.wallet.moonpay.repository.NewMoonpayRemoteRepository
-import org.p2p.wallet.moonpay.repository.NewMoonpayRepository
-import org.p2p.wallet.moonpay.ui.BuySolanaContract
-import org.p2p.wallet.moonpay.ui.BuySolanaPresenter
-import org.p2p.wallet.moonpay.ui.new.NewBuyContract
-import org.p2p.wallet.moonpay.ui.new.NewBuyPresenter
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcContract
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcPresenter
-import org.p2p.wallet.receive.solana.ReceiveSolanaContract
-import org.p2p.wallet.receive.solana.ReceiveSolanaPresenter
 import org.p2p.wallet.receive.token.ReceiveTokenContract
 import org.p2p.wallet.receive.token.ReceiveTokenPresenter
 import org.p2p.wallet.send.interactor.SearchInteractor
@@ -47,7 +29,6 @@ import org.p2p.wallet.send.ui.main.SendContract
 import org.p2p.wallet.send.ui.main.SendPresenter
 import org.p2p.wallet.send.ui.search.SearchContract
 import org.p2p.wallet.send.ui.search.SearchPresenter
-import retrofit2.Retrofit
 
 object HomeModule : InjectionModule {
 
@@ -60,18 +41,6 @@ object HomeModule : InjectionModule {
     }
 
     private fun Module.initDataLayer() {
-        factory { MoonpayApiMapper() }
-        factory<MoonpayRepository>() {
-            val api = get<Retrofit>(named(MOONPAY_QUALIFIER)).create(MoonpayApi::class.java)
-            val apiKey = BuildConfig.moonpayKey
-            MoonpayRemoteRepository(api, apiKey, get())
-        }
-        factory<NewMoonpayRepository>() {
-            val api = get<Retrofit>(named(MOONPAY_QUALIFIER)).create(MoonpayApi::class.java)
-            val apiKey = BuildConfig.moonpayKey
-            NewMoonpayRemoteRepository(api, apiKey, get())
-        }
-
         factory<HomeLocalRepository> { HomeDatabaseRepository(get()) }
     }
 
@@ -95,20 +64,6 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get()
             )
         }
-        factory {
-            PaymentMethodsInteractor(
-                repository = get(),
-                dispatchers = get(),
-                bankTransferFeatureToggle = get()
-            )
-        }
-        factory {
-            MoonpayBuyInteractor(
-                moonpayRepository = get(),
-                dispatchers = get(),
-                moonpayApiMapper = get()
-            )
-        }
     }
 
     private fun Module.initPresentationLayer() {
@@ -125,18 +80,6 @@ object HomeModule : InjectionModule {
                 homeElementItemMapper = HomeElementItemMapper(),
                 resourcesProvider = get(),
                 newBuyFeatureToggle = get()
-            )
-        }
-
-        factory<ReceiveSolanaContract.Presenter> { (token: Token.Active?) ->
-            ReceiveSolanaPresenter(
-                defaultToken = token,
-                userInteractor = get(),
-                qrCodeInteractor = get(),
-                usernameInteractor = get(),
-                tokenKeyProvider = get(),
-                receiveAnalytics = get(),
-                context = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
@@ -171,31 +114,6 @@ object HomeModule : InjectionModule {
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames = usernames, searchInteractor = get())
         }
-        factory<BuySolanaContract.Presenter> { (token: Token) ->
-            BuySolanaPresenter(
-                tokenToBuy = token,
-                moonpayRepository = get(),
-                minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),
-                maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
-                buyAnalytics = get(),
-                analyticsInteractor = get()
-            )
-        }
-        factory<NewBuyContract.Presenter> { (token: Token) ->
-            NewBuyPresenter(
-                tokenToBuy = token,
-                minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_minimal_transaction_format),
-                maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
-                buyAnalytics = get(),
-                analyticsInteractor = get(),
-                userInteractor = get(),
-                paymentMethodsInteractor = get(),
-                resourcesProvider = get(),
-                bankTransferFeatureToggle = get(),
-                moonpayBuyInteractor = get()
-            )
-        }
-        factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(
                 defaultToken = token,
@@ -205,11 +123,11 @@ object HomeModule : InjectionModule {
                 receiveAnalytics = get()
             )
         }
-
-        factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
-
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
+
+        factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
+        factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
     }
 }

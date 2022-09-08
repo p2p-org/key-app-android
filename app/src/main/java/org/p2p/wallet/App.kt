@@ -1,15 +1,15 @@
 package org.p2p.wallet
 
-import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.auth.AuthModule
@@ -27,6 +27,7 @@ import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.moonpay.BuyModule
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
@@ -44,7 +45,6 @@ import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
-import kotlinx.coroutines.launch
 
 class App : Application() {
 
@@ -105,6 +105,7 @@ class App : Application() {
                     UserModule.create(),
                     TokenPricesModule.create(),
                     HomeModule.create(),
+                    BuyModule.create(),
                     RenBtcModule.create(),
                     ScanQrModule.create(),
                     HistoryModule.create(),
