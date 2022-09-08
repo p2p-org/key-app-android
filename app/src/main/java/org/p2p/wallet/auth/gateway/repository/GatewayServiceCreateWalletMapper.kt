@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.gateway.repository
 
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.p2p.solanaj.utils.crypto.encodeToBase64
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
@@ -19,7 +20,8 @@ const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
 class GatewayServiceCreateWalletMapper(
     private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator,
-    private val errorMapper: GatewayServiceErrorMapper
+    private val errorMapper: GatewayServiceErrorMapper,
+    private val gson: Gson
 ) {
     private data class RegisterWalletSignatureStruct(
         val etheriumId: String,
@@ -99,7 +101,7 @@ class GatewayServiceCreateWalletMapper(
         etheriumAddress: String,
         phoneNumber: String,
         jsonEncryptedMnemonicPhrase: JsonObject,
-        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
 
@@ -111,7 +113,7 @@ class GatewayServiceCreateWalletMapper(
                 clientId = userPublicKey.base58Value,
                 etheriumId = etheriumAddress.lowercase(),
                 phone = phoneNumber,
-                encryptedShare = thirdShare.value,
+                encryptedShare = gson.toJson(thirdShare),
                 encryptedPayload = encryptedPayloadStrJson,
                 phoneConfirmationCode = otpConfirmationCode
             )
@@ -121,7 +123,7 @@ class GatewayServiceCreateWalletMapper(
             clientSolanaPublicKey = userPublicKey.base58Value,
             etheriumAddress = etheriumAddress,
             timestamp = createTimestampField(),
-            thirdShare = thirdShare.value.toByteArray().encodeToBase64(),
+            thirdShare = gson.toJson(thirdShare).toByteArray().encodeToBase64(),
             encryptedPayloadB64 = encryptedPayloadStrJson.toByteArray().encodeToBase64(),
             otpConfirmationCode = otpConfirmationCode,
             phone = phoneNumber,

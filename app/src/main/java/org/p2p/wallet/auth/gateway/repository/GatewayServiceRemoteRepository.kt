@@ -6,7 +6,6 @@ import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
-import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String
@@ -14,6 +13,9 @@ import org.p2p.wallet.utils.FlowDurationTimer
 import timber.log.Timber
 import kotlin.time.DurationUnit
 import kotlinx.coroutines.withContext
+import org.p2p.wallet.auth.model.PhoneNumber
+import org.p2p.wallet.auth.model.e164Formatted
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 
 class GatewayServiceRemoteRepository(
     private val api: GatewayServiceApi,
@@ -33,20 +35,23 @@ class GatewayServiceRemoteRepository(
     private var restoreWalletPublicKey: Base58String? = null
         set(value) {
             field = value
-            resetTemporaryPublicKeyTimer.launchTimer(appScope)
+            if (value != null) {
+                resetTemporaryPublicKeyTimer.launchTimer(appScope)
+                Timber.i("restoreWalletPublic key value = $value")
+            }
         }
 
     override suspend fun registerWalletWithSms(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         etheriumAddress: String,
-        e164PhoneNumber: String
+        phoneNumber: PhoneNumber
     ): RegisterWalletResponse = withContext(dispatchers.io) {
         val request = createWalletMapper.toRegisterWalletNetwork(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
             etheriumAddress = etheriumAddress,
-            phoneNumber = e164PhoneNumber,
+            phoneNumber = phoneNumber.e164Formatted(),
             channel = OtpMethod.SMS
         )
         val response = api.registerWallet(request)
@@ -57,9 +62,9 @@ class GatewayServiceRemoteRepository(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         etheriumAddress: String,
-        thirdShare: ShareValue,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         jsonEncryptedMnemonicPhrase: JsonObject,
-        phoneNumber: String,
+        phoneNumber: PhoneNumber,
         otpConfirmationCode: String
     ): GatewayServiceStandardResponse = withContext(dispatchers.io) {
         val request = createWalletMapper.toConfirmRegisterWalletNetwork(
@@ -68,7 +73,7 @@ class GatewayServiceRemoteRepository(
             etheriumAddress = etheriumAddress,
             thirdShare = thirdShare,
             jsonEncryptedMnemonicPhrase = jsonEncryptedMnemonicPhrase,
-            phoneNumber = phoneNumber,
+            phoneNumber = phoneNumber.e164Formatted(),
             otpConfirmationCode = otpConfirmationCode
         )
         val response = api.confirmRegisterWallet(request)
@@ -78,13 +83,13 @@ class GatewayServiceRemoteRepository(
     override suspend fun restoreWallet(
         solanaPublicKey: Base58String,
         solanaPrivateKey: Base58String,
-        phoneNumber: String,
+        phoneNumber: PhoneNumber,
         channel: OtpMethod
     ): GatewayServiceStandardResponse = withContext(dispatchers.io) {
         val request = restoreWalletMapper.toRestoreWalletNetwork(
             userPublicKey = solanaPublicKey,
             userPrivateKey = solanaPrivateKey,
-            phoneNumber = phoneNumber,
+            phoneNumber = phoneNumber.e164Formatted(),
             channel = channel
         )
         val response = api.restoreWallet(request)
@@ -95,7 +100,7 @@ class GatewayServiceRemoteRepository(
     override suspend fun confirmRestoreWallet(
         solanaPublicKey: Base58String,
         solanaPrivateKey: Base58String,
-        phoneNumber: String,
+        phoneNumber: PhoneNumber,
         otpConfirmationCode: String
     ): ConfirmRestoreWalletResponse = withContext(dispatchers.io) {
         if (solanaPublicKey != restoreWalletPublicKey) {
@@ -109,7 +114,7 @@ class GatewayServiceRemoteRepository(
         val request = restoreWalletMapper.toConfirmRestoreWalletNetwork(
             userPublicKey = solanaPublicKey,
             userPrivateKey = solanaPrivateKey,
-            phoneNumber = phoneNumber,
+            phoneNumber = phoneNumber.e164Formatted(),
             otpConfirmationCode = otpConfirmationCode
         )
         val response = api.confirmRestoreWallet(request)

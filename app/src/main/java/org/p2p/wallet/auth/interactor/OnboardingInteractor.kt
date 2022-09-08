@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.interactor
 import timber.log.Timber
 
 class OnboardingInteractor {
+
     enum class OnboardingFlow {
         CREATE_WALLET,
         RESTORE_WALLET

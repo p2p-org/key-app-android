@@ -6,6 +6,8 @@ import org.p2p.solanaj.utils.crypto.decodeFromBase64
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
+import org.p2p.wallet.auth.model.PhoneNumber
+import org.p2p.wallet.auth.model.equals
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.fromJsonReified
@@ -18,19 +20,20 @@ class CustomShareRestoreInteractor(
 ) {
     class RestoreWalletFailure(override val message: String) : Throwable(message)
 
-    suspend fun startRestoreCustomShare(userPhoneNumber: String) {
+    suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber) {
         val temporaryUserPublicKey = restoreFlowDataLocalRepository.userRestorePublicKey
             ?: throw RestoreWalletFailure("User restore public key is null")
         val temporaryUserPrivateKey = restoreFlowDataLocalRepository.userRestorePrivateKey
             ?: throw RestoreWalletFailure("User restore private key is null")
 
-        gatewayServiceRepository.restoreWallet(
-            solanaPublicKey = temporaryUserPublicKey,
-            solanaPrivateKey = temporaryUserPrivateKey,
-            phoneNumber = userPhoneNumber,
-            channel = OtpMethod.SMS
-        )
-
+        if (userPhoneNumber != restoreFlowDataLocalRepository.userPhoneNumber) {
+            gatewayServiceRepository.restoreWallet(
+                solanaPublicKey = temporaryUserPublicKey,
+                solanaPrivateKey = temporaryUserPrivateKey,
+                phoneNumber = userPhoneNumber,
+                channel = OtpMethod.SMS
+            )
+        }
         restoreFlowDataLocalRepository.userPhoneNumber = userPhoneNumber
     }
 
@@ -59,6 +62,7 @@ class CustomShareRestoreInteractor(
         thirdShareStructAsBase64: String
     ): Web3AuthSignUpResponse.ShareDetailsWithMeta {
         val thirdShareJson = String(thirdShareStructAsBase64.decodeFromBase64())
+        Timber.tag("___________").d(thirdShareJson)
         return gson.fromJsonReified<Web3AuthSignUpResponse.ShareDetailsWithMeta>(thirdShareJson)
             ?: run {
                 Timber.i(thirdShareStructAsBase64)

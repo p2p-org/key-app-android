@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.interactor
 
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
+import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
@@ -11,7 +12,7 @@ class CreateWalletInteractor(
 ) {
     class CreateWalletFailure(override val message: String) : Throwable(message)
 
-    suspend fun startCreatingWallet(userPhoneNumber: String) {
+    suspend fun startCreatingWallet(userPhoneNumber: PhoneNumber) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey
             ?: throw CreateWalletFailure("User public key is null")
         val userPrivateKey = signUpFlowDataRepository.userPrivateKeyB58
@@ -19,16 +20,15 @@ class CreateWalletInteractor(
         val etheriumPublicKey = signUpFlowDataRepository.ethereumPublicKey
             ?: throw CreateWalletFailure("User etherium public key is null")
 
-        val e164FormatUserPhoneNumber = "+$userPhoneNumber".replace(" ", "")
-        if (e164FormatUserPhoneNumber != signUpFlowDataRepository.userPhoneNumber) {
+        if (userPhoneNumber != signUpFlowDataRepository.userPhoneNumber) {
             gatewayServiceRepository.registerWalletWithSms(
                 userPublicKey = userPublicKey,
                 userPrivateKey = userPrivateKey,
                 etheriumAddress = etheriumPublicKey,
-                e164PhoneNumber = e164FormatUserPhoneNumber
+                phoneNumber = userPhoneNumber
             )
         }
-        signUpFlowDataRepository.userPhoneNumber = e164FormatUserPhoneNumber
+        signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
     }
 
     fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount

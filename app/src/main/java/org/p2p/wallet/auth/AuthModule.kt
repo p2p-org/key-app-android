@@ -127,7 +127,7 @@ object AuthModule {
         singleOf(::SignUpFlowDataLocalRepository)
         factoryOf(::CreateWalletInteractor)
         factoryOf(::UserSignUpInteractor)
-        factoryOf(::OnboardingInteractor)
+        singleOf(::OnboardingInteractor)
 
         factoryOf(::OnboardingRootPresenter) bind OnboardingRootContract.Presenter::class
 

@@ -1,12 +1,13 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
 interface NewSmsInputContract {
     interface View : MvpView {
-        fun initView(userPhoneNumber: String)
+        fun initView(userPhoneNumber: PhoneNumber)
 
         fun renderSmsFormatValid()
         fun renderSmsFormatInvalid()

@@ -10,6 +10,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.model.PhoneNumber
 
 private const val MAX_PHONE_NUMBER_TRIES = 5
 
@@ -94,8 +95,8 @@ class PhoneNumberEnterPresenter(
                 if (createWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
                     view?.navigateToAccountBlocked()
                 } else {
-                    val fullUserPhoneNumber = it.phoneCode + phoneNumber
-                    createWalletInteractor.startCreatingWallet(userPhoneNumber = fullUserPhoneNumber)
+                    val userPhoneNumber = PhoneNumber(it.phoneCode + phoneNumber)
+                    createWalletInteractor.startCreatingWallet(userPhoneNumber = userPhoneNumber)
                     view?.navigateToSmsInput()
                 }
             }
@@ -117,8 +118,8 @@ class PhoneNumberEnterPresenter(
     private suspend fun startRestoringCustomShare(phoneNumber: String) {
         try {
             selectedCountryCode?.let {
-                val fullUserPhoneNumber = it.phoneCode + phoneNumber
-                customShareRestoreInteractor.startRestoreCustomShare(userPhoneNumber = fullUserPhoneNumber)
+                val userPhoneNumber = PhoneNumber(it.phoneCode + phoneNumber)
+                customShareRestoreInteractor.startRestoreCustomShare(userPhoneNumber = userPhoneNumber)
                 view?.navigateToSmsInput()
             }
         } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {

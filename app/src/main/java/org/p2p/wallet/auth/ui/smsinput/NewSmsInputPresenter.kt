@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
@@ -31,7 +32,8 @@ class NewSmsInputPresenter(
     private val restoreWalletRestoreInteractor: CustomShareRestoreInteractor,
     private val socialShareRestoreInteractor: SocialShareRestoreInteractor,
     private val userRestoreInteractor: UserRestoreInteractor,
-    private val repository: SignUpFlowDataLocalRepository,
+    private val signUpRepository: SignUpFlowDataLocalRepository,
+    private val restoreRepository: RestoreFlowDataLocalRepository,
     private val onboardingInteractor: OnboardingInteractor,
 ) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
 
@@ -45,7 +47,11 @@ class NewSmsInputPresenter(
         super.attach(view)
 
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
-        view.initView(repository.userPhoneNumber.orEmpty())
+        val userPhoneNumber = when (onboardingInteractor.currentFlow) {
+            OnboardingInteractor.OnboardingFlow.CREATE_WALLET -> signUpRepository.userPhoneNumber
+            OnboardingInteractor.OnboardingFlow.RESTORE_WALLET -> restoreRepository.userPhoneNumber
+        }
+        userPhoneNumber?.let { view.initView(it) }
     }
 
     override fun onSmsInputChanged(smsCode: String) {
@@ -132,7 +138,10 @@ class NewSmsInputPresenter(
 
                 view?.renderButtonLoading(isLoading = true)
 
-                createWalletInteractor.startCreatingWallet(repository.userPhoneNumber.orEmpty())
+                createWalletInteractor.startCreatingWallet(
+                    signUpRepository.userPhoneNumber
+                        ?: throw IllegalStateException("User phone number cannot be null")
+                )
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.e(serverError)
                 view?.navigateToCriticalErrorScreen(serverError.code)

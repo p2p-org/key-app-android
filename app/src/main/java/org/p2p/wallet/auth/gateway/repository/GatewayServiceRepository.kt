@@ -5,6 +5,7 @@ import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
+import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
 
@@ -13,30 +14,30 @@ interface GatewayServiceRepository {
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         etheriumAddress: String,
-        e164PhoneNumber: String
+        phoneNumber: PhoneNumber
     ): RegisterWalletResponse
 
     suspend fun confirmRegisterWallet(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         etheriumAddress: String,
-        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue,
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         jsonEncryptedMnemonicPhrase: JsonObject,
-        phoneNumber: String,
+        phoneNumber: PhoneNumber,
         otpConfirmationCode: String
     ): GatewayServiceStandardResponse
 
     suspend fun restoreWallet(
         solanaPublicKey: Base58String,
         solanaPrivateKey: Base58String,
-        phoneNumber: String,
+        phoneNumber: PhoneNumber,
         channel: OtpMethod
     ): GatewayServiceStandardResponse
 
     suspend fun confirmRestoreWallet(
         solanaPublicKey: Base58String,
         solanaPrivateKey: Base58String,
-        phoneNumber: String,
+        phoneNumber: PhoneNumber,
         otpConfirmationCode: String
     ): ConfirmRestoreWalletResponse
 }
