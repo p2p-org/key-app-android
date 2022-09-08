@@ -198,11 +198,11 @@ class NewBuyFragment :
         binding.textViewTotal.text = viewData.totalText
     }
 
-    override fun showTotalData(viewData: BuyViewData) {
+    override fun showDetailsBottomSheet(buyDetailsState: BuyDetailsState) {
         BuyDetailsBottomSheet.show(
             childFragmentManager,
             getString(R.string.buy_transaction_details_bottom_sheet_title),
-            BuyDetailsState.Valid(viewData)
+            buyDetailsState
         )
     }
 

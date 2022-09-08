@@ -5,6 +5,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.model.BuyCurrency
+import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.PaymentMethod
 
@@ -20,7 +21,7 @@ interface NewBuyContract {
         fun showLoading(isLoading: Boolean)
         fun showMessage(message: String?, selectedTokenSymbol: String? = null)
         fun showTotal(viewData: BuyViewData)
-        fun showTotalData(viewData: BuyViewData)
+        fun showDetailsBottomSheet(buyDetailsState: BuyDetailsState)
         fun clearOppositeFieldAndTotal(totalText: String)
         fun navigateToMoonpay(
             amount: String,

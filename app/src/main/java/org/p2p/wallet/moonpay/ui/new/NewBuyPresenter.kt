@@ -19,6 +19,7 @@ import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
+import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.Method
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
@@ -65,6 +66,7 @@ class NewBuyPresenter(
 
     private var amount: String = "0"
     private var isSwappedToToken: Boolean = false
+    private var buyDetailsState: BuyDetailsState? = null
     private var currentBuyViewData: BuyViewData? = null
     private val currencySelectionEnabled = bankTransferFeatureToggle.value
 
@@ -161,8 +163,8 @@ class NewBuyPresenter(
     }
 
     override fun onTotalClicked() {
-        currentBuyViewData?.let {
-            view?.showTotalData(it)
+        buyDetailsState?.let {
+            view?.showDetailsBottomSheet(it)
         }
     }
 
@@ -276,8 +278,9 @@ class NewBuyPresenter(
                 view?.apply {
                     setContinueButtonEnabled(false)
                     val symbol = selectedCurrency.code.symbolFromCode()
-                    val messageForFormat = "$symbol ${buyResult.minBuyAmount.formatUsd()}"
-                    showMessage(minBuyErrorFormat.format(messageForFormat))
+                    val minAmountWithSymbol = "$symbol ${buyResult.minBuyAmount.formatUsd()}"
+                    buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
+                    showMessage(minBuyErrorFormat.format(minAmountWithSymbol))
                     clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
                 }
             }
@@ -339,6 +342,7 @@ class NewBuyPresenter(
         view?.apply {
             showTotal(data)
             currentBuyViewData = data
+            buyDetailsState = BuyDetailsState.Valid(data)
             showMessage(message = null, selectedToken.tokenSymbol)
             setContinueButtonEnabled(true)
         }
@@ -354,6 +358,7 @@ class NewBuyPresenter(
         } else {
             maxBuyErrorFormat.format("$symbol $maxAmount")
         }
+        buyDetailsState = BuyDetailsState.MinAmountError("$symbol ${minAmount.formatUsd()}")
         view?.apply {
             setContinueButtonEnabled(false)
             showMessage(message)
