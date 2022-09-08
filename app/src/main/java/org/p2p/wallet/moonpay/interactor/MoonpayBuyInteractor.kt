@@ -116,7 +116,7 @@ class MoonpayBuyInteractor(
     }
 
     private fun isMinimumAmountException(error: ServerException): Boolean {
-        return error.errorCode == ErrorCode.BAD_REQUEST && error.getDirectMessage()
-            ?.startsWith("Minimum purchase") == true
+        return error.errorCode == ErrorCode.BAD_REQUEST &&
+            error.getDirectMessage()?.startsWith("Minimum purchase") == true
     }
 }

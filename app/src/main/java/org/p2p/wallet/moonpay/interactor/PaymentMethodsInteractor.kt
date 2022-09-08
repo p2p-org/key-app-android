@@ -60,6 +60,6 @@ class PaymentMethodsInteractor(
     private fun bankTransferIsAvailable(alpha3Code: String): Boolean = BANK_TRANSFER_ALPHA3_CODES.contains(alpha3Code)
 
     suspend fun getBankTransferAlphaCode(): String = withContext(dispatchers.io) {
-        return@withContext repository.getIpAddressData().alpha3
+        repository.getIpAddressData().alpha3
     }
 }
