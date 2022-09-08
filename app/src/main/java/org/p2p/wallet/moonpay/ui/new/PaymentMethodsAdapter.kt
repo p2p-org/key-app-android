@@ -19,7 +19,7 @@ class PaymentMethodsAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentMethodViewHolder {
-        return PaymentMethodViewHolder(parent, onMethodClick)
+        return PaymentMethodViewHolder(parent = parent, onClickListener = onMethodClick)
     }
 
     override fun onBindViewHolder(holder: PaymentMethodViewHolder, position: Int) {

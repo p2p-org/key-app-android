@@ -1,25 +1,18 @@
 package org.p2p.wallet.moonpay.ui.new
 
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemPaymentMethodBinding
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.utils.viewbinding.getString
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class PaymentMethodViewHolder(
-    private val binding: ItemPaymentMethodBinding,
-    private val onClickListener: (PaymentMethod) -> Unit
+    parent: ViewGroup,
+    private val onClickListener: (PaymentMethod) -> Unit,
+    private val binding: ItemPaymentMethodBinding = parent.inflateViewBinding(attachToRoot = false)
 ) : RecyclerView.ViewHolder(binding.root) {
-
-    constructor(
-        parent: ViewGroup,
-        onClickListener: (PaymentMethod) -> Unit
-    ) : this(
-        ItemPaymentMethodBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-        onClickListener
-    )
 
     fun bind(method: PaymentMethod) = with(binding) {
         checkBox.isChecked = method.isSelected
