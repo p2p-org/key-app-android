@@ -29,9 +29,8 @@ object MoonpayUrlBuilder {
             .appendQueryParameter(QUERY_BASE_CURRENCY_CODE, currencyCode)
             .appendQueryParameter(QUERY_LOCK_AMOUNT, "false")
             .appendQueryParameter(QUERY_WALLET_ADDRESS, walletAddress)
-        paymentMethod?.let {
-            builder.appendQueryParameter(QUERY_PAYMENT_METHOD, it)
-        }
+            .apply { if (paymentMethod != null) appendQueryParameter(QUERY_PAYMENT_METHOD, paymentMethod) }
+
         return builder
             .build()
             .toString()
