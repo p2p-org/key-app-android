@@ -66,6 +66,10 @@ import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
+import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
@@ -146,5 +150,10 @@ object AuthModule {
 
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
         factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class
+
+        singleOf(::RestoreFlowDataLocalRepository)
+        factoryOf(::CustomShareRestoreInteractor)
+        factoryOf(::SocialShareRestoreInteractor)
+        factoryOf(::UserRestoreInteractor)
     }
 }

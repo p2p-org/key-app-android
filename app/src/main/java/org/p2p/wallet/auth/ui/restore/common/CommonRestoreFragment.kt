@@ -7,7 +7,6 @@ import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
@@ -31,7 +30,7 @@ class CommonRestoreFragment :
         fun create(): CommonRestoreFragment = CommonRestoreFragment()
     }
 
-    override val presenter: CommonRestoreContract.Presenter by inject { parametersOf(this) }
+    override val presenter: CommonRestoreContract.Presenter by inject()
 
     private val binding: FragmentCommonRestoreBinding by viewBinding()
 
@@ -69,6 +68,8 @@ class CommonRestoreFragment :
             }
         }
 
+        presenter.switchFlowToRestore()
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
@@ -85,12 +86,6 @@ class CommonRestoreFragment :
         }
     }
 
-    override fun onSuccessfulSignUp() {
-        setLoadingState(isScreenLoading = false)
-        // TODO check logic here
-        navigateToEnterPhone()
-    }
-
     override fun onNoTokenFoundError(userId: String) {
         view?.post {
             with(binding) {
@@ -105,7 +100,7 @@ class CommonRestoreFragment :
         }
     }
 
-    private fun setLoadingState(isScreenLoading: Boolean) {
+    override fun setLoadingState(isScreenLoading: Boolean) {
         with(binding) {
             buttonRestoreByGoogle.apply {
                 isLoadingState = isScreenLoading
@@ -119,21 +114,21 @@ class CommonRestoreFragment :
     private fun handleSignResult(result: ActivityResult) {
         signInHelper.parseSignInResult(requireContext(), result, errorHandler = this)?.let { credential ->
             setLoadingState(isScreenLoading = true)
-            presenter.setAlternativeIdToken(credential.id, credential.googleIdToken.orEmpty())
+            presenter.setGoogleIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
     }
 
     override fun onConnectionError() {
         setLoadingState(isScreenLoading = false)
-        showInfoSnackBar(getString(R.string.error_general_message))
+        showUiKitSnackBar(message = getString(R.string.error_general_message))
     }
 
     override fun onCommonError() {
         setLoadingState(isScreenLoading = false)
-        showErrorSnackBar(R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.error_general_message)
     }
 
-    private fun navigateToEnterPhone() {
+    override fun navigateToPhoneEnter() {
         replaceFragment(PhoneNumberEnterFragment.create())
     }
 }

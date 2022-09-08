@@ -7,12 +7,14 @@ interface CommonRestoreContract {
     interface View : MvpView {
         fun startGoogleFlow()
         fun showError(error: String)
-        fun onSuccessfulSignUp()
         fun onNoTokenFoundError(userId: String)
+        fun navigateToPhoneEnter()
+        fun setLoadingState(isScreenLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun useGoogleAccount()
-        fun setAlternativeIdToken(userId: String, idToken: String)
+        fun setGoogleIdToken(userId: String, idToken: String)
+        fun switchFlowToRestore()
     }
 }
