@@ -227,7 +227,7 @@ class NewBuyFragment :
     ) {
         val solSymbol = Constants.SOL_SYMBOL.lowercase()
         val selectedTokenSymbol = selectedToken.tokenSymbol.lowercase()
-        val tokenSymbol = if (token.isSOL) solSymbol else "${selectedTokenSymbol}_$solSymbol"
+        val tokenSymbol = if (selectedToken.isSOL) solSymbol else "${selectedTokenSymbol}_$solSymbol"
         val url = MoonpayUrlBuilder.build(
             moonpayWalletDomain = requireContext().getString(R.string.moonpayWalletDomain),
             moonpayApiKey = BuildConfig.moonpayKey,
