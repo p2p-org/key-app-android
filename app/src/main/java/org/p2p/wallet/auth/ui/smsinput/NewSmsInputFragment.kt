@@ -1,8 +1,9 @@
 package org.p2p.wallet.auth.ui.smsinput
 
 import androidx.activity.addCallback
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -12,6 +13,7 @@ import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter
+import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSmsInputBinding
 import org.p2p.wallet.intercom.IntercomService
@@ -22,13 +24,21 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewSmsInputFragment :
     BaseMvpFragment<NewSmsInputContract.View, Presenter>(R.layout.fragment_new_sms_input),
-    NewSmsInputContract.View {
+    NewSmsInputContract.View,
+    GoogleSignInHelper.GoogleSignInErrorHandler {
 
     companion object {
         fun create() = NewSmsInputFragment()
     }
 
-    override val presenter: Presenter by inject { parametersOf(this) }
+    override val presenter: Presenter by inject()
+
+    private val signInHelper: GoogleSignInHelper by inject()
+
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult(),
+        ::handleGoogleSignInResult
+    )
 
     private val binding: FragmentNewSmsInputBinding by viewBinding()
 
@@ -123,5 +133,23 @@ class NewSmsInputFragment :
             OnboardingGeneralErrorFragment.create(GeneralErrorScreenError.CriticalError(errorCode)),
             inclusive = true
         )
+    }
+
+    override fun requestGoogleSignIn() {
+        signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
+    }
+
+    private fun handleGoogleSignInResult(result: ActivityResult) {
+        signInHelper.parseSignInResult(requireContext(), result, errorHandler = this)?.let { credential ->
+            presenter.setGoogleSignInToken(credential.id, credential.googleIdToken.orEmpty())
+        }
+    }
+
+    override fun onConnectionError() {
+        showUiKitSnackBar(messageResId = R.string.onboarding_offline_error)
+    }
+
+    override fun onCommonError() {
+        showUiKitSnackBar(messageResId = R.string.error_general_message)
     }
 }

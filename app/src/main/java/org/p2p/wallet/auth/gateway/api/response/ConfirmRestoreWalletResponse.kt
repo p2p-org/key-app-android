@@ -12,8 +12,8 @@ data class ConfirmRestoreWalletResponse(
     val ethereumId: String,
 
     @SerializedName("share")
-    val unencryptedThirdShare: String,
+    val thirdShareStructBase64: String,
 
     @SerializedName("payload")
-    val encryptedMnemonics: JsonObject,
+    val encryptedMnemonicsStructBase64: String,
 )

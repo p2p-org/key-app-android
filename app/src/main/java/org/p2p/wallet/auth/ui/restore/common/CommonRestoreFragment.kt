@@ -31,7 +31,7 @@ class CommonRestoreFragment :
         fun create(): CommonRestoreFragment = CommonRestoreFragment()
     }
 
-    override val presenter: CommonRestoreContract.Presenter by inject { parametersOf(this) }
+    override val presenter: CommonRestoreContract.Presenter by inject()
 
     private val binding: FragmentCommonRestoreBinding by viewBinding()
 
@@ -60,6 +60,7 @@ class CommonRestoreFragment :
             }
 
             buttonPhone.setOnClickListener {
+                presenter.switchFlowToRestore()
                 replaceFragment(PhoneNumberEnterFragment.create())
             }
 
@@ -125,12 +126,12 @@ class CommonRestoreFragment :
 
     override fun onConnectionError() {
         setLoadingState(isScreenLoading = false)
-        showInfoSnackBar(getString(R.string.error_general_message))
+        showUiKitSnackBar(message = getString(R.string.error_general_message))
     }
 
     override fun onCommonError() {
         setLoadingState(isScreenLoading = false)
-        showErrorSnackBar(R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.error_general_message)
     }
 
     private fun navigateToEnterPhone() {

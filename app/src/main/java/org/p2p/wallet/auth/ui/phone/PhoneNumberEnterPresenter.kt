@@ -1,20 +1,22 @@
 package org.p2p.wallet.auth.ui.phone
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
+import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 private const val MAX_PHONE_NUMBER_TRIES = 5
 
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
     private val createWalletInteractor: CreateWalletInteractor,
+    private val customShareRestoreInteractor: CustomShareRestoreInteractor,
     private val onboardingInteractor: OnboardingInteractor
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
@@ -79,29 +81,58 @@ class PhoneNumberEnterPresenter(
 
     override fun submitUserPhoneNumber(phoneNumber: String) {
         launch {
-            try {
-                selectedCountryCode?.let {
-                    if (createWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
-                        view?.navigateToAccountBlocked()
-                    } else {
-                        val fullUserPhoneNumber = it.phoneCode + phoneNumber
-                        createWalletInteractor.startCreatingWallet(userPhoneNumber = fullUserPhoneNumber)
-                        view?.navigateToSmsInput()
-                    }
-                }
-            } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
-                Timber.i(smsDeliverFailed)
-                view?.showSmsDeliveryFailedForNumber()
-            } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
-                Timber.i(tooManyPhoneEnters)
-                view?.navigateToAccountBlocked()
-            } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-                Timber.e(serverError, "Phone number submission failed with critical error")
-                view?.navigateToCriticalErrorScreen(serverError.code)
-            } catch (error: Throwable) {
-                Timber.e(error, "Phone number submission failed")
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            when (onboardingInteractor.currentFlow) {
+                OnboardingInteractor.OnboardingFlow.CREATE_WALLET -> startCreatingWallet(phoneNumber)
+                OnboardingInteractor.OnboardingFlow.RESTORE_WALLET -> startRestoringCustomShare(phoneNumber)
             }
+        }
+    }
+
+    private suspend fun startCreatingWallet(phoneNumber: String) {
+        try {
+            selectedCountryCode?.let {
+                if (createWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
+                    view?.navigateToAccountBlocked()
+                } else {
+                    val fullUserPhoneNumber = it.phoneCode + phoneNumber
+                    createWalletInteractor.startCreatingWallet(userPhoneNumber = fullUserPhoneNumber)
+                    view?.navigateToSmsInput()
+                }
+            }
+        } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
+            Timber.i(smsDeliverFailed)
+            view?.showSmsDeliveryFailedForNumber()
+        } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
+            Timber.i(tooManyPhoneEnters)
+            view?.navigateToAccountBlocked()
+        } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+            Timber.e(serverError, "Phone number submission failed with critical error")
+            view?.navigateToCriticalErrorScreen(serverError.code)
+        } catch (error: Throwable) {
+            Timber.e(error, "Phone number submission failed")
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+        }
+    }
+
+    private suspend fun startRestoringCustomShare(phoneNumber: String) {
+        try {
+            selectedCountryCode?.let {
+                val fullUserPhoneNumber = it.phoneCode + phoneNumber
+                customShareRestoreInteractor.startRestoreCustomShare(userPhoneNumber = fullUserPhoneNumber)
+                view?.navigateToSmsInput()
+            }
+        } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
+            Timber.i(smsDeliverFailed)
+            view?.showSmsDeliveryFailedForNumber()
+        } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
+            Timber.i(tooManyPhoneEnters)
+            view?.navigateToAccountBlocked()
+        } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+            Timber.e(serverError, "Phone number submission failed with critical error")
+            view?.navigateToCriticalErrorScreen(serverError.code)
+        } catch (error: Throwable) {
+            Timber.e(error, "Phone number submission failed")
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
     }
 }

@@ -14,5 +14,6 @@ interface CommonRestoreContract {
     interface Presenter : MvpPresenter<View> {
         fun useGoogleAccount()
         fun setAlternativeIdToken(userId: String, idToken: String)
+        fun switchFlowToRestore()
     }
 }
