@@ -21,7 +21,6 @@ import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
-import org.p2p.wallet.moonpay.model.Method
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -137,7 +136,7 @@ class NewBuyPresenter(
     }
 
     private fun validatePaymentMethod() {
-        if (selectedPaymentMethod.method == Method.BANK_TRANSFER) {
+        if (selectedPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (currentAlphaCode == BANK_TRANSFER_UK_CODE) {
                 selectCurrency(BuyCurrency.Currency.create(Constants.GBP_SYMBOL))
             } else {
@@ -186,9 +185,9 @@ class NewBuyPresenter(
     }
 
     private fun isValidCurrencyForPay(): Boolean {
-        if (selectedPaymentMethod.method == Method.BANK_TRANSFER) {
+        if (selectedPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (selectedCurrency.code == Constants.USD_READABLE_SYMBOL) {
-                paymentMethods.find { it.method == Method.CARD }?.let {
+                paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it)
                 }
                 return false
