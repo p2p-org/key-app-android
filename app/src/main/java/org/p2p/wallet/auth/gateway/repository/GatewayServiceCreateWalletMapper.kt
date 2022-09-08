@@ -38,7 +38,7 @@ class GatewayServiceCreateWalletMapper(
         val clientId: String,
         val etheriumId: String,
         val encryptedShare: String,
-        val encryptedPayloadB64: String,
+        val encryptedPayload: String,
         val phone: String,
         val phoneConfirmationCode: String
     ) : BorshSerializable {
@@ -48,7 +48,7 @@ class GatewayServiceCreateWalletMapper(
                     etheriumId,
                     clientId,
                     encryptedShare,
-                    encryptedPayloadB64,
+                    encryptedPayload,
                     phone,
                     phoneConfirmationCode
                 ) // order is important
@@ -103,7 +103,7 @@ class GatewayServiceCreateWalletMapper(
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
 
-        val encryptedPayload = jsonEncryptedMnemonicPhrase.toString()
+        val encryptedPayloadStrJson = jsonEncryptedMnemonicPhrase.toString()
 
         val signatureField: Base58String = signatureFieldGenerator.generateSignatureField(
             userPrivateKey = userPrivateKey,
@@ -112,7 +112,7 @@ class GatewayServiceCreateWalletMapper(
                 etheriumId = etheriumAddress.lowercase(),
                 phone = phoneNumber,
                 encryptedShare = thirdShare.value,
-                encryptedPayloadB64 = encryptedPayload,
+                encryptedPayload = encryptedPayloadStrJson,
                 phoneConfirmationCode = otpConfirmationCode
             )
         )
@@ -122,7 +122,7 @@ class GatewayServiceCreateWalletMapper(
             etheriumAddress = etheriumAddress,
             timestamp = createTimestampField(),
             thirdShare = thirdShare.value.toByteArray().encodeToBase64(),
-            encryptedPayloadB64 = encryptedPayload.toByteArray().encodeToBase64(),
+            encryptedPayloadB64 = encryptedPayloadStrJson.toByteArray().encodeToBase64(),
             otpConfirmationCode = otpConfirmationCode,
             phone = phoneNumber,
             requestSignature = signatureField.base58Value
