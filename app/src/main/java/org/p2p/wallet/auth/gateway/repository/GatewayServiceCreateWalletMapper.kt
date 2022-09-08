@@ -1,9 +1,7 @@
 package org.p2p.wallet.auth.gateway.repository
 
 import com.google.gson.JsonObject
-import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.encodeToBase64
-import org.p2p.solanaj.utils.crypto.encodeToBase64String
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
@@ -104,6 +102,9 @@ class GatewayServiceCreateWalletMapper(
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta.ShareInnerDetails.ShareValue,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
+
+        val encryptedPayload = jsonEncryptedMnemonicPhrase.toString()
+
         val signatureField: Base58String = signatureFieldGenerator.generateSignatureField(
             userPrivateKey = userPrivateKey,
             structToSerialize = ConfirmRegisterWalletSignatureStruct(
@@ -111,22 +112,19 @@ class GatewayServiceCreateWalletMapper(
                 etheriumId = etheriumAddress.lowercase(),
                 phone = phoneNumber,
                 encryptedShare = thirdShare.value,
-                encryptedPayloadB64 = jsonEncryptedMnemonicPhrase.toString().toByteArray().encodeToBase64(),
+                encryptedPayloadB64 = encryptedPayload,
                 phoneConfirmationCode = otpConfirmationCode
             )
         )
-
-        val encryptedPayload: Base64String = jsonEncryptedMnemonicPhrase.toString()
-            .toByteArray()
-            .encodeToBase64String()
 
         return ConfirmRegisterWalletRequest(
             clientSolanaPublicKey = userPublicKey.base58Value,
             etheriumAddress = etheriumAddress,
             timestamp = createTimestampField(),
-            thirdShare = thirdShare.value,
-            encryptedPayloadB64 = encryptedPayload.base64Value,
+            thirdShare = thirdShare.value.toByteArray().encodeToBase64(),
+            encryptedPayloadB64 = encryptedPayload.toByteArray().encodeToBase64(),
             otpConfirmationCode = otpConfirmationCode,
+            phone = phoneNumber,
             requestSignature = signatureField.base58Value
         )
             .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.CONFIRM_REGISTER_WALLET) }

@@ -22,5 +22,7 @@ data class ConfirmRegisterWalletRequest(
      * example: "2022-07-18 20:55:08.987283300+03:00"
      */
     @SerializedName("timestamp_device")
-    val timestamp: String
+    val timestamp: String,
+    @SerializedName("phone")
+    val phone: String
 )
