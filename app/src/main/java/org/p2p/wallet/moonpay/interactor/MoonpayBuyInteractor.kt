@@ -28,7 +28,7 @@ class MoonpayBuyInteractor(
 
     private val quotes = mutableListOf<MoonpayBuyQuote>()
 
-    fun getQuotes() = quotes.toList()
+    fun getQuotes(): List<MoonpayBuyQuote> = quotes.toList()
 
     suspend fun loadQuotes(currencies: List<String>, tokens: List<Token>) = withContext(dispatchers.io) {
         currencies.forEach { currency ->
