@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.gateway.api.response
 
-import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import org.p2p.wallet.utils.Base58String
 

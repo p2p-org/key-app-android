@@ -35,9 +35,9 @@ class UserRestoreInteractor(
                 val customShare = restoreFlowDataLocalRepository.customShare
                     ?: throw IllegalStateException("Social+Custom restore way failed. Third share is null")
                 val socialShare = restoreFlowDataLocalRepository.socialShare
-                    ?: throw  IllegalStateException("Social+Custom restore way failed. Social share is null")
+                    ?: throw IllegalStateException("Social+Custom restore way failed. Social share is null")
                 val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
-                    ?: throw  IllegalStateException("Social+Custom restore way failed. Social share ID is null")
+                    ?: throw IllegalStateException("Social+Custom restore way failed. Social share ID is null")
                 val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(socialShare, customShare)
 
                 signUpDetailsStorage.save(
