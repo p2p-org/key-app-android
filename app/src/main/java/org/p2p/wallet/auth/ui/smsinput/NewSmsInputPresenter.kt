@@ -1,5 +1,12 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
@@ -16,13 +23,6 @@ import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTim
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
@@ -104,7 +104,7 @@ class NewSmsInputPresenter(
 
             restoreWalletRestoreInteractor.finishRestoreCustomShare(smsCode)
 
-            if (userRestoreInteractor.isUserReadyToBeRestored()) {
+            if (userRestoreInteractor.isUserReadyToBeRestoredByPhone()) {
                 restoreUserWithShares()
             } else {
                 // no social share, requesting now
