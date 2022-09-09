@@ -91,6 +91,7 @@ object HomeModule : InjectionModule {
                 tokenInteractor = get(),
                 receiveAnalytics = get(),
                 environmentManager = get(),
+                newBuyFeatureToggle = get(),
                 networkType = type
             )
         }

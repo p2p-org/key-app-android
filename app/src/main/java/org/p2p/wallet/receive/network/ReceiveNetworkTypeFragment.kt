@@ -9,7 +9,6 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReceiveNetworkTypeBinding
 import org.p2p.wallet.home.model.Token
@@ -59,7 +58,6 @@ class ReceiveNetworkTypeFragment :
     }
     private val binding: FragmentReceiveNetworkTypeBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
-    private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
 
     private val networkType: NetworkType by args(EXTRA_NETWORK_TYPE)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
@@ -92,16 +90,16 @@ class ReceiveNetworkTypeFragment :
                 val token = bundle.getParcelable<Token>(BUNDLE_KEY_SELECTED_TOKEN)
                 if (token != null) {
                     popAndReplaceFragment(
-                        if (newBuyFeatureToggle.value) {
-                            NewBuyFragment.create(token)
-                        } else {
-                            BuySolanaFragment.create(token)
-                        }
+                        BuySolanaFragment.create(token)
                     )
                 }
             }
         }
         presenter.load()
+    }
+
+    override fun showNewBuyFragment(token: Token) {
+        popAndReplaceFragment(NewBuyFragment.create(token))
     }
 
     override fun showNetworkInfo(type: NetworkType) {

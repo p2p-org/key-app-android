@@ -3,6 +3,7 @@ package org.p2p.wallet.receive.network
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
@@ -30,6 +31,7 @@ class ReceiveNetworkTypePresenter(
     private val tokenInteractor: TokenInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val environmentManager: NetworkEnvironmentManager,
+    private val newBuyFeatureToggle: NewBuyFeatureToggle,
     networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
@@ -67,11 +69,19 @@ class ReceiveNetworkTypePresenter(
         launch {
             try {
                 val tokensForBuy = userInteractor.getTokensForBuy(tokensValidForBuy)
-                view?.showTokensForBuy(tokensForBuy)
-                return@launch
+                resolveBuyScreensByFeatureToggle(tokensForBuy)
             } catch (e: Exception) {
                 view?.showErrorMessage(e)
             }
+        }
+    }
+
+    private fun resolveBuyScreensByFeatureToggle(tokensForBuy: List<Token>) {
+        if (newBuyFeatureToggle.value) {
+            val usdc = tokensForBuy.first { it.tokenSymbol == Constants.USDC_SYMBOL }
+            view?.showNewBuyFragment(usdc)
+        } else {
+            view?.showTokensForBuy(tokensForBuy)
         }
     }
 
