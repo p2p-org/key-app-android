@@ -318,7 +318,6 @@ class NewBuyPresenter(
     }
 
     private fun handleEnteredAmountValid(buyCurrencyInfo: BuyCurrency) {
-        val receiveSymbol = if (isSwappedToToken) selectedCurrency.code else selectedToken.tokenSymbol
         val amount = if (isSwappedToToken) {
             buyCurrencyInfo.totalAmount.formatUsd()
         } else {
@@ -338,11 +337,7 @@ class NewBuyPresenter(
             accountCreationCost = null,
             total = buyCurrencyInfo.totalAmount.scaleShort(),
             receiveAmountText = amount,
-            purchaseCostText = if (isSwappedToToken) {
-                currencyForTokensAmount.asCurrency(currency)
-            } else {
-                buyCurrencyInfo.receiveAmount.toBigDecimal().asCurrency(currency)
-            }
+            purchaseCostText = currencyForTokensAmount.asCurrency(currency)
         )
         view?.apply {
             showTotal(data)
