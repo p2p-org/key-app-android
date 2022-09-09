@@ -177,7 +177,7 @@ class HomeFragment :
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
                 result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-                    showBuyTokenScreen(it)
+                    this.showOldBuyScreen(it)
                 }
             }
             KEY_REQUEST_ACTION -> {
@@ -205,8 +205,12 @@ class HomeFragment :
         }
     }
 
-    private fun showBuyTokenScreen(token: Token) {
+    override fun showOldBuyScreen(token: Token) {
         replaceFragment(BuySolanaFragment.create(token))
+    }
+
+    override fun showNewBuyScreen(token: Token) {
+        replaceFragment(NewBuyFragment.create(token))
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
@@ -294,7 +298,7 @@ class HomeFragment :
                 openScreenByHomeAction(HomeAction.RECEIVE)
             }
         } else {
-            showBuyTokenScreen(token)
+            presenter.onBuyTokenClicked(token)
         }
     }
 
