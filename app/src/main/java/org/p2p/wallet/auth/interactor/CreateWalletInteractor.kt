@@ -21,6 +21,8 @@ class CreateWalletInteractor(
 
         val e164FormatUserPhoneNumber = "+$userPhoneNumber".replace(" ", "")
         if (e164FormatUserPhoneNumber != signUpFlowDataRepository.userPhoneNumber) {
+            signUpFlowDataRepository.userPhoneNumber = e164FormatUserPhoneNumber
+
             gatewayServiceRepository.registerWalletWithSms(
                 userPublicKey = userPublicKey,
                 userPrivateKey = userPrivateKey,
@@ -28,7 +30,6 @@ class CreateWalletInteractor(
                 e164PhoneNumber = e164FormatUserPhoneNumber
             )
         }
-        signUpFlowDataRepository.userPhoneNumber = e164FormatUserPhoneNumber
     }
 
     fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount

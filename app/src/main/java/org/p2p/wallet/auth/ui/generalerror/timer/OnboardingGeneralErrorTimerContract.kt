@@ -11,7 +11,7 @@ interface OnboardingGeneralErrorTimerContract {
             @StringRes subTitleRes: Int,
             formattedTimeLeft: String
         )
-        fun returnToPhoneNumberEnter()
+        fun navigateToStartingScreen()
     }
 
     interface Presenter : MvpPresenter<View>
