@@ -16,7 +16,7 @@ interface NewBuyContract {
         fun showTokensToBuy(selectedToken: Token, tokensToBuy: List<Token>)
         fun showCurrency(currencies: List<BuyCurrency.Currency>, selectedCurrency: BuyCurrency.Currency)
         fun setCurrencyCode(selectedCurrencyCode: String)
-        fun showPaymentMethods(methods: List<PaymentMethod>)
+        fun showPaymentMethods(methods: List<PaymentMethod>?)
         fun setContinueButtonEnabled(isEnabled: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showMessage(message: String?, selectedTokenSymbol: String? = null)

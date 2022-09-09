@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.FocusField
@@ -147,8 +148,9 @@ class NewBuyFragment :
         }
     }
 
-    override fun showPaymentMethods(methods: List<PaymentMethod>) {
-        adapter.setItems(methods)
+    override fun showPaymentMethods(methods: List<PaymentMethod>?) {
+        adapter.setItems(methods.orEmpty())
+        binding.groupPaymentMethods.isVisible = methods != null
     }
 
     override fun showTokensToBuy(selectedToken: Token, tokensToBuy: List<Token>) {

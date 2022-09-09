@@ -98,7 +98,12 @@ class NewBuyPresenter(
             val availablePaymentMethods = paymentMethodsInteractor.getAvailablePaymentMethods(currentAlphaCode)
             selectedPaymentMethod = availablePaymentMethods.first { it.isSelected }
             paymentMethods.addAll(availablePaymentMethods)
-            view?.showPaymentMethods(paymentMethods)
+
+            if (paymentMethods.size > 1) {
+                view?.showPaymentMethods(paymentMethods)
+            } else {
+                view?.showPaymentMethods(null)
+            }
 
             validatePaymentMethod()
             preselectMinimalFiatAmount()
