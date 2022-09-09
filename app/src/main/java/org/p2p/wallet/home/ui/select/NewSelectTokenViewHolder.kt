@@ -33,7 +33,7 @@ class NewSelectTokenViewHolder(
     override fun onBind(item: Token, selectedItem: Token?) {
         super.onBind(item, selectedItem)
         with(binding) {
-            imageViewCheck.isVisible = item == selectedItem
+            imageViewCheck.isVisible = item.tokenSymbol == selectedItem?.tokenSymbol
 
             if (!item.iconUrl.isNullOrEmpty()) {
                 loadImage(tokenImageView, item.iconUrl!!)
