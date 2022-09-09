@@ -11,7 +11,7 @@ import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import kotlinx.coroutines.launch
 
-private const val MAX_PHONE_NUMBER_TRIES = 5
+private const val MAX_PHONE_NUMBER_TRIES = 4
 
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
