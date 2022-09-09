@@ -194,7 +194,7 @@ class NewBuyFragment :
     }
 
     override fun showTotal(viewData: BuyViewData) {
-        val focusField = binding.amountsView.getFocusField()
+        val focusField = binding.amountsView.focusField
         if (focusField == FocusField.TOKEN) {
             binding.amountsView.setCurrencyAmount(viewData.receiveAmountText)
         } else {
@@ -216,7 +216,7 @@ class NewBuyFragment :
     }
 
     override fun clearOppositeFieldAndTotal(totalText: String) {
-        when (binding.amountsView.getFocusField()) {
+        when (binding.amountsView.focusField) {
             FocusField.TOKEN -> binding.amountsView.setCurrencyAmount(null)
             FocusField.CURRENCY -> binding.amountsView.setTokenAmount(null)
         }

@@ -295,7 +295,7 @@ class NewBuyPresenter(
 
     private fun onBuyCurrencyLoadFailed(error: Throwable) {
         if (error is CancellationException) {
-            Timber.w("Cancelled get currency request")
+            Timber.i("Cancelled get currency request")
         } else {
             Timber.e(error, "Error loading buy currency data")
             view?.showErrorMessage(error)

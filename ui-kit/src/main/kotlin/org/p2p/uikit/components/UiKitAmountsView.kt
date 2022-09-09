@@ -26,6 +26,13 @@ class UiKitAmountsView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
+    val focusField: FocusField
+        get() = if (binding.editTextTokenAmount.hasFocus()) {
+            FocusField.TOKEN
+        } else {
+            FocusField.CURRENCY
+        }
+
     private val binding = inflateViewBinding<WidgetAmountsViewBinding>()
 
     private lateinit var tokenTextWatcher: TextWatcher
@@ -55,12 +62,6 @@ class UiKitAmountsView @JvmOverloads constructor(
                 handleAmountTextChanged(editTextCurrencyAmount, textViewCurrencyAutoSizeHelper, text, originalTextSize)
             }
         }
-    }
-
-    fun getFocusField(): FocusField = if (binding.editTextTokenAmount.hasFocus()) {
-        FocusField.TOKEN
-    } else {
-        FocusField.CURRENCY
     }
 
     fun setTokenAmount(tokenAmount: String?) = with(binding.editTextTokenAmount) {

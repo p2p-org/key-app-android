@@ -1,6 +1,7 @@
 package org.p2p.wallet.moonpay
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
@@ -48,20 +49,8 @@ object BuyModule : InjectionModule {
     }
 
     private fun Module.initDomainLayer() {
-        factory {
-            PaymentMethodsInteractor(
-                repository = get(),
-                dispatchers = get(),
-                bankTransferFeatureToggle = get()
-            )
-        }
-        factory {
-            MoonpayBuyInteractor(
-                moonpayRepository = get(),
-                dispatchers = get(),
-                moonpayApiMapper = get()
-            )
-        }
+        factoryOf(::PaymentMethodsInteractor)
+        factoryOf(::MoonpayBuyInteractor)
     }
 
     private fun Module.initPresentationLayer() {
