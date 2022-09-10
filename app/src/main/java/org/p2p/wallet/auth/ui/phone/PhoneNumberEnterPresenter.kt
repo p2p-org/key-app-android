@@ -12,7 +12,7 @@ import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.model.PhoneNumber
 
-private const val MAX_PHONE_NUMBER_TRIES = 5
+private const val MAX_PHONE_NUMBER_TRIES = 4
 
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,

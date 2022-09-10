@@ -7,11 +7,11 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.Presenter
-import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
+import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.View as ContractView
@@ -37,10 +37,10 @@ class OnboardingGeneralErrorTimerFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.buttonToStartingScreen.setOnClickListener {
-            returnToPhoneNumberEnter()
+            navigateToStartingScreen()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            returnToPhoneNumberEnter()
+            navigateToStartingScreen()
         }
     }
 
@@ -49,7 +49,7 @@ class OnboardingGeneralErrorTimerFragment :
         binding.textViewErrorSubtitle.text = getString(subTitleRes, formattedTimeLeft)
     }
 
-    override fun returnToPhoneNumberEnter() {
-        popBackStackTo(PhoneNumberEnterFragment::class, inclusive = false)
+    override fun navigateToStartingScreen() {
+        popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
     }
 }
