@@ -37,7 +37,6 @@ class GatewayServiceRemoteRepository(
             field = value
             if (value != null) {
                 resetTemporaryPublicKeyTimer.launchTimer(appScope)
-                Timber.i("restoreWalletPublic key value = $value")
             }
         }
 
@@ -107,8 +106,7 @@ class GatewayServiceRemoteRepository(
             throw RestoreWalletPublicKeyError(
                 expectedPublicKey = restoreWalletPublicKey?.base58Value,
                 actualPublicKey = solanaPublicKey.base58Value
-            )
-                .also { Timber.i(it) }
+            ).also { Timber.i(it) }
         }
 
         val request = restoreWalletMapper.toConfirmRestoreWalletNetwork(

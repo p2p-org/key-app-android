@@ -1,17 +1,13 @@
 package org.p2p.wallet.auth.ui.restore.common
 
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
-import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
-import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
-    private val socialShareRestoreInteractor: SocialShareRestoreInteractor,
-    private val restoreUserRestoreInteractor: UserRestoreInteractor,
-    private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository
+    private val restoreWalletInteractor: RestoreWalletInteractor
 ) : BasePresenter<CommonRestoreContract.View>(), CommonRestoreContract.Presenter {
 
     override fun useGoogleAccount() {
@@ -25,14 +21,14 @@ class CommonRestorePresenter(
 
     override fun switchFlowToRestore() {
         onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
-        restoreFlowDataLocalRepository.generateRestoreUserKeyPair()
+        restoreWalletInteractor.generateRestoreUserKeyPair()
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
         view?.setLoadingState(isScreenLoading = true)
-        socialShareRestoreInteractor.restoreSocialShare(idToken, userId)
+        restoreWalletInteractor.restoreSocialShare(idToken, userId)
         view?.setLoadingState(isScreenLoading = false)
-        if (restoreUserRestoreInteractor.isUserReadyToBeRestored()) {
+        if (restoreWalletInteractor.isUserReadyToBeRestored()) {
             // navigate to pin if social + device share exists
         } else {
             view?.navigateToPhoneEnter()

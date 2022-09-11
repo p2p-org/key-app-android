@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.model
 
 /**
  * Data class which represent phone number format
- * [formattedValue] contains countryCode + phoneNumber without trim
+ * [formattedValue] contains countryCode + phoneNumber(formatted by PhoneNumberUtil) without trim
  */
 data class PhoneNumber(val formattedValue: String) {
 

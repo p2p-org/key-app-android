@@ -5,11 +5,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
-import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
-import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
-import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor.RestoreUserResult
-import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -22,18 +17,15 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
-import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
+import org.p2p.wallet.auth.model.RestoreUserResult
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
-    private val restoreWalletRestoreInteractor: CustomShareRestoreInteractor,
-    private val socialShareRestoreInteractor: SocialShareRestoreInteractor,
-    private val userRestoreInteractor: UserRestoreInteractor,
-    private val signUpRepository: SignUpFlowDataLocalRepository,
-    private val restoreRepository: RestoreFlowDataLocalRepository,
+    private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
 ) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
 
@@ -48,8 +40,8 @@ class NewSmsInputPresenter(
 
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
         val userPhoneNumber = when (onboardingInteractor.currentFlow) {
-            is OnboardingFlow.CreateWallet -> signUpRepository.userPhoneNumber
-            is OnboardingFlow.RestoreWallet -> restoreRepository.userPhoneNumber
+            is OnboardingFlow.CreateWallet -> createWalletInteractor.getUserPhoneNumber()
+            is OnboardingFlow.RestoreWallet -> restoreWalletInteractor.getUserPhoneNumber()
         }
         userPhoneNumber?.let { view.initView(it) }
     }
@@ -107,8 +99,8 @@ class NewSmsInputPresenter(
     private suspend fun finishRestoringCustomShare(smsCode: String) {
         try {
             view?.renderButtonLoading(isLoading = true)
-            restoreWalletRestoreInteractor.confirmRestoreWallet(smsCode)
-            if (userRestoreInteractor.isUserReadyToBeRestored()) {
+            restoreWalletInteractor.confirmRestoreWallet(smsCode)
+            if (restoreWalletInteractor.isUserReadyToBeRestored()) {
                 restoreUserWithShares()
             } else {
                 // no social share, requesting now
@@ -136,10 +128,9 @@ class NewSmsInputPresenter(
 
                 view?.renderButtonLoading(isLoading = true)
 
-                createWalletInteractor.startCreatingWallet(
-                    signUpRepository.userPhoneNumber
-                        ?: throw IllegalStateException("User phone number cannot be null")
-                )
+                val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
+                    ?: throw IllegalStateException("User phone number cannot be null")
+                createWalletInteractor.startCreatingWallet(userPhoneNumber)
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.e(serverError)
                 view?.navigateToCriticalErrorScreen(serverError.code)
@@ -154,16 +145,16 @@ class NewSmsInputPresenter(
 
     override fun setGoogleSignInToken(userId: String, googleToken: String) {
         launch {
-            socialShareRestoreInteractor.restoreSocialShare(googleToken, userId)
+            restoreWalletInteractor.restoreSocialShare(googleToken, userId)
             restoreUserWithShares()
         }
     }
 
     private suspend fun restoreUserWithShares() {
         val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet
-        when (val result = userRestoreInteractor.tryRestoreUser(restoreFlow)) {
+        when (val result = restoreWalletInteractor.tryRestoreUser(restoreFlow)) {
             is RestoreUserResult.RestoreSuccessful -> {
-                userRestoreInteractor.finishAuthFlow()
+                restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             }
             is RestoreUserResult.RestoreFailed -> {
@@ -176,15 +167,6 @@ class NewSmsInputPresenter(
     private fun Flow<Int>.toResendSmsInputTimer(): Flow<Int> {
         return onEach { secondsBeforeResend ->
             view?.renderSmsTimerState(SmsInputTimerState.ResendSmsNotReady(secondsBeforeResend))
-            if (secondsBeforeResend == 0) {
-                view?.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
-            }
-        }
-    }
-
-    private fun Flow<Int>.toRequestsOverflowSmsInputTimer(): Flow<Int> {
-        return onEach { secondsBeforeResend ->
-            view?.renderSmsTimerState(SmsInputTimerState.SmsValidationBlocked(secondsBeforeResend))
             if (secondsBeforeResend == 0) {
                 view?.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
             }

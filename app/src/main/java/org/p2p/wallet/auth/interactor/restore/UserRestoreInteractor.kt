@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.p2p.solanaj.utils.crypto.decodeFromBase64
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.RestoreUserResult
+import org.p2p.wallet.auth.model.RestoreWalletFailure
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
@@ -20,14 +22,6 @@ class UserRestoreInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val gson: Gson
 ) {
-    sealed interface RestoreUserResult {
-        object RestoreSuccessful : RestoreUserResult
-        class RestoreFailed(override val cause: Throwable) : Error(), RestoreUserResult
-    }
-
-    sealed interface RestoreUserWay {
-        object SocialPlusCustomShareWay : RestoreUserWay
-    }
 
     fun isUserReadyToBeRestored(): Boolean {
         val isTwoSharesAvailable =
@@ -116,8 +110,7 @@ class UserRestoreInteractor(
             ?: run {
                 Timber.i(encryptedMnemonicsStruct)
                 Timber.i(encryptedMnemonicsJson)
-                throw
-                CustomShareRestoreInteractor.RestoreWalletFailure("Couldn't convert base64 to encrypted mnemonics")
+                throw RestoreWalletFailure("Couldn't convert base64 to encrypted mnemonics")
             }
     }
 }

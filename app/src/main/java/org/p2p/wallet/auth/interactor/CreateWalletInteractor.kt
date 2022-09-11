@@ -33,6 +33,8 @@ class CreateWalletInteractor(
 
     fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount
 
+    fun getUserPhoneNumber() = signUpFlowDataRepository.userPhoneNumber
+
     suspend fun finishCreatingWallet(smsCode: String) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey
             ?: throw CreateWalletFailure("User public key is null")
