@@ -18,4 +18,6 @@
     <string name="seed_phrase_button_disabled_text">Fill 12 or 24 words</string>
     <string name="seed_phrase_view_invalid">Seed phrase</string>
     <string name="seed_phrase_view_valid">Seed phrase ✅</string>
+    <!-- change error text in PWN-5047 -->
+    <string name="seed_phrase_verify_failed">Seed phrase words out of base</string>
 </resources>

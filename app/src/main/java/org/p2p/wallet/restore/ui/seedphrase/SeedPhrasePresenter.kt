@@ -1,6 +1,7 @@
 package org.p2p.wallet.restore.ui.seedphrase
 
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import kotlin.properties.Delegates
@@ -31,6 +32,18 @@ class SeedPhrasePresenter(
         view?.showClearButton(isClearButtonVisible)
     }
 
+    override fun attach(view: SeedPhraseContract.View) {
+        super.attach(view)
+
+        if (currentSeedPhrase.isEmpty()) {
+            view.addFirstKey(SeedPhraseWord.EMPTY_WORD)
+            view.showSeedPhraseValid(isSeedPhraseValid = false)
+        } else {
+            currentSeedPhrase = currentSeedPhrase.toList()
+            view.updateSeedPhrase(currentSeedPhrase)
+        }
+    }
+
     override fun setNewSeedPhrase(seedPhrase: List<SeedPhraseWord>) {
         val filteredPhrase = seedPhrase.filter { it.text.isNotEmpty() }
         this.currentSeedPhrase = filteredPhrase.toMutableList()
@@ -43,16 +56,9 @@ class SeedPhrasePresenter(
 
             if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
                 view?.navigateToDerievableAccounts(currentSeedPhrase)
+            } else {
+                view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_failed)
             }
-        }
-    }
-
-    override fun load() {
-        if (currentSeedPhrase.isEmpty()) {
-            view?.addFirstKey(SeedPhraseWord.EMPTY_WORD)
-            view?.showSeedPhraseValid(isSeedPhraseValid = false)
-        } else {
-            currentSeedPhrase = currentSeedPhrase.toList()
         }
     }
 

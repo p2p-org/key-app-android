@@ -52,7 +52,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     }
 
     private fun addSeedPhraseFromClipboard() {
-        val clipboardValue =  getClipboardText()
+        val clipboardValue = getClipboardText()
         val keysFromClipboard = seedPhraseParser.parse(
             if (clipboardValue.split(" ").size == 1) "$clipboardValue " else clipboardValue
         )

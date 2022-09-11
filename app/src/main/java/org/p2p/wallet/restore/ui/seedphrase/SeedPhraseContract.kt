@@ -20,7 +20,6 @@ interface SeedPhraseContract {
     interface Presenter : MvpPresenter<View> {
         fun setNewSeedPhrase(seedPhrase: List<SeedPhraseWord>)
         fun verifySeedPhrase()
-        fun load()
         fun requestFocusOnLastWord()
     }
 }

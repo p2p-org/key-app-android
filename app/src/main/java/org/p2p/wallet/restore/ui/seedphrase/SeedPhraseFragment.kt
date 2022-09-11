@@ -58,8 +58,6 @@ class SeedPhraseFragment :
 
             seedPhraseView.focusAndShowKeyboard()
         }
-
-        presenter.load()
     }
 
     private fun FragmentSeedPhraseBinding.initToolbar() {

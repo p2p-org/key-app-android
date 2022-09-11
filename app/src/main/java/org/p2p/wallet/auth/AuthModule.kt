@@ -90,7 +90,7 @@ object AuthModule {
 
         factory { AuthInteractor(get(), get(), get(), get(), get()) }
         factory { AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-        factory { AuthRemoteRepository() } bind AuthRepository::class
+        factoryOf(::AuthRemoteRepository) bind AuthRepository::class
         factory { FileRepository(get(), get()) }
         factory { SecurityKeyPresenter(get(), get(), get(), get()) } bind SecurityKeyContract.Presenter::class
         factory { CreatePinPresenter(get(), get(), get(), get(), get()) } bind CreatePinContract.Presenter::class

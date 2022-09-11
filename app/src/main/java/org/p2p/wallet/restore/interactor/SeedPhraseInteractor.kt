@@ -102,9 +102,8 @@ class SeedPhraseInteractor(
 
     fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): List<SeedPhraseWord> {
         val words = English.INSTANCE.words
-        val keys = secretKeys.filter { key -> key.text.isNotEmpty() }
 
-        val validatedKeys = keys.map { key ->
+        val validatedKeys = secretKeys.map { key ->
             val isValid = words.contains(key.text)
             key.copy(isValid = isValid)
         }
