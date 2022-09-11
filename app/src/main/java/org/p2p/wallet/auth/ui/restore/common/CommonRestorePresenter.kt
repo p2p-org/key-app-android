@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.restore.common
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
+import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 
@@ -17,8 +18,13 @@ class CommonRestorePresenter(
         view?.startGoogleFlow()
     }
 
+    override fun useCustomShare() {
+        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet.DevicePlusCustomShare
+        view?.navigateToPhoneEnter()
+    }
+
     override fun switchFlowToRestore() {
-        onboardingInteractor.currentFlow = OnboardingInteractor.OnboardingFlow.RESTORE_WALLET
+        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
         restoreFlowDataLocalRepository.generateRestoreUserKeyPair()
     }
 

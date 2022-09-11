@@ -46,7 +46,7 @@ class NewSmsInputFragment :
     override fun initView(userPhoneNumber: PhoneNumber) {
         with(binding) {
             checkNumberTitleText.text =
-                getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber.value)
+                getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber.formattedValue)
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {

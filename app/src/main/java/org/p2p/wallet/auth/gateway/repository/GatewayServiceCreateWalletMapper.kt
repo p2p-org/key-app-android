@@ -128,8 +128,7 @@ class GatewayServiceCreateWalletMapper(
             otpConfirmationCode = otpConfirmationCode,
             phone = phoneNumber,
             requestSignature = signatureField.base58Value
-        )
-            .let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.CONFIRM_REGISTER_WALLET) }
+        ).let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.CONFIRM_REGISTER_WALLET) }
     }
 
     private fun createTimestampField(): String {

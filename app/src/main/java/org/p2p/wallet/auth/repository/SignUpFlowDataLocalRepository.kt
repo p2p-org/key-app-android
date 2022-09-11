@@ -51,7 +51,7 @@ class SignUpFlowDataLocalRepository(
         set(value) {
             field = value
             ++userPhoneNumberEnteredCount
-            Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.value?.length}")
+            Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
     fun generateUserAccount(userMnemonicPhrase: List<String>) {

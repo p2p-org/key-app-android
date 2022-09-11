@@ -10,6 +10,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 
 private const val MAX_PHONE_NUMBER_TRIES = 4
@@ -29,8 +30,8 @@ class PhoneNumberEnterPresenter(
         super.attach(view)
 
         when (onboardingInteractor.currentFlow) {
-            OnboardingInteractor.OnboardingFlow.CREATE_WALLET -> view.initCreateWalletViews()
-            OnboardingInteractor.OnboardingFlow.RESTORE_WALLET -> view.initRestoreWalletViews()
+            is OnboardingFlow.CreateWallet -> view.initCreateWalletViews()
+            is OnboardingFlow.RestoreWallet -> view.initRestoreWalletViews()
         }
 
         launch { loadDefaultCountryCode() }
@@ -83,8 +84,8 @@ class PhoneNumberEnterPresenter(
     override fun submitUserPhoneNumber(phoneNumber: String) {
         launch {
             when (onboardingInteractor.currentFlow) {
-                OnboardingInteractor.OnboardingFlow.CREATE_WALLET -> startCreatingWallet(phoneNumber)
-                OnboardingInteractor.OnboardingFlow.RESTORE_WALLET -> startRestoringCustomShare(phoneNumber)
+                is OnboardingFlow.CreateWallet -> startCreatingWallet(phoneNumber)
+                is OnboardingFlow.RestoreWallet -> startRestoringCustomShare(phoneNumber)
             }
         }
     }

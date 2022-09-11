@@ -1,17 +1,13 @@
 package org.p2p.wallet.auth.interactor
 
+import org.p2p.wallet.auth.model.OnboardingFlow
 import timber.log.Timber
 
 class OnboardingInteractor {
 
-    enum class OnboardingFlow {
-        CREATE_WALLET,
-        RESTORE_WALLET
-    }
-
-    var currentFlow: OnboardingFlow = OnboardingFlow.CREATE_WALLET
+    var currentFlow: OnboardingFlow = OnboardingFlow.CreateWallet
         set(value) {
             field = value
-            Timber.i("Current onboarding flow switched to ${field.name}")
+            Timber.i("Current onboarding flow switched to $field")
         }
 }

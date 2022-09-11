@@ -37,7 +37,7 @@ class CustomShareRestoreInteractor(
         restoreFlowDataLocalRepository.userPhoneNumber = userPhoneNumber
     }
 
-    suspend fun finishRestoreCustomShare(smsCode: String) {
+    suspend fun confirmRestoreWallet(smsCode: String) {
         val temporaryUserPublicKey = restoreFlowDataLocalRepository.userRestorePublicKey
             ?: throw RestoreWalletFailure("User restore public key is null")
         val temporaryUserPrivateKey = restoreFlowDataLocalRepository.userRestorePrivateKey

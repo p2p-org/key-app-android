@@ -1,11 +1,15 @@
 package org.p2p.wallet.auth.model
 
-data class PhoneNumber(val value: String) {
+/**
+ * Data class which represent phone number format
+ * [formattedValue] contains countryCode + phoneNumber without trim
+ */
+data class PhoneNumber(val formattedValue: String) {
 
     object PhoneNumberFormatter {
 
         fun getPhoneNumberE164Formatted(phoneNumber: PhoneNumber): String {
-            val trimmedValue = phoneNumber.value.replace(" ", "")
+            val trimmedValue = phoneNumber.formattedValue.replace(" ", "")
             return "+$trimmedValue"
         }
     }
@@ -16,5 +20,5 @@ fun PhoneNumber.e164Formatted(): String {
 }
 
 fun PhoneNumber.equals(phoneNumber: PhoneNumber?): Boolean {
-    return this.value == phoneNumber?.value
+    return this.formattedValue == phoneNumber?.formattedValue
 }

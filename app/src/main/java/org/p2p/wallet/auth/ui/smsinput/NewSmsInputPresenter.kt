@@ -9,7 +9,6 @@ import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor.RestoreUserResult
-import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor.RestoreUserWay
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
@@ -48,8 +48,8 @@ class NewSmsInputPresenter(
 
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
         val userPhoneNumber = when (onboardingInteractor.currentFlow) {
-            OnboardingInteractor.OnboardingFlow.CREATE_WALLET -> signUpRepository.userPhoneNumber
-            OnboardingInteractor.OnboardingFlow.RESTORE_WALLET -> restoreRepository.userPhoneNumber
+            is OnboardingFlow.CreateWallet -> signUpRepository.userPhoneNumber
+            is OnboardingFlow.RestoreWallet -> restoreRepository.userPhoneNumber
         }
         userPhoneNumber?.let { view.initView(it) }
     }
@@ -75,8 +75,8 @@ class NewSmsInputPresenter(
 
         launch {
             when (onboardingInteractor.currentFlow) {
-                OnboardingInteractor.OnboardingFlow.CREATE_WALLET -> finishCreatingWallet(smsCode)
-                OnboardingInteractor.OnboardingFlow.RESTORE_WALLET -> finishRestoringCustomShare(smsCode)
+                is OnboardingFlow.CreateWallet -> finishCreatingWallet(smsCode)
+                is OnboardingFlow.RestoreWallet -> finishRestoringCustomShare(smsCode)
             }
         }
     }
@@ -107,9 +107,7 @@ class NewSmsInputPresenter(
     private suspend fun finishRestoringCustomShare(smsCode: String) {
         try {
             view?.renderButtonLoading(isLoading = true)
-
-            restoreWalletRestoreInteractor.finishRestoreCustomShare(smsCode)
-
+            restoreWalletRestoreInteractor.confirmRestoreWallet(smsCode)
             if (userRestoreInteractor.isUserReadyToBeRestored()) {
                 restoreUserWithShares()
             } else {
@@ -162,7 +160,8 @@ class NewSmsInputPresenter(
     }
 
     private suspend fun restoreUserWithShares() {
-        when (val result = userRestoreInteractor.tryRestoreUser(RestoreUserWay.SocialPlusCustomShareWay)) {
+        val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet
+        when (val result = userRestoreInteractor.tryRestoreUser(restoreFlow)) {
             is RestoreUserResult.RestoreSuccessful -> {
                 userRestoreInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
