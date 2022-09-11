@@ -68,10 +68,7 @@ class RestoreFlowDataLocalRepository {
         }
 
     fun generateRestoreUserKeyPair() {
-        Timber.tag("______").d("Restoring keys")
         restoreUserKeyPair = TweetNaclFast.Signature.keyPair_fromSecretKey(TweetNaclFast.Signature.keyPair().secretKey)
-        Timber.tag("______").d("${restoreUserKeyPair?.publicKey}")
-        Timber.tag("______").d("${restoreUserKeyPair?.secretKey}")
     }
 
     fun generateActualAccount(userSeedPhrase: List<String>) {

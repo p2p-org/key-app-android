@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
 
 class FlowDurationTimer(
@@ -34,14 +33,11 @@ class FlowDurationTimer(
             .asSequence()
             .asFlow()
             .onEach {
-                Timber.tag("_____").d(" start Delay value =$it ")
                 onEachAction?.invoke(it)
                 delay(1.minutes.inWholeMilliseconds)
-                Timber.tag("_____").d("Delay value =$it ")
             }
             .onCompletion {
                 onTimerFinished?.invoke()
-                Timber.tag("_____").d("Timber finished")
             }
             .launchIn(scope)
     }
