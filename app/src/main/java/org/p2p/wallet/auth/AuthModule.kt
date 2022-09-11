@@ -67,6 +67,7 @@ import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
@@ -147,7 +148,7 @@ object AuthModule {
         factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorTimerPresenter) bind OnboardingGeneralErrorTimerContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
-
+        factoryOf(::RestoreWalletInteractor)
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
         factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class
 
