@@ -11,7 +11,7 @@ interface SeedPhraseContract {
         fun updateSeedPhrase(seedPhrase: List<SeedPhraseWord>)
         fun navigateToDerievableAccounts(seedPhrase: List<SeedPhraseWord>)
         fun showFile(file: File)
-        fun showSeedPhraseValid(isValid: Boolean)
+        fun showSeedPhraseValid(isSeedPhraseValid: Boolean)
         fun showClearButton(isVisible: Boolean)
         fun addFirstKey(seedPhraseWord: SeedPhraseWord)
         fun showFocusOnLastWord(lastSecretItemIndex: Int)

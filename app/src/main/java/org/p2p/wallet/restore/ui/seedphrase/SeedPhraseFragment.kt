@@ -7,7 +7,10 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import org.p2p.uikit.utils.focusAndShowKeyboard
+import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -15,8 +18,8 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSeedPhraseBinding
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
-import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -39,10 +42,7 @@ class SeedPhraseFragment :
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.IMPORT_MANUAL)
         with(binding) {
-            toolbar.setNavigationOnClickListener {
-                it.hideKeyboard()
-                popBackStack()
-            }
+            initToolbar()
 
             buttonContinue.setOnClickListener {
                 presenter.verifySeedPhrase()
@@ -56,20 +56,34 @@ class SeedPhraseFragment :
                 presenter.requestFocusOnLastWord()
             }
 
-            checkClipboard()
+            seedPhraseView.focusAndShowKeyboard()
         }
 
         presenter.load()
     }
 
+    private fun FragmentSeedPhraseBinding.initToolbar() {
+        with(toolbar) {
+            setNavigationOnClickListener {
+                it.hideKeyboard()
+                popBackStack()
+            }
+
+            setOnMenuItemClickListener {
+                if (it.itemId == R.id.helpItem) {
+                    hideKeyboard()
+                    IntercomService.showMessenger()
+                    true
+                } else {
+                    false
+                }
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         presenter.requestFocusOnLastWord()
-    }
-
-    private fun checkClipboard() {
-        val clipboardData = requireContext().getClipboardText()
-        binding.seedPhraseView.setPasteEnabled(!clipboardData.isNullOrBlank())
     }
 
     override fun updateSeedPhrase(seedPhrase: List<SeedPhraseWord>) {
@@ -80,9 +94,26 @@ class SeedPhraseFragment :
         replaceFragment(DerivableAccountsFragment.create(seedPhrase))
     }
 
-    override fun showSeedPhraseValid(isValid: Boolean) {
-        binding.buttonContinue.isEnabled = isValid
-        binding.seedPhraseView.showSeedPhraseValid(isValid)
+    override fun showSeedPhraseValid(isSeedPhraseValid: Boolean) {
+        renderButtonState(isButtonEnabled = isSeedPhraseValid)
+        binding.seedPhraseView.showSeedPhraseValid(isSeedPhraseValid)
+    }
+
+    private fun renderButtonState(isButtonEnabled: Boolean) {
+        with(binding.buttonContinue) {
+            isEnabled = isButtonEnabled
+            if (isButtonEnabled) {
+                setText(R.string.common_continue)
+                setTextColorRes(R.color.text_lime)
+                setIconResource(R.drawable.ic_arrow_forward)
+                setBackgroundColor(getColor(R.color.bg_night))
+            } else {
+                setText(R.string.seed_phrase_button_disabled_text)
+                setTextColorRes(R.color.text_mountain)
+                setBackgroundColor(getColor(R.color.bg_rain))
+                icon = null
+            }
+        }
     }
 
     override fun showClearButton(isVisible: Boolean) {

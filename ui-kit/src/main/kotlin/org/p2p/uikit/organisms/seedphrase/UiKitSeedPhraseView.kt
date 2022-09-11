@@ -13,8 +13,8 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSeedPhraseViewBinding
-import org.p2p.uikit.organisms.seedphrase.adapter.SecretPhraseAdapter
-import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseFormatter
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseParser
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.showSoftKeyboard
@@ -29,9 +29,14 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<WidgetSeedPhraseViewBinding>()
 
-    private val phraseAdapter: SecretPhraseAdapter by lazy {
-        SecretPhraseAdapter { keys -> onSeedPhraseChanged?.invoke(keys) }
+    private val phraseAdapter: SeedPhraseAdapter by lazy {
+        SeedPhraseAdapter { keys ->
+            setPasteButtonEnabled(isEnabled = keys.isEmpty() || keys.firstOrNull() == SeedPhraseWord.EMPTY_WORD)
+            onSeedPhraseChanged?.invoke(keys)
+        }
     }
+
+    private val seedPhraseParser = SeedPhraseParser()
 
     init {
         setBackgroundResource(R.drawable.bg_smoke_rounded)
@@ -43,11 +48,19 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         binding.keysRecyclerView.attachAdapter(phraseAdapter)
 
         binding.textViewClear.setOnClickListener { phraseAdapter.clear() }
+        binding.textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
+    }
 
-        binding.textViewPaste.setOnClickListener {
-            val keys = SeedPhraseFormatter.format(getClipboardText())
-            if (keys.isNotEmpty()) phraseAdapter.addAllSecretKeys(keys)
-        }
+    private fun addSeedPhraseFromClipboard() {
+        val clipboardValue =  getClipboardText()
+        val keysFromClipboard = seedPhraseParser.parse(
+            if (clipboardValue.split(" ").size == 1) "$clipboardValue " else clipboardValue
+        )
+        if (keysFromClipboard.isNotEmpty()) phraseAdapter.addAllSecretKeys(keysFromClipboard)
+    }
+
+    private fun setPasteButtonEnabled(isEnabled: Boolean) {
+        binding.textViewPaste.isEnabled = isEnabled
     }
 
     fun updateSecretKeys(secretKeys: List<SeedPhraseWord>) {
@@ -64,22 +77,18 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
             .getOrNull(lastSecretItemIndex) as? LinearLayout
             ?: return
 
-        val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.keyEditText }
+        val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.editTextWord }
         secretKeyEditText?.requestFocus()
         secretKeyEditText?.showSoftKeyboard()
     }
 
     fun showSeedPhraseValid(isValid: Boolean) {
-        val textRes = if (isValid) R.string.seed_phrase_check else R.string.seed_phrase
-        binding.textViewType.setText(textRes)
+        val textRes = if (isValid) R.string.seed_phrase_view_valid else R.string.seed_phrase_view_invalid
+        binding.textViewValidationTitle.setText(textRes)
     }
 
     fun showClearButton(isVisible: Boolean) {
         binding.textViewClear.isVisible = isVisible
-    }
-
-    fun setPasteEnabled(isEnabled: Boolean) {
-        binding.textViewPaste.isEnabled = isEnabled
     }
 
     fun setOnContainerClickListener(callback: () -> Unit) {

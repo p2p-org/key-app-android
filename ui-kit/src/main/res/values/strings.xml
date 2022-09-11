@@ -12,8 +12,10 @@
     <string name="tip_button_next_title">Next</string>
     <string name="tip_button_skip_all_title">Skip all</string>
 
+    <!-- Restore by seed phrase screen -->
     <string name="seed_phrase_restore_wallet">Restoring your wallet</string>
-    <string name="seed_phrase_enter">Enter your seed phrase</string>
-    <string name="seed_phrase">Seed phrase</string>
-    <string name="seed_phrase_check">Seed phrase ✅</string>
+    <string name="seed_phrase_enter_title">Enter your seed phrase</string>
+    <string name="seed_phrase_button_disabled_text">Fill 12 or 24 words</string>
+    <string name="seed_phrase_view_invalid">Seed phrase</string>
+    <string name="seed_phrase_view_valid">Seed phrase ✅</string>
 </resources>

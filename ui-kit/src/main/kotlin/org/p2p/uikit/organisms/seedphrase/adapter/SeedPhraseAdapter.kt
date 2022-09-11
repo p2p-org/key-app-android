@@ -5,34 +5,34 @@ import android.view.ViewGroup
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
 
-class SecretPhraseAdapter(
+class SeedPhraseAdapter(
     private val onSeedPhraseChanged: (List<SeedPhraseWord>) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<SeedPhraseWordViewHolder>() {
 
     private val data = mutableListOf<SeedPhraseWord>()
 
     override fun getItemCount(): Int = data.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SecretKeyViewHolder =
-        SecretKeyViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SeedPhraseWordViewHolder =
+        SeedPhraseWordViewHolder(
             parent = parent,
             onKeyRemovedListener = { removeSecretKey(it) },
-            onKeyAddedListener = { updateSecretKey(it) },
+            onUpdateKeyListener = { updateSecretKey(it) },
             onInsertedListener = { addAllSecretKeys(it) }
         )
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as SecretKeyViewHolder).onBind(data[position])
+    override fun onBindViewHolder(holder: SeedPhraseWordViewHolder, position: Int) {
+        holder.onBind(data[position])
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+    override fun onBindViewHolder(holder: SeedPhraseWordViewHolder, position: Int, payloads: MutableList<Any>) {
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)
             return
         }
 
         payloads.forEach { data ->
-            (holder as SecretKeyViewHolder).setKeyCompleted(data as SeedPhraseWord)
+            holder.setKeyCompleted(data as SeedPhraseWord)
         }
     }
 

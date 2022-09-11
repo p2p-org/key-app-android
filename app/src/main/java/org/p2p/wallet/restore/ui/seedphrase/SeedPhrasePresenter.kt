@@ -50,6 +50,7 @@ class SeedPhrasePresenter(
     override fun load() {
         if (currentSeedPhrase.isEmpty()) {
             view?.addFirstKey(SeedPhraseWord.EMPTY_WORD)
+            view?.showSeedPhraseValid(isSeedPhraseValid = false)
         } else {
             currentSeedPhrase = currentSeedPhrase.toList()
         }

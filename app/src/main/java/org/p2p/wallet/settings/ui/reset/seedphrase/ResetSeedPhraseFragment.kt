@@ -22,7 +22,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentResetSeedPhraseBinding
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
-import org.p2p.uikit.organisms.seedphrase.adapter.SecretPhraseAdapter
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
@@ -54,8 +54,8 @@ class ResetSeedPhraseFragment :
             )
     }
 
-    private val phraseAdapter: SecretPhraseAdapter by lazy {
-        SecretPhraseAdapter {
+    private val phraseAdapter: SeedPhraseAdapter by lazy {
+        SeedPhraseAdapter {
             presenter.setNewKeys(it)
             clearError()
         }
