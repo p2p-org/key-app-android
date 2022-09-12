@@ -25,8 +25,8 @@
     <string name="buy_details_title">Transaction details</string>
     <string name="buy_gbp_error">GBP transfer isn’t available out of UK</string>
 
-    <string name="buy_min_transaction_format">Min transaction is %s</string>
-    <string name="buy_max_transaction_format">Max transaction is %s</string>
+    <string name="buy_min_transaction_format">Min amount is %s</string>
+    <string name="buy_max_transaction_format">Max amount is %s</string>
 
     <string name="buy_min_amount_details_error_format">We can\'t process transactions less %s</string>
     <string name="buy_max_amount_details_error_format">We can\'t process transactions more %s</string>
