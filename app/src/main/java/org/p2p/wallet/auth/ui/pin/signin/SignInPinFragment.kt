@@ -3,19 +3,18 @@ package org.p2p.wallet.auth.ui.pin.signin
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
+import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
+import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import org.koin.android.ext.android.inject
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.analytics.constants.ScreenNames
-import org.p2p.wallet.home.MainFragment
-import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import javax.crypto.Cipher
 
 class SignInPinFragment :
@@ -25,6 +24,9 @@ class SignInPinFragment :
     companion object {
         fun create(): SignInPinFragment = SignInPinFragment()
     }
+
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_lime
 
     override val presenter: SignInPinContract.Presenter by inject()
     private val binding: FragmentSignInPinBinding by viewBinding()
@@ -42,7 +44,6 @@ class SignInPinFragment :
         with(binding) {
             pinView.onBiometricClicked = { presenter.onBiometricSignInRequested() }
             pinView.onPinCompleted = { presenter.signIn(it) }
-            pinView.onResetClicked = { popAndReplaceFragment(SeedPhraseFragment.create()) }
         }
     }
 
@@ -80,12 +81,14 @@ class SignInPinFragment :
 
     override fun showWrongPinError(attemptsLeft: Int) {
         val message = getString(R.string.auth_pin_code_attempts_format, attemptsLeft)
-        binding.pinView.startErrorAnimation(message)
+        showUiKitSnackBar(message)
+        binding.pinView.startErrorAnimation()
     }
 
     override fun showWalletLocked(seconds: Long) {
         val message = getString(R.string.auth_locked_message, seconds.toString())
-        binding.pinView.showLockedState(message)
+        showUiKitSnackBar(message)
+        binding.pinView.showLockedState()
     }
 
     override fun showWalletUnlocked() {
