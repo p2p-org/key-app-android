@@ -15,7 +15,7 @@ private const val SCALE_VALUE_LONG = 9
 
 private const val USD_DECIMALS = 2
 
-private const val USD_MIN_VALUE = 0.01
+private const val AMOUNT_MIN_VALUE = 0.01
 
 fun String?.toBigDecimalOrZero(): BigDecimal {
     val removedZeros = this?.replace("(?<=\\d)\\.?0+(?![\\d\\.])", emptyString())
@@ -61,7 +61,7 @@ fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
     usdRate?.let { this.multiply(it).scaleShort() }
 
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
-    token.usdRate?.let { this.multiply(it).scaleShort() }
+    token.rate?.let { this.multiply(it).scaleShort() }
 
 fun BigDecimal.formatUsd(): String = this.stripTrailingZeros().run {
     if (isZero()) this.toString() else DecimalFormatter.format(this, USD_DECIMALS)
@@ -85,9 +85,12 @@ fun BigInteger.isNotZero() = this.compareTo(BigInteger.ZERO) != 0
 fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 
-fun BigDecimal.asUsd(): String = if (lessThenMinUsd()) "<$0.01" else "$${formatUsd()}"
+fun BigDecimal.asCurrency(currency: String): String =
+    if (lessThenMinValue()) "<$currency 0.01" else "$currency ${formatUsd()}"
+
+fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${formatUsd()}"
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
-    lessThenMinUsd() -> "(<$0.01)"
+    lessThenMinValue() -> "(<$0.01)"
     withBraces -> "~($${formatUsd()})"
     else -> "~$${formatUsd()}"
 }
@@ -95,4 +98,4 @@ fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
 fun Int?.orZero(): Int = this ?: 0
 
 // value is in (0..0.01)
-private fun BigDecimal.lessThenMinUsd() = !isZero() && isLessThan(USD_MIN_VALUE.toBigDecimal())
+private fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())

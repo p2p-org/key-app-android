@@ -94,7 +94,7 @@ class SwapFee constructor(
         }
 
     private val accountCreationFeeUsdDecimals: BigDecimal?
-        get() = accountCreationFeeDecimals.toUsd(feePayerToken.usdRate)
+        get() = accountCreationFeeDecimals.toUsd(feePayerToken.rate)
 
     private val currentDecimals: BigDecimal =
         (if (feePayerToken.isSOL) fee.feeInSol else fee.feeInPayingToken)

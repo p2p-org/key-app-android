@@ -14,6 +14,7 @@ import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -27,6 +28,7 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomShee
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
@@ -70,6 +72,8 @@ class TokenHistoryFragment :
     private val binding: FragmentTokenHistoryBinding by viewBinding()
 
     private val receiveAnalytics: ReceiveAnalytics by inject()
+
+    private val newBuyFeatureToggle: NewBuyFeatureToggle by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -120,7 +124,13 @@ class TokenHistoryFragment :
 
     private fun ActionButtonsView.setupListeners() {
         onBuyItemClickListener = {
-            replaceFragment(BuySolanaFragment.create(tokenForHistory))
+            replaceFragment(
+                if (newBuyFeatureToggle.value) {
+                    NewBuyFragment.create(tokenForHistory)
+                } else {
+                    BuySolanaFragment.create(tokenForHistory)
+                }
+            )
         }
         onReceiveItemClickListener = {
             receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)

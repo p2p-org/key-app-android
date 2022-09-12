@@ -8,6 +8,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.moonpay.interactor.CREDIT_DEBIT_CARD
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
@@ -138,7 +139,8 @@ class BuySolanaPresenter(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = tokenToBuy,
-                baseCurrencyCode = baseCurrencyCode
+                baseCurrencyCode = baseCurrencyCode,
+                paymentMethod = CREDIT_DEBIT_CARD
             )
             onBuyCurrencyLoadSuccess(result)
         } catch (error: Throwable) {
@@ -159,6 +161,10 @@ class BuySolanaPresenter(
             is MoonpayBuyResult.Error -> {
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
+            }
+            is MoonpayBuyResult.MinimumAmountError -> {
+                // May by only in case of new buy
+                error("MinimumAmountError may be only in case of new buy screen")
             }
         }
         buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)

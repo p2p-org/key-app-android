@@ -25,15 +25,16 @@ import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
-import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
@@ -176,7 +177,7 @@ class HomeFragment :
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
                 result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-                    showBuyTokenScreen(it)
+                    this.showOldBuyScreen(it)
                 }
             }
             KEY_REQUEST_ACTION -> {
@@ -204,8 +205,12 @@ class HomeFragment :
         }
     }
 
-    private fun showBuyTokenScreen(token: Token) {
+    override fun showOldBuyScreen(token: Token) {
         replaceFragment(BuySolanaFragment.create(token))
+    }
+
+    override fun showNewBuyScreen(token: Token) {
+        replaceFragment(NewBuyFragment.create(token))
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
@@ -218,13 +223,9 @@ class HomeFragment :
 
     override fun showTokensForBuy(tokens: List<Token>, newBuyEnabled: Boolean) {
         if (newBuyEnabled) {
-            NewSelectTokenBottomSheet.show(
-                fm = childFragmentManager,
-                title = getString(R.string.buy_select_token_title),
-                tokens = tokens,
-                requestKey = KEY_REQUEST_TOKEN,
-                resultKey = KEY_RESULT_TOKEN
-            )
+            tokens.find { it.tokenSymbol == Constants.USDC_SYMBOL }?.let { token ->
+                replaceFragment(NewBuyFragment.create(token))
+            }
         } else {
             SelectTokenBottomSheet.show(
                 fm = childFragmentManager,
@@ -297,7 +298,7 @@ class HomeFragment :
                 openScreenByHomeAction(HomeAction.RECEIVE)
             }
         } else {
-            showBuyTokenScreen(token)
+            presenter.onBuyTokenClicked(token)
         }
     }
 
