@@ -78,8 +78,6 @@ object BuyModule : InjectionModule {
         factory<NewBuyContract.Presenter> { (token: Token) ->
             NewBuyPresenter(
                 tokenToBuy = token,
-                minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_minimal_transaction_format),
-                maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
                 analyticsInteractor = get(),
                 userInteractor = get(),

@@ -43,8 +43,6 @@ private val TOKENS_VALID_FOR_BUY = setOf(Constants.SOL_SYMBOL, Constants.USDC_SY
 
 class NewBuyPresenter(
     tokenToBuy: Token,
-    private val minBuyErrorFormat: String,
-    private val maxBuyErrorFormat: String,
     private val buyAnalytics: BuyAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val userInteractor: UserInteractor,
@@ -285,7 +283,9 @@ class NewBuyPresenter(
                     val symbol = selectedCurrency.code.symbolFromCode()
                     val minAmountWithSymbol = "$symbol ${buyResult.minBuyAmount.formatUsd()}"
                     buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
-                    showMessage(minBuyErrorFormat.format(minAmountWithSymbol))
+                    showMessage(
+                        resourcesProvider.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
+                    )
                     clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
                 }
             }
@@ -353,10 +353,14 @@ class NewBuyPresenter(
         val maxAmount = loadedBuyCurrency.maxAmount
         val minAmount = loadedBuyCurrency.minAmount
         val symbol = selectedCurrency.code.symbolFromCode()
+        val minAmountMessage = resourcesProvider.getString(R.string.buy_min_transaction_format)
+            .format("$symbol $minAmount")
+        val maxAmountMessage = resourcesProvider.getString(R.string.buy_max_error_format)
+            .format("$symbol $maxAmount")
         val message = if (isAmountLower) {
-            minBuyErrorFormat.format("$symbol $minAmount")
+            minAmountMessage
         } else {
-            maxBuyErrorFormat.format("$symbol $maxAmount")
+            maxAmountMessage
         }
         buyDetailsState = BuyDetailsState.MinAmountError("$symbol ${minAmount.formatUsd()}")
         view?.apply {
