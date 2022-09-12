@@ -3,9 +3,11 @@ package org.p2p.wallet.auth.ui.pin.signin
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -56,11 +58,6 @@ class SignInPinFragment :
         presenter.checkIfBiometricAvailable()
     }
 
-    override fun onStop() {
-        super.onStop()
-        presenter.stopTimer()
-    }
-
     override fun showBiometricDialog(cipher: Cipher) {
         biometricWrapper.authenticate(cipher)
     }
@@ -71,16 +68,33 @@ class SignInPinFragment :
 
     override fun onLogout() {
         popAndReplaceFragment(
-            OnboardingFragment.create(),
+            OnboardingRootFragment.create(),
             popTo = OnboardingFragment::class,
             addToBackStack = false,
             inclusive = true,
             enter = 0
         )
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.auth_pin_code_logout_title)
+            .setMessage(R.string.auth_pin_code_logout_description)
+            .setPositiveButton(R.string.auth_pin_code_logout_ok_button) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    override fun setBiometricVisibility(isVisible: Boolean) {
+        binding.pinView.setFingerprintVisible(isVisible)
     }
 
     override fun showWrongPinError(attemptsLeft: Int) {
         val message = getString(R.string.auth_pin_code_attempts_format, attemptsLeft)
+        showUiKitSnackBar(message)
+        binding.pinView.startErrorAnimation()
+    }
+
+    override fun showWarnPinError(attemptsLeft: Int) {
+        val message = getString(R.string.auth_pin_code_warn_format, attemptsLeft)
         showUiKitSnackBar(message)
         binding.pinView.startErrorAnimation()
     }

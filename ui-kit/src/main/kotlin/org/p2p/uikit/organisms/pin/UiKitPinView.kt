@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
 import androidx.core.os.postDelayed
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -88,6 +89,10 @@ class UiKitPinView @JvmOverloads constructor(
 
     fun setFingerprintVisible(isVisible: Boolean) {
         binding.keyboardView.setLeftButtonVisible(isVisible)
+    }
+
+    fun setLeftButtonDrawable(@DrawableRes drawableResId: Int) {
+        binding.keyboardView.setLeftButtonDrawable(drawableResId)
     }
 
     fun showLoading(isLoading: Boolean) {

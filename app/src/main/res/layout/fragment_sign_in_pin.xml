@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/auth_create_wallet_set_up_your_pin"
+            android:text="@string/auth_pin_code_enter_up_your_pin"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
             app:layout_constraintBottom_toTopOf="@+id/pinView"
             app:layout_constraintEnd_toEndOf="parent"
