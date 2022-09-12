@@ -17,7 +17,7 @@ import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
-import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -86,7 +86,7 @@ class ReserveUsernameFragment :
     }
 
     override fun navigateToPinCode() {
-        replaceFragment(CreatePinFragment.create())
+        replaceFragment(NewCreatePinFragment.create())
     }
 
     override fun navigateToUsername() {
