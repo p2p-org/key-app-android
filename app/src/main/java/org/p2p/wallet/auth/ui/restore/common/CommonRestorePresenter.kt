@@ -28,7 +28,7 @@ class CommonRestorePresenter(
         view?.setLoadingState(isScreenLoading = true)
         restoreWalletInteractor.restoreSocialShare(idToken, userId)
         view?.setLoadingState(isScreenLoading = false)
-        if (restoreWalletInteractor.isUserReadyToBeRestored()) {
+        if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.SocialPlusCustomShare)) {
             // navigate to pin if social + device share exists
         } else {
             view?.navigateToPhoneEnter()

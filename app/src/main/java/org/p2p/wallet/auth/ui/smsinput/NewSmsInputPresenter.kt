@@ -100,11 +100,18 @@ class NewSmsInputPresenter(
         try {
             view?.renderButtonLoading(isLoading = true)
             restoreWalletInteractor.confirmRestoreWallet(smsCode)
-            if (restoreWalletInteractor.isUserReadyToBeRestored()) {
-                restoreUserWithShares()
-            } else {
-                // no social share, requesting now
-                view?.requestGoogleSignIn()
+            when (val currentFlow = onboardingInteractor.currentFlow) {
+                is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
+                    restoreWalletInteractor.tryRestoreUser(currentFlow)
+                }
+                is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> {
+                    if (restoreWalletInteractor.isUserReadyToBeRestored(currentFlow)) {
+                        restoreUserWithShares()
+                    } else {
+                        // no social share, requesting now
+                        view?.requestGoogleSignIn()
+                    }
+                }
             }
         } catch (error: Throwable) {
             Timber.e(error, "Checking sms value failed")
@@ -128,9 +135,24 @@ class NewSmsInputPresenter(
 
                 view?.renderButtonLoading(isLoading = true)
 
-                val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
-                    ?: throw IllegalStateException("User phone number cannot be null")
-                createWalletInteractor.startCreatingWallet(userPhoneNumber)
+                when (onboardingInteractor.currentFlow) {
+                    is OnboardingFlow.RestoreWallet -> {
+                        val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
+                            ?: throw IllegalStateException("User phone number cannot be null")
+                        restoreWalletInteractor.startRestoreCustomShare(
+                            userPhoneNumber = userPhoneNumber,
+                            isResend = true
+                        )
+                    }
+                    is OnboardingFlow.CreateWallet -> {
+                        val userPhoneNumber = createWalletInteractor.getUserPhoneNumber()
+                            ?: throw IllegalStateException("User phone number cannot be null")
+                        createWalletInteractor.startCreatingWallet(
+                            userPhoneNumber = userPhoneNumber,
+                            isResend = true
+                        )
+                    }
+                }
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.e(serverError)
                 view?.navigateToCriticalErrorScreen(serverError.code)

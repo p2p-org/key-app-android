@@ -11,8 +11,8 @@ class RestoreWalletInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository
 ) {
 
-    suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber) =
-        customShareRestoreInteractor.startRestoreCustomShare(userPhoneNumber)
+    suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber, isResend: Boolean = false) =
+        customShareRestoreInteractor.startRestoreCustomShare(userPhoneNumber, isResend)
 
     fun getUserPhoneNumber() = restoreFlowDataLocalRepository.userPhoneNumber
 
@@ -24,7 +24,8 @@ class RestoreWalletInteractor(
         socialShareRestoreInteractor.restoreSocialShare(idToken, userId)
     }
 
-    fun isUserReadyToBeRestored() = userRestoreInteractor.isUserReadyToBeRestored()
+    fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet) =
+        userRestoreInteractor.isUserReadyToBeRestored(restoreFlow)
 
     suspend fun confirmRestoreWallet(smsCode: String) = customShareRestoreInteractor.confirmRestoreWallet(smsCode)
 

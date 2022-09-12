@@ -12,7 +12,7 @@ class CreateWalletInteractor(
 ) {
     class CreateWalletFailure(override val message: String) : Throwable(message)
 
-    suspend fun startCreatingWallet(userPhoneNumber: PhoneNumber) {
+    suspend fun startCreatingWallet(userPhoneNumber: PhoneNumber, isResend: Boolean = false) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey
             ?: throw CreateWalletFailure("User public key is null")
         val userPrivateKey = signUpFlowDataRepository.userPrivateKeyB58
@@ -20,7 +20,7 @@ class CreateWalletInteractor(
         val etheriumPublicKey = signUpFlowDataRepository.ethereumPublicKey
             ?: throw CreateWalletFailure("User etherium public key is null")
 
-        if (userPhoneNumber != signUpFlowDataRepository.userPhoneNumber) {
+        if (isResend || userPhoneNumber != signUpFlowDataRepository.userPhoneNumber) {
             gatewayServiceRepository.registerWalletWithSms(
                 userPublicKey = userPublicKey,
                 userPrivateKey = userPrivateKey,

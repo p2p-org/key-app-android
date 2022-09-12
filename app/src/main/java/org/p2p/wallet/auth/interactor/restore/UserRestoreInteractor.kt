@@ -23,10 +23,18 @@ class UserRestoreInteractor(
     private val gson: Gson
 ) {
 
-    fun isUserReadyToBeRestored(): Boolean {
-        val isTwoSharesAvailable =
-            restoreFlowDataLocalRepository.socialShare != null && restoreFlowDataLocalRepository.customShare != null
-        return isTwoSharesAvailable
+    fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet): Boolean {
+        return when (restoreFlow) {
+            is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> {
+                restoreFlowDataLocalRepository.socialShare != null && restoreFlowDataLocalRepository.customShare != null
+            }
+            is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
+                restoreFlowDataLocalRepository.deviceShare != null && restoreFlowDataLocalRepository.customShare != null
+            }
+            else -> {
+                false
+            }
+        }
     }
 
     suspend fun tryRestoreUser(restoreFlow: OnboardingFlow.RestoreWallet): RestoreUserResult = try {
