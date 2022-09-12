@@ -44,6 +44,16 @@ class SignInPinFragment :
             requireActivity().finish()
         }
         with(binding) {
+            with(toolbar) {
+                setOnMenuItemClickListener {
+                    if (it.itemId == org.p2p.wallet.R.id.helpItem) {
+                        org.p2p.wallet.intercom.IntercomService.showMessenger()
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
             pinView.onBiometricClicked = { presenter.onBiometricSignInRequested() }
             pinView.onPinCompleted = { presenter.signIn(it) }
         }
