@@ -3,11 +3,15 @@ package org.p2p.wallet.auth.ui.restore.common
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.account.AccountStorageContract
+import timber.log.Timber
 
 class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
-    private val restoreWalletInteractor: RestoreWalletInteractor
+    private val restoreWalletInteractor: RestoreWalletInteractor,
+    private val accountStorageContract: UserSignUpDetailsStorage
 ) : BasePresenter<CommonRestoreContract.View>(), CommonRestoreContract.Presenter {
 
     override fun useGoogleAccount() {

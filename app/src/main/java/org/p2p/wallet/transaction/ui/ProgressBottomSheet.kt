@@ -94,7 +94,6 @@ class ProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
     private fun observeState() {
         lifecycleScope.launchWhenCreated {
             transactionManager.getTransactionStateFlow(transactionId).collect { state ->
-                Timber.tag("_________State").d(state.toString())
                 TransitionManager.beginDelayedTransition(binding.root)
                 when (state) {
                     is TransactionState.Progress -> handleProgress(state)

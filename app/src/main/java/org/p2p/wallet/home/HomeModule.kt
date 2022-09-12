@@ -99,7 +99,9 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper(),
                 resourcesProvider = get(),
-                newBuyFeatureToggle = get()
+                newBuyFeatureToggle = get(),
+                accountStorageContract = get(),
+                authInteractor = get()
             )
         }
 

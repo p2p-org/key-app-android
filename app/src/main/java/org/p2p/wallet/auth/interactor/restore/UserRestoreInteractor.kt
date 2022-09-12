@@ -89,7 +89,7 @@ class UserRestoreInteractor(
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
             ?: throw IllegalStateException("Device+Custom restore way failed. Device share is null")
         val encryptedMnemonicGson = restoreFlowDataLocalRepository.encryptedMnemonic?.let {
-            convertBase64ToEncryptedMnemonics(it)
+            gson.fromJsonReified<JsonObject>(it)
         } ?: throw IllegalStateException("Device+Custom restore way failed. Mnemonic phrase is null")
 
         val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
@@ -108,17 +108,5 @@ class UserRestoreInteractor(
             tokenKeyProvider.secretKey = it.secretKey
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
         } ?: throw NullPointerException("User actual account is null, restoring a user is failed")
-    }
-
-    private fun convertBase64ToEncryptedMnemonics(
-        encryptedMnemonicsStruct: String
-    ): JsonObject {
-        val encryptedMnemonicsJson = String(encryptedMnemonicsStruct.decodeFromBase64())
-        return gson.fromJsonReified<JsonObject>(encryptedMnemonicsJson)
-            ?: run {
-                Timber.i(encryptedMnemonicsStruct)
-                Timber.i(encryptedMnemonicsJson)
-                throw RestoreWalletFailure("Couldn't convert base64 to encrypted mnemonics")
-            }
     }
 }
