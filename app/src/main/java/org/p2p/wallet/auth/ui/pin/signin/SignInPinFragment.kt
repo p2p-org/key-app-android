@@ -13,6 +13,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.vibrate
@@ -47,7 +48,7 @@ class SignInPinFragment :
             with(toolbar) {
                 setOnMenuItemClickListener {
                     if (it.itemId == org.p2p.wallet.R.id.helpItem) {
-                        org.p2p.wallet.intercom.IntercomService.showMessenger()
+                        IntercomService.showMessenger()
                         true
                     } else {
                         false
