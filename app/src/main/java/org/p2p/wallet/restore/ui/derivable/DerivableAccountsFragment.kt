@@ -16,7 +16,6 @@ import org.p2p.wallet.databinding.FragmentDerivableAccountsBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.ui.derivable.bottomsheet.SelectDerivableAccountBottomSheet
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack

@@ -42,7 +42,7 @@ class SeedPhraseAdapter(
     }
 
     fun addSecretKey(seedPhraseWord: SeedPhraseWord) {
-        if (data.size >= SEED_PHRASE_SIZE_LONG){
+        if (data.size >= SEED_PHRASE_SIZE_LONG) {
             return
         }
 
@@ -59,7 +59,7 @@ class SeedPhraseAdapter(
     }
 
     fun addAllSecretKeys(seedPhrase: List<SeedPhraseWord>) {
-        if (data.size >= SEED_PHRASE_SIZE_LONG){
+        if (data.size >= SEED_PHRASE_SIZE_LONG) {
             return
         }
 
