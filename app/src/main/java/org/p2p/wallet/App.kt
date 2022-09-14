@@ -1,11 +1,10 @@
 package org.p2p.wallet
 
+import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
-import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.palaima.debugdrawer.timber.data.LumberYard
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -46,6 +45,7 @@ import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class App : Application() {
 
