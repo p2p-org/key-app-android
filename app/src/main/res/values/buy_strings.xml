@@ -1,0 +1,29 @@
+<resources>
+    <!--Buy-->
+
+    <string name="buy_buying_title">Buying</string>
+    <string name="buy_method_title">Method</string>
+    <string name="buy_total_title">Total</string>
+
+    <string name="buy_fee">fee</string>
+    <string name="buy_fee_percent">%s%%</string>
+
+    <string name="buy_period_bank_transfer">~17 hours</string>
+    <string name="buy_period_card">Instant</string>
+
+    <string name="buy_method_bank_transfer">Bank transfer</string>
+    <string name="buy_method_card">Card</string>
+
+    <string name="buy_tokens_bottom_sheet_title">Coin to buy</string>
+    <string name="buy_currencies_bottom_sheet_title">Currency</string>
+    <string name="buy_transaction_details_bottom_sheet_title">Transaction details</string>
+
+    <string name="buy_toolbar_title">Buy %s</string>
+
+    <string name="buy_select_token_title">Coin to buy</string>
+    <string name="buy_select_currency_title">Currency</string>
+    <string name="buy_details_title">Transaction details</string>
+    <string name="buy_gbp_error">GBP transfer isn’t available out of UK</string>
+
+    <string name="buy_min_transaction_format">Minimal transaction is %s</string>
+</resources>

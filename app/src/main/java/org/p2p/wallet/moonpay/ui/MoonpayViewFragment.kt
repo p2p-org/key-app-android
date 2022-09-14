@@ -10,12 +10,13 @@ import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMoonpayViewBinding
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.moonpay.api.MoonpayUrlBuilder
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.context
@@ -28,11 +29,11 @@ private const val DELAY_IN_MS = 150L
 class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
     companion object {
-        private const val EXTRA_AMOUNT = "EXTRA_AMOUNT"
-        private const val EXTRA_CURRENCY_CODE = "EXTRA_CURRENCY_CODE"
+        private const val ARG_AMOUNT = "EXTRA_AMOUNT"
+        private const val ARG_TOKEN_SYMBOL = "ARG_TOKEN_SYMBOL"
         fun create(amount: String, currencyCode: String) = MoonpayViewFragment().withArgs(
-            EXTRA_AMOUNT to amount,
-            EXTRA_CURRENCY_CODE to currencyCode,
+            ARG_AMOUNT to amount,
+            ARG_TOKEN_SYMBOL to currencyCode,
         )
     }
 
@@ -40,8 +41,8 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val tokenKeyProvider: TokenKeyProvider by inject()
 
-    private val amount: String by args(EXTRA_AMOUNT)
-    private val currencyCode: String by args(EXTRA_CURRENCY_CODE)
+    private val amount: String by args(ARG_AMOUNT)
+    private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,7 +62,8 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
                     moonpayApiKey = BuildConfig.moonpayKey,
                     amount = amount,
                     walletAddress = tokenKeyProvider.publicKey,
-                    currencyCode = currencyCode
+                    tokenSymbol = tokenSymbol,
+                    currencyCode = Constants.USD_READABLE_SYMBOL.lowercase()
                 )
                 Timber.tag("Moonpay").d("Loading moonpay with url: $url")
                 webView.loadUrl(url)

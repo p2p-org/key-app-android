@@ -20,14 +20,15 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/send_network_destination"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular16" />
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_night" />
 
         <TextView
             android:id="@+id/optionsTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="?colorSecondary"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_mountain"
             android:visibility="gone"
             tools:text="One-time payment"
             tools:visibility="visible" />
@@ -42,7 +43,8 @@
         android:ellipsize="end"
         android:gravity="end"
         android:singleLine="true"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textColor="@color/text_night"
         tools:text="Solana" />
 
 </merge>

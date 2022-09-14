@@ -30,7 +30,7 @@ class TransactionBuilderInteractor {
             amountA = amountA,
             amountB = amountB,
             amountSentInUsd = amountA.toUsd(source),
-            amountReceivedInUsd = amountB.toUsd(destination.usdRate),
+            amountReceivedInUsd = amountB.toUsd(destination.rate),
             sourceSymbol = source.tokenSymbol,
             sourceIconUrl = source.iconUrl.orEmpty(),
             destinationSymbol = destination.tokenSymbol,

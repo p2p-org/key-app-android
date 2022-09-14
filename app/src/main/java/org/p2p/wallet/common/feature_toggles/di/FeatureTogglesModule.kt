@@ -6,10 +6,11 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConfig
-import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesSource
+import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
-import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
 
@@ -20,14 +21,18 @@ object FeatureTogglesModule : InjectionModule {
 
         singleOf(::FeatureTogglesValuesSource) bind RemoteConfigValuesProvider::class
 
-        factory<List<RemoteFeatureToggle<out Any>>> {
+        factory {
             listOf(
                 get<SslPinningFeatureToggle>(),
+                get<NewBuyFeatureToggle>(),
+                get<BuyWithTransferFeatureToggle>(),
                 get<SettingsNetworkListFeatureToggle>()
             )
         }
 
         factoryOf(::SslPinningFeatureToggle)
+        factoryOf(::NewBuyFeatureToggle)
+        factoryOf(::BuyWithTransferFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
     }
 }

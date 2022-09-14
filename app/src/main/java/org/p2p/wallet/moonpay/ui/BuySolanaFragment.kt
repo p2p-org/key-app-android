@@ -1,11 +1,11 @@
 package org.p2p.wallet.moonpay.ui
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.BuildConfig
@@ -115,14 +115,15 @@ class BuySolanaFragment :
 
     override fun navigateToMoonpay(amount: String) {
         val solSymbol = Constants.SOL_SYMBOL.lowercase()
-        val tokenSymbol = token.tokenSymbol.lowercase()
-        val currencyCode = if (token.isSOL) solSymbol else "${tokenSymbol}_$solSymbol"
+        val selectedTokenSymbol = token.tokenSymbol.lowercase()
+        val tokenSymbol = if (token.isSOL) solSymbol else "${selectedTokenSymbol}_$solSymbol"
         val url = MoonpayUrlBuilder.build(
             moonpayWalletDomain = requireContext().getString(R.string.moonpayWalletDomain),
             moonpayApiKey = BuildConfig.moonpayKey,
             amount = amount,
             walletAddress = tokenKeyProvider.publicKey,
-            currencyCode = currencyCode,
+            tokenSymbol = tokenSymbol,
+            currencyCode = Constants.USD_READABLE_SYMBOL.lowercase()
         )
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Buy.EXTERNAL)
         requireContext().showUrlInCustomTabs(url)

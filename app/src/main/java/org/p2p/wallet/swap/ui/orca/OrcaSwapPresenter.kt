@@ -609,9 +609,9 @@ class OrcaSwapPresenter(
             ?.fromLamports(destination.decimals) ?: return
 
         val inputPrice = inputAmount.divideSafe(estimatedOutputAmount).scaleMedium()
-        val inputPriceUsd = source.usdRate?.let { inputPrice.multiply(it) }
+        val inputPriceUsd = source.rate?.let { inputPrice.multiply(it) }
         val outputPrice = estimatedOutputAmount.divideSafe(inputAmount).scaleMedium()
-        val outputPriceUsd = destination.usdRate?.let { outputPrice.multiply(it) }
+        val outputPriceUsd = destination.rate?.let { outputPrice.multiply(it) }
         val priceData = SwapPrice(
             sourceSymbol = source.tokenSymbol,
             destinationSymbol = destination.tokenSymbol,

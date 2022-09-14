@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/containerContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:visibility="gone">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="42dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/buy_details_image" />
+
+        <org.p2p.wallet.common.ui.widget.OptionsTextView
+            android:id="@+id/optionsTextViewPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="36dp"
+            android:layout_marginVertical="16dp"
+            app:optionsLabelText="@string/buy_token_price" />
+
+        <org.p2p.wallet.common.ui.widget.OptionsTextView
+            android:id="@+id/optionsTextViewPurchaseCost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="38dp"
+            android:layout_marginVertical="12dp"
+            app:optionsLabelText="@string/buy_token_purchase_cost" />
+
+        <org.p2p.wallet.common.ui.widget.OptionsTextView
+            android:id="@+id/optionsTextViewProcessingFee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="38dp"
+            android:layout_marginVertical="12dp"
+            app:optionsLabelText="@string/buy_processing_fee" />
+
+        <org.p2p.wallet.common.ui.widget.OptionsTextView
+            android:id="@+id/optionsTextViewNetworkFee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="38dp"
+            android:layout_marginVertical="12dp"
+            app:optionsLabelText="@string/buy_network_fee" />
+
+        <org.p2p.wallet.common.ui.widget.OptionsTextView
+            android:id="@+id/optionsTextViewAccountCreation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="38dp"
+            android:layout_marginVertical="12dp"
+            android:visibility="gone"
+            app:optionsLabelText="@string/buy_account_creation"
+            app:optionsText="@string/buy_one_time_payment" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="38dp"
+            android:background="@color/strokeSecondary"
+            app:layout_constraintTop_toBottomOf="@id/payTextView" />
+
+        <org.p2p.wallet.common.ui.widget.OptionsTextView
+            android:id="@+id/optionsTextViewTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="38dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            app:isBoldLabel="true"
+            app:isBoldValue="true"
+            app:optionsLabelText="@string/buy_total" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="24dp"
+        android:drawablePadding="24dp"
+        android:gravity="center"
+        android:text="@string/buy_min_amount_error_format"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:drawableTopCompat="@drawable/ic_error_amount" />
+</FrameLayout>
