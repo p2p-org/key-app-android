@@ -2,6 +2,8 @@ package org.p2p.wallet.restore.interactor
 
 import androidx.core.content.edit
 import android.content.SharedPreferences
+import org.bitcoinj.crypto.MnemonicCode
+import org.bitcoinj.crypto.MnemonicException
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
@@ -19,6 +21,7 @@ import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.scaleLong
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
@@ -100,15 +103,30 @@ class SeedPhraseInteractor(
 
     suspend fun generateSecretKeys(): List<String> = authRepository.generatePhrase()
 
-    fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): List<SeedPhraseWord> {
-        val words = English.INSTANCE.words
-        val keys = secretKeys.filter { key -> key.text.isNotEmpty() }
+    sealed interface SeedPhraseVerifyResult {
+        class VerifiedSeedPhrase(val seedPhraseWord: List<SeedPhraseWord>) : SeedPhraseVerifyResult
+        object VerifyByChecksumFailed : SeedPhraseVerifyResult
+    }
 
-        val validatedKeys = keys.map { key ->
-            val isValid = words.contains(key.text)
+    fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): SeedPhraseVerifyResult {
+        val validWords = English.INSTANCE.words
+        val seedWords = secretKeys.map { it.text }
+
+        val validatedKeys = secretKeys.map { key ->
+            val isValid = validWords.contains(key.text)
             key.copy(isValid = isValid)
         }
 
-        return validatedKeys
+        return if (validatedKeys.any { !it.isValid }) {
+            SeedPhraseVerifyResult.VerifiedSeedPhrase(validatedKeys)
+        } else {
+            try {
+                MnemonicCode.INSTANCE.check(seedWords)
+                SeedPhraseVerifyResult.VerifiedSeedPhrase(validatedKeys)
+            } catch (checkError: MnemonicException) {
+                Timber.i(checkError)
+                SeedPhraseVerifyResult.VerifyByChecksumFailed
+            }
+        }
     }
 }

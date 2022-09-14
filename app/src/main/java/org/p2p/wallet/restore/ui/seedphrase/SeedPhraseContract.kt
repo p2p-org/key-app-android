@@ -11,7 +11,7 @@ interface SeedPhraseContract {
         fun updateSeedPhrase(seedPhrase: List<SeedPhraseWord>)
         fun navigateToDerievableAccounts(seedPhrase: List<SeedPhraseWord>)
         fun showFile(file: File)
-        fun showSeedPhraseValid(isValid: Boolean)
+        fun showSeedPhraseValid(isSeedPhraseValid: Boolean)
         fun showClearButton(isVisible: Boolean)
         fun addFirstKey(seedPhraseWord: SeedPhraseWord)
         fun showFocusOnLastWord(lastSecretItemIndex: Int)
@@ -20,7 +20,6 @@ interface SeedPhraseContract {
     interface Presenter : MvpPresenter<View> {
         fun setNewSeedPhrase(seedPhrase: List<SeedPhraseWord>)
         fun verifySeedPhrase()
-        fun load()
         fun requestFocusOnLastWord()
     }
 }

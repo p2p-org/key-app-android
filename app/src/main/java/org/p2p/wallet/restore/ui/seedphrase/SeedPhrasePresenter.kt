@@ -1,6 +1,7 @@
 package org.p2p.wallet.restore.ui.seedphrase
 
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import kotlin.properties.Delegates
@@ -31,6 +32,18 @@ class SeedPhrasePresenter(
         view?.showClearButton(isClearButtonVisible)
     }
 
+    override fun attach(view: SeedPhraseContract.View) {
+        super.attach(view)
+
+        if (currentSeedPhrase.isEmpty()) {
+            view.addFirstKey(SeedPhraseWord.EMPTY_WORD)
+            view.showSeedPhraseValid(isSeedPhraseValid = false)
+        } else {
+            currentSeedPhrase = currentSeedPhrase.toList()
+            view.updateSeedPhrase(currentSeedPhrase)
+        }
+    }
+
     override fun setNewSeedPhrase(seedPhrase: List<SeedPhraseWord>) {
         val filteredPhrase = seedPhrase.filter { it.text.isNotEmpty() }
         this.currentSeedPhrase = filteredPhrase.toMutableList()
@@ -38,20 +51,21 @@ class SeedPhrasePresenter(
 
     override fun verifySeedPhrase() {
         launch {
-            currentSeedPhrase = seedPhraseInteractor.verifySeedPhrase(currentSeedPhrase)
-            view?.updateSeedPhrase(currentSeedPhrase)
-
-            if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
-                view?.navigateToDerievableAccounts(currentSeedPhrase)
+            when (val result = seedPhraseInteractor.verifySeedPhrase(currentSeedPhrase)) {
+                is SeedPhraseInteractor.SeedPhraseVerifyResult.VerifiedSeedPhrase -> {
+                    currentSeedPhrase = result.seedPhraseWord
+                    if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
+                        view?.navigateToDerievableAccounts(currentSeedPhrase)
+                    } else {
+                        // warning: updateSeedPhrase causes keyboard to appear, so add a check
+                        view?.updateSeedPhrase(currentSeedPhrase)
+                        view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_words_failed)
+                    }
+                }
+                is SeedPhraseInteractor.SeedPhraseVerifyResult.VerifyByChecksumFailed -> {
+                    view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_checksum_failed)
+                }
             }
-        }
-    }
-
-    override fun load() {
-        if (currentSeedPhrase.isEmpty()) {
-            view?.addFirstKey(SeedPhraseWord.EMPTY_WORD)
-        } else {
-            currentSeedPhrase = currentSeedPhrase.toList()
         }
     }
 
