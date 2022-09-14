@@ -30,6 +30,12 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.length}")
         }
 
+    var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
+        set(value) {
+            field = value
+            Timber.tag(TAG).i("deviceShare is received and set")
+        }
+
     var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
         set(value) {
             field = value
