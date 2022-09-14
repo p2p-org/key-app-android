@@ -34,6 +34,14 @@
     <string name="auth_create_wallet_use_touch_id">Use Touch ID</string>
     <string name="auth_create_wallet_dont_use">Don\'t use</string>
 
+    <string name="auth_pin_code_enter_up_your_pin">Enter your PIN code</string>
+    <string name="auth_pin_code_attempts_format">❌ Wrong PIN. You have %d attempts left.</string>
+    <string name="auth_pin_code_warn_format">❌ After %d more incorrect tries, we\'ll log you out of your current account for your safety.</string>
+    <string name="auth_pin_code_wrong">❌ Wrong PIN. Try again or reset it</string>
+    <string name="auth_pin_code_logout_title">You were logged out</string>
+    <string name="auth_pin_code_logout_description">After 5 incorrect app PIN codes</string>
+    <string name="auth_pin_code_logout_ok_button">Got It</string>
+
     <!-- NewSmsInput -->
     <string name="onboarding_sms_input_wrong_sms">Incorrect SMS code \uD83D\uDE2C</string>
     <string name="onboarding_sms_invalid_sms_button_text">Enter the code to continue</string>

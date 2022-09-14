@@ -16,4 +16,8 @@
     <string name="seed_phrase_enter">Enter your seed phrase</string>
     <string name="seed_phrase">Seed phrase</string>
     <string name="seed_phrase_check">Seed phrase ✅</string>
+
+    <!-- UiKitAmountsView -->
+    <string name="amounts_view_hint">0.0</string>
+
 </resources>
