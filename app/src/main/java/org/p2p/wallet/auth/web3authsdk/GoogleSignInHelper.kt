@@ -11,6 +11,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Status
 import org.p2p.wallet.R
 import org.p2p.wallet.updates.ConnectionStateProvider
 import timber.log.Timber
@@ -56,6 +57,7 @@ class GoogleSignInHelper(
         errorHandler: GoogleSignInErrorHandler
     ): SignInCredential? {
         return try {
+            throw ApiException(Status.RESULT_TIMEOUT)
             getSignInClient(context).getSignInCredentialFromIntent(result.data)
         } catch (ex: ApiException) {
             Timber.e(ex, "Error on getting Credential from result")
