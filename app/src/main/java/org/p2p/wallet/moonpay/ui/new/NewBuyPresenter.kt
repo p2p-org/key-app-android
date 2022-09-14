@@ -30,10 +30,8 @@ import org.p2p.wallet.utils.asCurrency
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
-import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
 
@@ -130,6 +128,7 @@ class NewBuyPresenter(
     }
 
     override fun onPaymentMethodSelected(selectedMethod: PaymentMethod) {
+        buyAnalytics.logBuyMethodPaymentChanged(selectedMethod)
         selectedPaymentMethod = selectedMethod
         paymentMethods.forEach { paymentMethod ->
             paymentMethod.isSelected = paymentMethod.method == selectedMethod.method
@@ -166,12 +165,14 @@ class NewBuyPresenter(
     }
 
     override fun onTotalClicked() {
+        buyAnalytics.logBuyTotalShown(isShown = buyDetailsState != null)
         buyDetailsState?.let {
             view?.showDetailsBottomSheet(it)
         }
     }
 
     override fun setTokenToBuy(token: Token) {
+        buyAnalytics.logBuyTokenChanged(selectedToken.tokenSymbol, token.tokenSymbol)
         selectedToken = token
         recalculate()
     }
@@ -182,6 +183,7 @@ class NewBuyPresenter(
     }
 
     override fun setCurrency(currency: BuyCurrency.Currency) {
+        buyAnalytics.logBuyCurrencyChanged(selectedCurrency.code, currency.code)
         selectedCurrency = currency
         if (isValidCurrencyForPay()) {
             recalculate()
@@ -391,20 +393,20 @@ class NewBuyPresenter(
     override fun onContinueClicked() {
         currentBuyViewData?.let {
             val paymentType = getValidPaymentType()
+            buyAnalytics.logBuyButtonPressed(
+                buySumCurrency = it.total,
+                buySumCoin = it.receiveAmount.toBigDecimal(),
+                buyCurrency = it.currencySymbol,
+                buyCoin = it.tokenSymbol,
+                methodPayment = selectedPaymentMethod
+            )
             view?.navigateToMoonpay(
                 amount = it.total.toString(),
                 selectedToken,
                 selectedCurrency,
                 paymentType
             )
-            // TODO append analytics with selected token and currency
-            buyAnalytics.logBuyContinuing(
-                buyCurrency = it.tokenSymbol,
-                buySum = it.price,
-                buyProvider = "moonpay",
-                buyUSD = it.price.toUsd(it.price).orZero(),
-                lastScreenName = analyticsInteractor.getPreviousScreenName()
-            )
+            buyAnalytics.logBuyMoonPayOpened()
         }
     }
 
