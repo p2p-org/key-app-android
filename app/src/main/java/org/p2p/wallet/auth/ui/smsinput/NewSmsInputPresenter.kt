@@ -104,7 +104,7 @@ class NewSmsInputPresenter(
 
             restoreWalletRestoreInteractor.finishRestoreCustomShare(smsCode)
 
-            if (userRestoreInteractor.isUserReadyToBeRestoredByPhone()) {
+            if (userRestoreInteractor.isUserReadyToBeRestored(RestoreUserWay.SocialPlusCustomShareWay)) {
                 restoreUserWithShares()
             } else {
                 // no social share, requesting now

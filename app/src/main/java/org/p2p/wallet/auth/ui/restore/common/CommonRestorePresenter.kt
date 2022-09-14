@@ -5,6 +5,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor.RestoreUserWay
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
@@ -28,7 +29,7 @@ class CommonRestorePresenter(
     override fun setGoogleIdToken(userId: String, idToken: String) {
         view?.setLoadingState(isScreenLoading = true)
         socialShareRestoreInteractor.restoreSocialShare(idToken, userId)
-        if (restoreUserRestoreInteractor.isUserReadyToBeRestored()) {
+        if (restoreUserRestoreInteractor.isUserReadyToBeRestored(RestoreUserWay.DevicePlusSocialShareWay)) {
             launch {
                 restoreUserWithShares()
             }
@@ -39,10 +40,7 @@ class CommonRestorePresenter(
     }
 
     private suspend fun restoreUserWithShares() {
-        val result = restoreUserRestoreInteractor.tryRestoreUser(
-            UserRestoreInteractor.RestoreUserWay.DevicePlusSocialShareWay
-        )
-        when (result) {
+        when (val result = restoreUserRestoreInteractor.tryRestoreUser(RestoreUserWay.DevicePlusSocialShareWay)) {
             is UserRestoreInteractor.RestoreUserResult.RestoreSuccessful -> {
                 restoreUserRestoreInteractor.finishAuthFlow()
                 view?.setLoadingState(isScreenLoading = false)

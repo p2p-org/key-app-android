@@ -24,17 +24,18 @@ class UserRestoreInteractor(
         object SocialPlusCustomShareWay : RestoreUserWay
     }
 
-    fun isUserReadyToBeRestored(): Boolean {
-        val deviceShareCount = countShare(restoreFlowDataLocalRepository.deviceShare) +
-            countShare(restoreFlowDataLocalRepository.socialShare) +
-            countShare(restoreFlowDataLocalRepository.customShare)
-        return deviceShareCount > 1
-    }
-
-    fun isUserReadyToBeRestoredByPhone(): Boolean {
-        val deviceShareCount = countShare(restoreFlowDataLocalRepository.socialShare) +
-            countShare(restoreFlowDataLocalRepository.customShare)
-        return deviceShareCount > 1
+    fun isUserReadyToBeRestored(restoreWay: RestoreUserWay): Boolean {
+        val sharesCount = when (restoreWay) {
+            is RestoreUserWay.DevicePlusSocialShareWay -> {
+                countShare(restoreFlowDataLocalRepository.deviceShare) +
+                    countShare(restoreFlowDataLocalRepository.socialShare)
+            }
+            is RestoreUserWay.SocialPlusCustomShareWay -> {
+                countShare(restoreFlowDataLocalRepository.socialShare) +
+                    countShare(restoreFlowDataLocalRepository.customShare)
+            }
+        }
+        return sharesCount > 1
     }
 
     private fun countShare(share: Any?): Int {
