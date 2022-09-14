@@ -44,16 +44,16 @@ class SeedPhraseFragment :
         with(binding) {
             initToolbar()
 
-            buttonContinue.setOnClickListener {
-                presenter.verifySeedPhrase()
-            }
-
             seedPhraseView.onSeedPhraseChanged = { keys ->
                 presenter.setNewSeedPhrase(keys)
             }
 
             seedPhraseView.setOnContainerClickListener {
                 presenter.requestFocusOnLastWord()
+            }
+
+            buttonContinue.setOnClickListener {
+                presenter.verifySeedPhrase()
             }
 
             seedPhraseView.focusAndShowKeyboard()
