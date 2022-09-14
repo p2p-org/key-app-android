@@ -99,9 +99,9 @@ class BuyAnalytics(private val tracker: Analytics) {
     fun logBuyCurrencyChanged(fromCurrency: String, toCurrency: String) {
         tracker.logEvent(
             BUY_CURRENCY_CHANGED,
-            arrayOf(
-                Pair("From_Currency", fromCurrency),
-                Pair("To_Currency", toCurrency)
+            mapOf(
+                "From_Currency" to fromCurrency,
+                "To_Currency" to toCurrency
             )
         )
     }
@@ -109,9 +109,9 @@ class BuyAnalytics(private val tracker: Analytics) {
     fun logBuyTokenChanged(fromToken: String, toToken: String) {
         tracker.logEvent(
             BUY_COIN_CHANGED,
-            arrayOf(
-                Pair("From_Coin", fromToken),
-                Pair("To_Coin", toToken)
+            mapOf(
+                "From_Coin" to fromToken,
+                "To_Coin" to toToken
             )
         )
     }
@@ -119,9 +119,7 @@ class BuyAnalytics(private val tracker: Analytics) {
     fun logBuyMethodPaymentChanged(methodPayment: PaymentMethod) {
         tracker.logEvent(
             BUY_CHOSEN_METHOD_PAYMENT,
-            arrayOf(
-                Pair("Type", methodPayment.toType())
-            )
+            mapOf("Type" to methodPayment.toType())
         )
     }
 
@@ -135,14 +133,14 @@ class BuyAnalytics(private val tracker: Analytics) {
         val isBankTransfer = methodPayment.method == PaymentMethod.MethodType.BANK_TRANSFER
         tracker.logEvent(
             BUY_BUTTON_PRESSED,
-            arrayOf(
-                Pair("Sum_Currency", buySumCurrency),
-                Pair("Sum_Coin", buySumCoin),
-                Pair("Currency", buyCurrency),
-                Pair("Coin", buyCoin),
-                Pair("Payment_Method", methodPayment.toType()),
-                Pair("Bank_Transfer", isBankTransfer),
-                Pair("Type_Bank_Transfer", methodPayment.paymentType),
+            mapOf(
+                "Sum_Currency" to buySumCurrency,
+                "Sum_Coin" to buySumCoin,
+                "Currency" to buyCurrency,
+                "Coin" to buyCoin,
+                "Payment_Method" to methodPayment.toType(),
+                "Bank_Transfer" to isBankTransfer,
+                "Type_Bank_Transfer" to methodPayment.paymentType,
             )
         )
     }
@@ -150,18 +148,14 @@ class BuyAnalytics(private val tracker: Analytics) {
     fun logBuyTotalShown(isShown: Boolean) {
         tracker.logEvent(
             BUY_TOTAL_SHOWED,
-            arrayOf(
-                Pair("Shown", isShown)
-            )
+            mapOf("Shown" to isShown)
         )
     }
 
     fun logBuyMoonPayOpened() {
         tracker.logEvent(
             BUY_MOONPAY_WINDOW,
-            arrayOf(
-                Pair("Opened", true)
-            )
+            mapOf("Opened" to true)
         )
     }
 
