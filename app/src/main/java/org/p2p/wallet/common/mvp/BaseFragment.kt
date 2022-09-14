@@ -23,7 +23,9 @@ import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
@@ -110,13 +112,15 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is DerivableAccountsFragment -> ScreenNames.OnBoarding.DERIVATION
         is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
         is AuthDoneFragment -> ScreenNames.OnBoarding.WELCOME_NEW_USERNAME
-        is HomeFragment -> ScreenNames.Main.MAIN_COINS
+        is HomeFragment -> ScreenNames.Main.MAIN
         is SettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
         is SecurityFragment -> ScreenNames.Settings.SECURITY
         is SettingsNetworkFragment -> ScreenNames.Settings.NETWORK
         is NetworkSelectionFragment -> ScreenNames.Send.NETWORK
         is OrcaSwapFragment -> ScreenNames.Swap.MAIN
+        is TokenHistoryFragment -> ScreenNames.Token.TOKEN_SCREEN
+        is NewBuyFragment -> ScreenNames.Buy.BUY
         else -> emptyString()
     }
 }
