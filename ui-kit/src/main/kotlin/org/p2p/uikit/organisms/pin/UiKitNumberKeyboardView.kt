@@ -82,9 +82,6 @@ class UiKitNumberKeyboardView @JvmOverloads constructor(
 
     fun setLeftButtonVisible(isVisible: Boolean) {
         binding.additionalLeftPinCodeButton.isInvisible = !isVisible
-        binding.additionalLeftPinCodeButton.setBackgroundColor(
-            context.getColor(android.R.color.transparent)
-        )
     }
 
     fun setLeftButtonBackground(@DrawableRes drawableResId: Int) {
