@@ -93,7 +93,7 @@ class NewCreatePinFragment :
         analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.PIN_CONFIRM)
     }
 
-    override fun onPinCreated(pinCode: String) {
+    override fun onPinCreated() {
         binding.pinView.onSuccessPin()
         showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success, onDismissed = {
             presenter.onPinCreated()

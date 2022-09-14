@@ -130,9 +130,9 @@ class NewSmsInputFragment :
         )
     }
 
-    override fun navigateToCriticalErrorScreen(errorCode: Int) {
+    override fun navigateToCriticalErrorScreen(errorType: GeneralErrorScreenError) {
         popAndReplaceFragment(
-            OnboardingGeneralErrorFragment.create(GeneralErrorScreenError.CriticalError(errorCode)),
+            OnboardingGeneralErrorFragment.create(errorType),
             inclusive = true
         )
     }

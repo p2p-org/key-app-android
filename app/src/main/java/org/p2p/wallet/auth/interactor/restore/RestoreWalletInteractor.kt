@@ -16,6 +16,8 @@ class RestoreWalletInteractor(
 
     fun getUserPhoneNumber() = restoreFlowDataLocalRepository.userPhoneNumber
 
+    fun getUserEmailAddress() = restoreFlowDataLocalRepository.socialShareUserId
+
     fun generateRestoreUserKeyPair() {
         restoreFlowDataLocalRepository.generateRestoreUserKeyPair()
     }

@@ -129,4 +129,3 @@ object InfrastructureModule : InjectionModule {
         single { PushTokenRepository() }
     }
 }
-

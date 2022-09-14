@@ -4,7 +4,6 @@ import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 private const val MINIMUM_SPLASH_SHOWING_TIME_MS = 2000L
 

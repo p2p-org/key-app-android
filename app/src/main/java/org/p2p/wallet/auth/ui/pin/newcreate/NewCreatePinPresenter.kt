@@ -1,11 +1,13 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
-import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
@@ -15,7 +17,7 @@ private const val VIBRATE_DURATION = 500L
 class NewCreatePinPresenter(
     private val adminAnalytics: AdminAnalytics,
     private val authInteractor: AuthInteractor,
-    private val createWalletInteractor: CreateWalletInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<NewCreatePinContract.View>(),
     NewCreatePinContract.Presenter {
 
@@ -41,10 +43,13 @@ class NewCreatePinPresenter(
             return
         }
 
-        view?.apply {
-            lockPinKeyboard()
-            onPinCreated(createdPin)
-            vibrate(VIBRATE_DURATION)
+        view?.lockPinKeyboard()
+
+        if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
+            createPinCode(createdPin)
+        } else {
+            view?.navigateToBiometrics(pinCode)
+            view?.vibrate(VIBRATE_DURATION)
         }
     }
 
@@ -63,22 +68,28 @@ class NewCreatePinPresenter(
         }
     }
 
-    override fun onPinCreated() {
-        try {
-            checkBiometricAvailability()
-            // Clear pin in case of returning back
-            createdPin = emptyString()
-        } catch (e: Throwable) {
-            Timber.e(e, "Failed to finish pin creation")
-            view?.navigateToMain()
+    private fun createPinCode(pinCode: String) {
+        view?.showLoading(true)
+        launch {
+            try {
+                registerComplete(pinCode, null)
+                view?.onPinCreated()
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to create pin code")
+                createdPin = emptyString()
+                view?.showCreation()
+                view?.showErrorMessage(R.string.error_general_message)
+                view?.vibrate(VIBRATE_DURATION)
+            } finally {
+                view?.showLoading(false)
+            }
         }
     }
 
-    private fun checkBiometricAvailability() {
-        if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
-            createWalletInteractor.finishAuthFlow()
-        } else {
-            view?.navigateToBiometrics(createdPin)
-        }
+    private fun registerComplete(pinCode: String, cipher: EncodeCipher?) {
+        authInteractor.registerComplete(pinCode, cipher)
+        // TODO determine pin complexity
+        adminAnalytics.logPinCreated(currentScreenName = analyticsInteractor.getCurrentScreenName())
+        view?.navigateToMain()
     }
 }

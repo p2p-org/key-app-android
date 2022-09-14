@@ -18,7 +18,6 @@ import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
-import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService

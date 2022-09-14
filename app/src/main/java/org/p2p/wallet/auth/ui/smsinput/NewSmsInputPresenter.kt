@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserResult
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
@@ -79,6 +80,9 @@ class NewSmsInputPresenter(
             createWalletInteractor.finishCreatingWallet(smsCode)
             createWalletInteractor.finishAuthFlow()
             view?.navigateToPinCreate()
+        } catch (tooOftenOtpRequests: GatewayServiceError.TooOftenOtpRequests) {
+            Timber.e(tooOftenOtpRequests)
+            view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
         } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
             Timber.i(incorrectSms)
             view?.renderIncorrectSms()
@@ -87,7 +91,7 @@ class NewSmsInputPresenter(
             view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS)
         } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
             Timber.e(serverError)
-            view?.navigateToCriticalErrorScreen(serverError.code)
+            view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
         } catch (error: Throwable) {
             Timber.e(error, "Checking sms value failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
@@ -102,7 +106,14 @@ class NewSmsInputPresenter(
             restoreWalletInteractor.confirmRestoreWallet(smsCode)
             when (val currentFlow = onboardingInteractor.currentFlow) {
                 is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
-                    restoreWalletInteractor.tryRestoreUser(currentFlow)
+                    when (restoreWalletInteractor.tryRestoreUser(currentFlow)) {
+                        RestoreUserResult.RestoreSuccessful -> {
+                            view?.navigateToPinCreate()
+                        }
+                        is RestoreUserResult.RestoreFailed -> {
+                            view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.PhoneNumberDoesNotMatchError)
+                        }
+                    }
                 }
                 is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> {
                     if (restoreWalletInteractor.isUserReadyToBeRestored(currentFlow)) {
@@ -155,7 +166,7 @@ class NewSmsInputPresenter(
                 }
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.e(serverError)
-                view?.navigateToCriticalErrorScreen(serverError.code)
+                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
             } catch (error: Throwable) {
                 Timber.e(error, "Resending sms failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)

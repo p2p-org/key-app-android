@@ -5,8 +5,6 @@ import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.account.AccountStorageContract
-import timber.log.Timber
 
 class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,

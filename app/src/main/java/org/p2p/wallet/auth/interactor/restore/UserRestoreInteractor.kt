@@ -2,10 +2,8 @@ package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import org.p2p.solanaj.utils.crypto.decodeFromBase64
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserResult
-import org.p2p.wallet.auth.model.RestoreWalletFailure
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
@@ -13,7 +11,6 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.fromJsonReified
-import timber.log.Timber
 
 class UserRestoreInteractor(
     private val web3AuthApi: Web3AuthApi,

@@ -6,7 +6,6 @@ import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
@@ -23,8 +22,6 @@ class PhoneNumberEnterPresenter(
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
-    private var lastFullPhoneNumber: String = emptyString()
-    private var submitUserPhoneTriesCount = 0
 
     override fun attach(view: PhoneNumberEnterContract.View) {
         super.attach(view)

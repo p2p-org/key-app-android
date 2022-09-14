@@ -31,6 +31,9 @@ class GatewayServiceErrorMapper {
             -32057 -> GatewayServiceError.UserAlreadyExists(
                 error.errorCode, error.errorMessage
             )
+            -32059 -> GatewayServiceError.TooOftenOtpRequests(
+                error.errorCode, error.errorMessage
+            )
             -32060 -> GatewayServiceError.PhoneNumberNotExists(
                 error.errorCode, error.errorMessage
             )

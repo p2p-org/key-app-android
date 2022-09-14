@@ -22,7 +22,6 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
 
 /**
  * Bottom sheet dialog which shows current transaction's state
