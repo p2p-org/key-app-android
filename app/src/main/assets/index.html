@@ -14,7 +14,7 @@
         sessionStorage.clear();
     }
 </script>
-<h1>APP VERSION 1.1.2</h1>
+<h1>APP VERSION 1.1.6</h1>
 <button onclick="window.clearStorages()">Clear Storage</button>
 <script defer>(function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -30085,29 +30085,32 @@ var AuthProvider = /*#__PURE__*/function () {
 
               case 2:
                 this.encryptedSolResult = _context9.sent;
+                _context9.prev = 3;
 
                 if (!(this.authParams.type === "signup")) {
-                  _context9.next = 9;
+                  _context9.next = 8;
                   break;
                 }
 
                 _utils__WEBPACK_IMPORTED_MODULE_17__.logger.trace("saving seed using seed module");
-                _context9.next = 7;
+                _context9.next = 8;
                 return this.KeyManager.setItemToStorage(this.authParams.privateInput);
 
-              case 7:
-                _context9.next = 10;
+              case 8:
+                _context9.next = 13;
                 break;
 
-              case 9:
+              case 10:
+                _context9.prev = 10;
+                _context9.t0 = _context9["catch"](3);
                 _utils__WEBPACK_IMPORTED_MODULE_17__.logger.error("saving seed phrase did not happen");
 
-              case 10:
+              case 13:
               case "end":
                 return _context9.stop();
             }
           }
-        }, _callee9, this);
+        }, _callee9, this, [[3, 10]]);
       }));
 
       function generateKeysAndSave() {
@@ -30722,11 +30725,14 @@ var typeMap = (_typeMap = {}, _defineProperty(_typeMap, _typings__WEBPACK_IMPORT
   message: "GetMetadata errored out",
   code: 1022
 }), _defineProperty(_typeMap, _typings__WEBPACK_IMPORTED_MODULE_0__.ERROR_TYPE.COULD_NOT_RETRIEVE_SEED, {
-  message: "`ould not retrieve seed phrase",
+  message: "Could not retrieve seed phrase",
   code: 1023
 }), _defineProperty(_typeMap, _typings__WEBPACK_IMPORTED_MODULE_0__.ERROR_TYPE.MNEMONICS_NOT_EQUAL, {
   message: "Mnemonics are not equal",
   code: 1024
+}), _defineProperty(_typeMap, _typings__WEBPACK_IMPORTED_MODULE_0__.ERROR_TYPE.DEPRECATED_PARAM, {
+  message: "Deprecated init param",
+  code: 1025
 }), _typeMap);
 
 /***/ }),
@@ -30859,15 +30865,17 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
 
     _defineProperty(this, "platform", void 0);
 
-    _defineProperty(this, "mandatoryParams", ["torusLoginType", "torusEndpoint", "torusVerifier", "torusNetwork", "metadataEndpoint", "type"]);
+    _defineProperty(this, "mandatoryParams", ["torusLoginType", "torusEndpoint", "torusVerifier", "torusNetwork", "type"]);
 
     _defineProperty(this, "mandatorySignupParams", ["useNewEth", "type"]);
+
+    _defineProperty(this, "deprecatedParams", ["metadataEndpoint"]);
   }
 
   _createClass(AbstractMobileFacade, [{
     key: "getVersion",
     value: function getVersion() {
-      return "1.1.2";
+      return "1.1.6";
     }
   }, {
     key: "validateInitParams",
@@ -30876,15 +30884,15 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
         this.throwIvalidParamError("type");
       }
 
-      var _iterator = _createForOfIteratorHelper(this.mandatoryParams),
+      var _iterator = _createForOfIteratorHelper(this.deprecatedParams),
           _step;
 
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var _param = _step.value;
+          var deprecatedParam = _step.value;
 
-          if (typeof options[_param] === "undefined") {
-            this.throwIvalidParamError(_param);
+          if (options[deprecatedParam]) {
+            this.throwDepricatedParamError(deprecatedParam);
           }
         }
       } catch (err) {
@@ -30893,22 +30901,39 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
         _iterator.f();
       }
 
+      var _iterator2 = _createForOfIteratorHelper(this.mandatoryParams),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var _param = _step2.value;
+
+          if (typeof options[_param] === "undefined") {
+            this.throwIvalidParamError(_param);
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
       if (options.type === "signup") {
-        var _iterator2 = _createForOfIteratorHelper(this.mandatorySignupParams),
-            _step2;
+        var _iterator3 = _createForOfIteratorHelper(this.mandatorySignupParams),
+            _step3;
 
         try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var param = _step2.value;
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var param = _step3.value;
 
             if (typeof options[param] === "undefined") {
               this.throwIvalidParamError(param);
             }
           }
         } catch (err) {
-          _iterator2.e(err);
+          _iterator3.e(err);
         } finally {
-          _iterator2.f();
+          _iterator3.f();
         }
       }
     }
@@ -30916,6 +30941,11 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
     key: "throwIvalidParamError",
     value: function throwIvalidParamError(param) {
       throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.INVALID_INIT_ARGS, "".concat(param, " is missing during initialization"));
+    }
+  }, {
+    key: "throwDepricatedParamError",
+    value: function throwDepricatedParamError(param) {
+      throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.DEPRECATED_PARAM, "".concat(param, " is deprecated"));
     }
   }], [{
     key: "validatePrivateInput",
@@ -31027,7 +31057,7 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     key: "getVersion",
     value: function getVersion() {
       try {
-        AndroidCommunicationChannel.getVersion("1.1.2");
+        AndroidCommunicationChannel.getVersion("1.1.6");
       } catch (e) {
         var err = new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.READ_VERSION_ERROR, e);
         AndroidCommunicationChannel.handleError(JSON.stringify(e));
@@ -31088,56 +31118,52 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("+++++++++++++++++++");
-                _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info(idToken);
-                _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info(shareWithMeta);
-                _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("+++++++++++++++++++");
-                _context2.prev = 4;
+                _context2.prev = 0;
 
                 if (this.checkIdToken(idToken)) {
-                  _context2.next = 8;
+                  _context2.next = 4;
                   break;
                 }
 
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("GET OUT OF SILENT SIGNIN BECAUSE NOT SHARE OR TOKEN");
                 return _context2.abrupt("return");
 
-              case 8:
+              case 4:
                 if (shareWithMeta) {
-                  _context2.next = 10;
+                  _context2.next = 6;
                   break;
                 }
 
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_DEVICE_SHARE);
 
-              case 10:
+              case 6:
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("TRYING SILENT SIGNIN...");
                 this.mobileAuthAdapter = new _core_mobileAuthAdapter__WEBPACK_IMPORTED_MODULE_0__.MobileAuthAdapter(_objectSpread(_objectSpread({}, this.options), {}, {
                   platform: this.platform,
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SIGNIN_NO_CUSTOM
                 }));
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("MOBILE ADAPTER ON SILENT SIGNIN", this.mobileAuthAdapter);
-                _context2.next = 15;
+                _context2.next = 11;
                 return this.mobileAuthAdapter.triggerSilentSign(idToken, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.DEVICE, shareWithMeta);
 
-              case 15:
+              case 11:
                 result = _context2.sent;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("RESULT ON SIGNIN:", result);
                 AndroidCommunicationChannel.handleSignInNoCustomResponse(JSON.stringify(result));
-                _context2.next = 23;
+                _context2.next = 19;
                 break;
 
-              case 20:
-                _context2.prev = 20;
-                _context2.t0 = _context2["catch"](4);
+              case 16:
+                _context2.prev = 16;
+                _context2.t0 = _context2["catch"](0);
                 this.reportError(_context2.t0);
 
-              case 23:
+              case 19:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[4, 20]]);
+        }, _callee2, this, [[0, 16]]);
       }));
 
       function triggerSignInNoCustom(_x2, _x3) {
@@ -31406,32 +31432,37 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     key: "triggerSilentSignup",
     value: function () {
       var _triggerSilentSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(idToken) {
-        var _this$mobileAuthAdapt;
+        var _this$mobileAuthAdapt, result;
 
-        var result;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                _context.prev = 0;
                 this.checkIdToken(idToken);
                 this.mobileAuthAdapter = new _core_mobileAuthAdapter__WEBPACK_IMPORTED_MODULE_0__.MobileAuthAdapter(_objectSpread(_objectSpread({}, this.options), {}, {
                   platform: this.platform,
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SIGNUP
                 }));
-                _context.next = 4;
+                _context.next = 5;
                 return (_this$mobileAuthAdapt = this.mobileAuthAdapter) === null || _this$mobileAuthAdapt === void 0 ? void 0 : _this$mobileAuthAdapt.triggerSilentSignup(idToken);
 
-              case 4:
+              case 5:
                 result = _context.sent;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("SILENT SIGNUP RESULT ON IOS", result);
                 return _context.abrupt("return", result);
 
-              case 7:
+              case 10:
+                _context.prev = 10;
+                _context.t0 = _context["catch"](0);
+                this.rethrowError(_context.t0);
+
+              case 13:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee, this, [[0, 10]]);
       }));
 
       function triggerSilentSignup(_x) {
@@ -31449,35 +31480,41 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+                _context2.prev = 0;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("GET INTO SILENT SIGNIN WITH THE DEVICE SHARE");
                 this.checkIdToken(idToken);
 
                 if (shareWithMeta) {
-                  _context2.next = 4;
+                  _context2.next = 5;
                   break;
                 }
 
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_DEVICE_SHARE).toJSON();
 
-              case 4:
+              case 5:
                 this.mobileAuthAdapter = new _core_mobileAuthAdapter__WEBPACK_IMPORTED_MODULE_0__.MobileAuthAdapter(_objectSpread(_objectSpread({}, this.options), {}, {
                   platform: this.platform,
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SIGNIN_NO_CUSTOM
                 }));
-                _context2.next = 7;
+                _context2.next = 8;
                 return this.mobileAuthAdapter.triggerSilentSign(idToken, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.DEVICE, shareWithMeta);
 
-              case 7:
+              case 8:
                 result = _context2.sent;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("RESULT ON SIGNIN WITH CUSTOM:", result);
                 return _context2.abrupt("return", result);
 
-              case 10:
+              case 13:
+                _context2.prev = 13;
+                _context2.t0 = _context2["catch"](0);
+                this.rethrowError(_context2.t0);
+
+              case 16:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee2, this, [[0, 13]]);
       }));
 
       function triggerSignInNoCustom(_x2, _x3) {
@@ -31490,55 +31527,60 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     key: "triggerSignInNoDevice",
     value: function () {
       var _triggerSignInNoDevice = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(idToken, shareWithMeta, encryptedMnemonic) {
-        var _this$mobileAuthAdapt2;
+        var _this$mobileAuthAdapt2, result;
 
-        var result;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
+                _context3.prev = 0;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("GET INTO SILENT SIGNIN WITH CUSTOM SHARE");
                 this.checkIdToken(idToken);
 
                 if (shareWithMeta) {
-                  _context3.next = 4;
+                  _context3.next = 5;
                   break;
                 }
 
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_CUSTOM_SHARE).toJSON();
 
-              case 4:
+              case 5:
                 if (encryptedMnemonic) {
-                  _context3.next = 6;
+                  _context3.next = 7;
                   break;
                 }
 
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_ENCRYPTED_MNEMONIC);
 
-              case 6:
+              case 7:
                 this.mobileAuthAdapter = new _core_mobileAuthAdapter__WEBPACK_IMPORTED_MODULE_0__.MobileAuthAdapter(_objectSpread(_objectSpread({}, this.options), {}, {
                   platform: this.platform,
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SIGNIN_NO_DEVICE
                 }));
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("MOBILE ADAPTER ON SILENT SIGNIN WITH CUSTOM", this.mobileAuthAdapter);
-                _context3.next = 10;
+                _context3.next = 11;
                 return this.mobileAuthAdapter.triggerSilentSign(idToken, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.CUSTOM, shareWithMeta);
 
-              case 10:
+              case 11:
                 result = _context3.sent;
-                _context3.next = 13;
+                _context3.next = 14;
                 return (_this$mobileAuthAdapt2 = this.mobileAuthAdapter.authProvider) === null || _this$mobileAuthAdapt2 === void 0 ? void 0 : _this$mobileAuthAdapt2.compareMnemonics(encryptedMnemonic);
 
-              case 13:
+              case 14:
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("RESULT ON SIGNIN WITH CUSTOM:", result);
                 return _context3.abrupt("return", result);
 
-              case 15:
+              case 18:
+                _context3.prev = 18;
+                _context3.t0 = _context3["catch"](0);
+                this.rethrowError(_context3.t0);
+
+              case 21:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee3, this, [[0, 18]]);
       }));
 
       function triggerSignInNoDevice(_x4, _x5, _x6) {
@@ -31551,62 +31593,67 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     key: "triggerSignInNoTorus",
     value: function () {
       var _triggerSignInNoTorus = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(deviceShare, customShare, encryptedMnemonic) {
-        var _this$mobileAuthAdapt3;
+        var _this$mobileAuthAdapt3, result;
 
-        var result;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
+                _context4.prev = 0;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("TRYING SILENT SIGNIN NO TORUS");
 
                 if (deviceShare) {
-                  _context4.next = 3;
+                  _context4.next = 4;
                   break;
                 }
 
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_DEVICE_SHARE).toJSON();
 
-              case 3:
+              case 4:
                 if (customShare) {
-                  _context4.next = 5;
+                  _context4.next = 6;
                   break;
                 }
 
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_CUSTOM_SHARE).toJSON();
 
-              case 5:
+              case 6:
                 if (encryptedMnemonic) {
-                  _context4.next = 7;
+                  _context4.next = 8;
                   break;
                 }
 
                 throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_ENCRYPTED_MNEMONIC);
 
-              case 7:
+              case 8:
                 this.mobileAuthAdapter = new _core_mobileAuthAdapter__WEBPACK_IMPORTED_MODULE_0__.MobileAuthAdapter(_objectSpread(_objectSpread({}, this.options), {}, {
                   platform: this.platform,
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SINGIN_NO_TORUS
                 }));
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("MOBILE ADAPTER HAS BEEN INITIALIZED");
-                _context4.next = 11;
+                _context4.next = 12;
                 return this.mobileAuthAdapter.triggerSilentSignInNoSocial(deviceShare, customShare);
 
-              case 11:
+              case 12:
                 result = _context4.sent;
-                _context4.next = 14;
+                _context4.next = 15;
                 return (_this$mobileAuthAdapt3 = this.mobileAuthAdapter.authProvider) === null || _this$mobileAuthAdapt3 === void 0 ? void 0 : _this$mobileAuthAdapt3.compareMnemonics(encryptedMnemonic);
 
-              case 14:
+              case 15:
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("RESULT ON SIGNIN NO TORUS:", result);
                 return _context4.abrupt("return", result);
 
-              case 16:
+              case 19:
+                _context4.prev = 19;
+                _context4.t0 = _context4["catch"](0);
+                this.rethrowError(_context4.t0);
+
+              case 22:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee4, this, [[0, 19]]);
       }));
 
       function triggerSignInNoTorus(_x7, _x8, _x9) {
@@ -31622,6 +31669,14 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
         _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("NO TOKEN PROVIDED, EXITING SIGNIN");
         throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_TOKEN_PROVIDED).toJSON();
       }
+    }
+  }, {
+    key: "rethrowError",
+    value: function rethrowError(e) {
+      var err = e instanceof _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError ? e : new _errors__WEBPACK_IMPORTED_MODULE_1__.UknownError(e);
+      _utils__WEBPACK_IMPORTED_MODULE_3__.logger.error("SIGNIN/SIGNUP ERROR");
+      _utils__WEBPACK_IMPORTED_MODULE_3__.logger.error(err);
+      throw err.toJSON();
     }
   }]);
 
@@ -34020,6 +34075,7 @@ var ERROR_TYPE;
   ERROR_TYPE["GET_METADATA_FAILED"] = "GET_METADATA_FAILED";
   ERROR_TYPE["COULD_NOT_RETRIEVE_SEED"] = "COULD_NOT_RETRIEVE_SEED";
   ERROR_TYPE["MNEMONICS_NOT_EQUAL"] = "MNEMONICS_NOT_EQUAL";
+  ERROR_TYPE["DEPRECATED_PARAM"] = "DEPRECATED_PARAM";
 })(ERROR_TYPE || (ERROR_TYPE = {}));
 
 function isMnemonicPair(pair) {
