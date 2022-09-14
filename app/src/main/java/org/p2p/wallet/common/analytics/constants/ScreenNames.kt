@@ -20,14 +20,13 @@ object ScreenNames {
     }
 
     object Main {
-        const val MAIN_COINS = "Main_Coins"
-        const val MAIN_NEW = "Main_New"
+        const val MAIN = "Main_Screen"
         const val MAIN_FEEDBACK = "Main_Feedback"
         const val MAIN_HISTORY = "Main_History"
     }
 
     object Token {
-        const val TOKEN_SCREEN = "Token_Screen (ETH_Screen)"
+        const val TOKEN_SCREEN = "Token_Screen"
         const val TOKEN_RECEIVE = "Token_Receive (ETH_Receive)"
     }
 
@@ -75,6 +74,7 @@ object ScreenNames {
     }
 
     object Buy {
+        const val BUY = "Buy_Screen"
         const val SOL = "Buy_SOL"
         const val EXTERNAL = "Buy_External"
     }
