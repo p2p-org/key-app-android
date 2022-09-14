@@ -150,6 +150,6 @@ class NewSmsInputFragment :
     }
 
     override fun onCommonError() {
-        showUiKitSnackBar(messageResId = R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.onboarding_google_services_error)
     }
 }

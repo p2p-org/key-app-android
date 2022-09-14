@@ -110,7 +110,7 @@ class WalletFoundFragment :
 
     override fun onCommonError() {
         setLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(messageResId = R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.onboarding_google_services_error)
     }
 
     override fun onConnectionError() {
