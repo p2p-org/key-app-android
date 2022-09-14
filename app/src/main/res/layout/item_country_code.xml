@@ -20,11 +20,14 @@
 
     <TextView
         android:id="@+id/textViewCountryName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="2"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/emojiTextView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Armenia" />
