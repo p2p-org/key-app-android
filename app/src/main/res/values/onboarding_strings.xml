@@ -85,4 +85,5 @@
 
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
+    <string name="onboarding_google_services_error">There is a problem with Google Services. Try again</string>
 </resources>
