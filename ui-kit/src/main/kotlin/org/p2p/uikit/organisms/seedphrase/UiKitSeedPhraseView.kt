@@ -31,7 +31,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
     private val phraseAdapter: SeedPhraseAdapter by lazy {
         SeedPhraseAdapter { keys ->
-            setPasteButtonEnabled(isEnabled = keys.isEmpty() || keys.firstOrNull() == SeedPhraseWord.EMPTY_WORD)
+            setPasteButtonBackgroundColor(isLime = keys.isEmpty() || keys.firstOrNull() == SeedPhraseWord.EMPTY_WORD)
             onSeedPhraseChanged?.invoke(keys)
         }
     }
@@ -59,12 +59,13 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         if (keysFromClipboard.isNotEmpty()) phraseAdapter.addAllSecretKeys(keysFromClipboard)
     }
 
-    private fun setPasteButtonEnabled(isEnabled: Boolean) {
-        binding.textViewPaste.isEnabled = isEnabled
+    private fun setPasteButtonBackgroundColor(isLime: Boolean) {
+        val backgroundRes = if (isLime) R.drawable.bg_lime_rounded_small else R.drawable.bg_rounded_small
+        binding.textViewPaste.setBackgroundResource(backgroundRes)
     }
 
     fun updateSecretKeys(secretKeys: List<SeedPhraseWord>) {
-        phraseAdapter.updateSecretKeys(secretKeys)
+        phraseAdapter.replaceSecretKeys(secretKeys)
     }
 
     fun addSecretKey(seedPhraseWord: SeedPhraseWord) {

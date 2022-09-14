@@ -36,12 +36,16 @@ class SeedPhraseAdapter(
         }
     }
 
-    fun updateSecretKeys(secretKeys: List<SeedPhraseWord>) {
+    fun replaceSecretKeys(seedPhrase: List<SeedPhraseWord>) {
         clear()
-        addAllSecretKeys(secretKeys)
+        addAllSecretKeys(seedPhrase)
     }
 
     fun addSecretKey(seedPhraseWord: SeedPhraseWord) {
+        if (data.size >= SEED_PHRASE_SIZE_LONG){
+            return
+        }
+
         data.add(seedPhraseWord)
         notifyItemInserted(data.size)
     }
@@ -55,6 +59,10 @@ class SeedPhraseAdapter(
     }
 
     fun addAllSecretKeys(seedPhrase: List<SeedPhraseWord>) {
+        if (data.size >= SEED_PHRASE_SIZE_LONG){
+            return
+        }
+
         seedPhrase
             .take(SEED_PHRASE_SIZE_LONG)
             .forEach { item ->
