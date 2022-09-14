@@ -16,10 +16,12 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.ui.derivable.bottomsheet.SelectDerivableAccountBottomSheet
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -40,13 +42,13 @@ class DerivableAccountsFragment :
     }
 
     private val secretKeys: List<SeedPhraseWord> by args(EXTRA_SECRET_KEYS)
-    override val presenter: DerivableAccountsContract.Presenter by inject {
-        parametersOf(secretKeys)
-    }
-    private val accountsAdapter: DerivableAccountsAdapter by lazy {
-        DerivableAccountsAdapter()
-    }
+
+    override val presenter: DerivableAccountsContract.Presenter by inject { parametersOf(secretKeys) }
+
+    private val accountsAdapter: DerivableAccountsAdapter by unsafeLazy { DerivableAccountsAdapter() }
+
     private val binding: FragmentDerivableAccountsBinding by viewBinding()
+
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private var selectedPath: DerivationPath = DerivationPath.BIP44CHANGE
@@ -97,7 +99,7 @@ class DerivableAccountsFragment :
     }
 
     override fun navigateToCreatePin() {
-        replaceFragment(CreatePinFragment.create())
+        replaceFragment(NewCreatePinFragment.create())
     }
 
     override fun showLoading(isLoading: Boolean) {
