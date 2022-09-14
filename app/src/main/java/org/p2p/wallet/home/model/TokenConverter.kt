@@ -40,7 +40,7 @@ object TokenConverter {
             iconUrl = tokenData.iconUrl,
             totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price) },
             total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
-            usdRate = price?.price,
+            rate = price?.price,
             visibility = TokenVisibility.DEFAULT,
             serumV3Usdc = tokenData.serumV3Usdc,
             serumV3Usdt = tokenData.serumV3Usdt,
@@ -61,7 +61,7 @@ object TokenConverter {
             serumV3Usdc = data.serumV3Usdc,
             serumV3Usdt = data.serumV3Usdt,
             isWrapped = data.isWrapped,
-            usdRate = price?.price
+            rate = price?.price
         )
 
     fun toDatabase(token: Token.Active): TokenEntity =
@@ -74,7 +74,7 @@ object TokenConverter {
             iconUrl = token.iconUrl,
             totalInUsd = token.totalInUsd,
             total = token.total,
-            exchangeRate = token.usdRate?.toString(),
+            exchangeRate = token.rate?.toString(),
             visibility = token.visibility.stringValue,
             serumV3Usdc = token.serumV3Usdc,
             serumV3Usdt = token.serumV3Usdt,
@@ -91,7 +91,7 @@ object TokenConverter {
             iconUrl = entity.iconUrl,
             totalInUsd = entity.totalInUsd,
             total = entity.total,
-            usdRate = entity.exchangeRate?.toBigDecimalOrZero(),
+            rate = entity.exchangeRate?.toBigDecimalOrZero(),
             visibility = TokenVisibility.parse(entity.visibility),
             serumV3Usdc = entity.serumV3Usdc,
             serumV3Usdt = entity.serumV3Usdt,
