@@ -34,6 +34,19 @@
     <string name="auth_create_wallet_use_touch_id">Use Touch ID</string>
     <string name="auth_create_wallet_dont_use">Don\'t use</string>
 
+    <!-- PhoneNumberEnter -->
+    <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
+    <string name="onboarding_step_2">Step 2 of 3</string>
+    <string name="onboarding_add_number_title">What\'s your number? 🤙</string>
+    <string name="onboarding_add_number_message">Add a phone to protect your account</string>
+    <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
+    <string name="onboarding_country_name">Country name</string>
+    <string name="onboarding_fill_your_number">Fill your phone number</string>
+    <string name="onboarding_no_sms_for_number">We can\'t send SMS. Change your number, please</string>
+    <string name="onboarding_lets_finish_last_step">Oh, let’s finish the last step!</string>
+    <string name="onboarding_phone_enter_error_sms_failed">❌ SMS will not be delivered. Please check your phone settings</string>
+    <string name="onboarding_phone_enter_error_phone_confirmed">❌ This phone has already been confirmed. Change phone number</string>
+
     <!-- NewSmsInput -->
     <string name="onboarding_sms_input_wrong_sms">Incorrect SMS code \uD83D\uDE2C</string>
     <string name="onboarding_sms_invalid_sms_button_text">Enter the code to continue</string>

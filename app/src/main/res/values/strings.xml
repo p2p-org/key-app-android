@@ -589,14 +589,4 @@
     <string name="search_menu">Search</string>
     <string name="search_for_a_token">Search for a token</string>
 
-
-    <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
-    <string name="onboarding_step_2">Step 2 of 3</string>
-    <string name="onboarding_add_number_title">What\'s your number? 🤙</string>
-    <string name="onboarding_add_number_message">Add a phone to protect your account</string>
-    <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
-    <string name="onboarding_country_name">Country name</string>
-    <string name="onboarding_fill_your_number">Fill your phone number</string>
-    <string name="onboarding_no_sms_for_number">We can\'t send SMS. Change your number, please</string>
-    <string name="onboarding_lets_finish_last_step">Oh, let’s finish the last step!</string>
 </resources>
