@@ -5,10 +5,12 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_NAME
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.wallet.utils.asCurrency
 import org.p2p.wallet.utils.asUsd
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.isZero
@@ -27,7 +29,8 @@ sealed class Token constructor(
     open val serumV3Usdc: String?,
     open val serumV3Usdt: String?,
     open val isWrapped: Boolean,
-    open val usdRate: BigDecimal?
+    open var rate: BigDecimal?,
+    open var currency: String = Constants.USD_READABLE_SYMBOL
 ) : Parcelable {
 
     @Parcelize
@@ -36,7 +39,6 @@ sealed class Token constructor(
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
-        override val usdRate: BigDecimal?,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -44,7 +46,9 @@ sealed class Token constructor(
         override val iconUrl: String?,
         override val serumV3Usdc: String?,
         override val serumV3Usdt: String?,
-        override val isWrapped: Boolean
+        override val isWrapped: Boolean,
+        override var rate: BigDecimal?,
+        override var currency: String = Constants.USD_READABLE_SYMBOL
     ) : Token(
         publicKey = publicKey,
         tokenSymbol = tokenSymbol,
@@ -55,7 +59,8 @@ sealed class Token constructor(
         serumV3Usdc = serumV3Usdc,
         serumV3Usdt = serumV3Usdt,
         isWrapped = isWrapped,
-        usdRate = usdRate
+        rate = rate,
+        currency = currency
     ) {
 
         @IgnoredOnParcel
@@ -104,7 +109,8 @@ sealed class Token constructor(
         override val serumV3Usdc: String?,
         override val serumV3Usdt: String?,
         override val isWrapped: Boolean,
-        override val usdRate: BigDecimal?
+        override var rate: BigDecimal?,
+        override var currency: String = Constants.USD_READABLE_SYMBOL
     ) : Token(
         publicKey = null,
         tokenSymbol = tokenSymbol,
@@ -115,7 +121,8 @@ sealed class Token constructor(
         serumV3Usdc = serumV3Usdc,
         serumV3Usdt = serumV3Usdt,
         isWrapped = isWrapped,
-        usdRate = usdRate
+        rate = rate,
+        currency = currency
     )
 
     @IgnoredOnParcel
@@ -132,7 +139,15 @@ sealed class Token constructor(
 
     @IgnoredOnParcel
     val usdRateOrZero: BigDecimal
-        get() = usdRate ?: BigDecimal.ZERO
+        get() = rate ?: BigDecimal.ZERO
+
+    @IgnoredOnParcel
+    val currencyFormattedRate: String
+        get() = (rate ?: BigDecimal.ZERO).asCurrency(currencySymbol)
+
+    @IgnoredOnParcel
+    val currencySymbol: String
+        get() = if (currency == Constants.USD_READABLE_SYMBOL) Constants.USD_SYMBOL else currency
 
     @IgnoredOnParcel
     val isActive: Boolean
@@ -157,7 +172,7 @@ sealed class Token constructor(
                 iconUrl = tokenData.iconUrl,
                 totalInUsd = exchangeRate?.let { total.multiply(it) },
                 total = total,
-                usdRate = exchangeRate,
+                rate = exchangeRate,
                 visibility = TokenVisibility.SHOWN,
                 serumV3Usdc = tokenData.serumV3Usdc,
                 serumV3Usdt = tokenData.serumV3Usdt,

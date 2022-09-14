@@ -18,9 +18,9 @@ abstract class BaseSingleSelectionAdapter<T, VH : BaseSelectionViewHolder<T>>(
     ): VH = onCreateViewHolder(parent, viewType) { item ->
         if (selectedItem != item) {
             selectedItem = item
-            onItemClicked(item)
             notifyDataSetChanged()
         }
+        onItemClicked(item)
     }
 
     abstract fun onCreateViewHolder(

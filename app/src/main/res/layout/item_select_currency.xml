@@ -8,8 +8,7 @@
     android:layout_height="wrap_content"
     android:background="@color/backgroundPrimary"
     android:clickable="true"
-    android:focusable="true"
-    android:paddingHorizontal="16dp">
+    android:focusable="true">
 
     <TextView
         android:id="@+id/textViewCurrencySymbol"
