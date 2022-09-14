@@ -1,10 +1,14 @@
 package org.p2p.wallet.auth.ui.restore.common
 
+import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
@@ -29,11 +33,28 @@ class CommonRestorePresenter(
     override fun setGoogleIdToken(userId: String, idToken: String) {
         view?.setLoadingState(isScreenLoading = true)
         restoreWalletInteractor.restoreSocialShare(idToken, userId)
-        view?.setLoadingState(isScreenLoading = false)
-        if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.SocialPlusCustomShare)) {
-            // navigate to pin if social + device share exists
+        if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)) {
+            launch {
+                restoreUserWithShares()
+            }
         } else {
             view?.navigateToPhoneEnter()
+            view?.setLoadingState(isScreenLoading = false)
+        }
+    }
+
+    private suspend fun restoreUserWithShares() {
+        when (val result = restoreWalletInteractor.tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)) {
+            is RestoreUserResult.RestoreSuccessful -> {
+                restoreWalletInteractor.finishAuthFlow()
+                view?.setLoadingState(isScreenLoading = false)
+                view?.navigateToPinCreate()
+            }
+            is RestoreUserResult.RestoreFailed -> {
+                Timber.e(result)
+                view?.setLoadingState(isScreenLoading = false)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
         }
     }
 }

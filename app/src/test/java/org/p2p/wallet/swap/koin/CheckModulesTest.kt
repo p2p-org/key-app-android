@@ -27,7 +27,6 @@ import org.koin.test.KoinTest
 import org.koin.test.check.checkKoinModules
 import org.koin.test.mock.MockProviderRule
 import org.mockito.Mockito
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
@@ -45,6 +44,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
@@ -209,7 +209,7 @@ class CheckModulesTest : KoinTest {
             totalInUsd = null,
             total = BigDecimal.ZERO,
             visibility = TokenVisibility.DEFAULT,
-            usdRate = null,
+            rate = null,
             tokenSymbol = "",
             decimals = 0,
             mintAddress = "",

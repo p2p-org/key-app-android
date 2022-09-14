@@ -73,7 +73,7 @@ class NewCreatePinPresenter(
         launch {
             try {
                 registerComplete(pinCode, null)
-                view?.onPinCreated()
+                view?.navigateToMain()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
                 createdPin = emptyString()
@@ -90,6 +90,5 @@ class NewCreatePinPresenter(
         authInteractor.registerComplete(pinCode, cipher)
         // TODO determine pin complexity
         adminAnalytics.logPinCreated(currentScreenName = analyticsInteractor.getCurrentScreenName())
-        view?.navigateToMain()
     }
 }

@@ -31,16 +31,16 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
-    var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
-        set(value) {
-            field = value
-            Timber.tag(TAG).i("thirdShare is received and set")
-        }
-
     var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
         set(value) {
             field = value
             Timber.tag(TAG).i("deviceShare is received and set")
+        }
+
+    var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
+        set(value) {
+            field = value
+            Timber.tag(TAG).i("thirdShare is received and set")
         }
 
     var encryptedMnemonic: String? = null

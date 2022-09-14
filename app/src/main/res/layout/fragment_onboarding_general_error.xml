@@ -65,7 +65,7 @@
             android:id="@+id/container_common_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertxical"
+            android:orientation="vertical"
             android:visibility="gone">
 
             <org.p2p.uikit.components.UiKitButton

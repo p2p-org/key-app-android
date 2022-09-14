@@ -6,6 +6,7 @@ import org.p2p.wallet.common.mvp.MvpView
 interface CommonRestoreContract {
     interface View : MvpView {
         fun startGoogleFlow()
+        fun navigateToPinCreate()
         fun showError(error: String)
         fun onNoTokenFoundError(userId: String)
         fun navigateToPhoneEnter()

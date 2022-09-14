@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="132dp"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="4dp"
+    android:background="@drawable/bg_paying_method"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/textViewFeeAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+        android:textColor="@color/text_night"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="4,5%" />
+
+    <TextView
+        android:id="@+id/textViewFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/buy_fee"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_night"
+        app:layout_constraintBaseline_toBaselineOf="@id/textViewFeeAmount"
+        app:layout_constraintStart_toEndOf="@id/textViewFeeAmount" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:button="@drawable/bg_checkbox"
+        android:buttonTint="@color/icons_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewPaymentPeriod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewFeeAmount"
+        tools:text="@string/buy_period_card" />
+
+    <TextView
+        android:id="@+id/textViewPayingMethod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewPaymentPeriod"
+        tools:text="@string/buy_method_card" />
+
+    <ImageView
+        android:id="@+id/imageViewMethod"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@id/textViewPayingMethod"
+        app:layout_constraintStart_toEndOf="@id/textViewPayingMethod"
+        app:layout_constraintTop_toTopOf="@id/textViewPayingMethod"
+        app:tint="@color/icons_mountain"
+        tools:src="@drawable/ic_card" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

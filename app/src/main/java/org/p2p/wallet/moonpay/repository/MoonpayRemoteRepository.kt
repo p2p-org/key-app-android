@@ -4,6 +4,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.moonpay.api.MoonpayApi
+import org.p2p.wallet.moonpay.api.MoonpayIpAddressResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import java.math.BigDecimal
@@ -18,14 +19,16 @@ class MoonpayRemoteRepository(
         baseCurrencyAmount: String?,
         quoteCurrencyAmount: String?,
         tokenToBuy: Token,
-        baseCurrencyCode: String
+        baseCurrencyCode: String,
+        paymentMethod: String,
     ): MoonpayBuyResult = try {
         val response = api.getBuyCurrency(
             quoteCurrencyCode = tokenToBuy.tokenSymbolForMoonPay,
             apiKey = moonpayApiKey,
             baseCurrencyAmount = baseCurrencyAmount,
             quoteCurrencyAmount = quoteCurrencyAmount,
-            baseCurrencyCode = baseCurrencyCode
+            baseCurrencyCode = baseCurrencyCode,
+            paymentMethod = paymentMethod
         )
         MoonpayBuyResult.Success(mapper.fromNetworkToDomain(response))
     } catch (error: ServerException) {
@@ -39,6 +42,10 @@ class MoonpayRemoteRepository(
     override suspend fun getCurrencyAskPrice(tokenToGetPrice: Token): BigDecimal {
         val response = api.getCurrencyAskPrice(tokenToGetPrice.tokenSymbolForMoonPay, moonpayApiKey)
         return response.amountInUsd
+    }
+
+    override suspend fun getIpAddressData(): MoonpayIpAddressResponse {
+        return api.getIpAddress(moonpayApiKey)
     }
 
     private val Token.tokenSymbolForMoonPay: String

@@ -103,6 +103,14 @@ class HomePresenter(
         }
     }
 
+    override fun onBuyTokenClicked(token: Token) {
+        if (newBuyFeatureToggle.value) {
+            view?.showNewBuyScreen(token)
+        } else {
+            view?.showOldBuyScreen(token)
+        }
+    }
+
     override fun subscribeToUserTokensFlow() {
         userTokensFlowJob?.cancel()
         userTokensFlowJob = launch {

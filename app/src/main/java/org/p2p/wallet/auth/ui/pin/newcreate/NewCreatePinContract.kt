@@ -6,7 +6,6 @@ import org.p2p.wallet.common.mvp.MvpView
 interface NewCreatePinContract {
 
     interface View : MvpView {
-        fun onPinCreated()
         fun showCreation()
         fun showConfirmation()
         fun showConfirmationError()
