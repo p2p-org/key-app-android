@@ -1,7 +1,10 @@
 package org.p2p.wallet.moonpay.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
+@Parcelize
 data class BuyCurrency(
     val receiveAmount: Double,
     val price: BigDecimal,
@@ -11,10 +14,19 @@ data class BuyCurrency(
     val totalAmount: BigDecimal,
     val baseCurrency: Currency,
     val quoteCurrency: Currency,
-) {
+) : Parcelable {
+    @Parcelize
     data class Currency(
         val code: String,
         val minAmount: BigDecimal,
         val maxAmount: BigDecimal?,
-    )
+    ) : Parcelable {
+        companion object {
+            fun create(code: String): Currency = Currency(
+                code = code,
+                minAmount = BigDecimal.ZERO,
+                maxAmount = null
+            )
+        }
+    }
 }

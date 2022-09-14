@@ -20,17 +20,51 @@ class UserRestoreInteractor(
     }
 
     sealed interface RestoreUserWay {
+        object DevicePlusSocialShareWay : RestoreUserWay
         object SocialPlusCustomShareWay : RestoreUserWay
     }
 
-    fun isUserReadyToBeRestored(): Boolean {
-        val isTwoSharesAvailable =
-            restoreFlowDataLocalRepository.socialShare != null && restoreFlowDataLocalRepository.customShare != null
-        return isTwoSharesAvailable
+    fun isUserReadyToBeRestored(restoreWay: RestoreUserWay): Boolean {
+        val sharesCount = when (restoreWay) {
+            is RestoreUserWay.DevicePlusSocialShareWay -> {
+                countShare(restoreFlowDataLocalRepository.deviceShare) +
+                    countShare(restoreFlowDataLocalRepository.socialShare)
+            }
+            is RestoreUserWay.SocialPlusCustomShareWay -> {
+                countShare(restoreFlowDataLocalRepository.socialShare) +
+                    countShare(restoreFlowDataLocalRepository.customShare)
+            }
+        }
+        return sharesCount > 1
+    }
+
+    private fun countShare(share: Any?): Int {
+        return if (share == null) 0 else 1
     }
 
     suspend fun tryRestoreUser(restoreWay: RestoreUserWay): RestoreUserResult = try {
         when (restoreWay) {
+            is RestoreUserWay.DevicePlusSocialShareWay -> {
+                val deviceShare = restoreFlowDataLocalRepository.deviceShare
+                val socialShare = restoreFlowDataLocalRepository.socialShare
+                val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
+                if (deviceShare != null && socialShare != null) {
+                    val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoCustom(socialShare, deviceShare)
+                    signUpDetailsStorage.save(
+                        data = Web3AuthSignUpResponse(
+                            ethereumPublicKey = result.ethereumPublicKey,
+                            mnemonicPhrase = result.mnemonicPhrase,
+                            encryptedMnemonicPhrase = JsonObject(),
+                            deviceShare = deviceShare,
+                            customThirdShare = null
+                        ),
+                        userId = socialShareUserId.orEmpty()
+                    )
+                    restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
+                } else {
+                    throw IllegalStateException("Social+Device restore way failed. Social or Device share is null!")
+                }
+            }
             is RestoreUserWay.SocialPlusCustomShareWay -> {
                 val customShare = restoreFlowDataLocalRepository.customShare
                     ?: throw IllegalStateException("Social+Custom restore way failed. Third share is null")

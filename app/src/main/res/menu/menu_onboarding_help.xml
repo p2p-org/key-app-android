@@ -7,6 +7,6 @@
         android:icon="@drawable/ic_help_outlined"
         android:iconTint="@color/icons_night"
         android:iconTintMode="multiply"
-        android:title="@string/menu_help"
+        android:title="@null"
         app:showAsAction="always" />
 </menu>

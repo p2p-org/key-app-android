@@ -21,4 +21,8 @@
     <!-- change error text in PWN-5047 -->
     <string name="seed_phrase_verify_checksum_failed">The seed phrase doesn\'t match. Please try again</string>
     <string name="seed_phrase_verify_words_failed">We found one or more typos. Please try again.</string>
+
+    <!-- UiKitAmountsView -->
+    <string name="amounts_view_hint">0.0</string>
+
 </resources>
