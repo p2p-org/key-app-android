@@ -1,13 +1,13 @@
 package org.p2p.wallet.home
 
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
@@ -82,7 +82,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         if (!fragments.containsKey(itemId)) {
             val fragment = when (ScreenTab.fromTabId(itemId)) {
                 ScreenTab.HOME_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_COINS)
+                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN)
                     HomeFragment.create()
                 }
                 ScreenTab.HISTORY_SCREEN -> {
