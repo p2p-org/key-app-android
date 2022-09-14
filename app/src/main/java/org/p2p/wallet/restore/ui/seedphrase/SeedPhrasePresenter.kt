@@ -51,14 +51,20 @@ class SeedPhrasePresenter(
 
     override fun verifySeedPhrase() {
         launch {
-            currentSeedPhrase = seedPhraseInteractor.verifySeedPhrase(currentSeedPhrase)
-
-            if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
-                view?.navigateToDerievableAccounts(currentSeedPhrase)
-            } else {
-                // warning: updateSeedPhrase causes keyboard to appear, so add a check
-                view?.updateSeedPhrase(currentSeedPhrase)
-                view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_failed)
+            when (val result = seedPhraseInteractor.verifySeedPhrase(currentSeedPhrase)) {
+                is SeedPhraseInteractor.SeedPhraseVerifyResult.VerifiedSeedPhrase -> {
+                    currentSeedPhrase = result.seedPhraseWord
+                    if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
+                        view?.navigateToDerievableAccounts(currentSeedPhrase)
+                    } else {
+                        // warning: updateSeedPhrase causes keyboard to appear, so add a check
+                        view?.updateSeedPhrase(currentSeedPhrase)
+                        view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_words_failed)
+                    }
+                }
+                is SeedPhraseInteractor.SeedPhraseVerifyResult.VerifyByChecksumFailed -> {
+                    view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_checksum_failed)
+                }
             }
         }
     }

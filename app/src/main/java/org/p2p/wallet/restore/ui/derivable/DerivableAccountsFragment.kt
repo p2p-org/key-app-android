@@ -7,7 +7,6 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
