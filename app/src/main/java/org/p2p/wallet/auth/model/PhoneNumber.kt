@@ -13,12 +13,8 @@ data class PhoneNumber(val formattedValue: String) {
             return "+$trimmedValue"
         }
     }
-}
 
-fun PhoneNumber.e164Formatted(): String {
-    return PhoneNumber.PhoneNumberFormatter.getPhoneNumberE164Formatted(this)
-}
-
-fun PhoneNumber.equals(phoneNumber: PhoneNumber?): Boolean {
-    return this.formattedValue == phoneNumber?.formattedValue
+    fun e164Formatted(): String {
+        return PhoneNumberFormatter.getPhoneNumberE164Formatted(this)
+    }
 }

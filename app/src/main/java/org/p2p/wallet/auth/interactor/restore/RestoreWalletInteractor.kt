@@ -29,7 +29,8 @@ class RestoreWalletInteractor(
     fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet) =
         userRestoreInteractor.isUserReadyToBeRestored(restoreFlow)
 
-    suspend fun confirmRestoreWallet(smsCode: String) = customShareRestoreInteractor.confirmRestoreWallet(smsCode)
+    suspend fun finishRestoreCustomShare(smsCode: String) =
+        customShareRestoreInteractor.finishRestoreCustomShare(smsCode)
 
     suspend fun tryRestoreUser(restoreFlow: OnboardingFlow.RestoreWallet) =
         userRestoreInteractor.tryRestoreUser(restoreFlow)

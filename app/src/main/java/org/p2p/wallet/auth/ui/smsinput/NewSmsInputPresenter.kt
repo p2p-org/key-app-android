@@ -80,7 +80,7 @@ class NewSmsInputPresenter(
             createWalletInteractor.finishCreatingWallet(smsCode)
             createWalletInteractor.finishAuthFlow()
             view?.navigateToPinCreate()
-        } catch (tooOftenOtpRequests: GatewayServiceError.TooOftenOtpRequests) {
+        } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
             Timber.e(tooOftenOtpRequests)
             view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
         } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
@@ -103,7 +103,7 @@ class NewSmsInputPresenter(
     private suspend fun finishRestoringCustomShare(smsCode: String) {
         try {
             view?.renderButtonLoading(isLoading = true)
-            restoreWalletInteractor.confirmRestoreWallet(smsCode)
+            restoreWalletInteractor.finishRestoreCustomShare(smsCode)
             when (val currentFlow = onboardingInteractor.currentFlow) {
                 is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
                     when (val flow = restoreWalletInteractor.tryRestoreUser(currentFlow)) {
@@ -167,7 +167,7 @@ class NewSmsInputPresenter(
                         )
                     }
                 }
-            } catch (tooOftenOtpRequests: GatewayServiceError.TooOftenOtpRequests) {
+            } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
                 Timber.e(tooOftenOtpRequests)
                 view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {

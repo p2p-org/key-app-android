@@ -38,8 +38,10 @@ import org.p2p.wallet.updates.UpdatesManager
 import java.security.KeyStore
 import java.util.concurrent.Executors
 
-private const val SHARED_PREFS_ACCOUNT_STORAGE = "AccountSharedPreferences"
-private const val SHARED_PREFS_KEY_STORE = "KeyStoreSharedPreferences"
+enum class SharedPreferencesName(val prefsName: String) {
+    AccountStorage("AccountSharedPreferences"),
+    KeyStorage("KeyStoreSharedPreferences")
+}
 
 object InfrastructureModule : InjectionModule {
 
@@ -74,23 +76,20 @@ object InfrastructureModule : InjectionModule {
         }
 
         single {
-            val context = get<Context>()
-            val name = "${context.packageName}.prefs"
-            context.getSharedPreferences(name, Context.MODE_PRIVATE)
+            val name = "${androidContext().packageName}.prefs"
+            androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
         }
 
-        single(named(SHARED_PREFS_ACCOUNT_STORAGE)) {
-            val context = get<Context>()
-            val name = "${context.packageName}.account_prefs"
-            context.getSharedPreferences(name, Context.MODE_PRIVATE)
+        single(named(SharedPreferencesName.AccountStorage)) {
+            val name = "${androidContext().packageName}.account_prefs"
+            androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
         }
-        single(named(SHARED_PREFS_KEY_STORE)) {
-            val context = get<Context>()
-            val name = "${context.packageName}.keystore_prefs"
-            context.getSharedPreferences(name, Context.MODE_PRIVATE)
+        single(named(SharedPreferencesName.KeyStorage)) {
+            val name = "${androidContext().packageName}.keystore_prefs"
+            androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
         }
 
-        single { EncoderDecoderMarshmallow(get(named(SHARED_PREFS_KEY_STORE))) } bind EncoderDecoder::class
+        single<EncoderDecoder> { EncoderDecoderMarshmallow(get(named(SharedPreferencesName.KeyStorage))) }
 
         single { KeyStore.getInstance("AndroidKeyStore") }
 
@@ -102,9 +101,8 @@ object InfrastructureModule : InjectionModule {
         factory {
             AccountStorage(
                 keyStoreWrapper = get(),
-                sharedPreferences = get(named(SHARED_PREFS_ACCOUNT_STORAGE)),
+                sharedPreferences = get(named(SharedPreferencesName.AccountStorage)),
                 gson = get()
-
             )
         } bind AccountStorageContract::class
 

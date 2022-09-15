@@ -70,11 +70,11 @@ class UserRestoreInteractor(
         restoreWay: OnboardingFlow.RestoreWallet.SocialPlusCustomShare
     ): RestoreUserResult = try {
         val customShare = restoreFlowDataLocalRepository.customShare
-            ?: throw IllegalStateException("Social+Custom restore way failed. Third share is null")
+            ?: error("Social+Custom restore way failed. Third share is null")
         val socialShare = restoreFlowDataLocalRepository.socialShare
-            ?: throw IllegalStateException("Social+Custom restore way failed. Social share is null")
+            ?: error("Social+Custom restore way failed. Social share is null")
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
-            ?: throw IllegalStateException("Social+Custom restore way failed. Social share ID is null")
+            ?: error("Social+Custom restore way failed. Social share ID is null")
         val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(socialShare, customShare)
 
         signUpDetailsStorage.save(
@@ -98,12 +98,12 @@ class UserRestoreInteractor(
         restoreFlow: OnboardingFlow.RestoreWallet.DevicePlusCustomShare
     ): RestoreUserResult = try {
         val customShare = restoreFlowDataLocalRepository.customShare
-            ?: throw IllegalStateException("Device+Custom restore way failed. Third share is null")
+            ?: error("Device+Custom restore way failed. Third share is null")
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
-            ?: throw IllegalStateException("Device+Custom restore way failed. Device share is null")
+            ?: error("Device+Custom restore way failed. Device share is null")
         val encryptedMnemonicGson = restoreFlowDataLocalRepository.encryptedMnemonic?.let {
             gson.fromJsonReified<JsonObject>(it)
-        } ?: throw IllegalStateException("Device+Custom restore way failed. Mnemonic phrase is null")
+        } ?: error("Device+Custom restore way failed. Mnemonic phrase is null")
 
         val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
             deviceShare = deviceShare,
@@ -142,7 +142,7 @@ class UserRestoreInteractor(
             )
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
         } else {
-            throw IllegalStateException("Social+Device restore way failed. Social or Device share is null!")
+            error("Social+Device restore way failed. Social or Device share is null!")
         }
         RestoreUserResult.RestoreSuccessful
     } catch (e: Throwable) {
@@ -153,6 +153,6 @@ class UserRestoreInteractor(
         restoreFlowDataLocalRepository.userActualAccount?.also {
             tokenKeyProvider.secretKey = it.secretKey
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
-        } ?: throw NullPointerException("User actual account is null, restoring a user is failed")
+        } ?: error("User actual account is null, restoring a user is failed")
     }
 }
