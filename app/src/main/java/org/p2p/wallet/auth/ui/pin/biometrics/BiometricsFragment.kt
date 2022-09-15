@@ -28,6 +28,9 @@ class BiometricsFragment :
 
     override val presenter: BiometricsContract.Presenter by inject()
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_snow
+
     private val binding: FragmentBiometricsBinding by viewBinding()
     private val pinCode: String by args(ARG_PIN_CODE)
 
