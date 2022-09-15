@@ -121,7 +121,7 @@ class Web3AuthApiClient(
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
-                    jsMethodCall = "triggerSignInNoCustom($params)"
+                    jsMethodCall = "triggerSignInNoTorus($params)"
                 ),
                 null
             )

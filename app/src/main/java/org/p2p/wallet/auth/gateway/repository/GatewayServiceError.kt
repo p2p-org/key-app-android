@@ -63,4 +63,9 @@ sealed class GatewayServiceError : Throwable() {
         override val code: Int,
         override val message: String
     ) : GatewayServiceError()
+
+    class TooManyOtpRequests(
+        override val code: Int,
+        override val message: String
+    ) : GatewayServiceError()
 }

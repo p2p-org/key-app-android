@@ -5,8 +5,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
@@ -47,6 +49,8 @@ class HomePresenter(
     private val homeElementItemMapper: HomeElementItemMapper,
     private val resourcesProvider: ResourcesProvider,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
+    private val accountStorageContract: UserSignUpDetailsStorage,
+    private val authInteractor: AuthInteractor
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private data class ViewState(
