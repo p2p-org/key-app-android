@@ -10,12 +10,15 @@ import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
+import timber.log.Timber
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
+
+private const val TAG = "Web3AuthApiClient"
 
 class Web3AuthApiClient(
     context: Context,
@@ -48,6 +51,8 @@ class Web3AuthApiClient(
         return suspendCancellableCoroutine {
             this.continuation = it
 
+            Timber.tag(TAG).i("triggerSilentSignUp triggered")
+
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signup",
@@ -64,6 +69,8 @@ class Web3AuthApiClient(
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
+
+            Timber.tag(TAG).i("triggerSignInNoDevice triggered")
 
             val thirdShareAsJsObject = gson.toJson(thirdShare)
             onboardingWebView.evaluateJavascript(
@@ -83,6 +90,8 @@ class Web3AuthApiClient(
         return suspendCancellableCoroutine {
             this.continuation = it
 
+            Timber.tag(TAG).i("triggerSignInNoCustom triggered")
+
             val deviceShareAsJsObject = gson.toJson(deviceShare)
             onboardingWebView.evaluateJavascript(
                 generateFacade(
@@ -101,6 +110,8 @@ class Web3AuthApiClient(
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
+
+            Timber.tag(TAG).i("triggerSignInNoCustom triggered")
 
             val thirdShareAsJsObject = gson.toJson(thirdShare)
             val deviceShareAsJsObject = gson.toJson(deviceShare)
@@ -132,7 +143,7 @@ class Web3AuthApiClient(
             append("torusNetwork: '$torusNetworkEnv', ")
             append("torusLoginType: '$torusLoginType', ")
             append("torusEndpoint: '$torusEndpoint', ")
-            append("torusVerifier: '$torusVerifier', ")
+            append("torusVerifier: '$torusVerifier'")
             append("})")
             append(".$jsMethodCall")
         }
