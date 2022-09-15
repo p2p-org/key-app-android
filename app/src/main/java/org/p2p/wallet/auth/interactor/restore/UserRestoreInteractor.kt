@@ -7,6 +7,7 @@ import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -111,6 +112,12 @@ class UserRestoreInteractor(
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
         RestoreUserResult.RestoreSuccessful
+    } catch (web3AuthError: Web3AuthErrorResponse) {
+        if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
+            RestoreUserResult.UserNotFound
+        } else {
+            RestoreUserResult.RestoreFailed(Throwable("Unknown error type"))
+        }
     } catch (e: Throwable) {
         RestoreUserResult.RestoreFailed(e)
     }

@@ -106,12 +106,15 @@ class NewSmsInputPresenter(
             restoreWalletInteractor.confirmRestoreWallet(smsCode)
             when (val currentFlow = onboardingInteractor.currentFlow) {
                 is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
-                    when (restoreWalletInteractor.tryRestoreUser(currentFlow)) {
+                    when (val flow = restoreWalletInteractor.tryRestoreUser(currentFlow)) {
                         RestoreUserResult.RestoreSuccessful -> {
                             view?.navigateToPinCreate()
                         }
-                        is RestoreUserResult.RestoreFailed -> {
+                        RestoreUserResult.UserNotFound -> {
                             view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.PhoneNumberDoesNotMatchError)
+                        }
+                        is RestoreUserResult.RestoreFailed -> {
+                            view?.showErrorMessage(messageResId = R.string.error_general_message)
                         }
                     }
                 }
@@ -164,6 +167,9 @@ class NewSmsInputPresenter(
                         )
                     }
                 }
+            } catch (tooOftenOtpRequests: GatewayServiceError.TooOftenOtpRequests) {
+                Timber.e(tooOftenOtpRequests)
+                view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
             } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
                 Timber.e(serverError)
                 view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
