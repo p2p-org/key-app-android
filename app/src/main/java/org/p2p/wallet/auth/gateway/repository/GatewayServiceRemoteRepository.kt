@@ -14,7 +14,6 @@ import timber.log.Timber
 import kotlin.time.DurationUnit
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.model.PhoneNumber
-import org.p2p.wallet.auth.model.e164Formatted
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 
 class GatewayServiceRemoteRepository(
