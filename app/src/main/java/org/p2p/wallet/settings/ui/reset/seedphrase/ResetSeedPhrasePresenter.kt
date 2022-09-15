@@ -4,6 +4,7 @@ import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import timber.log.Timber
 import kotlin.properties.Delegates
 
 class ResetSeedPhrasePresenter(
@@ -30,10 +31,13 @@ class ResetSeedPhrasePresenter(
     }
 
     override fun verifySeedPhrase() {
-        val validatedKeys = seedPhraseInteractor.verifySeedPhrase(keys)
-        val isValid = validatedKeys.none { !it.isValid }
-
-        val resetResult = if (isValid) AuthAnalytics.ResetResult.SUCCESS else AuthAnalytics.ResetResult.ERROR
-        authAnalytics.logAuthResetValidated(resetResult)
+        val verifyResult = seedPhraseInteractor.verifySeedPhrase(keys)
+        if (verifyResult is SeedPhraseInteractor.SeedPhraseVerifyResult.VerifiedSeedPhrase) {
+            val isValid = verifyResult.seedPhraseWord.none { !it.isValid }
+            val resetResult = if (isValid) AuthAnalytics.ResetResult.SUCCESS else AuthAnalytics.ResetResult.ERROR
+            authAnalytics.logAuthResetValidated(resetResult)
+        } else {
+            Timber.i("Checksum verify failed on Reset Seed Phrase")
+        }
     }
 }

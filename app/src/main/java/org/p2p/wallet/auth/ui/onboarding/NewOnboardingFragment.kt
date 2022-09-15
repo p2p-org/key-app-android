@@ -120,6 +120,6 @@ class NewOnboardingFragment :
 
     override fun onCommonError() {
         setButtonLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(messageResId = R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.onboarding_google_services_error)
     }
 }
