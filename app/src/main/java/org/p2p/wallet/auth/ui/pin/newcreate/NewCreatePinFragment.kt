@@ -93,13 +93,6 @@ class NewCreatePinFragment :
         analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.PIN_CONFIRM)
     }
 
-    override fun onPinCreated(pinCode: String) {
-        binding.pinView.onSuccessPin()
-        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success, onDismissed = {
-            presenter.onPinCreated()
-        })
-    }
-
     override fun showConfirmationError() {
         showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_error)
         binding.pinView.startErrorAnimation()
@@ -118,6 +111,9 @@ class NewCreatePinFragment :
     }
 
     override fun navigateToMain() {
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        binding.pinView.onSuccessPin()
+        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success, onDismissed = {
+            popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        })
     }
 }

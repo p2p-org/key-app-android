@@ -1,13 +1,13 @@
 package org.p2p.wallet.auth.ui.generalerror
 
-import android.os.Bundle
-import android.view.View
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract.Presenter
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
+import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorBinding
 import org.p2p.wallet.intercom.IntercomService
@@ -39,22 +39,44 @@ class OnboardingGeneralErrorFragment :
     override val navBarColor: Int = R.color.bg_night
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding.buttonReportBug.setOnClickListener {
-            IntercomService.showMessenger()
-        }
-        binding.buttonToStartingScreen.setOnClickListener {
-            popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
-        }
-    }
-
-    override fun updateTitle(title: String) {
+    override fun updateText(title: String, message: String) {
         binding.textViewErrorTitle.text = title
+        binding.textViewErrorSubtitle.text = message
     }
 
-    override fun updateSubtitle(subTitle: String) {
-        binding.textViewErrorSubtitle.text = subTitle
+    override fun setViewState(errorState: GeneralErrorScreenError) = with(binding) {
+        when (errorState) {
+            is GeneralErrorScreenError.CriticalError -> {
+                buttonReportBug.setOnClickListener {
+                    IntercomService.showMessenger()
+                }
+                buttonToStartingScreen.setOnClickListener {
+                    popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
+                }
+
+                buttonReportBug.setOnClickListener {
+                    IntercomService.showMessenger()
+                }
+                buttonToStartingScreen.setOnClickListener {
+                    popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
+                }
+                containerCommonButtons.isVisible = true
+            }
+            GeneralErrorScreenError.PhoneNumberDoesNotMatchError -> {
+                errorState.titleResId?.let { textViewErrorTitle.text = getString(it) }
+                errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
+
+                buttonRestoreToStartingScreen.setOnClickListener {
+                    popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
+                }
+                buttonRestoreWithPhone.setOnClickListener {
+                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                }
+                buttonRestoreByGoogle.setOnClickListener {
+                    // TODO implement restore by google API
+                }
+                containerDeviceCustomShareButtons.isVisible = true
+            }
+        }
     }
 }

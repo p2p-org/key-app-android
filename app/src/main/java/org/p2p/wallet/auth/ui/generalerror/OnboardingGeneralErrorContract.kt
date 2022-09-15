@@ -5,8 +5,8 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface OnboardingGeneralErrorContract {
     interface View : MvpView {
-        fun updateTitle(title: String)
-        fun updateSubtitle(subTitle: String)
+        fun updateText(title: String, message: String)
+        fun setViewState(errorState: GeneralErrorScreenError)
     }
 
     interface Presenter : MvpPresenter<View>

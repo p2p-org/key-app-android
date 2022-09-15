@@ -66,7 +66,7 @@ class CommonRestoreFragment :
             }
 
             buttonPhone.setOnClickListener {
-                replaceFragment(PhoneNumberEnterFragment.create())
+                presenter.useCustomShare()
             }
 
             buttonSeed.setOnClickListener {

@@ -81,7 +81,6 @@ class SecureStorage(
     override fun contains(key: String) = sharedPreferences.contains(key)
 
     override fun clear() {
-        keyStoreWrapper.clear()
         sharedPreferences.edit { clear() }
     }
 }

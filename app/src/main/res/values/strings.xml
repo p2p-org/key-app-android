@@ -59,6 +59,9 @@
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
     <string name="error_country_not_found">Sorry, we don’t know a such country</string>
+    <string name="error_wallet_not_found_title">No wallet found</string>
+    <string name="error_wallet_not_found_message">Try account or use an another phone number</string>
+    <string name="error_too_often_otp_requests_message">You request SMS too often. Try later.</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>

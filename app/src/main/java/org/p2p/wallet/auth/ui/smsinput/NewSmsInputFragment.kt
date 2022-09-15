@@ -7,6 +7,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
@@ -42,9 +43,10 @@ class NewSmsInputFragment :
 
     private val binding: FragmentNewSmsInputBinding by viewBinding()
 
-    override fun initView(userPhoneNumber: String) {
+    override fun initView(userPhoneNumber: PhoneNumber) {
         with(binding) {
-            checkNumberTitleText.text = getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber)
+            checkNumberTitleText.text =
+                getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber.formattedValue)
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
@@ -128,9 +130,9 @@ class NewSmsInputFragment :
         )
     }
 
-    override fun navigateToCriticalErrorScreen(errorCode: Int) {
+    override fun navigateToCriticalErrorScreen(errorType: GeneralErrorScreenError) {
         popAndReplaceFragment(
-            OnboardingGeneralErrorFragment.create(GeneralErrorScreenError.CriticalError(errorCode)),
+            OnboardingGeneralErrorFragment.create(errorType),
             inclusive = true
         )
     }

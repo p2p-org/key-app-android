@@ -13,8 +13,6 @@ data class Web3AuthSignUpResponse(
     @SerializedName("deviceShare") val deviceShare: ShareDetailsWithMeta?,
     @SerializedName("customShare") val customThirdShare: ShareDetailsWithMeta?,
 ) {
-    val thirdShare: ShareDetailsWithMeta.ShareInnerDetails.ShareValue?
-        get() = customThirdShare?.innerShareDetails?.shareValue
 
     data class ShareDetailsWithMeta(
         @SerializedName("share") val innerShareDetails: ShareInnerDetails,

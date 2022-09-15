@@ -2,12 +2,12 @@ package org.p2p.wallet.auth.ui.restore.found
 
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.interactor.OnboardingInteractor.OnboardingFlow
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.model.OnboardingFlow
 
 class WalletFoundPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
@@ -30,7 +30,7 @@ class WalletFoundPresenter(
 
             when (val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
-                    onboardingInteractor.currentFlow = OnboardingFlow.CREATE_WALLET
+                    onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
@@ -48,6 +48,6 @@ class WalletFoundPresenter(
     }
 
     override fun startRestoreWallet() {
-        onboardingInteractor.currentFlow = OnboardingFlow.RESTORE_WALLET
+        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
     }
 }
