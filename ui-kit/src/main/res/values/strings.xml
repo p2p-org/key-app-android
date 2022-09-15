@@ -13,14 +13,8 @@
     <string name="tip_button_skip_all_title">Skip all</string>
 
     <!-- Restore by seed phrase screen -->
-    <string name="seed_phrase_restore_wallet">Restoring your wallet</string>
-    <string name="seed_phrase_enter_title">Enter your seed phrase</string>
-    <string name="seed_phrase_button_disabled_text">Fill 12 or 24 words</string>
     <string name="seed_phrase_view_invalid">Seed phrase</string>
     <string name="seed_phrase_view_valid">Seed phrase ✅</string>
-    <!-- change error text in PWN-5047 -->
-    <string name="seed_phrase_verify_checksum_failed">The seed phrase doesn\'t match. Please try again</string>
-    <string name="seed_phrase_verify_words_failed">We found one or more typos. Please try again.</string>
 
     <!-- UiKitAmountsView -->
     <string name="amounts_view_hint">0.0</string>
