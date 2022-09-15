@@ -44,9 +44,9 @@ class NewCreatePinPresenter(
         }
 
         view?.lockPinKeyboard()
-
+        createPinCode(createdPin)
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
-            createPinCode(createdPin)
+            view?.navigateToMain()
         } else {
             view?.navigateToBiometrics(pinCode)
             view?.vibrate(VIBRATE_DURATION)
