@@ -1,15 +1,16 @@
 package org.p2p.uikit.components
 
+import android.content.Context
+import android.util.AttributeSet
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import androidx.core.view.isVisible
-import android.content.Context
-import android.util.AttributeSet
 import com.redmadrobot.inputmask.MaskedTextChangedListener
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.ComponentLargeInputFourDigitsBinding
 import org.p2p.uikit.utils.emptyString
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
 
 private val NO_ICON: Int? = null
@@ -88,6 +89,8 @@ class UiKitFourDigitsLargeInput @JvmOverloads constructor(
     fun setInputListener(listener: Listener) {
         this.listener = listener
     }
+
+    fun focusAndShowKeyboard() = binding.fourDigitsInput.focusAndShowKeyboard()
 
     fun setErrorState(errorMessage: String) {
         binding.contentCardLayout.setBackgroundResource(R.drawable.background_input_stroke_oval_error)

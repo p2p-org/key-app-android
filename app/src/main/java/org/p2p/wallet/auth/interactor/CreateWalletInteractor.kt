@@ -8,9 +8,15 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 class CreateWalletInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
     private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
-    private val tokenKeyProvider: TokenKeyProvider,
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
     class CreateWalletFailure(override val message: String) : Throwable(message)
+
+    val timer
+        get() = signUpFlowDataRepository.timerFlow
+
+    val resetCount
+        get() = signUpFlowDataRepository.smsResendCount
 
     suspend fun startCreatingWallet(userPhoneNumber: PhoneNumber, isResend: Boolean = false) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey
@@ -29,6 +35,7 @@ class CreateWalletInteractor(
             )
         }
         signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
+        signUpFlowDataRepository.startTimer()
     }
 
     fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount

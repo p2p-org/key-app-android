@@ -1,26 +1,23 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
-import org.p2p.wallet.common.mvp.BasePresenter
-import timber.log.Timber
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
+import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
@@ -32,10 +29,6 @@ class NewSmsInputPresenter(
 
     private var timerFlow: Job? = null
 
-    private var smsResendCount = 0
-
-    private var smsIncorrectTries = 0
-
     override fun attach(view: NewSmsInputContract.View) {
         super.attach(view)
 
@@ -45,12 +38,23 @@ class NewSmsInputPresenter(
             is OnboardingFlow.RestoreWallet -> restoreWalletInteractor.getUserPhoneNumber()
         }
         userPhoneNumber?.let { view.initView(it) }
+        connectToTimer()
+    }
+
+    private fun connectToTimer() {
+        createWalletInteractor.timer?.let { timer ->
+            launch {
+                timerFlow?.cancel()
+                timerFlow = timer
+                    .toResendSmsInputTimer()
+                    .launchIn(this)
+            }
+        }
     }
 
     override fun onSmsInputChanged(smsCode: String) {
         if (isSmsCodeFormatValid(smsCode)) {
             view?.renderSmsFormatValid()
-            checkSmsValue(smsCode)
         } else {
             view?.renderSmsFormatInvalid()
         }
@@ -136,49 +140,45 @@ class NewSmsInputPresenter(
     }
 
     override fun resendSms() {
-        launch {
-            try {
-                if (++smsResendCount >= MAX_RESENT_CLICK_TRIES_COUNT && smsIncorrectTries == 0) {
-                    view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED)
-                    return@launch
-                }
-                timerFlow?.cancel()
-                timerFlow = createSmsInputTimer(timerSeconds = 5 * smsResendCount)
-                    .toResendSmsInputTimer()
-                    .launchIn(this)
+        if (createWalletInteractor.resetCount >= MAX_RESENT_CLICK_TRIES_COUNT) {
+            view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED)
+        } else {
+            launch {
+                try {
+                    view?.renderButtonLoading(isLoading = true)
 
-                view?.renderButtonLoading(isLoading = true)
-
-                when (onboardingInteractor.currentFlow) {
-                    is OnboardingFlow.RestoreWallet -> {
-                        val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
-                            ?: throw IllegalStateException("User phone number cannot be null")
-                        restoreWalletInteractor.startRestoreCustomShare(
-                            userPhoneNumber = userPhoneNumber,
-                            isResend = true
-                        )
+                    when (onboardingInteractor.currentFlow) {
+                        is OnboardingFlow.RestoreWallet -> {
+                            val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
+                                ?: throw IllegalStateException("User phone number cannot be null")
+                            restoreWalletInteractor.startRestoreCustomShare(
+                                userPhoneNumber = userPhoneNumber,
+                                isResend = true
+                            )
+                        }
+                        is OnboardingFlow.CreateWallet -> {
+                            val userPhoneNumber = createWalletInteractor.getUserPhoneNumber()
+                                ?: throw IllegalStateException("User phone number cannot be null")
+                            createWalletInteractor.startCreatingWallet(
+                                userPhoneNumber = userPhoneNumber,
+                                isResend = true
+                            )
+                        }
                     }
-                    is OnboardingFlow.CreateWallet -> {
-                        val userPhoneNumber = createWalletInteractor.getUserPhoneNumber()
-                            ?: throw IllegalStateException("User phone number cannot be null")
-                        createWalletInteractor.startCreatingWallet(
-                            userPhoneNumber = userPhoneNumber,
-                            isResend = true
-                        )
-                    }
+                } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
+                    Timber.e(tooOftenOtpRequests)
+                    view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
+                } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+                    Timber.e(serverError)
+                    view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
+                } catch (error: Throwable) {
+                    Timber.e(error, "Resending sms failed")
+                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                } finally {
+                    view?.renderButtonLoading(isLoading = false)
                 }
-            } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
-                Timber.e(tooOftenOtpRequests)
-                view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
-            } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-                Timber.e(serverError)
-                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
-            } catch (error: Throwable) {
-                Timber.e(error, "Resending sms failed")
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            } finally {
-                view?.renderButtonLoading(isLoading = false)
             }
+            connectToTimer()
         }
     }
 
@@ -215,10 +215,4 @@ class NewSmsInputPresenter(
     private fun isSmsCodeFormatValid(smsCode: String): Boolean {
         return smsCode.length == 6
     }
-
-    private fun createSmsInputTimer(timerSeconds: Int): Flow<Int> =
-        (timerSeconds downTo 0)
-            .asSequence()
-            .asFlow()
-            .onEach { delay(1.seconds.inWholeMilliseconds) }
 }

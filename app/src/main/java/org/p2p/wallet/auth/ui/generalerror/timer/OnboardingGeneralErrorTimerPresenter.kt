@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,7 +19,8 @@ private const val TIMER_VALUE_FORMAT = "mm:ss"
 private const val START_TIMER_VALUE_MIN = 10
 
 class OnboardingGeneralErrorTimerPresenter(
-    private val error: GeneralErrorTimerScreenError
+    private val error: GeneralErrorTimerScreenError,
+    private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
 ) : BasePresenter<OnboardingGeneralErrorTimerContract.View>(),
     OnboardingGeneralErrorTimerContract.Presenter {
 
@@ -29,7 +31,10 @@ class OnboardingGeneralErrorTimerPresenter(
 
         createTimerFlow()
             .onEach(::onTimerValueChanged)
-            .onCompletion { this@OnboardingGeneralErrorTimerPresenter.view?.navigateToStartingScreen() }
+            .onCompletion {
+                signUpFlowDataRepository.resetSmsCount()
+                this@OnboardingGeneralErrorTimerPresenter.view?.navigateToStartingScreen()
+            }
             .launchIn(this)
     }
 

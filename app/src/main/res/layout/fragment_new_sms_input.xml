@@ -17,11 +17,11 @@
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="@color/black"
         app:title="Step 2 of 3"
-        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title2" />
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
     <TextView
         android:id="@+id/titleText"
-        style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -59,11 +59,11 @@
         android:layout_marginStart="24dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/bg_night"
+        android:backgroundTint="@color/button_night_to_rain_tint"
         android:enabled="false"
         android:padding="18dp"
         android:text="@string/common_continue"
-        android:textColor="@color/text_lime"
+        android:textColor="@color/button_lime_to_mountain_text"
         app:iconGravity="textEnd"
         app:iconTint="@color/icons_lime"
         app:layout_constraintBottom_toBottomOf="parent"
