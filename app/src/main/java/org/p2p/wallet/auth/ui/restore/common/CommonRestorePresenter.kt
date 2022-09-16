@@ -28,7 +28,7 @@ class CommonRestorePresenter(
     override fun switchFlowToRestore() {
         onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
         restoreWalletInteractor.generateRestoreUserKeyPair()
-        view?.setGoogleFlowEnabled(accountStorageContract.isDeviceShareSaved())
+        view?.setRestoreViaGoogleFlowVisibility(isVisible = accountStorageContract.isDeviceShareSaved())
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
