@@ -1,20 +1,22 @@
 package org.p2p.wallet.auth.interactor
 
-import androidx.biometric.BiometricManager
-import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.biometric.BiometricManager
+import androidx.core.content.edit
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.HashingUtils
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.auth.model.SignInResult
+import org.p2p.wallet.auth.repository.KEY_IN_SIGN_UP_PROCESS
 import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
+import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import kotlinx.coroutines.withContext
 
 private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
 private const val KEY_PIN_CODE_HASH = "KEY_PIN_CODE_HASH"
@@ -29,6 +31,7 @@ private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON
 class AuthInteractor(
     private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorageContract,
+    private val accountStorage: AccountStorageContract,
     private val sharedPreferences: SharedPreferences,
     private val biometricManager: BiometricManager,
     private val dispatchers: CoroutineDispatchers,
@@ -145,4 +148,6 @@ class AuthInteractor(
     }
 
     fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
+
+    fun finishSignUp() = accountStorage.remove(KEY_IN_SIGN_UP_PROCESS)
 }
