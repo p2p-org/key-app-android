@@ -71,6 +71,7 @@ class NewSmsInputFragment :
                 binding.smsInputComponent.clearErrorState()
                 presenter.checkSmsValue(smsInputComponent.inputText)
             }
+            binding.smsInputComponent.focusAndShowKeyboard()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

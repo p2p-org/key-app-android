@@ -66,6 +66,7 @@ import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
+import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
@@ -147,6 +148,7 @@ object AuthModule {
 
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
 
+        singleOf(::SmsInputTimer)
         factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorTimerPresenter) bind OnboardingGeneralErrorTimerContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class

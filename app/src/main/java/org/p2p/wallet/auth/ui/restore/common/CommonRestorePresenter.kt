@@ -28,17 +28,18 @@ class CommonRestorePresenter(
     override fun switchFlowToRestore() {
         onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
         restoreWalletInteractor.generateRestoreUserKeyPair()
+        view?.setRestoreViaGoogleFlowVisibility(isVisible = accountStorageContract.isDeviceShareSaved())
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
         view?.setLoadingState(isScreenLoading = true)
-        restoreWalletInteractor.restoreSocialShare(idToken, userId)
+        restoreWalletInteractor.restoreSocialShare(userId = userId, idToken = idToken)
         if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)) {
             launch {
                 restoreUserWithShares()
             }
         } else {
-            view?.navigateToPhoneEnter()
+            view?.onNoTokenFoundError(userId)
             view?.setLoadingState(isScreenLoading = false)
         }
     }
@@ -54,6 +55,9 @@ class CommonRestorePresenter(
                 Timber.e(result)
                 view?.setLoadingState(isScreenLoading = false)
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+            RestoreUserResult.UserNotFound -> {
+                view?.onNoTokenFoundError(restoreWalletInteractor.getUserEmailAddress().orEmpty())
             }
         }
     }
