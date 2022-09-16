@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
@@ -48,6 +49,15 @@ class PhoneNumberEnterFragment :
     private fun FragmentPhoneNumberEnterBinding.initViews() {
         toolbar.setNavigationOnClickListener {
             popBackStack()
+        }
+
+        toolbar.setOnMenuItemClickListener {
+            if (it.itemId == R.id.helpItem) {
+                IntercomService.showMessenger()
+                true
+            } else {
+                false
+            }
         }
 
         buttonConfirmPhone.setOnClickListener {
