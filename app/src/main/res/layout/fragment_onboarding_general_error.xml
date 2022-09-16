@@ -146,12 +146,13 @@
             android:textColor="@color/mountain" />
 
         <TextView
+            android:id="@+id/textViewTermsAndPolicy"
             style="@style/UiKit.TextAppearance.Regular.Label1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:text="@string/onboarding_terms_button"
+            android:text="@string/onboarding_terms_and_policy"
             android:textColor="@color/rain" />
 
     </LinearLayout>

@@ -1,10 +1,11 @@
 package org.p2p.wallet.auth.ui.onboarding
 
+import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
@@ -17,9 +18,12 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
+import org.p2p.wallet.utils.SpanUtils
+import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import java.io.File
 
 class NewOnboardingFragment :
     BaseMvpFragment<NewOnboardingContract.View, NewOnboardingContract.Presenter>(R.layout.fragment_new_onboarding),
@@ -73,6 +77,14 @@ class NewOnboardingFragment :
             buttonRestoreWalletOnboarding.setOnClickListener {
                 replaceFragment(CommonRestoreFragment.create())
             }
+            textViewTermsAndPolicy.apply {
+                text = SpanUtils.buildTermsAndPolicyText(
+                    context = requireContext(),
+                    onTermsClick = { presenter.onTermsClick() },
+                    onPolicyClick = { presenter.onPolicyClick() }
+                )
+                movementMethod = LinkMovementMethod.getInstance()
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -121,5 +133,9 @@ class NewOnboardingFragment :
     override fun onCommonError() {
         setButtonLoadingState(isScreenLoading = false)
         showUiKitSnackBar(messageResId = R.string.onboarding_google_services_error)
+    }
+
+    override fun showFile(file: File) {
+        openFile(file)
     }
 }

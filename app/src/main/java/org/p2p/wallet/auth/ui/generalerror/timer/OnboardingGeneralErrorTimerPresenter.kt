@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.FileInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,7 +19,8 @@ private const val TIMER_VALUE_FORMAT = "mm:ss"
 private const val START_TIMER_VALUE_MIN = 10
 
 class OnboardingGeneralErrorTimerPresenter(
-    private val error: GeneralErrorTimerScreenError
+    private val error: GeneralErrorTimerScreenError,
+    private val fileInteractor: FileInteractor
 ) : BasePresenter<OnboardingGeneralErrorTimerContract.View>(),
     OnboardingGeneralErrorTimerContract.Presenter {
 
@@ -70,5 +72,15 @@ class OnboardingGeneralErrorTimerPresenter(
     private fun createFormattedTimerValue(secondsLeft: Long): String {
         val formatter = SimpleDateFormat(TIMER_VALUE_FORMAT, Locale.getDefault())
         return formatter.format(Date(secondsLeft.seconds.inWholeMilliseconds))
+    }
+
+    override fun onTermsClick() {
+        val file = fileInteractor.getTermsOfUseFile()
+        view?.showFile(file)
+    }
+
+    override fun onPolicyClick() {
+        val file = fileInteractor.getPrivacyPolicyFile()
+        view?.showFile(file)
     }
 }
