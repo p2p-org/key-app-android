@@ -113,8 +113,8 @@ class NewCreatePinFragment :
 
     override fun navigateToMain() {
         binding.pinView.onSuccessPin()
-        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success, onDismissed = {
-            popAndReplaceFragment(MainFragment.create(), inclusive = true)
-        })
+
+        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success)
+        popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 }
