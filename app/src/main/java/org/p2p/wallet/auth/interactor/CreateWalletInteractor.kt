@@ -45,6 +45,8 @@ class CreateWalletInteractor(
     fun getUserPhoneNumber() = signUpFlowDataRepository.userPhoneNumber
 
     suspend fun finishCreatingWallet(smsCode: String) {
+        require(smsCode.length == 6) { "SMS code is not valid" }
+
         val userPublicKey = signUpFlowDataRepository.userPublicKey
             ?: throw CreateWalletFailure("User public key is null")
         val userPrivateKey = signUpFlowDataRepository.userPrivateKeyB58
