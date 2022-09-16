@@ -139,42 +139,46 @@ class NewSmsInputPresenter(
         if (createWalletInteractor.resetCount >= MAX_RESENT_CLICK_TRIES_COUNT) {
             view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED)
         } else {
-            launch {
-                try {
-                    view?.renderButtonLoading(isLoading = true)
-
-                    when (onboardingInteractor.currentFlow) {
-                        is OnboardingFlow.RestoreWallet -> {
-                            val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
-                                ?: throw IllegalStateException("User phone number cannot be null")
-                            restoreWalletInteractor.startRestoreCustomShare(
-                                userPhoneNumber = userPhoneNumber,
-                                isResend = true
-                            )
-                        }
-                        is OnboardingFlow.CreateWallet -> {
-                            val userPhoneNumber = createWalletInteractor.getUserPhoneNumber()
-                                ?: throw IllegalStateException("User phone number cannot be null")
-                            createWalletInteractor.startCreatingWallet(
-                                userPhoneNumber = userPhoneNumber,
-                                isResend = true
-                            )
-                        }
-                    }
-                } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
-                    Timber.e(tooOftenOtpRequests)
-                    view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
-                } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-                    Timber.e(serverError)
-                    view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
-                } catch (error: Throwable) {
-                    Timber.e(error, "Resending sms failed")
-                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-                } finally {
-                    view?.renderButtonLoading(isLoading = false)
-                }
-            }
+            tryToResendSms()
             connectToTimer()
+        }
+    }
+
+    private fun tryToResendSms() {
+        launch {
+            try {
+                view?.renderButtonLoading(isLoading = true)
+
+                when (onboardingInteractor.currentFlow) {
+                    is OnboardingFlow.RestoreWallet -> {
+                        val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
+                            ?: throw IllegalStateException("User phone number cannot be null")
+                        restoreWalletInteractor.startRestoreCustomShare(
+                            userPhoneNumber = userPhoneNumber,
+                            isResend = true
+                        )
+                    }
+                    is OnboardingFlow.CreateWallet -> {
+                        val userPhoneNumber = createWalletInteractor.getUserPhoneNumber()
+                            ?: throw IllegalStateException("User phone number cannot be null")
+                        createWalletInteractor.startCreatingWallet(
+                            userPhoneNumber = userPhoneNumber,
+                            isResend = true
+                        )
+                    }
+                }
+            } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
+                Timber.e(tooOftenOtpRequests)
+                view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
+            } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+                Timber.e(serverError)
+                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
+            } catch (error: Throwable) {
+                Timber.e(error, "Resending sms failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            } finally {
+                view?.renderButtonLoading(isLoading = false)
+            }
         }
     }
 
