@@ -81,6 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="8dp"
+            android:visibility="gone"
             android:backgroundTint="@color/snow"
             android:text="@string/restore_continue_with_google"
             android:textColor="@color/night"
