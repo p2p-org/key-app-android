@@ -42,6 +42,7 @@
     <color name="text_rose">@color/rose</color>
     <color name="text_mint">@color/mint</color>
     <color name="text_sun">@color/sun</color>
+    <color name="text_rain">@color/rain</color>
 
     <color name="icons_snow">@color/snow</color>
     <color name="icons_cloud">@color/cloud</color>

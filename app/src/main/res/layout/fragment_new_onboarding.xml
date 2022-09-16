@@ -79,10 +79,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:textColor="@color/rain"
+            android:textColor="@color/text_rain"
             tools:text="@string/onboarding_terms_and_policy" />
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
