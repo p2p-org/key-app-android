@@ -30,7 +30,7 @@ object SpanUtils {
             override fun updateDrawState(ds: TextPaint) {
                 super.updateDrawState(ds)
                 ds.apply {
-                    color = ContextCompat.getColor(context, R.color.rain)
+                    color = ContextCompat.getColor(context, R.color.text_rain)
                     isUnderlineText = false
                 }
             }
@@ -53,7 +53,7 @@ object SpanUtils {
             override fun updateDrawState(ds: TextPaint) {
                 super.updateDrawState(ds)
                 ds.apply {
-                    color = ContextCompat.getColor(context, R.color.rain)
+                    color = ContextCompat.getColor(context, R.color.text_rain)
                     isUnderlineText = false
                 }
             }
