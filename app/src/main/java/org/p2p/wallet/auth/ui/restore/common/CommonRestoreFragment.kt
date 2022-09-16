@@ -124,10 +124,10 @@ class CommonRestoreFragment :
         }
     }
 
-    override fun setGoogleFlowEnabled(isEnabled: Boolean) {
+    override fun setRestoreViaGoogleFlowVisibility(isVisible: Boolean) {
         with(binding) {
-            buttonRestoreByGoogle.isVisible = isEnabled
-            if (!isEnabled) {
+            buttonRestoreByGoogle.isVisible = isVisible
+            if (!isVisible) {
                 textViewTitle.text = getString(R.string.restore_choose_way)
 
                 buttonPhone.apply {

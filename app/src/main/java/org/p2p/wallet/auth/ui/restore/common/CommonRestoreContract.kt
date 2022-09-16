@@ -11,7 +11,7 @@ interface CommonRestoreContract {
         fun onNoTokenFoundError(userId: String)
         fun navigateToPhoneEnter()
         fun setLoadingState(isScreenLoading: Boolean)
-        fun setGoogleFlowEnabled(isEnabled: Boolean)
+        fun setRestoreViaGoogleFlowVisibility(isVisible: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

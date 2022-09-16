@@ -33,7 +33,7 @@ class CommonRestorePresenter(
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
         view?.setLoadingState(isScreenLoading = true)
-        restoreWalletInteractor.restoreSocialShare(userId, idToken)
+        restoreWalletInteractor.restoreSocialShare(userId = userId, idToken = idToken)
         if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)) {
             launch {
                 restoreUserWithShares()

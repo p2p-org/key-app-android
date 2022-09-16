@@ -12,7 +12,8 @@ class SocialShareRestoreInteractor(
             it.socialShare = socialShare
             it.socialShareUserId = socialShareUserId
             it.deviceShare = userSignUpDetailsStorage.getUserSignUpDetailsById(socialShareUserId)
-                ?.signUpDetails?.deviceShare
+                ?.signUpDetails
+                ?.deviceShare
         }
     }
 }
