@@ -3,14 +3,22 @@ package org.p2p.wallet.auth.interactor
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
+import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class CreateWalletInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
     private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
-    private val tokenKeyProvider: TokenKeyProvider,
+    private val smsInputTimer: SmsInputTimer,
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
     class CreateWalletFailure(override val message: String) : Throwable(message)
+
+    val timer
+        get() = smsInputTimer.smsInputTimerFlow
+
+    val resetCount
+        get() = smsInputTimer.smsResendCount
 
     suspend fun startCreatingWallet(userPhoneNumber: PhoneNumber, isResend: Boolean = false) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey
@@ -27,6 +35,7 @@ class CreateWalletInteractor(
                 etheriumAddress = etheriumPublicKey,
                 phoneNumber = userPhoneNumber
             )
+            smsInputTimer.startSmsInputTimerFlow()
         }
         signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
     }

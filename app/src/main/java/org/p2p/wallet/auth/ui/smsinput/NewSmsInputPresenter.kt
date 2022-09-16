@@ -1,26 +1,19 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
-import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
-import org.p2p.wallet.common.mvp.BasePresenter
-import timber.log.Timber
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
+import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
@@ -29,12 +22,6 @@ class NewSmsInputPresenter(
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
 ) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
-
-    private var timerFlow: Job? = null
-
-    private var smsResendCount = 0
-
-    private var smsIncorrectTries = 0
 
     override fun attach(view: NewSmsInputContract.View) {
         super.attach(view)
@@ -45,12 +32,25 @@ class NewSmsInputPresenter(
             is OnboardingFlow.RestoreWallet -> restoreWalletInteractor.getUserPhoneNumber()
         }
         userPhoneNumber?.let { view.initView(it) }
+        connectToTimer()
+    }
+
+    private fun connectToTimer() {
+        createWalletInteractor.timer.let { timer ->
+            launch {
+                timer.collect { secondsBeforeResend ->
+                    view?.renderSmsTimerState(SmsInputTimerState.ResendSmsNotReady(secondsBeforeResend))
+                    if (secondsBeforeResend == 0) {
+                        view?.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
+                    }
+                }
+            }
+        }
     }
 
     override fun onSmsInputChanged(smsCode: String) {
         if (isSmsCodeFormatValid(smsCode)) {
             view?.renderSmsFormatValid()
-            checkSmsValue(smsCode)
         } else {
             view?.renderSmsFormatInvalid()
         }
@@ -136,17 +136,17 @@ class NewSmsInputPresenter(
     }
 
     override fun resendSms() {
+        if (createWalletInteractor.resetCount >= MAX_RESENT_CLICK_TRIES_COUNT) {
+            view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED)
+        } else {
+            tryToResendSms()
+            connectToTimer()
+        }
+    }
+
+    private fun tryToResendSms() {
         launch {
             try {
-                if (++smsResendCount >= MAX_RESENT_CLICK_TRIES_COUNT && smsIncorrectTries == 0) {
-                    view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED)
-                    return@launch
-                }
-                timerFlow?.cancel()
-                timerFlow = createSmsInputTimer(timerSeconds = 5 * smsResendCount)
-                    .toResendSmsInputTimer()
-                    .launchIn(this)
-
                 view?.renderButtonLoading(isLoading = true)
 
                 when (onboardingInteractor.currentFlow) {
@@ -203,22 +203,7 @@ class NewSmsInputPresenter(
         }
     }
 
-    private fun Flow<Int>.toResendSmsInputTimer(): Flow<Int> {
-        return onEach { secondsBeforeResend ->
-            view?.renderSmsTimerState(SmsInputTimerState.ResendSmsNotReady(secondsBeforeResend))
-            if (secondsBeforeResend == 0) {
-                view?.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
-            }
-        }
-    }
-
     private fun isSmsCodeFormatValid(smsCode: String): Boolean {
         return smsCode.length == 6
     }
-
-    private fun createSmsInputTimer(timerSeconds: Int): Flow<Int> =
-        (timerSeconds downTo 0)
-            .asSequence()
-            .asFlow()
-            .onEach { delay(1.seconds.inWholeMilliseconds) }
 }

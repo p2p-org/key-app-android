@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.onboarding.root
 
-import android.view.View
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf

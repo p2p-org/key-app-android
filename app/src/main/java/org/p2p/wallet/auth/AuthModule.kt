@@ -16,19 +16,28 @@ import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
+import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingPresenter
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingContract
@@ -56,8 +65,7 @@ import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
-import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract
-import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
+import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
@@ -65,13 +73,6 @@ import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
-import org.p2p.wallet.auth.interactor.UserSignUpInteractor
-import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
-import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
-import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
-import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
-import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
-import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
@@ -145,6 +146,7 @@ object AuthModule {
 
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
 
+        singleOf(::SmsInputTimer)
         factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorTimerPresenter) bind OnboardingGeneralErrorTimerContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
