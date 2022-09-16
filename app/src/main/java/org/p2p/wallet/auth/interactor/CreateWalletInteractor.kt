@@ -33,9 +33,9 @@ class CreateWalletInteractor(
                 etheriumAddress = etheriumPublicKey,
                 phoneNumber = userPhoneNumber
             )
+            signUpFlowDataRepository.startTimer()
         }
         signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
-        signUpFlowDataRepository.startTimer()
     }
 
     fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount

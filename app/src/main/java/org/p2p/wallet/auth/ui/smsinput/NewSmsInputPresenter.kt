@@ -1,9 +1,5 @@
 package org.p2p.wallet.auth.ui.smsinput
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -27,8 +23,6 @@ class NewSmsInputPresenter(
     private val onboardingInteractor: OnboardingInteractor,
 ) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
 
-    private var timerFlow: Job? = null
-
     override fun attach(view: NewSmsInputContract.View) {
         super.attach(view)
 
@@ -44,10 +38,12 @@ class NewSmsInputPresenter(
     private fun connectToTimer() {
         createWalletInteractor.timer?.let { timer ->
             launch {
-                timerFlow?.cancel()
-                timerFlow = timer
-                    .toResendSmsInputTimer()
-                    .launchIn(this)
+                timer.collect { secondsBeforeResend ->
+                    view?.renderSmsTimerState(SmsInputTimerState.ResendSmsNotReady(secondsBeforeResend))
+                    if (secondsBeforeResend == 0) {
+                        view?.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
+                    }
+                }
             }
         }
     }
@@ -199,15 +195,6 @@ class NewSmsInputPresenter(
             is RestoreUserResult.RestoreFailed -> {
                 Timber.e(result)
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            }
-        }
-    }
-
-    private fun Flow<Int>.toResendSmsInputTimer(): Flow<Int> {
-        return onEach { secondsBeforeResend ->
-            view?.renderSmsTimerState(SmsInputTimerState.ResendSmsNotReady(secondsBeforeResend))
-            if (secondsBeforeResend == 0) {
-                view?.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
             }
         }
     }
