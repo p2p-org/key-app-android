@@ -5,9 +5,11 @@ import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
@@ -119,6 +121,20 @@ class CommonRestoreFragment :
             }
             buttonPhone.isEnabled = !isScreenLoading
             buttonSeed.isEnabled = !isScreenLoading
+        }
+    }
+
+    override fun setRestoreViaGoogleFlowVisibility(isVisible: Boolean) {
+        with(binding) {
+            buttonRestoreByGoogle.isVisible = isVisible
+            if (!isVisible) {
+                textViewTitle.text = getString(R.string.restore_choose_way)
+
+                buttonPhone.apply {
+                    backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.bg_snow)
+                    setTextColor(getColor(R.color.text_night))
+                }
+            }
         }
     }
 
