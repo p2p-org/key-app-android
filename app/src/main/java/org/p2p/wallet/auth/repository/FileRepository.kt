@@ -27,13 +27,6 @@ class FileRepository(
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
 
-    companion object {
-        const val TERMS_OF_USE_PDF = "p2p_terms_of_service.pdf"
-        const val PRIVACY_POLICY_PDF = "p2p_privacy_policy.pdf"
-        const val TERMS_OF_USE = "p2p_terms_of_service"
-        const val PRIVACY_POLICY = "p2p_privacy_policy"
-    }
-
     private val pdfFolder: File
     private val miscFolder: File
 
