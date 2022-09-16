@@ -62,7 +62,10 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
     }
 
     private fun updateEnvironmentAndRestart(newUrl: String? = null, newVerifier: String? = null) {
-        networkServicesUrlProvider.saveTorusEnvironment(newUrl?.ifEmpty { null }, newVerifier?.ifEmpty { null })
+        networkServicesUrlProvider.saveTorusEnvironment(
+            newUrl = newUrl?.ifEmpty { null },
+            newVerifier = newVerifier?.ifEmpty { null }
+        )
         appRestarter.restartApp()
     }
 }
