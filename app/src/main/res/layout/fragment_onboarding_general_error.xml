@@ -61,27 +61,81 @@
         android:paddingTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/button_report_bug"
-            style="@style/UiKit.Components.Button.Large.Outlined"
+        <LinearLayout
+            android:id="@+id/container_common_buttons"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/ui_kit_button_large_height"
-            android:layout_marginBottom="18dp"
-            android:backgroundTint="@color/bg_snow"
-            android:text="@string/onboarding_general_error_bug_report_button_title"
-            android:textColor="@color/text_night"
-            app:strokeColor="@color/snow" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-        <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/button_to_starting_screen"
-            style="@style/UiKit.Components.Button.Large.Text"
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/button_report_bug"
+                style="@style/UiKit.Components.Button.Large.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ui_kit_button_large_height"
+                android:layout_marginBottom="18dp"
+                android:backgroundTint="@color/bg_snow"
+                android:text="@string/onboarding_general_error_bug_report_button_title"
+                android:textColor="@color/text_night"
+                app:strokeColor="@color/snow" />
+
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/button_to_starting_screen"
+                style="@style/UiKit.Components.Button.Large.Text"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ui_kit_button_large_height"
+                android:layout_marginBottom="18dp"
+                android:backgroundTint="@color/bg_night"
+                android:text="@string/onboarding_general_error_starting_screen_button_title"
+                android:textColor="@color/text_lime"
+                app:strokeColor="@color/snow" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/container_device_custom_share_buttons"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/ui_kit_button_large_height"
-            android:layout_marginBottom="18dp"
-            android:backgroundTint="@color/bg_night"
-            android:text="@string/onboarding_general_error_starting_screen_button_title"
-            android:textColor="@color/text_lime"
-            app:strokeColor="@color/snow" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/button_restore_by_google"
+                style="@style/UiKit.Components.Button.Large"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ui_kit_button_large_height"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/snow"
+                android:text="@string/restore_continue_with_google"
+                android:textColor="@color/night"
+                app:icon="@drawable/ic_google_logo"
+                app:iconGravity="textStart"
+                app:iconSize="24dp"
+                app:iconTint="@null" />
+
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/button_restore_with_phone"
+                style="@style/UiKit.Components.Button.Large.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ui_kit_button_large_height"
+                android:layout_marginBottom="8dp"
+                android:text="@string/restore_phone_number"
+                android:textColor="@color/snow"
+                app:strokeColor="@color/snow" />
+
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/button_restore_to_starting_screen"
+                style="@style/UiKit.Components.Button.Large.Text"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ui_kit_button_large_height"
+                android:layout_marginBottom="18dp"
+                android:backgroundTint="@color/bg_night"
+                android:text="@string/onboarding_general_error_starting_screen_button_title"
+                android:textColor="@color/text_lime"
+                app:strokeColor="@color/snow" />
+
+        </LinearLayout>
+
 
         <TextView
             style="@style/UiKit.TextAppearance.Regular.Label1"

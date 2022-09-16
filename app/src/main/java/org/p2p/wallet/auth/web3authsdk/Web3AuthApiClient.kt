@@ -121,7 +121,7 @@ class Web3AuthApiClient(
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
-                    jsMethodCall = "triggerSignInNoCustom($params)"
+                    jsMethodCall = "triggerSignInNoTorus($params)"
                 ),
                 null
             )
@@ -135,7 +135,6 @@ class Web3AuthApiClient(
         val torusNetworkEnv = "testnet"
         val torusEndpoint = "$host:5051"
         val torusVerifier = torusNetwork.verifier
-        val metadataEndpoint = "$host:2222"
 
         return buildString {
             append("new p2pWeb3Auth.AndroidFacade({")
@@ -144,8 +143,7 @@ class Web3AuthApiClient(
             append("torusNetwork: '$torusNetworkEnv', ")
             append("torusLoginType: '$torusLoginType', ")
             append("torusEndpoint: '$torusEndpoint', ")
-            append("torusVerifier: '$torusVerifier', ")
-            append("metadataEndpoint: '$metadataEndpoint'")
+            append("torusVerifier: '$torusVerifier'")
             append("})")
             append(".$jsMethodCall")
         }

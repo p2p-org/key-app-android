@@ -14,19 +14,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_onboarding_help"
         app:navigationIcon="@drawable/ic_back"
-        app:navigationIconTint="@color/black"
+        app:navigationIconTint="@color/icons_night"
         app:title="@string/seed_phrase_restore_wallet"
-        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title2" />
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night" />
 
     <TextView
         android:id="@+id/textViewSeedPhraseTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="@string/seed_phrase_enter"
+        android:text="@string/seed_phrase_enter_title"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
-        android:textColor="@color/mountain" />
+        android:textColor="@color/text_mountain" />
 
     <org.p2p.uikit.organisms.seedphrase.UiKitSeedPhraseView
         android:id="@+id/seedPhraseView"

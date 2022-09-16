@@ -1,20 +1,23 @@
 package org.p2p.wallet.auth.ui.restore.common
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
+import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -33,6 +36,10 @@ class CommonRestoreFragment :
     override val presenter: CommonRestoreContract.Presenter by inject()
 
     private val binding: FragmentCommonRestoreBinding by viewBinding()
+
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+    override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
 
     private val signInHelper: GoogleSignInHelper by inject()
 
@@ -59,7 +66,7 @@ class CommonRestoreFragment :
             }
 
             buttonPhone.setOnClickListener {
-                replaceFragment(PhoneNumberEnterFragment.create())
+                presenter.useCustomShare()
             }
 
             buttonSeed.setOnClickListener {
@@ -77,6 +84,10 @@ class CommonRestoreFragment :
 
     override fun startGoogleFlow() {
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
+    }
+
+    override fun navigateToPinCreate() {
+        popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
     }
 
     override fun showError(error: String) {
@@ -125,7 +136,7 @@ class CommonRestoreFragment :
 
     override fun onCommonError() {
         setLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(messageResId = R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.onboarding_google_services_error)
     }
 
     override fun navigateToPhoneEnter() {

@@ -16,6 +16,7 @@ interface ReceiveNetworkTypeContract {
         fun showTokensForBuy(tokens: List<Token>)
         fun showTopup()
         fun close()
+        fun showNewBuyFragment(token: Token)
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -21,6 +21,8 @@ import org.p2p.wallet.history.repository.local.db.dao.TransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.TransactionsDaoDelegate
 import org.p2p.wallet.history.repository.local.db.dao.TransferTransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.UnknownTransactionsDao
+import org.p2p.wallet.infrastructure.account.AccountStorage
+import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_NAME
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -36,7 +38,10 @@ import org.p2p.wallet.updates.UpdatesManager
 import java.security.KeyStore
 import java.util.concurrent.Executors
 
-private const val ANDROID_KEY_STORE = "AndroidKeyStore"
+enum class SharedPreferencesName(val prefsName: String) {
+    AccountStorage("AccountSharedPreferences"),
+    KeyStorage("KeyStoreSharedPreferences")
+}
 
 object InfrastructureModule : InjectionModule {
 
@@ -71,16 +76,35 @@ object InfrastructureModule : InjectionModule {
         }
 
         single {
-            val context = get<Context>()
-            val name = "${context.packageName}.prefs"
-            context.getSharedPreferences(name, Context.MODE_PRIVATE)
+            val name = "${androidContext().packageName}.prefs"
+            androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
         }
 
-        single { EncoderDecoderMarshmallow(get()) } bind EncoderDecoder::class
-        single { KeyStore.getInstance(ANDROID_KEY_STORE) }
-        single { KeyStoreWrapper(encoderDecoder = get(), keyStore = get()) }
+        single(named(SharedPreferencesName.AccountStorage)) {
+            val name = "${androidContext().packageName}.account_prefs"
+            androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
+        }
+        single(named(SharedPreferencesName.KeyStorage)) {
+            val name = "${androidContext().packageName}.keystore_prefs"
+            androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
+        }
+
+        single<EncoderDecoder> { EncoderDecoderMarshmallow(get(named(SharedPreferencesName.KeyStorage))) }
+
+        single { KeyStore.getInstance("AndroidKeyStore") }
+
+        single {
+            KeyStoreWrapper(encoderDecoder = get(), keyStore = get())
+        }
 
         factoryOf(::SecureStorage) bind SecureStorageContract::class
+        factory {
+            AccountStorage(
+                keyStoreWrapper = get(),
+                sharedPreferences = get(named(SharedPreferencesName.AccountStorage)),
+                gson = get()
+            )
+        } bind AccountStorageContract::class
 
         single { GlideManager(get()) }
 

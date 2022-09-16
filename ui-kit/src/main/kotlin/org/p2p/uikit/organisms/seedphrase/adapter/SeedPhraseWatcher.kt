@@ -38,6 +38,8 @@ class SeedPhraseWatcher(
         }
     }
 
+    private val seedPhraseParser = SeedPhraseParser()
+
     private var seedPhrase: SeedPhrase by Delegates.observable(SeedPhrase(null)) { _, oldValue, newValue ->
         if (newValue != oldValue) {
             when (val result = seedPhrase.result) {
@@ -48,12 +50,12 @@ class SeedPhraseWatcher(
         }
     }
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         val text = s?.toString().orEmpty()
 
-        val keys = SeedPhraseFormatter.format(text)
+        val keys = seedPhraseParser.parse(text)
         when (keys.size) {
             0 -> {
                 Log.d("SEED_PHRASE", "User is typing and not finished yet, doing nothing $text")

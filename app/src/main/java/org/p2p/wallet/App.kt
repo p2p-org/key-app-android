@@ -27,6 +27,7 @@ import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.moonpay.BuyModule
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
@@ -105,6 +106,7 @@ class App : Application() {
                     UserModule.create(),
                     TokenPricesModule.create(),
                     HomeModule.create(),
+                    BuyModule.create(),
                     RenBtcModule.create(),
                     ScanQrModule.create(),
                     HistoryModule.create(),

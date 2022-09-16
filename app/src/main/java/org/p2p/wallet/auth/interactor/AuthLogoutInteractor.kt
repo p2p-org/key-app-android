@@ -32,7 +32,6 @@ class AuthLogoutInteractor(
     fun onUserLogout() {
         appScope.launch {
             val publicKey = tokenKeyProvider.publicKey
-
             updatesManager.stop()
             sharedPreferences.edit { clear() }
             tokenKeyProvider.clear()
@@ -45,20 +44,6 @@ class AuthLogoutInteractor(
             RenVMService.stopService(context)
 
             pushNotificationsInteractor.deleteDeviceToken(publicKey)
-        }
-    }
-
-    fun clearAppData() {
-        appScope.launch {
-            sharedPreferences.edit { clear() }
-            secureStorage.clear()
-            tokenKeyProvider.clear()
-            mainLocalRepository.clear()
-            updatesManager.stop()
-            transactionManager.stop()
-            renBtcInteractor.clearSession()
-            transactionDetailsLocalRepository.deleteAll()
-            RenVMService.stopService(context)
         }
     }
 }

@@ -21,8 +21,8 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
     }
 
     private val title: String by args(ARG_TITLE)
-    private val resultKey: String by args(ARG_RESULT_KEY)
-    private val requestKey: String by args(ARG_REQUEST_KEY)
+    protected val resultKey: String by args(ARG_RESULT_KEY)
+    protected val requestKey: String by args(ARG_REQUEST_KEY)
 
     lateinit var baseDialogBinding: DialogBaseDoneBinding
 

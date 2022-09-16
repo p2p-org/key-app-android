@@ -1,19 +1,19 @@
 package org.p2p.wallet.auth.ui.restore.found
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
+import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentWalletFoundBinding
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -64,8 +64,7 @@ class WalletFoundFragment :
             }
             buttonStartRestore.setOnClickListener {
                 presenter.startRestoreWallet()
-                // TODO make a real restore implementation!
-                replaceFragment(SeedPhraseFragment.create())
+                replaceFragment(CommonRestoreFragment.create())
             }
         }
 
@@ -111,7 +110,7 @@ class WalletFoundFragment :
 
     override fun onCommonError() {
         setLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(messageResId = R.string.error_general_message)
+        showUiKitSnackBar(messageResId = R.string.onboarding_google_services_error)
     }
 
     override fun onConnectionError() {

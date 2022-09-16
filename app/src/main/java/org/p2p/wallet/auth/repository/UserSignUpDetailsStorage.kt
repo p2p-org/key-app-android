@@ -2,14 +2,14 @@ package org.p2p.wallet.auth.repository
 
 import com.google.gson.annotations.SerializedName
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import timber.log.Timber
 
 private const val TAG = "UserSignUpDetailsStorage"
 private const val KEY_LAST_DEVICE_SHARE_ID = "KEY_LAST_DEVICE_SHARE_ID"
 
 class UserSignUpDetailsStorage(
-    private val secureStorage: SecureStorageContract,
+    private val accountStorage: AccountStorageContract,
 ) {
 
     private fun generatePrefsKey(userId: String): String = "${userId}_sign_up_details"
@@ -26,25 +26,25 @@ class UserSignUpDetailsStorage(
         val key = generatePrefsKey(userId)
         val value = SignUpUserDetails(userId, data)
 
-        secureStorage.saveObject(key, value)
-        secureStorage.saveObject(KEY_LAST_DEVICE_SHARE_ID, value)
+        accountStorage.saveObject(key, value)
+        accountStorage.saveObject(KEY_LAST_DEVICE_SHARE_ID, value)
 
         Timber.tag(TAG).i("New user sign up details saved!")
         return true
     }
 
     fun isUserSignUpDetailsSaved(userId: String): Boolean {
-        return secureStorage.contains(generatePrefsKey(userId))
+        return accountStorage.contains(generatePrefsKey(userId))
     }
 
     fun getUserSignUpDetailsById(userId: String): SignUpUserDetails? {
-        return kotlin.runCatching { secureStorage.getObject(generatePrefsKey(userId), SignUpUserDetails::class) }
+        return kotlin.runCatching { accountStorage.getObject(generatePrefsKey(userId), SignUpUserDetails::class) }
             .onFailure { Timber.i(it) }
             .getOrNull()
     }
 
     fun getLastSignUpUserDetails(): SignUpUserDetails? {
-        return kotlin.runCatching { secureStorage.getObject(KEY_LAST_DEVICE_SHARE_ID, SignUpUserDetails::class) }
+        return kotlin.runCatching { accountStorage.getObject(KEY_LAST_DEVICE_SHARE_ID, SignUpUserDetails::class) }
             .onSuccess { Timber.tag(TAG).i("Last sign up user details received!") }
             .onFailure { Timber.tag(TAG).i(it) }
             .getOrNull()

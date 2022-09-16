@@ -1,7 +1,6 @@
 package org.p2p.wallet.utils
 
 import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -9,6 +8,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlin.time.Duration.Companion.minutes
 
 class FlowDurationTimer(
     private val startValue: Long,
@@ -29,16 +29,17 @@ class FlowDurationTimer(
     }
 
     fun launchTimer(scope: CoroutineScope) {
-        timerJob =
-            (startValue until 0)
-                .asSequence()
-                .asFlow()
-                .onEach {
-                    onEachAction?.invoke(it)
-                    delay(1.toDuration(durationUnit).inWholeMilliseconds)
-                }
-                .onCompletion { onTimerFinished?.invoke() }
-                .launchIn(scope)
+        timerJob = (startValue downTo 0)
+            .asSequence()
+            .asFlow()
+            .onEach {
+                onEachAction?.invoke(it)
+                delay(1.minutes.inWholeMilliseconds)
+            }
+            .onCompletion {
+                onTimerFinished?.invoke()
+            }
+            .launchIn(scope)
     }
 
     fun stopTimer() {

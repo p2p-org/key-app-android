@@ -2,12 +2,12 @@ package org.p2p.wallet.auth.ui.onboarding.continuestep
 
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.interactor.OnboardingInteractor.OnboardingFlow
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.model.OnboardingFlow
 
 class ContinueOnboardingPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
@@ -27,7 +27,7 @@ class ContinueOnboardingPresenter(
 
             when (val result = userSignUpInteractor.continueSignUpUser()) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
-                    onboardingInteractor.currentFlow = OnboardingFlow.CREATE_WALLET
+                    onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.navigateToPhoneNumberEnter()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {

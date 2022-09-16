@@ -59,6 +59,9 @@
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
     <string name="error_country_not_found">Sorry, we don’t know a such country</string>
+    <string name="error_wallet_not_found_title">No wallet found</string>
+    <string name="error_wallet_not_found_message">Try account or use an another phone number</string>
+    <string name="error_too_often_otp_requests_message">You request SMS too often. Try later.</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
@@ -101,9 +104,7 @@
     <string name="auth_almost_done_title">Almost done!</string>
     <string name="auth_quick_access">Quick Access</string>
     <string name="auth_biometric_question">Use biometric for quick access?</string>
-    <string name="auth_pin_codes_match_error">PIN doesn’t match. Try again</string>
-    <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
-    <string name="auth_pin_code_wrong">Wrong PIN. Try again or reset it</string>
+    <string name="auth_pin_codes_match_error">❌ PIN doesn’t match. Try again</string>
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
     <string name="auth_go_to_wallet">Go to wallet</string>
@@ -428,6 +429,7 @@
     <string name="buy_value_allowed_symbols"> 1234567890.,</string>
     <string name="buy_min_error_format">Minimum amount for the purchase is %s</string>
     <string name="buy_max_error_format">Maximum amount for the purchase is %s</string>
+    <string name="buy_min_amount_error_format">We can\'t process transactions less %s</string>
 
     <!-- details -->
     <string name="details_1h">1H</string>

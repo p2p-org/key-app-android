@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.repository
 
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.utils.TweetNaclFast
+import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
@@ -24,10 +25,16 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("Account is generated and set: ${restoreUserKeyPair?.publicKey}")
         }
 
-    var userPhoneNumber: String? = null
+    var userPhoneNumber: PhoneNumber? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.length}")
+            Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
+        }
+
+    var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
+        set(value) {
+            field = value
+            Timber.tag(TAG).i("deviceShare is received and set")
         }
 
     var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null

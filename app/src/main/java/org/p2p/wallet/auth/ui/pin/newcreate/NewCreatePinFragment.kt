@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
-import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
@@ -35,6 +35,7 @@ class NewCreatePinFragment :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_snow
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -93,13 +94,6 @@ class NewCreatePinFragment :
         analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.PIN_CONFIRM)
     }
 
-    override fun onPinCreated(pinCode: String) {
-        binding.pinView.onSuccessPin()
-        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success, onDismissed = {
-            presenter.onPinCreated()
-        })
-    }
-
     override fun showConfirmationError() {
         showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_error)
         binding.pinView.startErrorAnimation()
@@ -118,6 +112,9 @@ class NewCreatePinFragment :
     }
 
     override fun navigateToMain() {
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        binding.pinView.onSuccessPin()
+        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success, onDismissed = {
+            popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        })
     }
 }

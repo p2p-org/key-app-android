@@ -12,13 +12,13 @@
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <TextView
-        android:id="@+id/textViewType"
+        android:id="@+id/textViewValidationTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
         android:maxLines="1"
         android:paddingVertical="8dp"
-        android:text="@string/seed_phrase"
+        android:text="@string/seed_phrase_view_invalid"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/mountain"
         app:layout_constraintBottom_toBottomOf="@id/textViewPaste"
@@ -32,17 +32,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/bg_paste_onboarding"
+        android:background="@drawable/bg_lime_rounded_small"
         android:drawablePadding="8dp"
         android:gravity="center"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         android:text="@string/common_paste"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
-        android:textColor="@color/night"
+        android:textColor="@color/text_night"
         app:drawableStartCompat="@drawable/ic_copy_small"
         app:layout_constraintEnd_toStartOf="@id/textViewClear"
         app:layout_constraintTop_toTopOf="parent"
+        tools:drawableStart="@drawable/ic_copy_small"
         tools:background="@drawable/bg_lime_rounded_small" />
 
     <TextView

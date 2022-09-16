@@ -11,8 +11,8 @@
     <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
 
     <!--Onboarding - Continue-->
-    <string name="onboarding_continue_title">Let’s continue</string>
-    <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nIt\’s only a phone number needed to create a new wallet</string>
+    <string name="onboarding_continue_title">Choose an option to continue</string>
+    <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nOnly a phone number is needed to create a new wallet.</string>
     <string name="onboarding_continue_button_text">Continue</string>
     <string name="onboarding_continue_starting_button_text">Starting screen</string>
 
@@ -24,21 +24,29 @@
 
     <!-- Onboarding pin / touch id -->
     <string name="auth_create_wallet_step_3">Step 3 of 3</string>
-    <string name="auth_create_wallet_set_up_your_pin">Set up your PIN code</string>
-    <string name="auth_create_wallet_confirm_your_pin">Confirm your PIN code</string>
-    <string name="auth_create_wallet_pin_code_error">😬 PINs aren’t matching. Check and try again</string>
-    <string name="auth_create_wallet_pin_code_success">✌️ Yeah, you’ve created the PIN to KeyApp</string>
+    <string name="auth_create_wallet_set_up_your_pin">Set up your passcode</string>
+    <string name="auth_create_wallet_confirm_your_pin">Confirm your passcode</string>
+    <string name="auth_create_wallet_pin_code_error">Passcode doesn\'t  match. Please try again.</string>
+    <string name="auth_create_wallet_pin_code_success">Great! Your new passcode is set.</string>
 
     <string name="auth_create_wallet_use_touch_id_title">Use Touch ID?</string>
     <string name="auth_create_wallet_use_touch_id_subtitle">For logging in and verifying transactions</string>
     <string name="auth_create_wallet_use_touch_id">Use Touch ID</string>
     <string name="auth_create_wallet_dont_use">Don\'t use</string>
 
+    <string name="auth_pin_code_enter_up_your_pin">Enter your passcode</string>
+    <string name="auth_pin_code_attempts_format">❌ Wrong passcode. You have %d attempts left.</string>
+    <string name="auth_pin_code_warn_format">❌ After %d more incorrect tries, we\'ll log you out of your current account for your safety.</string>
+    <string name="auth_pin_code_wrong">❌ Wrong passcode. Try again or reset it</string>
+    <string name="auth_pin_code_logout_title">You were logged out</string>
+    <string name="auth_pin_code_logout_description">After 5 incorrect app passcodes</string>
+    <string name="auth_pin_code_logout_ok_button">Got It</string>
+
     <!-- PhoneNumberEnter -->
     <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
     <string name="onboarding_step_2">Step 2 of 3</string>
     <string name="onboarding_add_number_title">What\'s your number? 🤙</string>
-    <string name="onboarding_add_number_message">Add a phone to protect your account</string>
+    <string name="onboarding_add_number_message">Add a phone number to protect your account</string>
     <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
     <string name="onboarding_country_name">Country name</string>
     <string name="onboarding_fill_your_number">Fill your phone number</string>
@@ -73,11 +81,11 @@
     </string>
     <string name="onboarding_general_error_terms_title">Key App\'s</string>
     <string name="onboarding_general_error_starting_screen_button_title">Starting screen</string>
-    <string name="onboarding_general_error_bug_report_button_title">Write us to HEEEEELP</string>
+    <string name="onboarding_general_error_bug_report_button_title">Support</string>
     <string name="onboarding_general_error_critical_error_title">Well well 🦄</string>
     <string name="onboarding_general_error_critical_error_sub_title">
         We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n
-        If you will write us, use error code: %1$s
+        If you wish to report the issue, use error code #%1$s
     </string>
 
     <!--Common Restore-->
@@ -85,10 +93,17 @@
     <string name="restore_choose_method">Choose\nthe method</string>
     <string name="restore_continue_with_google">Continue with Google</string>
     <string name="restore_phone_number">Continue using a phone number</string>
-    <string name="restore_seed_phrase">Use a seed phrase / private key</string>
+    <string name="restore_seed_phrase">Use a seed phrase</string>
 
     <string name="restore_no_wallet_title">No wallet found</string>
-    <string name="restore_no_wallet_subtitle">With %s.\nTry another account or use a phone number</string>
+    <string name="restore_no_wallet_subtitle">With %s.\nTry another option</string>
+
+    <!-- Seed phrase scree -->
+    <string name="seed_phrase_restore_wallet">Restoring your wallet</string>
+    <string name="seed_phrase_enter_title">Enter your seed phrase</string>
+    <string name="seed_phrase_button_disabled_text">Fill 12 or 24 words</string>
+    <string name="seed_phrase_verify_checksum_failed">😔 The seed phrase doesn\'t match. Please try again</string>
+    <string name="seed_phrase_verify_words_failed">😔 We found one or more typos. Please try again</string>
 
     <!--Derivable Accounts-->
     <string name="derivable_accounts_title">Derivable Accounts</string>
@@ -98,4 +113,5 @@
 
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
+    <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
 </resources>
