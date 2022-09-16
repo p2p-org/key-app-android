@@ -36,7 +36,7 @@ class NewSmsInputPresenter(
     }
 
     private fun connectToTimer() {
-        createWalletInteractor.timer?.let { timer ->
+        createWalletInteractor.timer.let { timer ->
             launch {
                 timer.collect { secondsBeforeResend ->
                     view?.renderSmsTimerState(SmsInputTimerState.ResendSmsNotReady(secondsBeforeResend))
