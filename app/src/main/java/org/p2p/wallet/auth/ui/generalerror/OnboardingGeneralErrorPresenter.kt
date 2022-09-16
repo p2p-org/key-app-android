@@ -1,12 +1,14 @@
 package org.p2p.wallet.auth.ui.generalerror
 
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.FileInteractor
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class OnboardingGeneralErrorPresenter(
     private val error: GeneralErrorScreenError,
     private val resourcesProvider: ResourcesProvider,
+    private val fileInteractor: FileInteractor
 ) : BasePresenter<OnboardingGeneralErrorContract.View>(),
     OnboardingGeneralErrorContract.Presenter {
 
@@ -29,5 +31,15 @@ class OnboardingGeneralErrorPresenter(
                 view.setViewState(error)
             }
         }
+    }
+
+    override fun onTermsClick() {
+        val file = fileInteractor.getTermsOfUseFile()
+        view?.showFile(file)
+    }
+
+    override fun onPolicyClick() {
+        val file = fileInteractor.getPrivacyPolicyFile()
+        view?.showFile(file)
     }
 }

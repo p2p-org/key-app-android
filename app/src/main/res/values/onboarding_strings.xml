@@ -3,8 +3,9 @@
     <string name="onboarding_create_text">Create a new wallet</string>
     <string name="onboarding_restore_text">I already have a wallet</string>
     <string name="onboarding_terms_text">By continuing, you agree to Key App’s</string>
-    <string name="onboarding_terms_button">Terms and Conditions</string>
-    <string name="onboarding_key_app_terms_conditions">Key App’s\nTerms and Conditions</string>
+    <string name="onboarding_terms_and_policy">Terms of Use and Privacy Policy</string>
+    <string name="onboarding_terms_of_use">Terms of Use</string>
+    <string name="onboarding_privacy_policy">Privacy Policy</string>
 
     <!--Onboarding Slides-->
     <string name="onboarding_slide_1_title">Welcome \nto Key App</string>
