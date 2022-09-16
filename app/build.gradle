@@ -198,9 +198,14 @@ android {
             enabled = false
         }
     }
+
+    sourceSets.main {
+        jniLibs.srcDir 'jniLibs'
+    }
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['.so'])
     implementation project(':solanaj')
     implementation project(':ui-kit')
 
@@ -303,8 +308,6 @@ dependencies {
 
     // Google Play Auth
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
-
-
 
 
     // core
