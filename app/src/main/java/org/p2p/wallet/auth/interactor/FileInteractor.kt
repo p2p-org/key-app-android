@@ -17,12 +17,20 @@ class FileInteractor(
     }
 
     fun getTermsOfUseFile(): File {
-        val inputStream = context.assets.open(TERMS_OF_USE_PDF)
-        return fileRepository.savePdf(TERMS_OF_USE, inputStream.readBytes())
+        return if (fileRepository.isFileExists(TERMS_OF_USE_PDF)) {
+            fileRepository.getPdfFile(TERMS_OF_USE)
+        } else {
+            val inputStream = context.assets.open(TERMS_OF_USE_PDF)
+            fileRepository.savePdf(TERMS_OF_USE, inputStream.readBytes())
+        }
     }
 
     fun getPrivacyPolicyFile(): File {
-        val inputStream = context.assets.open(PRIVACY_POLICY_PDF)
-        return fileRepository.savePdf(PRIVACY_POLICY, inputStream.readBytes())
+        return if (fileRepository.isFileExists(PRIVACY_POLICY_PDF)) {
+            fileRepository.getPdfFile(PRIVACY_POLICY)
+        } else {
+            val inputStream = context.assets.open(PRIVACY_POLICY_PDF)
+            fileRepository.savePdf(PRIVACY_POLICY, inputStream.readBytes())
+        }
     }
 }
