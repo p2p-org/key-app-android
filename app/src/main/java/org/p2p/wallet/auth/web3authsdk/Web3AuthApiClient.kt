@@ -111,7 +111,7 @@ class Web3AuthApiClient(
         return suspendCancellableCoroutine {
             this.continuation = it
 
-            Timber.tag(TAG).i("triggerSignInNoCustom triggered")
+            Timber.tag(TAG).i("triggerSignInNoTorus triggered")
 
             val thirdShareAsJsObject = gson.toJson(thirdShare)
             val deviceShareAsJsObject = gson.toJson(deviceShare)
@@ -147,6 +147,7 @@ class Web3AuthApiClient(
             append("})")
             append(".$jsMethodCall")
         }
+            .also { Timber.tag(TAG).i("facade generated: $it") }
     }
 
     /**
