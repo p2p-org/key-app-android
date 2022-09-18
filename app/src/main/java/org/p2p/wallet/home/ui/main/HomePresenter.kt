@@ -131,7 +131,7 @@ class HomePresenter(
                                         titleTextId = R.string.main_banner_title,
                                         subtitleTextId = R.string.main_banner_subtitle,
                                         buttonTextId = R.string.main_banner_button,
-                                        drawableRes = R.drawable.ic_banner_image,
+                                        drawableRes = R.drawable.ic_main_banner,
                                         backgroundColorRes = R.color.bannerBackgroundColor
                                     ),
                                     resourcesProvider.getString(R.string.main_popular_tokens_header)
