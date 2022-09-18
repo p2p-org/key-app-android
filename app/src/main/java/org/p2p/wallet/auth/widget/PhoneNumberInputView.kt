@@ -5,15 +5,12 @@ import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.KeyEvent
 import android.widget.TextView
-import org.p2p.uikit.utils.emptyString
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.ui.phone.maskwatcher.CountryCodeTextWatcher
 import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
 import org.p2p.wallet.databinding.WidgetPhoneInputViewBinding
 import org.p2p.wallet.utils.orZero
@@ -33,7 +30,6 @@ open class PhoneNumberInputView @JvmOverloads constructor(
     protected val binding = inflateViewBinding<WidgetPhoneInputViewBinding>()
 
     private lateinit var phoneTextWatcher: PhoneNumberTextWatcher
-    private lateinit var countryCodeWatcher: CountryCodeTextWatcher
 
     private val bgRed = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
@@ -95,7 +91,6 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     fun setupViewState(
         countryCode: CountryCode?,
-        onCountryCodeChanged: (String) -> Unit,
         onPhoneChanged: (String) -> Unit,
         onCountryClickListener: () -> Unit
     ) = with(binding) {
@@ -108,11 +103,6 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         val restoredNumber = editTextPhoneNumber.text.toString()
 
         editTextPhoneNumber.setHintText(hint)
-        numberHintTextView.setHintText(hint)
-
-        if (restoredNumber.isNotEmpty()) {
-            numberHintTextView.updateNumber(restoredNumber)
-        }
 
         countryPickerView.setOnClickListener {
             onCountryClickListener.invoke()
@@ -124,19 +114,12 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         phoneTextWatcher = PhoneNumberTextWatcher(binding.editTextPhoneNumber) { phoneNumber ->
             resizeInputs(phoneNumber, originalTextSize)
 
-            numberHintTextView.updateNumber(phoneNumber)
-
             // Invoking callbacks
             val phone = phoneNumber.getFullPhoneNumber()
             onPhoneChanged.invoke(phone)
         }
-        countryCodeWatcher = CountryCodeTextWatcher { countryCode ->
-            onCountryCodeChanged.invoke(countryCode)
-        }
-        editTextPhoneNumber.addTextChangedListener(phoneTextWatcher)
-        editTextPhoneNumber.onEmptyDelete = { moveCursorToCodeField() }
 
-        editTextCountryCode.addTextChangedListener(countryCodeWatcher)
+        editTextPhoneNumber.addTextChangedListener(phoneTextWatcher)
 
         val focusView = if (countryCode == null) editTextCountryCode else editTextPhoneNumber
         focusView.focusAndShowKeyboard()
@@ -155,25 +138,7 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         val textSize = if (phoneNumber.isEmpty()) originalTextSize else autoSizeHelperTextView.textSize
         editTextPhoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         editTextCountryCode.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-        numberHintTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         textViewPlusSign.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-    }
-
-    private fun moveCursorToCodeField() = with(binding) {
-        val currentText = editTextPhoneNumber.text.toString()
-        if (currentText.isNotEmpty()) return@with
-
-        with(editTextPhoneNumber) {
-            editTextPhoneNumber.setSelection(editTextPhoneNumber.length())
-            setHintText(emptyString())
-            numberHintTextView.text = emptyString()
-        }
-
-        with(editTextCountryCode) {
-            setSelection(binding.editTextCountryCode.length())
-            dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
-            focusAndShowKeyboard()
-        }
     }
 
     fun updateViewState(countryCode: CountryCode?) = with(binding) {
@@ -184,13 +149,9 @@ open class PhoneNumberInputView @JvmOverloads constructor(
         }
         textViewFlagEmoji.text = countryCode.flagEmoji
 
-        with(editTextCountryCode) {
-            removeTextChangedListener(countryCodeWatcher)
-            setText(countryCode.phoneCode)
-        }
+        editTextCountryCode.text = countryCode.phoneCode
         val hint = countryCode.getZeroFilledMask()
         editTextPhoneNumber.setHintText(hint)
-        numberHintTextView.setHintText(hint)
 
         with(editTextPhoneNumber) {
             addTextChangedListener(phoneTextWatcher)
@@ -199,7 +160,6 @@ open class PhoneNumberInputView @JvmOverloads constructor(
             focusAndShowKeyboard()
         }
 
-        editTextCountryCode.addTextChangedListener(countryCodeWatcher)
         showError(null)
     }
 
