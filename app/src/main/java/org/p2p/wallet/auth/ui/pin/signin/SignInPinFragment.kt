@@ -29,7 +29,7 @@ class SignInPinFragment :
     }
 
     override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_snow
+    override val navBarColor: Int = R.color.bg_night
 
     override val presenter: SignInPinContract.Presenter by inject()
     private val binding: FragmentSignInPinBinding by viewBinding()
