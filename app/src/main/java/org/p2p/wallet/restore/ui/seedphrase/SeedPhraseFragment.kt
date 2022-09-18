@@ -48,7 +48,7 @@ class SeedPhraseFragment :
                 presenter.setNewSeedPhrase(keys)
             }
 
-            seedPhraseView.setOnContainerClickListener {
+            seedPhraseView.onShowKeyboardListener = {
                 presenter.requestFocusOnLastWord()
             }
 
