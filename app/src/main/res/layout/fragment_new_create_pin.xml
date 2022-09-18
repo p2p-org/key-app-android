@@ -18,9 +18,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:menu="@menu/menu_onboarding_help"
-            app:navigationIcon="@drawable/ic_back_night"
             app:title="@string/auth_create_wallet_step_3"
-            app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+            app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1" />
 
         <ImageView
             android:id="@+id/imageViewLock"
