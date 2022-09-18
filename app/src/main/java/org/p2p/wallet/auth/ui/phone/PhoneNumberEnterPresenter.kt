@@ -98,18 +98,35 @@ class PhoneNumberEnterPresenter(
                     view?.navigateToSmsInput()
                 }
             }
-        } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
-            Timber.i(smsDeliverFailed)
-            view?.showSmsDeliveryFailedForNumber()
-        } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
-            Timber.i(tooManyPhoneEnters)
-            view?.navigateToAccountBlocked()
-        } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-            Timber.e(serverError, "Phone number submission failed with critical error")
-            view?.navigateToCriticalErrorScreen(serverError.code)
+        } catch (gatewayError: GatewayServiceError) {
+            handleGatewayServiceError(gatewayError)
         } catch (error: Throwable) {
             Timber.e(error, "Phone number submission failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+        }
+    }
+
+    private fun handleGatewayServiceError(gatewayServiceError: GatewayServiceError) {
+        Timber.i(gatewayServiceError)
+        when (gatewayServiceError) {
+            is GatewayServiceError.SmsDeliverFailed -> {
+                view?.showUiKitSnackBar(messageResId = R.string.onboarding_phone_enter_error_sms_failed)
+                view?.showSmsDeliveryFailedForNumber()
+            }
+            is GatewayServiceError.UserAlreadyExists, is GatewayServiceError.PhoneNumberAlreadyConfirmed -> {
+                view?.showUiKitSnackBar(messageResId = R.string.onboarding_phone_enter_error_phone_confirmed)
+            }
+            is GatewayServiceError.TooManyRequests -> {
+                view?.navigateToAccountBlocked()
+            }
+            is GatewayServiceError.CriticalServiceFailure -> {
+                Timber.e(gatewayServiceError, "Phone number submission failed with critical error")
+                view?.navigateToCriticalErrorScreen(gatewayServiceError.code)
+            }
+            else -> {
+                Timber.e(gatewayServiceError, "Phone number submission failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
         }
     }
 
@@ -120,15 +137,8 @@ class PhoneNumberEnterPresenter(
                 restoreWalletInteractor.startRestoreCustomShare(userPhoneNumber = userPhoneNumber)
                 view?.navigateToSmsInput()
             }
-        } catch (smsDeliverFailed: GatewayServiceError.SmsDeliverFailed) {
-            Timber.i(smsDeliverFailed)
-            view?.showSmsDeliveryFailedForNumber()
-        } catch (tooManyPhoneEnters: GatewayServiceError.TooManyRequests) {
-            Timber.i(tooManyPhoneEnters)
-            view?.navigateToAccountBlocked()
-        } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-            Timber.e(serverError, "Phone number submission failed with critical error")
-            view?.navigateToCriticalErrorScreen(serverError.code)
+        } catch (gatewayError: GatewayServiceError) {
+            handleGatewayServiceError(gatewayError)
         } catch (error: Throwable) {
             Timber.e(error, "Phone number submission failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)

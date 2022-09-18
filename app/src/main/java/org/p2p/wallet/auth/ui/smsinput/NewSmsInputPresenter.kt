@@ -13,6 +13,7 @@ import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.utils.removeWhiteSpaces
 import timber.log.Timber
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
@@ -61,15 +62,16 @@ class NewSmsInputPresenter(
             return
         }
 
-        if (BuildConfig.DEBUG && smsCode == "111111") {
+        if (BuildConfig.DEBUG && smsCode == "111 111") {
             view?.navigateToPinCreate()
             return
         }
 
         launch {
+            val smsCodeRaw = smsCode.removeWhiteSpaces()
             when (onboardingInteractor.currentFlow) {
-                is OnboardingFlow.CreateWallet -> finishCreatingWallet(smsCode)
-                is OnboardingFlow.RestoreWallet -> finishRestoringCustomShare(smsCode)
+                is OnboardingFlow.CreateWallet -> finishCreatingWallet(smsCodeRaw)
+                is OnboardingFlow.RestoreWallet -> finishRestoringCustomShare(smsCodeRaw)
             }
         }
     }
