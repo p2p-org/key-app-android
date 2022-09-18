@@ -97,12 +97,14 @@ class SecretKeyViewHolder(
     private fun onSeedPhraseInserted(secretKeys: List<SecretKey>) {
         keyEditText.clearFocus()
         SeedPhraseWatcher.uninstallFrom(keyEditText)
+        textWatcher = null
         keyEditText.text = null
         onInsertedListener(secretKeys)
     }
 
     private fun onKeyAdded(secretKey: SecretKey) {
         SeedPhraseWatcher.uninstallFrom(keyEditText)
+        textWatcher = null
         keyEditText.text = null
         onUpdateKeyListener(secretKey)
     }
