@@ -28,10 +28,10 @@ class CreateWalletInteractor(
         val etheriumPublicKey = signUpFlowDataRepository.ethereumPublicKey
             ?: throw CreateWalletFailure("User etherium public key is null")
 
-        val isNumberEquals = userPhoneNumber == signUpFlowDataRepository.userPhoneNumber
+        val isNumberAlreadyUsed = userPhoneNumber == signUpFlowDataRepository.userPhoneNumber
         val isCreateWalletRequestSent = signUpFlowDataRepository.isCreateWalletRequestSent
-
-        if (isResend || (!isCreateWalletRequestSent && !isNumberEquals)) {
+        val isCreateRequestNeeded = isResend || (!isCreateWalletRequestSent && !isNumberAlreadyUsed)
+        if (isCreateRequestNeeded) {
             gatewayServiceRepository.registerWalletWithSms(
                 userPublicKey = userPublicKey,
                 userPrivateKey = userPrivateKey,
@@ -39,6 +39,7 @@ class CreateWalletInteractor(
                 phoneNumber = userPhoneNumber
             )
             signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
+            setIsCreateWalletRequestSent(isSent = true)
             smsInputTimer.startSmsInputTimerFlow()
         }
     }

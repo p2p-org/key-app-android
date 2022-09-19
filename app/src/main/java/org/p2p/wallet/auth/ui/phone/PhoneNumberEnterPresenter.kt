@@ -147,7 +147,7 @@ class PhoneNumberEnterPresenter(
                 Timber.e(error, "Phone number submission failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
-            restoreWalletInteractor.setIsRestoreWalletRequestSent(false)
+            restoreWalletInteractor.setIsRestoreWalletRequestSent(isSent = false)
         }
     }
 }

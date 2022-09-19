@@ -30,7 +30,6 @@ class RestoreFlowDataLocalRepository {
     var userPhoneNumber: PhoneNumber? = null
         set(value) {
             field = value
-            isRestoreWalletRequestSent = true
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 

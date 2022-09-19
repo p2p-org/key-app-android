@@ -27,9 +27,10 @@ class CustomShareRestoreInteractor(
         val temporaryUserPrivateKey = restoreFlowDataLocalRepository.userRestorePrivateKey
             ?: throw RestoreWalletFailure("User restore private key is null")
 
-        val isNumberEquals = userPhoneNumber == restoreFlowDataLocalRepository.userPhoneNumber
+        val isNumberAlreadyUsed = userPhoneNumber == restoreFlowDataLocalRepository.userPhoneNumber
         val isRestoreWalletRequestSent = restoreFlowDataLocalRepository.isRestoreWalletRequestSent
-        if (isResend || (!isRestoreWalletRequestSent && !isNumberEquals)) {
+        val isRestoreRequestNeeded = isResend || (!isRestoreWalletRequestSent && !isNumberAlreadyUsed)
+        if (isRestoreRequestNeeded) {
             gatewayServiceRepository.restoreWallet(
                 solanaPublicKey = temporaryUserPublicKey,
                 solanaPrivateKey = temporaryUserPrivateKey,
@@ -37,6 +38,7 @@ class CustomShareRestoreInteractor(
                 channel = OtpMethod.SMS
             )
             restoreFlowDataLocalRepository.userPhoneNumber = userPhoneNumber
+            setIsRestoreWalletRequestSent(isSent = true)
         }
     }
 
@@ -84,5 +86,9 @@ class CustomShareRestoreInteractor(
                 Timber.i(encryptedMnemonicsJson)
                 throw RestoreWalletFailure("Couldn't convert base64 to encrypted mnemonics")
             }
+    }
+
+    fun setIsRestoreWalletRequestSent(isSent: Boolean) {
+        restoreFlowDataLocalRepository.isRestoreWalletRequestSent = isSent
     }
 }
