@@ -141,7 +141,7 @@
         name_code="bn"
         phone_code="673" />
     <country
-        name="Bolivia, Plurinational State Of"
+        name="Bolivia"
         flag_emoji="&#127463;&#127476;"
         name_code="bo"
         phone_code="591" />
@@ -186,7 +186,7 @@
         name_code="cc"
         phone_code="61" />
     <country
-        name="Congo, The Democratic Republic Of The"
+        name="Congo(Dem.Rep.)"
         flag_emoji="&#127464;&#127465;"
         name_code="cd"
         phone_code="243" />
@@ -196,7 +196,7 @@
         name_code="cf"
         phone_code="236" />
     <country
-        name="Congo"
+        name="Congo(Rep.)"
         flag_emoji="&#127464;&#127468;"
         name_code="cg"
         phone_code="242" />
@@ -346,7 +346,7 @@
         name_code="fk"
         phone_code="500" />
     <country
-        name="Micronesia, Federated States Of"
+        name="Micronesia"
         flag_emoji="&#127467;&#127474;"
         name_code="fm"
         phone_code="691" />
@@ -516,7 +516,7 @@
         name_code="iq"
         phone_code="964" />
     <country
-        name="Iran, Islamic Republic Of"
+        name="Iran"
         flag_emoji="&#127470;&#127479;"
         name_code="ir"
         phone_code="98" />
@@ -666,7 +666,7 @@
         name_code="mc"
         phone_code="377" />
     <country
-        name="Moldova, Republic Of"
+        name="Moldova"
         flag_emoji="&#127474;&#127465;"
         name_code="md"
         phone_code="373" />
@@ -966,7 +966,7 @@
         name_code="sg"
         phone_code="65" />
     <country
-        name="Saint Helena, Ascension And Tristan Da Cunha"
+        name="Saint Helena"
         flag_emoji="&#127480;&#127469;"
         name_code="sh"
         phone_code="290" />
@@ -1101,12 +1101,12 @@
         name_code="tv"
         phone_code="688" />
     <country
-            name="Taiwan"
+        name="Taiwan"
         flag_emoji="&#127481;&#127484;"
         name_code="tw"
         phone_code="886" />
     <country
-        name="Tanzania, United Republic Of"
+        name="Tanzania"
         flag_emoji="&#127481;&#127487;"
         name_code="tz"
         phone_code="255" />
@@ -1146,7 +1146,7 @@
         name_code="vc"
         phone_code="1" />
     <country
-        name="Venezuela, Bolivarian Republic Of"
+        name="Venezuela"
         flag_emoji="&#127483;&#127466;"
         name_code="ve"
         phone_code="58" />
