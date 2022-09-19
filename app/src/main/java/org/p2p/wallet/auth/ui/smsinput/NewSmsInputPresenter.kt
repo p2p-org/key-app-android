@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.smsinput
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
@@ -15,6 +14,7 @@ import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTim
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.removeWhiteSpaces
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
@@ -106,34 +106,47 @@ class NewSmsInputPresenter(
         try {
             view?.renderButtonLoading(isLoading = true)
             restoreWalletInteractor.finishRestoreCustomShare(smsCode)
-            when (val currentFlow = onboardingInteractor.currentFlow) {
-                is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
-                    when (val flow = restoreWalletInteractor.tryRestoreUser(currentFlow)) {
-                        RestoreUserResult.RestoreSuccessful -> {
-                            view?.navigateToPinCreate()
-                        }
-                        RestoreUserResult.UserNotFound -> {
-                            view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.PhoneNumberDoesNotMatchError)
-                        }
-                        is RestoreUserResult.RestoreFailed -> {
-                            view?.showErrorMessage(messageResId = R.string.error_general_message)
-                        }
-                    }
-                }
-                is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> {
-                    if (restoreWalletInteractor.isUserReadyToBeRestored(currentFlow)) {
-                        restoreUserWithShares()
-                    } else {
-                        // no social share, requesting now
-                        view?.requestGoogleSignIn()
-                    }
-                }
-            }
+            restoreUserWithShares()
         } catch (error: Throwable) {
-            Timber.e(error, "Checking sms value failed")
+            Timber.e(error, "Restoring user or custom share failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         } finally {
             view?.renderButtonLoading(isLoading = false)
+        }
+    }
+
+    private suspend fun restoreUserWithShares() {
+        when (onboardingInteractor.currentFlow) {
+            is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
+                restoreUserWithDevicePlusCustomShare()
+            }
+            is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> {
+                tryRestoreUserWithSocialPlusCustomShare()
+            }
+        }
+    }
+
+    private suspend fun restoreUserWithDevicePlusCustomShare() {
+        when (restoreWalletInteractor.tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusCustomShare)) {
+            RestoreUserResult.RestoreSuccessful -> {
+                restoreWalletInteractor.finishAuthFlow()
+                view?.navigateToPinCreate()
+            }
+            RestoreUserResult.UserNotFound -> {
+                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.PhoneNumberDoesNotMatchError)
+            }
+            is RestoreUserResult.RestoreFailed -> {
+                view?.showErrorMessage(messageResId = R.string.error_general_message)
+            }
+        }
+    }
+
+    private suspend fun tryRestoreUserWithSocialPlusCustomShare() {
+        if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.SocialPlusCustomShare)) {
+            restoreUserWithSocialPlusCustomShare()
+        } else {
+            // no social share, requesting now
+            view?.requestGoogleSignIn()
         }
     }
 
@@ -187,11 +200,11 @@ class NewSmsInputPresenter(
     override fun setGoogleSignInToken(userId: String, googleToken: String) {
         launch {
             restoreWalletInteractor.restoreSocialShare(googleToken, userId)
-            restoreUserWithShares()
+            restoreUserWithSocialPlusCustomShare()
         }
     }
 
-    private suspend fun restoreUserWithShares() {
+    private suspend fun restoreUserWithSocialPlusCustomShare() {
         val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet
         when (val result = restoreWalletInteractor.tryRestoreUser(restoreFlow)) {
             is RestoreUserResult.RestoreSuccessful -> {

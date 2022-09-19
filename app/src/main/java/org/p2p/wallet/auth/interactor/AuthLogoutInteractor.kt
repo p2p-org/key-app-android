@@ -15,6 +15,7 @@ import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.updates.UpdatesManager
+import timber.log.Timber
 
 class AuthLogoutInteractor(
     private val context: Context,
@@ -32,6 +33,8 @@ class AuthLogoutInteractor(
     fun onUserLogout() {
         appScope.launch {
             val publicKey = tokenKeyProvider.publicKey
+            Timber.i("Cleaning storages and stopping all services for $publicKey")
+
             updatesManager.stop()
             sharedPreferences.edit { clear() }
             tokenKeyProvider.clear()
