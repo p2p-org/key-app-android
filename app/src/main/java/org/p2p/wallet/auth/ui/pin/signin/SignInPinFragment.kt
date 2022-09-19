@@ -60,10 +60,6 @@ class SignInPinFragment :
         }
     }
 
-    override fun showLoading(isLoading: Boolean) {
-        binding.pinView.showLoading(isLoading)
-    }
-
     override fun onStart() {
         super.onStart()
         presenter.checkIfBiometricAvailable()
@@ -74,6 +70,7 @@ class SignInPinFragment :
     }
 
     override fun onSignInSuccess() {
+        binding.pinView.onSuccessPin()
         popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 
