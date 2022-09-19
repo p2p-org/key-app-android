@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
@@ -53,6 +54,7 @@ class PhoneNumberEnterFragment :
 
         toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.helpItem) {
+                view?.hideKeyboard()
                 IntercomService.showMessenger()
                 true
             } else {
