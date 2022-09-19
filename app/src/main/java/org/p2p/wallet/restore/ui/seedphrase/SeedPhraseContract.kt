@@ -14,7 +14,7 @@ interface SeedPhraseContract {
         fun showSeedPhraseValid(isSeedPhraseValid: Boolean)
         fun showClearButton(isVisible: Boolean)
         fun addFirstKey(seedPhraseWord: SeedPhraseWord)
-        fun showFocusOnLastWord(lastSecretItemIndex: Int)
+        fun showFocusOnLastWord()
     }
 
     interface Presenter : MvpPresenter<View> {

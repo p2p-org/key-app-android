@@ -36,7 +36,7 @@ class SeedPhraseAdapter(
         payloads.forEach { payload ->
             when (payload) {
                 is SeedPhraseWord -> holder.setKeyCompleted(payload)
-                is Int -> holder.setupKey(data[position])
+                is Int -> holder.requestFocus()
             }
         }
     }
@@ -55,8 +55,18 @@ class SeedPhraseAdapter(
         notifyItemInserted(data.size)
     }
 
-    fun showFocusOnItem(itemIndex: Int) {
-        notifyItemChanged(itemIndex, itemIndex)
+    fun showFocusOnLastItem() {
+        val lastItem = data.lastOrNull()
+
+        if (lastItem == null || lastItem.text.isNotEmpty()) {
+            addSecretKey(SeedPhraseWord.EMPTY_WORD)
+            return
+        }
+
+        if (lastItem.text.isEmpty()) {
+            val itemIndex = data.lastIndex
+            notifyItemChanged(itemIndex, itemIndex)
+        }
     }
 
     fun clear() {

@@ -74,6 +74,6 @@ class SeedPhrasePresenter(
     }
 
     override fun requestFocusOnLastWord() {
-        view?.showFocusOnLastWord(currentSeedPhrase.size - 1)
+        view?.showFocusOnLastWord()
     }
 }
