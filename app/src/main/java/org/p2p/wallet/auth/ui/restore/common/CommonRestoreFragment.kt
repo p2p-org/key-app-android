@@ -26,7 +26,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val ARG_DO_NOT_SHOW_BACK = "ARG_DO_NOT_SHOW_BACK"
+private const val ARG_SHOW_BACK_BUTTON = "ARG_DO_NOT_SHOW_BACK"
 
 class CommonRestoreFragment :
     BaseMvpFragment<CommonRestoreContract.View, CommonRestoreContract.Presenter>(
@@ -37,7 +37,7 @@ class CommonRestoreFragment :
 
     companion object {
         fun create(showBackButton: Boolean = true): CommonRestoreFragment = CommonRestoreFragment().withArgs(
-            ARG_DO_NOT_SHOW_BACK to showBackButton
+            ARG_SHOW_BACK_BUTTON to showBackButton
         )
 
         fun createWithoutBack(): CommonRestoreFragment = create(showBackButton = false)
@@ -47,7 +47,7 @@ class CommonRestoreFragment :
 
     private val binding: FragmentCommonRestoreBinding by viewBinding()
 
-    private val useBackButton: Boolean by args(ARG_DO_NOT_SHOW_BACK)
+    private val showBackButton: Boolean by args(ARG_SHOW_BACK_BUTTON)
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night
@@ -63,7 +63,7 @@ class CommonRestoreFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            if (useBackButton) {
+            if (showBackButton) {
                 toolbar.setNavigationIcon(R.drawable.ic_back)
             } else {
                 toolbar.navigationIcon = null

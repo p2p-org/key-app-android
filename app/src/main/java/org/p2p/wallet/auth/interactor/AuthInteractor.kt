@@ -149,7 +149,7 @@ class AuthInteractor(
 
     fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
 
-    fun finishSignUp() { 
+    fun finishSignUp() {
         accountStorage.remove(KEY_IN_SIGN_UP_PROCESS)
     }
 }

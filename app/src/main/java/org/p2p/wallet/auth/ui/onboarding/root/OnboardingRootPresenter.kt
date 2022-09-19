@@ -21,7 +21,7 @@ class OnboardingRootPresenter(
         when {
             userLeftOnPinCreation() -> view.navigateToCreatePin()
             userSignUpDetailsStorage.getLastSignUpUserDetails() != null -> {
-                if (userSignUpDetailsStorage.isSignUpProcess()) {
+                if (userSignUpDetailsStorage.isSignUpInProcess()) {
                     view.navigateToContinueOnboarding()
                 } else {
                     view.navigateToRestore()
