@@ -121,7 +121,7 @@ class NewSmsInputPresenter(
     }
 
     private suspend fun restoreUserWithDevicePlusCustomShare() {
-        when (restoreWalletInteractor.tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusCustomShare)) {
+        when (val result = restoreWalletInteractor.tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusCustomShare)) {
             RestoreUserResult.RestoreSuccessful -> {
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
@@ -130,7 +130,8 @@ class NewSmsInputPresenter(
                 view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.PhoneNumberDoesNotMatchError)
             }
             is RestoreUserResult.RestoreFailed -> {
-                view?.showErrorMessage(messageResId = R.string.error_general_message)
+                Timber.e(result, "Restoring user device+custom share failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }
@@ -161,7 +162,7 @@ class NewSmsInputPresenter(
                 when (onboardingInteractor.currentFlow) {
                     is OnboardingFlow.RestoreWallet -> {
                         val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
-                            ?: throw IllegalStateException("User phone number cannot be null")
+                            ?: error("User phone number cannot be null")
                         restoreWalletInteractor.startRestoreCustomShare(
                             userPhoneNumber = userPhoneNumber,
                             isResend = true
@@ -169,7 +170,7 @@ class NewSmsInputPresenter(
                     }
                     is OnboardingFlow.CreateWallet -> {
                         val userPhoneNumber = createWalletInteractor.getUserPhoneNumber()
-                            ?: throw IllegalStateException("User phone number cannot be null")
+                            ?: error("User phone number cannot be null")
                         createWalletInteractor.startCreatingWallet(
                             userPhoneNumber = userPhoneNumber,
                             isResend = true
@@ -206,7 +207,7 @@ class NewSmsInputPresenter(
                 view?.navigateToPinCreate()
             }
             is RestoreUserResult.RestoreFailed -> {
-                Timber.e(result)
+                Timber.e(result, "Restoring user social+custom share failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }

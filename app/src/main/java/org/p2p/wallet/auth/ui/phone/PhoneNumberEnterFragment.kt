@@ -149,10 +149,6 @@ class PhoneNumberEnterFragment :
         }
     }
 
-    override fun showSmsDeliveryFailedForNumber() {
-        binding.editTextPhoneNumber.showError(getString(R.string.onboarding_no_sms_for_number))
-    }
-
     private fun onCountryCodeChanged(countryCode: String) {
         presenter.onCountryCodeChanged(countryCode)
     }
@@ -163,13 +159,5 @@ class PhoneNumberEnterFragment :
 
     private fun onCountryClickListener() {
         presenter.onCountryCodeInputClicked()
-    }
-
-    override fun showErrorMessage(messageResId: Int) {
-        showErrorSnackBar(getString(messageResId))
-    }
-
-    override fun showErrorMessage(e: Throwable?) {
-        e?.message?.let { showErrorSnackBar(message = it) }
     }
 }
