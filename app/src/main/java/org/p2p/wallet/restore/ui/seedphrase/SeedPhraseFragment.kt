@@ -122,8 +122,8 @@ class SeedPhraseFragment :
         binding.seedPhraseView.addSecretKey(SeedPhraseWord.EMPTY_WORD)
     }
 
-    override fun showFocusOnLastWord(lastSecretItemIndex: Int) {
-        binding.seedPhraseView.showFocusOnLastKey(lastSecretItemIndex)
+    override fun showFocusOnLastWord() {
+        binding.seedPhraseView.showFocusOnLastKey()
     }
 
     override fun showFile(file: File) {
