@@ -23,10 +23,14 @@ class SeedPhrasePresenter(
 ) : BasePresenter<SeedPhraseContract.View>(), SeedPhraseContract.Presenter {
 
     private var currentSeedPhrase: List<SeedPhraseWord> by Delegates.observable(emptyList()) { _, _, newValue ->
+        onSeedPhraseUpdated(newValue)
+    }
+
+    private fun onSeedPhraseUpdated(newValue: List<SeedPhraseWord>) {
         val newSeedPhraseSize = newValue.size
-        val isSeedPhraseValid =
-            newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT
-        view?.showSeedPhraseValid(isSeedPhraseValid)
+        val isValid = newValue.all { it.isValid } &&
+            (newSeedPhraseSize == SEED_PHRASE_SIZE_LONG || newSeedPhraseSize == SEED_PHRASE_SIZE_SHORT)
+        view?.showSeedPhraseValid(isValid)
 
         val isClearButtonVisible = newValue.isNotEmpty()
         view?.showClearButton(isClearButtonVisible)
@@ -70,6 +74,6 @@ class SeedPhrasePresenter(
     }
 
     override fun requestFocusOnLastWord() {
-        view?.showFocusOnLastWord(currentSeedPhrase.size)
+        view?.showFocusOnLastWord(currentSeedPhrase.size - 1)
     }
 }

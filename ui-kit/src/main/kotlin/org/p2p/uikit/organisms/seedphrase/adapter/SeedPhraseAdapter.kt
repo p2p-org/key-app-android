@@ -6,7 +6,8 @@ import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
 
 class SeedPhraseAdapter(
-    private val onSeedPhraseChanged: (List<SeedPhraseWord>) -> Unit
+    private val onSeedPhraseChanged: (List<SeedPhraseWord>) -> Unit,
+    private val onShowKeyboardListener: (Int) -> Unit,
 ) : RecyclerView.Adapter<SeedPhraseWordViewHolder>() {
 
     private val data = mutableListOf<SeedPhraseWord>()
@@ -18,7 +19,8 @@ class SeedPhraseAdapter(
             parent = parent,
             onKeyRemovedListener = { removeSecretKey(it) },
             onUpdateKeyListener = { updateSecretKey(it) },
-            onInsertedListener = { addAllSecretKeys(it) }
+            onInsertedListener = { addAllSecretKeys(it) },
+            onShowKeyboardListener = onShowKeyboardListener
         )
 
     override fun onBindViewHolder(holder: SeedPhraseWordViewHolder, position: Int) {
@@ -31,8 +33,11 @@ class SeedPhraseAdapter(
             return
         }
 
-        payloads.forEach { data ->
-            holder.setKeyCompleted(data as SeedPhraseWord)
+        payloads.forEach { payload ->
+            when (payload) {
+                is SeedPhraseWord -> holder.setKeyCompleted(payload)
+                is Int -> holder.setupKey(data[position])
+            }
         }
     }
 
@@ -50,10 +55,16 @@ class SeedPhraseAdapter(
         notifyItemInserted(data.size)
     }
 
+    fun showFocusOnItem(itemIndex: Int) {
+        notifyItemChanged(itemIndex, itemIndex)
+    }
+
     fun clear() {
+        val dataSize = data.size
         data.clear()
+        notifyItemRangeRemoved(0, dataSize)
         data.add(SeedPhraseWord.EMPTY_WORD)
-        notifyDataSetChanged()
+        notifyItemInserted(data.size - 1)
 
         onSeedPhraseChanged(data)
     }
@@ -89,7 +100,7 @@ class SeedPhraseAdapter(
     private fun removeSecretKey(index: Int) {
         if (index == -1) return
         data.removeAt(index)
-        notifyDataSetChanged()
+        notifyItemRemoved(index)
 
         onSeedPhraseChanged(data)
     }
@@ -97,9 +108,8 @@ class SeedPhraseAdapter(
     private fun updateSecretKey(seedPhraseWord: SeedPhraseWord) {
         /* Updating current viewHolder, where editText is active */
         val index = data.size - 1
+        data[index] = seedPhraseWord
         notifyItemChanged(index, seedPhraseWord)
-        data.removeAt(index)
-        data.add(index, seedPhraseWord)
 
         onSeedPhraseChanged(data)
 

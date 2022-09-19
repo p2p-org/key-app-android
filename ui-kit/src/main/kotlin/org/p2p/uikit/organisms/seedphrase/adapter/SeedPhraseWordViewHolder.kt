@@ -21,6 +21,7 @@ class SeedPhraseWordViewHolder(
     private val onKeyRemovedListener: (Int) -> Unit,
     private val onUpdateKeyListener: (SeedPhraseWord) -> Unit,
     private val onInsertedListener: (List<SeedPhraseWord>) -> Unit,
+    private val onShowKeyboardListener: (Int) -> Unit,
     private val binding: ItemSecretKeyBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -30,6 +31,29 @@ class SeedPhraseWordViewHolder(
         textWatcher?.isLastKey = adapterPosition == SEED_PHRASE_SIZE_LONG
 
         if (item.text.isEmpty()) {
+            setupKey(null)
+        } else {
+            setKeyCompleted(item)
+        }
+    }
+
+    fun setKeyCompleted(seedPhraseWord: SeedPhraseWord) {
+        val wordIndex = adapterPosition + 1
+        val text = "$wordIndex ${seedPhraseWord.text}"
+
+        if (seedPhraseWord.isValid) {
+            renderValidWord(text, wordIndex)
+        } else {
+            renderInvalidWord(text)
+        }
+
+        binding.textViewWord.setOnClickListener { onShowKeyboardListener(adapterPosition) }
+        binding.textViewWord.isVisible = true
+        binding.editTextWord.isVisible = false
+    }
+
+    fun setupKey(seedPhraseWord: SeedPhraseWord?) {
+        with(binding) {
             textWatcher = SeedPhraseWatcher.installOn(
                 isLast = adapterPosition == SEED_PHRASE_SIZE_LONG,
                 editText = editTextWord,
@@ -41,24 +65,11 @@ class SeedPhraseWordViewHolder(
             editTextWord.showSoftKeyboard()
             editTextWord.requestFocus()
             editTextWord.setOnKeyListener(::onKeyClicked)
-        } else {
-            setKeyCompleted(item)
-        }
-    }
 
-    fun setKeyCompleted(seedPhraseWord: SeedPhraseWord) {
-        val wordIndex = adapterPosition + 1
-        val text = "$wordIndex ${seedPhraseWord.text}"
-
-        with(binding) {
-            if (seedPhraseWord.isValid) {
-                renderValidWord(text, wordIndex)
-            } else {
-                renderInvalidWord(text)
+            seedPhraseWord?.let {
+                editTextWord.setText(it.text)
+                editTextWord.setSelection(it.text.length)
             }
-
-            textViewWord.isVisible = true
-            editTextWord.isVisible = false
         }
     }
 
@@ -96,12 +107,14 @@ class SeedPhraseWordViewHolder(
         SeedPhraseWatcher.uninstallFrom(binding.editTextWord)
         binding.editTextWord.text = null
         onInsertedListener(seedPhrase)
+        textWatcher = null
     }
 
     private fun onKeyAdded(seedPhraseWord: SeedPhraseWord) {
         SeedPhraseWatcher.uninstallFrom(binding.editTextWord)
         binding.editTextWord.text = null
         onUpdateKeyListener(seedPhraseWord)
+        textWatcher = null
     }
 
     private fun onKeyRemoved() {

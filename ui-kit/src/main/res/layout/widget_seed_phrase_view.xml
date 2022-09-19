@@ -43,8 +43,8 @@
         app:drawableStartCompat="@drawable/ic_copy_small"
         app:layout_constraintEnd_toStartOf="@id/textViewClear"
         app:layout_constraintTop_toTopOf="parent"
-        tools:drawableStart="@drawable/ic_copy_small"
-        tools:background="@drawable/bg_lime_rounded_small" />
+        tools:background="@drawable/bg_lime_rounded_small"
+        tools:drawableStart="@drawable/ic_copy_small" />
 
     <TextView
         android:id="@+id/textViewClear"

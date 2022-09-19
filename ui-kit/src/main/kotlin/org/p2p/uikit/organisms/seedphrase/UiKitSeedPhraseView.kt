@@ -2,12 +2,10 @@ package org.p2p.uikit.organisms.seedphrase
 
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.getSystemService
-import androidx.core.view.children
 import androidx.core.view.isVisible
 import android.content.ClipboardManager
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.LinearLayout
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
@@ -17,7 +15,6 @@ import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseParser
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.showSoftKeyboard
 
 class UiKitSeedPhraseView @JvmOverloads constructor(
     context: Context,
@@ -26,14 +23,20 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     var onSeedPhraseChanged: ((List<SeedPhraseWord>) -> Unit)? = null
+    var onShowKeyboardListener: ((Int) -> Unit)? = null
 
     private val binding = inflateViewBinding<WidgetSeedPhraseViewBinding>()
 
     private val phraseAdapter: SeedPhraseAdapter by lazy {
-        SeedPhraseAdapter { keys ->
-            setPasteButtonBackgroundColor(isLime = keys.isEmpty() || keys.firstOrNull() == SeedPhraseWord.EMPTY_WORD)
-            onSeedPhraseChanged?.invoke(keys)
-        }
+        SeedPhraseAdapter(
+            onSeedPhraseChanged = { keys ->
+                setPasteButtonBackgroundColor(
+                    isLime = keys.isEmpty() || keys.firstOrNull() == SeedPhraseWord.EMPTY_WORD
+                )
+                onSeedPhraseChanged?.invoke(keys)
+            },
+            onShowKeyboardListener = { onShowKeyboardListener?.invoke(it) }
+        )
     }
 
     private val seedPhraseParser = SeedPhraseParser()
@@ -73,14 +76,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     }
 
     fun showFocusOnLastKey(lastSecretItemIndex: Int) {
-        val viewGroup = binding.keysRecyclerView.children
-            .toList()
-            .getOrNull(lastSecretItemIndex) as? LinearLayout
-            ?: return
-
-        val secretKeyEditText = viewGroup.children.firstOrNull { it.id == R.id.editTextWord }
-        secretKeyEditText?.requestFocus()
-        secretKeyEditText?.showSoftKeyboard()
+        phraseAdapter.showFocusOnItem(lastSecretItemIndex)
     }
 
     fun showSeedPhraseValid(isValid: Boolean) {
@@ -90,10 +86,6 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
     fun showClearButton(isVisible: Boolean) {
         binding.textViewClear.isVisible = isVisible
-    }
-
-    fun setOnContainerClickListener(callback: () -> Unit) {
-        binding.keysRecyclerView.setOnClickListener { callback() }
     }
 
     // Getting clipboard here since it's impossible to move `ContextExtensions` to ui-kit at the moment
