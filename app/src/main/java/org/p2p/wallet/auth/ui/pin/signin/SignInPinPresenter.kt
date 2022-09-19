@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.pin.signin
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
@@ -18,9 +17,6 @@ private const val VIBRATE_DURATION = 500L
 
 private const val PIN_CODE_WARN_ATTEMPT_COUNT = 3
 private const val PIN_CODE_ATTEMPT_COUNT = 5
-
-private const val TIMER_MILLIS = 10000L
-private const val TIMER_INTERVAL = 1000L
 
 class SignInPinPresenter(
     private val authInteractor: AuthInteractor,
@@ -88,16 +84,12 @@ class SignInPinPresenter(
     ) {
         launch {
             try {
-                view?.showLoading(true)
-                delay(500L)
                 val result = performSignIn()
                 handleResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error while signing")
                 view?.clearPin()
                 view?.showErrorMessage(e)
-            } finally {
-                view?.showLoading(false)
             }
         }
     }
