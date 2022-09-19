@@ -48,14 +48,21 @@ class BuyDetailsBottomSheet : BaseDoneBottomSheet() {
         super.onViewCreated(view, savedInstanceState)
         when (val state = state) {
             is BuyDetailsState.Valid -> showData(state.data)
-            is BuyDetailsState.MinAmountError -> showErrorState(state)
+            is BuyDetailsState.MinAmountError -> showMinErrorState(state)
+            is BuyDetailsState.MaxAmountError -> showMaxErrorState(state)
         }
     }
 
-    private fun showErrorState(state: BuyDetailsState.MinAmountError) {
-        binding.containerContent.isVisible = false
-        binding.textViewError.isVisible = true
-        binding.textViewError.text = getString(R.string.buy_min_amount_error_format, state.amount)
+    private fun showMinErrorState(state: BuyDetailsState.MinAmountError) = with(binding) {
+        containerContent.isVisible = false
+        textViewError.isVisible = true
+        textViewError.text = getString(R.string.buy_min_amount_details_error_format, state.amount)
+    }
+
+    private fun showMaxErrorState(state: BuyDetailsState.MaxAmountError) = with(binding) {
+        containerContent.isVisible = false
+        textViewError.isVisible = true
+        textViewError.text = getString(R.string.buy_max_amount_details_error_format, state.amount)
     }
 
     override fun onStart() {
@@ -67,8 +74,8 @@ class BuyDetailsBottomSheet : BaseDoneBottomSheet() {
     }
 
     private fun showData(viewData: BuyViewData) = with(binding) {
-        binding.containerContent.isVisible = true
-        binding.textViewError.isVisible = false
+        containerContent.isVisible = true
+        textViewError.isVisible = false
 
         optionsTextViewPrice.labelText = getString(R.string.buy_token_price, viewData.tokenSymbol)
         optionsTextViewPurchaseCost.labelText = getString(R.string.buy_token_purchase_cost, viewData.tokenSymbol)
