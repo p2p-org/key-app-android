@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:cardBackgroundColor="@color/bg_rain"
-        app:cardCornerRadius="8dp">
+        app:cardCornerRadius="12dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/contentCardLayout"

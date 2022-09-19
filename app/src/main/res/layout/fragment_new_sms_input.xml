@@ -17,7 +17,8 @@
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="@color/black"
         app:title="Step 2 of 3"
-        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night" />
 
     <TextView
         android:id="@+id/titleText"
@@ -75,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/common_resend"
+        android:text="@string/onboarding_sms_input_resend_sms"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
         android:textColor="@color/text_sky"
         app:layout_constraintEnd_toEndOf="parent"

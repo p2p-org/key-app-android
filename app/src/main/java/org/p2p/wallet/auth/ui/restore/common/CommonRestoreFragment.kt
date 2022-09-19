@@ -79,6 +79,11 @@ class CommonRestoreFragment :
                 }
                 false
             }
+            toolbar.setOnLongClickListener {
+                // TODO PWN-4615 remove after all onboarding testing completed!
+                replaceFragment(DebugSettingsFragment.create())
+                true
+            }
             buttonRestoreByGoogle.setOnClickListener {
                 presenter.useGoogleAccount()
             }
