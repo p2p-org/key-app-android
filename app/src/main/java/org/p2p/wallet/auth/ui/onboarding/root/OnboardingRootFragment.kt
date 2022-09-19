@@ -7,6 +7,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
+import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.replaceFragment
@@ -30,6 +31,10 @@ class OnboardingRootFragment :
 
     override fun navigateToContinueOnboarding() {
         navigateTo(ContinueOnboardingFragment.create())
+    }
+
+    override fun navigateToRestore() {
+        navigateTo(CommonRestoreFragment.createWithoutBack())
     }
 
     override fun navigateToCreatePin() {

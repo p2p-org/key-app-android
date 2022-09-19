@@ -18,11 +18,15 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+
+private const val ARG_SHOW_BACK_BUTTON = "ARG_DO_NOT_SHOW_BACK"
 
 class CommonRestoreFragment :
     BaseMvpFragment<CommonRestoreContract.View, CommonRestoreContract.Presenter>(
@@ -32,12 +36,18 @@ class CommonRestoreFragment :
     GoogleSignInHelper.GoogleSignInErrorHandler {
 
     companion object {
-        fun create(): CommonRestoreFragment = CommonRestoreFragment()
+        fun create(showBackButton: Boolean = true): CommonRestoreFragment = CommonRestoreFragment().withArgs(
+            ARG_SHOW_BACK_BUTTON to showBackButton
+        )
+
+        fun createWithoutBack(): CommonRestoreFragment = create(showBackButton = false)
     }
 
     override val presenter: CommonRestoreContract.Presenter by inject()
 
     private val binding: FragmentCommonRestoreBinding by viewBinding()
+
+    private val showBackButton: Boolean by args(ARG_SHOW_BACK_BUTTON)
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night
@@ -53,6 +63,11 @@ class CommonRestoreFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            if (showBackButton) {
+                toolbar.setNavigationIcon(R.drawable.ic_back)
+            } else {
+                toolbar.navigationIcon = null
+            }
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {

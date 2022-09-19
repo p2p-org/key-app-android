@@ -5,6 +5,8 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import timber.log.Timber
 
+const val KEY_IN_SIGN_UP_PROCESS = "KEY_IN_SIGN_UP_PROCESS"
+
 private const val TAG = "UserSignUpDetailsStorage"
 private const val KEY_LAST_DEVICE_SHARE_ID = "KEY_LAST_DEVICE_SHARE_ID"
 
@@ -28,6 +30,7 @@ class UserSignUpDetailsStorage(
 
         accountStorage.saveObject(key, value)
         accountStorage.saveObject(KEY_LAST_DEVICE_SHARE_ID, value)
+        accountStorage.saveString(KEY_IN_SIGN_UP_PROCESS, key)
 
         Timber.tag(TAG).i("New user sign up details saved!")
         return true
@@ -51,4 +54,6 @@ class UserSignUpDetailsStorage(
     }
 
     fun isDeviceShareSaved(): Boolean = getLastSignUpUserDetails() != null
+
+    fun isSignUpInProcess(): Boolean = accountStorage.getString(KEY_IN_SIGN_UP_PROCESS) != null
 }
