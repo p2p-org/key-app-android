@@ -98,11 +98,14 @@ class PhoneNumberEnterPresenter(
                     view?.navigateToSmsInput()
                 }
             }
-        } catch (gatewayError: GatewayServiceError) {
-            handleGatewayServiceError(gatewayError)
         } catch (error: Throwable) {
-            Timber.e(error, "Phone number submission failed")
-            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            if (error is GatewayServiceError) {
+                handleGatewayServiceError(error)
+            } else {
+                Timber.e(error, "Phone number submission failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+            createWalletInteractor.setIsCreateWalletRequestSent(isSent = false)
         }
     }
 
@@ -137,11 +140,14 @@ class PhoneNumberEnterPresenter(
                 restoreWalletInteractor.startRestoreCustomShare(userPhoneNumber = userPhoneNumber)
                 view?.navigateToSmsInput()
             }
-        } catch (gatewayError: GatewayServiceError) {
-            handleGatewayServiceError(gatewayError)
         } catch (error: Throwable) {
-            Timber.e(error, "Phone number submission failed")
-            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            if (error is GatewayServiceError) {
+                handleGatewayServiceError(error)
+            } else {
+                Timber.e(error, "Phone number submission failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+            restoreWalletInteractor.setIsRestoreWalletRequestSent(isSent = false)
         }
     }
 }

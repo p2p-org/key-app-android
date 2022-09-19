@@ -21,6 +21,8 @@ class SignUpFlowDataLocalRepository(
 
     var userPhoneNumberEnteredCount = 0
 
+    var isCreateWalletRequestSent = false
+
     var signUpUserId: String? = null
         set(value) {
             field = value
