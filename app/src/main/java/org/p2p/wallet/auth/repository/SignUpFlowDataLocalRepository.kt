@@ -21,6 +21,8 @@ class SignUpFlowDataLocalRepository(
 
     var userPhoneNumberEnteredCount = 0
 
+    var isCreateWalletRequestSent = false
+
     var signUpUserId: String? = null
         set(value) {
             field = value
@@ -51,6 +53,7 @@ class SignUpFlowDataLocalRepository(
         set(value) {
             field = value
             ++userPhoneNumberEnteredCount
+            isCreateWalletRequestSent = true
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 

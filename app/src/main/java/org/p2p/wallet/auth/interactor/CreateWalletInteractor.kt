@@ -28,16 +28,19 @@ class CreateWalletInteractor(
         val etheriumPublicKey = signUpFlowDataRepository.ethereumPublicKey
             ?: throw CreateWalletFailure("User etherium public key is null")
 
-        if (isResend || userPhoneNumber != signUpFlowDataRepository.userPhoneNumber) {
+        val isNumberEquals = userPhoneNumber == signUpFlowDataRepository.userPhoneNumber
+        val isCreateWalletRequestSent = signUpFlowDataRepository.isCreateWalletRequestSent
+
+        if (isResend || (!isCreateWalletRequestSent && !isNumberEquals)) {
             gatewayServiceRepository.registerWalletWithSms(
                 userPublicKey = userPublicKey,
                 userPrivateKey = userPrivateKey,
                 etheriumAddress = etheriumPublicKey,
                 phoneNumber = userPhoneNumber
             )
-            smsInputTimer.startSmsInputTimerFlow()
+            signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
         }
-        signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
+        smsInputTimer.startSmsInputTimerFlow()
     }
 
     fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount
@@ -78,5 +81,9 @@ class CreateWalletInteractor(
         } ?: throw CreateWalletFailure("User account is null, creating a user is failed")
 
         signUpFlowDataRepository.clear()
+    }
+
+    fun setIsCreateWalletRequestSent(isSent: Boolean) {
+        signUpFlowDataRepository.isCreateWalletRequestSent = isSent
     }
 }

@@ -27,15 +27,17 @@ class CustomShareRestoreInteractor(
         val temporaryUserPrivateKey = restoreFlowDataLocalRepository.userRestorePrivateKey
             ?: throw RestoreWalletFailure("User restore private key is null")
 
-        if (isResend || userPhoneNumber != restoreFlowDataLocalRepository.userPhoneNumber) {
+        val isNumberEquals = userPhoneNumber == restoreFlowDataLocalRepository.userPhoneNumber
+        val isRestoreWalletRequestSent = restoreFlowDataLocalRepository.isRestoreWalletRequestSent
+        if (isResend || (!isRestoreWalletRequestSent && !isNumberEquals)) {
             gatewayServiceRepository.restoreWallet(
                 solanaPublicKey = temporaryUserPublicKey,
                 solanaPrivateKey = temporaryUserPrivateKey,
                 phoneNumber = userPhoneNumber,
                 channel = OtpMethod.SMS
             )
+            restoreFlowDataLocalRepository.userPhoneNumber = userPhoneNumber
         }
-        restoreFlowDataLocalRepository.userPhoneNumber = userPhoneNumber
     }
 
     suspend fun finishRestoreCustomShare(smsCode: String) {

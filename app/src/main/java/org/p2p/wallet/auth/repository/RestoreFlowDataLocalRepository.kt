@@ -13,6 +13,8 @@ private val TAG = RestoreFlowDataLocalRepository::class.simpleName.orEmpty()
 
 class RestoreFlowDataLocalRepository {
 
+    var isRestoreWalletRequestSent = false
+
     val userRestorePublicKey: Base58String?
         get() = restoreUserKeyPair?.publicKey?.toBase58Instance()
 
@@ -28,6 +30,7 @@ class RestoreFlowDataLocalRepository {
     var userPhoneNumber: PhoneNumber? = null
         set(value) {
             field = value
+            isRestoreWalletRequestSent = true
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
