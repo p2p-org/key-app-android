@@ -109,4 +109,11 @@ object EventNames {
     const val SWAP_USER_CONFIRMED = "Swap_User_Confirmed"
     const val SWAP_STARTED = "Swap_Started"
     const val SWAP_COMPLETED = "Swap_Completed"
+
+    const val BUY_CURRENCY_CHANGED = "Buy_Currency_Changed"
+    const val BUY_COIN_CHANGED = "Buy_Coin_Changed"
+    const val BUY_TOTAL_SHOWED = "Buy_Total_Showed"
+    const val BUY_CHOSEN_METHOD_PAYMENT = "Buy_Chosen_Method_Payment"
+    const val BUY_BUTTON_PRESSED = "Buy_Button_Pressed"
+    const val BUY_MOONPAY_WINDOW = "Moonpay_Window"
 }

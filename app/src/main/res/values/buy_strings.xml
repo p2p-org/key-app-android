@@ -9,7 +9,7 @@
     <string name="buy_fee_percent">%s%%</string>
 
     <string name="buy_period_bank_transfer">~17 hours</string>
-    <string name="buy_period_card">1 day</string>
+    <string name="buy_period_card">Instant</string>
 
     <string name="buy_method_bank_transfer">Bank transfer</string>
     <string name="buy_method_card">Card</string>
@@ -26,4 +26,9 @@
     <string name="buy_gbp_error">GBP transfer isn’t available out of UK</string>
 
     <string name="buy_min_transaction_format">Minimal transaction is %s</string>
+    <string name="buy_max_transaction_format">Maximum transaction is %s</string>
+
+    <string name="buy_min_amount_details_error_format">We can\'t process transactions less %s</string>
+    <string name="buy_max_amount_details_error_format">We can\'t process transactions more %s</string>
+
 </resources>

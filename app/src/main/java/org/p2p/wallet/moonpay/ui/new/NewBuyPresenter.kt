@@ -30,10 +30,8 @@ import org.p2p.wallet.utils.asCurrency
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
-import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
 
@@ -130,6 +128,7 @@ class NewBuyPresenter(
     }
 
     override fun onPaymentMethodSelected(selectedMethod: PaymentMethod) {
+        buyAnalytics.logBuyMethodPaymentChanged(selectedMethod)
         selectedPaymentMethod = selectedMethod
         paymentMethods.forEach { paymentMethod ->
             paymentMethod.isSelected = paymentMethod.method == selectedMethod.method
@@ -166,12 +165,14 @@ class NewBuyPresenter(
     }
 
     override fun onTotalClicked() {
+        buyAnalytics.logBuyTotalShown(isShown = buyDetailsState != null)
         buyDetailsState?.let {
             view?.showDetailsBottomSheet(it)
         }
     }
 
     override fun setTokenToBuy(token: Token) {
+        buyAnalytics.logBuyTokenChanged(selectedToken.tokenSymbol, token.tokenSymbol)
         selectedToken = token
         recalculate()
     }
@@ -182,6 +183,7 @@ class NewBuyPresenter(
     }
 
     override fun setCurrency(currency: BuyCurrency.Currency) {
+        buyAnalytics.logBuyCurrencyChanged(selectedCurrency.code, currency.code)
         selectedCurrency = currency
         if (isValidCurrencyForPay()) {
             recalculate()
@@ -276,21 +278,42 @@ class NewBuyPresenter(
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
-            is MoonpayBuyResult.MinimumAmountError -> {
+            is MoonpayBuyResult.MinAmountError -> {
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
-                view?.apply {
-                    setContinueButtonEnabled(false)
-                    val symbol = selectedCurrency.code.symbolFromCode()
-                    val minAmountWithSymbol = "$symbol ${buyResult.minBuyAmount.formatUsd()}"
-                    buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
-                    showMessage(
-                        resourcesProvider.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
-                    )
-                    clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
-                }
+                showMinAmountError(buyResult.minBuyAmount)
+            }
+            is MoonpayBuyResult.MaxAmountError -> {
+                buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
+                showMaxAmountError(buyResult.maxBuyAmount)
             }
         }
         buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)
+    }
+
+    private fun showMinAmountError(minAmount: BigDecimal) {
+        view?.apply {
+            setContinueButtonEnabled(false)
+            val symbol = selectedCurrency.code.symbolFromCode()
+            val minAmountWithSymbol = "$symbol ${minAmount.formatUsd()}"
+            buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
+            showMessage(
+                resourcesProvider.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
+            )
+            clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
+        }
+    }
+
+    private fun showMaxAmountError(maxAmount: BigDecimal) {
+        view?.apply {
+            setContinueButtonEnabled(false)
+            val symbol = selectedCurrency.code.symbolFromCode()
+            val minAmountWithSymbol = "$symbol ${maxAmount.formatUsd()}"
+            buyDetailsState = BuyDetailsState.MaxAmountError(minAmountWithSymbol)
+            showMessage(
+                resourcesProvider.getString(R.string.buy_max_transaction_format).format(minAmountWithSymbol)
+            )
+            clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
+        }
     }
 
     private fun onBuyCurrencyLoadFailed(error: Throwable) {
@@ -391,20 +414,20 @@ class NewBuyPresenter(
     override fun onContinueClicked() {
         currentBuyViewData?.let {
             val paymentType = getValidPaymentType()
+            buyAnalytics.logBuyButtonPressed(
+                buySumCurrency = it.total,
+                buySumCoin = it.receiveAmount.toBigDecimal(),
+                buyCurrency = it.currencySymbol,
+                buyCoin = it.tokenSymbol,
+                methodPayment = selectedPaymentMethod
+            )
             view?.navigateToMoonpay(
                 amount = it.total.toString(),
                 selectedToken,
                 selectedCurrency,
                 paymentType
             )
-            // TODO append analytics with selected token and currency
-            buyAnalytics.logBuyContinuing(
-                buyCurrency = it.tokenSymbol,
-                buySum = it.price,
-                buyProvider = "moonpay",
-                buyUSD = it.price.toUsd(it.price).orZero(),
-                lastScreenName = analyticsInteractor.getPreviousScreenName()
-            )
+            buyAnalytics.logBuyMoonPayOpened()
         }
     }
 
