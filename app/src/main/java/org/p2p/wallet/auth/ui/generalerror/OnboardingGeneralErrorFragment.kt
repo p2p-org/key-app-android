@@ -18,6 +18,7 @@ import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.io.File
@@ -85,7 +86,7 @@ class OnboardingGeneralErrorFragment :
                     popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
                 }
                 buttonRestoreWithPhone.setOnClickListener {
-                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                    replaceFragment(PhoneNumberEnterFragment.create())
                 }
                 buttonRestoreByGoogle.setOnClickListener {
                     // TODO implement restore by google API
