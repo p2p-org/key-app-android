@@ -278,21 +278,42 @@ class NewBuyPresenter(
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
-            is MoonpayBuyResult.MinimumAmountError -> {
+            is MoonpayBuyResult.MinAmountError -> {
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
-                view?.apply {
-                    setContinueButtonEnabled(false)
-                    val symbol = selectedCurrency.code.symbolFromCode()
-                    val minAmountWithSymbol = "$symbol ${buyResult.minBuyAmount.formatUsd()}"
-                    buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
-                    showMessage(
-                        resourcesProvider.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
-                    )
-                    clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
-                }
+                showMinAmountError(buyResult.minBuyAmount)
+            }
+            is MoonpayBuyResult.MaxAmountError -> {
+                buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
+                showMaxAmountError(buyResult.maxBuyAmount)
             }
         }
         buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)
+    }
+
+    private fun showMinAmountError(minAmount: BigDecimal) {
+        view?.apply {
+            setContinueButtonEnabled(false)
+            val symbol = selectedCurrency.code.symbolFromCode()
+            val minAmountWithSymbol = "$symbol ${minAmount.formatUsd()}"
+            buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
+            showMessage(
+                resourcesProvider.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
+            )
+            clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
+        }
+    }
+
+    private fun showMaxAmountError(maxAmount: BigDecimal) {
+        view?.apply {
+            setContinueButtonEnabled(false)
+            val symbol = selectedCurrency.code.symbolFromCode()
+            val minAmountWithSymbol = "$symbol ${maxAmount.formatUsd()}"
+            buyDetailsState = BuyDetailsState.MaxAmountError(minAmountWithSymbol)
+            showMessage(
+                resourcesProvider.getString(R.string.buy_max_transaction_format).format(minAmountWithSymbol)
+            )
+            clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
+        }
     }
 
     private fun onBuyCurrencyLoadFailed(error: Throwable) {

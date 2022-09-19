@@ -9,4 +9,7 @@ sealed interface BuyDetailsState : Parcelable {
 
     @Parcelize
     data class MinAmountError(val amount: String) : BuyDetailsState
+
+    @Parcelize
+    data class MaxAmountError(val amount: String) : BuyDetailsState
 }
