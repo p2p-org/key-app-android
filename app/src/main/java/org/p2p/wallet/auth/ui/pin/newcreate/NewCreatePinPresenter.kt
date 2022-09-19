@@ -88,6 +88,7 @@ class NewCreatePinPresenter(
 
     private fun registerComplete(pinCode: String, cipher: EncodeCipher?) {
         authInteractor.registerComplete(pinCode, cipher)
+        authInteractor.finishSignUp()
         // TODO determine pin complexity
         adminAnalytics.logPinCreated(currentScreenName = analyticsInteractor.getCurrentScreenName())
     }

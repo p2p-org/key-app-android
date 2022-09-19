@@ -98,17 +98,24 @@ class PhoneNumberEnterPresenter(
                     view?.navigateToSmsInput()
                 }
             }
-        } catch (gatewayError: GatewayServiceError) {
-            handleGatewayServiceError(gatewayError)
         } catch (error: Throwable) {
-            Timber.e(error, "Phone number submission failed")
-            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            if (error is GatewayServiceError) {
+                handleGatewayServiceError(error)
+            } else {
+                Timber.e(error, "Phone number submission failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+            createWalletInteractor.setIsCreateWalletRequestSent(isSent = false)
         }
     }
 
     private fun handleGatewayServiceError(gatewayServiceError: GatewayServiceError) {
         Timber.i(gatewayServiceError)
         when (gatewayServiceError) {
+            is GatewayServiceError.TooManyOtpRequests -> {
+                Timber.e(gatewayServiceError)
+                view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
+            }
             is GatewayServiceError.SmsDeliverFailed -> {
                 view?.showUiKitSnackBar(messageResId = R.string.onboarding_phone_enter_error_sms_failed)
                 view?.showSmsDeliveryFailedForNumber()
@@ -137,11 +144,14 @@ class PhoneNumberEnterPresenter(
                 restoreWalletInteractor.startRestoreCustomShare(userPhoneNumber = userPhoneNumber)
                 view?.navigateToSmsInput()
             }
-        } catch (gatewayError: GatewayServiceError) {
-            handleGatewayServiceError(gatewayError)
         } catch (error: Throwable) {
-            Timber.e(error, "Phone number submission failed")
-            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            if (error is GatewayServiceError) {
+                handleGatewayServiceError(error)
+            } else {
+                Timber.e(error, "Phone number submission failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+            restoreWalletInteractor.setIsRestoreWalletRequestSent(isSent = false)
         }
     }
 }

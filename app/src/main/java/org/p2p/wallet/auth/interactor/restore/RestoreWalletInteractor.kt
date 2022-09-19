@@ -36,4 +36,8 @@ class RestoreWalletInteractor(
         userRestoreInteractor.tryRestoreUser(restoreFlow)
 
     suspend fun finishAuthFlow() = userRestoreInteractor.finishAuthFlow()
+
+    fun setIsRestoreWalletRequestSent(isSent: Boolean) {
+        customShareRestoreInteractor.setIsRestoreWalletRequestSent(isSent)
+    }
 }

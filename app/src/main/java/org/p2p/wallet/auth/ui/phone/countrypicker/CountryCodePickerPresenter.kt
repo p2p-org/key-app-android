@@ -33,7 +33,7 @@ class CountryCodePickerPresenter(
                 view?.showCountries(cachedItems)
             } else {
                 val searchResult =
-                    allCountryCodeItems.filter { it.country.name.startsWith(countryName, ignoreCase = true) }
+                    allCountryCodeItems.filter { it.country.name.contains(countryName, ignoreCase = true) }
                 searchTextMap[countryName] = searchResult
                 view?.showCountries(searchResult)
             }

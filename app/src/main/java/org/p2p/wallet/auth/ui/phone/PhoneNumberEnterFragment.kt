@@ -86,7 +86,6 @@ class PhoneNumberEnterFragment :
     override fun showDefaultCountryCode(defaultCountryCode: CountryCode?) {
         binding.editTextPhoneNumber.setupViewState(
             countryCode = defaultCountryCode,
-            onCountryCodeChanged = ::onCountryCodeChanged,
             onPhoneChanged = ::onPhoneChanged,
             onCountryClickListener = ::onCountryClickListener
         )

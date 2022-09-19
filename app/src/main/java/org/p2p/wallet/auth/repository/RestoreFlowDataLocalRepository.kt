@@ -13,6 +13,8 @@ private val TAG = RestoreFlowDataLocalRepository::class.simpleName.orEmpty()
 
 class RestoreFlowDataLocalRepository {
 
+    var isRestoreWalletRequestSent = false
+
     val userRestorePublicKey: Base58String?
         get() = restoreUserKeyPair?.publicKey?.toBase58Instance()
 

@@ -13,7 +13,7 @@ import timber.log.Timber
 class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
-    private val accountStorageContract: UserSignUpDetailsStorage
+    private val accountStorageContract: UserSignUpDetailsStorage,
 ) : BasePresenter<CommonRestoreContract.View>(), CommonRestoreContract.Presenter {
 
     override fun useGoogleAccount() {
@@ -28,7 +28,9 @@ class CommonRestorePresenter(
     override fun switchFlowToRestore() {
         onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
         restoreWalletInteractor.generateRestoreUserKeyPair()
-        view?.setRestoreViaGoogleFlowVisibility(isVisible = accountStorageContract.isDeviceShareSaved())
+        view?.setRestoreViaGoogleFlowVisibility(
+            isVisible = accountStorageContract.isDeviceShareSaved() && !accountStorageContract.isSignUpInProcess()
+        )
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {

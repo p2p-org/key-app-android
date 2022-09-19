@@ -19,12 +19,12 @@
         name="Antigua and Barbuda"
         flag_emoji="&#127462;&#127468;"
         name_code="ag"
-        phone_code="1" />
+        phone_code="1268" />
     <country
         name="Anguilla"
         flag_emoji="&#127462;&#127470;"
         name_code="ai"
-        phone_code="1" />
+        phone_code="1264" />
     <country
         name="Albania"
         flag_emoji="&#127462;&#127473;"
@@ -54,7 +54,7 @@
         name="American Samoa"
         flag_emoji="&#127462;&#127480;"
         name_code="as"
-        phone_code="1" />
+        phone_code="1684" />
     <country
         name="Austria"
         flag_emoji="&#127462;&#127481;"
@@ -89,7 +89,7 @@
         name="Barbados"
         flag_emoji="&#127463;&#127463;"
         name_code="bb"
-        phone_code="1" />
+        phone_code="1246" />
     <country
         name="Bangladesh"
         flag_emoji="&#127463;&#127465;"
@@ -134,14 +134,14 @@
         name="Bermuda"
         flag_emoji="&#127463;&#127474;"
         name_code="bm"
-        phone_code="1" />
+        phone_code="1441" />
     <country
         name="Brunei Darussalam"
         flag_emoji="&#127463;&#127475;"
         name_code="bn"
         phone_code="673" />
     <country
-        name="Bolivia, Plurinational State Of"
+        name="Bolivia"
         flag_emoji="&#127463;&#127476;"
         name_code="bo"
         phone_code="591" />
@@ -154,7 +154,7 @@
         name="Bahamas"
         flag_emoji="&#127463;&#127480;"
         name_code="bs"
-        phone_code="1" />
+        phone_code="1242" />
     <country
         name="Bhutan"
         flag_emoji="&#127463;&#127481;"
@@ -186,7 +186,7 @@
         name_code="cc"
         phone_code="61" />
     <country
-        name="Congo, The Democratic Republic Of The"
+        name="Congo(Dem.Rep.)"
         flag_emoji="&#127464;&#127465;"
         name_code="cd"
         phone_code="243" />
@@ -196,7 +196,7 @@
         name_code="cf"
         phone_code="236" />
     <country
-        name="Congo"
+        name="Congo(Rep.)"
         flag_emoji="&#127464;&#127468;"
         name_code="cg"
         phone_code="242" />
@@ -251,7 +251,7 @@
         name_code="cv"
         phone_code="238" />
     <country
-        name="Curaçao"
+        name="Curacao"
         flag_emoji="&#127464;&#127484;"
         name_code="cw"
         phone_code="599" />
@@ -289,12 +289,22 @@
         name="Dominica"
         flag_emoji="&#127465;&#127474;"
         name_code="dm"
-        phone_code="1" />
+        phone_code="1767" />
     <country
         name="Dominican Republic"
         flag_emoji="&#127465;&#127476;"
         name_code="do"
-        phone_code="1" />
+        phone_code="1809" />
+    <country
+        name="Dominican Republic"
+        flag_emoji="&#127465;&#127476;"
+        name_code="do"
+        phone_code="1829" />
+    <country
+        name="Dominican Republic"
+        flag_emoji="&#127465;&#127476;"
+        name_code="do"
+        phone_code="1849" />
     <country
         name="Algeria"
         flag_emoji="&#127465;&#127487;"
@@ -346,7 +356,7 @@
         name_code="fk"
         phone_code="500" />
     <country
-        name="Micronesia, Federated States Of"
+        name="Micronesia"
         flag_emoji="&#127467;&#127474;"
         name_code="fm"
         phone_code="691" />
@@ -374,7 +384,7 @@
         name="Grenada"
         flag_emoji="&#127468;&#127465;"
         name_code="gd"
-        phone_code="1" />
+        phone_code="1473" />
     <country
         name="Georgia"
         flag_emoji="&#127468;&#127466;"
@@ -439,7 +449,7 @@
         name="Guam"
         flag_emoji="&#127468;&#127482;"
         name_code="gu"
-        phone_code="1" />
+        phone_code="1671" />
     <country
         name="Guinea-bissau"
         flag_emoji="&#127468;&#127484;"
@@ -516,7 +526,7 @@
         name_code="iq"
         phone_code="964" />
     <country
-        name="Iran, Islamic Republic Of"
+        name="Iran"
         flag_emoji="&#127470;&#127479;"
         name_code="ir"
         phone_code="98" />
@@ -534,7 +544,7 @@
         name="Jamaica"
         flag_emoji="&#127471;&#127474;"
         name_code="jm"
-        phone_code="1" />
+        phone_code="1876" />
     <country
         name="Jordan"
         flag_emoji="&#127471;&#127476;"
@@ -574,7 +584,7 @@
         name="Saint Kitts and Nevis"
         flag_emoji="&#127472;&#127475;"
         name_code="kn"
-        phone_code="1" />
+        phone_code="1869" />
     <country
         name="North Korea"
         flag_emoji="&#127472;&#127477;"
@@ -594,7 +604,7 @@
         name="Cayman Islands"
         flag_emoji="&#127472;&#127486;"
         name_code="ky"
-        phone_code="1" />
+        phone_code="1345" />
     <country
         name="Kazakhstan"
         flag_emoji="&#127472;&#127487;"
@@ -614,7 +624,7 @@
         name="Saint Lucia"
         flag_emoji="&#127473;&#127464;"
         name_code="lc"
-        phone_code="1" />
+        phone_code="1758" />
     <country
         name="Liechtenstein"
         flag_emoji="&#127473;&#127470;"
@@ -666,7 +676,7 @@
         name_code="mc"
         phone_code="377" />
     <country
-        name="Moldova, Republic Of"
+        name="Moldova"
         flag_emoji="&#127474;&#127465;"
         name_code="md"
         phone_code="373" />
@@ -719,7 +729,7 @@
         name="Northern Mariana Islands"
         flag_emoji="&#127474;&#127477;"
         name_code="mp"
-        phone_code="1" />
+        phone_code="1670" />
     <country
         name="Martinique"
         flag_emoji="&#127474;&#127478;"
@@ -734,7 +744,7 @@
         name="Montserrat"
         flag_emoji="&#127474;&#127480;"
         name_code="ms"
-        phone_code="1" />
+        phone_code="1664" />
     <country
         name="Malta"
         flag_emoji="&#127474;&#127481;"
@@ -884,7 +894,12 @@
         name="Puerto Rico"
         flag_emoji="&#127477;&#127479;"
         name_code="pr"
-        phone_code="1" />
+        phone_code="1787" />
+    <country
+        name="Puerto Rico"
+        flag_emoji="&#127477;&#127479;"
+        name_code="pr"
+        phone_code="1939" />
     <country
         name="Palestine"
         flag_emoji="&#127477;&#127480;"
@@ -966,7 +981,7 @@
         name_code="sg"
         phone_code="65" />
     <country
-        name="Saint Helena, Ascension And Tristan Da Cunha"
+        name="Saint Helena"
         flag_emoji="&#127480;&#127469;"
         name_code="sh"
         phone_code="290" />
@@ -1024,7 +1039,7 @@
         name="Sint Maarten"
         flag_emoji="&#127480;&#127485;"
         name_code="sx"
-        phone_code="1" />
+        phone_code="1721" />
     <country
         name="Syrian Arab Republic"
         flag_emoji="&#127480;&#127486;"
@@ -1039,7 +1054,7 @@
         name="Turks and Caicos Islands"
         flag_emoji="&#127481;&#127464;"
         name_code="tc"
-        phone_code="1" />
+        phone_code="1649" />
     <country
         name="Chad"
         flag_emoji="&#127481;&#127465;"
@@ -1094,19 +1109,19 @@
         name="Trinidad &amp; Tobago"
         flag_emoji="&#127481;&#127481;"
         name_code="tt"
-        phone_code="1" />
+        phone_code="1868" />
     <country
         name="Tuvalu"
         flag_emoji="&#127481;&#127483;"
         name_code="tv"
         phone_code="688" />
     <country
-            name="Taiwan"
+        name="Taiwan"
         flag_emoji="&#127481;&#127484;"
         name_code="tw"
         phone_code="886" />
     <country
-        name="Tanzania, United Republic Of"
+        name="Tanzania"
         flag_emoji="&#127481;&#127487;"
         name_code="tz"
         phone_code="255" />
@@ -1144,9 +1159,9 @@
         name="Saint Vincent &amp; The Grenadines"
         flag_emoji="&#127483;&#127464;"
         name_code="vc"
-        phone_code="1" />
+        phone_code="1784" />
     <country
-        name="Venezuela, Bolivarian Republic Of"
+        name="Venezuela"
         flag_emoji="&#127483;&#127466;"
         name_code="ve"
         phone_code="58" />
@@ -1154,12 +1169,12 @@
         name="British Virgin Islands"
         flag_emoji="&#127483;&#127468;"
         name_code="vg"
-        phone_code="1" />
+        phone_code="1284" />
     <country
         name="US Virgin Islands"
         flag_emoji="&#127483;&#127470;"
         name_code="vi"
-        phone_code="1" />
+        phone_code="1340" />
     <country
         name="Vietnam"
         flag_emoji="&#127483;&#127475;"

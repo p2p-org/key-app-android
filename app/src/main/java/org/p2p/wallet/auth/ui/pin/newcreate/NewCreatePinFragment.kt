@@ -35,7 +35,7 @@ class NewCreatePinFragment :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_snow
+    override val navBarColor: Int = R.color.bg_night
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

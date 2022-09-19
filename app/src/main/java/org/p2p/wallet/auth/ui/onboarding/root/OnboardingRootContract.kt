@@ -7,6 +7,7 @@ interface OnboardingRootContract {
     interface View : MvpView {
         fun navigateToOnboarding()
         fun navigateToContinueOnboarding()
+        fun navigateToRestore()
         fun navigateToCreatePin()
     }
 

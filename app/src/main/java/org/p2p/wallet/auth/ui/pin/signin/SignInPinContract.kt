@@ -14,7 +14,6 @@ interface SignInPinContract {
         fun showWarnPinError(attemptsLeft: Int)
         fun showWalletLocked(seconds: Long)
         fun showWalletUnlocked()
-        fun showLoading(isLoading: Boolean)
         fun vibrate(duration: Long)
         fun clearPin()
     }

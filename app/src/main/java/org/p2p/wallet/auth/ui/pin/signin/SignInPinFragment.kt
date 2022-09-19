@@ -29,7 +29,7 @@ class SignInPinFragment :
     }
 
     override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_snow
+    override val navBarColor: Int = R.color.bg_night
 
     override val presenter: SignInPinContract.Presenter by inject()
     private val binding: FragmentSignInPinBinding by viewBinding()
@@ -60,10 +60,6 @@ class SignInPinFragment :
         }
     }
 
-    override fun showLoading(isLoading: Boolean) {
-        binding.pinView.showLoading(isLoading)
-    }
-
     override fun onStart() {
         super.onStart()
         presenter.checkIfBiometricAvailable()
@@ -74,6 +70,7 @@ class SignInPinFragment :
     }
 
     override fun onSignInSuccess() {
+        binding.pinView.onSuccessPin()
         popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 

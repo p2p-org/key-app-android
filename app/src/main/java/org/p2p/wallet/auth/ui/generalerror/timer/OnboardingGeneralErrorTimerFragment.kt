@@ -8,7 +8,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.Presenter
-import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
 import org.p2p.wallet.utils.SpanUtils
@@ -65,7 +65,7 @@ class OnboardingGeneralErrorTimerFragment :
     }
 
     override fun navigateToStartingScreen() {
-        popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
+        popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
     }
 
     override fun showFile(file: File) {

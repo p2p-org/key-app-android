@@ -25,5 +25,20 @@ class AccountStorage(
             ?.let { gson.fromJson(it, type.java) }
     }
 
+    override fun saveString(key: String, data: String) {
+        val encodedData = keyStoreWrapper.encode(key, data)
+        sharedPreferences.edit { putString(key, encodedData) }
+    }
+
+    override fun getString(key: String): String? {
+        val encodedData = sharedPreferences.getString(key, null)
+        return encodedData?.let { keyStoreWrapper.decode(key, it) }
+    }
+
     override fun contains(key: String): Boolean = sharedPreferences.contains(key)
+
+    override fun remove(key: String) {
+        sharedPreferences.edit { remove(key) }
+        keyStoreWrapper.delete(key)
+    }
 }
