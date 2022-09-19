@@ -8,9 +8,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogHomeActionsBinding
 import org.p2p.wallet.databinding.ViewActionItemBinding
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.send.analytics.SendAnalytics
+import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.withArgs
 
@@ -33,6 +37,10 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
 
+    private val sendAnalytics: SendAnalytics by inject()
+    private val swapAnalytics: SwapAnalytics by inject()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
+
     private lateinit var binding: DialogHomeActionsBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -50,18 +58,24 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
                 textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
             }
             viewActionReceive.apply {
+                receiveAnalytics.logReceiveActionButtonClicked()
+
                 setResultClickListener(HomeAction.RECEIVE)
                 imageViewAction.setImageResource(R.drawable.action_receive_icon)
                 textViewActionTitle.setText(R.string.home_actions_receive_title)
                 textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
             }
             viewActionTrade.apply {
+                swapAnalytics.logSwapActionButtonClicked()
+
                 setResultClickListener(HomeAction.TRADE)
                 imageViewAction.setImageResource(R.drawable.action_trade_icon)
                 textViewActionTitle.setText(R.string.home_actions_trade_title)
                 textViewActionSubtitle.setText(R.string.home_actions_trade_subtitle)
             }
             viewActionSend.apply {
+                sendAnalytics.logSendActionButtonClicked()
+
                 setResultClickListener(HomeAction.SEND)
                 imageViewAction.setImageResource(R.drawable.action_send_icon)
                 textViewActionTitle.setText(R.string.home_actions_send_title)

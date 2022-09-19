@@ -11,6 +11,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
@@ -61,6 +62,8 @@ class CommonRestoreFragment :
         ::handleSignResult
     )
 
+    private val onboardingAnalytics: OnboardingAnalytics by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
@@ -85,14 +88,18 @@ class CommonRestoreFragment :
                 true
             }
             buttonRestoreByGoogle.setOnClickListener {
+                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.GOOGLE)
                 presenter.useGoogleAccount()
             }
 
             buttonPhone.setOnClickListener {
+                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.PHONE)
                 presenter.useCustomShare()
             }
 
             buttonSeed.setOnClickListener {
+                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.SEED)
+                // TODO make a real restore implementation!
                 replaceFragment(SeedPhraseFragment.create())
             }
             buttonSeed.setOnLongClickListener {

@@ -1,22 +1,27 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
+import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
+import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
 
 class NewCreatePinPresenter(
     private val adminAnalytics: AdminAnalytics,
+    private val onboardingAnalytics: OnboardingAnalytics,
     private val authInteractor: AuthInteractor,
+    private val onboardingInteractor: OnboardingInteractor,
     private val analyticsInteractor: ScreensAnalyticsInteractor
 ) : BasePresenter<NewCreatePinContract.View>(),
     NewCreatePinContract.Presenter {
@@ -40,11 +45,21 @@ class NewCreatePinPresenter(
             view?.showConfirmationError()
             view?.vibrate(VIBRATE_DURATION)
             adminAnalytics.logPinRejected(ScreenNames.OnBoarding.PIN_CONFIRM)
+            if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
+                onboardingAnalytics.logCreateWalletPinConfirm(OnboardingAnalytics.ConfirmPinResult.FAIL)
+            } else {
+                onboardingAnalytics.logRestoreWalletPinConfirm(OnboardingAnalytics.ConfirmPinResult.FAIL)
+            }
             return
         }
 
         view?.lockPinKeyboard()
         createPinCode(createdPin)
+        if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
+            onboardingAnalytics.logCreateWalletPinConfirm(OnboardingAnalytics.ConfirmPinResult.SUCCESS)
+        } else {
+            onboardingAnalytics.logRestoreWalletPinConfirm(OnboardingAnalytics.ConfirmPinResult.SUCCESS)
+        }
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
             view?.navigateToMain()
         } else {

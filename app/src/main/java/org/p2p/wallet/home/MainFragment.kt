@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
@@ -29,7 +30,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
     private val binding: FragmentMainBinding by viewBinding()
     private val fragments = SparseArrayCompat<Fragment>()
-    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val screenAnalyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val generalAnalytics: GeneralAnalytics by inject()
     private val deeplinksManager: AppDeeplinksManager by inject()
 
     companion object {
@@ -50,7 +52,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             bottomNavigation.setOnItemSelectedListener {
                 if (it.itemId == R.id.feedbackItem) {
                     IntercomService.showMessenger()
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
+                    screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
                     return@setOnItemSelectedListener false
                 }
 
@@ -82,15 +84,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         if (!fragments.containsKey(itemId)) {
             val fragment = when (ScreenTab.fromTabId(itemId)) {
                 ScreenTab.HOME_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN)
+                    screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN)
                     HomeFragment.create()
                 }
                 ScreenTab.HISTORY_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_HISTORY)
+                    screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_HISTORY)
                     HistoryFragment.create()
                 }
                 ScreenTab.SETTINGS_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.MAIN)
+                    screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.MAIN)
                     NewSettingsFragment.create()
                 }
                 else -> error("No tab found for $itemId")
@@ -155,7 +157,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
-        binding.buttonCenterAction.setOnClickListener { block.invoke() }
+        binding.buttonCenterAction.setOnClickListener {
+            generalAnalytics.logActionButtonClicked()
+            block.invoke()
+        }
     }
 
     // TODO: this is a dirty hack on how to trigger data update

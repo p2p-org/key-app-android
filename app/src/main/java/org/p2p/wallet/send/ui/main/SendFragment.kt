@@ -36,6 +36,7 @@ import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
+import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
@@ -93,6 +94,7 @@ class SendFragment :
     private val binding: FragmentSendBinding by viewBinding()
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val sendAnalytics: SendAnalytics by inject()
 
     private val address: String? by args(EXTRA_ADDRESS)
     private val token: Token.Active? by args(EXTRA_TOKEN)
@@ -105,6 +107,7 @@ class SendFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.MAIN)
+        sendAnalytics.logSendStartedScreen(analyticsInteractor.getPreviousScreenName())
         setupViews()
 
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -164,9 +167,16 @@ class SendFragment :
                 }
             }
 
-            targetTextView.setOnClickListener { addFragment(SearchFragment.create()) }
-            targetImageView.setOnClickListener { addFragment(SearchFragment.create()) }
-            messageTextView.setOnClickListener { addFragment(SearchFragment.create()) }
+            targetTextView.setOnClickListener {
+                sendAnalytics.logRecipientScreenOpened()
+                addFragment(SearchFragment.create())
+            }
+            targetImageView.setOnClickListener {
+                addFragment(SearchFragment.create())
+            }
+            messageTextView.setOnClickListener {
+                addFragment(SearchFragment.create())
+            }
 
             clearImageView.setOnClickListener { presenter.setTargetResult(result = null) }
 
@@ -193,7 +203,7 @@ class SendFragment :
 
             pasteTextView.setOnClickListener {
                 val nameOrAddress = requireContext().getClipboardText(trimmed = true)
-                nameOrAddress?.let { presenter.validateTarget(it) }
+                nameOrAddress?.let { presenter.validateTargetAddress(it) }
             }
 
             sendDetailsView.setOnPaidClickListener { presenter.onFeeClicked() }
@@ -202,7 +212,7 @@ class SendFragment :
 
             if (isVisible) amountEditText.focusAndShowKeyboard()
 
-            address?.let { presenter.validateTarget(it) }
+            address?.let { presenter.validateTargetAddress(it) }
         }
     }
 
@@ -228,7 +238,7 @@ class SendFragment :
     }
 
     override fun showScanner() {
-        val target = ScanQrFragment.create { presenter.validateTarget(it) }
+        val target = ScanQrFragment.create { presenter.validateTargetAddress(it) }
         addFragment(target)
     }
 

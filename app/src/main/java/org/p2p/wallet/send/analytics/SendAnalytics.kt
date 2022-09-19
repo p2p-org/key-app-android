@@ -2,22 +2,27 @@ package org.p2p.wallet.send.analytics
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_ACTION_BUTTON_CLICKED
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHANGING_CURRENCY
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHANGING_TOKEN
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CHOOSING_RECEIPT
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_COMPLETED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CONFIRM_BUTTON_PRESSED
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CREATING_ANOTHER
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_FILLING_ADDRESS
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_GOING_BACK
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_PASTING
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_PROCESS_SHOWN
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_QR_GOING_BACK
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_QR_SCANNING
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_RECIPIENT_SCREEN
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_RESOLVED_AUTO
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_RESOLVED_MANUALLY
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_REVIEWING
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_SHOWING_DETAILS
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_SHOW_DETAIL_PRESSED
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_STARTED
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_START_SCREEN
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_USER_CONFIRMED
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VERIFICATION_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VIEWED
@@ -27,6 +32,16 @@ import org.p2p.wallet.send.model.SendFee
 import java.math.BigDecimal
 
 class SendAnalytics(private val tracker: Analytics) {
+
+    var isSendMaxButtonClickedOnce: Boolean = false
+    var isSendTargetUsername: Boolean = false
+
+    fun logSendStartedScreen(lastScreenName: String) {
+        tracker.logEvent(
+            event = SEND_START_SCREEN,
+            params = mapOf("Last_Screen" to lastScreenName)
+        )
+    }
 
     fun logSendViewed(lastScreenName: String) {
         tracker.logEvent(
@@ -269,6 +284,41 @@ class SendAnalytics(private val tracker: Analytics) {
                 "Send_Account_Fee_Token" to (fee?.feePayerSymbol ?: "None")
             )
         )
+    }
+
+    fun logRecipientScreenOpened() {
+        tracker.logEvent(event = SEND_RECIPIENT_SCREEN)
+    }
+
+    fun logFillingAddress() {
+        tracker.logEvent(event = SEND_FILLING_ADDRESS)
+    }
+
+    fun logConfirmButtonPressed(
+        network: NetworkType,
+        sendCurrency: String,
+        sendSum: String,
+        sendSumInUsd: String,
+        isSendFree: Boolean,
+        accountFeeTokenSymbol: String?
+    ) {
+        tracker.logEvent(
+            event = SEND_CONFIRM_BUTTON_PRESSED,
+            params = mapOf(
+                "Send_Network" to network.toAnalyticsValue().title,
+                "Send_Currency" to sendCurrency,
+                "Send_Sum" to sendSum,
+                "Send_MAX" to isSendMaxButtonClickedOnce,
+                "Send_USD" to sendSumInUsd,
+                "Send_Free" to isSendFree,
+                "Send_Username" to isSendTargetUsername,
+                "Send_Account_Fee_Token" to (accountFeeTokenSymbol ?: "None")
+            )
+        )
+    }
+
+    fun logSendActionButtonClicked() {
+        tracker.logEvent(SEND_ACTION_BUTTON_CLICKED)
     }
 
     enum class QrTab(val title: String) {

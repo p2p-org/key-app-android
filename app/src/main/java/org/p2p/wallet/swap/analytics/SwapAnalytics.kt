@@ -2,10 +2,12 @@ package org.p2p.wallet.swap.analytics
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_ACTION_BUTTON_CLICKED
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_CURRENCY
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_A
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_B
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_COMPLETED
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CONFIRM_CLICKED
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CREATING_ANOTHER
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_GOING_BACK
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_PROCESS_SHOWN
@@ -18,42 +20,43 @@ import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOWING_HISTORY
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOWING_SETTINGS
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOW_DETAILS_PRESSED
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_STARTED
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_START_SCREEN
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_USER_CONFIRMED
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VERIFICATION_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VIEWED
 import java.math.BigDecimal
 
-class SwapAnalytics(private val trackerContract: Analytics) {
+class SwapAnalytics(private val tracker: Analytics) {
 
     fun logSwapViewed(lastScreenName: String) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_VIEWED,
-            arrayOf(
-                Pair("Last_Screen", lastScreenName)
+            mapOf(
+                "Last_Screen" to lastScreenName
             )
         )
     }
 
     fun logSwapChangingTokenA(tokenName: String) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_CHANGING_TOKEN_A,
-            arrayOf(
-                Pair("Token_A_Name", tokenName)
+            mapOf(
+                "Token_A_Name" to tokenName
             )
         )
     }
 
     fun logSwapChangingTokenB(tokenName: String) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_CHANGING_TOKEN_B,
-            arrayOf(
-                Pair("Token_B_Name", tokenName)
+            mapOf(
+                "Token_B_Name" to tokenName
             )
         )
     }
 
     fun logSwapReversing(reverseTokenName: String) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_REVERSING,
             arrayOf(
                 Pair("Token_B_Name", reverseTokenName)
@@ -67,7 +70,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
         feesSource: FeeSource,
         swapSettingsSource: SwapSettingsSource
     ) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_SHOWING_SETTINGS,
             arrayOf(
                 Pair("Price_Slippage", priceSlippage),
@@ -83,7 +86,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
         priceSlippageExact: Boolean,
         feesSource: FeeSource
     ) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_SETTING_SETTINGS,
             arrayOf(
                 Pair("Price_Slippage", priceSlippage),
@@ -94,7 +97,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
     }
 
     fun logSwapChangingCurrency(currency: String) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_CHANGING_CURRENCY,
             arrayOf(
                 Pair("Swap_Currency", currency)
@@ -103,7 +106,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
     }
 
     fun logSwapShowDetailsPressed() {
-        trackerContract.logEvent(SWAP_SHOW_DETAILS_PRESSED)
+        tracker.logEvent(SWAP_SHOW_DETAILS_PRESSED)
     }
 
     fun logSwapGoingBack(
@@ -117,7 +120,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
         priceSlippageExact: Boolean,
         feesSource: FeeSource
     ) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_GOING_BACK,
             arrayOf(
                 Pair("Token_A_Name", tokenAName),
@@ -144,7 +147,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
         priceSlippageExact: Boolean,
         feesSource: FeeSource
     ) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_REVIEWING,
             arrayOf(
                 Pair("Token_A_Name", tokenAName),
@@ -161,11 +164,11 @@ class SwapAnalytics(private val trackerContract: Analytics) {
     }
 
     fun logSwapReviewingHelpClosed() {
-        trackerContract.logEvent(SWAP_REVIEWING_HELP_CLOSED)
+        tracker.logEvent(SWAP_REVIEWING_HELP_CLOSED)
     }
 
     fun logSwapVerificationInvoked(authType: AuthAnalytics.AuthType) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_VERIFICATION_INVOKED,
             arrayOf(
                 Pair("Auth_Type", authType.title)
@@ -174,11 +177,11 @@ class SwapAnalytics(private val trackerContract: Analytics) {
     }
 
     fun logSwapProcessShown() {
-        trackerContract.logEvent(SWAP_PROCESS_SHOWN)
+        tracker.logEvent(SWAP_PROCESS_SHOWN)
     }
 
     fun logSwapCreatingAnother(swapStatus: SwapStatus) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_CREATING_ANOTHER,
             arrayOf(
                 Pair("Swap_Status", swapStatus.title)
@@ -187,7 +190,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
     }
 
     fun logSwapShowingHistory() {
-        trackerContract.logEvent(SWAP_SHOWING_HISTORY)
+        tracker.logEvent(SWAP_SHOWING_HISTORY)
     }
 
     fun logSwapShowingDetails(
@@ -200,7 +203,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
         feesSource: FeeSource
     ) {
 
-        trackerContract.logEvent(
+        tracker.logEvent(
             SWAP_SHOWING_DETAILS,
             arrayOf(
                 Pair("Swap_Status", swapStatus.title),
@@ -223,7 +226,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
         priceSlippage: Double,
         feesSource: FeeSource
     ) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             event = SWAP_USER_CONFIRMED,
             params = mapOf(
                 "Token_A_Name" to tokenAName,
@@ -246,7 +249,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
         priceSlippage: Double,
         feesSource: FeeSource
     ) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             event = SWAP_STARTED,
             params = mapOf(
                 "Token_A_Name" to tokenAName,
@@ -269,7 +272,7 @@ class SwapAnalytics(private val trackerContract: Analytics) {
         priceSlippage: Double,
         feesSource: FeeSource
     ) {
-        trackerContract.logEvent(
+        tracker.logEvent(
             event = SWAP_COMPLETED,
             params = mapOf(
                 "Token_A_Name" to tokenAName,
@@ -279,6 +282,38 @@ class SwapAnalytics(private val trackerContract: Analytics) {
                 "Swap_USD" to swapUsd.toString(),
                 "Price_Slippage" to priceSlippage,
                 "Fees_Source" to feesSource.title
+            )
+        )
+    }
+
+    fun logSwapScreenStarted(lastScreenName: String) {
+        tracker.logEvent(
+            event = SWAP_START_SCREEN,
+            params = mapOf(
+                "Last_Screen" to lastScreenName
+            )
+        )
+    }
+
+    fun logSwapActionButtonClicked() {
+        tracker.logEvent(event = SWAP_ACTION_BUTTON_CLICKED)
+    }
+
+    fun logSwapConfirmButtonClicked(
+        tokenAName: String,
+        tokenBName: String,
+        swapSum: String,
+        isSwapMax: Boolean,
+        swapUsd: BigDecimal,
+    ) {
+        tracker.logEvent(
+            event = SWAP_CONFIRM_CLICKED,
+            params = mapOf(
+                "Token_A" to tokenAName,
+                "Token_B" to tokenBName,
+                "Swap_Sum" to swapSum,
+                "Swap_MAX" to isSwapMax,
+                "Swap_USD" to swapUsd.toPlainString()
             )
         )
     }

@@ -29,6 +29,7 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
@@ -68,6 +69,7 @@ class HomeFragment :
     }
 
     private val browseAnalytics: BrowseAnalytics by inject()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -138,7 +140,10 @@ class HomeFragment :
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
-        textViewAddress.setOnClickListener { presenter.onAddressClicked() }
+        textViewAddress.setOnClickListener {
+            receiveAnalytics.logAddressOnMainClicked()
+            presenter.onAddressClicked()
+        }
         imageViewProfile.setOnClickListener { presenter.onProfileClick() }
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }

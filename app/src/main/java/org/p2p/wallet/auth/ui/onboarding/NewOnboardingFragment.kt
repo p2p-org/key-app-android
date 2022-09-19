@@ -41,7 +41,7 @@ class NewOnboardingFragment :
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
 
     private val binding: FragmentNewOnboardingBinding by viewBinding()
-    private val analytics: OnboardingAnalytics by inject()
+    private val onboardingAnalytics: OnboardingAnalytics by inject()
 
     private val fragments = List(3) { SliderFragment::class }
     private val args = List(3) {
@@ -61,12 +61,13 @@ class NewOnboardingFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analytics.logSplashViewed()
+        onboardingAnalytics.logSplashViewed()
 
         with(binding) {
             viewPagerOnboardingSlider.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
             dotsIndicatorOnboardingSlider.attachTo(viewPagerOnboardingSlider)
             buttonCreateWalletOnboarding.setOnClickListener {
+                onboardingAnalytics.logCreateWalletClicked()
                 presenter.onSignUpButtonClicked()
             }
             buttonCreateWalletOnboarding.setOnLongClickListener {
@@ -75,6 +76,7 @@ class NewOnboardingFragment :
                 true
             }
             buttonRestoreWalletOnboarding.setOnClickListener {
+                onboardingAnalytics.logAlreadyHaveWalletClicked()
                 replaceFragment(CommonRestoreFragment.create())
             }
             textViewTermsAndPolicy.apply {
