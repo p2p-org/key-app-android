@@ -39,8 +39,8 @@ class CreateWalletInteractor(
                 phoneNumber = userPhoneNumber
             )
             signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
+            smsInputTimer.startSmsInputTimerFlow()
         }
-        smsInputTimer.startSmsInputTimerFlow()
     }
 
     fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount
