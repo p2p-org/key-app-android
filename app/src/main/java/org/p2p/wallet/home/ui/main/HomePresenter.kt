@@ -217,8 +217,8 @@ class HomePresenter(
 
     private fun logBalance(balance: BigDecimal) {
         val hasPositiveBalance = balance.isNotZero()
-        analytics.logUserHasPositiveBalance(hasPositiveBalance)
-        analytics.logUserAggregateBalance(balance)
+        analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
+        analytics.logUserAggregateBalanceProperty(balance)
     }
 
     private fun initialLoadTokens() {

@@ -7,17 +7,11 @@ import java.math.BigDecimal
 
 class HomeAnalytics(private val tracker: Analytics) {
 
-    fun logUserHasPositiveBalance(hasPositiveBalance: Boolean) {
-        tracker.logEvent(
-            HOME_USER_HAS_POSITIVE_BALANCE,
-            arrayOf("User_Has_Positive_Balance" to hasPositiveBalance)
-        )
+    fun logUserHasPositiveBalanceProperty(hasPositiveBalance: Boolean) {
+        tracker.setUserProperty(HOME_USER_HAS_POSITIVE_BALANCE, hasPositiveBalance)
     }
 
-    fun logUserAggregateBalance(usdBalance: BigDecimal) {
-        tracker.logEvent(
-            HOME_USER_AGGREGATE_BALANCE,
-            arrayOf("User_Aggregate_Balance" to usdBalance)
-        )
+    fun logUserAggregateBalanceProperty(usdBalance: BigDecimal) {
+        tracker.setUserProperty(HOME_USER_AGGREGATE_BALANCE, usdBalance.toString())
     }
 }
