@@ -9,7 +9,7 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract.Presenter
-import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorBinding
@@ -73,14 +73,7 @@ class OnboardingGeneralErrorFragment :
                     IntercomService.showMessenger()
                 }
                 buttonToStartingScreen.setOnClickListener {
-                    popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
-                }
-
-                buttonReportBug.setOnClickListener {
-                    IntercomService.showMessenger()
-                }
-                buttonToStartingScreen.setOnClickListener {
-                    popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
+                    popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
                 }
                 containerCommonButtons.isVisible = true
             }
@@ -89,7 +82,7 @@ class OnboardingGeneralErrorFragment :
                 errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
 
                 buttonRestoreToStartingScreen.setOnClickListener {
-                    popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
+                    popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
                 }
                 buttonRestoreWithPhone.setOnClickListener {
                     popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
