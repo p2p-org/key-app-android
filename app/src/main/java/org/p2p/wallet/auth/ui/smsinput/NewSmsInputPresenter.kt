@@ -101,6 +101,18 @@ class NewSmsInputPresenter(
             view?.renderButtonLoading(isLoading = true)
             restoreWalletInteractor.finishRestoreCustomShare(smsCode)
             restoreUserWithShares()
+        } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
+            Timber.e(tooOftenOtpRequests)
+            view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
+        } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
+            Timber.i(incorrectSms)
+            view?.renderIncorrectSms()
+        } catch (tooManyRequests: GatewayServiceError.TooManyRequests) {
+            Timber.i(tooManyRequests)
+            view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS)
+        } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+            Timber.e(serverError)
+            view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
         } catch (error: Throwable) {
             Timber.e(error, "Restoring user or custom share failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
@@ -200,7 +212,7 @@ class NewSmsInputPresenter(
     }
 
     private suspend fun restoreUserWithSocialPlusCustomShare() {
-        val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet
+        val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet.SocialPlusCustomShare
         when (val result = restoreWalletInteractor.tryRestoreUser(restoreFlow)) {
             is RestoreUserResult.RestoreSuccessful -> {
                 restoreWalletInteractor.finishAuthFlow()
