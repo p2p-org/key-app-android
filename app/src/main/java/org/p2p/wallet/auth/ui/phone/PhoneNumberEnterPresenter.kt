@@ -112,6 +112,10 @@ class PhoneNumberEnterPresenter(
     private fun handleGatewayServiceError(gatewayServiceError: GatewayServiceError) {
         Timber.i(gatewayServiceError)
         when (gatewayServiceError) {
+            is GatewayServiceError.TooManyOtpRequests -> {
+                Timber.e(gatewayServiceError)
+                view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
+            }
             is GatewayServiceError.SmsDeliverFailed -> {
                 view?.showUiKitSnackBar(messageResId = R.string.onboarding_phone_enter_error_sms_failed)
                 view?.showSmsDeliveryFailedForNumber()
