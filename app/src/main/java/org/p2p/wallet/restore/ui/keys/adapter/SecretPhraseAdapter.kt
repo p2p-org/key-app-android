@@ -44,7 +44,7 @@ class SecretPhraseAdapter(
     private fun removeSecretKey(index: Int) {
         if (index == -1) return
         data.removeAt(index)
-        notifyDataSetChanged()
+        notifyItemRemoved(index)
 
         onSeedPhraseChanged(data)
     }
@@ -84,9 +84,8 @@ class SecretPhraseAdapter(
     private fun updateSecretKey(secretKey: SecretKey) {
         /* Updating current viewHolder, where editText is active */
         val index = data.size - 1
+        data[index] = secretKey
         notifyItemChanged(index, secretKey)
-        data.removeAt(index)
-        data.add(index, secretKey)
 
         onSeedPhraseChanged(data)
 
