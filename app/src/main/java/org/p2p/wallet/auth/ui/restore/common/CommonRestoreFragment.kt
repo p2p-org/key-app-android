@@ -16,6 +16,7 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
+import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.utils.args
@@ -87,8 +88,12 @@ class CommonRestoreFragment :
             }
 
             buttonSeed.setOnClickListener {
-                // TODO make a real restore implementation!
                 replaceFragment(SeedPhraseFragment.create())
+            }
+            buttonSeed.setOnLongClickListener {
+                // TODO PWN-4615 remove after all onboarding testing completed!
+                replaceFragment(DebugSettingsFragment.create())
+                true
             }
         }
 

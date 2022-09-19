@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.smsinput
 
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
@@ -59,11 +58,6 @@ class NewSmsInputPresenter(
 
     override fun checkSmsValue(smsCode: String) {
         if (smsCode.isBlank()) {
-            return
-        }
-
-        if (BuildConfig.DEBUG && smsCode == "111 111") {
-            view?.navigateToPinCreate()
             return
         }
 
