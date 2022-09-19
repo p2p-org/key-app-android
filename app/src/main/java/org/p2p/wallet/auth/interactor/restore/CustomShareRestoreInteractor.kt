@@ -28,6 +28,9 @@ class CustomShareRestoreInteractor(
             ?: throw RestoreWalletFailure("User restore private key is null")
 
         val isNumberAlreadyUsed = userPhoneNumber == restoreFlowDataLocalRepository.userPhoneNumber
+        if (!isNumberAlreadyUsed) {
+            setIsRestoreWalletRequestSent(isSent = false)
+        }
         val isRestoreWalletRequestSent = restoreFlowDataLocalRepository.isRestoreWalletRequestSent
         val isRestoreRequestNeeded = isResend || (!isRestoreWalletRequestSent && !isNumberAlreadyUsed)
         if (isRestoreRequestNeeded) {

@@ -29,6 +29,9 @@ class CreateWalletInteractor(
             ?: throw CreateWalletFailure("User etherium public key is null")
 
         val isNumberAlreadyUsed = userPhoneNumber == signUpFlowDataRepository.userPhoneNumber
+        if (!isNumberAlreadyUsed) {
+            setIsCreateWalletRequestSent(isSent = false)
+        }
         val isCreateWalletRequestSent = signUpFlowDataRepository.isCreateWalletRequestSent
         val isCreateRequestNeeded = isResend || (!isCreateWalletRequestSent && !isNumberAlreadyUsed)
         if (isCreateRequestNeeded) {
