@@ -7,7 +7,14 @@ interface OnboardingGeneralErrorContract {
     interface View : MvpView {
         fun updateText(title: String, message: String)
         fun setViewState(errorState: GeneralErrorScreenError)
+        fun startGoogleFlow()
+        fun setRestoreByGoogleLoadingState(isRestoringByGoogle: Boolean)
+        fun onNoTokenFoundError(userId: String)
+        fun navigateToPinCreate()
     }
 
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun setGoogleIdToken(userId: String, idToken: String)
+        fun useGoogleAccount()
+    }
 }
