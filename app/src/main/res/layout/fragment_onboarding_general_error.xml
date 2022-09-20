@@ -97,7 +97,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <org.p2p.uikit.components.UiKitButton
                 android:id="@+id/button_restore_by_google"
@@ -135,25 +136,6 @@
                 app:strokeColor="@color/snow" />
 
         </LinearLayout>
-
-
-        <TextView
-            style="@style/UiKit.TextAppearance.Regular.Label1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/onboarding_general_error_terms_title"
-            android:textColor="@color/mountain" />
-
-        <TextView
-            android:id="@+id/textViewTermsAndPolicy"
-            style="@style/UiKit.TextAppearance.Regular.Label1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:text="@string/onboarding_terms_and_policy"
-            android:textColor="@color/rain" />
 
     </LinearLayout>
 
