@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentDebugTorusBinding
@@ -20,6 +21,8 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
     private val binding: FragmentDebugTorusBinding by viewBinding()
 
     private val networkServicesUrlProvider: NetworkServicesUrlProvider by inject()
+    private val signUpDetailsStorage: UserSignUpDetailsStorage by inject()
+
     private val appRestarter: AppRestarter by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,6 +60,21 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
                 val newUrl = environmentEditText.text.toString()
                 val newVerifier = verifierEditText.text.toString()
                 updateEnvironmentAndRestart(newUrl = newUrl, newVerifier = newVerifier)
+            }
+
+            val signUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()
+            val hasShare = signUpDetails?.signUpDetails?.deviceShare != null
+            shareTextView.text = if (hasShare) {
+                signUpDetails?.signUpDetails?.deviceShare.toString()
+            } else {
+                "No device share"
+            }
+            shareDeleteButton.apply {
+                isEnabled = hasShare
+                setOnClickListener {
+                    signUpDetailsStorage.removeLastDeviceShare()
+                    appRestarter.restartApp()
+                }
             }
         }
     }
