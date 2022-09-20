@@ -124,6 +124,7 @@ class GatewayServiceCreateWalletMapper(
             etheriumAddress = etheriumAddress,
             timestamp = createTimestampField(),
             thirdShare = gson.toJson(thirdShare).toByteArray().encodeToBase64(),
+            encryptedMetadata = "", // todo: replace in PWN-5213
             encryptedPayloadB64 = encryptedPayloadStrJson.toByteArray().encodeToBase64(),
             otpConfirmationCode = otpConfirmationCode,
             phone = phoneNumber,
