@@ -39,8 +39,8 @@ class NewCreatePinFragment :
             this,
             titleRes = R.string.auth_pin_code_fingerprint_title,
             descriptionRes = R.string.auth_pin_code_fingerprint_description,
-            onError = { presenter.createPin() },
-            onSuccess = { presenter.createPin(it) }
+            onError = { presenter.createPin(biometricCipher = null) },
+            onSuccess = { presenter.createPin(biometricCipher = it) }
         )
     }
 
@@ -123,8 +123,8 @@ class NewCreatePinFragment :
         popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 
-    override fun showBiometricDialog(cipher: Cipher) {
-        biometricWrapper.authenticate(cipher)
+    override fun showBiometricDialog(biometricCipher: Cipher) {
+        biometricWrapper.authenticate(biometricCipher)
     }
 
     override fun onAuthFinished() {

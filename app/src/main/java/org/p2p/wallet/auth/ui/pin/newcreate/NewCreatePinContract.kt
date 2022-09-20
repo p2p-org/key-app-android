@@ -15,7 +15,7 @@ interface NewCreatePinContract {
         fun showLoading(isLoading: Boolean)
         fun navigateBack()
         fun navigateToMain()
-        fun showBiometricDialog(cipher: Cipher)
+        fun showBiometricDialog(biometricCipher: Cipher)
         fun onAuthFinished()
     }
 
@@ -24,6 +24,6 @@ interface NewCreatePinContract {
         fun setPinCode(pinCode: String)
         fun onBackPressed()
         fun finishAuthorization()
-        fun createPin(cipher: Cipher? = null)
+        fun createPin(biometricCipher: Cipher?)
     }
 }

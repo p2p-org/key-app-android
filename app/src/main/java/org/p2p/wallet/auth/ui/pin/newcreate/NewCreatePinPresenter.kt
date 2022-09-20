@@ -82,12 +82,12 @@ class NewCreatePinPresenter(
         }
     }
 
-    override fun createPin(cipher: Cipher?) {
+    override fun createPin(biometricCipher: Cipher?) {
         launch {
             try {
-                val encoderCipher = if (cipher != null) EncodeCipher(cipher) else null
+                val encoderCipher = if (biometricCipher != null) EncodeCipher(biometricCipher) else null
                 registerComplete(createdPin, encoderCipher)
-                if (cipher == null) analytics.logBioRejected()
+                if (biometricCipher == null) analytics.logBioRejected()
                 view?.onAuthFinished()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
