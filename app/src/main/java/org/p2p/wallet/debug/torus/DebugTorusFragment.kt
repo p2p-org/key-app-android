@@ -66,7 +66,9 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
             val hasShare = signUpDetails?.signUpDetails?.deviceShare != null
             shareTextView.text = if (hasShare) {
                 signUpDetails?.signUpDetails?.deviceShare.toString()
-            } else "No device share"
+            } else {
+                "No device share"
+            }
             shareDeleteButton.apply {
                 isEnabled = hasShare
                 setOnClickListener {
