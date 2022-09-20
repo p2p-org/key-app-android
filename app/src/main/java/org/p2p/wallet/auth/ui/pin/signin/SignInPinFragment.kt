@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.pin.signin
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
@@ -35,7 +36,17 @@ class SignInPinFragment :
     private val binding: FragmentSignInPinBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val biometricWrapper by lazy {
-        BiometricPromptWrapper(this) { presenter.signInByBiometric(it) }
+        BiometricPromptWrapper(
+            this,
+            onLockout = {
+                showDialog(
+                    title = R.string.auth_pin_code_lockout_title,
+                    message = R.string.auth_pin_code_lockout_description,
+                    positiveButtonString = R.string.auth_pin_code_lockout_ok_button
+                )
+            },
+            onSuccess = { presenter.signInByBiometric(it) }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,10 +93,22 @@ class SignInPinFragment :
             inclusive = true,
             enter = 0
         )
+        showDialog(
+            title = R.string.auth_pin_code_logout_title,
+            message = R.string.auth_pin_code_logout_description,
+            positiveButtonString = R.string.auth_pin_code_logout_ok_button
+        )
+    }
+
+    private fun showDialog(
+        @StringRes title: Int,
+        @StringRes message: Int,
+        @StringRes positiveButtonString: Int
+    ) {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.auth_pin_code_logout_title)
-            .setMessage(R.string.auth_pin_code_logout_description)
-            .setPositiveButton(R.string.auth_pin_code_logout_ok_button) { dialog, _ ->
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonString) { dialog, _ ->
                 dialog.dismiss()
             }
             .show()

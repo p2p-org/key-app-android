@@ -43,6 +43,10 @@
     <string name="auth_pin_code_logout_description">After 5 incorrect app passcodes</string>
     <string name="auth_pin_code_logout_ok_button">Got It</string>
 
+    <string name="auth_pin_code_lockout_title">Wrong code too many times in a row</string>
+    <string name="auth_pin_code_lockout_description">Try again after 30 seconds or login using your PIN code</string>
+    <string name="auth_pin_code_lockout_ok_button">Got It</string>
+
     <!-- PhoneNumberEnter -->
     <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
     <string name="onboarding_step_2">Step 2 of 3</string>
