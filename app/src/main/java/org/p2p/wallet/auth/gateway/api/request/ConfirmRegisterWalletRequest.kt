@@ -13,6 +13,8 @@ data class ConfirmRegisterWalletRequest(
 
     @SerializedName("encrypted_payload")
     val encryptedPayloadB64: String,
+    @SerializedName("encrypted_metadata")
+    val encryptedMetadata: String,
 
     @SerializedName("phone_confirmation_code")
     val otpConfirmationCode: String,
