@@ -34,7 +34,7 @@ class NewCreatePinFragment :
     private val binding: FragmentNewCreatePinBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
-    private val biometricWrapper by lazy {
+    private val biometricWrapper: BiometricPromptWrapper by lazy {
         BiometricPromptWrapper(
             this,
             titleRes = R.string.auth_pin_code_fingerprint_title,
