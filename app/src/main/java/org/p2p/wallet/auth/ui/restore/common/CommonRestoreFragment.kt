@@ -115,7 +115,7 @@ class CommonRestoreFragment :
     override fun showError(error: String) {
         view?.post {
             setLoadingState(isScreenLoading = false)
-            showErrorSnackBar(error)
+            showUiKitSnackBar(error)
         }
     }
 
@@ -126,8 +126,9 @@ class CommonRestoreFragment :
                 textViewTitle.text = getString(R.string.restore_no_wallet_title)
                 textViewSubtitle.apply {
                     isVisible = true
-                    text = getString(R.string.restore_no_wallet_subtitle, userId)
+                    text = userId
                 }
+                textViewTryAnother.isVisible = true
             }
             setLoadingState(isScreenLoading = false)
         }
