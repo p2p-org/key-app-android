@@ -16,7 +16,8 @@
         app:navigationIcon="@drawable/ic_toolbar_back"
         app:navigationIconTint="@color/night"
         app:title="@string/onboarding_step_2"
-        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1" />
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        app:titleTextColor="@color/text_night" />
 
     <TextView
         android:id="@+id/textViewTitle"
