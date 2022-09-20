@@ -56,14 +56,34 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="16dp"
+        android:ellipsize="middle"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@color/night"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTryAnother"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        tools:text="test@gmail.com"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/textViewTryAnother"
+        style="@style/UiKit.TextAppearance.Regular.Title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="2dp"
         android:gravity="center"
         android:textColor="@color/night"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/containerBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
-        tools:text="@string/restore_no_wallet_subtitle" />
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitle"
+        tools:text="@string/restore_no_wallet_try_another_option"
+        tools:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/containerBottom"
@@ -81,10 +101,10 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="8dp"
-            android:visibility="gone"
             android:backgroundTint="@color/snow"
             android:text="@string/restore_continue_with_google"
             android:textColor="@color/night"
+            android:visibility="gone"
             app:icon="@drawable/ic_google_logo"
             app:iconGravity="textStart"
             app:iconSize="24dp"

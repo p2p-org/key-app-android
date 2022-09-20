@@ -100,7 +100,7 @@
     <string name="restore_seed_phrase">Use a seed phrase</string>
 
     <string name="restore_no_wallet_title">No wallet found</string>
-    <string name="restore_no_wallet_subtitle">With %s.\nTry another option</string>
+    <string name="restore_no_wallet_try_another_option">Try another option</string>
 
     <!-- Seed phrase scree -->
     <string name="seed_phrase_restore_wallet">Restoring your wallet</string>

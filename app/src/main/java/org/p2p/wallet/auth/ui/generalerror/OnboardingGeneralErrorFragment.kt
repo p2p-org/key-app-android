@@ -119,7 +119,11 @@ class OnboardingGeneralErrorFragment :
     override fun onNoTokenFoundError(userId: String) {
         view?.post {
             with(binding) {
-                textViewErrorSubtitle.text = getString(R.string.restore_no_wallet_subtitle, userId)
+                textViewErrorEmail.apply {
+                    isVisible = true
+                    text = userId
+                }
+                textViewErrorSubtitle.text = getString(R.string.restore_no_wallet_try_another_option)
             }
             setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
         }

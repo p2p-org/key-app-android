@@ -37,18 +37,36 @@
         app:layout_constraintTop_toBottomOf="@+id/image_view_box" />
 
     <TextView
-        android:id="@+id/text_view_error_subtitle"
+        android:id="@+id/text_view_error_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="8dp"
+        android:ellipsize="middle"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/text_view_error_subtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_error_title"
+        tools:text="test@gmail.com"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/text_view_error_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="32dp"
         android:gravity="center"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
         app:layout_constraintBottom_toTopOf="@+id/container_bottom_buttons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_error_title"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_error_email"
         tools:text="We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n If you will write us, use error code: %1$s" />
 
     <LinearLayout
