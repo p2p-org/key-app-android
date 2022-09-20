@@ -30,11 +30,6 @@
     <string name="auth_create_wallet_pin_code_error">Passcode doesn\'t  match. Please try again.</string>
     <string name="auth_create_wallet_pin_code_success">Great! Your new passcode is set.</string>
 
-    <string name="auth_create_wallet_use_touch_id_title">Use Touch ID?</string>
-    <string name="auth_create_wallet_use_touch_id_subtitle">For logging in and verifying transactions</string>
-    <string name="auth_create_wallet_use_touch_id">Use Touch ID</string>
-    <string name="auth_create_wallet_dont_use">Don\'t use</string>
-
     <string name="auth_pin_code_enter_up_your_pin">Enter your passcode</string>
     <string name="auth_pin_code_attempts_format">❌ Wrong passcode. You have %d attempts left.</string>
     <string name="auth_pin_code_warn_format">❌ After %d more incorrect tries, we\'ll log you out of your current account for your safety.</string>
@@ -46,6 +41,9 @@
     <string name="auth_pin_code_lockout_title">Wrong code too many times in a row</string>
     <string name="auth_pin_code_lockout_description">Try again after 30 seconds or login using your PIN code</string>
     <string name="auth_pin_code_lockout_ok_button">Got It</string>
+
+    <string name="auth_pin_code_fingerprint_title">Fingerprint required</string>
+    <string name="auth_pin_code_fingerprint_description">Use your fingerprint to access the security key</string>
 
     <!-- PhoneNumberEnter -->
     <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>

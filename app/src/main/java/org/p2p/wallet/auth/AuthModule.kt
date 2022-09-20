@@ -50,8 +50,6 @@ import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterPresenter
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerContract
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerPresenter
-import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsContract
-import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsPresenter
 import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
 import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
@@ -154,7 +152,6 @@ object AuthModule {
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
         factoryOf(::RestoreWalletInteractor)
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
-        factoryOf(::BiometricsPresenter) bind BiometricsContract.Presenter::class
 
         singleOf(::RestoreFlowDataLocalRepository)
         factoryOf(::CustomShareRestoreInteractor)

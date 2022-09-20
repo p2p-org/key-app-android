@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.pin.newcreate
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -11,10 +12,12 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
+import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 500L
 
 class NewCreatePinPresenter(
+    private val analytics: OnboardingAnalytics,
     private val adminAnalytics: AdminAnalytics,
     private val authInteractor: AuthInteractor,
     private val analyticsInteractor: ScreensAnalyticsInteractor
@@ -48,8 +51,8 @@ class NewCreatePinPresenter(
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
             view?.navigateToMain()
         } else {
-            view?.navigateToBiometrics(pinCode)
             view?.vibrate(VIBRATE_DURATION)
+            enableBiometric()
         }
     }
 
@@ -68,12 +71,42 @@ class NewCreatePinPresenter(
         }
     }
 
+    private fun enableBiometric() {
+        try {
+            val cipher = authInteractor.getPinEncodeCipher()
+            analytics.logBioApproved()
+            view?.showBiometricDialog(cipher.value)
+        } catch (e: Throwable) {
+            Timber.e(e, "Failed to get cipher for biometrics")
+            view?.onAuthFinished()
+        }
+    }
+
+    override fun createPin(cipher: Cipher?) {
+        launch {
+            try {
+                val encoderCipher = if (cipher != null) EncodeCipher(cipher) else null
+                registerComplete(createdPin, encoderCipher)
+                if (cipher == null) analytics.logBioRejected()
+                view?.onAuthFinished()
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to create pin code")
+                view?.showErrorMessage(R.string.error_general_message)
+                view?.onAuthFinished()
+            }
+        }
+    }
+
+    override fun finishAuthorization() {
+        analytics.logBioRejected()
+        view?.onAuthFinished()
+    }
+
     private fun createPinCode(pinCode: String) {
         view?.showLoading(true)
         launch {
             try {
                 registerComplete(pinCode, null)
-                view?.navigateToMain()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
                 createdPin = emptyString()
