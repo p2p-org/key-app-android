@@ -121,7 +121,7 @@
             app:strokeColor="@color/snow" />
 
         <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonSeed"
+            android:id="@+id/buttonBottom"
             style="@style/UiKit.Components.Button.Large.Outlined"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ui_kit_button_large_height"

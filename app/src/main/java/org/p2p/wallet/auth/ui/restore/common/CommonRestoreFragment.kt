@@ -88,10 +88,10 @@ class CommonRestoreFragment :
                 presenter.useCustomShare()
             }
 
-            buttonSeed.setOnClickListener {
+            buttonBottom.setOnClickListener {
                 replaceFragment(SeedPhraseFragment.create())
             }
-            buttonSeed.setOnLongClickListener {
+            buttonBottom.setOnLongClickListener {
                 // TODO PWN-4615 remove after all onboarding testing completed!
                 replaceFragment(DebugSettingsFragment.create())
                 true
@@ -131,7 +131,7 @@ class CommonRestoreFragment :
                 }
                 textViewTryAnother.isVisible = true
 
-                buttonSeed.apply {
+                buttonBottom.apply {
                     strokeWidth = 0
                     text = getString(R.string.restore_starting_screen)
                     backgroundTintList = ContextCompat.getColorStateList(requireContext(), android.R.color.transparent)
@@ -152,7 +152,7 @@ class CommonRestoreFragment :
                 isEnabled = !isScreenLoading
             }
             buttonPhone.isEnabled = !isScreenLoading
-            buttonSeed.isEnabled = !isScreenLoading
+            buttonBottom.isEnabled = !isScreenLoading
         }
     }
 
