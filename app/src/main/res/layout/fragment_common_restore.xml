@@ -76,13 +76,13 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="2dp"
         android:gravity="center"
+        android:text="@string/restore_no_wallet_try_another_option"
         android:textColor="@color/night"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/containerBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewSubtitle"
-        tools:text="@string/restore_no_wallet_try_another_option"
         tools:visibility="visible" />
 
     <LinearLayout
