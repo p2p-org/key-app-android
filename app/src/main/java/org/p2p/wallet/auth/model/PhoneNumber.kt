@@ -1,10 +1,14 @@
 package org.p2p.wallet.auth.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Data class which represent phone number format
  * [formattedValue] contains countryCode + phoneNumber(formatted by PhoneNumberUtil) without trim
  */
-data class PhoneNumber(val formattedValue: String) {
+@Parcelize
+data class PhoneNumber(val formattedValue: String) : Parcelable {
 
     object PhoneNumberFormatter {
 

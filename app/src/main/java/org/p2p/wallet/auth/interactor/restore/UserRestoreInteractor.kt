@@ -155,6 +155,4 @@ class UserRestoreInteractor(
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
         } ?: error("User actual account is null, restoring a user is failed")
     }
-
-    fun isDeviceShareSaved(): Boolean = signUpDetailsStorage.isDeviceShareSaved()
 }

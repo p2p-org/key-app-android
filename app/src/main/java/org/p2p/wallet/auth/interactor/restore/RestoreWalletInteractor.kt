@@ -3,12 +3,14 @@ package org.p2p.wallet.auth.interactor.restore
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 
 class RestoreWalletInteractor(
     private val customShareRestoreInteractor: CustomShareRestoreInteractor,
     private val socialShareRestoreInteractor: SocialShareRestoreInteractor,
     private val userRestoreInteractor: UserRestoreInteractor,
-    private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository
+    private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
+    private val signUpDetailsStorage: UserSignUpDetailsStorage
 ) {
 
     suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber, isResend: Boolean = false) =
@@ -41,5 +43,5 @@ class RestoreWalletInteractor(
         customShareRestoreInteractor.setIsRestoreWalletRequestSent(isSent)
     }
 
-    fun isDeviceShareSaved(): Boolean = userRestoreInteractor.isDeviceShareSaved()
+    fun isDeviceShareSaved(): Boolean = signUpDetailsStorage.isDeviceShareSaved()
 }

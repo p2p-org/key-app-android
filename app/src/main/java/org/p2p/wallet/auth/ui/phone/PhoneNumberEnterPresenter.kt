@@ -14,7 +14,7 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.common.ResourcesProvider
 
-private const val MAX_PHONE_NUMBER_TRIES = 80
+private const val MAX_PHONE_NUMBER_TRIES = 4
 
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
@@ -122,29 +122,12 @@ class PhoneNumberEnterPresenter(
             is GatewayServiceError.PhoneNumberNotExists -> {
                 Timber.e(gatewayServiceError)
                 val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
-
-                val title = if (isDeviceShareSaved) {
-                    resourcesProvider.getString(R.string.restore_no_wallet_title)
-                } else {
-                    resourcesProvider.getString(R.string.restore_no_account_title)
-                }
-                val message = if (isDeviceShareSaved) {
-                    val userEmailAddress = restoreWalletInteractor.getUserEmailAddress()
-                    resourcesProvider.getString(
-                        R.string.restore_no_wallet_found_with_device_share_message,
-                        userEmailAddress.orEmpty()
-                    )
-                } else {
-                    val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()?.formattedValue.orEmpty()
-                    resourcesProvider.getString(
-                        R.string.restore_no_wallet_found_with_no_device_share_message,
-                        userPhoneNumber
-                    )
-                }
+                val userEmailAddress = restoreWalletInteractor.getUserEmailAddress().orEmpty()
+                val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber() ?: error("Phone number is null")
                 val error = GeneralErrorScreenError.AccountNotFound(
                     isDeviceShareExists = isDeviceShareSaved,
-                    title = title,
-                    message = message
+                    userPhoneNumber = userPhoneNumber,
+                    userEmailAddress = userEmailAddress
                 )
                 view?.navigateToCriticalErrorScreen(error)
             }

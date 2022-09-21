@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.PhoneNumber
 
 @Parcelize
 sealed class GeneralErrorScreenError(
@@ -20,7 +21,7 @@ sealed class GeneralErrorScreenError(
 
     data class AccountNotFound(
         val isDeviceShareExists: Boolean,
-        val title: String,
-        val message: String
+        val userEmailAddress: String,
+        val userPhoneNumber: PhoneNumber
     ) : GeneralErrorScreenError()
 }

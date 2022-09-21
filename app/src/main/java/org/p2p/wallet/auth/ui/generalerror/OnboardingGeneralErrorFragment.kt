@@ -2,7 +2,6 @@ package org.p2p.wallet.auth.ui.generalerror
 
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -17,6 +16,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -94,41 +94,75 @@ class OnboardingGeneralErrorFragment :
                 }
             }
             is GeneralErrorScreenError.AccountNotFound -> {
-                textViewErrorTitle.text = errorState.title
-                textViewErrorSubtitle.text = errorState.message
-                with(buttonRestoreByGoogle) {
-                    text = if (errorState.isDeviceShareExists) getString(R.string.restore_continue_with_google) else
-                        getString(R.string.restore_another_phone_number)
-                    icon = if (errorState.isDeviceShareExists) ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_google_logo,
-                        null
-                    ) else null
-                    setOnClickListener {
-                        if (errorState.isDeviceShareExists) {
-                            presenter.useGoogleAccount()
-                        } else {
-                            popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
-                        }
-                    }
-                    isVisible = true
-                }
-                if (errorState.isDeviceShareExists) {
-                    with(buttonPrimaryFirst) {
-                        text = getString(R.string.restore_phone_number)
-                        setOnClickListener {
-                            popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
-                        }
-                        isVisible = true
-                    }
-                }
+                onAccountNotFound(errorState)
+            }
+        }
+    }
 
-                with(buttonSecondaryFirst) {
-                    text = getString(R.string.onboarding_continue_starting_button_text)
-                    setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
-                    isVisible = true
+    private fun onAccountNotFound(errorState: GeneralErrorScreenError.AccountNotFound) = with(binding) {
+        val isDeviceShareSaved = errorState.isDeviceShareExists
+        val title = if (isDeviceShareSaved) {
+            resourcesProvider.getString(R.string.restore_no_wallet_title)
+        } else {
+            resourcesProvider.getString(R.string.restore_no_account_title)
+        }
+        val message = if (isDeviceShareSaved) {
+            resourcesProvider.getString(
+                R.string.restore_no_wallet_found_with_device_share_message,
+                errorState.userEmailAddress
+            )
+        } else {
+            resourcesProvider.getString(
+                R.string.restore_no_wallet_found_with_no_device_share_message,
+                errorState.userPhoneNumber.formattedValue
+            )
+        }
+        textViewErrorTitle.text = title
+        textViewErrorSubtitle.text = message
+        with(buttonRestoreByGoogle) {
+            text = if (errorState.isDeviceShareExists) {
+                getString(R.string.restore_continue_with_google)
+            } else {
+                getString(R.string.restore_another_phone_number)
+            }
+
+            icon = if (errorState.isDeviceShareExists) {
+                context.getDrawableCompat(R.drawable.ic_google_logo)
+            } else {
+                null
+            }
+
+            setOnClickListener {
+                if (errorState.isDeviceShareExists) {
+                    presenter.useGoogleAccount()
+                } else {
+                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
                 }
             }
+            isVisible = true
+        }
+        if (errorState.isDeviceShareExists) {
+            with(buttonPrimaryFirst) {
+                text = getString(R.string.restore_phone_number)
+                setOnClickListener {
+                    popAndReplaceFragment(
+                        PhoneNumberEnterFragment.create(),
+                        inclusive = true
+                    )
+                }
+                isVisible = true
+            }
+        }
+
+        with(buttonSecondaryFirst) {
+            text = getString(org.p2p.wallet.R.string.onboarding_continue_starting_button_text)
+            setOnClickListener {
+                popAndReplaceFragment(
+                    org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment.create(),
+                    inclusive = true
+                )
+            }
+            isVisible = true
         }
     }
 
