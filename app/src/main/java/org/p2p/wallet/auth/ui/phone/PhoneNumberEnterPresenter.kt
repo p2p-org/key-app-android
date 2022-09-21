@@ -12,7 +12,6 @@ import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
-import org.p2p.wallet.common.ResourcesProvider
 
 private const val MAX_PHONE_NUMBER_TRIES = 4
 
@@ -20,8 +19,7 @@ class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
-    private val onboardingInteractor: OnboardingInteractor,
-    private val resourcesProvider: ResourcesProvider
+    private val onboardingInteractor: OnboardingInteractor
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
@@ -94,6 +92,7 @@ class PhoneNumberEnterPresenter(
         try {
             selectedCountryCode?.let {
                 if (createWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
+                    createWalletInteractor.resetUserEnterPhoneNumberTriesCount()
                     view?.navigateToAccountBlocked()
                 } else {
                     val userPhoneNumber = PhoneNumber(it.phoneCode + phoneNumber)
@@ -154,9 +153,14 @@ class PhoneNumberEnterPresenter(
     private suspend fun startRestoringCustomShare(phoneNumber: String) {
         try {
             selectedCountryCode?.let {
-                val userPhoneNumber = PhoneNumber(it.phoneCode + phoneNumber)
-                restoreWalletInteractor.startRestoreCustomShare(userPhoneNumber = userPhoneNumber)
-                view?.navigateToSmsInput()
+                if (restoreWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
+                    restoreWalletInteractor.resetUserEnterPhoneNumberTriesCount()
+                    view?.navigateToAccountBlocked()
+                } else {
+                    val userPhoneNumber = PhoneNumber(it.phoneCode + phoneNumber)
+                    restoreWalletInteractor.startRestoreCustomShare(userPhoneNumber = userPhoneNumber)
+                    view?.navigateToSmsInput()
+                }
             }
         } catch (error: Throwable) {
             if (error is GatewayServiceError) {

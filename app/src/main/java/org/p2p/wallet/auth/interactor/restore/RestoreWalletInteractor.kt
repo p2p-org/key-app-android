@@ -44,4 +44,10 @@ class RestoreWalletInteractor(
     }
 
     fun isDeviceShareSaved(): Boolean = signUpDetailsStorage.isDeviceShareSaved()
+
+    fun getUserEnterPhoneNumberTriesCount() = restoreFlowDataLocalRepository.userPhoneNumberEnteredCount
+
+    fun resetUserEnterPhoneNumberTriesCount() {
+        restoreFlowDataLocalRepository.resetUserPhoneNumberEnteredCount()
+    }
 }
