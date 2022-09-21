@@ -11,7 +11,7 @@ class HomeAnalytics(private val tracker: Analytics) {
         tracker.setUserProperty(HOME_USER_HAS_POSITIVE_BALANCE, hasPositiveBalance)
     }
 
-    fun logUserAggregateBalanceProperty(usdBalance: BigDecimal) {
+    fun logUserAggregateBalanceProperty(usdBalance: Int) {
         tracker.setUserProperty(HOME_USER_AGGREGATE_BALANCE, usdBalance.toString())
     }
 }

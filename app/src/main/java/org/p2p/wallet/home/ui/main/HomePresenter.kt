@@ -27,7 +27,7 @@ import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.ellipsizeAddress
-import org.p2p.wallet.utils.isNotZero
+import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
@@ -216,9 +216,9 @@ class HomePresenter(
     }
 
     private fun logBalance(balance: BigDecimal) {
-        val hasPositiveBalance = balance.isNotZero()
+        val hasPositiveBalance = balance.isMoreThan(BigDecimal.ZERO)
         analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
-        analytics.logUserAggregateBalanceProperty(balance)
+        analytics.logUserAggregateBalanceProperty(balance.toInt())
     }
 
     private fun initialLoadTokens() {

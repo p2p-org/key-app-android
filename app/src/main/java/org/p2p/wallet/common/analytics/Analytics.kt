@@ -43,4 +43,8 @@ class Analytics(private val trackers: Set<AnalyticsTracker>) {
     fun appendToArray(property: String, value: Int) {
         trackers.forEach { it.appendToArray(property, value) }
     }
+
+    fun clearUserProperties() {
+        trackers.forEach { it.clearUserProperties() }
+    }
 }
