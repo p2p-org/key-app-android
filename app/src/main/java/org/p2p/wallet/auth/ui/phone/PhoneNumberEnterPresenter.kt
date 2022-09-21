@@ -1,17 +1,17 @@
 package org.p2p.wallet.auth.ui.phone
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.common.mvp.BasePresenter
-import timber.log.Timber
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 private const val MAX_PHONE_NUMBER_TRIES = 4
 
@@ -32,7 +32,9 @@ class PhoneNumberEnterPresenter(
             is OnboardingFlow.RestoreWallet -> view.initRestoreWalletViews()
         }
 
-        launch { loadDefaultCountryCode() }
+        selectedCountryCode?.let { countryCode ->
+            view.showDefaultCountryCode(countryCode)
+        } ?: launch { loadDefaultCountryCode() }
     }
 
     private suspend fun loadDefaultCountryCode() {
