@@ -11,6 +11,8 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.common.ResourcesProvider
 
 private const val MAX_PHONE_NUMBER_TRIES = 4
 
@@ -18,7 +20,8 @@ class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
-    private val onboardingInteractor: OnboardingInteractor
+    private val onboardingInteractor: OnboardingInteractor,
+    private val resourcesProvider: ResourcesProvider
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
@@ -116,6 +119,18 @@ class PhoneNumberEnterPresenter(
                 Timber.e(gatewayServiceError)
                 view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
             }
+            is GatewayServiceError.PhoneNumberNotExists -> {
+                Timber.e(gatewayServiceError)
+                val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
+                val userEmailAddress = restoreWalletInteractor.getUserEmailAddress().orEmpty()
+                val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber() ?: error("Phone number is null")
+                val error = GeneralErrorScreenError.AccountNotFound(
+                    isDeviceShareExists = isDeviceShareSaved,
+                    userPhoneNumber = userPhoneNumber,
+                    userEmailAddress = userEmailAddress
+                )
+                view?.navigateToCriticalErrorScreen(error)
+            }
             is GatewayServiceError.SmsDeliverFailed -> {
                 view?.showUiKitSnackBar(messageResId = R.string.onboarding_phone_enter_error_sms_failed)
             }
@@ -127,7 +142,7 @@ class PhoneNumberEnterPresenter(
             }
             is GatewayServiceError.CriticalServiceFailure -> {
                 Timber.e(gatewayServiceError, "Phone number submission failed with critical error")
-                view?.navigateToCriticalErrorScreen(gatewayServiceError.code)
+                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(gatewayServiceError.code))
             }
             else -> {
                 Timber.e(gatewayServiceError, "Phone number submission failed")
