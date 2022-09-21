@@ -57,7 +57,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         binding.textViewClear.setOnClickListener { phraseAdapter.clear() }
         binding.textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
 
-        setOnClickListener { onShowKeyboardListener?.invoke(phraseAdapter.itemCount) }
+        setOnClickListener { onShowKeyboardListener?.invoke(phraseAdapter.itemCount - 1) }
     }
 
     private fun addSeedPhraseFromClipboard() {
