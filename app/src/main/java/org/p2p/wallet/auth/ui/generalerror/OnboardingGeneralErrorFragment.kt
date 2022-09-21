@@ -17,6 +17,7 @@ import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract.View as ContractView
@@ -75,7 +76,7 @@ class OnboardingGeneralErrorFragment :
                     popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
                 }
                 buttonRestoreWithPhone.setOnClickListener {
-                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                    replaceFragment(PhoneNumberEnterFragment.create())
                 }
                 buttonRestoreByGoogle.setOnClickListener {
                     presenter.useGoogleAccount()

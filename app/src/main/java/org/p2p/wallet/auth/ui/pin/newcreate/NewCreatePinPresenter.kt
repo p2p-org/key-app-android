@@ -111,7 +111,7 @@ class NewCreatePinPresenter(
                 Timber.e(e, "Failed to create pin code")
                 createdPin = emptyString()
                 view?.showCreation()
-                view?.showErrorMessage(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
                 view?.showLoading(false)

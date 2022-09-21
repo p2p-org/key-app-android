@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.pin.signin
 
+import org.p2p.wallet.R
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
@@ -89,7 +90,7 @@ class SignInPinPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error while signing")
                 view?.clearPin()
-                view?.showErrorMessage(e)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }
