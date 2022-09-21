@@ -16,7 +16,6 @@ interface PhoneNumberEnterContract {
         fun showCountryCodePicker(selectedCountryCode: CountryCode?)
         fun navigateToSmsInput()
         fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState)
-        fun showSmsDeliveryFailedForNumber()
         fun navigateToAccountBlocked()
         fun navigateToCriticalErrorScreen(error: GeneralErrorScreenError)
     }

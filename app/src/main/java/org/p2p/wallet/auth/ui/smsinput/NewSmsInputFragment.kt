@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
@@ -50,6 +51,7 @@ class NewSmsInputFragment :
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
+                    view?.hideKeyboard()
                     IntercomService.showMessenger()
                     return@setOnMenuItemClickListener true
                 }

@@ -101,6 +101,18 @@ class NewSmsInputPresenter(
             view?.renderButtonLoading(isLoading = true)
             restoreWalletInteractor.finishRestoreCustomShare(smsCode)
             restoreUserWithShares()
+        } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
+            Timber.e(tooOftenOtpRequests)
+            view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
+        } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
+            Timber.i(incorrectSms)
+            view?.renderIncorrectSms()
+        } catch (tooManyRequests: GatewayServiceError.TooManyRequests) {
+            Timber.i(tooManyRequests)
+            view?.navigateToSmsInputBlocked(GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS)
+        } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
+            Timber.e(serverError)
+            view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
         } catch (error: Throwable) {
             Timber.e(error, "Restoring user or custom share failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
@@ -121,7 +133,7 @@ class NewSmsInputPresenter(
     }
 
     private suspend fun restoreUserWithDevicePlusCustomShare() {
-        when (restoreWalletInteractor.tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusCustomShare)) {
+        when (val result = restoreWalletInteractor.tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusCustomShare)) {
             RestoreUserResult.RestoreSuccessful -> {
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
@@ -130,7 +142,8 @@ class NewSmsInputPresenter(
                 view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.PhoneNumberDoesNotMatchError)
             }
             is RestoreUserResult.RestoreFailed -> {
-                view?.showErrorMessage(messageResId = R.string.error_general_message)
+                Timber.e(result, "Restoring user device+custom share failed")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }
@@ -159,7 +172,7 @@ class NewSmsInputPresenter(
                 when (onboardingInteractor.currentFlow) {
                     is OnboardingFlow.RestoreWallet -> {
                         val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
-                            ?: throw IllegalStateException("User phone number cannot be null")
+                            ?: error("User phone number cannot be null")
                         restoreWalletInteractor.startRestoreCustomShare(
                             userPhoneNumber = userPhoneNumber,
                             isResend = true
@@ -167,7 +180,7 @@ class NewSmsInputPresenter(
                     }
                     is OnboardingFlow.CreateWallet -> {
                         val userPhoneNumber = createWalletInteractor.getUserPhoneNumber()
-                            ?: throw IllegalStateException("User phone number cannot be null")
+                            ?: error("User phone number cannot be null")
                         createWalletInteractor.startCreatingWallet(
                             userPhoneNumber = userPhoneNumber,
                             isResend = true
@@ -195,14 +208,14 @@ class NewSmsInputPresenter(
     }
 
     private suspend fun restoreUserWithSocialPlusCustomShare() {
-        val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet
+        val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet.SocialPlusCustomShare
         when (val result = restoreWalletInteractor.tryRestoreUser(restoreFlow)) {
             is RestoreUserResult.RestoreSuccessful -> {
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             }
             is RestoreUserResult.RestoreFailed -> {
-                Timber.e(result)
+                Timber.e(result, "Restoring user social+custom share failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }

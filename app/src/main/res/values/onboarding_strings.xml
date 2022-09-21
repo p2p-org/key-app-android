@@ -53,7 +53,6 @@
     <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
     <string name="onboarding_country_name">Country name</string>
     <string name="onboarding_fill_your_number">Fill your phone number</string>
-    <string name="onboarding_no_sms_for_number">We can\'t send SMS. Change your number, please</string>
     <string name="onboarding_lets_finish_last_step">Oh, let’s finish the last step!</string>
     <string name="onboarding_phone_enter_error_sms_failed">❌ SMS will not be delivered. Please check your phone settings</string>
     <string name="onboarding_phone_enter_error_phone_confirmed">❌ This phone has already been confirmed. Change phone number</string>
@@ -101,6 +100,7 @@
     <string name="restore_seed_phrase">Use a seed phrase</string>
     <string name="restore_no_wallet_found_with_no_device_share_message">$s not works.\nUse an another phone number</string>
     <string name="restore_no_wallet_found_with_device_share_message">$s Try another account or use a another phone number</string>
+    <string name="restore_starting_screen">Starting screen</string>
 
     <string name="restore_no_wallet_title">No wallet found</string>
     <string name="restore_no_account_title">No account found</string>

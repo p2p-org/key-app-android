@@ -150,7 +150,6 @@ class PhoneNumberEnterPresenter(
             }
             is GatewayServiceError.SmsDeliverFailed -> {
                 view?.showUiKitSnackBar(messageResId = R.string.onboarding_phone_enter_error_sms_failed)
-                view?.showSmsDeliveryFailedForNumber()
             }
             is GatewayServiceError.UserAlreadyExists, is GatewayServiceError.PhoneNumberAlreadyConfirmed -> {
                 view?.showUiKitSnackBar(messageResId = R.string.onboarding_phone_enter_error_phone_confirmed)
