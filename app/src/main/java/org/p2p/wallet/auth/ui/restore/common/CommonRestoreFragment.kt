@@ -11,7 +11,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
@@ -137,7 +137,7 @@ class CommonRestoreFragment :
                     backgroundTintList = ContextCompat.getColorStateList(requireContext(), android.R.color.transparent)
                     setTextColor(getColor(R.color.text_lime))
                     setOnClickListener {
-                        popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
+                        popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
                     }
                 }
             }
