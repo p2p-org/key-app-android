@@ -45,7 +45,7 @@ class NewCreatePinFragment :
     }
 
     override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
+    override val navBarColor: Int = R.color.bg_lime
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
