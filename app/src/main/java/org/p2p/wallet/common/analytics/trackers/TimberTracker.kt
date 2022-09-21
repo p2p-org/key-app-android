@@ -35,5 +35,7 @@ class TimberTracker : AnalyticsTracker {
         Timber.tag(TAG_ANALYTICS).v("appendToArray() property [$property] value $value")
     }
 
-    override fun regenerateDeviceId() = NoOp
+    override fun regenerateDeviceId() = Unit
+
+    override fun clearUserProperties() = Unit
 }
