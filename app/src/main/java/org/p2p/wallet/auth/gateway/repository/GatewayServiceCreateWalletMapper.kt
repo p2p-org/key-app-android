@@ -41,6 +41,7 @@ class GatewayServiceCreateWalletMapper(
         val etheriumId: String,
         val encryptedShare: String,
         val encryptedPayload: String,
+        val encryptedMetadata: String = "-",
         val phone: String,
         val phoneConfirmationCode: String
     ) : BorshSerializable {
@@ -51,6 +52,7 @@ class GatewayServiceCreateWalletMapper(
                     clientId,
                     encryptedShare,
                     encryptedPayload,
+                    encryptedMetadata,
                     phone,
                     phoneConfirmationCode
                 ) // order is important
@@ -124,7 +126,7 @@ class GatewayServiceCreateWalletMapper(
             etheriumAddress = etheriumAddress,
             timestamp = createTimestampField(),
             thirdShare = gson.toJson(thirdShare).toByteArray().encodeToBase64(),
-            encryptedMetadata = "", // todo: replace in PWN-5213
+            encryptedMetadata = "-", // todo: replace in PWN-5213
             encryptedPayloadB64 = encryptedPayloadStrJson.toByteArray().encodeToBase64(),
             otpConfirmationCode = otpConfirmationCode,
             phone = phoneNumber,
