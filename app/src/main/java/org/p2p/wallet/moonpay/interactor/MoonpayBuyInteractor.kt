@@ -12,9 +12,11 @@ import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.NewMoonpayRepository
 import org.p2p.wallet.utils.isLessThan
+import org.p2p.wallet.utils.isMoreThan
 import java.math.BigDecimal
 
 private const val CURRENCY_AMOUNT_FOR_PRICE_REQUEST = "1"
+private const val DEFAULT_MAX_CURRENCY_AMOUNT = 10000
 private const val DEFAULT_PAYMENT_TYPE = "credit_debit_card"
 private val FIAT_CURRENCY_CODES = listOf("eur", "usd", "gbp")
 
@@ -62,15 +64,21 @@ class MoonpayBuyInteractor(
                 paymentMethod
             )
 
-            return if (isMinimumAmountValid(response, tokenToBuy)) {
-                MoonpayBuyResult.Success(moonpayApiMapper.fromNetworkToDomain(response))
-            } else {
-                MoonpayBuyResult.MinimumAmountError(minBuyAmount)
+            return when {
+                !isMinAmountValid(response, tokenToBuy) -> {
+                    MoonpayBuyResult.MinAmountError(minBuyAmount)
+                }
+                !isMaxAmountValid(response) -> {
+                    MoonpayBuyResult.MaxAmountError(DEFAULT_MAX_CURRENCY_AMOUNT.toBigDecimal())
+                }
+                else -> {
+                    MoonpayBuyResult.Success(moonpayApiMapper.fromNetworkToDomain(response))
+                }
             }
         } catch (error: ServerException) {
             return when {
                 isMinimumAmountException(error) -> {
-                    MoonpayBuyResult.MinimumAmountError(minBuyAmount)
+                    MoonpayBuyResult.MinAmountError(minBuyAmount)
                 }
                 error.errorCode == ErrorCode.BAD_REQUEST -> {
                     MoonpayBuyResult.Error(moonpayApiMapper.fromNetworkErrorToDomainMessage(error))
@@ -109,12 +117,19 @@ class MoonpayBuyInteractor(
         )
     }
 
-    private fun isMinimumAmountValid(response: MoonpayBuyCurrencyResponse, token: Token): Boolean {
+    private fun isMinAmountValid(response: MoonpayBuyCurrencyResponse, token: Token): Boolean {
         val buyCurrency = response.baseCurrency
         val isFiatCurrency = buyCurrency.code in FIAT_CURRENCY_CODES
         val minBuyAmount = getMinAmountForPair(response.baseCurrency.code, token)
-        val isLessThen = response.totalAmount.isLessThan(minBuyAmount)
-        return if (isFiatCurrency) !isLessThen else true
+        val isLessThenMin = response.totalAmount.isLessThan(minBuyAmount)
+        return if (isFiatCurrency) !isLessThenMin else true
+    }
+
+    private fun isMaxAmountValid(response: MoonpayBuyCurrencyResponse): Boolean {
+        val buyCurrency = response.baseCurrency
+        val isFiatCurrency = buyCurrency.code in FIAT_CURRENCY_CODES
+        val isMoreThenMax = response.totalAmount.isMoreThan(DEFAULT_MAX_CURRENCY_AMOUNT.toBigDecimal())
+        return if (isFiatCurrency) !isMoreThenMax else true
     }
 
     private fun isMinimumAmountException(error: ServerException): Boolean {

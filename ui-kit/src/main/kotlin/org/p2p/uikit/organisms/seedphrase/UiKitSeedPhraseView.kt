@@ -14,7 +14,10 @@ import org.p2p.uikit.databinding.WidgetSeedPhraseViewBinding
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseParser
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.dip
 import org.p2p.uikit.utils.inflateViewBinding
+
+private const val MIN_WIDGET_HEIGHT_DP = 312
 
 class UiKitSeedPhraseView @JvmOverloads constructor(
     context: Context,
@@ -43,6 +46,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
     init {
         setBackgroundResource(R.drawable.bg_smoke_rounded)
+        minHeight = dip(MIN_WIDGET_HEIGHT_DP)
 
         binding.keysRecyclerView.layoutManager = FlexboxLayoutManager(context).also {
             it.flexDirection = FlexDirection.ROW
@@ -52,6 +56,8 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
         binding.textViewClear.setOnClickListener { phraseAdapter.clear() }
         binding.textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
+
+        setOnClickListener { onShowKeyboardListener?.invoke(phraseAdapter.itemCount) }
     }
 
     private fun addSeedPhraseFromClipboard() {
@@ -75,8 +81,8 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         phraseAdapter.addSecretKey(seedPhraseWord)
     }
 
-    fun showFocusOnLastKey(lastSecretItemIndex: Int) {
-        phraseAdapter.showFocusOnItem(lastSecretItemIndex)
+    fun showFocusOnLastKey() {
+        phraseAdapter.showFocusOnLastItem()
     }
 
     fun showSeedPhraseValid(isValid: Boolean) {

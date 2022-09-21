@@ -11,6 +11,7 @@ import org.p2p.uikit.databinding.ItemSecretKeyBinding
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
 import org.p2p.uikit.utils.SpanUtils
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.setTextColorRes
@@ -71,6 +72,12 @@ class SeedPhraseWordViewHolder(
                 editTextWord.setSelection(it.text.length)
             }
         }
+    }
+
+    fun requestFocus() {
+        binding.editTextWord.isVisible = true
+        binding.textViewWord.isVisible = false
+        binding.editTextWord.focusAndShowKeyboard()
     }
 
     private fun renderValidWord(text: String, wordIndex: Int) {

@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
@@ -13,7 +14,6 @@ import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTim
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.removeWhiteSpaces
 import timber.log.Timber
-import kotlinx.coroutines.launch
 
 private const val MAX_RESENT_CLICK_TRIES_COUNT = 5
 
@@ -169,8 +169,6 @@ class NewSmsInputPresenter(
     private fun tryToResendSms() {
         launch {
             try {
-                view?.renderButtonLoading(isLoading = true)
-
                 when (onboardingInteractor.currentFlow) {
                     is OnboardingFlow.RestoreWallet -> {
                         val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber()
@@ -198,8 +196,6 @@ class NewSmsInputPresenter(
             } catch (error: Throwable) {
                 Timber.e(error, "Resending sms failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            } finally {
-                view?.renderButtonLoading(isLoading = false)
             }
         }
     }

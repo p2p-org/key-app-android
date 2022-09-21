@@ -2,13 +2,13 @@
     <!--Onboarding-->
     <string name="onboarding_create_text">Create a new wallet</string>
     <string name="onboarding_restore_text">I already have a wallet</string>
-    <string name="onboarding_terms_text">By continuing, you agree to Key App’s</string>
+    <string name="onboarding_terms_text">By continuing, you agree to P2P App’s</string>
     <string name="onboarding_terms_and_policy">Terms of Use and Privacy Policy</string>
     <string name="onboarding_terms_of_use">Terms of Use</string>
     <string name="onboarding_privacy_policy">Privacy Policy</string>
 
     <!--Onboarding Slides-->
-    <string name="onboarding_slide_1_title">Welcome \nto Key App</string>
+    <string name="onboarding_slide_1_title">Welcome \nto P2P App</string>
     <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
 
     <!--Onboarding - Continue-->
@@ -30,11 +30,6 @@
     <string name="auth_create_wallet_pin_code_error">Passcode doesn\'t  match. Please try again.</string>
     <string name="auth_create_wallet_pin_code_success">Great! Your new passcode is set.</string>
 
-    <string name="auth_create_wallet_use_touch_id_title">Use Touch ID?</string>
-    <string name="auth_create_wallet_use_touch_id_subtitle">For logging in and verifying transactions</string>
-    <string name="auth_create_wallet_use_touch_id">Use Touch ID</string>
-    <string name="auth_create_wallet_dont_use">Don\'t use</string>
-
     <string name="auth_pin_code_enter_up_your_pin">Enter your passcode</string>
     <string name="auth_pin_code_attempts_format">❌ Wrong passcode. You have %d attempts left.</string>
     <string name="auth_pin_code_warn_format">❌ After %d more incorrect tries, we\'ll log you out of your current account for your safety.</string>
@@ -42,6 +37,13 @@
     <string name="auth_pin_code_logout_title">You were logged out</string>
     <string name="auth_pin_code_logout_description">After 5 incorrect app passcodes</string>
     <string name="auth_pin_code_logout_ok_button">Got It</string>
+
+    <string name="auth_pin_code_lockout_title">Wrong code too many times in a row</string>
+    <string name="auth_pin_code_lockout_description">Try again after 30 seconds or login using your PIN code</string>
+    <string name="auth_pin_code_lockout_ok_button">Got It</string>
+
+    <string name="auth_pin_code_fingerprint_title">Fingerprint required</string>
+    <string name="auth_pin_code_fingerprint_description">Use your fingerprint to access the security key</string>
 
     <!-- PhoneNumberEnter -->
     <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
@@ -58,7 +60,7 @@
     <!-- NewSmsInput -->
     <string name="onboarding_sms_input_wrong_sms">Incorrect SMS code \uD83D\uDE2C</string>
     <string name="onboarding_sms_invalid_sms_button_text">Enter the code to continue</string>
-    <string name="onboarding_sms_input_resend_sms">Resend SMS</string>
+    <string name="onboarding_sms_input_resend_sms">Tap to resend</string>
     <string name="onboarding_sms_input_before_resend_sms">Resend after %1$d sec.</string>
     <string name="onboarding_sms_input_request_overflow">Too many tries, sms validation blocked for %1$d sec.</string>
     <string name="onboarding_sms_input_title">The code from SMS</string>
@@ -79,7 +81,7 @@
     <string name="onboarding_general_error_retry_button_tries_exceeded">
         You didn’t use any of 5 codes. For your safety we frozen account for %1$s min
     </string>
-    <string name="onboarding_general_error_terms_title">Key App\'s</string>
+    <string name="onboarding_general_error_terms_title">P2P App\'s</string>
     <string name="onboarding_general_error_starting_screen_button_title">Starting screen</string>
     <string name="onboarding_general_error_bug_report_button_title">Support</string>
     <string name="onboarding_general_error_critical_error_title">Well well 🦄</string>
@@ -97,7 +99,7 @@
     <string name="restore_seed_phrase">Use a seed phrase</string>
 
     <string name="restore_no_wallet_title">No wallet found</string>
-    <string name="restore_no_wallet_subtitle">With %s.\nTry another option</string>
+    <string name="restore_no_wallet_try_another_option">Try another option</string>
 
     <!-- Seed phrase scree -->
     <string name="seed_phrase_restore_wallet">Restoring your wallet</string>

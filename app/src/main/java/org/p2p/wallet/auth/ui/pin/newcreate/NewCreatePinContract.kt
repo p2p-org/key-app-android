@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.pin.newcreate
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import javax.crypto.Cipher
 
 interface NewCreatePinContract {
 
@@ -13,13 +14,16 @@ interface NewCreatePinContract {
         fun vibrate(duration: Long)
         fun showLoading(isLoading: Boolean)
         fun navigateBack()
-        fun navigateToBiometrics(pinCode: String)
         fun navigateToMain()
+        fun showBiometricDialog(biometricCipher: Cipher)
+        fun onAuthFinished()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun setPinMode(pinMode: PinMode)
         fun setPinCode(pinCode: String)
         fun onBackPressed()
+        fun finishAuthorization()
+        fun createPin(biometricCipher: Cipher?)
     }
 }

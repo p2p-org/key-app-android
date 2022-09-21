@@ -90,7 +90,7 @@
         android:layout_marginVertical="24dp"
         android:drawablePadding="24dp"
         android:gravity="center"
-        android:text="@string/buy_min_amount_error_format"
+        android:text="@string/buy_min_amount_details_error_format"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
         app:drawableTopCompat="@drawable/ic_error_amount" />
 </FrameLayout>
