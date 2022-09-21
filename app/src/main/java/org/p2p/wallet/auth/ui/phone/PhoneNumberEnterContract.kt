@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.ui.phone
 
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
@@ -17,7 +18,7 @@ interface PhoneNumberEnterContract {
         fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState)
         fun showSmsDeliveryFailedForNumber()
         fun navigateToAccountBlocked()
-        fun navigateToCriticalErrorScreen(errorCode: Int)
+        fun navigateToCriticalErrorScreen(error: GeneralErrorScreenError)
     }
 
     interface Presenter : MvpPresenter<View> {

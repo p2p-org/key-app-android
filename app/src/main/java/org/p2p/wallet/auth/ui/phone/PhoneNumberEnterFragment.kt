@@ -113,10 +113,8 @@ class PhoneNumberEnterFragment :
         )
     }
 
-    override fun navigateToCriticalErrorScreen(errorCode: Int) {
-        popAndReplaceFragment(
-            OnboardingGeneralErrorFragment.create(GeneralErrorScreenError.CriticalError(errorCode)), inclusive = true
-        )
+    override fun navigateToCriticalErrorScreen(error: GeneralErrorScreenError) {
+        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(error), inclusive = true)
     }
 
     override fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState) {

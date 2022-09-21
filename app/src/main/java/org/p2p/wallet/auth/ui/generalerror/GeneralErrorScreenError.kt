@@ -17,4 +17,10 @@ sealed class GeneralErrorScreenError(
         titleResId = R.string.error_wallet_not_found_title,
         messageResId = R.string.error_wallet_not_found_message
     )
+
+    data class AccountNotFound(
+        val isDeviceShareExists: Boolean,
+        val title: String,
+        val message: String
+    ) : GeneralErrorScreenError()
 }

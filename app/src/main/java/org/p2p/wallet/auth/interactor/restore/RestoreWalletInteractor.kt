@@ -40,4 +40,6 @@ class RestoreWalletInteractor(
     fun setIsRestoreWalletRequestSent(isSent: Boolean) {
         customShareRestoreInteractor.setIsRestoreWalletRequestSent(isSent)
     }
+
+    fun isDeviceShareSaved(): Boolean = userRestoreInteractor.isDeviceShareSaved()
 }

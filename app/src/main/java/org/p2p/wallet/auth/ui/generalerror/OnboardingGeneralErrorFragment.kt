@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.generalerror
 
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -59,28 +60,74 @@ class OnboardingGeneralErrorFragment :
     override fun setViewState(errorState: GeneralErrorScreenError) = with(binding) {
         when (errorState) {
             is GeneralErrorScreenError.CriticalError -> {
-                buttonReportBug.setOnClickListener {
-                    IntercomService.showMessenger()
+                with(buttonPrimaryFirst) {
+                    text = getString(R.string.onboarding_general_error_bug_report_button_title)
+                    setOnClickListener { IntercomService.showMessenger() }
+                    isVisible = true
                 }
-                buttonToStartingScreen.setOnClickListener {
-                    popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
+                with(buttonSecondaryFirst) {
+                    text = getString(R.string.onboarding_general_error_starting_screen_button_title)
+                    setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+                    isVisible = true
                 }
-                containerCommonButtons.isVisible = true
             }
-            GeneralErrorScreenError.PhoneNumberDoesNotMatchError -> {
+
+            is GeneralErrorScreenError.PhoneNumberDoesNotMatchError -> {
                 errorState.titleResId?.let { textViewErrorTitle.text = getString(it) }
                 errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
 
-                buttonRestoreToStartingScreen.setOnClickListener {
-                    popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
+                with(buttonRestoreByGoogle) {
+                    setOnClickListener { presenter.useGoogleAccount() }
+                    isVisible = true
                 }
-                buttonRestoreWithPhone.setOnClickListener {
-                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                with(buttonPrimaryFirst) {
+                    text = getString(R.string.restore_phone_number)
+                    setOnClickListener {
+                        popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                    }
+                    isVisible = true
                 }
-                buttonRestoreByGoogle.setOnClickListener {
-                    presenter.useGoogleAccount()
+                with(buttonSecondaryFirst) {
+                    text = getString(R.string.onboarding_general_error_starting_screen_button_title)
+                    setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+                    isVisible = true
                 }
-                containerDeviceCustomShareButtons.isVisible = true
+            }
+            is GeneralErrorScreenError.AccountNotFound -> {
+                textViewErrorTitle.text = errorState.title
+                textViewErrorSubtitle.text = errorState.message
+                with(buttonRestoreByGoogle) {
+                    text = if (errorState.isDeviceShareExists) getString(R.string.restore_continue_with_google) else
+                        getString(R.string.restore_another_phone_number)
+                    icon = if (errorState.isDeviceShareExists) ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_google_logo,
+                        null
+                    ) else null
+                    setOnClickListener {
+                        if (errorState.isDeviceShareExists) {
+                            presenter.useGoogleAccount()
+                        } else {
+                            popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                        }
+                    }
+                    isVisible = true
+                }
+                if (errorState.isDeviceShareExists) {
+                    with(buttonPrimaryFirst) {
+                        text = getString(R.string.restore_phone_number)
+                        setOnClickListener {
+                            popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                        }
+                        isVisible = true
+                    }
+                }
+
+                with(buttonSecondaryFirst) {
+                    text = getString(R.string.onboarding_continue_starting_button_text)
+                    setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+                    isVisible = true
+                }
             }
         }
     }
@@ -102,7 +149,7 @@ class OnboardingGeneralErrorFragment :
                 isLoadingState = isRestoringByGoogle
                 isEnabled = !isRestoringByGoogle
             }
-            buttonRestoreWithPhone.isEnabled = !isRestoringByGoogle
+            buttonPrimaryFirst.isEnabled = !isRestoringByGoogle
         }
     }
 
