@@ -65,6 +65,10 @@ class SignUpFlowDataLocalRepository(
         )
     }
 
+    fun resetUserPhoneNumberEnteredCount() {
+        userPhoneNumberEnteredCount = 0
+    }
+
     fun clear() {
         this.signUpUserId = null
         this.userAccount = null

@@ -47,6 +47,10 @@ class CreateWalletInteractor(
 
     fun getUserEnterPhoneNumberTriesCount() = signUpFlowDataRepository.userPhoneNumberEnteredCount
 
+    fun resetUserEnterPhoneNumberTriesCount() {
+        signUpFlowDataRepository.resetUserPhoneNumberEnteredCount()
+    }
+
     fun getUserPhoneNumber() = signUpFlowDataRepository.userPhoneNumber
 
     suspend fun finishCreatingWallet(smsCode: String) {

@@ -15,6 +15,8 @@ class RestoreFlowDataLocalRepository {
 
     var isRestoreWalletRequestSent = false
 
+    var userPhoneNumberEnteredCount = 0
+
     val userRestorePublicKey: Base58String?
         get() = restoreUserKeyPair?.publicKey?.toBase58Instance()
 
@@ -30,6 +32,7 @@ class RestoreFlowDataLocalRepository {
     var userPhoneNumber: PhoneNumber? = null
         set(value) {
             field = value
+            ++userPhoneNumberEnteredCount
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
@@ -75,5 +78,9 @@ class RestoreFlowDataLocalRepository {
 
     fun generateActualAccount(userSeedPhrase: List<String>) {
         this.userActualAccount = Account.fromBip44Mnemonic(userSeedPhrase, walletIndex = 0, passphrase = emptyString())
+    }
+
+    fun resetUserPhoneNumberEnteredCount() {
+        userPhoneNumberEnteredCount = 0
     }
 }
