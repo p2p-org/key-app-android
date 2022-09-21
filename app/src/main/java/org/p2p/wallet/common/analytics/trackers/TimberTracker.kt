@@ -1,6 +1,5 @@
 package org.p2p.wallet.common.analytics.trackers
 
-import org.p2p.wallet.utils.NoOp
 import timber.log.Timber
 
 private const val TAG_ANALYTICS = "Analytics"
