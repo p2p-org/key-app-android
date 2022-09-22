@@ -1,6 +1,7 @@
 <resources>
     <!--Onboarding-->
     <string name="onboarding_create_text">Create a new wallet</string>
+    <string name="onboarding_continue_with_google">Continue with Google</string>
     <string name="onboarding_restore_text">I already have a wallet</string>
     <string name="onboarding_terms_text">By continuing, you agree to P2P App’s</string>
     <string name="onboarding_terms_and_policy">Terms of Use and Privacy Policy</string>
@@ -39,7 +40,7 @@
     <string name="auth_pin_code_logout_ok_button">Got It</string>
 
     <string name="auth_pin_code_lockout_title">Wrong code too many times in a row</string>
-    <string name="auth_pin_code_lockout_description">Try again after 30 seconds or login using your PIN code</string>
+    <string name="auth_pin_code_lockout_description">Try again after 30 seconds or login using your PIN</string>
     <string name="auth_pin_code_lockout_ok_button">Got It</string>
 
     <string name="auth_pin_code_fingerprint_title">Fingerprint required</string>
@@ -48,7 +49,7 @@
     <!-- PhoneNumberEnter -->
     <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
     <string name="onboarding_step_2">Step 2 of 3</string>
-    <string name="onboarding_add_number_title">What\'s your number? 🤙</string>
+    <string name="onboarding_add_number_title">Add a phone number to restore your account</string>
     <string name="onboarding_add_number_message">Add a phone number to protect your account</string>
     <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
     <string name="onboarding_country_name">Country name</string>
@@ -73,25 +74,25 @@
     <string name="onboarding_general_error_let_breath_title">So, let\’s breathe</string>
     <string name="onboarding_general_error_timer_title">It\'s okay to be wrong</string>
     <string name="onboarding_general_error_timer_enter_phone_subtitle">
-        You used too many numbers. For your safety we\'ve frozen account for %1$s min
+        You used too many numbers. For your safety, we have frozen your account for %1$s min
     </string>
     <string name="onboarding_general_error_too_many_wrong_attempts">
-        You used 5 incorrect codes. For your safety we\'ve frozen account for %1$s min
+        You used 5 incorrect codes. For your safety, we have frozen your account for %1$s min
     </string>
     <string name="onboarding_general_error_retry_button_tries_exceeded">
-        You didn’t use any of 5 codes. For your safety we frozen account for %1$s min
+        You didn\'t use any of 5 codes. For your safety, we have frozen your account for %1$s min
     </string>
     <string name="onboarding_general_error_terms_title">P2P App\'s</string>
     <string name="onboarding_general_error_starting_screen_button_title">Starting screen</string>
     <string name="onboarding_general_error_bug_report_button_title">Support</string>
     <string name="onboarding_general_error_critical_error_title">Well well 🦄</string>
     <string name="onboarding_general_error_critical_error_sub_title">
-        We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n
+        We\'ve broke something really big. Let\'s wait together, finally the app will be repaired. \n\n
         If you wish to report the issue, use error code #%1$s
     </string>
 
     <!--Common Restore-->
-    <string name="restore_title">Restoring your wallet</string>
+    <string name="restore_title">Restore your wallet</string>
     <string name="restore_choose_method">Choose\nthe method</string>
     <string name="restore_choose_way">Choose the way\nto continue</string>
     <string name="restore_continue_with_google">Continue with Google</string>
@@ -107,7 +108,7 @@
     <string name="restore_no_wallet_try_another_option">Try another option</string>
 
     <!-- Seed phrase scree -->
-    <string name="seed_phrase_restore_wallet">Restoring your wallet</string>
+    <string name="seed_phrase_restore_wallet">Restore your wallet</string>
     <string name="seed_phrase_enter_title">Enter your seed phrase</string>
     <string name="seed_phrase_button_disabled_text">Fill 12 or 24 words</string>
     <string name="seed_phrase_verify_checksum_failed">😔 The seed phrase doesn\'t match. Please try again</string>
