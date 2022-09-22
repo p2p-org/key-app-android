@@ -9,7 +9,7 @@
 
     <!--Onboarding Slides-->
     <string name="onboarding_slide_1_title">Welcome \nto P2P App</string>
-    <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
+    <string name="onboarding_slide_1_text">Buy, sell and hold cryptocurrency. \nEarn up to 6% on USD</string>
 
     <!--Onboarding - Continue-->
     <string name="onboarding_continue_title">Choose an option to continue</string>

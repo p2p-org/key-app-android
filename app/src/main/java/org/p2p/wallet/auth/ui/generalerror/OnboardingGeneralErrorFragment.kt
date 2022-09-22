@@ -60,6 +60,9 @@ class OnboardingGeneralErrorFragment :
     override fun setViewState(errorState: GeneralErrorScreenError) = with(binding) {
         when (errorState) {
             is GeneralErrorScreenError.CriticalError -> {
+                // replace image with https://www.figma.com/file/XxOnIBFz9tVABsN783U3hR/Onboarding-Web3Auth?node-id=3216%3A134877
+                imageViewBox.setImageResource(R.drawable.ic_wallet_found)
+
                 with(buttonPrimaryFirst) {
                     text = getString(R.string.onboarding_general_error_bug_report_button_title)
                     setOnClickListener { IntercomService.showMessenger() }
@@ -75,6 +78,8 @@ class OnboardingGeneralErrorFragment :
             is GeneralErrorScreenError.PhoneNumberDoesNotMatchError -> {
                 errorState.titleResId?.let { textViewErrorTitle.text = getString(it) }
                 errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
+
+                imageViewBox.setImageResource(R.drawable.ic_cat)
 
                 with(buttonRestoreByGoogle) {
                     setOnClickListener { presenter.useGoogleAccount() }
@@ -119,6 +124,7 @@ class OnboardingGeneralErrorFragment :
         }
         textViewErrorTitle.text = title
         textViewErrorSubtitle.text = message
+        imageViewBox.setImageResource(R.drawable.onboarding_box)
         with(buttonRestoreByGoogle) {
             text = if (errorState.isDeviceShareExists) {
                 getString(R.string.restore_continue_with_google)
@@ -158,7 +164,7 @@ class OnboardingGeneralErrorFragment :
             text = getString(org.p2p.wallet.R.string.onboarding_continue_starting_button_text)
             setOnClickListener {
                 popAndReplaceFragment(
-                    org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment.create(),
+                    OnboardingRootFragment.create(),
                     inclusive = true
                 )
             }
