@@ -28,13 +28,11 @@ class OnboardingGeneralErrorTimerFragment :
     ContractView {
 
     companion object {
-        fun create(
-            error: GeneralErrorTimerScreenError,
-            timerLeftTime: Long
-        ) = OnboardingGeneralErrorTimerFragment().withArgs(
-            ARG_TIMER_ERROR_TYPE to error,
-            ARG_TIMER_LEFT_TIME to timerLeftTime
-        )
+        fun create(error: GeneralErrorTimerScreenError, timerLeftTime: Long): OnboardingGeneralErrorTimerFragment =
+            OnboardingGeneralErrorTimerFragment().withArgs(
+                ARG_TIMER_ERROR_TYPE to error,
+                ARG_TIMER_LEFT_TIME to timerLeftTime
+            )
     }
 
     override val statusBarColor: Int = R.color.bg_lime
