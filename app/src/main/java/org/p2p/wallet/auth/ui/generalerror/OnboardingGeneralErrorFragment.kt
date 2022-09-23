@@ -96,6 +96,30 @@ class OnboardingGeneralErrorFragment :
             is GeneralErrorScreenError.AccountNotFound -> {
                 onAccountNotFound(errorState)
             }
+            is GeneralErrorScreenError.DeviceShareNotFound -> {
+                onDeviceShareNotFound()
+            }
+            is GeneralErrorScreenError.NoTokenFound -> {
+                onNoTokenFound(errorState.tokenId)
+            }
+        }
+        val imageResourceId = when (errorState) {
+            GeneralErrorScreenError.DeviceShareNotFound -> R.drawable.easy_to_start
+            else -> R.drawable.onboarding_box
+        }
+        binding.imageViewBox.setImageResource(imageResourceId)
+    }
+
+    private fun onNoTokenFound(userId: String) {
+        view?.post {
+            with(binding) {
+                textViewErrorEmail.apply {
+                    isVisible = true
+                    text = userId
+                }
+                textViewErrorSubtitle.text = getString(R.string.restore_no_wallet_try_another_option)
+            }
+            setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
         }
     }
 
@@ -152,15 +176,34 @@ class OnboardingGeneralErrorFragment :
         }
 
         with(buttonSecondaryFirst) {
-            text = getString(org.p2p.wallet.R.string.onboarding_continue_starting_button_text)
+            text = getString(R.string.onboarding_continue_starting_button_text)
             setOnClickListener {
                 popAndReplaceFragment(
-                    org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment.create(),
+                    OnboardingRootFragment.create(),
                     inclusive = true
                 )
             }
             isVisible = true
         }
+    }
+
+    private fun onDeviceShareNotFound() = with(binding) {
+        with(buttonRestoreByGoogle) {
+            setOnClickListener { presenter.useGoogleAccount() }
+            isVisible = true
+        }
+        with(toolbar) {
+            inflateMenu(R.menu.menu_onboarding_help)
+            setOnMenuItemClickListener { menuItem ->
+                if (menuItem.itemId == R.id.helpItem) {
+                    IntercomService.showMessenger()
+                    return@setOnMenuItemClickListener true
+                }
+                return@setOnMenuItemClickListener false
+            }
+            isVisible = true
+        }
+        textViewErrorTitle.setText(R.string.restore_how_to_continue)
     }
 
     override fun startGoogleFlow() {
@@ -179,8 +222,10 @@ class OnboardingGeneralErrorFragment :
             buttonRestoreByGoogle.apply {
                 isLoadingState = isRestoringByGoogle
                 isEnabled = !isRestoringByGoogle
+                isVisible = true
             }
             buttonPrimaryFirst.isEnabled = !isRestoringByGoogle
+            buttonPrimaryFirst.isVisible = true
         }
     }
 
@@ -195,16 +240,7 @@ class OnboardingGeneralErrorFragment :
     }
 
     override fun onNoTokenFoundError(userId: String) {
-        view?.post {
-            with(binding) {
-                textViewErrorEmail.apply {
-                    isVisible = true
-                    text = userId
-                }
-                textViewErrorSubtitle.text = getString(R.string.restore_no_wallet_try_another_option)
-            }
-            setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
-        }
+        popAndReplaceFragment(create(GeneralErrorScreenError.NoTokenFound(userId)))
     }
 
     override fun navigateToPinCreate() {
