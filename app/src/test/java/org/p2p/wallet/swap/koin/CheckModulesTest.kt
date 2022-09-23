@@ -158,7 +158,7 @@ class CheckModulesTest : KoinTest {
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
                 withParameter<OnboardingGeneralErrorPresenter> { GeneralErrorScreenError.CriticalError(0) }
-                withParameters<OnboardingGeneralErrorTimerPresenter> { ParametersHolder(mutableListOf(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,10)) }
+                withParameters<OnboardingGeneralErrorTimerPresenter> { ParametersHolder(mutableListOf(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER, 10)) }
             }
         )
     }
