@@ -99,19 +99,22 @@ class UserRestoreInteractor(
     ): RestoreUserResult = try {
         val customShare = restoreFlowDataLocalRepository.customShare
             ?: error("Device+Custom restore way failed. Third share is null")
-        val deviceShare = restoreFlowDataLocalRepository.deviceShare
-            ?: error("Device+Custom restore way failed. Device share is null")
+
         val encryptedMnemonicGson = restoreFlowDataLocalRepository.encryptedMnemonic?.let {
             gson.fromJsonReified<JsonObject>(it)
         } ?: error("Device+Custom restore way failed. Mnemonic phrase is null")
-
-        val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
-            deviceShare = deviceShare,
-            thirdShare = customShare,
-            encryptedMnemonicPhrase = encryptedMnemonicGson
-        )
-        restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
-        RestoreUserResult.RestoreSuccessful
+        val deviceShare = restoreFlowDataLocalRepository.deviceShare
+        if (deviceShare == null) {
+            RestoreUserResult.DeviceShareNotFound
+        } else {
+            val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
+                deviceShare = deviceShare,
+                thirdShare = customShare,
+                encryptedMnemonicPhrase = encryptedMnemonicGson
+            )
+            restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
+            RestoreUserResult.RestoreSuccessful
+        }
     } catch (web3AuthError: Web3AuthErrorResponse) {
         if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
             RestoreUserResult.UserNotFound

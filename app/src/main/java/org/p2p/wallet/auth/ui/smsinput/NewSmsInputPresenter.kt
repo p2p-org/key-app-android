@@ -159,6 +159,10 @@ class NewSmsInputPresenter(
                 Timber.e(result, "Restoring user device+custom share failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
+            is RestoreUserResult.DeviceShareNotFound -> {
+                Timber.e("Restoring user device+ custom, device share not found")
+                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.DeviceShareNotFound)
+            }
         }
     }
 
