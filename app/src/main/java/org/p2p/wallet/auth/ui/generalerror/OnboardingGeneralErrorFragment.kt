@@ -107,10 +107,7 @@ class OnboardingGeneralErrorFragment :
             resourcesProvider.getString(R.string.restore_no_account_title)
         }
         val message = if (isDeviceShareSaved) {
-            resourcesProvider.getString(
-                R.string.restore_no_wallet_found_with_device_share_message,
-                errorState.userEmailAddress
-            )
+            resourcesProvider.getString(R.string.restore_no_wallet_found_with_device_share_message)
         } else {
             resourcesProvider.getString(
                 R.string.restore_no_wallet_found_with_no_device_share_message,
