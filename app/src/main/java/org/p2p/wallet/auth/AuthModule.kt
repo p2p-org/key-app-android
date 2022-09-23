@@ -122,7 +122,8 @@ object AuthModule {
                 context = androidContext(),
                 torusNetwork = get<NetworkServicesUrlProvider>().loadTorusEnvironment(),
                 mapper = get(),
-                gson = get()
+                gson = get(),
+                authRepository = get()
             )
         }
         singleOf(::SignUpFlowDataLocalRepository)
