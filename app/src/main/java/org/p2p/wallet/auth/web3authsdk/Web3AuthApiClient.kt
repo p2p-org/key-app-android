@@ -144,7 +144,7 @@ class Web3AuthApiClient(
         if (userGeneratedSeedPhrase.isEmpty()) {
             runBlocking { userGeneratedSeedPhrase = authRepository.generatePhrase() }
         }
-        
+
         val seedPhraseAsString = userGeneratedSeedPhrase.joinToString(separator = " ")
 
         return buildString {
