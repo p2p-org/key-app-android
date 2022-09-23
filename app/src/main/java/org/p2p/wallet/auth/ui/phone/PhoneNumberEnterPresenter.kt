@@ -129,11 +129,9 @@ class PhoneNumberEnterPresenter(
             is GatewayServiceError.PhoneNumberNotExists -> {
                 Timber.e(gatewayServiceError)
                 val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
-                val userEmailAddress = restoreWalletInteractor.getUserEmailAddress().orEmpty()
                 val error = GeneralErrorScreenError.AccountNotFound(
                     isDeviceShareExists = isDeviceShareSaved,
-                    userPhoneNumber = PhoneNumber(selectedCountryCode?.phoneCode + phoneNumber),
-                    userEmailAddress = userEmailAddress
+                    userPhoneNumber = PhoneNumber("+${selectedCountryCode?.phoneCode + phoneNumber}")
                 )
                 view?.navigateToCriticalErrorScreen(error)
             }
