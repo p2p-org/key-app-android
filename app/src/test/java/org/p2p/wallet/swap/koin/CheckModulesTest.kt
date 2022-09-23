@@ -72,6 +72,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import org.koin.core.parameter.ParametersHolder
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -157,7 +158,7 @@ class CheckModulesTest : KoinTest {
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
                 withParameter<OnboardingGeneralErrorPresenter> { GeneralErrorScreenError.CriticalError(0) }
-                withParameter<OnboardingGeneralErrorTimerPresenter> { GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER }
+                withParameters<OnboardingGeneralErrorTimerPresenter> { ParametersHolder(mutableListOf(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,10)) }
             }
         )
     }
