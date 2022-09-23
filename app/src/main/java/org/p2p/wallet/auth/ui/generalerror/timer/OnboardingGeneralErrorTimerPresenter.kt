@@ -13,14 +13,13 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 private const val TIMER_VALUE_FORMAT = "mm:ss"
-private const val START_TIMER_VALUE_MIN = 10
 
 class OnboardingGeneralErrorTimerPresenter(
     private val error: GeneralErrorTimerScreenError,
+    private val timerLeftTime: Long,
     private val smsInputTimer: SmsInputTimer,
     private val fileInteractor: FileInteractor
 ) : BasePresenter<OnboardingGeneralErrorTimerContract.View>(),
@@ -29,7 +28,7 @@ class OnboardingGeneralErrorTimerPresenter(
     override fun attach(view: OnboardingGeneralErrorTimerContract.View) {
         super.attach(view)
         // Call this method, to fill emptiness in subtitle, before timer will start count down
-        onTimerValueChanged(START_TIMER_VALUE_MIN.minutes.inWholeSeconds)
+        onTimerValueChanged(timerLeftTime.seconds.inWholeSeconds)
 
         createTimerFlow()
             .onEach(::onTimerValueChanged)
@@ -68,7 +67,7 @@ class OnboardingGeneralErrorTimerPresenter(
     }
 
     private fun createTimerFlow(): Flow<Long> {
-        return (START_TIMER_VALUE_MIN.minutes.inWholeSeconds - 1 downTo 0L)
+        return (timerLeftTime.seconds.inWholeSeconds - 1 downTo 0L)
             .asSequence()
             .asFlow()
             .onEach { delay(1.seconds.inWholeMilliseconds) }

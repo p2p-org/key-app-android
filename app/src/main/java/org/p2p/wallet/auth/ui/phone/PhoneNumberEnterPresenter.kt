@@ -10,16 +10,20 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlin.time.Duration.Companion.minutes
 
-private const val MAX_PHONE_NUMBER_TRIES = 4
+private const val MAX_PHONE_NUMBER_TRIES = 40
+private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class PhoneNumberEnterPresenter(
     private val countryCodeInteractor: CountryCodeInteractor,
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
-    private val onboardingInteractor: OnboardingInteractor
+    private val onboardingInteractor: OnboardingInteractor,
+    private val resourcesProvider: ResourcesProvider
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null
@@ -95,7 +99,7 @@ class PhoneNumberEnterPresenter(
             selectedCountryCode?.let {
                 if (createWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
                     createWalletInteractor.resetUserEnterPhoneNumberTriesCount()
-                    view?.navigateToAccountBlocked()
+                    view?.navigateToAccountBlocked(DEFAULT_BLOCK_TIME_IN_MINUTES.minutes.inWholeSeconds)
                 } else {
                     val userPhoneNumber = PhoneNumber(it.phoneCode + phoneNumber)
                     createWalletInteractor.startCreatingWallet(userPhoneNumber = userPhoneNumber)
@@ -104,7 +108,7 @@ class PhoneNumberEnterPresenter(
             }
         } catch (error: Throwable) {
             if (error is GatewayServiceError) {
-                handleGatewayServiceError(error)
+                handleGatewayServiceError(phoneNumber, error)
             } else {
                 Timber.e(error, "Phone number submission failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
@@ -113,21 +117,22 @@ class PhoneNumberEnterPresenter(
         }
     }
 
-    private fun handleGatewayServiceError(gatewayServiceError: GatewayServiceError) {
+    private fun handleGatewayServiceError(phoneNumber: String, gatewayServiceError: GatewayServiceError) {
         Timber.i(gatewayServiceError)
         when (gatewayServiceError) {
             is GatewayServiceError.TooManyOtpRequests -> {
                 Timber.e(gatewayServiceError)
-                view?.showUiKitSnackBar(messageResId = R.string.error_too_often_otp_requests_message)
+                val cooldownTtl = gatewayServiceError.cooldownTtl
+                val message = resourcesProvider.getString(R.string.error_too_often_otp_requests_message, cooldownTtl)
+                view?.showUiKitSnackBar(message)
             }
             is GatewayServiceError.PhoneNumberNotExists -> {
                 Timber.e(gatewayServiceError)
                 val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
                 val userEmailAddress = restoreWalletInteractor.getUserEmailAddress().orEmpty()
-                val userPhoneNumber = restoreWalletInteractor.getUserPhoneNumber() ?: error("Phone number is null")
                 val error = GeneralErrorScreenError.AccountNotFound(
                     isDeviceShareExists = isDeviceShareSaved,
-                    userPhoneNumber = userPhoneNumber,
+                    userPhoneNumber = PhoneNumber(selectedCountryCode?.phoneCode + phoneNumber),
                     userEmailAddress = userEmailAddress
                 )
                 view?.navigateToCriticalErrorScreen(error)
@@ -139,7 +144,7 @@ class PhoneNumberEnterPresenter(
                 view?.showUiKitSnackBar(messageResId = R.string.onboarding_phone_enter_error_phone_confirmed)
             }
             is GatewayServiceError.TooManyRequests -> {
-                view?.navigateToAccountBlocked()
+                view?.navigateToAccountBlocked(gatewayServiceError.cooldownTtl)
             }
             is GatewayServiceError.CriticalServiceFailure -> {
                 Timber.e(gatewayServiceError, "Phone number submission failed with critical error")
@@ -157,7 +162,7 @@ class PhoneNumberEnterPresenter(
             selectedCountryCode?.let {
                 if (restoreWalletInteractor.getUserEnterPhoneNumberTriesCount() >= MAX_PHONE_NUMBER_TRIES) {
                     restoreWalletInteractor.resetUserEnterPhoneNumberTriesCount()
-                    view?.navigateToAccountBlocked()
+                    view?.navigateToAccountBlocked(DEFAULT_BLOCK_TIME_IN_MINUTES.minutes.inWholeSeconds)
                 } else {
                     val userPhoneNumber = PhoneNumber(it.phoneCode + phoneNumber)
                     restoreWalletInteractor.startRestoreCustomShare(userPhoneNumber = userPhoneNumber)
@@ -166,7 +171,7 @@ class PhoneNumberEnterPresenter(
             }
         } catch (error: Throwable) {
             if (error is GatewayServiceError) {
-                handleGatewayServiceError(error)
+                handleGatewayServiceError(phoneNumber, error)
             } else {
                 Timber.e(error, "Phone number submission failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)

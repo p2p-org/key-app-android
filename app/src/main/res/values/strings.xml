@@ -60,7 +60,7 @@
     <string name="error_country_not_found">Sorry, we don’t know a such country</string>
     <string name="error_wallet_not_found_title">No wallet found</string>
     <string name="error_wallet_not_found_message">Try account or use an another phone number</string>
-    <string name="error_too_often_otp_requests_message">You request SMS too often. Try later.</string>
+    <string name="error_too_often_otp_requests_message">You request SMS too often. Try again in %1d sec.</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>

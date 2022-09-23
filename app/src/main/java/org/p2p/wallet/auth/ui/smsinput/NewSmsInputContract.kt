@@ -18,7 +18,7 @@ interface NewSmsInputContract {
         fun renderButtonLoading(isLoading: Boolean)
 
         fun navigateToPinCreate()
-        fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError)
+        fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long)
         fun navigateToCriticalErrorScreen(screenError: GeneralErrorScreenError)
         fun requestGoogleSignIn()
     }

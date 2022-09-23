@@ -109,9 +109,12 @@ class PhoneNumberEnterFragment :
         replaceFragment(NewSmsInputFragment.create())
     }
 
-    override fun navigateToAccountBlocked() {
+    override fun navigateToAccountBlocked(cooldownTtl: Long) {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER)
+            OnboardingGeneralErrorTimerFragment.create(
+                error = GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
+                timerLeftTime = cooldownTtl
+            )
         )
     }
 
