@@ -79,7 +79,6 @@ object BuyModule : InjectionModule {
             NewBuyPresenter(
                 tokenToBuy = token,
                 buyAnalytics = get(),
-                analyticsInteractor = get(),
                 userInteractor = get(),
                 paymentMethodsInteractor = get(),
                 resourcesProvider = get(),

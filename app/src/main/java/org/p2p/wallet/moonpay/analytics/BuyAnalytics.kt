@@ -9,7 +9,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.BUY_CONTINUING
 import org.p2p.wallet.common.analytics.constants.EventNames.BUY_CURRENCY_CHANGED
 import org.p2p.wallet.common.analytics.constants.EventNames.BUY_GOING_BACK
 import org.p2p.wallet.common.analytics.constants.EventNames.BUY_LIST_VIEWED
-import org.p2p.wallet.common.analytics.constants.EventNames.BUY_MOONPAY_WINDOW
+import org.p2p.wallet.common.analytics.constants.EventNames.BUY_MOONPAY_WINDOW_OPENED
 import org.p2p.wallet.common.analytics.constants.EventNames.BUY_PAYMENT_RESULT_SHOWN
 import org.p2p.wallet.common.analytics.constants.EventNames.BUY_PROVIDER_STEP_VIEWED
 import org.p2p.wallet.common.analytics.constants.EventNames.BUY_TOKEN_CHOSEN
@@ -124,8 +124,8 @@ class BuyAnalytics(private val tracker: Analytics) {
     }
 
     fun logBuyButtonPressed(
-        buySumCurrency: BigDecimal,
-        buySumCoin: BigDecimal,
+        buySumCurrency: String,
+        buySumCoin: String,
         buyCurrency: String,
         buyCoin: String,
         methodPayment: PaymentMethod
@@ -133,30 +133,27 @@ class BuyAnalytics(private val tracker: Analytics) {
         val isBankTransfer = methodPayment.method == PaymentMethod.MethodType.BANK_TRANSFER
         tracker.logEvent(
             BUY_BUTTON_PRESSED,
-            mapOf(
+            mutableMapOf(
                 "Sum_Currency" to buySumCurrency,
                 "Sum_Coin" to buySumCoin,
                 "Currency" to buyCurrency,
                 "Coin" to buyCoin,
                 "Payment_Method" to methodPayment.toType(),
                 "Bank_Transfer" to isBankTransfer,
-                "Type_Bank_Transfer" to methodPayment.paymentType,
-            )
+            ).apply {
+                if (!isBankTransfer) {
+                    put("Type_Bank_Transfer", methodPayment.paymentType)
+                }
+            }
         )
     }
 
-    fun logBuyTotalShown(isShown: Boolean) {
-        tracker.logEvent(
-            BUY_TOTAL_SHOWED,
-            mapOf("Shown" to isShown)
-        )
+    fun logBuyTotalShown() {
+        tracker.logEvent(BUY_TOTAL_SHOWED)
     }
 
     fun logBuyMoonPayOpened() {
-        tracker.logEvent(
-            BUY_MOONPAY_WINDOW,
-            mapOf("Opened" to true)
-        )
+        tracker.logEvent(BUY_MOONPAY_WINDOW_OPENED)
     }
 
     private fun PaymentMethod.toType(): String {

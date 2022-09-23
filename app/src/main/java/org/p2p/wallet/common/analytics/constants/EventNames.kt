@@ -112,5 +112,5 @@ object EventNames {
     const val BUY_TOTAL_SHOWED = "Buy_Total_Showed"
     const val BUY_CHOSEN_METHOD_PAYMENT = "Buy_Chosen_Method_Payment"
     const val BUY_BUTTON_PRESSED = "Buy_Button_Pressed"
-    const val BUY_MOONPAY_WINDOW = "Moonpay_Window"
+    const val BUY_MOONPAY_WINDOW_OPENED = "Moonpay_Window_Opened"
 }
