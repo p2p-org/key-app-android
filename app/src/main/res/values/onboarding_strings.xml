@@ -13,7 +13,7 @@
     <string name="onboarding_slide_1_text">Buy, sell and hold cryptocurrency. \nEarn up to 6% on USD</string>
 
     <!--Onboarding - Continue-->
-    <string name="onboarding_continue_title">Choose an option to continue</string>
+    <string name="onboarding_continue_title">Let\'s continue</string>
     <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nOnly a phone number is needed to create a new wallet.</string>
     <string name="onboarding_continue_button_text">Continue</string>
     <string name="onboarding_continue_starting_button_text">Starting screen</string>
@@ -49,7 +49,7 @@
     <!-- PhoneNumberEnter -->
     <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
     <string name="onboarding_step_2">Step 2 of 3</string>
-    <string name="onboarding_add_number_title">Add a phone number to restore your account</string>
+    <string name="onboarding_add_number_title">What\'s your number? 🤙</string>
     <string name="onboarding_add_number_message">Add a phone number to protect your account</string>
     <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
     <string name="onboarding_country_name">Country name</string>
