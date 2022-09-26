@@ -100,7 +100,7 @@
     <string name="auth_enter_pin_code">Enter PIN</string>
     <string name="auth_enter_current_pin_code">Enter current PIN</string>
     <string name="auth_repeat_new_pin_code">Confirm PIN</string>
-    <string name="auth_almost_done_title">Almost done!</string>
+    <string name="auth_almost_done_title">Almost done</string>
     <string name="auth_quick_access">Quick Access</string>
     <string name="auth_biometric_question">Use biometric for quick access?</string>
     <string name="auth_pin_codes_match_error">❌ PIN doesn’t match. Try again</string>
