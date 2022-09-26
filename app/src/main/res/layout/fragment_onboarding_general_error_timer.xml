@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        app:srcCompat="@drawable/onboarding_box" />
+        app:srcCompat="@drawable/ic_timer_error" />
 
     <TextView
         android:id="@+id/text_view_error_title"

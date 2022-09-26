@@ -60,9 +60,7 @@ class OnboardingGeneralErrorFragment :
     override fun setViewState(errorState: GeneralErrorScreenError) = with(binding) {
         when (errorState) {
             is GeneralErrorScreenError.CriticalError -> {
-                // replace image with https://www.figma.com/file/XxOnIBFz9tVABsN783U3hR/Onboarding-Web3Auth?node-id=3216%3A134877
-                imageViewBox.setImageResource(R.drawable.ic_wallet_found)
-
+                imageViewBox.setImageResource(R.drawable.ic_not_found)
                 with(buttonPrimaryFirst) {
                     text = getString(R.string.onboarding_general_error_bug_report_button_title)
                     setOnClickListener { IntercomService.showMessenger() }
@@ -74,7 +72,6 @@ class OnboardingGeneralErrorFragment :
                     isVisible = true
                 }
             }
-
             is GeneralErrorScreenError.PhoneNumberDoesNotMatchError -> {
                 errorState.titleResId?.let { textViewErrorTitle.text = getString(it) }
                 errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
