@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="@string/restore_your_wallet"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-        app:titleTextColor="@color/text_night"/>
+        app:titleTextColor="@color/text_night" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -88,7 +88,6 @@
         android:paddingTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-
         <org.p2p.uikit.components.UiKitButton
             android:id="@+id/buttonRestoreByGoogle"
             style="@style/UiKit.Components.Button.Large"
@@ -102,7 +101,8 @@
             app:icon="@drawable/ic_google_logo"
             app:iconGravity="textStart"
             app:iconSize="24dp"
-            app:iconTint="@null" />
+            app:iconTint="@null"
+            tools:visibility="visible" />
 
         <org.p2p.uikit.components.UiKitButton
             android:id="@+id/buttonPrimaryFirst"
@@ -113,7 +113,8 @@
             android:text="@string/restore_phone_number"
             android:textColor="@color/text_snow"
             android:visibility="gone"
-            app:strokeColor="@color/snow" />
+            app:strokeColor="@color/snow"
+            tools:visibility="visible" />
 
         <org.p2p.uikit.components.UiKitButton
             android:id="@+id/buttonPrimarySecond"
@@ -124,7 +125,8 @@
             android:text="@string/restore_phone_number"
             android:textColor="@color/text_snow"
             android:visibility="gone"
-            app:strokeColor="@color/snow" />
+            app:strokeColor="@color/snow"
+            tools:visibility="visible" />
 
         <org.p2p.uikit.components.UiKitButton
             android:id="@+id/buttonSecondaryFirst"
@@ -136,7 +138,8 @@
             android:text="@string/onboarding_general_error_starting_screen_button_title"
             android:textColor="@color/text_lime"
             android:visibility="gone"
-            app:strokeColor="@color/text_snow" />
+            app:strokeColor="@color/text_snow"
+            tools:visibility="visible" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

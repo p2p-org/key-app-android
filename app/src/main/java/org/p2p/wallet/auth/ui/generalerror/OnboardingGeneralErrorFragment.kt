@@ -60,9 +60,11 @@ class OnboardingGeneralErrorFragment :
     override fun setViewState(errorState: GeneralErrorScreenError) = with(binding) {
         when (errorState) {
             is GeneralErrorScreenError.CriticalError -> {
-                with(buttonPrimaryFirst) {
+                with(buttonRestoreByGoogle) {
                     text = getString(R.string.onboarding_general_error_bug_report_button_title)
                     setOnClickListener { IntercomService.showMessenger() }
+                    setIconResource(R.drawable.ic_caution)
+                    setIconTintResource(R.color.text_night)
                     isVisible = true
                 }
                 with(buttonSecondaryFirst) {
@@ -85,6 +87,23 @@ class OnboardingGeneralErrorFragment :
                     setOnClickListener {
                         popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
                     }
+                    isVisible = true
+                }
+                with(buttonSecondaryFirst) {
+                    text = getString(R.string.onboarding_general_error_starting_screen_button_title)
+                    setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+                    isVisible = true
+                }
+            }
+            is GeneralErrorScreenError.SharesDoesNotMatchError -> {
+                errorState.titleResId?.let { textViewErrorTitle.text = getString(it) }
+                errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
+
+                with(buttonRestoreByGoogle) {
+                    text = getString(R.string.onboarding_general_error_bug_report_button_title)
+                    setOnClickListener { IntercomService.showMessenger() }
+                    setIconResource(R.drawable.ic_caution)
+                    setIconTintResource(R.color.text_night)
                     isVisible = true
                 }
                 with(buttonSecondaryFirst) {
