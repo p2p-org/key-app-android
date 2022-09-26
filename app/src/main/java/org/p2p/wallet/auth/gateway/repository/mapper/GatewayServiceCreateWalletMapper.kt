@@ -1,17 +1,25 @@
-package org.p2p.wallet.auth.gateway.repository
+package org.p2p.wallet.auth.gateway.repository.mapper
 
+import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import org.p2p.solanaj.utils.crypto.encodeToBase64
+import org.near.borshj.Borsh
+import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRegisterWalletRequest
+import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceResponse
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
+import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.toByteArray
+import org.p2p.wallet.utils.toJsonObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -20,6 +28,7 @@ const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
 class GatewayServiceCreateWalletMapper(
     private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator,
+    private val onboardingMetadataCipher: GatewayServiceOnboardingMetadataCipher,
     private val errorMapper: GatewayServiceErrorMapper,
     private val gson: Gson
 ) {
@@ -36,23 +45,24 @@ class GatewayServiceCreateWalletMapper(
                 .toByteArray()
     }
 
-    private data class ConfirmRegisterWalletSignatureStruct(
+    data class ConfirmRegisterWalletSignatureStruct(
         val clientId: String,
         val etheriumId: String,
-        val encryptedShare: String,
-        val encryptedPayload: String,
-        val encryptedMetadata: String = "-",
+        val encryptedShare: JsonObject,
+        val encryptedPayload: JsonObject,
+        val onboardingMetadata: JsonObject,
         val phone: String,
         val phoneConfirmationCode: String
-    ) : BorshSerializable {
+    ) : BorshSerializable, Borsh {
+
         override fun serializeSelf(): ByteArray =
             getBorshBuffer()
                 .write(
                     etheriumId,
                     clientId,
-                    encryptedShare,
-                    encryptedPayload,
-                    encryptedMetadata,
+                    encryptedShare.toString(),
+                    encryptedPayload.toString(),
+                    onboardingMetadata.toString(),
                     phone,
                     phoneConfirmationCode
                 ) // order is important
@@ -101,36 +111,45 @@ class GatewayServiceCreateWalletMapper(
         userPublicKey: Base58String,
         userPrivateKey: Base58String,
         etheriumAddress: String,
-        phoneNumber: String,
+        phoneNumber: PhoneNumber,
         jsonEncryptedMnemonicPhrase: JsonObject,
+        socialShareOwnerId: String,
+        userSeedPhrase: List<String>,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         otpConfirmationCode: String
     ): GatewayServiceRequest<ConfirmRegisterWalletRequest> {
-
-        val encryptedPayloadStrJson = jsonEncryptedMnemonicPhrase.toString()
+        val encryptedMetadata: GatewayOnboardingMetadataCiphered = onboardingMetadataCipher.encryptMetadata(
+            mnemonicPhrase = userSeedPhrase,
+            onboardingMetadata = GatewayOnboardingMetadata(
+                deviceShareDeviceName = Build.MANUFACTURER + Build.PRODUCT,
+                customSharePhoneNumberE164 = phoneNumber.e164Formatted(),
+                socialShareOwnerEmail = socialShareOwnerId
+            )
+        )
 
         val signatureField: Base58String = signatureFieldGenerator.generateSignatureField(
             userPrivateKey = userPrivateKey,
             structToSerialize = ConfirmRegisterWalletSignatureStruct(
                 clientId = userPublicKey.base58Value,
                 etheriumId = etheriumAddress.lowercase(),
-                phone = phoneNumber,
-                encryptedShare = gson.toJson(thirdShare),
-                encryptedPayload = encryptedPayloadStrJson,
+                phone = phoneNumber.e164Formatted(),
+                encryptedShare = gson.toJsonObject(thirdShare),
+                encryptedPayload = jsonEncryptedMnemonicPhrase,
+                onboardingMetadata = gson.toJsonObject(encryptedMetadata),
                 phoneConfirmationCode = otpConfirmationCode
             )
         )
 
         return ConfirmRegisterWalletRequest(
-            clientSolanaPublicKey = userPublicKey.base58Value,
+            clientSolanaPublicKey = userPublicKey,
             etheriumAddress = etheriumAddress,
             timestamp = createTimestampField(),
-            thirdShare = gson.toJson(thirdShare).toByteArray().encodeToBase64(),
-            encryptedMetadata = "-".toByteArray().encodeToBase64(), // todo: replace in PWN-5213
-            encryptedPayloadB64 = encryptedPayloadStrJson.toByteArray().encodeToBase64(),
+            thirdShare = gson.toJsonObject(thirdShare).toByteArray().toBase64Instance(),
+            encryptedPayloadB64 = jsonEncryptedMnemonicPhrase.toByteArray().toBase64Instance(),
+            onboardingMetadata = gson.toJsonObject(encryptedMetadata).toByteArray().toBase64Instance(),
             otpConfirmationCode = otpConfirmationCode,
-            phone = phoneNumber,
-            requestSignature = signatureField.base58Value
+            phone = phoneNumber.e164Formatted(),
+            requestSignature = signatureField
         ).let { GatewayServiceRequest(it, methodName = GatewayServiceJsonRpcMethod.CONFIRM_REGISTER_WALLET) }
     }
 

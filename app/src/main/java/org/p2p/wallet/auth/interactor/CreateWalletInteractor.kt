@@ -3,12 +3,14 @@ package org.p2p.wallet.auth.interactor
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class CreateWalletInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
     private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     private val smsInputTimer: SmsInputTimer,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
@@ -69,6 +71,14 @@ class CreateWalletInteractor(
         val phoneNumber = signUpFlowDataRepository.userPhoneNumber
             ?: throw CreateWalletFailure("User phone number is null")
 
+        val userSeedPhrase: List<String>
+        val socialShareOwnerId: String
+        userSignUpDetailsStorage.getLastSignUpUserDetails().also {
+            userSeedPhrase = it?.signUpDetails?.mnemonicPhrase?.split(" ")
+                ?: throw CreateWalletFailure("Mnemonic phrase is null")
+            socialShareOwnerId = it.userId
+        }
+
         gatewayServiceRepository.confirmRegisterWallet(
             userPublicKey = userPublicKey,
             userPrivateKey = userPrivateKey,
@@ -76,7 +86,9 @@ class CreateWalletInteractor(
             thirdShare = thirdShare,
             phoneNumber = phoneNumber,
             jsonEncryptedMnemonicPhrase = encryptedMnemonicPhrase,
-            otpConfirmationCode = smsCode
+            otpConfirmationCode = smsCode,
+            userSeedPhrase = userSeedPhrase,
+            socialShareOwnerId = socialShareOwnerId
         )
     }
 

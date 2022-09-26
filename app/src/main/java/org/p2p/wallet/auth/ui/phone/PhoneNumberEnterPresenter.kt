@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.ui.phone
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.gateway.repository.GatewayServiceError
+import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor

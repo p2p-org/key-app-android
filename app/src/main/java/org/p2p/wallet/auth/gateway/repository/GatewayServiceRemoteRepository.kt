@@ -6,6 +6,11 @@ import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
+import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceCreateWalletMapper
+import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceRestoreWalletMapper
+import org.p2p.wallet.auth.gateway.repository.model.RestoreWalletPublicKeyError
+import org.p2p.wallet.auth.model.PhoneNumber
+import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String
@@ -13,8 +18,6 @@ import org.p2p.wallet.utils.FlowDurationTimer
 import timber.log.Timber
 import kotlin.time.DurationUnit
 import kotlinx.coroutines.withContext
-import org.p2p.wallet.auth.model.PhoneNumber
-import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 
 class GatewayServiceRemoteRepository(
     private val api: GatewayServiceApi,
@@ -63,6 +66,8 @@ class GatewayServiceRemoteRepository(
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         jsonEncryptedMnemonicPhrase: JsonObject,
         phoneNumber: PhoneNumber,
+        userSeedPhrase: List<String>,
+        socialShareOwnerId: String,
         otpConfirmationCode: String
     ): GatewayServiceStandardResponse = withContext(dispatchers.io) {
         val request = createWalletMapper.toConfirmRegisterWalletNetwork(
@@ -71,8 +76,10 @@ class GatewayServiceRemoteRepository(
             etheriumAddress = etheriumAddress,
             thirdShare = thirdShare,
             jsonEncryptedMnemonicPhrase = jsonEncryptedMnemonicPhrase,
-            phoneNumber = phoneNumber.e164Formatted(),
-            otpConfirmationCode = otpConfirmationCode
+            phoneNumber = phoneNumber,
+            otpConfirmationCode = otpConfirmationCode,
+            socialShareOwnerId = socialShareOwnerId,
+            userSeedPhrase = userSeedPhrase
         )
         val response = api.confirmRegisterWallet(request)
         createWalletMapper.fromNetwork(response)

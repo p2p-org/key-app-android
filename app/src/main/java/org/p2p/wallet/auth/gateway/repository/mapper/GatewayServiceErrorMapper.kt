@@ -1,6 +1,7 @@
-package org.p2p.wallet.auth.gateway.repository
+package org.p2p.wallet.auth.gateway.repository.mapper
 
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceErrorResponse
+import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import timber.log.Timber
 
 class GatewayServiceErrorMapper {

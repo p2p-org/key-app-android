@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.gateway.repository
+package org.p2p.wallet.auth.gateway.repository.mapper
 
 import org.p2p.wallet.auth.gateway.api.request.ConfirmRestoreWalletRequest
 import org.p2p.wallet.auth.gateway.api.request.GatewayServiceJsonRpcMethod
