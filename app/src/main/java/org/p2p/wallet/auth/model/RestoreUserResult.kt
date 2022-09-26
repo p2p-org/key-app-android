@@ -4,4 +4,5 @@ sealed interface RestoreUserResult {
     object RestoreSuccessful : RestoreUserResult
     object UserNotFound : RestoreUserResult
     class RestoreFailed(override val cause: Throwable) : Throwable(message = cause.message), RestoreUserResult
+    object DeviceShareNotFound : RestoreUserResult
 }

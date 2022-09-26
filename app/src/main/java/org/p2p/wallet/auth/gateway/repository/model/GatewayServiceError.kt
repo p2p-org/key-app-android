@@ -26,7 +26,8 @@ sealed class GatewayServiceError : Throwable() {
 
     class TooManyRequests(
         override val code: Int,
-        override val message: String
+        override val message: String,
+        val cooldownTtl: Long
     ) : GatewayServiceError()
 
     class SmsDeliverFailed(
@@ -66,6 +67,7 @@ sealed class GatewayServiceError : Throwable() {
 
     class TooManyOtpRequests(
         override val code: Int,
-        override val message: String
+        override val message: String,
+        val cooldownTtl: Long
     ) : GatewayServiceError()
 }

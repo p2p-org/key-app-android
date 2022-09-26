@@ -66,7 +66,6 @@ class NewSmsInputFragment :
 
             resendText.setOnClickListener {
                 presenter.resendSms()
-                it.isClickable = false
             }
 
             continueButton.setOnClickListener {
@@ -127,9 +126,9 @@ class NewSmsInputFragment :
         popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
     }
 
-    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError) {
+    override fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long) {
         replaceFragment(
-            OnboardingGeneralErrorTimerFragment.create(error)
+            OnboardingGeneralErrorTimerFragment.create(error, timerLeftTime)
         )
     }
 
