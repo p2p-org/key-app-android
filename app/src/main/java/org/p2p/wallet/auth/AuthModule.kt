@@ -8,6 +8,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
+import org.koin.dsl.factory
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
@@ -37,6 +38,7 @@ import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingContract
@@ -122,7 +124,8 @@ object AuthModule {
                 context = androidContext(),
                 torusNetwork = get<NetworkServicesUrlProvider>().loadTorusEnvironment(),
                 mapper = get(),
-                gson = get()
+                gson = get(),
+                authRepository = get()
             )
         }
         singleOf(::SignUpFlowDataLocalRepository)
@@ -148,7 +151,15 @@ object AuthModule {
 
         singleOf(::SmsInputTimer)
         factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
-        factoryOf(::OnboardingGeneralErrorTimerPresenter) bind OnboardingGeneralErrorTimerContract.Presenter::class
+
+        factory { (error: GeneralErrorTimerScreenError, timerLeftTime: Long) ->
+            OnboardingGeneralErrorTimerPresenter(
+                error = error,
+                timerLeftTime = timerLeftTime,
+                smsInputTimer = get(),
+                fileInteractor = get()
+            )
+        } bind OnboardingGeneralErrorTimerContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
         factoryOf(::RestoreWalletInteractor)
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class

@@ -21,7 +21,10 @@ sealed class GeneralErrorScreenError(
 
     data class AccountNotFound(
         val isDeviceShareExists: Boolean,
-        val userEmailAddress: String,
         val userPhoneNumber: PhoneNumber
     ) : GeneralErrorScreenError()
+
+    object DeviceShareNotFound : GeneralErrorScreenError()
+
+    data class NoTokenFound(val tokenId: String) : GeneralErrorScreenError()
 }
