@@ -18,6 +18,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract.View as ContractView
@@ -85,7 +86,7 @@ class OnboardingGeneralErrorFragment :
                 with(buttonPrimaryFirst) {
                     text = getString(R.string.restore_phone_number)
                     setOnClickListener {
-                        popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                        replaceFragment(PhoneNumberEnterFragment.create())
                     }
                     isVisible = true
                 }
@@ -160,7 +161,7 @@ class OnboardingGeneralErrorFragment :
                 if (errorState.isDeviceShareExists) {
                     presenter.useGoogleAccount()
                 } else {
-                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                    replaceFragment(PhoneNumberEnterFragment.create())
                 }
             }
             isVisible = true
@@ -169,10 +170,7 @@ class OnboardingGeneralErrorFragment :
             with(buttonPrimaryFirst) {
                 text = getString(R.string.restore_phone_number)
                 setOnClickListener {
-                    popAndReplaceFragment(
-                        PhoneNumberEnterFragment.create(),
-                        inclusive = true
-                    )
+                    replaceFragment(PhoneNumberEnterFragment.create(),)
                 }
                 isVisible = true
             }
