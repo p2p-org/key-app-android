@@ -19,8 +19,7 @@ sealed class GeneralErrorScreenError(
         messageResId = R.string.error_wallet_not_found_message
     )
 
-    @Parcelize
-    class SharesDoesNotMatchError(val errorCode: Int) : GeneralErrorScreenError(
+    object SharesDoesNotMatchError : GeneralErrorScreenError(
         titleResId = R.string.error_shares_does_not_matches_title,
         messageResId = R.string.error_shares_does_not_matches_message
     )
