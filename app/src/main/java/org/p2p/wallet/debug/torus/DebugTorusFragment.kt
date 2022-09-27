@@ -33,11 +33,7 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
 
             networkServicesUrlProvider.loadTorusEnvironment().apply {
                 environmentTextView.text = baseUrl
-                verifierTextView.text = if (subVerifier.isNullOrBlank()) {
-                    verifier
-                } else {
-                    "verifier = $verifier\nsubVerifier = $subVerifier"
-                }
+                verifierTextView.text = "verifier = $verifier\nsubVerifier = ${subVerifier ?: "-"}"
             }
 
             testUrlButton.setOnClickListener {
