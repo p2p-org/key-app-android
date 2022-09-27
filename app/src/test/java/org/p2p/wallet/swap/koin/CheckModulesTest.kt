@@ -1,24 +1,19 @@
 package org.p2p.wallet.swap.koin
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -32,39 +27,22 @@ import org.koin.test.mock.MockProviderRule
 import org.mockito.Mockito
 import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.AppModule
-import org.p2p.wallet.auth.AuthModule
-import org.p2p.wallet.common.analytics.AnalyticsModule
-import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
-import org.p2p.wallet.debug.DebugSettingsModule
-import org.p2p.wallet.feerelayer.FeeRelayerModule
-import org.p2p.wallet.history.HistoryModule
-import org.p2p.wallet.history.HistoryStrategyModule
-import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
-import org.p2p.wallet.infrastructure.InfrastructureModule
-import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.security.SecureStorage
-import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
-import org.p2p.wallet.push_notifications.PushNotificationsModule
-import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
-import org.p2p.wallet.renbtc.RenBtcModule
-import org.p2p.wallet.restore.BackupModule
-import org.p2p.wallet.root.RootModule
-import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.settings.SettingsModule
-import org.p2p.wallet.swap.SwapModule
-import org.p2p.wallet.transaction.di.TransactionModule
-import org.p2p.wallet.user.UserModule
-import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -131,7 +109,7 @@ class CheckModulesTest : KoinTest {
     fun verifyKoinApp() {
         mockFirebase()
         checkKoinModules(
-            modules = allModules + javaxDefaultModule,
+            modules = AppModule.create(restartAction = {}) + javaxDefaultModule,
             appDeclaration = {
                 allowOverride(override = true)
 
@@ -163,32 +141,6 @@ class CheckModulesTest : KoinTest {
     fun after() {
         Dispatchers.resetMain()
     }
-
-    private val allModules = listOf(
-        AuthModule.create(),
-        RootModule.create(),
-        BackupModule.create(),
-        UserModule.create(),
-        TokenPricesModule.create(),
-        HomeModule.create(),
-        RenBtcModule.create(),
-        NetworkModule.create(),
-        ScanQrModule.create(),
-        HistoryModule.create(),
-        HistoryStrategyModule.create(),
-        SettingsModule.create(),
-        DebugSettingsModule.create(),
-        SwapModule.create(),
-        RpcModule.create(),
-        FeeRelayerModule.create(),
-        InfrastructureModule.create(),
-        PushNotificationsModule.create(),
-        TransactionModule.create(),
-        AnalyticsModule.create(),
-        AppModule.create(restartAction = {}),
-        FeatureTogglesModule.create(),
-        TransactionManagerModule.create()
-    )
 
     private fun createEmptyActiveToken(): Token.Active {
         return Token.Active(
