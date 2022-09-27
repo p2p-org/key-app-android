@@ -19,9 +19,9 @@ sealed class GeneralErrorScreenError(
         messageResId = R.string.error_wallet_not_found_message
     )
 
-    object SharesDoesNotMatchError : GeneralErrorScreenError(
-        titleResId = R.string.error_shares_does_not_matches_title,
-        messageResId = R.string.error_shares_does_not_matches_message
+    object SharesDoNotMatchError : GeneralErrorScreenError(
+        titleResId = R.string.error_shares_do_not_matches_title,
+        messageResId = R.string.error_shares_do_not_matches_message
     )
 
     data class AccountNotFound(

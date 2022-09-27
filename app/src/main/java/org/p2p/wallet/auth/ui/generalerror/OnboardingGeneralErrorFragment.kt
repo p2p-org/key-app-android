@@ -66,7 +66,7 @@ class OnboardingGeneralErrorFragment :
                     text = getString(R.string.onboarding_general_error_bug_report_button_title)
                     setOnClickListener { IntercomService.showMessenger() }
                     setIconResource(R.drawable.ic_caution)
-                    setIconTintResource(R.color.text_night)
+                    setIconTintResource(R.color.icons_night)
                     isVisible = true
                 }
                 with(buttonSecondaryFirst) {
@@ -98,7 +98,7 @@ class OnboardingGeneralErrorFragment :
                     isVisible = true
                 }
             }
-            is GeneralErrorScreenError.SharesDoesNotMatchError -> {
+            is GeneralErrorScreenError.SharesDoNotMatchError -> {
                 errorState.titleResId?.let { textViewErrorTitle.text = getString(it) }
                 errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
 
@@ -106,7 +106,7 @@ class OnboardingGeneralErrorFragment :
                     text = getString(R.string.onboarding_general_error_bug_report_button_title)
                     setOnClickListener { IntercomService.showMessenger() }
                     setIconResource(R.drawable.ic_caution)
-                    setIconTintResource(R.color.text_night)
+                    setIconTintResource(R.color.icons_night)
                     isVisible = true
                 }
                 with(buttonSecondaryFirst) {
