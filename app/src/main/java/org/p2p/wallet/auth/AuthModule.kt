@@ -92,7 +92,9 @@ object AuthModule {
         single { BiometricManager.from(androidContext()) }
 
         factoryOf(::AuthInteractor)
-        factory { AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        factory {
+            AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+        }
         factoryOf(::AuthRemoteRepository) bind AuthRepository::class
         factory { FileRepository(get(), get()) }
         factory { SecurityKeyPresenter(get(), get(), get(), get()) } bind SecurityKeyContract.Presenter::class
