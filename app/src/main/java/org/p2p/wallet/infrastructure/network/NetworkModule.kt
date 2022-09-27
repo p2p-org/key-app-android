@@ -8,6 +8,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
+import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
@@ -15,6 +16,7 @@ import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.Base58TypeAdapter
+import org.p2p.wallet.home.model.Base64TypeAdapter
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
@@ -52,6 +54,7 @@ object NetworkModule : InjectionModule {
                 .apply { if (BuildConfig.DEBUG) setPrettyPrinting() }
                 .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
                 .registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
+                .registerTypeAdapter(Base64String::class.java, Base64TypeAdapter)
                 .setLenient()
                 .disableHtmlEscaping()
                 .create()

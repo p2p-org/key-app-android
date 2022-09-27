@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.gateway.repository
+package org.p2p.wallet.auth.gateway.repository.model
 
 class RestoreWalletPublicKeyError(
     expectedPublicKey: String?,
