@@ -62,7 +62,7 @@
     <string name="error_wallet_not_found_message">Try account or use an another phone number</string>
     <string name="error_too_often_otp_requests_message">You request SMS too often. Try again in %1d sec.</string>
     <string name="error_shares_does_not_matches_title">Shares aren\'t\nmatch</string>
-    <string name="error_shares_does_not_matches_message">So sorry, baby\n\nIf you will write us, use error code #10464</string>
+    <string name="error_shares_does_not_matches_message">So sorry, baby\n\nIf you will write us, use error code #%1d</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
