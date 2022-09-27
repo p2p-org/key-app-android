@@ -33,7 +33,7 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
 
             networkServicesUrlProvider.loadTorusEnvironment().apply {
                 environmentTextView.text = baseUrl
-                verifierTextView.text = verifier
+                verifierTextView.text = "verifier = $verifier\nsubVerifier = ${subVerifier ?: "-"}"
             }
 
             testUrlButton.setOnClickListener {
@@ -59,7 +59,12 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
             confirmButton.setOnClickListener {
                 val newUrl = environmentEditText.text.toString()
                 val newVerifier = verifierEditText.text.toString()
-                updateEnvironmentAndRestart(newUrl = newUrl, newVerifier = newVerifier)
+                val newSubVerifier = subVerifierEditText.text.toString()
+                updateEnvironmentAndRestart(
+                    newUrl = newUrl,
+                    newVerifier = newVerifier,
+                    newSubVerifier = newSubVerifier
+                )
             }
 
             val signUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()
@@ -79,10 +84,15 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
         }
     }
 
-    private fun updateEnvironmentAndRestart(newUrl: String? = null, newVerifier: String? = null) {
+    private fun updateEnvironmentAndRestart(
+        newUrl: String? = null,
+        newVerifier: String? = null,
+        newSubVerifier: String? = null
+    ) {
         networkServicesUrlProvider.saveTorusEnvironment(
             newUrl = newUrl?.ifEmpty { null },
-            newVerifier = newVerifier?.ifEmpty { null }
+            newVerifier = newVerifier?.ifEmpty { null },
+            newSubVerifier = newSubVerifier
         )
         appRestarter.restartApp()
     }

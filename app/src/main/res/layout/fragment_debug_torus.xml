@@ -145,6 +145,16 @@
             android:importantForAutofill="no"
             android:inputType="text" />
 
+        <EditText
+            android:id="@+id/subVerifierEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="8dp"
+            android:hint="Enter Sub Verifier"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
         <Button
             android:id="@+id/confirmButton"
             android:layout_width="match_parent"

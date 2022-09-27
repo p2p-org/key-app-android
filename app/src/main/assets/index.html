@@ -14,7 +14,7 @@
         sessionStorage.clear();
     }
 </script>
-<h1>APP VERSION 1.1.12</h1>
+<h1>APP VERSION 1.2.0</h1>
 <button onclick="window.clearStorages()">Clear Storage</button>
 <script defer>(function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -30386,30 +30386,50 @@ var AuthProvider = /*#__PURE__*/function () {
                 directAuthSdk = torusServiceProvider.directWeb;
                 decoded = (0,jwt_decode__WEBPACK_IMPORTED_MODULE_8__["default"])(idToken);
                 (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("startObtainTorusKey");
-                _context8.next = 11;
+
+                if (!this.authParams.torusSubVerifier) {
+                  _context8.next = 15;
+                  break;
+                }
+
+                _context8.next = 12;
+                return directAuthSdk.getAggregateTorusKey(this.authParams.torusVerifier, decoded.email, [{
+                  idToken: idToken,
+                  verifier: this.authParams.torusSubVerifier
+                }]);
+
+              case 12:
+                torusKey = _context8.sent;
+                _context8.next = 18;
+                break;
+
+              case 15:
+                _context8.next = 17;
                 return directAuthSdk.getTorusKey(this.authParams.torusVerifier, decoded.email, {
                   verifier_id: decoded.email
                 }, idToken);
 
-              case 11:
+              case 17:
                 torusKey = _context8.sent;
+
+              case 18:
                 (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endObtainTorusKey");
                 this.tkeySDKInstance.serviceProvider.postboxKey = new (bn_js__WEBPACK_IMPORTED_MODULE_7___default())(torusKey.privateKey, this.stringFormat);
                 (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endTotalSilentAuth");
-                _context8.next = 20;
+                _context8.next = 26;
                 break;
 
-              case 17:
-                _context8.prev = 17;
+              case 23:
+                _context8.prev = 23;
                 _context8.t0 = _context8["catch"](0);
                 throw new _errors__WEBPACK_IMPORTED_MODULE_9__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_16__.ERROR_TYPE.DUPLICATE_TOKEN, _context8.t0);
 
-              case 20:
+              case 26:
               case "end":
                 return _context8.stop();
             }
           }
-        }, _callee8, this, [[0, 17]]);
+        }, _callee8, this, [[0, 23]]);
       }));
 
       function startSilentAuthentication(_x4) {
@@ -31242,7 +31262,7 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
   _createClass(AbstractMobileFacade, [{
     key: "getVersion",
     value: function getVersion() {
-      return "1.1.12";
+      return "1.2.0";
     }
   }, {
     key: "validateInitParams",
@@ -31426,7 +31446,7 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     key: "getVersion",
     value: function getVersion() {
       try {
-        AndroidCommunicationChannel.getVersion("1.1.12");
+        AndroidCommunicationChannel.getVersion("1.2.0");
       } catch (e) {
         var err = new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.READ_VERSION_ERROR, e);
         AndroidCommunicationChannel.handleError(JSON.stringify(e));
