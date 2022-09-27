@@ -6,6 +6,9 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -13,9 +16,6 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
 import timber.log.Timber
 import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
@@ -140,6 +140,7 @@ class Web3AuthApiClient(
         val torusNetworkEnv = "testnet"
         val torusEndpoint = "$host:5051"
         val torusVerifier = torusNetwork.verifier
+        val torusSubVerifier = torusNetwork.subVerifier
 
         if (userGeneratedSeedPhrase.isEmpty()) {
             runBlocking { userGeneratedSeedPhrase = authRepository.generatePhrase() }
@@ -155,6 +156,9 @@ class Web3AuthApiClient(
             append("torusLoginType: '$torusLoginType', ")
             append("torusEndpoint: '$torusEndpoint', ")
             append("torusVerifier: '$torusVerifier', ")
+            if (!torusSubVerifier.isNullOrBlank()) {
+                append("torusSubVerifier: '$torusSubVerifier', ")
+            }
             append("privateInput: '$seedPhraseAsString'")
             append("})")
             append(".$jsMethodCall")
