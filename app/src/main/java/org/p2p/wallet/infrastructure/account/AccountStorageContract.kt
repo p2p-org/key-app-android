@@ -9,4 +9,5 @@ interface AccountStorageContract {
     fun getString(key: String): String?
     fun contains(key: String): Boolean
     fun remove(key: String)
+    fun removeAll()
 }

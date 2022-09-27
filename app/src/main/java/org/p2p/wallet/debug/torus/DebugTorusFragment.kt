@@ -72,7 +72,7 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
             shareDeleteButton.apply {
                 isEnabled = hasShare
                 setOnClickListener {
-                    signUpDetailsStorage.removeLastDeviceShare()
+                    signUpDetailsStorage.removeAllShares()
                     appRestarter.restartApp()
                 }
             }
