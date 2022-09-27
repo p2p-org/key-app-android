@@ -102,6 +102,7 @@
     <string name="restore_no_wallet_found_with_no_device_share_message">%s doesn\'t work. Try another option</string>
     <string name="restore_no_wallet_found_with_device_share_message">Try with account or use an another phone number</string>
     <string name="restore_starting_screen">Starting screen</string>
+    <string name="restore_go_to_the_starting_screen">Go to the starting screen</string>
 
     <string name="restore_your_wallet">Restoring your wallet</string>
 

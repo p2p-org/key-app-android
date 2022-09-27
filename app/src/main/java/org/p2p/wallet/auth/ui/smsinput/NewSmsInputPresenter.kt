@@ -166,6 +166,10 @@ class NewSmsInputPresenter(
                 Timber.e("Restoring user device+ custom, device share not found")
                 view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.DeviceShareNotFound)
             }
+            is RestoreUserResult.SocialAuthRequired -> {
+                Timber.e("Restoring user device + custom, social auth required")
+                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.SocialAuthRepeat)
+            }
         }
     }
 
