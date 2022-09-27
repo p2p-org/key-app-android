@@ -152,6 +152,9 @@ class NewSmsInputPresenter(
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             }
+            RestoreUserResult.SharesDoNotMatch -> {
+                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.SharesDoNotMatchError)
+            }
             RestoreUserResult.UserNotFound -> {
                 view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.PhoneNumberDoesNotMatchError)
             }

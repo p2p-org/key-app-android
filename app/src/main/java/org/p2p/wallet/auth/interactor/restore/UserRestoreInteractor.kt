@@ -119,7 +119,9 @@ class UserRestoreInteractor(
         if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
             RestoreUserResult.UserNotFound
         } else {
-            RestoreUserResult.RestoreFailed(Throwable("Unknown error type"))
+            RestoreUserResult.SharesDoNotMatch
+            // TODO: PWN-5197 check on another error but use this for now
+            // RestoreUserResult.RestoreFailed(Throwable("Unknown error type"))
         }
     } catch (e: Throwable) {
         RestoreUserResult.RestoreFailed(e)

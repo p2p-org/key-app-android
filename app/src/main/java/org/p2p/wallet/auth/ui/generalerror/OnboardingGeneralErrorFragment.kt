@@ -62,9 +62,11 @@ class OnboardingGeneralErrorFragment :
         when (errorState) {
             is GeneralErrorScreenError.CriticalError -> {
                 imageViewBox.setImageResource(R.drawable.ic_not_found)
-                with(buttonPrimaryFirst) {
+                with(buttonRestoreByGoogle) {
                     text = getString(R.string.onboarding_general_error_bug_report_button_title)
                     setOnClickListener { IntercomService.showMessenger() }
+                    setIconResource(R.drawable.ic_caution)
+                    setIconTintResource(R.color.icons_night)
                     isVisible = true
                 }
                 with(buttonSecondaryFirst) {
@@ -88,6 +90,23 @@ class OnboardingGeneralErrorFragment :
                     setOnClickListener {
                         replaceFragment(PhoneNumberEnterFragment.create())
                     }
+                    isVisible = true
+                }
+                with(buttonSecondaryFirst) {
+                    text = getString(R.string.onboarding_general_error_starting_screen_button_title)
+                    setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+                    isVisible = true
+                }
+            }
+            is GeneralErrorScreenError.SharesDoNotMatchError -> {
+                errorState.titleResId?.let { textViewErrorTitle.text = getString(it) }
+                errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
+
+                with(buttonRestoreByGoogle) {
+                    text = getString(R.string.onboarding_general_error_bug_report_button_title)
+                    setOnClickListener { IntercomService.showMessenger() }
+                    setIconResource(R.drawable.ic_caution)
+                    setIconTintResource(R.color.icons_night)
                     isVisible = true
                 }
                 with(buttonSecondaryFirst) {
