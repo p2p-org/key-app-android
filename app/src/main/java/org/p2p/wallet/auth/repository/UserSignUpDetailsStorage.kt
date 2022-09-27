@@ -57,6 +57,11 @@ class UserSignUpDetailsStorage(
 
     fun isSignUpInProcess(): Boolean = accountStorage.getString(KEY_IN_SIGN_UP_PROCESS) != null
 
+    fun removeAllShares() {
+        accountStorage.removeAll()
+        removeLastDeviceShare()
+    }
+
     fun removeLastDeviceShare() {
         accountStorage.apply {
             remove(KEY_LAST_DEVICE_SHARE_ID)
