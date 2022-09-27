@@ -27,7 +27,7 @@
         android:layout_marginHorizontal="20dp"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/image_lock"
+        android:src="@drawable/ic_lock_new_large"
         app:layout_constraintBottom_toTopOf="@+id/textViewTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

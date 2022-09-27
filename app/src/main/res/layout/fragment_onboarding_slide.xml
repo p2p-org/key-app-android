@@ -14,7 +14,7 @@
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
         android:padding="38dp"
-        tools:src="@drawable/onboarding_1_slide" />
+        tools:src="@drawable/onboarding_slide_temp" />
 
     <TextView
         android:id="@+id/textViewSliderTitle"

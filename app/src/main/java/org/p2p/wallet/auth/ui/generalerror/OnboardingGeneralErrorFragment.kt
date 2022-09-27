@@ -18,6 +18,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract.View as ContractView
@@ -60,6 +61,7 @@ class OnboardingGeneralErrorFragment :
     override fun setViewState(errorState: GeneralErrorScreenError) = with(binding) {
         when (errorState) {
             is GeneralErrorScreenError.CriticalError -> {
+                imageViewBox.setImageResource(R.drawable.ic_not_found)
                 with(buttonRestoreByGoogle) {
                     text = getString(R.string.onboarding_general_error_bug_report_button_title)
                     setOnClickListener { IntercomService.showMessenger() }
@@ -73,10 +75,11 @@ class OnboardingGeneralErrorFragment :
                     isVisible = true
                 }
             }
-
             is GeneralErrorScreenError.PhoneNumberDoesNotMatchError -> {
                 errorState.titleResId?.let { textViewErrorTitle.text = getString(it) }
                 errorState.messageResId?.let { textViewErrorSubtitle.text = getString(it) }
+
+                imageViewBox.setImageResource(R.drawable.ic_cat)
 
                 with(buttonRestoreByGoogle) {
                     setOnClickListener { presenter.useGoogleAccount() }
@@ -85,7 +88,7 @@ class OnboardingGeneralErrorFragment :
                 with(buttonPrimaryFirst) {
                     text = getString(R.string.restore_phone_number)
                     setOnClickListener {
-                        popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                        replaceFragment(PhoneNumberEnterFragment.create())
                     }
                     isVisible = true
                 }
@@ -159,6 +162,7 @@ class OnboardingGeneralErrorFragment :
         }
         textViewErrorTitle.text = title
         textViewErrorSubtitle.text = message
+        imageViewBox.setImageResource(R.drawable.onboarding_box)
         with(buttonRestoreByGoogle) {
             text = if (errorState.isDeviceShareExists) {
                 getString(R.string.restore_continue_with_google)
@@ -176,7 +180,7 @@ class OnboardingGeneralErrorFragment :
                 if (errorState.isDeviceShareExists) {
                     presenter.useGoogleAccount()
                 } else {
-                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                    replaceFragment(PhoneNumberEnterFragment.create())
                 }
             }
             isVisible = true
@@ -185,10 +189,7 @@ class OnboardingGeneralErrorFragment :
             with(buttonPrimaryFirst) {
                 text = getString(R.string.restore_phone_number)
                 setOnClickListener {
-                    popAndReplaceFragment(
-                        PhoneNumberEnterFragment.create(),
-                        inclusive = true
-                    )
+                    replaceFragment(PhoneNumberEnterFragment.create(),)
                 }
                 isVisible = true
             }

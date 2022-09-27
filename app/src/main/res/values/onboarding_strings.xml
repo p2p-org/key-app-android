@@ -10,7 +10,7 @@
 
     <!--Onboarding Slides-->
     <string name="onboarding_slide_1_title">Welcome \nto P2P App</string>
-    <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
+    <string name="onboarding_slide_1_text">Buy, sell and hold cryptocurrency. \nEarn up to 6% on USD</string>
 
     <!--Onboarding - Continue-->
     <string name="onboarding_continue_title">Let\'s continue</string>
@@ -109,6 +109,7 @@
     <string name="restore_no_account_title">Account not found</string>
     <string name="restore_no_wallet_try_another_option">Try another option</string>
     <string name="restore_how_to_continue">How to continue?</string>
+    <string name="restore_continuation_alternative_text">If you want to continue with %s select phone number. If you made a mistake, please choose another mail</string>
 
     <!-- Seed phrase scree -->
     <string name="seed_phrase_restore_wallet">Restore your wallet</string>

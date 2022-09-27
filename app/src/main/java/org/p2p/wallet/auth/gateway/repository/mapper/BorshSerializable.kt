@@ -1,6 +1,8 @@
-package org.p2p.wallet.auth.gateway.repository
+package org.p2p.wallet.auth.gateway.repository.mapper
 
+import com.google.gson.JsonObject
 import org.near.borshj.BorshBuffer
+import timber.log.Timber
 
 private const val DEFAULT_BORSH_CAPACITY = 4096
 
@@ -17,6 +19,10 @@ interface BorshSerializable {
 }
 
 fun BorshBuffer.write(vararg objects: Any): BorshBuffer {
-    objects.forEach { this.write(it) }
+    val validatedObjects: List<Any> = objects.map { if (it is JsonObject) it.toString() else it }
+    validatedObjects.forEach {
+        Timber.tag("BorshBuffer").d("Written to borsh: $it")
+        this.write(it)
+    }
     return this
 }
