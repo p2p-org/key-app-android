@@ -81,6 +81,10 @@ class AdminAnalytics(private val tracker: Analytics) {
         tracker.logEvent(ADMIN_PASSWORD_CREATED)
     }
 
+    fun clearUserProperties() {
+        tracker.clearUserProperties()
+    }
+
     enum class AppOpenSource(val title: String) {
         DIRECT("Direct"),
         DEEPLINK("Deeplink"),

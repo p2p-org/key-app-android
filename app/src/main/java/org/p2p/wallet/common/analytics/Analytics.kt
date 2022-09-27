@@ -25,11 +25,15 @@ class Analytics(private val trackers: Set<AnalyticsTracker>) {
     }
 
     fun setUserProperty(key: String, value: Boolean) {
-        setUserProperty(key, if (value) "TRUE" else "FALSE")
+        setUserProperty(key, if (value) "true" else "false")
     }
 
     fun setUserPropertyOnce(key: String, value: String) {
         trackers.forEach { it.setUserPropertyOnce(key, value) }
+    }
+
+    fun setUserPropertyOnce(key: String, value: Boolean) {
+        setUserPropertyOnce(key, if (value) "true" else "false")
     }
 
     fun incrementUserProperty(property: String, byValue: Int) {
@@ -42,5 +46,9 @@ class Analytics(private val trackers: Set<AnalyticsTracker>) {
 
     fun appendToArray(property: String, value: Int) {
         trackers.forEach { it.appendToArray(property, value) }
+    }
+
+    fun clearUserProperties() {
+        trackers.forEach { it.clearUserProperties() }
     }
 }

@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="16dp">
 
     <View
         android:id="@+id/view_background"
@@ -22,7 +23,7 @@
         android:id="@+id/button"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_height="@dimen/ui_kit_button_medium_height"
         android:layout_marginHorizontal="62dp"
         android:layout_marginBottom="18dp"
         android:backgroundTint="@color/lime"
@@ -48,9 +49,9 @@
         android:id="@+id/image_view_banner"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="24dp"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_banner_image"
+        android:src="@drawable/ic_main_banner"
         app:layout_constraintBottom_toTopOf="@id/text_view_banner_subtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
