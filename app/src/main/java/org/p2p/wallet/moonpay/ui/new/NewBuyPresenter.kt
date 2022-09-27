@@ -191,8 +191,9 @@ class NewBuyPresenter(
     }
 
     private fun isValidCurrencyForPay(): Boolean {
+        val selectedCurrencyCode = selectedCurrency.code
         if (selectedPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
-            if (selectedCurrency.code == Constants.USD_READABLE_SYMBOL) {
+            if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL || selectedCurrencyCode == Constants.EUR_SYMBOL) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it)
                 }
