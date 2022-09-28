@@ -1,12 +1,12 @@
 package org.p2p.wallet.auth.web3authsdk
 
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
 import android.content.Context
 import android.content.IntentSender.SendIntentException
 import android.content.SharedPreferences
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.core.content.edit
 import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -75,6 +75,9 @@ class GoogleSignInHelper(
             }
             result
         } catch (ex: ApiException) {
+            sharedPreferences.edit {
+                putLong(PREFS_KEY_TOKEN_EXPIRE_TIME, 0)
+            }
             Timber.e(ex, "Error on getting Credential from result")
 
             if (shouldErrorBeHandled(ex)) {

@@ -69,7 +69,8 @@ class UserRestoreInteractor(
     }
 
     private suspend fun tryRestoreUser(
-        restoreWay: OnboardingFlow.RestoreWallet.SocialPlusCustomShare
+        restoreWay: OnboardingFlow.RestoreWallet.SocialPlusCustomShare,
+        checkThirdShare: Boolean = false
     ): RestoreUserResult = try {
         val customShare = restoreFlowDataLocalRepository.customShare
             ?: error("Social+Custom restore way failed. Third share is null")
@@ -92,6 +93,12 @@ class UserRestoreInteractor(
 
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
         RestoreUserResult.RestoreSuccessful
+    } catch (web3AuthError: Web3AuthErrorResponse) {
+        if (checkThirdShare && web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.NO_ENCRYPTED_MNEMONIC) {
+            RestoreUserResult.SharesDoNotMatch
+        } else {
+            RestoreUserResult.RestoreFailed(web3AuthError)
+        }
     } catch (error: Throwable) {
         RestoreUserResult.RestoreFailed(error)
     }
@@ -105,9 +112,8 @@ class UserRestoreInteractor(
         val encryptedMnemonicGson = restoreFlowDataLocalRepository.encryptedMnemonic?.let {
             gson.fromJsonReified<JsonObject>(it)
         } ?: error("Device+Custom restore way failed. Mnemonic phrase is null")
-        val deviceShare = restoreFlowDataLocalRepository.deviceShare
-        when {
-            deviceShare == null -> {
+        when (val deviceShare = restoreFlowDataLocalRepository.deviceShare) {
+            null -> {
                 RestoreUserResult.DeviceShareNotFound
             }
             else -> {
@@ -122,14 +128,16 @@ class UserRestoreInteractor(
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
         if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
-            RestoreUserResult.SocialAuthRequired
+            if (googleSignInHelper.isGoogleTokenExpired()) {
+                RestoreUserResult.SocialAuthRequired
+            } else {
+                tryRestoreUser(OnboardingFlow.RestoreWallet.SocialPlusCustomShare, checkThirdShare = true)
+            }
         } else {
             RestoreUserResult.SharesDoNotMatch
-            // TODO: PWN-5197 check on another error but use this for now
-            // RestoreUserResult.RestoreFailed(Throwable("Unknown error type"))
         }
-    } catch (e: Throwable) {
-        RestoreUserResult.RestoreFailed(e)
+    } catch (error: Throwable) {
+        RestoreUserResult.RestoreFailed(error)
     }
 
     private suspend fun tryRestoreUser(

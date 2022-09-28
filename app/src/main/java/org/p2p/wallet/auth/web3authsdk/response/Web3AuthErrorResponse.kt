@@ -31,6 +31,7 @@ data class Web3AuthErrorResponse(
         USER_NOT_REGISTERED(code = 1016),
         NO_CUSTOM_METADATA(code = 1017),
         INVALID_INIT_ARGS(code = 1018),
+        NO_ENCRYPTED_MNEMONIC(code = 1020),
         NETWORK_ERROR(code = 1666);
 
         companion object {

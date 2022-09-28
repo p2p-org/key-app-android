@@ -123,12 +123,11 @@ class CommonRestoreFragment :
     override fun onNoTokenFoundError(userId: String) {
         view?.post {
             with(binding) {
-                toolbar.setTitle(R.string.auth_almost_done_title)
                 imageView.setImageResource(R.drawable.image_box)
                 textViewTitle.text = getString(R.string.restore_no_wallet_title)
                 textViewSubtitle.apply {
                     isVisible = true
-                    text = getString(R.string.restore_continuation_alternative_text, userId)
+                    text = userId
                 }
                 textViewTryAnother.isVisible = true
 
