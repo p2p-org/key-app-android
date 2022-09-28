@@ -23,6 +23,7 @@ data class Web3AuthErrorResponse(
         BAD_MAC(code = 1007),
         HEX_TO_BIN_CONVERSION(code = 1008),
         CANNOT_RECONSTRUCT(code = 1009),
+        SOCIAL_SHARE_NOT_FOUND(code = 1021),
         CANNOT_READ_WEB_STORAGE(code = 1011),
         CANNOT_INITIALIZE_TKEY(code = 1012),
         DUPLICATE_TOKEN(code = 1013),

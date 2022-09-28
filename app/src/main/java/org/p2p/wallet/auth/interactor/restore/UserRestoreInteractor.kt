@@ -13,6 +13,7 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.fromJsonReified
+import timber.log.Timber
 
 class UserRestoreInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -108,9 +109,15 @@ class UserRestoreInteractor(
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
         when {
             deviceShare == null -> {
+                Timber.e("Restore Device + Custom. No Device share")
                 RestoreUserResult.DeviceShareNotFound
             }
+            googleSignInHelper.isGoogleTokenExpired() -> {
+                Timber.e("Restore Device + Custom. Google Token expired")
+                RestoreUserResult.SocialAuthRequired
+            }
             else -> {
+                Timber.e("Restore Device + Custom. Start restore wallet")
                 val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
                     deviceShare = deviceShare,
                     thirdShare = customShare,
@@ -122,7 +129,7 @@ class UserRestoreInteractor(
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
         if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
-            RestoreUserResult.SocialAuthRequired
+            RestoreUserResult.UserNotFound
         } else {
             RestoreUserResult.SharesDoNotMatch
             // TODO: PWN-5197 check on another error but use this for now
@@ -155,6 +162,19 @@ class UserRestoreInteractor(
             error("Social+Device restore way failed. Social or Device share is null!")
         }
         RestoreUserResult.RestoreSuccessful
+    } catch (web3AuthError: Web3AuthErrorResponse) {
+        val socialShareId = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
+        when (web3AuthError.errorType) {
+            Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT -> {
+                RestoreUserResult.DeviceAndSocialShareNotMatch(socialShareId)
+            }
+            Web3AuthErrorResponse.ErrorType.SOCIAL_SHARE_NOT_FOUND -> {
+                RestoreUserResult.SocialShareNotFound(socialShareId)
+            }
+            else -> {
+                RestoreUserResult.RestoreFailed(web3AuthError)
+            }
+        }
     } catch (e: Throwable) {
         RestoreUserResult.RestoreFailed(e)
     }

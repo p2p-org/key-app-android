@@ -29,7 +29,7 @@
     <string name="auth_create_wallet_set_up_your_pin">Set up your passcode</string>
     <string name="auth_create_wallet_confirm_your_pin">Confirm your passcode</string>
     <string name="auth_create_wallet_pin_code_error">Passcode doesn\'t  match. Please try again.</string>
-    <string name="auth_create_wallet_pin_code_success">Great! Your new passcode is set.</string>
+    <string name="auth_create_wallet_pin_code_success">Great! Your new PIN is set.</string>
 
     <string name="auth_pin_code_enter_up_your_pin">Enter your passcode</string>
     <string name="auth_pin_code_attempts_format">❌ Wrong passcode. You have %d attempts left.</string>
@@ -51,6 +51,7 @@
     <string name="onboarding_step_2">Step 2 of 3</string>
     <string name="onboarding_add_number_title">What\'s your number? 🤙</string>
     <string name="onboarding_add_number_message">Add a phone number to protect your account</string>
+    <string name="onboarding_restore_number_message">Add a phone number to restore your account</string>
     <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
     <string name="onboarding_country_name">Country name</string>
     <string name="onboarding_fill_your_number">Fill your phone number</string>
@@ -94,17 +95,18 @@
     <!--Common Restore-->
     <string name="restore_title">Restore your wallet</string>
     <string name="restore_choose_method">Choose\nthe method</string>
+    <string name="restore_choose_an_option">Choose an option to continue</string>
     <string name="restore_choose_way">Choose the way\nto continue</string>
     <string name="restore_continue_with_google">Continue with Google</string>
     <string name="restore_phone_number">Continue using a phone number</string>
     <string name="restore_another_phone_number">Use an another phone</string>
     <string name="restore_seed_phrase">Use a seed phrase</string>
     <string name="restore_no_wallet_found_with_no_device_share_message">%s doesn\'t work. Try another option</string>
-    <string name="restore_no_wallet_found_with_device_share_message">Try with account or use an another phone number</string>
+    <string name="restore_no_wallet_found_with_device_share_message">Try another account or use a phone number</string>
     <string name="restore_starting_screen">Starting screen</string>
     <string name="restore_go_to_the_starting_screen">Go to the starting screen</string>
 
-    <string name="restore_your_wallet">Restoring your wallet</string>
+    <string name="restore_your_wallet">Restore your wallet</string>
 
     <string name="restore_no_wallet_title">No wallet found</string>
     <string name="restore_no_account_title">Account not found</string>
@@ -128,4 +130,5 @@
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
+    <string name="onboarding_with_email">With %s</string>
 </resources>

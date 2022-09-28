@@ -87,7 +87,7 @@ class OnboardingGeneralErrorFragment :
                 with(buttonPrimaryFirst) {
                     text = getString(R.string.restore_phone_number)
                     setOnClickListener {
-                        popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                        presenter.onDevicePlusCustomShareRestoreClicked()
                     }
                     isVisible = true
                 }
@@ -125,6 +125,12 @@ class OnboardingGeneralErrorFragment :
             }
             is GeneralErrorScreenError.SocialAuthRepeat -> {
                 onSocialAuthRepeatRequired()
+            }
+            is GeneralErrorScreenError.DeviceAndSocialShareNotMatch -> {
+                onDeviceAndSocialShareNotMatch(errorState)
+            }
+            is GeneralErrorScreenError.SocialShareNotFound -> {
+                onSocialShareNotFound(errorState)
             }
         }
         val imageResourceId = when (errorState) {
@@ -263,6 +269,55 @@ class OnboardingGeneralErrorFragment :
         textViewErrorSubtitle.setText(R.string.error_repeat_social_auth)
     }
 
+    private fun onSocialShareNotFound(error: GeneralErrorScreenError.SocialShareNotFound) = with(binding) {
+        with(buttonRestoreByGoogle) {
+            setOnClickListener { presenter.useGoogleAccount() }
+            isVisible = true
+        }
+        with(buttonPrimaryFirst) {
+            text = getString(R.string.restore_phone_number)
+            setOnClickListener {
+                presenter.onDevicePlusCustomShareRestoreClicked()
+            }
+            isVisible = true
+        }
+        with(buttonSecondaryFirst) {
+            setText(R.string.restore_starting_screen)
+            setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+            isVisible = true
+        }
+
+        textViewErrorTitle.text = getString(R.string.restore_no_wallet_title)
+        textViewErrorEmail.text = getString(R.string.onboarding_with_email, error.socialShareUserId)
+        textViewErrorSubtitle.text = getString(R.string.restore_no_wallet_found_with_device_share_message)
+        textViewErrorEmail.isVisible = true
+    }
+
+    private fun onDeviceAndSocialShareNotMatch(error: GeneralErrorScreenError.DeviceAndSocialShareNotMatch) =
+        with(binding) {
+            with(buttonRestoreByGoogle) {
+                setOnClickListener { presenter.useGoogleAccount() }
+                isVisible = true
+            }
+            with(buttonPrimaryFirst) {
+                text = getString(R.string.restore_phone_number)
+                setOnClickListener {
+                    presenter.onDevicePlusCustomShareRestoreClicked()
+                }
+                isVisible = true
+            }
+            with(buttonSecondaryFirst) {
+                setText(R.string.restore_starting_screen)
+                setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+                isVisible = true
+            }
+
+            textViewErrorTitle.text = getString(R.string.auth_almost_done_title)
+            textViewErrorEmail.text = getString(R.string.onboarding_with_email, error.socialShareUserId)
+            textViewErrorSubtitle.text = getString(R.string.restore_no_wallet_found_with_device_share_message)
+            textViewErrorEmail.isVisible = true
+        }
+
     override fun startGoogleFlow() {
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
@@ -301,5 +356,9 @@ class OnboardingGeneralErrorFragment :
 
     override fun navigateToPinCreate() {
         popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
+    }
+
+    override fun navigateToEnterPhone() {
+        popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
     }
 }
