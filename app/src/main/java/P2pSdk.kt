@@ -15,6 +15,12 @@ typealias u32 = UInt
 
 @Keep
 class P2pSdk {
+    companion object {
+        init {
+            System.loadLibrary("p2p_sdk_android")
+        }
+    }
+
     // for testing
     external fun greet(
         name: String

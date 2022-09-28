@@ -47,12 +47,6 @@ import timber.log.Timber
 import kotlinx.coroutines.launch
 
 class App : Application() {
-    companion object {
-        init {
-            System.loadLibrary("p2p_sdk_android")
-        }
-    }
-
     private val crashLogger: CrashLogger by inject()
     private val appScope: AppScope by inject()
     private val pushTokenRepository: PushTokenRepository by inject()
