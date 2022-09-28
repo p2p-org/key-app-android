@@ -142,6 +142,22 @@ class OnboardingGeneralErrorFragment :
                     text = userId
                 }
                 textViewErrorSubtitle.text = getString(R.string.restore_no_wallet_try_another_option)
+                textViewErrorTitle.text = getString(R.string.restore_no_wallet_title)
+
+                with(buttonRestoreByGoogle) {
+                    setOnClickListener { presenter.useGoogleAccount() }
+                    isVisible = true
+                }
+                with(buttonPrimaryFirst) {
+                    setText(R.string.restore_phone_number)
+                    setOnClickListener { popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true) }
+                    isVisible = true
+                }
+                with(buttonSecondaryFirst) {
+                    setText(R.string.restore_starting_screen)
+                    setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+                    isVisible = true
+                }
             }
             setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
         }
