@@ -6,4 +6,5 @@ sealed interface RestoreUserResult {
     object SharesDoNotMatch : RestoreUserResult
     class RestoreFailed(override val cause: Throwable) : Throwable(message = cause.message), RestoreUserResult
     object DeviceShareNotFound : RestoreUserResult
+    object SocialAuthRequired : RestoreUserResult
 }

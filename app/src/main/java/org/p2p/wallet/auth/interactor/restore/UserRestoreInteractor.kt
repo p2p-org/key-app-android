@@ -6,6 +6,7 @@ import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -18,7 +19,8 @@ class UserRestoreInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val gson: Gson
+    private val gson: Gson,
+    private val googleSignInHelper: GoogleSignInHelper
 ) {
 
     fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet): Boolean {
@@ -104,20 +106,23 @@ class UserRestoreInteractor(
             gson.fromJsonReified<JsonObject>(it)
         } ?: error("Device+Custom restore way failed. Mnemonic phrase is null")
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
-        if (deviceShare == null) {
-            RestoreUserResult.DeviceShareNotFound
-        } else {
-            val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
-                deviceShare = deviceShare,
-                thirdShare = customShare,
-                encryptedMnemonicPhrase = encryptedMnemonicGson
-            )
-            restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
-            RestoreUserResult.RestoreSuccessful
+        when {
+            deviceShare == null -> {
+                RestoreUserResult.DeviceShareNotFound
+            }
+            else -> {
+                val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
+                    deviceShare = deviceShare,
+                    thirdShare = customShare,
+                    encryptedMnemonicPhrase = encryptedMnemonicGson
+                )
+                restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
+                RestoreUserResult.RestoreSuccessful
+            }
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
         if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
-            RestoreUserResult.UserNotFound
+            RestoreUserResult.SocialAuthRequired
         } else {
             RestoreUserResult.SharesDoNotMatch
             // TODO: PWN-5197 check on another error but use this for now

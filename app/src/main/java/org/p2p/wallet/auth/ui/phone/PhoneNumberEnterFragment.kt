@@ -13,6 +13,7 @@ import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
+import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
@@ -81,7 +82,7 @@ class PhoneNumberEnterFragment :
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            popBackStack()
+            popAndReplaceFragment(CommonRestoreFragment.create(), inclusive = true)
         }
     }
 

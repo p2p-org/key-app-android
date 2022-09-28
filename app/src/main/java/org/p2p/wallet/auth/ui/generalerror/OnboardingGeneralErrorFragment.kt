@@ -18,7 +18,6 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract.View as ContractView
@@ -88,7 +87,7 @@ class OnboardingGeneralErrorFragment :
                 with(buttonPrimaryFirst) {
                     text = getString(R.string.restore_phone_number)
                     setOnClickListener {
-                        replaceFragment(PhoneNumberEnterFragment.create())
+                        popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
                     }
                     isVisible = true
                 }
@@ -123,6 +122,9 @@ class OnboardingGeneralErrorFragment :
             }
             is GeneralErrorScreenError.NoTokenFound -> {
                 onNoTokenFound(errorState.tokenId)
+            }
+            is GeneralErrorScreenError.SocialAuthRepeat -> {
+                onSocialAuthRepeatRequired()
             }
         }
         val imageResourceId = when (errorState) {
@@ -180,7 +182,7 @@ class OnboardingGeneralErrorFragment :
                 if (errorState.isDeviceShareExists) {
                     presenter.useGoogleAccount()
                 } else {
-                    replaceFragment(PhoneNumberEnterFragment.create())
+                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
                 }
             }
             isVisible = true
@@ -189,7 +191,7 @@ class OnboardingGeneralErrorFragment :
             with(buttonPrimaryFirst) {
                 text = getString(R.string.restore_phone_number)
                 setOnClickListener {
-                    replaceFragment(PhoneNumberEnterFragment.create(),)
+                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
                 }
                 isVisible = true
             }
@@ -226,6 +228,25 @@ class OnboardingGeneralErrorFragment :
         textViewErrorTitle.setText(R.string.restore_how_to_continue)
     }
 
+    private fun onSocialAuthRepeatRequired() = with(binding) {
+        with(buttonRestoreByGoogle) {
+            setOnClickListener { presenter.useGoogleAccount() }
+            isVisible = true
+        }
+        with(buttonSecondaryFirst) {
+            setText(R.string.restore_go_to_the_starting_screen)
+            setOnClickListener {
+                popAndReplaceFragment(
+                    OnboardingRootFragment.create(),
+                    inclusive = true
+                )
+            }
+            isVisible = true
+        }
+        textViewErrorTitle.setText(R.string.error_wallet_not_found_title)
+        textViewErrorSubtitle.setText(R.string.error_repeat_social_auth)
+    }
+
     override fun startGoogleFlow() {
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
@@ -245,7 +266,6 @@ class OnboardingGeneralErrorFragment :
                 isVisible = true
             }
             buttonPrimaryFirst.isEnabled = !isRestoringByGoogle
-            buttonPrimaryFirst.isVisible = true
         }
     }
 
