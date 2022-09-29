@@ -11,10 +11,12 @@ interface OnboardingGeneralErrorContract {
         fun setRestoreByGoogleLoadingState(isRestoringByGoogle: Boolean)
         fun onNoTokenFoundError(userId: String)
         fun navigateToPinCreate()
+        fun navigateToEnterPhone()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun setGoogleIdToken(userId: String, idToken: String)
         fun useGoogleAccount()
+        fun onDevicePlusCustomShareRestoreClicked()
     }
 }

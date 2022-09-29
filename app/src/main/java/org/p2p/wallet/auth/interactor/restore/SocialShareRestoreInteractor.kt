@@ -11,7 +11,7 @@ class SocialShareRestoreInteractor(
         restoreFlowDataLocalRepository.also {
             it.socialShare = socialShare
             it.socialShareUserId = socialShareUserId
-            it.deviceShare = userSignUpDetailsStorage.getUserSignUpDetailsById(socialShareUserId)
+            it.deviceShare = userSignUpDetailsStorage.getLastSignUpUserDetails()
                 ?.signUpDetails
                 ?.deviceShare
         }

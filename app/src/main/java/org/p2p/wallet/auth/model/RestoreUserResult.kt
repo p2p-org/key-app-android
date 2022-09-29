@@ -7,4 +7,6 @@ sealed interface RestoreUserResult {
     class RestoreFailed(override val cause: Throwable) : Throwable(message = cause.message), RestoreUserResult
     object DeviceShareNotFound : RestoreUserResult
     object SocialAuthRequired : RestoreUserResult
+    data class DeviceAndSocialShareNotMatch(val socialShareUserId: String) : RestoreUserResult
+    data class SocialShareNotFound(val socialShareUserId: String) : RestoreUserResult
 }

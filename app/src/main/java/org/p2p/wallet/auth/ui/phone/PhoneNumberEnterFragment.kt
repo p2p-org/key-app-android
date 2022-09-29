@@ -71,6 +71,7 @@ class PhoneNumberEnterFragment :
     override fun initCreateWalletViews() {
         binding.toolbar.setNavigationOnClickListener(null)
         binding.toolbar.navigationIcon = null
+        binding.textViewSubtitle.setText(R.string.onboarding_add_number_message)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             requireActivity().finish()
@@ -80,6 +81,7 @@ class PhoneNumberEnterFragment :
     override fun initRestoreWalletViews() {
         binding.toolbar.setNavigationIcon(R.drawable.ic_toolbar_back)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
+        binding.textViewSubtitle.setText(R.string.onboarding_restore_number_message)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popAndReplaceFragment(CommonRestoreFragment.create(), inclusive = true)

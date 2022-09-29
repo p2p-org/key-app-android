@@ -42,7 +42,7 @@
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="26dp"
         android:gravity="center"
-        android:text="@string/restore_choose_method"
+        android:text="@string/restore_choose_an_option"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@+id/textViewSubtitle"
         app:layout_constraintEnd_toEndOf="parent"
