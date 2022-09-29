@@ -26,17 +26,17 @@
 
     <!-- Onboarding pin / touch id -->
     <string name="auth_create_wallet_step_3">Step 3 of 3</string>
-    <string name="auth_create_wallet_set_up_your_pin">Set up your passcode</string>
-    <string name="auth_create_wallet_confirm_your_pin">Confirm your passcode</string>
-    <string name="auth_create_wallet_pin_code_error">Passcode doesn\'t  match. Please try again.</string>
+    <string name="auth_create_wallet_set_up_your_pin">Create your PIN</string>
+    <string name="auth_create_wallet_confirm_your_pin">Confirm your PIN</string>
+    <string name="auth_create_wallet_pin_code_error">PIN doesn\'t  match. Please try again.</string>
     <string name="auth_create_wallet_pin_code_success">Great! Your new PIN is set.</string>
 
-    <string name="auth_pin_code_enter_up_your_pin">Enter your passcode</string>
-    <string name="auth_pin_code_attempts_format">❌ Wrong passcode. You have %d attempts left.</string>
+    <string name="auth_pin_code_enter_up_your_pin">Enter your PIN</string>
+    <string name="auth_pin_code_attempts_format">❌ Wrong PIN. You have %d attempts left.</string>
     <string name="auth_pin_code_warn_format">❌ After %d more incorrect tries, we\'ll log you out of your current account for your safety.</string>
-    <string name="auth_pin_code_wrong">❌ Wrong passcode. Try again or reset it</string>
+    <string name="auth_pin_code_wrong">❌ Wrong PIN. Try again or reset it</string>
     <string name="auth_pin_code_logout_title">You were logged out</string>
-    <string name="auth_pin_code_logout_description">After 5 incorrect app passcodes</string>
+    <string name="auth_pin_code_logout_description">After 5 incorrect app PIN</string>
     <string name="auth_pin_code_logout_ok_button">Got It</string>
 
     <string name="auth_pin_code_lockout_title">Wrong code too many times in a row</string>
@@ -69,7 +69,7 @@
     <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
     <string name="onboarding_sms_starting_screen">Starting screen</string>
     <string name="onboarding_sms_verify_error_title">It’s okay\nto be wrong</string>
-    <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we frozen\naccount for %s min</string>
+    <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we have frozen\naccount for %s min</string>
 
     <!-- General error timer -->
     <string name="onboarding_general_error_let_breath_title">So, let\’s breathe</string>
