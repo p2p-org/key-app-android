@@ -135,8 +135,8 @@ class UserRestoreInteractor(
             // TODO: PWN-5197 check on another error but use this for now
             // RestoreUserResult.RestoreFailed(Throwable("Unknown error type"))
         }
-    } catch (e: Throwable) {
-        RestoreUserResult.RestoreFailed(e)
+    } catch (error: Throwable) {
+        RestoreUserResult.RestoreFailed(error)
     }
 
     private suspend fun tryRestoreUser(
