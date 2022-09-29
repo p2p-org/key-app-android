@@ -71,7 +71,7 @@ class Web3AuthApiClient(
     override suspend fun triggerSignInNoDevice(
         socialShare: String,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
-        encryptedMnemonicGson: JsonObject,
+        encryptedMnemonic: JsonObject,
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
@@ -79,10 +79,11 @@ class Web3AuthApiClient(
             Timber.tag(TAG).i("triggerSignInNoDevice triggered")
 
             val thirdShareAsJsObject = gson.toJson(thirdShare)
+            val params = "'$socialShare', $thirdShareAsJsObject, $encryptedMnemonic"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
-                    jsMethodCall = "triggerSignInNoDevice('$socialShare', $thirdShareAsJsObject,$encryptedMnemonicGson)"
+                    jsMethodCall = "triggerSignInNoDevice($params)"
                 ),
                 null
             )
@@ -91,8 +92,7 @@ class Web3AuthApiClient(
 
     override suspend fun triggerSignInNoCustom(
         socialShare: String,
-        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
-        encryptedMnemonicPhrase: JsonObject
+        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
@@ -100,7 +100,7 @@ class Web3AuthApiClient(
             Timber.tag(TAG).i("triggerSignInNoCustom triggered")
 
             val deviceShareAsJsObject = gson.toJson(deviceShare)
-            val params = "$socialShare, $deviceShareAsJsObject, $encryptedMnemonicPhrase"
+            val params = "'$socialShare', $deviceShareAsJsObject"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
@@ -114,7 +114,7 @@ class Web3AuthApiClient(
     override suspend fun triggerSignInNoTorus(
         deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
-        encryptedMnemonicPhrase: JsonObject,
+        encryptedMnemonic: JsonObject,
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
@@ -124,8 +124,7 @@ class Web3AuthApiClient(
             val thirdShareAsJsObject = gson.toJson(thirdShare)
             val deviceShareAsJsObject = gson.toJson(deviceShare)
 
-            val params = "$deviceShareAsJsObject, $thirdShareAsJsObject, $encryptedMnemonicPhrase"
-
+            val params = "$deviceShareAsJsObject, $thirdShareAsJsObject, $encryptedMnemonic"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",

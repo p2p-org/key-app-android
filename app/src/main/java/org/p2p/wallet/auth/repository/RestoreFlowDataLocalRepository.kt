@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.repository
 
+import com.google.gson.JsonObject
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.auth.model.PhoneNumber
@@ -48,7 +49,7 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("thirdShare is received and set")
         }
 
-    var encryptedMnemonic: String? = null
+    var encryptedMnemonicJson: JsonObject? = null
         set(value) {
             field = value
             Timber.tag(TAG).i("encryptedMnemonic is received and set")

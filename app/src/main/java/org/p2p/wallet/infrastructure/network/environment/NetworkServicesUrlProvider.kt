@@ -1,8 +1,8 @@
 package org.p2p.wallet.infrastructure.network.environment
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.edit
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.emptyString
 
@@ -60,19 +60,17 @@ class NetworkServicesUrlProvider(
     }
 
     fun saveTorusEnvironment(newUrl: String?, newVerifier: String?, newSubVerifier: String?) {
-        newUrl?.let {
-            sharedPreferences.edit {
+        sharedPreferences.edit {
+            newUrl?.let {
                 putString(KEY_TORUS_BASE_URL, it)
             }
-        }
-        newVerifier?.let {
-            sharedPreferences.edit {
+            newVerifier?.let {
                 putString(KEY_TORUS_BASE_VERIFIER, it)
             }
-        }
-        newSubVerifier?.let {
-            sharedPreferences.edit {
+            newSubVerifier?.let {
                 putString(KEY_TORUS_BASE_SUB_VERIFIER, it)
+            } ?: run {
+                remove(KEY_TORUS_BASE_SUB_VERIFIER)
             }
         }
     }
