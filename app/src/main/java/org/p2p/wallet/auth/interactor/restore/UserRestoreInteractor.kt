@@ -93,8 +93,6 @@ class UserRestoreInteractor(
 
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
         RestoreUserResult.RestoreSuccessful
-    } catch (web3AuthError: Web3AuthErrorResponse) {
-        RestoreUserResult.RestoreFailed(web3AuthError)
     } catch (error: Throwable) {
         RestoreUserResult.RestoreFailed(error)
     }
@@ -134,6 +132,8 @@ class UserRestoreInteractor(
             RestoreUserResult.UserNotFound
         } else {
             RestoreUserResult.SharesDoNotMatch
+            // TODO: PWN-5197 check on another error but use this for now
+            // RestoreUserResult.RestoreFailed(Throwable("Unknown error type"))
         }
     } catch (error: Throwable) {
         RestoreUserResult.RestoreFailed(error)
