@@ -11,6 +11,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
@@ -160,7 +162,6 @@ class CommonRestoreFragment :
         with(binding) {
             buttonRestoreByGoogle.isVisible = isVisible
             if (!isVisible) {
-                textViewTitle.text = getString(R.string.restore_choose_way)
 
                 buttonPhone.apply {
                     backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.bg_snow)
@@ -168,6 +169,10 @@ class CommonRestoreFragment :
                 }
             }
         }
+    }
+
+    override fun showGeneralErrorScreen(error: GeneralErrorScreenError) {
+        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(error), inclusive = true)
     }
 
     private fun handleSignResult(result: ActivityResult) {

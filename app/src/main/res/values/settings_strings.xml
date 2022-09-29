@@ -27,7 +27,7 @@
     <string name="settings_item_your_current_pin_code">Your current PIN</string>
     <string name="settings_item_create_new_pin_code">Create your new PIN</string>
     <string name="settings_item_confirm_new_pin_code">Confirm your new PIN</string>
-    <string name="settings_item_pin_do_not_match">😢 PIN doesn\'t match. Try again</string>
+    <string name="settings_item_pin_do_not_match">PIN doesn\'t  match. Please try again</string>
     <string name="settings_item_pin_changed">✌️ Your PIN was changed</string>
     <string name="settings_item_forgot_pin">Forgot your PIN?</string>
     <string name="settings_item_forgot_pin_message">If you forgot your PIN, you can log out and create a new one when you log in again.</string>

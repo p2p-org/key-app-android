@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.generalerror
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserResult
@@ -12,7 +13,8 @@ import timber.log.Timber
 class OnboardingGeneralErrorPresenter(
     private val error: GeneralErrorScreenError,
     private val resourcesProvider: ResourcesProvider,
-    private val restoreWalletInteractor: RestoreWalletInteractor
+    private val restoreWalletInteractor: RestoreWalletInteractor,
+    private val onboardingInteractor: OnboardingInteractor
 ) : BasePresenter<OnboardingGeneralErrorContract.View>(),
     OnboardingGeneralErrorContract.Presenter {
 
@@ -39,6 +41,11 @@ class OnboardingGeneralErrorPresenter(
 
     override fun useGoogleAccount() {
         view?.startGoogleFlow()
+    }
+
+    override fun onDevicePlusCustomShareRestoreClicked() {
+        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet.DevicePlusCustomShare
+        view?.navigateToEnterPhone()
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
@@ -68,6 +75,17 @@ class OnboardingGeneralErrorPresenter(
             }
             RestoreUserResult.UserNotFound -> {
                 view?.onNoTokenFoundError(restoreWalletInteractor.getUserEmailAddress().orEmpty())
+                view?.setRestoreByGoogleLoadingState(false)
+            }
+            is RestoreUserResult.SocialShareNotFound -> {
+                val error = GeneralErrorScreenError.SocialShareNotFound(result.socialShareUserId)
+                view?.setViewState(error)
+                view?.setRestoreByGoogleLoadingState(false)
+            }
+            is RestoreUserResult.DeviceAndSocialShareNotMatch -> {
+                val error = GeneralErrorScreenError.DeviceAndSocialShareNotMatch(result.socialShareUserId)
+                view?.setViewState(error)
+                view?.setRestoreByGoogleLoadingState(false)
             }
         }
     }

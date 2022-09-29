@@ -7,6 +7,7 @@ import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
@@ -57,6 +58,14 @@ class CommonRestorePresenter(
                 Timber.e(result)
                 view?.setLoadingState(isScreenLoading = false)
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+            is RestoreUserResult.SocialShareNotFound -> {
+                val error = GeneralErrorScreenError.SocialShareNotFound(result.socialShareUserId)
+                view?.showGeneralErrorScreen(error)
+            }
+            is RestoreUserResult.DeviceAndSocialShareNotMatch -> {
+                val error = GeneralErrorScreenError.DeviceAndSocialShareNotMatch(result.socialShareUserId)
+                view?.showGeneralErrorScreen(error)
             }
             RestoreUserResult.UserNotFound -> {
                 view?.onNoTokenFoundError(restoreWalletInteractor.getUserEmailAddress().orEmpty())
