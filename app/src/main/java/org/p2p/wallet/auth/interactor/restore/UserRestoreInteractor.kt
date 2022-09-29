@@ -86,7 +86,7 @@ class UserRestoreInteractor(
             userId = socialShareUserId
         )
 
-        restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
+        restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
         RestoreUserResult.RestoreSuccessful
     } catch (error: Throwable) {
         RestoreUserResult.RestoreFailed(error)
@@ -117,7 +117,7 @@ class UserRestoreInteractor(
                     thirdShare = customShare,
                     encryptedMnemonic = encryptedMnemonic
                 )
-                restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
+                restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
                 RestoreUserResult.RestoreSuccessful
             }
         }
@@ -157,7 +157,7 @@ class UserRestoreInteractor(
             ),
             userId = socialShareUserId
         )
-        restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhrase.split(""))
+        restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
         RestoreUserResult.RestoreSuccessful
     } catch (web3AuthError: Web3AuthErrorResponse) {
         val socialShareId = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()

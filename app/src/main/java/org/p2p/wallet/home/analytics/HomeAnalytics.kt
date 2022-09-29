@@ -11,6 +11,6 @@ class HomeAnalytics(private val tracker: Analytics) {
     }
 
     fun logUserAggregateBalanceProperty(usdBalance: Int) {
-        tracker.setUserPropertyOnce(HOME_USER_AGGREGATE_BALANCE, usdBalance)
+        tracker.setUserPropertyOnce(HOME_USER_AGGREGATE_BALANCE, usdBalance.toString())
     }
 }

@@ -129,8 +129,6 @@ class HomePresenter(
                     val isAccountEmpty = updatedTokens.run { size == 1 && first().isSOL && first().isZero }
                     when {
                         isAccountEmpty -> {
-                            logBalance(BigDecimal.ZERO)
-
                             val tokensForBuyOrReceive = userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
                             view?.showEmptyState(isEmpty = true)
                             view?.showEmptyViewData(

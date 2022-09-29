@@ -6,7 +6,6 @@ interface AnalyticsTracker {
     fun setUserProperty(key: String, value: String)
     fun incrementUserProperty(property: String, byValue: Int = 1)
     fun setUserPropertyOnce(key: String, value: String)
-    fun setUserPropertyOnce(key: String, value: Int)
     fun setUserId(userId: String?)
     fun appendToArray(property: String, value: Int)
     fun regenerateDeviceId()
