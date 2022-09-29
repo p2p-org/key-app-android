@@ -106,10 +106,6 @@ class UserRestoreInteractor(
                 Timber.i("Restore Device + Custom. No Device share")
                 RestoreUserResult.DeviceShareNotFound
             }
-            googleSignInHelper.isGoogleTokenExpired() -> {
-                Timber.i("Restore Device + Custom. Google Token expired")
-                RestoreUserResult.SocialAuthRequired
-            }
             else -> {
                 Timber.i("Restore Device + Custom. Start restore wallet")
                 val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
