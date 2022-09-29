@@ -48,12 +48,18 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
 
             testVerifierButton.setOnClickListener {
                 val testVerifier = getString(R.string.torusDebugVerifier)
-                updateEnvironmentAndRestart(newVerifier = testVerifier)
+                updateEnvironmentAndRestart(newVerifier = testVerifier, newSubVerifier = null)
+            }
+
+            featureVerifierButton.setOnClickListener {
+                val releaseVerifier = getString(R.string.torusFeatureVerifier)
+                updateEnvironmentAndRestart(newVerifier = releaseVerifier, newSubVerifier = null)
             }
 
             releaseVerifierButton.setOnClickListener {
-                val releaseVerifier = getString(R.string.torusFeatureVerifier)
-                updateEnvironmentAndRestart(newVerifier = releaseVerifier)
+                val releaseVerifier = "key-app-google-testnet"
+                val releaseSubVerifier = "android"
+                updateEnvironmentAndRestart(newVerifier = releaseVerifier, newSubVerifier = releaseSubVerifier)
             }
 
             confirmButton.setOnClickListener {

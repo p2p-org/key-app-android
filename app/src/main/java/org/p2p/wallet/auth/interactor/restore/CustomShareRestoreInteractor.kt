@@ -63,7 +63,7 @@ class CustomShareRestoreInteractor(
 
         restoreFlowDataLocalRepository.apply {
             customShare = convertBase64ToShareWithMeta(result.thirdShareStructBase64)
-            encryptedMnemonic = convertBase64ToEncryptedMnemonics(result.encryptedMnemonicsStructBase64).toString()
+            encryptedMnemonicJson = convertBase64ToEncryptedMnemonics(result.encryptedMnemonicsStructBase64)
             deviceShare = signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare
         }
     }
