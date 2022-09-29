@@ -71,6 +71,7 @@ class Web3AuthApiClient(
     override suspend fun triggerSignInNoDevice(
         socialShare: String,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        encryptedMnemonicGson: JsonObject,
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
@@ -81,7 +82,7 @@ class Web3AuthApiClient(
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
-                    jsMethodCall = "triggerSignInNoDevice('$socialShare', $thirdShareAsJsObject)"
+                    jsMethodCall = "triggerSignInNoDevice('$socialShare', $thirdShareAsJsObject,$encryptedMnemonicGson)"
                 ),
                 null
             )
@@ -91,6 +92,7 @@ class Web3AuthApiClient(
     override suspend fun triggerSignInNoCustom(
         socialShare: String,
         deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        encryptedMnemonicPhrase: JsonObject
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
@@ -98,10 +100,11 @@ class Web3AuthApiClient(
             Timber.tag(TAG).i("triggerSignInNoCustom triggered")
 
             val deviceShareAsJsObject = gson.toJson(deviceShare)
+            val params = "$socialShare, $deviceShareAsJsObject, $encryptedMnemonicPhrase"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
-                    jsMethodCall = "triggerSignInNoCustom('$socialShare', $deviceShareAsJsObject)"
+                    jsMethodCall = "triggerSignInNoCustom($params)"
                 ),
                 null
             )

@@ -13,7 +13,8 @@ interface Web3AuthApi {
 
     suspend fun triggerSignInNoCustom(
         socialShare: String,
-        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta
+        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        encryptedMnemonicPhrase: JsonObject
     ): Web3AuthSignInResponse
 
     suspend fun triggerSignInNoTorus(
@@ -24,6 +25,7 @@ interface Web3AuthApi {
 
     suspend fun triggerSignInNoDevice(
         socialShare: String,
-        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta
+        thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        encryptedMnemonicGson: JsonObject
     ): Web3AuthSignInResponse
 }

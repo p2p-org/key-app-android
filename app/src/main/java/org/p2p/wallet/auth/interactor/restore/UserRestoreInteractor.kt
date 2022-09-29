@@ -78,7 +78,13 @@ class UserRestoreInteractor(
             ?: error("Social+Custom restore way failed. Social share is null")
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
             ?: error("Social+Custom restore way failed. Social share ID is null")
-        val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(socialShare, customShare)
+
+        val encryptedMnemonicGson = restoreFlowDataLocalRepository.encryptedMnemonic?.let {
+            gson.fromJsonReified<JsonObject>(it)
+        } ?: error("Device+Custom restore way failed. Mnemonic phrase is null")
+
+        val result: Web3AuthSignInResponse =
+            web3AuthApi.triggerSignInNoDevice(socialShare, customShare, encryptedMnemonicGson)
 
         signUpDetailsStorage.save(
             data = Web3AuthSignUpResponse(
@@ -145,8 +151,12 @@ class UserRestoreInteractor(
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
         val socialShare = restoreFlowDataLocalRepository.socialShare
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
+        val encryptedMnemonicGson = restoreFlowDataLocalRepository.encryptedMnemonic?.let {
+            gson.fromJsonReified<JsonObject>(it)
+        } ?: error("Device+Custom restore way failed. Mnemonic phrase is null")
         if (deviceShare != null && socialShare != null) {
-            val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoCustom(socialShare, deviceShare)
+            val result: Web3AuthSignInResponse =
+                web3AuthApi.triggerSignInNoCustom(socialShare, deviceShare, encryptedMnemonicGson)
             signUpDetailsStorage.save(
                 data = Web3AuthSignUpResponse(
                     ethereumPublicKey = result.ethereumPublicKey,
