@@ -83,7 +83,7 @@ class OnboardingGeneralErrorPresenter(
                 view?.setRestoreByGoogleLoadingState(false)
             }
             is RestoreUserResult.DeviceAndSocialShareNotMatch -> {
-                val error = GeneralErrorScreenError.DeviceAndSocialShareNotMatch(result.socialShareUserId)
+                val error = GeneralErrorScreenError.SharesDoNotMatchError
                 view?.setViewState(error)
                 view?.setRestoreByGoogleLoadingState(false)
             }
