@@ -74,7 +74,7 @@ class CreateWalletInteractor(
         val userSeedPhrase: List<String>
         val socialShareOwnerId: String
         userSignUpDetailsStorage.getLastSignUpUserDetails().also {
-            userSeedPhrase = it?.signUpDetails?.mnemonicPhrase?.split(" ")
+            userSeedPhrase = it?.signUpDetails?.mnemonicPhraseWords
                 ?: throw CreateWalletFailure("Mnemonic phrase is null")
             socialShareOwnerId = it.userId
         }

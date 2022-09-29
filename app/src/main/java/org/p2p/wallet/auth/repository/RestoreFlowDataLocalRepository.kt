@@ -78,8 +78,11 @@ class RestoreFlowDataLocalRepository {
     }
 
     fun generateActualAccount(userSeedPhrase: List<String>) {
-        this.userActualAccount =
-            Account.fromBip44MnemonicWithChange(userSeedPhrase, walletIndex = 0, passphrase = emptyString())
+        this.userActualAccount = Account.fromBip44MnemonicWithChange(
+            words = userSeedPhrase,
+            walletIndex = 0,
+            passphrase = emptyString()
+        )
     }
 
     fun resetUserPhoneNumberEnteredCount() {
