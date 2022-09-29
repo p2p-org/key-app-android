@@ -32,6 +32,10 @@ class Analytics(private val trackers: Set<AnalyticsTracker>) {
         trackers.forEach { it.setUserPropertyOnce(key, value) }
     }
 
+    fun setUserPropertyOnce(key: String, value: Int) {
+        trackers.forEach { it.setUserPropertyOnce(key, value) }
+    }
+
     fun setUserPropertyOnce(key: String, value: Boolean) {
         setUserPropertyOnce(key, if (value) "true" else "false")
     }

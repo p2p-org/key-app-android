@@ -14,6 +14,10 @@ class TimberTracker : AnalyticsTracker {
         Timber.tag(TAG_ANALYTICS).v("setUserPropertyOnce() key [$key], value [$value]")
     }
 
+    override fun setUserPropertyOnce(key: String, value: Int) {
+        Timber.tag(TAG_ANALYTICS).v("setUserPropertyOnce() key [$key], value [$value]")
+    }
+
     override fun logEvent(eventName: String, params: Array<out Pair<String, Any>>) {
         Timber.tag(TAG_ANALYTICS).v("logEvent() event [$eventName], params [${params.toMap()}]")
     }
