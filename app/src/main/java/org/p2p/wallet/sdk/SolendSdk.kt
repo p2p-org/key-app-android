@@ -78,7 +78,7 @@ class SolendSdk {
         owner: JString,
         symbol: JString,
         pool: JString
-    )
+    ): JString
 
     external fun getSolendUserDeposits(
         owner: JString,

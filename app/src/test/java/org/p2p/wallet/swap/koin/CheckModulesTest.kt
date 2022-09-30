@@ -108,6 +108,7 @@ class CheckModulesTest : KoinTest {
     @Test
     fun verifyKoinApp() {
         mockFirebase()
+        mockSystemCalls()
         checkKoinModules(
             modules = AppModule.create(restartAction = {}) + javaxDefaultModule,
             appDeclaration = {
@@ -135,6 +136,12 @@ class CheckModulesTest : KoinTest {
 
         mockkStatic(Cipher::class)
         every { Cipher.getInstance(any()) } returns mockk(relaxed = true)
+    }
+
+    private fun mockSystemCalls() {
+        mockkStatic(System::class)
+        // mock native .so libs loading
+        every { System.loadLibrary(any()) } returns mockk(relaxed = true)
     }
 
     @After
