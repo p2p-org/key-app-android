@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/solend_earn_title"
+        app:titleMargin="16dp"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
+
+    <TextView
+        android:id="@+id/textViewTokensTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:text="@string/solend_deposit_to_earn"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tokensRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

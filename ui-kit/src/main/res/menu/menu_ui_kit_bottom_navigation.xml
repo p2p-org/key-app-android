@@ -6,17 +6,16 @@
         android:icon="@drawable/ic_main_wallet"
         android:title="@string/common_wallet" />
     <item
-        android:id="@+id/historyItem"
-        android:icon="@drawable/ic_main_history"
-        android:title="@string/common_history" />
-
+        android:id="@+id/earnItem"
+        android:icon="@drawable/ic_main_feedback"
+        android:title="@string/common_earn" />
     <item
         android:id="@+id/sendItem"
         android:title="" />
     <item
-        android:id="@+id/feedbackItem"
-        android:icon="@drawable/ic_main_feedback"
-        android:title="@string/common_feedback" />
+        android:id="@+id/historyItem"
+        android:icon="@drawable/ic_main_history"
+        android:title="@string/common_history" />
     <item
         android:id="@+id/settingsItem"
         android:icon="@drawable/ic_main_settings"
