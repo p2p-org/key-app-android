@@ -309,6 +309,8 @@ dependencies {
     // Google Play Auth
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
+    // TickerView
+    implementation 'com.robinhood.ticker:ticker:2.0.4'
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'

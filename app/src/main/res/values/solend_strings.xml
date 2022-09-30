@@ -3,4 +3,31 @@
 
     <string name="solend_earn_title">Earn a yield</string>
     <string name="solend_deposit_to_earn">Deposit to earn a yield</string>
+
+    <!--Earn Widget-->
+
+    <!--Earn Widget -> LearnMore-->
+    <string name="earn_widget_learn_more_title">Deposit your tokens and earn</string>
+    <string name="earn_widget_learn_more_message">All your funds are insured. Withdraw your deposit with all rewards at any time.</string>
+    <string name="earn_widget_learn_more_button">Learn More</string>
+
+    <!--Earn Widget -> Deposit-->
+    <string name="earn_widget_deposit_sending">🕑  Sending your deposit…</string>
+    <string name="earn_widget_deposit_withdrawing">🕑  Withdrawing your deposit…</string>
+
+    <!--Earn Widget -> DepositFailed-->
+    <string name="earn_widget_deposit_failed_title">Depositing funds failed</string>
+    <string name="earn_widget_deposit_failed_message">The funds are returned to your wallet. You can try depositing again.</string>
+    <string name="earn_widget_deposit_failed_button">Try again</string>
+
+    <!--Earn Widget -> Balance-->
+    <string name="earn_widget_balance_title">Earn balance</string>
+    <string name="earn_widget_balance_button">Show deposit</string>
+
+    <!--Earn Widget -> Error-->
+    <string name="earn_widget_error_title">An unexpected error occurred </string>
+    <string name="earn_widget_error_message_withdrawal">Don\'t worry, your deposits are safe. Somehow, withdrawal did not happen</string>
+    <string name="earn_widget_error_message_show_info">Don\'t worry, your deposits are safe. We just have issues with showing the info.</string>
+    <string name="earn_widget_error_button_ok">Ok</string>
+    <string name="earn_widget_error_button_try_again">Try again</string>
 </resources>
