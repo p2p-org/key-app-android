@@ -5,7 +5,6 @@ import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -17,19 +16,18 @@ class UserRestoreInteractor(
     private val web3AuthApi: Web3AuthApi,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
-    private val tokenKeyProvider: TokenKeyProvider,
-    private val googleSignInHelper: GoogleSignInHelper
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet): Boolean {
         val sharesCount = when (restoreFlow) {
             is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> {
-                countShare(restoreFlowDataLocalRepository.socialShare) +
+                countShare(restoreFlowDataLocalRepository.torusKey) +
                     countShare(restoreFlowDataLocalRepository.customShare)
             }
             is OnboardingFlow.RestoreWallet.DevicePlusSocialShare -> {
                 countShare(restoreFlowDataLocalRepository.deviceShare) +
-                    countShare(restoreFlowDataLocalRepository.socialShare)
+                    countShare(restoreFlowDataLocalRepository.torusKey)
             }
             is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
                 countShare(restoreFlowDataLocalRepository.deviceShare) +
@@ -62,7 +60,7 @@ class UserRestoreInteractor(
     ): RestoreUserResult = try {
         val customShare = restoreFlowDataLocalRepository.customShare
             ?: error("Social+Custom restore way failed. Third share is null")
-        val socialShare = restoreFlowDataLocalRepository.socialShare
+        val socialShare = restoreFlowDataLocalRepository.torusKey
             ?: error("Social+Custom restore way failed. Social share is null")
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
             ?: error("Social+Custom restore way failed. Social share ID is null")
@@ -134,7 +132,7 @@ class UserRestoreInteractor(
     ): RestoreUserResult = try {
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
             ?: error("Device+Social restore way failed. Device share is null")
-        val socialShare = restoreFlowDataLocalRepository.socialShare
+        val socialShare = restoreFlowDataLocalRepository.torusKey
             ?: error("Device+Social restore way failed. Social share is null")
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
             ?: error("Device+Social restore way failed. Social share ID is null")

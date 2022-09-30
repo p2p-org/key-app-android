@@ -61,10 +61,10 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("userActualAccount is generated and set")
         }
 
-    var socialShare: String? = null
+    var torusKey: String? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("socialShare is generated and set: ${socialShare?.length}")
+            Timber.tag(TAG).i("socialShare is generated and set: ${torusKey?.length}")
         }
 
     var socialShareUserId: String? = null

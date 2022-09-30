@@ -156,12 +156,16 @@ class OnboardingGeneralErrorFragment :
                 }
                 with(buttonPrimaryFirst) {
                     setText(R.string.restore_phone_number)
-                    setOnClickListener { popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true) }
+                    setOnClickListener {
+                        presenter.onContinueWithPhoneNumberClicked()
+                    }
                     isVisible = true
                 }
                 with(buttonSecondaryFirst) {
                     setText(R.string.restore_starting_screen)
-                    setOnClickListener { popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true) }
+                    setOnClickListener {
+                        presenter.onContinueWithPhoneNumberClicked()
+                    }
                     isVisible = true
                 }
             }
@@ -204,7 +208,7 @@ class OnboardingGeneralErrorFragment :
                 if (errorState.isDeviceShareExists) {
                     presenter.useGoogleAccount()
                 } else {
-                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                    presenter.onContinueWithPhoneNumberClicked()
                 }
             }
             isVisible = true
@@ -213,7 +217,7 @@ class OnboardingGeneralErrorFragment :
             with(buttonPrimaryFirst) {
                 text = getString(R.string.restore_phone_number)
                 setOnClickListener {
-                    popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+                    presenter.onContinueWithPhoneNumberClicked()
                 }
                 isVisible = true
             }

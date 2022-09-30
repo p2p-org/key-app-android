@@ -27,4 +27,8 @@ interface Web3AuthApi {
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         encryptedMnemonic: JsonObject
     ): Web3AuthSignInResponse
+
+    suspend fun obtainTorusKey(
+        googleUserTokenId: String
+    ): Web3AuthSignUpResponse
 }

@@ -48,6 +48,11 @@ class OnboardingGeneralErrorPresenter(
         view?.navigateToEnterPhone()
     }
 
+    override fun onContinueWithPhoneNumberClicked() {
+        restoreWalletInteractor.resetUserPhoneNumber()
+        view?.navigateToEnterPhone()
+    }
+
     override fun setGoogleIdToken(userId: String, idToken: String) {
         view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = true)
         restoreWalletInteractor.restoreSocialShare(userId = userId, idToken = idToken)

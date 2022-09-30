@@ -14,7 +14,7 @@
         sessionStorage.clear();
     }
 </script>
-<h1>APP VERSION 1.2.0</h1>
+<h1>APP VERSION 2.2.1</h1>
 <button onclick="window.clearStorages()">Clear Storage</button>
 <script defer>(function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -29628,13 +29628,19 @@ var markerFactory = function markerFactory() {
   };
 };
 
-var loggerFactory = function loggerFactory(active) {
-  return function () {
-    if (!active) {
-      return;
-    }
+var loggerFactory = function loggerFactory() {
+  var active = false;
+  return {
+    setActive: function setActive(val) {
+      active = val;
+    },
+    log: function log() {
+      if (!active) {
+        return;
+      }
 
-    void logPerfEntries();
+      void logPerfEntries();
+    }
   };
 };
 
@@ -29930,22 +29936,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _tkey_share_serialization__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @tkey/share-serialization */ "../../node_modules/@tkey/share-serialization/dist/shareSerialization.esm.js");
 /* harmony import */ var _tkey_storage_layer_torus__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @tkey/storage-layer-torus */ "../../node_modules/@tkey/storage-layer-torus/dist/storageLayerTorus.esm.js");
 /* harmony import */ var _tkey_web_storage__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @tkey/web-storage */ "../../node_modules/@tkey/web-storage/dist/webStorage.esm.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "../../node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var bip39__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! bip39 */ "../../node_modules/bip39/src/index.js");
-/* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! bn.js */ "../../node_modules/bn.js/lib/bn.js");
-/* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(bn_js__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var jwt_decode__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! jwt-decode */ "../../node_modules/jwt-decode/build/jwt-decode.esm.js");
-/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../errors */ "./src/errors/index.ts");
-/* harmony import */ var _errors_tkeyMap__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../errors/tkeyMap */ "./src/errors/tkeyMap.ts");
-/* harmony import */ var _managers_customShareManager__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../managers/customShareManager */ "./src/managers/customShareManager.ts");
-/* harmony import */ var _managers_deviceShareManager__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../managers/deviceShareManager */ "./src/managers/deviceShareManager.ts");
-/* harmony import */ var _managers_mnemonicManager__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../managers/mnemonicManager */ "./src/managers/mnemonicManager.ts");
-/* harmony import */ var _seed_SeedPhrase__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../seed/SeedPhrase */ "./src/seed/SeedPhrase.ts");
-/* harmony import */ var _seed_seedPhraseFormat__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../seed/seedPhraseFormat */ "./src/seed/seedPhraseFormat.ts");
-/* harmony import */ var _typings__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../typings */ "./src/typings/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
-/* harmony import */ var _utils_profiler__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../utils/profiler */ "./src/utils/profiler.ts");
+/* harmony import */ var bip39__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! bip39 */ "../../node_modules/bip39/src/index.js");
+/* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! bn.js */ "../../node_modules/bn.js/lib/bn.js");
+/* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(bn_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../errors */ "./src/errors/index.ts");
+/* harmony import */ var _errors_tkeyMap__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../errors/tkeyMap */ "./src/errors/tkeyMap.ts");
+/* harmony import */ var _managers_customShareManager__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../managers/customShareManager */ "./src/managers/customShareManager.ts");
+/* harmony import */ var _managers_deviceShareManager__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../managers/deviceShareManager */ "./src/managers/deviceShareManager.ts");
+/* harmony import */ var _managers_mnemonicManager__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../managers/mnemonicManager */ "./src/managers/mnemonicManager.ts");
+/* harmony import */ var _seed_SeedPhrase__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../seed/SeedPhrase */ "./src/seed/SeedPhrase.ts");
+/* harmony import */ var _seed_seedPhraseFormat__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../seed/seedPhraseFormat */ "./src/seed/seedPhraseFormat.ts");
+/* harmony import */ var _typings__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../typings */ "./src/typings/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
+/* harmony import */ var _utils_profiler__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../utils/profiler */ "./src/utils/profiler.ts");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
@@ -29965,8 +29968,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
 
 
 
@@ -30008,9 +30009,7 @@ var AuthProvider = /*#__PURE__*/function () {
 
     _defineProperty(this, "_isInitialized", false);
 
-    (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("startAuthProviderInit"); // @FIXME remove
-
-    (axios__WEBPACK_IMPORTED_MODULE_5___default().defaults.baseURL) = authParams.metadataEndpoint;
+    (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("startAuthProviderInit");
     var serviceProvider = new _tkey_service_provider_torus__WEBPACK_IMPORTED_MODULE_1__["default"]({
       directParams: {
         baseUrl: "http://192.168.0.108:3000/",
@@ -30026,22 +30025,22 @@ var AuthProvider = /*#__PURE__*/function () {
       serviceProvider: serviceProvider
     });
     this.tkeySDKInstance = new _tkey_default__WEBPACK_IMPORTED_MODULE_0__["default"]({
-      modules: (_modules = {}, _defineProperty(_modules, _tkey_web_storage__WEBPACK_IMPORTED_MODULE_4__.WEB_STORAGE_MODULE_NAME, new _tkey_web_storage__WEBPACK_IMPORTED_MODULE_4__["default"]()), _defineProperty(_modules, _tkey_share_serialization__WEBPACK_IMPORTED_MODULE_2__.SHARE_SERIALIZATION_MODULE_NAME, new _tkey_share_serialization__WEBPACK_IMPORTED_MODULE_2__.ShareSerializationModule()), _defineProperty(_modules, _seed_SeedPhrase__WEBPACK_IMPORTED_MODULE_14__.SEED_PHRASE_MODULE_NAME, new _seed_SeedPhrase__WEBPACK_IMPORTED_MODULE_14__["default"]([new _seed_seedPhraseFormat__WEBPACK_IMPORTED_MODULE_15__.SeedPhraseFormat()])), _modules),
+      modules: (_modules = {}, _defineProperty(_modules, _tkey_web_storage__WEBPACK_IMPORTED_MODULE_4__.WEB_STORAGE_MODULE_NAME, new _tkey_web_storage__WEBPACK_IMPORTED_MODULE_4__["default"]()), _defineProperty(_modules, _tkey_share_serialization__WEBPACK_IMPORTED_MODULE_2__.SHARE_SERIALIZATION_MODULE_NAME, new _tkey_share_serialization__WEBPACK_IMPORTED_MODULE_2__.ShareSerializationModule()), _defineProperty(_modules, _seed_SeedPhrase__WEBPACK_IMPORTED_MODULE_12__.SEED_PHRASE_MODULE_NAME, new _seed_SeedPhrase__WEBPACK_IMPORTED_MODULE_12__["default"]([new _seed_seedPhraseFormat__WEBPACK_IMPORTED_MODULE_13__.SeedPhraseFormat()])), _modules),
       serviceProvider: serviceProvider,
       storageLayer: storageLayer,
       manualSync: true
     });
     this.authParams = authParams;
-    this.KeyManager = new _managers_mnemonicManager__WEBPACK_IMPORTED_MODULE_13__.MnemonicManager(_objectSpread(_objectSpread({}, authParams), {}, {
+    this.KeyManager = new _managers_mnemonicManager__WEBPACK_IMPORTED_MODULE_11__.MnemonicManager(_objectSpread(_objectSpread({}, authParams), {}, {
       tkeySDKInstance: this.tkeySDKInstance
     }));
-    this.CustomShareManager = new _managers_customShareManager__WEBPACK_IMPORTED_MODULE_11__.CustomShareManager({
+    this.CustomShareManager = new _managers_customShareManager__WEBPACK_IMPORTED_MODULE_9__.CustomShareManager({
       tkeySDKInstance: this.tkeySDKInstance
     });
-    this.DeviceShareManager = new _managers_deviceShareManager__WEBPACK_IMPORTED_MODULE_12__.DeviceShareManager({
+    this.DeviceShareManager = new _managers_deviceShareManager__WEBPACK_IMPORTED_MODULE_10__.DeviceShareManager({
       tkeySDKInstance: this.tkeySDKInstance
     });
-    (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endAuthProviderInit");
+    (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("endAuthProviderInit");
   }
 
   _createClass(AuthProvider, [{
@@ -30056,23 +30055,23 @@ var AuthProvider = /*#__PURE__*/function () {
         return this.encryptedSolResult;
       }
 
-      throw new _errors__WEBPACK_IMPORTED_MODULE_9__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_16__.ERROR_TYPE.NO_CUSTOM_METADATA);
+      throw new _errors__WEBPACK_IMPORTED_MODULE_7__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_14__.ERROR_TYPE.NO_CUSTOM_METADATA);
     }
   }, {
     key: "triggerSignup",
     value: function () {
-      var _triggerSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(idToken) {
+      var _triggerSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(torusKey) {
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!idToken) {
+                if (!torusKey) {
                   _context.next = 5;
                   break;
                 }
 
                 _context.next = 3;
-                return this.startSilentAuthentication(idToken);
+                return this.startSilentAuthentication(torusKey);
 
               case 3:
                 _context.next = 7;
@@ -30107,18 +30106,18 @@ var AuthProvider = /*#__PURE__*/function () {
   }, {
     key: "triggerLogin",
     value: function () {
-      var _triggerLogin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(idToken) {
+      var _triggerLogin = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(torusKey) {
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!idToken) {
+                if (!torusKey) {
                   _context2.next = 5;
                   break;
                 }
 
                 _context2.next = 3;
-                return this.startSilentAuthentication(idToken);
+                return this.startSilentAuthentication(torusKey);
 
               case 3:
                 _context2.next = 7;
@@ -30189,13 +30188,13 @@ var AuthProvider = /*#__PURE__*/function () {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("startKeyReconstruct");
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("startKeyReconstruct");
                 _context4.next = 3;
                 return this.KeyManager.getReconstructedEthPrivate();
 
               case 3:
                 res = _context4.sent;
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endKeyReconstruct");
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("endKeyReconstruct");
                 return _context4.abrupt("return", res);
 
               case 6:
@@ -30221,7 +30220,7 @@ var AuthProvider = /*#__PURE__*/function () {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _utils__WEBPACK_IMPORTED_MODULE_17__.logger.debug("COMPARING MNEMONICS");
+                _utils__WEBPACK_IMPORTED_MODULE_15__.logger.debug("COMPARING MNEMONICS");
                 _context5.next = 3;
                 return this.KeyManager.getItemFromStorage();
 
@@ -30232,7 +30231,7 @@ var AuthProvider = /*#__PURE__*/function () {
 
               case 6:
                 decpryptedMnemonic = _context5.sent;
-                validMnemonics = (0,bip39__WEBPACK_IMPORTED_MODULE_6__.validateMnemonic)(tkeyMnemonic) && (0,bip39__WEBPACK_IMPORTED_MODULE_6__.validateMnemonic)(decpryptedMnemonic);
+                validMnemonics = (0,bip39__WEBPACK_IMPORTED_MODULE_5__.validateMnemonic)(tkeyMnemonic) && (0,bip39__WEBPACK_IMPORTED_MODULE_5__.validateMnemonic)(decpryptedMnemonic);
                 notMatchingMnemonics = tkeyMnemonic !== decpryptedMnemonic;
 
                 if (!(validMnemonics && notMatchingMnemonics)) {
@@ -30240,7 +30239,7 @@ var AuthProvider = /*#__PURE__*/function () {
                   break;
                 }
 
-                throw new _errors__WEBPACK_IMPORTED_MODULE_9__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_16__.ERROR_TYPE.MNEMONICS_NOT_EQUAL);
+                throw new _errors__WEBPACK_IMPORTED_MODULE_7__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_14__.ERROR_TYPE.MNEMONICS_NOT_EQUAL);
 
               case 11:
               case "end":
@@ -30265,17 +30264,17 @@ var AuthProvider = /*#__PURE__*/function () {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                if (!(this.authParams.flow === _typings__WEBPACK_IMPORTED_MODULE_16__.FLOW_TYPE.SIGNUP && this.KeyManager.ethPrivate)) {
+                if (!(this.authParams.flow === _typings__WEBPACK_IMPORTED_MODULE_14__.FLOW_TYPE.SIGNUP && this.KeyManager.ethPrivate)) {
                   _context6.next = 2;
                   break;
                 }
 
                 return _context6.abrupt("return", {
-                  importKey: new (bn_js__WEBPACK_IMPORTED_MODULE_7___default())(this.KeyManager.ethPrivate)
+                  importKey: new (bn_js__WEBPACK_IMPORTED_MODULE_6___default())(this.KeyManager.ethPrivate)
                 });
 
               case 2:
-                if (!(this.authParams.flow === _typings__WEBPACK_IMPORTED_MODULE_16__.FLOW_TYPE.SIGNIN_NO_DEVICE)) {
+                if (!(this.authParams.flow === _typings__WEBPACK_IMPORTED_MODULE_14__.FLOW_TYPE.SIGNIN_NO_DEVICE)) {
                   _context6.next = 4;
                   break;
                 }
@@ -30285,7 +30284,7 @@ var AuthProvider = /*#__PURE__*/function () {
                 });
 
               case 4:
-                if (!(this.authParams.flow === _typings__WEBPACK_IMPORTED_MODULE_16__.FLOW_TYPE.SIGNIN_NO_CUSTOM)) {
+                if (!(this.authParams.flow === _typings__WEBPACK_IMPORTED_MODULE_14__.FLOW_TYPE.SIGNIN_NO_CUSTOM)) {
                   _context6.next = 6;
                   break;
                 }
@@ -30295,7 +30294,7 @@ var AuthProvider = /*#__PURE__*/function () {
                 });
 
               case 6:
-                if (!(this.authParams.flow === _typings__WEBPACK_IMPORTED_MODULE_16__.FLOW_TYPE.SINGIN_NO_TORUS)) {
+                if (!(this.authParams.flow === _typings__WEBPACK_IMPORTED_MODULE_14__.FLOW_TYPE.SINGIN_NO_TORUS)) {
                   _context6.next = 12;
                   break;
                 }
@@ -30305,7 +30304,7 @@ var AuthProvider = /*#__PURE__*/function () {
 
               case 9:
                 customShare = _context6.sent;
-                _utils__WEBPACK_IMPORTED_MODULE_17__.logger.debug("CUSTOM SHARE IN CONSTRUCTING INIT PARAMS", customShare);
+                _utils__WEBPACK_IMPORTED_MODULE_15__.logger.debug("CUSTOM SHARE IN CONSTRUCTING INIT PARAMS", customShare);
                 return _context6.abrupt("return", {
                   neverInitializeNewKey: true,
                   withShare: customShare
@@ -30366,14 +30365,14 @@ var AuthProvider = /*#__PURE__*/function () {
   }, {
     key: "startSilentAuthentication",
     value: function () {
-      var _startSilentAuthentication = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(idToken) {
-        var serviceProvider, torusServiceProvider, directAuthSdk, decoded, torusKey;
+      var _startSilentAuthentication = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(torusKey) {
+        var serviceProvider;
         return _regeneratorRuntime().wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
                 _context8.prev = 0;
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("startTotalSilentAuth");
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("startTotalSilentAuth");
                 serviceProvider = this.tkeySDKInstance.serviceProvider;
                 _context8.next = 5;
                 return serviceProvider.init({
@@ -30382,54 +30381,22 @@ var AuthProvider = /*#__PURE__*/function () {
                 });
 
               case 5:
-                torusServiceProvider = this.tkeySDKInstance.serviceProvider;
-                directAuthSdk = torusServiceProvider.directWeb;
-                decoded = (0,jwt_decode__WEBPACK_IMPORTED_MODULE_8__["default"])(idToken);
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("startObtainTorusKey");
-
-                if (!this.authParams.torusSubVerifier) {
-                  _context8.next = 15;
-                  break;
-                }
-
+                this.tkeySDKInstance.serviceProvider.postboxKey = new (bn_js__WEBPACK_IMPORTED_MODULE_6___default())(torusKey, this.stringFormat);
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("endTotalSilentAuth");
                 _context8.next = 12;
-                return directAuthSdk.getAggregateTorusKey(this.authParams.torusVerifier, decoded.email, [{
-                  idToken: idToken,
-                  verifier: this.authParams.torusSubVerifier
-                }]);
+                break;
+
+              case 9:
+                _context8.prev = 9;
+                _context8.t0 = _context8["catch"](0);
+                throw new _errors__WEBPACK_IMPORTED_MODULE_7__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_14__.ERROR_TYPE.DUPLICATE_TOKEN, _context8.t0);
 
               case 12:
-                torusKey = _context8.sent;
-                _context8.next = 18;
-                break;
-
-              case 15:
-                _context8.next = 17;
-                return directAuthSdk.getTorusKey(this.authParams.torusVerifier, decoded.email, {
-                  verifier_id: decoded.email
-                }, idToken);
-
-              case 17:
-                torusKey = _context8.sent;
-
-              case 18:
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endObtainTorusKey");
-                this.tkeySDKInstance.serviceProvider.postboxKey = new (bn_js__WEBPACK_IMPORTED_MODULE_7___default())(torusKey.privateKey, this.stringFormat);
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endTotalSilentAuth");
-                _context8.next = 26;
-                break;
-
-              case 23:
-                _context8.prev = 23;
-                _context8.t0 = _context8["catch"](0);
-                throw new _errors__WEBPACK_IMPORTED_MODULE_9__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_16__.ERROR_TYPE.DUPLICATE_TOKEN, _context8.t0);
-
-              case 26:
               case "end":
                 return _context8.stop();
             }
           }
-        }, _callee8, this, [[0, 23]]);
+        }, _callee8, this, [[0, 9]]);
       }));
 
       function startSilentAuthentication(_x4) {
@@ -30468,7 +30435,7 @@ var AuthProvider = /*#__PURE__*/function () {
               case 9:
                 _context9.prev = 9;
                 _context9.t0 = _context9["catch"](3);
-                _utils__WEBPACK_IMPORTED_MODULE_17__.logger.error("saving seed phrase did not happen");
+                _utils__WEBPACK_IMPORTED_MODULE_15__.logger.error("saving seed phrase did not happen");
 
               case 12:
               case "end":
@@ -30493,14 +30460,14 @@ var AuthProvider = /*#__PURE__*/function () {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("startTotalWebStorage");
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("startInitWebStorage");
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("startTotalWebStorage");
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("startInitWebStorage");
                 _context10.next = 4;
                 return this.getTkeyInitializeParams();
 
               case 4:
                 tKeyInitializeParams = _context10.sent;
-                shouldAddDeviceShareWeb = this.authParams.platform === _typings__WEBPACK_IMPORTED_MODULE_16__.PLATFORM.WEB && this.authParams.flow !== _typings__WEBPACK_IMPORTED_MODULE_16__.FLOW_TYPE.SIGNIN_NO_DEVICE;
+                shouldAddDeviceShareWeb = this.authParams.platform === _typings__WEBPACK_IMPORTED_MODULE_14__.PLATFORM.WEB && this.authParams.flow !== _typings__WEBPACK_IMPORTED_MODULE_14__.FLOW_TYPE.SIGNIN_NO_DEVICE;
                 _context10.prev = 6;
                 _context10.next = 9;
                 return this.tkeySDKInstance.initialize(tKeyInitializeParams);
@@ -30512,19 +30479,19 @@ var AuthProvider = /*#__PURE__*/function () {
               case 11:
                 _context10.prev = 11;
                 _context10.t0 = _context10["catch"](6);
-                (0,_errors_tkeyMap__WEBPACK_IMPORTED_MODULE_10__.throwFromTkeyCode)(_context10.t0);
+                (0,_errors_tkeyMap__WEBPACK_IMPORTED_MODULE_8__.throwFromTkeyCode)(_context10.t0);
 
               case 14:
-                _utils__WEBPACK_IMPORTED_MODULE_17__.logger.debug("should add device share: ".concat(shouldAddDeviceShareWeb, " \n\n       flow: ").concat(this.authParams.flow, " \n\n       platform: ").concat(this.authParams.platform, "\n      "));
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endInitWebStorage");
+                _utils__WEBPACK_IMPORTED_MODULE_15__.logger.debug("should add device share: ".concat(shouldAddDeviceShareWeb, " \n\n       flow: ").concat(this.authParams.flow, " \n\n       platform: ").concat(this.authParams.platform, "\n      "));
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("endInitWebStorage");
 
                 if (!shouldAddDeviceShareWeb) {
                   _context10.next = 31;
                   break;
                 }
 
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("startInsertWebStorage");
-                _utils__WEBPACK_IMPORTED_MODULE_17__.logger.debug("inserting device share in initializeTkeyWithWebStorage");
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("startInsertWebStorage");
+                _utils__WEBPACK_IMPORTED_MODULE_15__.logger.debug("inserting device share in initializeTkeyWithWebStorage");
                 storageModule = this.tkeySDKInstance.modules[_tkey_web_storage__WEBPACK_IMPORTED_MODULE_4__.WEB_STORAGE_MODULE_NAME];
                 _context10.prev = 20;
                 _context10.next = 23;
@@ -30537,16 +30504,16 @@ var AuthProvider = /*#__PURE__*/function () {
               case 25:
                 _context10.prev = 25;
                 _context10.t1 = _context10["catch"](20);
-                throw new _errors__WEBPACK_IMPORTED_MODULE_9__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_16__.ERROR_TYPE.CANNOT_READ_WEB_STORAGE, _context10.t1);
+                throw new _errors__WEBPACK_IMPORTED_MODULE_7__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_14__.ERROR_TYPE.CANNOT_READ_WEB_STORAGE, _context10.t1);
 
               case 28:
                 _context10.prev = 28;
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endInsertWebStorage");
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("endInsertWebStorage");
                 return _context10.finish(28);
 
               case 31:
                 this._isInitialized = true;
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_18__.sdkMarker)("endTotalWebStorage");
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_16__.sdkMarker)("endTotalWebStorage");
 
               case 33:
               case "end":
@@ -30635,7 +30602,7 @@ var MobileAuthAdapter = /*#__PURE__*/function () {
   _createClass(MobileAuthAdapter, [{
     key: "triggerSilentSignup",
     value: function () {
-      var _triggerSilentSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(idToken) {
+      var _triggerSilentSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(torusKey) {
         var reconstructedETH, privateSOL, customShareWithMeta, deviceShareWithMeta;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
@@ -30643,7 +30610,7 @@ var MobileAuthAdapter = /*#__PURE__*/function () {
               case 0:
                 this.authProvider = new _authProvider__WEBPACK_IMPORTED_MODULE_6__.AuthProvider(_objectSpread({}, this.options));
                 _context.next = 3;
-                return this.authProvider.triggerSignup(idToken);
+                return this.authProvider.triggerSignup(torusKey);
 
               case 3:
                 _context.next = 5;
@@ -30701,14 +30668,14 @@ var MobileAuthAdapter = /*#__PURE__*/function () {
   }, {
     key: "triggerSilentSign",
     value: function () {
-      var _triggerSilentSign = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(idToken, type, shareWithMeta) {
+      var _triggerSilentSign = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(torusKey, type, shareWithMeta) {
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 this.authProvider = new _authProvider__WEBPACK_IMPORTED_MODULE_6__.AuthProvider(_objectSpread({}, this.options));
                 _context2.next = 3;
-                return this.authProvider.triggerLogin(idToken);
+                return this.authProvider.triggerLogin(torusKey);
 
               case 3:
                 if (type === _typings__WEBPACK_IMPORTED_MODULE_3__.SHARE_TYPE.DEVICE && shareWithMeta) {
@@ -31219,9 +31186,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AbstractMobileFacade": () => (/* binding */ AbstractMobileFacade)
 /* harmony export */ });
-/* harmony import */ var bip39__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bip39 */ "../../node_modules/bip39/src/index.js");
-/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../errors */ "./src/errors/index.ts");
-/* harmony import */ var _typings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../typings */ "./src/typings/index.ts");
+/* harmony import */ var _toruslabs_customauth__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @toruslabs/customauth */ "../../node_modules/@toruslabs/customauth/dist/customauth.esm.js");
+/* harmony import */ var bip39__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bip39 */ "../../node_modules/bip39/src/index.js");
+/* harmony import */ var jwt_decode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! jwt-decode */ "../../node_modules/jwt-decode/build/jwt-decode.esm.js");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../errors */ "./src/errors/index.ts");
+/* harmony import */ var _typings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../typings */ "./src/typings/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
+/* harmony import */ var _utils_profiler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/profiler */ "./src/utils/profiler.ts");
+/* provided dependency */ var console = __webpack_require__(/*! ../../node_modules/console-browserify/index.js */ "../../node_modules/console-browserify/index.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -31229,6 +31201,12 @@ function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -31242,8 +31220,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
+
+
+
 var AbstractMobileFacade = /*#__PURE__*/function () {
-  function AbstractMobileFacade() {
+  function AbstractMobileFacade(options) {
     _classCallCheck(this, AbstractMobileFacade);
 
     _defineProperty(this, "mobileAuthAdapter", void 0);
@@ -31257,13 +31239,80 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
     _defineProperty(this, "mandatorySignupParams", ["useNewEth", "type"]);
 
     _defineProperty(this, "deprecatedParams", ["metadataEndpoint"]);
+
+    this.setLogLevel(options.logLevel);
+    this.validateInitParams(options);
+    this.options = options;
+    AbstractMobileFacade.validatePrivateInput(options);
+    _utils_profiler__WEBPACK_IMPORTED_MODULE_6__.perfLogger.setActive(_utils__WEBPACK_IMPORTED_MODULE_5__.logger.getLevel() < _utils_profiler__WEBPACK_IMPORTED_MODULE_6__.INFO_LEVEL);
   }
 
   _createClass(AbstractMobileFacade, [{
     key: "getVersion",
     value: function getVersion() {
-      return "1.2.0";
+      return "2.2.1";
     }
+  }, {
+    key: "obtainTorusKey",
+    value: function () {
+      var _obtainTorusKey = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(idToken) {
+        var decoded, customAuth, torusKey;
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                decoded = (0,jwt_decode__WEBPACK_IMPORTED_MODULE_2__["default"])(idToken);
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_6__.sdkMarker)("startObtainTorusKey");
+                customAuth = new _toruslabs_customauth__WEBPACK_IMPORTED_MODULE_0__["default"]({
+                  baseUrl: "http://192.168.0.108:3000/",
+                  network: this.options.torusNetwork
+                });
+
+                if (!this.options.torusSubVerifier) {
+                  _context.next = 9;
+                  break;
+                }
+
+                _context.next = 6;
+                return customAuth.getAggregateTorusKey(this.options.torusVerifier, decoded.email, [{
+                  idToken: idToken,
+                  verifier: this.options.torusSubVerifier
+                }]);
+
+              case 6:
+                torusKey = _context.sent;
+                _context.next = 12;
+                break;
+
+              case 9:
+                _context.next = 11;
+                return customAuth.getTorusKey(this.options.torusVerifier, decoded.email, {
+                  verifier_id: decoded.email
+                }, idToken);
+
+              case 11:
+                torusKey = _context.sent;
+
+              case 12:
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_6__.sdkMarker)("endObtainTorusKey");
+                _utils_profiler__WEBPACK_IMPORTED_MODULE_6__.perfLogger.log();
+                _utils__WEBPACK_IMPORTED_MODULE_5__.logger.debug("TORUS KEY", torusKey.privateKey);
+                return _context.abrupt("return", torusKey.privateKey);
+
+              case 16:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function obtainTorusKey(_x) {
+        return _obtainTorusKey.apply(this, arguments);
+      }
+
+      return obtainTorusKey;
+    }()
   }, {
     key: "validateInitParams",
     value: function validateInitParams(options) {
@@ -31325,14 +31374,27 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "setLogLevel",
+    value: function setLogLevel(level) {
+      if (!level) {
+        _utils__WEBPACK_IMPORTED_MODULE_5__.logger.warn("[loglevel] is used with default level: info");
+        _utils__WEBPACK_IMPORTED_MODULE_5__.logger.setLevel("info");
+        return;
+      } // eslint-disable-next-line
+
+
+      console.log("[loglevel] is set to ".concat(level));
+      _utils__WEBPACK_IMPORTED_MODULE_5__.logger.setLevel(level);
+    }
+  }, {
     key: "throwIvalidParamError",
     value: function throwIvalidParamError(param) {
-      throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.INVALID_INIT_ARGS, "".concat(param, " is missing during initialization"));
+      throw new _errors__WEBPACK_IMPORTED_MODULE_3__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_4__.ERROR_TYPE.INVALID_INIT_ARGS, "".concat(param, " is missing during initialization"));
     }
   }, {
     key: "throwDepricatedParamError",
     value: function throwDepricatedParamError(param) {
-      throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.DEPRECATED_PARAM, "".concat(param, " is deprecated"));
+      throw new _errors__WEBPACK_IMPORTED_MODULE_3__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_4__.ERROR_TYPE.DEPRECATED_PARAM, "".concat(param, " is deprecated"));
     }
   }], [{
     key: "validatePrivateInput",
@@ -31345,8 +31407,8 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
         return;
       }
 
-      if (options.privateInput && !bip39__WEBPACK_IMPORTED_MODULE_0__.validateMnemonic(options.privateInput)) {
-        throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.INVALID_MNEMONIC);
+      if (options.privateInput && !bip39__WEBPACK_IMPORTED_MODULE_1__.validateMnemonic(options.privateInput)) {
+        throw new _errors__WEBPACK_IMPORTED_MODULE_3__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_4__.ERROR_TYPE.INVALID_MNEMONIC);
       }
     }
   }]);
@@ -31393,6 +31455,10 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
@@ -31426,7 +31492,7 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
 
     _classCallCheck(this, AndroidFacade);
 
-    _this = _super.call(this);
+    _this = _super.call(this, options);
 
     _defineProperty(_assertThisInitialized(_this), "mobileAuthAdapter", void 0);
 
@@ -31435,10 +31501,6 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     _defineProperty(_assertThisInitialized(_this), "platform", _typings__WEBPACK_IMPORTED_MODULE_2__.PLATFORM.ANDROID);
 
     _this.options = options;
-
-    _this.validateInitParams(options);
-
-    _abstractMobileFacade__WEBPACK_IMPORTED_MODULE_5__.AbstractMobileFacade.validatePrivateInput(options);
     return _this;
   }
 
@@ -31446,7 +31508,7 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     key: "getVersion",
     value: function getVersion() {
       try {
-        AndroidCommunicationChannel.getVersion("1.2.0");
+        AndroidCommunicationChannel.getVersion("2.2.1");
       } catch (e) {
         var err = new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.READ_VERSION_ERROR, e);
         AndroidCommunicationChannel.handleError(JSON.stringify(e));
@@ -31456,28 +31518,28 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
   }, {
     key: "triggerSilentSignup",
     value: function () {
-      var _triggerSilentSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(idToken) {
-        var _this$mobileAuthAdapt, result;
-
+      var _triggerSilentSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(torusKey) {
+        var result;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.prev = 0;
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_4__.sdkMarker)("startTotalSignup");
-                this.checkIdToken(idToken);
+                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_4__.sdkMarker)("startTotalSignup"); // @TODO replace by checkTorusKey
+
+                this.checkTorusKey(torusKey);
                 this.mobileAuthAdapter = new _core_mobileAuthAdapter__WEBPACK_IMPORTED_MODULE_0__.MobileAuthAdapter(_objectSpread(_objectSpread({}, this.options), {}, {
                   platform: this.platform,
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SIGNUP
                 }));
                 _context.next = 6;
-                return (_this$mobileAuthAdapt = this.mobileAuthAdapter) === null || _this$mobileAuthAdapt === void 0 ? void 0 : _this$mobileAuthAdapt.triggerSilentSignup(idToken);
+                return this.mobileAuthAdapter.triggerSilentSignup(torusKey);
 
               case 6:
                 result = _context.sent;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("SILENT SIGNUP RESULT", result);
                 (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_4__.sdkMarker)("endTotalSignup");
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_4__.logPerfEntries)();
+                _utils_profiler__WEBPACK_IMPORTED_MODULE_4__.perfLogger.log();
                 AndroidCommunicationChannel.handleSignUpResponse(JSON.stringify(result));
                 _context.next = 16;
                 break;
@@ -31512,7 +31574,7 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
               case 0:
                 _context2.prev = 0;
 
-                if (this.checkIdToken(idToken)) {
+                if (this.checkTorusKey(idToken)) {
                   _context2.next = 4;
                   break;
                 }
@@ -31567,8 +31629,8 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
   }, {
     key: "triggerSignInNoDevice",
     value: function () {
-      var _triggerSignInNoDevice = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(idToken, shareWithMeta, encryptedMnemonic) {
-        var _this$mobileAuthAdapt2, result;
+      var _triggerSignInNoDevice = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(torusKey, shareWithMeta, encryptedMnemonic) {
+        var _this$mobileAuthAdapt, result;
 
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) {
@@ -31576,7 +31638,7 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
               case 0:
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("GET INTO SILENT SIGNIN WITH CUSTOM SHARE");
                 _context3.prev = 1;
-                this.checkIdToken(idToken);
+                this.checkTorusKey(torusKey);
 
                 if (encryptedMnemonic) {
                   _context3.next = 5;
@@ -31600,14 +31662,14 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SIGNIN_NO_DEVICE
                 }));
                 _context3.next = 11;
-                return this.mobileAuthAdapter.triggerSilentSign(idToken, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.CUSTOM, shareWithMeta);
+                return this.mobileAuthAdapter.triggerSilentSign(torusKey, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.CUSTOM, shareWithMeta);
 
               case 11:
                 result = _context3.sent;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("MOBILE ADAPTER ON SILENT SIGNIN WITH CUSTOM", this.mobileAuthAdapter);
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("RESULT ON SIGNIN WITH CUSTOM:", result);
                 _context3.next = 16;
-                return (_this$mobileAuthAdapt2 = this.mobileAuthAdapter.authProvider) === null || _this$mobileAuthAdapt2 === void 0 ? void 0 : _this$mobileAuthAdapt2.compareMnemonics(encryptedMnemonic);
+                return (_this$mobileAuthAdapt = this.mobileAuthAdapter.authProvider) === null || _this$mobileAuthAdapt === void 0 ? void 0 : _this$mobileAuthAdapt.compareMnemonics(encryptedMnemonic);
 
               case 16:
                 AndroidCommunicationChannel.handleSignInNoDeviceResponse(JSON.stringify(result));
@@ -31637,7 +31699,7 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     key: "triggerSignInNoTorus",
     value: function () {
       var _triggerSignInNoTorus = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(deviceShare, customShare, encryptedMnemonic) {
-        var _this$mobileAuthAdapt3, result;
+        var _this$mobileAuthAdapt2, result;
 
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) {
@@ -31681,7 +31743,7 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
               case 12:
                 result = _context4.sent;
                 _context4.next = 15;
-                return (_this$mobileAuthAdapt3 = this.mobileAuthAdapter.authProvider) === null || _this$mobileAuthAdapt3 === void 0 ? void 0 : _this$mobileAuthAdapt3.compareMnemonics(encryptedMnemonic);
+                return (_this$mobileAuthAdapt2 = this.mobileAuthAdapter.authProvider) === null || _this$mobileAuthAdapt2 === void 0 ? void 0 : _this$mobileAuthAdapt2.compareMnemonics(encryptedMnemonic);
 
               case 15:
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("RESULT ON SIGNIN NO TORUS:", result);
@@ -31709,11 +31771,50 @@ var AndroidFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
       return triggerSignInNoTorus;
     }()
   }, {
-    key: "checkIdToken",
-    value: function checkIdToken(idToken) {
+    key: "obtainTorusKey",
+    value: function () {
+      var _obtainTorusKey = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(idToken) {
+        var torusKey;
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _context5.prev = 0;
+                _context5.next = 3;
+                return _get(_getPrototypeOf(AndroidFacade.prototype), "obtainTorusKey", this).call(this, idToken);
+
+              case 3:
+                torusKey = _context5.sent;
+                _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("OBTAINED TORUS KEY", torusKey);
+                AndroidCommunicationChannel.handleTorusKey(torusKey);
+                _context5.next = 11;
+                break;
+
+              case 8:
+                _context5.prev = 8;
+                _context5.t0 = _context5["catch"](0);
+                this.reportError(_context5.t0);
+
+              case 11:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this, [[0, 8]]);
+      }));
+
+      function obtainTorusKey(_x10) {
+        return _obtainTorusKey.apply(this, arguments);
+      }
+
+      return obtainTorusKey;
+    }()
+  }, {
+    key: "checkTorusKey",
+    value: function checkTorusKey(idToken) {
       if (!idToken) {
         var err = new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_TOKEN_PROVIDED);
-        _utils__WEBPACK_IMPORTED_MODULE_3__.logger.error("THERE IS NO TOKEN IN THE TOKEN CHECK, throwing an error");
+        _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("THERE IS NO KEY IN THE TOKEN CHECK, throwing an error");
         _utils__WEBPACK_IMPORTED_MODULE_3__.logger.error(err);
         AndroidCommunicationChannel.handleError(JSON.stringify(err));
         throw err;
@@ -31806,7 +31907,7 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
 
     _classCallCheck(this, IosFacade);
 
-    _this = _super.call(this);
+    _this = _super.call(this, options);
 
     _defineProperty(_assertThisInitialized(_this), "mobileAuthAdapter", void 0);
 
@@ -31815,17 +31916,13 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
     _defineProperty(_assertThisInitialized(_this), "platform", _typings__WEBPACK_IMPORTED_MODULE_2__.PLATFORM.IOS);
 
     _this.options = options;
-
-    _this.validateInitParams(options);
-
-    _abstractMobileFacade__WEBPACK_IMPORTED_MODULE_5__.AbstractMobileFacade.validatePrivateInput(options);
     return _this;
   }
 
   _createClass(IosFacade, [{
     key: "triggerSilentSignup",
     value: function () {
-      var _triggerSilentSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(idToken) {
+      var _triggerSilentSignup = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(torusKey) {
         var _this$mobileAuthAdapt, result;
 
         return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -31834,19 +31931,19 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
               case 0:
                 _context.prev = 0;
                 (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_4__.sdkMarker)("startTotalSignup");
-                this.checkIdToken(idToken);
+                this.checkTorusKey(torusKey);
                 this.mobileAuthAdapter = new _core_mobileAuthAdapter__WEBPACK_IMPORTED_MODULE_0__.MobileAuthAdapter(_objectSpread(_objectSpread({}, this.options), {}, {
                   platform: this.platform,
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SIGNUP
                 }));
                 _context.next = 6;
-                return (_this$mobileAuthAdapt = this.mobileAuthAdapter) === null || _this$mobileAuthAdapt === void 0 ? void 0 : _this$mobileAuthAdapt.triggerSilentSignup(idToken);
+                return (_this$mobileAuthAdapt = this.mobileAuthAdapter) === null || _this$mobileAuthAdapt === void 0 ? void 0 : _this$mobileAuthAdapt.triggerSilentSignup(torusKey);
 
               case 6:
                 result = _context.sent;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.info("SILENT SIGNUP RESULT ON IOS", result);
                 (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_4__.sdkMarker)("endTotalSignup");
-                (0,_utils_profiler__WEBPACK_IMPORTED_MODULE_4__.logPerfEntries)();
+                _utils_profiler__WEBPACK_IMPORTED_MODULE_4__.perfLogger.log();
                 return _context.abrupt("return", result);
 
               case 13:
@@ -31871,7 +31968,7 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
   }, {
     key: "triggerSignInNoCustom",
     value: function () {
-      var _triggerSignInNoCustom = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(idToken, shareWithMeta) {
+      var _triggerSignInNoCustom = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(torusKey, shareWithMeta) {
         var result;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
@@ -31879,7 +31976,7 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
               case 0:
                 _context2.prev = 0;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("GET INTO SILENT SIGNIN WITH THE DEVICE SHARE");
-                this.checkIdToken(idToken);
+                this.checkTorusKey(torusKey);
 
                 if (shareWithMeta) {
                   _context2.next = 5;
@@ -31894,7 +31991,7 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
                   flow: _typings__WEBPACK_IMPORTED_MODULE_2__.FLOW_TYPE.SIGNIN_NO_CUSTOM
                 }));
                 _context2.next = 8;
-                return this.mobileAuthAdapter.triggerSilentSign(idToken, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.DEVICE, shareWithMeta);
+                return this.mobileAuthAdapter.triggerSilentSign(torusKey, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.DEVICE, shareWithMeta);
 
               case 8:
                 result = _context2.sent;
@@ -31923,7 +32020,7 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
   }, {
     key: "triggerSignInNoDevice",
     value: function () {
-      var _triggerSignInNoDevice = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(idToken, shareWithMeta, encryptedMnemonic) {
+      var _triggerSignInNoDevice = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(torusKey, shareWithMeta, encryptedMnemonic) {
         var _this$mobileAuthAdapt2, result;
 
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
@@ -31932,7 +32029,7 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
               case 0:
                 _context3.prev = 0;
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("GET INTO SILENT SIGNIN WITH CUSTOM SHARE");
-                this.checkIdToken(idToken);
+                this.checkTorusKey(torusKey);
 
                 if (shareWithMeta) {
                   _context3.next = 5;
@@ -31956,7 +32053,7 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
                 }));
                 _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("MOBILE ADAPTER ON SILENT SIGNIN WITH CUSTOM", this.mobileAuthAdapter);
                 _context3.next = 11;
-                return this.mobileAuthAdapter.triggerSilentSign(idToken, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.CUSTOM, shareWithMeta);
+                return this.mobileAuthAdapter.triggerSilentSign(torusKey, _typings__WEBPACK_IMPORTED_MODULE_2__.SHARE_TYPE.CUSTOM, shareWithMeta);
 
               case 11:
                 result = _context3.sent;
@@ -32060,10 +32157,10 @@ var IosFacade = /*#__PURE__*/function (_AbstractMobileFacade) {
       return triggerSignInNoTorus;
     }()
   }, {
-    key: "checkIdToken",
-    value: function checkIdToken(idToken) {
-      if (!idToken) {
-        _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("NO TOKEN PROVIDED, EXITING SIGNIN");
+    key: "checkTorusKey",
+    value: function checkTorusKey(torusKey) {
+      if (!torusKey) {
+        _utils__WEBPACK_IMPORTED_MODULE_3__.logger.debug("NO TORUS KEY PROVIDED, EXITING SIGNIN");
         throw new _errors__WEBPACK_IMPORTED_MODULE_1__.P2PSdkError(_typings__WEBPACK_IMPORTED_MODULE_2__.ERROR_TYPE.NO_TOKEN_PROVIDED).toJSON();
       }
     }
@@ -34566,13 +34663,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var loglevel__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(loglevel__WEBPACK_IMPORTED_MODULE_0__);
 
 var logger = loglevel__WEBPACK_IMPORTED_MODULE_0___default().getLogger("sdk");
-var level = "debug";
-
-if (!level) {
-  logger.warn("[loglevel] is used with default level: info");
-}
-
-logger.setLevel(level || "info");
 
 
 /***/ }),
@@ -34608,16 +34698,15 @@ var MOCK_MNEMONIC = "record main swim yellow luggage decrease husband heavy huge
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "logPerfEntries": () => (/* binding */ logPerfEntries),
+/* harmony export */   "INFO_LEVEL": () => (/* binding */ INFO_LEVEL),
+/* harmony export */   "perfLogger": () => (/* binding */ perfLogger),
 /* harmony export */   "sdkMarker": () => (/* binding */ sdkMarker)
 /* harmony export */ });
 /* harmony import */ var _p2p_common__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @p2p/common */ "../common/src/index.ts");
-/* harmony import */ var _logger__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./logger */ "./src/utils/logger.ts");
-
 
 var INFO_LEVEL = 2;
 var sdkMarker = (0,_p2p_common__WEBPACK_IMPORTED_MODULE_0__.markerFactory)();
-var logPerfEntries = (0,_p2p_common__WEBPACK_IMPORTED_MODULE_0__.loggerFactory)(_logger__WEBPACK_IMPORTED_MODULE_1__.logger.getLevel() < INFO_LEVEL);
+var perfLogger = (0,_p2p_common__WEBPACK_IMPORTED_MODULE_0__.loggerFactory)();
 
 
 /***/ }),

@@ -19,9 +19,6 @@ class CreateWalletInteractor(
     val timer
         get() = smsInputTimer.smsInputTimerFlow
 
-    val resetCount
-        get() = smsInputTimer.smsResendCount
-
     suspend fun startCreatingWallet(userPhoneNumber: PhoneNumber, isResend: Boolean = false) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey
             ?: throw CreateWalletFailure("User public key is null")

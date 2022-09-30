@@ -52,7 +52,7 @@ class Web3AuthApiClient(
         }
     }
 
-    override suspend fun triggerSilentSignUp(socialShare: String): Web3AuthSignUpResponse {
+    override suspend fun triggerSilentSignUp(torusKey: String): Web3AuthSignUpResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
 
@@ -61,7 +61,7 @@ class Web3AuthApiClient(
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signup",
-                    jsMethodCall = "triggerSilentSignup('$socialShare')"
+                    jsMethodCall = "triggerSilentSignup('$torusKey')"
                 ),
                 null
             )
@@ -69,7 +69,7 @@ class Web3AuthApiClient(
     }
 
     override suspend fun triggerSignInNoDevice(
-        socialShare: String,
+        torusKey: String,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         encryptedMnemonic: JsonObject,
     ): Web3AuthSignInResponse {
@@ -79,7 +79,7 @@ class Web3AuthApiClient(
             Timber.tag(TAG).i("triggerSignInNoDevice triggered")
 
             val thirdShareAsJsObject = gson.toJson(thirdShare)
-            val params = "'$socialShare', $thirdShareAsJsObject, $encryptedMnemonic"
+            val params = "'$torusKey', $thirdShareAsJsObject, $encryptedMnemonic"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
@@ -90,8 +90,24 @@ class Web3AuthApiClient(
         }
     }
 
+    override suspend fun obtainTorusKey(googleUserTokenId: String): Web3AuthSignUpResponse {
+        return suspendCancellableCoroutine {
+            this.continuation = it
+
+            Timber.tag(TAG).i("obtainTorusKey triggered")
+
+            onboardingWebView.evaluateJavascript(
+                generateFacade(
+                    type = "signup",
+                    jsMethodCall = "obtainTorusKey($googleUserTokenId)"
+                ),
+                null
+            )
+        }
+    }
+
     override suspend fun triggerSignInNoCustom(
-        socialShare: String,
+        torusKey: String,
         deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
@@ -100,7 +116,7 @@ class Web3AuthApiClient(
             Timber.tag(TAG).i("triggerSignInNoCustom triggered")
 
             val deviceShareAsJsObject = gson.toJson(deviceShare)
-            val params = "'$socialShare', $deviceShareAsJsObject"
+            val params = "'$torusKey', $deviceShareAsJsObject"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
@@ -210,6 +226,14 @@ class Web3AuthApiClient(
             runCatching<Throwable> { mapper.fromNetworkError(error) }
                 .recover { it }
                 .onSuccess { continuation?.resumeWithException(it) }
+        }
+
+        @JavascriptInterface
+        fun handleTorusKey(msg: String) {
+            Timber.tag(TAG).d(msg)
+            (continuation as? CancellableContinuation<Web3AuthSignUpResponse>)
+                ?.resumeWith(mapper.fromNetworkSignUp(msg))
+                ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
         }
     }
 }

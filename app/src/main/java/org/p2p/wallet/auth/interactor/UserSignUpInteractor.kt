@@ -22,7 +22,7 @@ class UserSignUpInteractor(
     suspend fun trySignUpNewUser(idToken: String, idTokenOwnerId: String): SignUpResult {
         return try {
             signUpFlowDataRepository.signUpUserId = idTokenOwnerId
-
+            val torusKey: Web3AuthSignUpResponse = obtainTorusKey(idToken)
             val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare(idToken)
             signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
 
@@ -56,5 +56,9 @@ class UserSignUpInteractor(
 
     private suspend fun generateDeviceAndThirdShare(idToken: String): Web3AuthSignUpResponse {
         return web3AuthApi.triggerSilentSignUp(idToken)
+    }
+
+    private suspend fun obtainTorusKey(idToken: String): Web3AuthSignUpResponse {
+        return web3AuthApi.obtainTorusKey(idToken)
     }
 }

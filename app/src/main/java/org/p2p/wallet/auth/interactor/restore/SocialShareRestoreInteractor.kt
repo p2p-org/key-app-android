@@ -7,9 +7,9 @@ class SocialShareRestoreInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
 ) {
-    fun restoreSocialShare(socialShare: String, socialShareUserId: String) {
+    fun restoreSocialShare(torusKey: String, socialShareUserId: String) {
         restoreFlowDataLocalRepository.also {
-            it.socialShare = socialShare
+            it.torusKey = torusKey
             it.socialShareUserId = socialShareUserId
             it.deviceShare = userSignUpDetailsStorage.getLastSignUpUserDetails()
                 ?.signUpDetails

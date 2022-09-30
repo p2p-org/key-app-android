@@ -18,5 +18,6 @@ interface OnboardingGeneralErrorContract {
         fun setGoogleIdToken(userId: String, idToken: String)
         fun useGoogleAccount()
         fun onDevicePlusCustomShareRestoreClicked()
+        fun onContinueWithPhoneNumberClicked()
     }
 }

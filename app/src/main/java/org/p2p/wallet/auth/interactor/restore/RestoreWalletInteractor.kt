@@ -4,12 +4,14 @@ import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 
 class RestoreWalletInteractor(
     private val customShareRestoreInteractor: CustomShareRestoreInteractor,
     private val socialShareRestoreInteractor: SocialShareRestoreInteractor,
     private val userRestoreInteractor: UserRestoreInteractor,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
+    private val smsInputTimer: SmsInputTimer,
     private val signUpDetailsStorage: UserSignUpDetailsStorage
 ) {
 
@@ -49,5 +51,14 @@ class RestoreWalletInteractor(
 
     fun resetUserEnterPhoneNumberTriesCount() {
         restoreFlowDataLocalRepository.resetUserPhoneNumberEnteredCount()
+    }
+
+    fun resetUserPhoneNumber() {
+        restoreFlowDataLocalRepository.userPhoneNumber = null
+        resetTimer()
+    }
+
+    private fun resetTimer() {
+        smsInputTimer.smsResendCount = 0
     }
 }
