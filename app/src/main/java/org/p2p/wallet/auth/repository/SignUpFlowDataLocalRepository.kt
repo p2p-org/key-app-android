@@ -56,6 +56,12 @@ class SignUpFlowDataLocalRepository(
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
+    var torusKey: String? = null
+        set(value) {
+            field = value
+            Timber.tag(TAG).i("socialShare is generated and set: ${torusKey?.length}")
+        }
+
     fun generateUserAccount(userMnemonicPhrase: List<String>) {
         // BIP-44 by default
         userAccount = Account.fromBip44MnemonicWithChange(

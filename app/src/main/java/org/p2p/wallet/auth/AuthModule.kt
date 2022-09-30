@@ -8,7 +8,6 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
-import org.koin.dsl.factory
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
@@ -22,7 +21,7 @@ import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
-import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
@@ -168,7 +167,7 @@ object AuthModule {
 
         singleOf(::RestoreFlowDataLocalRepository)
         factoryOf(::CustomShareRestoreInteractor)
-        factoryOf(::SocialShareRestoreInteractor)
+        factoryOf(::TorusKeyInteractor)
         factoryOf(::UserRestoreInteractor)
     }
 }

@@ -28,7 +28,6 @@ class UserSignUpDetailsStorage(
         val key = generatePrefsKey(userId)
         val value = SignUpUserDetails(userId, data)
 
-        accountStorage.saveObject(key, value)
         accountStorage.saveObject(KEY_LAST_DEVICE_SHARE_ID, value)
         accountStorage.saveString(KEY_IN_SIGN_UP_PROCESS, key)
 

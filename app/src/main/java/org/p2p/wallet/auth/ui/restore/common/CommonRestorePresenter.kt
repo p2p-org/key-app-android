@@ -35,15 +35,16 @@ class CommonRestorePresenter(
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
-        view?.setLoadingState(isScreenLoading = true)
-        restoreWalletInteractor.restoreSocialShare(userId = userId, idToken = idToken)
-        if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)) {
-            launch {
+        launch {
+
+            view?.setLoadingState(isScreenLoading = true)
+            restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
+            if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)) {
                 restoreUserWithShares()
+            } else {
+                view?.onNoTokenFoundError(userId)
+                view?.setLoadingState(isScreenLoading = false)
             }
-        } else {
-            view?.onNoTokenFoundError(userId)
-            view?.setLoadingState(isScreenLoading = false)
         }
     }
 

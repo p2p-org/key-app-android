@@ -54,20 +54,20 @@ class OnboardingGeneralErrorPresenter(
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
-        view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = true)
-        restoreWalletInteractor.restoreSocialShare(userId = userId, idToken = idToken)
-        val flow = if (restoreWalletInteractor.isDeviceShareSaved()) {
-            OnboardingFlow.RestoreWallet.DevicePlusSocialShare
-        } else {
-            OnboardingFlow.RestoreWallet.SocialPlusCustomShare
-        }
-        if (restoreWalletInteractor.isUserReadyToBeRestored(flow)) {
-            launch {
-                restoreUserWithShares(flow)
+        launch {
+            view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = true)
+            restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
+            val flow = if (restoreWalletInteractor.isDeviceShareSaved()) {
+                OnboardingFlow.RestoreWallet.DevicePlusSocialShare
+            } else {
+                OnboardingFlow.RestoreWallet.SocialPlusCustomShare
             }
-        } else {
-            view?.onNoTokenFoundError(userId)
-            view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
+            if (restoreWalletInteractor.isUserReadyToBeRestored(flow)) {
+                restoreUserWithShares(flow)
+            } else {
+                view?.onNoTokenFoundError(userId)
+                view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
+            }
         }
     }
 

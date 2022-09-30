@@ -233,7 +233,7 @@ class NewSmsInputPresenter(
 
     override fun setGoogleSignInToken(userId: String, googleToken: String) {
         launch {
-            restoreWalletInteractor.restoreSocialShare(googleToken, userId)
+            restoreWalletInteractor.obtainTorusKey(googleToken, userId)
             restoreUserWithSocialPlusCustomShare()
         }
     }

@@ -60,7 +60,7 @@ class UserRestoreInteractor(
     ): RestoreUserResult = try {
         val customShare = restoreFlowDataLocalRepository.customShare
             ?: error("Social+Custom restore way failed. Third share is null")
-        val socialShare = restoreFlowDataLocalRepository.torusKey
+        val torusKey = restoreFlowDataLocalRepository.torusKey
             ?: error("Social+Custom restore way failed. Social share is null")
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
             ?: error("Social+Custom restore way failed. Social share ID is null")
@@ -68,7 +68,7 @@ class UserRestoreInteractor(
             ?: error("Social+Custom restore way failed. Mnemonic phrase is null")
 
         val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(
-            socialShare = socialShare,
+            socialShare = torusKey,
             thirdShare = customShare,
             encryptedMnemonic = encryptedMnemonic
         )
@@ -132,13 +132,13 @@ class UserRestoreInteractor(
     ): RestoreUserResult = try {
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
             ?: error("Device+Social restore way failed. Device share is null")
-        val socialShare = restoreFlowDataLocalRepository.torusKey
+        val torusKey = restoreFlowDataLocalRepository.torusKey
             ?: error("Device+Social restore way failed. Social share is null")
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
             ?: error("Device+Social restore way failed. Social share ID is null")
 
         val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoCustom(
-            socialShare = socialShare,
+            socialShare = torusKey,
             deviceShare = deviceShare
         )
         signUpDetailsStorage.save(

@@ -90,7 +90,7 @@ class Web3AuthApiClient(
         }
     }
 
-    override suspend fun obtainTorusKey(googleUserTokenId: String): Web3AuthSignUpResponse {
+    override suspend fun obtainTorusKey(googleUserToken: String): String {
         return suspendCancellableCoroutine {
             this.continuation = it
 
@@ -99,7 +99,7 @@ class Web3AuthApiClient(
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signup",
-                    jsMethodCall = "obtainTorusKey($googleUserTokenId)"
+                    jsMethodCall = "obtainTorusKey('$googleUserToken')"
                 ),
                 null
             )
@@ -231,8 +231,8 @@ class Web3AuthApiClient(
         @JavascriptInterface
         fun handleTorusKey(msg: String) {
             Timber.tag(TAG).d(msg)
-            (continuation as? CancellableContinuation<Web3AuthSignUpResponse>)
-                ?.resumeWith(mapper.fromNetworkSignUp(msg))
+            (continuation as? CancellableContinuation<String>)
+                ?.resumeWith(mapper.obtainTorusKey(msg))
                 ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
         }
     }
