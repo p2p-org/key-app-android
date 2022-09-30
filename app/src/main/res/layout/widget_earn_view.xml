@@ -74,6 +74,16 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:text="@string/earn_widget_learn_more_button" />
 
+        <FrameLayout
+            android:id="@+id/viewTokenContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@id/buttonEarn"
+            app:layout_constraintEnd_toEndOf="@id/buttonEarn"
+            app:layout_constraintTop_toTopOf="@id/buttonEarn" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

@@ -9,16 +9,23 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import com.robinhood.ticker.TickerUtils
 import com.robinhood.ticker.TickerView
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.WidgetEardViewBinding
+import org.p2p.wallet.databinding.ItemDepositTokenBinding
+import org.p2p.wallet.databinding.WidgetEarnViewBinding
 import org.p2p.wallet.utils.DecimalFormatter
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
 
 private const val DEFAULT_BUTTON_TEXT_PADDING_DP = 20
 private const val SMALL_BUTTON_TEXT_PADDING_DP = 16
+
+private const val TOKEN_MARGIN_END_DP = 8
 
 private const val TICKER_DECIMALS = 12
 
@@ -26,9 +33,11 @@ class EarnWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr), KoinComponent {
 
-    private val binding = WidgetEardViewBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding: WidgetEarnViewBinding = inflateViewBinding()
+
+    private val glideManager: GlideManager by inject()
 
     var currentState: EarnWidgetState? = null
 
@@ -51,6 +60,7 @@ class EarnWidget @JvmOverloads constructor(
         textViewEarnTitle.isVisible = !depositingState
         tickerViewAmount.isVisible = balanceState
         textViewEarnMessage.isVisible = !balanceState
+        viewTokenContainer.isVisible = balanceState
         buttonEarn.isEnabled = !depositingState
         when (state) {
             is EarnWidgetState.Balance -> {
@@ -70,10 +80,8 @@ class EarnWidget @JvmOverloads constructor(
                 tickerViewAmount.isVisible = false
                 textViewEarnTitle.isVisible = false
                 textViewEarnMessage.isVisible = false
-                buttonEarn.apply {
-                    isEnabled = true // false
-                    setText(state.buttonTextRes)
-                }
+                buttonEarn.setText(state.buttonTextRes)
+                buttonEarn.isEnabled = true // TODO remove after tests and real integration
             }
             is EarnWidgetState.DepositFoundsFailed -> {
                 makeAlignCenterContent()
@@ -112,6 +120,50 @@ class EarnWidget @JvmOverloads constructor(
             textAlignment = TEXT_ALIGNMENT_CENTER
             setPadding(horizontalPadding, 0, horizontalPadding, 0)
         }
+    }
+
+    fun setDepositTokens(tokens: List<String>) {
+        val container = binding.viewTokenContainer
+        if (container.childCount < tokens.size) {
+            for (i in container.childCount until tokens.size) {
+                val binding = ItemDepositTokenBinding.inflate(
+                    LayoutInflater.from(context), container, true
+                ).apply {
+                    val params = tokenImageView.layoutParams as MarginLayoutParams
+                    params.marginEnd = (TOKEN_MARGIN_END_DP * i).toPx()
+                    tokenImageView.layoutParams = params
+                }
+                val holder = DepositTokenViewHolder(binding, glideManager)
+                binding.root.tag = holder
+            }
+        } else if (container.childCount > tokens.size) {
+            if (tokens.isEmpty()) {
+                removeAllViews()
+            } else {
+                container.removeViewsInLayout(
+                    tokens.size, container.childCount - tokens.size
+                )
+            }
+        }
+        for (i in 0 until container.childCount) {
+            (container.getChildAt(i)?.tag as? DepositTokenViewHolder)?.apply {
+                bind(tokens[i])
+            }
+        }
+    }
+}
+
+class DepositTokenViewHolder(
+    private val binding: ItemDepositTokenBinding,
+    private val glideManager: GlideManager
+) {
+
+    companion object {
+        private const val IMAGE_SIZE = 16
+    }
+
+    fun bind(tokenUrl: String) = with(binding) {
+        glideManager.load(tokenImageView, tokenUrl, IMAGE_SIZE)
     }
 }
 
