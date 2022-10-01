@@ -4,9 +4,12 @@ import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.constants.EventNames
 
 class GeneralAnalytics(private val tracker: Analytics) {
-    fun logActionButtonClicked() {
+    fun logActionButtonClicked(lastScreenName: String) {
         tracker.logEvent(
-            event = EventNames.GENERAL_ACTION_BUTTON_CLICKED
+            event = EventNames.GENERAL_ACTION_BUTTON_CLICKED,
+            params = mapOf(
+                "Last_Screen" to lastScreenName
+            )
         )
     }
 }

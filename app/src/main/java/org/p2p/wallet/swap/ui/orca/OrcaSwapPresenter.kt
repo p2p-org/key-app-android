@@ -76,6 +76,8 @@ class OrcaSwapPresenter(
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     private var destinationToken: Token? by Delegates.observable(null) { _, _, newValue ->
+        newValue?.let { swapAnalytics.logSwapChangingTokenBNew(it.tokenSymbol) }
+
         view?.showDestinationToken(newValue)
     }
 
@@ -155,6 +157,7 @@ class OrcaSwapPresenter(
     }
 
     override fun setNewSourceToken(newToken: Token.Active) {
+        swapAnalytics.logSwapChangingTokenANew(newToken.tokenSymbol)
         setSourceToken(newToken)
         clearDestination()
         updateButtonState()

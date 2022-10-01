@@ -158,7 +158,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
         binding.buttonCenterAction.setOnClickListener {
-            generalAnalytics.logActionButtonClicked()
+            generalAnalytics.logActionButtonClicked(screenAnalyticsInteractor.getCurrentScreenName())
             block.invoke()
         }
     }

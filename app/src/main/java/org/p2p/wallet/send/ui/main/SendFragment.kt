@@ -204,6 +204,8 @@ class SendFragment :
             pasteTextView.setOnClickListener {
                 val nameOrAddress = requireContext().getClipboardText(trimmed = true)
                 nameOrAddress?.let { presenter.validateTargetAddress(it) }
+
+                sendAnalytics.logSendPasting()
             }
 
             sendDetailsView.setOnPaidClickListener { presenter.onFeeClicked() }

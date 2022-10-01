@@ -5,7 +5,9 @@ import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_ACTION_BUTTON_CLICKED
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_CURRENCY
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_A
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_A_NEW
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_B
+import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_B_NEW
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_COMPLETED
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CONFIRM_CLICKED
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CREATING_ANOTHER
@@ -314,6 +316,24 @@ class SwapAnalytics(private val tracker: Analytics) {
                 "Swap_Sum" to swapSum,
                 "Swap_MAX" to isSwapMax,
                 "Swap_USD" to swapUsd.toPlainString()
+            )
+        )
+    }
+
+    fun logSwapChangingTokenANew(tokenAName: String) {
+        tracker.logEvent(
+            event = SWAP_CHANGING_TOKEN_A_NEW,
+            params = mapOf(
+                "Token_A_Name" to tokenAName
+            )
+        )
+    }
+
+    fun logSwapChangingTokenBNew(tokenBName: String) {
+        tracker.logEvent(
+            event = SWAP_CHANGING_TOKEN_B_NEW,
+            params = mapOf(
+                "Token_B_Name" to tokenBName
             )
         )
     }

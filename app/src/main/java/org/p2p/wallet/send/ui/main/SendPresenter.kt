@@ -1,8 +1,5 @@
 package org.p2p.wallet.send.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
@@ -22,6 +19,7 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.renbtc.utils.BitcoinAddressValidator
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -64,9 +62,11 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import java.util.Locale
-import kotlin.properties.Delegates
-import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import java.util.UUID
+import kotlin.properties.Delegates
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class SendPresenter(
     private val sendInteractor: SendInteractor,
@@ -151,6 +151,10 @@ class SendPresenter(
     }
 
     override fun setTargetResult(result: SearchResult?) {
+        if (result is SearchResult.Full && result.username.isNotBlank()) {
+            sendAnalytics.isSendTargetUsername = true
+        }
+
         val validatedResult = validateResultByNetwork(result = result, updateNetwork = true)
 
         state.searchResult = validatedResult
@@ -231,8 +235,6 @@ class SendPresenter(
                         sendAnalytics.isSendTargetUsername = false
                     }
                 }
-
-                sendAnalytics.logSendPasting()
             } catch (e: Throwable) {
                 Timber.e(e, "Error validating target: $value")
             } finally {

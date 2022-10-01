@@ -1,12 +1,12 @@
 package org.p2p.wallet.home.ui.main.bottomsheet
 
+import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
@@ -58,24 +58,18 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
                 textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
             }
             viewActionReceive.apply {
-                receiveAnalytics.logReceiveActionButtonClicked()
-
                 setResultClickListener(HomeAction.RECEIVE)
                 imageViewAction.setImageResource(R.drawable.action_receive_icon)
                 textViewActionTitle.setText(R.string.home_actions_receive_title)
                 textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
             }
             viewActionTrade.apply {
-                swapAnalytics.logSwapActionButtonClicked()
-
                 setResultClickListener(HomeAction.TRADE)
                 imageViewAction.setImageResource(R.drawable.action_trade_icon)
                 textViewActionTitle.setText(R.string.home_actions_trade_title)
                 textViewActionSubtitle.setText(R.string.home_actions_trade_subtitle)
             }
             viewActionSend.apply {
-                sendAnalytics.logSendActionButtonClicked()
-
                 setResultClickListener(HomeAction.SEND)
                 imageViewAction.setImageResource(R.drawable.action_send_icon)
                 textViewActionTitle.setText(R.string.home_actions_send_title)
@@ -88,8 +82,18 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
 
     private fun ViewActionItemBinding.setResultClickListener(action: HomeAction) {
         viewActionRoot.setOnClickListener {
+            logActionButtonClicked(action)
+
             setFragmentResult(requestKey, bundleOf(resultKey to action))
             dismissAllowingStateLoss()
+        }
+    }
+
+    private fun logActionButtonClicked(clickedActionButton: HomeAction) {
+        when (clickedActionButton) {
+            HomeAction.RECEIVE -> receiveAnalytics.logReceiveActionButtonClicked()
+            HomeAction.TRADE -> swapAnalytics.logSwapActionButtonClicked()
+            HomeAction.SEND -> sendAnalytics.logSendActionButtonClicked()
         }
     }
 }

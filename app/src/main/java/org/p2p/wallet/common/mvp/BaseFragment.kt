@@ -61,11 +61,26 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setSystemBarsColors(statusBarColor, navBarColor)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        logScreenOpenedEvent()
+    }
+
+    // fragments in the tab are shown using show/hide methods
+    // so no standard lifecycle methods are called
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) logScreenOpenedEvent()
+    }
+
+    private fun logScreenOpenedEvent() {
         val analyticsName = getAnalyticsName()
         if (analyticsName.isNotEmpty()) {
             analyticsInteractor.logScreenOpenEvent(analyticsName)
         }
-        setSystemBarsColors(statusBarColor, navBarColor)
     }
 
     override fun overrideEnterAnimation(@AnimRes animation: Int) {
