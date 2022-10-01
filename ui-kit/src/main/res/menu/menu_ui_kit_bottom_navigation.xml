@@ -7,7 +7,7 @@
         android:title="@string/common_wallet" />
     <item
         android:id="@+id/earnItem"
-        android:icon="@drawable/ic_main_feedback"
+        android:icon="@drawable/ic_earn"
         android:title="@string/common_earn" />
     <item
         android:id="@+id/sendItem"
