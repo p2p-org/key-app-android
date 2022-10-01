@@ -3,4 +3,5 @@
 
     <string name="solend_earn_title">Earn a yield</string>
     <string name="solend_deposit_to_earn">Deposit to earn a yield</string>
+    <string name="solend_apy">APY</string>
 </resources>

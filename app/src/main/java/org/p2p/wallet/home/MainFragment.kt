@@ -23,7 +23,7 @@ import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.solend.ui.SolendEarnFragment
+import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
