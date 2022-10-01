@@ -1,5 +1,9 @@
 package org.p2p.wallet.common.ui.widget
 
+import androidx.annotation.AttrRes
+import androidx.annotation.FloatRange
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import android.content.Context
 import android.content.res.TypedArray
 import android.os.Parcel
@@ -9,10 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.annotation.AttrRes
-import androidx.annotation.FloatRange
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import org.p2p.uikit.utils.dip
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetExpandViewBinding
@@ -118,31 +118,6 @@ class ExpandView @JvmOverloads constructor(
 
         constructor(source: Parcel) : super(source) {
             isExpanded = source.readInt() != 0
-        }
-
-        override fun writeToParcel(out: Parcel?, flags: Int) {
-            super.writeToParcel(out, flags)
-            out?.writeInt(if (isExpanded == true) 1 else 0)
-        }
-
-        companion object {
-            @JvmField
-            val CREATOR: Parcelable.ClassLoaderCreator<ExpandViewState> =
-                object : Parcelable.ClassLoaderCreator<ExpandViewState> {
-
-                    override fun createFromParcel(
-                        p0: Parcel,
-                        p1: ClassLoader?
-                    ): ExpandViewState {
-                        return ExpandViewState(p0)
-                    }
-
-                    override fun createFromParcel(p0: Parcel): ExpandViewState {
-                        return ExpandViewState(p0)
-                    }
-
-                    override fun newArray(p0: Int): Array<ExpandViewState> = newArray(p0)
-                }
         }
     }
 }
