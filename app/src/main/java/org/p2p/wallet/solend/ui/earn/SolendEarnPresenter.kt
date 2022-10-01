@@ -6,6 +6,7 @@ import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.getErrorMessage
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SolendEarnPresenter(
@@ -17,6 +18,7 @@ class SolendEarnPresenter(
         launch {
             try {
                 // TODO: do request and show real data
+                delay(1000L)
                 val tokens = listOf(
                     SolendDepositToken.Active(
                         "Solana",
