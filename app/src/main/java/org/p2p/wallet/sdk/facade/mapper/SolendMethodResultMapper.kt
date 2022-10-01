@@ -1,7 +1,6 @@
 package org.p2p.wallet.sdk.facade.mapper
 
 import com.google.gson.Gson
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess
 import org.p2p.wallet.utils.fromJsonReified
 import timber.log.Timber
 
@@ -10,20 +9,30 @@ class SolendMethodResultMapper(
     val gson: Gson
 ) {
 
-    inline fun <reified ResultT : SolendMethodResultSuccess> fromSdk(sdkResult: String): SolendResult<ResultT> {
-        return gson.fromJsonReified<SolendResult<ResultT>>(sdkResult)
-            ?.onErrorLog(sdkResult)
-            ?: error("Failed to map result from sdk: $sdkResult")
+    inline fun <reified ResultT> fromSdk(sdkResult: String): ResultT {
+        val mapperResponse = gson.fromJsonReified<SolendResult<ResultT>>(sdkResult)
+
+        logMethodResponse(mapperResponse, sdkResult)
+
+        if (mapperResponse?.error != null) {
+            Timber.e(mapperResponse.error)
+            throw mapperResponse.error
+        }
+
+        return mapperResponse?.success ?: error("Failed to map result from sdk: $sdkResult")
     }
 
-    // public due to inline
-    fun <ResultType : SolendMethodResultSuccess> SolendResult<ResultType>.onErrorLog(
-        rawSdkResult: String
-    ): SolendResult<ResultType> {
-        if (error != null) {
-            Timber.i(rawSdkResult)
-            Timber.e(error)
+    fun <ResultT> logMethodResponse(mapperResponse: SolendResult<ResultT>?, sdkResult: String) {
+        val logMessage = buildString {
+            if (mapperResponse?.error != null) {
+                append("ERROR")
+            } else {
+                append("SUCCESS")
+            }
+            append(" -------> ")
+            appendLine()
+            append(sdkResult)
         }
-        return this
+        Timber.tag("SolendMethodResultMapper").d(logMessage)
     }
 }

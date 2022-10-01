@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class SolendConfigResponse(
     @SerializedName("config")
     val solendConfig: SolendConfig
-) : SolendMethodResultSuccess {
+) {
     data class SolendConfig(
         @SerializedName("assets")
         val assets: List<SolendAsset>,

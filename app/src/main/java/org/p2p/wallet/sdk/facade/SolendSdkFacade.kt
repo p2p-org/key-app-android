@@ -7,31 +7,28 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.sdk.SolendSdk
 import org.p2p.wallet.sdk.facade.mapper.SolendMethodResultMapper
+import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountResponse
+import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountsListResponse
 import org.p2p.wallet.sdk.facade.model.SolendConfigResponse
+import org.p2p.wallet.sdk.facade.model.SolendDepositTransactionsResponse
 import org.p2p.wallet.sdk.facade.model.SolendEnvironment
 import org.p2p.wallet.sdk.facade.model.SolendFeePayerTokenData
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendCollateralAccount
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendCollateralAccountsList
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendDepositTransactions
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendMarketInformation
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendTokenDepositFees
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendUserDeposit
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendUserDepositByTokenResponse
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendUserDepositsResponse
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultSuccess.SolendWithdrawTransactions
+import org.p2p.wallet.sdk.facade.model.SolendMarketInformationResponse
+import org.p2p.wallet.sdk.facade.model.SolendPool
+import org.p2p.wallet.sdk.facade.model.SolendTokenDepositFeesResponse
+import org.p2p.wallet.sdk.facade.model.SolendUserDepositByTokenResponseResponse
+import org.p2p.wallet.sdk.facade.model.SolendUserDepositResponse
+import org.p2p.wallet.sdk.facade.model.SolendUserDepositsResponseResponse
+import org.p2p.wallet.sdk.facade.model.SolendWithdrawTransactionsResponse
 import org.p2p.wallet.utils.Base58String
-import timber.log.Timber
 import kotlinx.coroutines.withContext
-
-private const val TAG = "SolendSdkFacade"
 
 class SolendSdkFacade(
     private val solendSdk: SolendSdk,
     private val solendEnvironment: SolendEnvironment,
     private val networkEnvironmentManager: NetworkEnvironmentManager,
-    private val methodResultHandler: SolendMethodResultHandler,
     private val methodResultMapper: SolendMethodResultMapper,
+    private val logger: SolendSdkLogger,
     private val gson: Gson,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -50,26 +47,36 @@ class SolendSdkFacade(
         payFeeWithRelay: Boolean,
         feePayerToken: SolendFeePayerTokenData?,
         realFeePayerAddress: Base58String
-    ) {
-        withContext(dispatchers.io) {
-            Timber.tag(TAG).i("Method createSolendDepositTransactions called")
+    ): SolendDepositTransactionsResponse = withContext(dispatchers.io) {
+        logger.logRequest(
+            "createDepositTransactions",
+            relayProgramId,
+            depositAmount,
+            currencySymbol,
+            ownerAddress,
+            lendingMarketAddress,
+            currentBlockhash,
+            remainingFreeTransactionsCount,
+            payFeeWithRelay,
+            feePayerToken,
+            realFeePayerAddress
+        )
 
-            val result = solendSdk.createSolendDepositTransactions(
-                solana_rpc_url = currentNetworkEnvironment.endpoint,
-                relay_program_id = relayProgramId,
-                amount = depositAmount,
-                symbol = currencySymbol,
-                ownerAddres = ownerAddress.value,
-                environment = solendEnvironment.sdkValue,
-                lendng_market_address = lendingMarketAddress.orEmpty(),
-                blockhash = currentBlockhash,
-                free_transactions_count = remainingFreeTransactionsCount,
-                need_to_use_relay = payFeeWithRelay,
-                pay_fee_in_token = feePayerToken?.let { gson.toJson(it) }.orEmpty(),
-                fee_payer_address = realFeePayerAddress.value
-            )
-            handleSdkResultWithHandler<SolendDepositTransactions>(result)
-        }
+        val response = solendSdk.createSolendDepositTransactions(
+            solana_rpc_url = currentNetworkEnvironment.endpoint,
+            relay_program_id = relayProgramId,
+            amount = depositAmount,
+            symbol = currencySymbol,
+            ownerAddres = ownerAddress.value,
+            environment = solendEnvironment.sdkValue,
+            lendng_market_address = lendingMarketAddress.orEmpty(),
+            blockhash = currentBlockhash,
+            free_transactions_count = remainingFreeTransactionsCount,
+            need_to_use_relay = payFeeWithRelay,
+            pay_fee_in_token = feePayerToken?.let { gson.toJson(it) }.orEmpty(),
+            fee_payer_address = realFeePayerAddress.value
+        )
+        methodResultMapper.fromSdk(response)
     }
 
     suspend fun createWithdrawTransactions(
@@ -83,129 +90,114 @@ class SolendSdkFacade(
         payFeeWithRelay: Boolean,
         feePayerToken: SolendFeePayerTokenData?,
         realFeePayerAddress: Base58String
-    ) {
-        withContext(dispatchers.io) {
-            Timber.tag(TAG).i("Method createSolendWithdrawTransactions called")
+    ): SolendWithdrawTransactionsResponse = withContext(dispatchers.io) {
+        logger.logRequest(
+            "createWithdrawTransactions",
+            relayProgramId,
+            depositAmount,
+            currencySymbol,
+            ownerAddress,
+            lendingMarketAddress,
+            currentBlockhash,
+            remainingFreeTransactionsCount,
+            payFeeWithRelay,
+            feePayerToken,
+            realFeePayerAddress
+        )
 
-            val result = solendSdk.createSolendWithdrawTransactions(
-                solana_rpc_url = currentNetworkEnvironment.endpoint,
-                relay_program_id = relayProgramId,
-                amount = depositAmount,
-                symbol = currencySymbol,
-                owner_address = ownerAddress.value,
-                environment = solendEnvironment.sdkValue,
-                lendng_market_address = lendingMarketAddress.orEmpty(),
-                blockhash = currentBlockhash,
-                free_transactions_count = remainingFreeTransactionsCount,
-                need_to_use_relay = payFeeWithRelay,
-                pay_fee_in_token = feePayerToken?.let { gson.toJson(it) }.orEmpty(),
-                fee_payer_address = realFeePayerAddress.value
-            )
-            handleSdkResultWithHandler<SolendWithdrawTransactions>(result)
-        }
+        val response = solendSdk.createSolendWithdrawTransactions(
+            solana_rpc_url = currentNetworkEnvironment.endpoint,
+            relay_program_id = relayProgramId,
+            amount = depositAmount,
+            symbol = currencySymbol,
+            owner_address = ownerAddress.value,
+            environment = solendEnvironment.sdkValue,
+            lendng_market_address = lendingMarketAddress.orEmpty(),
+            blockhash = currentBlockhash,
+            free_transactions_count = remainingFreeTransactionsCount,
+            need_to_use_relay = payFeeWithRelay,
+            pay_fee_in_token = feePayerToken?.let { gson.toJson(it) }.orEmpty(),
+            fee_payer_address = realFeePayerAddress.value
+        )
+        methodResultMapper.fromSdk(response)
     }
 
     suspend fun getSolendCollateralAccounts(
         ownerAddress: Base58String
-    ): List<SolendCollateralAccount> = withContext(dispatchers.io) {
-        Timber.tag(TAG).i("Method getSolendCollateralAccounts called")
+    ): List<SolendCollateralAccountResponse> = withContext(dispatchers.io) {
+        logger.logRequest("getSolendCollateralAccounts", ownerAddress)
 
-        methodResultMapper.fromSdk<SolendCollateralAccountsList>(
-            solendSdk.getSolendCollateralAccounts(
-                rpc_url = currentNetworkEnvironment.endpoint,
-                owner = ownerAddress.value
-            )
+        val response = solendSdk.getSolendCollateralAccounts(
+            rpc_url = currentNetworkEnvironment.endpoint,
+            owner = ownerAddress.value
         )
-            .getOrThrow()
-            .accounts
+        methodResultMapper.fromSdk<SolendCollateralAccountsListResponse>(response).accounts
     }
 
     suspend fun getSolendConfig(): SolendConfigResponse = withContext(dispatchers.io) {
-        Timber.tag(TAG).i("Method getSolendConfig called")
+        logger.logRequest("getSolendConfig")
 
-        methodResultMapper.fromSdk<SolendConfigResponse>(
-            solendSdk.getSolendConfig(
-                environment = solendEnvironment.sdkValue
-            )
+        val response = solendSdk.getSolendConfig(
+            environment = solendEnvironment.sdkValue
         )
-            .getOrThrow()
+        methodResultMapper.fromSdk(response)
     }
 
     suspend fun getSolendDepositFees(
-        addressOwner: Base58String,
+        ownerAddress: Base58String,
         tokenAmountToDeposit: Long,
         tokenAddressToDeposit: Base58String
-    ): SolendTokenDepositFees {
-        return withContext(dispatchers.io) {
-            Timber.tag(TAG).i("Method getSolendDepositFees called")
+    ): SolendTokenDepositFeesResponse = withContext(dispatchers.io) {
+        logger.logRequest("getSolendDepositFees", ownerAddress, tokenAmountToDeposit, tokenAddressToDeposit)
 
-            methodResultMapper.fromSdk<SolendTokenDepositFees>(
-                solendSdk.getSolendDepositFees(
-                    rpc_url = currentNetworkEnvironment.endpoint,
-                    owner = addressOwner.value,
-                    token_amount = tokenAmountToDeposit,
-                    token_symbol = tokenAddressToDeposit.value
-                )
-            )
-                .getOrThrow()
-        }
+        val response = solendSdk.getSolendDepositFees(
+            rpc_url = currentNetworkEnvironment.endpoint,
+            owner = ownerAddress.value,
+            token_amount = tokenAmountToDeposit,
+            token_symbol = tokenAddressToDeposit.value
+        )
+        methodResultMapper.fromSdk(response)
     }
 
     suspend fun getSolendMarketInfo(
         tokens: List<Token>,
         solendPoolName: String
-    ) {
-        return withContext(dispatchers.io) {
-            Timber.tag(TAG).i("Method getSolendMarketInfo called")
+    ): SolendMarketInformationResponse = withContext(dispatchers.io) {
+        logger.logRequest("getSolendMarketInfo", tokens, solendPoolName)
 
-            val tokenSymbols = tokens.joinToString(separator = ",", transform = Token::tokenSymbol)
-            methodResultMapper.fromSdk<SolendMarketInformation>(
-                solendSdk.getSolendMarketInfo(
-                    tokens = tokenSymbols,
-                    pool = solendPoolName
-                )
-            )
-                .getOrThrow()
-        }
+        val tokenSymbols = tokens.joinToString(separator = ",", transform = Token::tokenSymbol)
+        val response = solendSdk.getSolendMarketInfo(
+            tokens = tokenSymbols,
+            pool = solendPoolName
+        )
+        methodResultMapper.fromSdk(response)
     }
 
     suspend fun getSolendUserDepositByTokenSymbol(
         userAddress: Base58String,
         tokenSymbol: String,
         solendPoolAddress: SolendPool
-    ): SolendUserDeposit = withContext(dispatchers.io) {
-        Timber.tag(TAG).i("Method getSolendUserDepositBySymbol with $tokenSymbol called")
+    ): SolendUserDepositResponse = withContext(dispatchers.io) {
+        logger.logRequest("getSolendUserDepositByTokenSymbol", userAddress, tokenSymbol, solendPoolAddress)
 
-        methodResultMapper.fromSdk<SolendUserDepositByTokenResponse>(
-            solendSdk.getSolendUserDepositBySymbol(
-                owner = userAddress.value,
-                symbol = tokenSymbol,
-                pool = solendPoolAddress.poolAddress.value
-            )
+        val response = solendSdk.getSolendUserDepositBySymbol(
+            owner = userAddress.value,
+            symbol = tokenSymbol,
+            pool = solendPoolAddress.poolAddress.value
         )
-            .getOrThrow()
-            .userDepositBySymbol
+        methodResultMapper.fromSdk<SolendUserDepositByTokenResponseResponse>(response).userDepositBySymbol
     }
 
     suspend fun getAllSolendUserDeposits(
         userAddress: Base58String,
         solendPoolAddress: SolendPool
-    ): List<SolendUserDeposit> = withContext(dispatchers.io) {
-        Timber.tag(TAG).i("Method getSolendUserDeposits called")
+    ): List<SolendUserDepositResponse> = withContext(dispatchers.io) {
+        logger.logRequest("getSolendUserDeposits", userAddress, solendPoolAddress)
 
-        methodResultMapper.fromSdk<SolendUserDepositsResponse>(
-            solendSdk.getSolendUserDeposits(
-                owner = userAddress.value,
-                pool = solendPoolAddress.poolAddress.value
-            )
+        val response = solendSdk.getSolendUserDeposits(
+            owner = userAddress.value,
+            pool = solendPoolAddress.poolAddress.value
         )
-            .getOrThrow()
-            .deposits
-    }
-
-    private inline fun <reified T : SolendMethodResultSuccess> handleSdkResultWithHandler(result: String) {
-        methodResultMapper.fromSdk<T>(result)
-            .onResultSuccess { methodResultHandler.handleResultSuccess(it) }
-            .onResultError { methodResultHandler.handleResultError(it) }
+        methodResultMapper.fromSdk<SolendUserDepositsResponseResponse>(response).deposits
     }
 }

@@ -1,4 +1,4 @@
-package org.p2p.wallet.sdk.facade
+package org.p2p.wallet.sdk.facade.model
 
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
