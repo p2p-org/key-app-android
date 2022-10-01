@@ -327,6 +327,9 @@ dependencies {
     // Koin for JUnit 4
     testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 
+    testImplementation "org.assertj:assertj-core:3.22.0"
+    testImplementation 'org.slf4j:slf4j-nop:1.7.30'
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
 
     implementation 'com.github.RedMadRobot:input-mask-android:6.1.0'
