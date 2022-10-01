@@ -58,13 +58,10 @@ object EventNames {
     const val ONBOARD_USERNAME_SAVED = "Username_Saved"
     const val ONBOARD_USERNAME_RESERVED = "Username_Reserved"
 
-    const val BUY_VIEWED = "Buy_Viewed"
-    const val BUY_LIST_VIEWED = "Buy_List_Viewed"
+    const val BUY_SCREEN_OPENED = "Buy_Screen_Opened"
     const val BUY_TOKEN_CHOSEN = "Buy_Token_Chosen"
     const val BUY_GOING_BACK = "Buy_Going_Back"
     const val BUY_CONTINUING = "Buy_Continuing"
-    const val BUY_CHANGING_PROVIDER = "Buy_Changing_Provider"
-    const val BUY_PROVIDER_STEP_VIEWED = "Buy_Provider_Step_Viewed"
     const val BUY_PAYMENT_RESULT_SHOWN = "Buy_Payment_Result_Shown"
 
     const val SEND_VIEWED = "Send_Viewed"

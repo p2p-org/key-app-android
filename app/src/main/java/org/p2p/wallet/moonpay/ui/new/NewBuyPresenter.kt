@@ -125,8 +125,10 @@ class NewBuyPresenter(
         view?.close()
     }
 
-    override fun onPaymentMethodSelected(selectedMethod: PaymentMethod) {
-        buyAnalytics.logBuyMethodPaymentChanged(selectedMethod)
+    override fun onPaymentMethodSelected(selectedMethod: PaymentMethod, byUser: Boolean) {
+        if (byUser) {
+            buyAnalytics.logBuyMethodPaymentChanged(selectedMethod)
+        }
         selectedPaymentMethod = selectedMethod
         paymentMethods.forEach { paymentMethod ->
             paymentMethod.isSelected = paymentMethod.method == selectedMethod.method
@@ -195,7 +197,7 @@ class NewBuyPresenter(
         if (selectedPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL || selectedCurrencyCode == Constants.EUR_SYMBOL) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
-                    onPaymentMethodSelected(it)
+                    onPaymentMethodSelected(it, byUser = false)
                 }
                 return false
             } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {

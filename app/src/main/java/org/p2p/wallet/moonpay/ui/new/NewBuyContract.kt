@@ -34,7 +34,7 @@ interface NewBuyContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onPaymentMethodSelected(selectedMethod: PaymentMethod)
+        fun onPaymentMethodSelected(selectedMethod: PaymentMethod, byUser: Boolean = true)
         fun onSelectTokenClicked()
         fun onSelectCurrencyClicked()
         fun onTotalClicked()
