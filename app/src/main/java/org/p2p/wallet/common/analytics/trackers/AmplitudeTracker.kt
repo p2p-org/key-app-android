@@ -31,6 +31,10 @@ class AmplitudeTracker(app: Application) : AnalyticsTracker {
         amplitude.identify(Identify().setOnce(key, value))
     }
 
+    override fun setUserPropertyOnce(key: String, value: Int) {
+        amplitude.identify(Identify().setOnce(key, value))
+    }
+
     override fun logEvent(eventName: String, params: Map<String, Any>) {
         if (params.isEmpty()) {
             amplitude.logEvent(eventName)
@@ -62,5 +66,9 @@ class AmplitudeTracker(app: Application) : AnalyticsTracker {
 
     override fun regenerateDeviceId() {
         amplitude.regenerateDeviceId()
+    }
+
+    override fun clearUserProperties() {
+        amplitude.clearUserProperties()
     }
 }

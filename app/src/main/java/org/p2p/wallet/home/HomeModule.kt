@@ -71,6 +71,7 @@ object HomeModule : InjectionModule {
         factory<HomeContract.Presenter> {
             HomePresenter(
                 inAppFeatureFlags = get(),
+                analytics = get(),
                 updatesManager = get(),
                 userInteractor = get(),
                 settingsInteractor = get(),

@@ -1,6 +1,5 @@
 package org.p2p.wallet.common.analytics.trackers
 
-import org.p2p.wallet.utils.NoOp
 import timber.log.Timber
 
 private const val TAG_ANALYTICS = "Analytics"
@@ -12,6 +11,10 @@ class TimberTracker : AnalyticsTracker {
     }
 
     override fun setUserPropertyOnce(key: String, value: String) {
+        Timber.tag(TAG_ANALYTICS).v("setUserPropertyOnce() key [$key], value [$value]")
+    }
+
+    override fun setUserPropertyOnce(key: String, value: Int) {
         Timber.tag(TAG_ANALYTICS).v("setUserPropertyOnce() key [$key], value [$value]")
     }
 
@@ -35,5 +38,7 @@ class TimberTracker : AnalyticsTracker {
         Timber.tag(TAG_ANALYTICS).v("appendToArray() property [$property] value $value")
     }
 
-    override fun regenerateDeviceId() = NoOp
+    override fun regenerateDeviceId() = Unit
+
+    override fun clearUserProperties() = Unit
 }

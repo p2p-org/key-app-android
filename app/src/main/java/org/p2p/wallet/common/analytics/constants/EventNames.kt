@@ -64,6 +64,9 @@ object EventNames {
     const val BUY_CONTINUING = "Buy_Continuing"
     const val BUY_PAYMENT_RESULT_SHOWN = "Buy_Payment_Result_Shown"
 
+    const val HOME_USER_HAS_POSITIVE_BALANCE = "User_Has_Positive_Balance"
+    const val HOME_USER_AGGREGATE_BALANCE = "User_Aggregate_Balance"
+
     const val SEND_VIEWED = "Send_Viewed"
     const val SEND_CHANGING_TOKEN = "Send_Changing_Token"
     const val SEND_CHANGING_CURRENCY = "Send_Changing_Currency"
