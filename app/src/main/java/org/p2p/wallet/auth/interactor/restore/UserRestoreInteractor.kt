@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.RestoreUserException
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
@@ -44,15 +45,11 @@ class UserRestoreInteractor(
         return if (share == null) 0 else 1
     }
 
-    suspend fun tryRestoreUser(restoreFlow: OnboardingFlow.RestoreWallet): RestoreUserResult = try {
-        when (restoreFlow) {
-            is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> tryRestoreUser(restoreFlow)
-            is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> tryRestoreUser(restoreFlow)
-            is OnboardingFlow.RestoreWallet.DevicePlusSocialShare -> tryRestoreUser(restoreFlow)
-            else -> error("Unknown restore flow")
-        }
-    } catch (error: Throwable) {
-        RestoreUserResult.RestoreFailed(error)
+    suspend fun tryRestoreUser(restoreFlow: OnboardingFlow.RestoreWallet): RestoreUserResult = when (restoreFlow) {
+        is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> tryRestoreUser(restoreFlow)
+        is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> tryRestoreUser(restoreFlow)
+        is OnboardingFlow.RestoreWallet.DevicePlusSocialShare -> tryRestoreUser(restoreFlow)
+        else -> error("Unknown restore flow")
     }
 
     private suspend fun tryRestoreUser(
@@ -85,9 +82,13 @@ class UserRestoreInteractor(
         )
 
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-        RestoreUserResult.RestoreSuccessful
-    } catch (error: Throwable) {
-        RestoreUserResult.RestoreFailed(error)
+        RestoreUserResult.RestoreSuccess.SocialPlusCustomShare
+    } catch (error: Web3AuthErrorResponse) {
+        val errorMessage = error.message.orEmpty()
+        RestoreUserResult.RestoreFailure.SocialPlusCustomShare(RestoreUserException(errorMessage, error.errorCode))
+    } catch (e: Throwable) {
+        val errorMessage = e.message.orEmpty()
+        RestoreUserResult.RestoreFailure.SocialPlusCustomShare(RestoreUserException(errorMessage))
     }
 
     private suspend fun tryRestoreUser(
@@ -101,8 +102,7 @@ class UserRestoreInteractor(
 
         when {
             deviceShare == null -> {
-                Timber.i("Restore Device + Custom. No Device share")
-                RestoreUserResult.DeviceShareNotFound
+                RestoreUserResult.RestoreFailure.DevicePlusCustomShare(RestoreUserException("No Device Share"))
             }
             else -> {
                 Timber.i("Restore Device + Custom. Start restore wallet")
@@ -112,19 +112,19 @@ class UserRestoreInteractor(
                     encryptedMnemonic = encryptedMnemonic
                 )
                 restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-                RestoreUserResult.RestoreSuccessful
+                RestoreUserResult.RestoreSuccess.DevicePlusCustomShare
             }
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
         if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
-            RestoreUserResult.UserNotFound
+            RestoreUserResult.RestoreFailure.DevicePlusCustomShare.UserNotFound
         } else {
-            RestoreUserResult.SharesDoNotMatch
+            RestoreUserResult.RestoreFailure.DevicePlusCustomShare.SharesDoesNotMatch
             // TODO: PWN-5197 check on another error but use this for now
             // RestoreUserResult.RestoreFailed(Throwable("Unknown error type"))
         }
     } catch (error: Throwable) {
-        RestoreUserResult.RestoreFailed(error)
+        RestoreUserResult.RestoreFailure.DevicePlusCustomShare(RestoreUserException(error.message.orEmpty()))
     }
 
     private suspend fun tryRestoreUser(
@@ -152,22 +152,24 @@ class UserRestoreInteractor(
             userId = socialShareUserId
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-        RestoreUserResult.RestoreSuccessful
+        RestoreUserResult.RestoreSuccess.DevicePlusSocialShare
     } catch (web3AuthError: Web3AuthErrorResponse) {
         val socialShareId = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
         when (web3AuthError.errorType) {
             Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT -> {
-                RestoreUserResult.DeviceAndSocialShareNotMatch(socialShareId)
+                RestoreUserResult.RestoreFailure.DevicePlusSocialShare.DeviceAndSocialShareNotMatch(socialShareId)
             }
             Web3AuthErrorResponse.ErrorType.SOCIAL_SHARE_NOT_FOUND -> {
-                RestoreUserResult.SocialShareNotFound(socialShareId)
+                RestoreUserResult.RestoreFailure.DevicePlusSocialShare.SocialShareNotFound(socialShareId)
             }
             else -> {
-                RestoreUserResult.RestoreFailed(web3AuthError)
+                RestoreUserResult.RestoreFailure.DevicePlusSocialShare(
+                    RestoreUserException(web3AuthError.message.orEmpty())
+                )
             }
         }
     } catch (e: Throwable) {
-        RestoreUserResult.RestoreFailed(e)
+        RestoreUserResult.RestoreFailure.DevicePlusSocialShare(RestoreUserException(e.message.orEmpty()))
     }
 
     fun finishAuthFlow() {

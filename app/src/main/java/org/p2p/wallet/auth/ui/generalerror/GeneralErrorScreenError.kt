@@ -31,8 +31,6 @@ sealed class GeneralErrorScreenError(
 
     object DeviceShareNotFound : GeneralErrorScreenError()
 
-    object SocialAuthRepeat : GeneralErrorScreenError()
-
     data class NoTokenFound(val tokenId: String) : GeneralErrorScreenError()
 
     data class SocialShareNotFound(val socialShareUserId: String) : GeneralErrorScreenError()

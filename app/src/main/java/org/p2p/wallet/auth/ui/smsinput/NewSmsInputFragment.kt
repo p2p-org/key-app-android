@@ -9,7 +9,7 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.PhoneNumber
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.repository.RestoreHandledState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
@@ -132,7 +132,7 @@ class NewSmsInputFragment :
         )
     }
 
-    override fun navigateToCriticalErrorScreen(errorType: GeneralErrorScreenError) {
+    override fun navigateToCriticalErrorScreen(errorType: RestoreHandledState) {
         popAndReplaceFragment(
             OnboardingGeneralErrorFragment.create(errorType),
             inclusive = true

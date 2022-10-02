@@ -1,43 +1,21 @@
 package org.p2p.wallet.auth.ui.generalerror
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
-import org.p2p.wallet.auth.model.RestoreUserResult
-import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.auth.repository.RestoreFailureState
+import org.p2p.wallet.auth.repository.RestoreSuccessState
+import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
 import org.p2p.wallet.common.mvp.BasePresenter
-import timber.log.Timber
 
 class OnboardingGeneralErrorPresenter(
     private val error: GeneralErrorScreenError,
-    private val resourcesProvider: ResourcesProvider,
     private val restoreWalletInteractor: RestoreWalletInteractor,
-    private val onboardingInteractor: OnboardingInteractor
+    private val onboardingInteractor: OnboardingInteractor,
+    private val restoreUserExceptionHandler: RestoreUserExceptionHandler
 ) : BasePresenter<OnboardingGeneralErrorContract.View>(),
     OnboardingGeneralErrorContract.Presenter {
-
-    override fun attach(view: OnboardingGeneralErrorContract.View) {
-        super.attach(view)
-
-        when (error) {
-            is GeneralErrorScreenError.CriticalError -> {
-                val title = resourcesProvider.getString(
-                    R.string.onboarding_general_error_critical_error_title
-                )
-                val subTitle = resourcesProvider.getString(
-                    R.string.onboarding_general_error_critical_error_sub_title,
-                    error.errorCode
-                )
-                view.updateText(title, subTitle)
-                view.setViewState(error)
-            }
-            else -> {
-                view.setViewState(error)
-            }
-        }
-    }
 
     override fun useGoogleAccount() {
         view?.startGoogleFlow()
@@ -57,6 +35,7 @@ class OnboardingGeneralErrorPresenter(
         launch {
             view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = true)
             restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
+
             val flow = if (restoreWalletInteractor.isDeviceShareSaved()) {
                 OnboardingFlow.RestoreWallet.DevicePlusSocialShare
             } else {
@@ -65,37 +44,20 @@ class OnboardingGeneralErrorPresenter(
             if (restoreWalletInteractor.isUserReadyToBeRestored(flow)) {
                 restoreUserWithShares(flow)
             } else {
-                view?.onNoTokenFoundError(userId)
+                // view?.onNoTokenFoundError(userId)
                 view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
             }
         }
     }
 
     private suspend fun restoreUserWithShares(flow: OnboardingFlow.RestoreWallet) {
-        when (val result = restoreWalletInteractor.tryRestoreUser(flow)) {
-            is RestoreUserResult.RestoreSuccessful -> {
-                restoreWalletInteractor.finishAuthFlow()
-                view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
+        val result = restoreWalletInteractor.tryRestoreUser(flow)
+        when (val state = restoreUserExceptionHandler.handleRestoreResult(result)) {
+            is RestoreFailureState.TitleSubtitleError -> {
+                view?.showState(state)
+            }
+            is RestoreSuccessState -> {
                 view?.navigateToPinCreate()
-            }
-            is RestoreUserResult.RestoreFailed -> {
-                Timber.e(result)
-                view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            }
-            RestoreUserResult.UserNotFound -> {
-                view?.onNoTokenFoundError(restoreWalletInteractor.getUserEmailAddress().orEmpty())
-                view?.setRestoreByGoogleLoadingState(false)
-            }
-            is RestoreUserResult.SocialShareNotFound -> {
-                val error = GeneralErrorScreenError.SocialShareNotFound(result.socialShareUserId)
-                view?.setViewState(error)
-                view?.setRestoreByGoogleLoadingState(false)
-            }
-            is RestoreUserResult.DeviceAndSocialShareNotMatch -> {
-                val error = GeneralErrorScreenError.SharesDoNotMatchError
-                view?.setViewState(error)
-                view?.setRestoreByGoogleLoadingState(false)
             }
         }
     }

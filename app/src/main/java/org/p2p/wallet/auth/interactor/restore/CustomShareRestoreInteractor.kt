@@ -22,7 +22,6 @@ class CustomShareRestoreInteractor(
     private val smsInputTimer: SmsInputTimer,
     private val gson: Gson,
 ) {
-
     suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber, isResend: Boolean = false) {
         val temporaryUserPublicKey = restoreFlowDataLocalRepository.userRestorePublicKey
             ?: throw RestoreWalletFailure("User restore public key is null")

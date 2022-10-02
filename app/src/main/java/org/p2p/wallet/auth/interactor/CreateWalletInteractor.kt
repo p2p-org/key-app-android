@@ -87,9 +87,11 @@ class CreateWalletInteractor(
             userSeedPhrase = userSeedPhrase,
             socialShareOwnerId = socialShareOwnerId
         )
+
+        finishAuthFlow()
     }
 
-    fun finishAuthFlow() {
+    private fun finishAuthFlow() {
         signUpFlowDataRepository.userAccount?.also {
             tokenKeyProvider.secretKey = it.secretKey
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
