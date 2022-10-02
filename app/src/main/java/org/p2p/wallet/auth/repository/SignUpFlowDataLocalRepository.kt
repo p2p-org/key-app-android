@@ -58,11 +58,15 @@ class SignUpFlowDataLocalRepository(
 
     fun generateUserAccount(userMnemonicPhrase: List<String>) {
         // BIP-44 by default
-        userAccount = Account.fromBip44Mnemonic(
+        userAccount = Account.fromBip44MnemonicWithChange(
             words = userMnemonicPhrase,
             walletIndex = 0,
             passphrase = emptyString()
         )
+    }
+
+    fun resetUserPhoneNumberEnteredCount() {
+        userPhoneNumberEnteredCount = 0
     }
 
     fun clear() {

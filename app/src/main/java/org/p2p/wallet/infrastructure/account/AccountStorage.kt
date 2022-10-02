@@ -41,4 +41,11 @@ class AccountStorage(
         sharedPreferences.edit { remove(key) }
         keyStoreWrapper.delete(key)
     }
+
+    override fun removeAll() {
+        sharedPreferences.all.forEach { (key, _) ->
+            keyStoreWrapper.delete(key)
+        }
+        sharedPreferences.edit().clear()
+    }
 }

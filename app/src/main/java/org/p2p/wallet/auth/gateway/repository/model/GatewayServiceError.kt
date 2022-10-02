@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.gateway.repository
+package org.p2p.wallet.auth.gateway.repository.model
 
 sealed class GatewayServiceError : Throwable() {
     abstract val code: Int
@@ -26,7 +26,8 @@ sealed class GatewayServiceError : Throwable() {
 
     class TooManyRequests(
         override val code: Int,
-        override val message: String
+        override val message: String,
+        val cooldownTtl: Long
     ) : GatewayServiceError()
 
     class SmsDeliverFailed(
@@ -66,6 +67,7 @@ sealed class GatewayServiceError : Throwable() {
 
     class TooManyOtpRequests(
         override val code: Int,
-        override val message: String
+        override val message: String,
+        val cooldownTtl: Long
     ) : GatewayServiceError()
 }

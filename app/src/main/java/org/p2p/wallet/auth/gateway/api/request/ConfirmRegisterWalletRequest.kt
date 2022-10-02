@@ -1,23 +1,28 @@
 package org.p2p.wallet.auth.gateway.api.request
 
 import com.google.gson.annotations.SerializedName
+import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.wallet.utils.Base58String
 
 data class ConfirmRegisterWalletRequest(
     @SerializedName("solana_pubkey")
-    val clientSolanaPublicKey: String,
+    val clientSolanaPublicKey: Base58String,
     @SerializedName("ethereum_id")
     val etheriumAddress: String,
 
     @SerializedName("encrypted_share")
-    val thirdShare: String,
+    val thirdShare: Base64String,
+
+    @SerializedName("encrypted_metadata")
+    val onboardingMetadata: Base64String,
 
     @SerializedName("encrypted_payload")
-    val encryptedPayloadB64: String,
+    val encryptedPayloadB64: Base64String,
 
     @SerializedName("phone_confirmation_code")
     val otpConfirmationCode: String,
     @SerializedName("signature")
-    val requestSignature: String,
+    val requestSignature: Base58String,
     /**
      * example: "2022-07-18 20:55:08.987283300+03:00"
      */

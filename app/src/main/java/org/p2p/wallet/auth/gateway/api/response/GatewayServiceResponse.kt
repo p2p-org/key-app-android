@@ -19,5 +19,7 @@ data class GatewayServiceErrorResponse(
     @SerializedName("code")
     val errorCode: Int,
     @SerializedName("message")
-    val errorMessage: String
+    val errorMessage: String,
+    @SerializedName("data")
+    val data: GatewayServiceErrorDataResponse?
 )

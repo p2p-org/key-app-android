@@ -15,7 +15,7 @@
         android:layout_marginHorizontal="20dp"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/continue_image"
+        android:src="@drawable/ic_continue_onboarding"
         app:layout_constraintBottom_toTopOf="@+id/textViewContinueOnboardingTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

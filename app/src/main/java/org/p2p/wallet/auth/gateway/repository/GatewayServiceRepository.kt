@@ -24,6 +24,8 @@ interface GatewayServiceRepository {
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         jsonEncryptedMnemonicPhrase: JsonObject,
         phoneNumber: PhoneNumber,
+        userSeedPhrase: List<String>,
+        socialShareOwnerId: String,
         otpConfirmationCode: String
     ): GatewayServiceStandardResponse
 

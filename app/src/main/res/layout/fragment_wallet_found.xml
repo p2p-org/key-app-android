@@ -27,7 +27,7 @@
         android:layout_marginHorizontal="20dp"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/wallet_found"
+        android:src="@drawable/ic_wallet_found"
         app:layout_constraintBottom_toTopOf="@+id/walletFoundTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

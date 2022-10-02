@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.repository
 
+import com.google.gson.JsonObject
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.auth.model.PhoneNumber
@@ -14,6 +15,8 @@ private val TAG = RestoreFlowDataLocalRepository::class.simpleName.orEmpty()
 class RestoreFlowDataLocalRepository {
 
     var isRestoreWalletRequestSent = false
+
+    var userPhoneNumberEnteredCount = 0
 
     val userRestorePublicKey: Base58String?
         get() = restoreUserKeyPair?.publicKey?.toBase58Instance()
@@ -30,6 +33,7 @@ class RestoreFlowDataLocalRepository {
     var userPhoneNumber: PhoneNumber? = null
         set(value) {
             field = value
+            ++userPhoneNumberEnteredCount
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
@@ -45,7 +49,7 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("thirdShare is received and set")
         }
 
-    var encryptedMnemonic: String? = null
+    var encryptedMnemonicJson: JsonObject? = null
         set(value) {
             field = value
             Timber.tag(TAG).i("encryptedMnemonic is received and set")
@@ -74,6 +78,14 @@ class RestoreFlowDataLocalRepository {
     }
 
     fun generateActualAccount(userSeedPhrase: List<String>) {
-        this.userActualAccount = Account.fromBip44Mnemonic(userSeedPhrase, walletIndex = 0, passphrase = emptyString())
+        this.userActualAccount = Account.fromBip44MnemonicWithChange(
+            words = userSeedPhrase,
+            walletIndex = 0,
+            passphrase = emptyString()
+        )
+    }
+
+    fun resetUserPhoneNumberEnteredCount() {
+        userPhoneNumberEnteredCount = 0
     }
 }

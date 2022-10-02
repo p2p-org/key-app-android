@@ -1,23 +1,23 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
-import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.pin.biometrics.BiometricsFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 10L
 
@@ -34,8 +34,18 @@ class NewCreatePinFragment :
     private val binding: FragmentNewCreatePinBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
+    private val biometricWrapper: BiometricPromptWrapper by lazy {
+        BiometricPromptWrapper(
+            this,
+            titleRes = R.string.auth_pin_code_fingerprint_title,
+            descriptionRes = R.string.auth_pin_code_fingerprint_description,
+            onError = { presenter.createPin(biometricCipher = null) },
+            onSuccess = { presenter.createPin(biometricCipher = it) }
+        )
+    }
+
     override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
+    override val navBarColor: Int = R.color.bg_lime
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,14 +116,19 @@ class NewCreatePinFragment :
         requireContext().vibrate(duration)
     }
 
-    override fun navigateToBiometrics(pinCode: String) {
-        replaceFragment(BiometricsFragment.create(pinCode))
-    }
-
     override fun navigateToMain() {
         binding.pinView.onSuccessPin()
 
         showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success)
+        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+    }
+
+    override fun showBiometricDialog(biometricCipher: Cipher) {
+        biometricWrapper.authenticate(biometricCipher)
+    }
+
+    override fun onAuthFinished() {
+        binding.pinView.onSuccessPin()
         popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 }

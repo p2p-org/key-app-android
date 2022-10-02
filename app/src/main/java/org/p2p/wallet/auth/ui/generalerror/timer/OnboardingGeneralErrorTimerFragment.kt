@@ -21,22 +21,27 @@ import java.io.File
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerContract.View as ContractView
 
 private const val ARG_TIMER_ERROR_TYPE = "ARG_TIMER_ERROR_TYPE"
+private const val ARG_TIMER_LEFT_TIME = "ARG_TIMER_LEFT_TIME"
 
 class OnboardingGeneralErrorTimerFragment :
     BaseMvpFragment<ContractView, Presenter>(R.layout.fragment_onboarding_general_error_timer),
     ContractView {
 
     companion object {
-        fun create(error: GeneralErrorTimerScreenError) =
-            OnboardingGeneralErrorTimerFragment().withArgs(ARG_TIMER_ERROR_TYPE to error)
+        fun create(error: GeneralErrorTimerScreenError, timerLeftTime: Long): OnboardingGeneralErrorTimerFragment =
+            OnboardingGeneralErrorTimerFragment().withArgs(
+                ARG_TIMER_ERROR_TYPE to error,
+                ARG_TIMER_LEFT_TIME to timerLeftTime
+            )
     }
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night
-    override val presenter: Presenter by inject { parametersOf(error) }
+    override val presenter: Presenter by inject { parametersOf(error, timerLeftTime) }
 
     private val binding: FragmentOnboardingGeneralErrorTimerBinding by viewBinding()
     private val error: GeneralErrorTimerScreenError by args(ARG_TIMER_ERROR_TYPE)
+    private val timerLeftTime: Long by args(ARG_TIMER_LEFT_TIME)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

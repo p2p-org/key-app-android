@@ -1,10 +1,12 @@
-package org.p2p.wallet.auth.gateway.repository
+package org.p2p.wallet.auth.gateway.repository.mapper
 
 import org.p2p.solanaj.utils.TweetNaclFast
-import org.p2p.solanaj.utils.crypto.encodeToBase64
+import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
+
+private val TAG = GatewayServiceSignatureFieldGenerator::class.java.simpleName
 
 class GatewayServiceSignatureFieldGenerator {
     @Throws(GatewayServiceError.RequestCreationFailure::class)
@@ -13,7 +15,7 @@ class GatewayServiceSignatureFieldGenerator {
         structToSerialize: BorshSerializable
     ): Base58String = try {
         val structSerializedBytes = structToSerialize.serializeSelf()
-        Timber.i("Gateway: Signature struct field serialize result base64: ${structSerializedBytes.encodeToBase64()}")
+        Timber.tag(TAG).i("serializeSelf result: ${structSerializedBytes.size}")
 
         val solanaPrivateKeyBytes = userPrivateKey.decodeToBytes()
         TweetNaclFast.Signature(byteArrayOf(), solanaPrivateKeyBytes.copyOf())

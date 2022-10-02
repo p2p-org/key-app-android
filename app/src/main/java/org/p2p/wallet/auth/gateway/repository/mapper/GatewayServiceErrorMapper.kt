@@ -1,6 +1,7 @@
-package org.p2p.wallet.auth.gateway.repository
+package org.p2p.wallet.auth.gateway.repository.mapper
 
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceErrorResponse
+import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import timber.log.Timber
 
 class GatewayServiceErrorMapper {
@@ -17,7 +18,7 @@ class GatewayServiceErrorMapper {
             )
             // PWN-4774 - This error temporary unavailable
             -32053 -> GatewayServiceError.TooManyRequests(
-                error.errorCode, error.errorMessage
+                error.errorCode, error.errorMessage, cooldownTtl = error.data?.cooldownTtl ?: 0L
             )
             -32054 -> GatewayServiceError.SmsDeliverFailed(
                 error.errorCode, error.errorMessage
@@ -32,7 +33,7 @@ class GatewayServiceErrorMapper {
                 error.errorCode, error.errorMessage
             )
             -32059 -> GatewayServiceError.TooManyOtpRequests(
-                error.errorCode, error.errorMessage
+                error.errorCode, error.errorMessage, error.data?.cooldownTtl ?: 0L
             )
             -32060 -> GatewayServiceError.PhoneNumberNotExists(
                 error.errorCode, error.errorMessage

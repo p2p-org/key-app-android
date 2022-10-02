@@ -3,6 +3,8 @@ package org.p2p.wallet.auth.web3authsdk.response
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
+private const val SEED_PHRASE_WORDS_SEPARATOR = " "
+
 data class Web3AuthSignUpResponse(
     // Hex string
     @SerializedName("ethAddress") val ethereumPublicKey: String,
@@ -13,6 +15,9 @@ data class Web3AuthSignUpResponse(
     @SerializedName("deviceShare") val deviceShare: ShareDetailsWithMeta?,
     @SerializedName("customShare") val customThirdShare: ShareDetailsWithMeta?,
 ) {
+
+    val mnemonicPhraseWords: List<String>
+        get() = mnemonicPhrase.split(SEED_PHRASE_WORDS_SEPARATOR)
 
     data class ShareDetailsWithMeta(
         @SerializedName("share") val innerShareDetails: ShareInnerDetails,

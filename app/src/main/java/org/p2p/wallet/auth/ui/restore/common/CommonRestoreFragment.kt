@@ -11,6 +11,9 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
+import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
@@ -82,11 +85,6 @@ class CommonRestoreFragment :
                 }
                 false
             }
-            toolbar.setOnLongClickListener {
-                // TODO PWN-4615 remove after all onboarding testing completed!
-                replaceFragment(DebugSettingsFragment.create())
-                true
-            }
             buttonRestoreByGoogle.setOnClickListener {
                 onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.GOOGLE)
                 presenter.useGoogleAccount()
@@ -97,12 +95,12 @@ class CommonRestoreFragment :
                 presenter.useCustomShare()
             }
 
-            buttonSeed.setOnClickListener {
+            buttonBottom.setOnClickListener {
                 onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.SEED)
                 // TODO make a real restore implementation!
                 replaceFragment(SeedPhraseFragment.create())
             }
-            buttonSeed.setOnLongClickListener {
+            buttonBottom.setOnLongClickListener {
                 // TODO PWN-4615 remove after all onboarding testing completed!
                 replaceFragment(DebugSettingsFragment.create())
                 true
@@ -127,7 +125,7 @@ class CommonRestoreFragment :
     override fun showError(error: String) {
         view?.post {
             setLoadingState(isScreenLoading = false)
-            showErrorSnackBar(error)
+            showUiKitSnackBar(error)
         }
     }
 
@@ -138,7 +136,18 @@ class CommonRestoreFragment :
                 textViewTitle.text = getString(R.string.restore_no_wallet_title)
                 textViewSubtitle.apply {
                     isVisible = true
-                    text = getString(R.string.restore_no_wallet_subtitle, userId)
+                    text = userId
+                }
+                textViewTryAnother.isVisible = true
+
+                buttonBottom.apply {
+                    strokeWidth = 0
+                    text = getString(R.string.restore_starting_screen)
+                    backgroundTintList = ContextCompat.getColorStateList(requireContext(), android.R.color.transparent)
+                    setTextColor(getColor(R.color.text_lime))
+                    setOnClickListener {
+                        popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
+                    }
                 }
             }
             setLoadingState(isScreenLoading = false)
@@ -152,7 +161,7 @@ class CommonRestoreFragment :
                 isEnabled = !isScreenLoading
             }
             buttonPhone.isEnabled = !isScreenLoading
-            buttonSeed.isEnabled = !isScreenLoading
+            buttonBottom.isEnabled = !isScreenLoading
         }
     }
 
@@ -160,7 +169,6 @@ class CommonRestoreFragment :
         with(binding) {
             buttonRestoreByGoogle.isVisible = isVisible
             if (!isVisible) {
-                textViewTitle.text = getString(R.string.restore_choose_way)
 
                 buttonPhone.apply {
                     backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.bg_snow)
@@ -168,6 +176,10 @@ class CommonRestoreFragment :
                 }
             }
         }
+    }
+
+    override fun showGeneralErrorScreen(error: GeneralErrorScreenError) {
+        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(error), inclusive = true)
     }
 
     private fun handleSignResult(result: ActivityResult) {

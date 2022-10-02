@@ -43,10 +43,10 @@ class NewOnboardingFragment :
     private val binding: FragmentNewOnboardingBinding by viewBinding()
     private val onboardingAnalytics: OnboardingAnalytics by inject()
 
-    private val fragments = List(3) { SliderFragment::class }
-    private val args = List(3) {
+    private val fragments = List(1) { SliderFragment::class }
+    private val args = List(1) {
         SliderFragmentArgs(
-            R.drawable.onboarding_1_slide,
+            R.drawable.onboarding_slide_temp,
             R.string.onboarding_slide_1_title,
             R.string.onboarding_slide_1_text,
         ).toBundle()

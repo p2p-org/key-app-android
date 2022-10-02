@@ -8,51 +8,79 @@
     android:layout_height="match_parent"
     android:background="@color/lime">
 
-    <ImageView
-        android:id="@+id/image_view_box"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/text_view_error_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:srcCompat="@drawable/onboarding_box" />
-
-    <TextView
-        android:id="@+id/text_view_error_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="@string/onboarding_general_error_critical_error_title"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
-        app:layout_constraintBottom_toTopOf="@+id/text_view_error_subtitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_view_box" />
-
-    <TextView
-        android:id="@+id/text_view_error_subtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="32dp"
-        android:gravity="center"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
-        app:layout_constraintBottom_toTopOf="@+id/container_bottom_buttons"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_error_title"
-        tools:text="We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n If you will write us, use error code: %1$s" />
+        app:title="@string/restore_your_wallet"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night" />
 
     <LinearLayout
-        android:id="@+id/container_bottom_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/containerBottomButtons"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintVertical_bias="0.3">
+
+        <ImageView
+            android:id="@+id/imageViewBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            app:srcCompat="@drawable/onboarding_box" />
+
+        <TextView
+            android:id="@+id/textViewErrorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="@string/onboarding_general_error_critical_error_title"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+            android:textColor="@color/text_night" />
+
+        <TextView
+            android:id="@+id/textViewErrorEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="middle"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
+            android:textColor="@color/text_night"
+            android:visibility="gone"
+            tools:text="test@gmail.com"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/textViewErrorSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
+            android:textColor="@color/text_night"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewErrorEmail"
+            tools:text="We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n If you will write us, use error code: %1$s" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/containerBottomButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_night_top_rounded"
@@ -61,100 +89,58 @@
         android:paddingTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
-            android:id="@+id/container_common_buttons"
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonRestoreByGoogle"
+            style="@style/UiKit.Components.Button.Large"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/snow"
+            android:text="@string/restore_continue_with_google"
+            android:textColor="@color/night"
+            android:visibility="gone"
+            app:icon="@drawable/ic_google_logo"
+            app:iconGravity="textStart"
+            app:iconSize="24dp"
+            app:iconTint="@null"
+            tools:visibility="visible" />
 
-            <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/button_report_bug"
-                style="@style/UiKit.Components.Button.Large.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/ui_kit_button_large_height"
-                android:layout_marginBottom="18dp"
-                android:backgroundTint="@color/bg_snow"
-                android:text="@string/onboarding_general_error_bug_report_button_title"
-                android:textColor="@color/text_night"
-                app:strokeColor="@color/snow" />
-
-            <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/button_to_starting_screen"
-                style="@style/UiKit.Components.Button.Large.Text"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/ui_kit_button_large_height"
-                android:layout_marginBottom="18dp"
-                android:backgroundTint="@color/bg_night"
-                android:text="@string/onboarding_general_error_starting_screen_button_title"
-                android:textColor="@color/text_lime"
-                app:strokeColor="@color/snow" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/container_device_custom_share_buttons"
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonPrimaryFirst"
+            style="@style/UiKit.Components.Button.Large.Outlined"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="8dp"
+            android:text="@string/restore_phone_number"
+            android:textColor="@color/text_snow"
+            android:visibility="gone"
+            app:strokeColor="@color/snow"
+            tools:visibility="visible" />
 
-            <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/button_restore_by_google"
-                style="@style/UiKit.Components.Button.Large"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/ui_kit_button_large_height"
-                android:layout_marginBottom="8dp"
-                android:backgroundTint="@color/snow"
-                android:text="@string/restore_continue_with_google"
-                android:textColor="@color/night"
-                app:icon="@drawable/ic_google_logo"
-                app:iconGravity="textStart"
-                app:iconSize="24dp"
-                app:iconTint="@null" />
-
-            <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/button_restore_with_phone"
-                style="@style/UiKit.Components.Button.Large.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/ui_kit_button_large_height"
-                android:layout_marginBottom="8dp"
-                android:text="@string/restore_phone_number"
-                android:textColor="@color/snow"
-                app:strokeColor="@color/snow" />
-
-            <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/button_restore_to_starting_screen"
-                style="@style/UiKit.Components.Button.Large.Text"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/ui_kit_button_large_height"
-                android:layout_marginBottom="18dp"
-                android:backgroundTint="@color/bg_night"
-                android:text="@string/onboarding_general_error_starting_screen_button_title"
-                android:textColor="@color/text_lime"
-                app:strokeColor="@color/snow" />
-
-        </LinearLayout>
-
-
-        <TextView
-            style="@style/UiKit.TextAppearance.Regular.Label1"
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonPrimarySecond"
+            style="@style/UiKit.Components.Button.Large.Outlined"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/onboarding_general_error_terms_title"
-            android:textColor="@color/mountain" />
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="8dp"
+            android:text="@string/restore_phone_number"
+            android:textColor="@color/text_snow"
+            android:visibility="gone"
+            app:strokeColor="@color/snow"
+            tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/textViewTermsAndPolicy"
-            style="@style/UiKit.TextAppearance.Regular.Label1"
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonSecondaryFirst"
+            style="@style/UiKit.Components.Button.Large.Text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:text="@string/onboarding_terms_and_policy"
-            android:textColor="@color/rain" />
-
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="18dp"
+            android:backgroundTint="@color/bg_night"
+            android:text="@string/onboarding_general_error_starting_screen_button_title"
+            android:textColor="@color/text_lime"
+            android:visibility="gone"
+            app:strokeColor="@color/text_snow"
+            tools:visibility="visible" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

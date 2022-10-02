@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentDebugTorusBinding
@@ -20,6 +21,8 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
     private val binding: FragmentDebugTorusBinding by viewBinding()
 
     private val networkServicesUrlProvider: NetworkServicesUrlProvider by inject()
+    private val signUpDetailsStorage: UserSignUpDetailsStorage by inject()
+
     private val appRestarter: AppRestarter by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -30,7 +33,7 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
 
             networkServicesUrlProvider.loadTorusEnvironment().apply {
                 environmentTextView.text = baseUrl
-                verifierTextView.text = verifier
+                verifierTextView.text = "verifier = $verifier\nsubVerifier = ${subVerifier ?: "-"}"
             }
 
             testUrlButton.setOnClickListener {
@@ -45,26 +48,57 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
 
             testVerifierButton.setOnClickListener {
                 val testVerifier = getString(R.string.torusDebugVerifier)
-                updateEnvironmentAndRestart(newVerifier = testVerifier)
+                updateEnvironmentAndRestart(newVerifier = testVerifier, newSubVerifier = null)
+            }
+
+            featureVerifierButton.setOnClickListener {
+                val releaseVerifier = getString(R.string.torusFeatureVerifier)
+                updateEnvironmentAndRestart(newVerifier = releaseVerifier, newSubVerifier = null)
             }
 
             releaseVerifierButton.setOnClickListener {
-                val releaseVerifier = getString(R.string.torusFeatureVerifier)
-                updateEnvironmentAndRestart(newVerifier = releaseVerifier)
+                val releaseVerifier = "key-app-google-testnet"
+                val releaseSubVerifier = "android"
+                updateEnvironmentAndRestart(newVerifier = releaseVerifier, newSubVerifier = releaseSubVerifier)
             }
 
             confirmButton.setOnClickListener {
                 val newUrl = environmentEditText.text.toString()
                 val newVerifier = verifierEditText.text.toString()
-                updateEnvironmentAndRestart(newUrl = newUrl, newVerifier = newVerifier)
+                val newSubVerifier = subVerifierEditText.text.toString()
+                updateEnvironmentAndRestart(
+                    newUrl = newUrl,
+                    newVerifier = newVerifier,
+                    newSubVerifier = newSubVerifier
+                )
+            }
+
+            val signUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()
+            val hasShare = signUpDetails?.signUpDetails?.deviceShare != null
+            shareTextView.text = if (hasShare) {
+                signUpDetails?.signUpDetails?.deviceShare.toString()
+            } else {
+                "No device share"
+            }
+            shareDeleteButton.apply {
+                isEnabled = hasShare
+                setOnClickListener {
+                    signUpDetailsStorage.removeAllShares()
+                    appRestarter.restartApp()
+                }
             }
         }
     }
 
-    private fun updateEnvironmentAndRestart(newUrl: String? = null, newVerifier: String? = null) {
+    private fun updateEnvironmentAndRestart(
+        newUrl: String? = null,
+        newVerifier: String? = null,
+        newSubVerifier: String? = null
+    ) {
         networkServicesUrlProvider.saveTorusEnvironment(
             newUrl = newUrl?.ifEmpty { null },
-            newVerifier = newVerifier?.ifEmpty { null }
+            newVerifier = newVerifier?.ifEmpty { null },
+            newSubVerifier = newSubVerifier
         )
         appRestarter.restartApp()
     }

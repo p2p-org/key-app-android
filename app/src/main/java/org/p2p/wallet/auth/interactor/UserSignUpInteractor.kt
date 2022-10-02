@@ -24,7 +24,7 @@ class UserSignUpInteractor(
             signUpFlowDataRepository.signUpUserId = idTokenOwnerId
 
             val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare(idToken)
-            signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhrase.split(""))
+            signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
 
             userSignUpDetailsStorage.save(signUpResponse, idTokenOwnerId)
             SignUpResult.SignUpSuccessful
@@ -46,7 +46,7 @@ class UserSignUpInteractor(
 
             signUpFlowDataRepository.signUpUserId = lastUserDetails.userId
             signUpFlowDataRepository.generateUserAccount(
-                userMnemonicPhrase = lastUserDetails.signUpDetails.mnemonicPhrase.split("")
+                userMnemonicPhrase = lastUserDetails.signUpDetails.mnemonicPhraseWords
             )
             SignUpResult.SignUpSuccessful
         } catch (error: Throwable) {

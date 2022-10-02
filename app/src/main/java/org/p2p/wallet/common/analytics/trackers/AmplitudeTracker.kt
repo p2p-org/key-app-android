@@ -73,4 +73,8 @@ class AmplitudeTracker(app: Application) : AnalyticsTracker {
     override fun regenerateDeviceId() {
         amplitude.regenerateDeviceId()
     }
+
+    override fun clearUserProperties() {
+        amplitude.clearUserProperties()
+    }
 }

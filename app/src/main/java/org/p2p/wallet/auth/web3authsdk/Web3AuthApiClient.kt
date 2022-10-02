@@ -6,14 +6,16 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
 import timber.log.Timber
 import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
@@ -24,10 +26,13 @@ class Web3AuthApiClient(
     context: Context,
     private val torusNetwork: TorusEnvironment,
     private val mapper: Web3AuthClientMapper,
-    private val gson: Gson
+    private val gson: Gson,
+    private val authRepository: AuthRepository
 ) : Web3AuthApi {
 
     private var continuation: CancellableContinuation<*>? = null
+
+    private var userGeneratedSeedPhrase: List<String> = emptyList()
 
     private val onboardingWebView: WebView = WebView(context).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -66,6 +71,7 @@ class Web3AuthApiClient(
     override suspend fun triggerSignInNoDevice(
         socialShare: String,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        encryptedMnemonic: JsonObject,
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
@@ -73,10 +79,11 @@ class Web3AuthApiClient(
             Timber.tag(TAG).i("triggerSignInNoDevice triggered")
 
             val thirdShareAsJsObject = gson.toJson(thirdShare)
+            val params = "'$socialShare', $thirdShareAsJsObject, $encryptedMnemonic"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
-                    jsMethodCall = "triggerSignInNoDevice('$socialShare', $thirdShareAsJsObject)"
+                    jsMethodCall = "triggerSignInNoDevice($params)"
                 ),
                 null
             )
@@ -85,7 +92,7 @@ class Web3AuthApiClient(
 
     override suspend fun triggerSignInNoCustom(
         socialShare: String,
-        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
+        deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
@@ -93,10 +100,11 @@ class Web3AuthApiClient(
             Timber.tag(TAG).i("triggerSignInNoCustom triggered")
 
             val deviceShareAsJsObject = gson.toJson(deviceShare)
+            val params = "'$socialShare', $deviceShareAsJsObject"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
-                    jsMethodCall = "triggerSignInNoCustom('$socialShare', $deviceShareAsJsObject)"
+                    jsMethodCall = "triggerSignInNoCustom($params)"
                 ),
                 null
             )
@@ -106,7 +114,7 @@ class Web3AuthApiClient(
     override suspend fun triggerSignInNoTorus(
         deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
-        encryptedMnemonicPhrase: JsonObject,
+        encryptedMnemonic: JsonObject,
     ): Web3AuthSignInResponse {
         return suspendCancellableCoroutine {
             this.continuation = it
@@ -116,8 +124,7 @@ class Web3AuthApiClient(
             val thirdShareAsJsObject = gson.toJson(thirdShare)
             val deviceShareAsJsObject = gson.toJson(deviceShare)
 
-            val params = "$deviceShareAsJsObject, $thirdShareAsJsObject, $encryptedMnemonicPhrase"
-
+            val params = "$deviceShareAsJsObject, $thirdShareAsJsObject, $encryptedMnemonic"
             onboardingWebView.evaluateJavascript(
                 generateFacade(
                     type = "signin",
@@ -135,6 +142,13 @@ class Web3AuthApiClient(
         val torusNetworkEnv = "testnet"
         val torusEndpoint = "$host:5051"
         val torusVerifier = torusNetwork.verifier
+        val torusSubVerifier = torusNetwork.subVerifier
+
+        if (userGeneratedSeedPhrase.isEmpty()) {
+            runBlocking { userGeneratedSeedPhrase = authRepository.generatePhrase() }
+        }
+
+        val seedPhraseAsString = userGeneratedSeedPhrase.joinToString(separator = " ")
 
         return buildString {
             append("new p2pWeb3Auth.AndroidFacade({")
@@ -143,7 +157,11 @@ class Web3AuthApiClient(
             append("torusNetwork: '$torusNetworkEnv', ")
             append("torusLoginType: '$torusLoginType', ")
             append("torusEndpoint: '$torusEndpoint', ")
-            append("torusVerifier: '$torusVerifier'")
+            append("torusVerifier: '$torusVerifier', ")
+            if (!torusSubVerifier.isNullOrBlank()) {
+                append("torusSubVerifier: '$torusSubVerifier', ")
+            }
+            append("privateInput: '$seedPhraseAsString'")
             append("})")
             append(".$jsMethodCall")
         }
@@ -156,6 +174,7 @@ class Web3AuthApiClient(
     private inner class AndroidCommunicationChannel {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
+            Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignUpResponse>)
                 ?.resumeWith(mapper.fromNetworkSignUp(msg))
                 ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
@@ -163,6 +182,7 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoCustomResponse(msg: String) {
+            Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
                 ?.resumeWith(mapper.fromNetworkSignIn(msg))
                 ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
@@ -170,6 +190,7 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoDeviceResponse(msg: String) {
+            Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
                 ?.resumeWith(mapper.fromNetworkSignIn(msg))
                 ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
@@ -177,6 +198,7 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoTorusResponse(msg: String) {
+            Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
                 ?.resumeWith(mapper.fromNetworkSignIn(msg))
                 ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
@@ -184,6 +206,7 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleError(error: String) {
+            Timber.tag(TAG).d(error)
             runCatching<Throwable> { mapper.fromNetworkError(error) }
                 .recover { it }
                 .onSuccess { continuation?.resumeWithException(it) }

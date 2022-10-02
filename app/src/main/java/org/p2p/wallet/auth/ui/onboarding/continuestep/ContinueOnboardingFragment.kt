@@ -7,7 +7,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
+import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentContinueOnboardingBinding
@@ -42,7 +42,7 @@ class ContinueOnboardingFragment :
                 presenter.continueSignUp()
             }
             buttonContinueStarting.setOnClickListener {
-                popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
+                popAndReplaceFragment(NewOnboardingFragment.create(), inclusive = true)
             }
         }
 

@@ -78,7 +78,15 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="16dp"
-            android:text="Use test torus verifier" />
+            android:text="Use test torus verifier (testTkeyD1)" />
+
+        <Button
+            android:id="@+id/featureVerifierButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="16dp"
+            android:text="Use feature torus verifier (testTketF2)" />
 
         <Button
             android:id="@+id/releaseVerifierButton"
@@ -86,7 +94,38 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="16dp"
-            android:text="Use release torus verifier" />
+            android:text="Use release torus verifier+subverifier" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/amp_gray" />
+
+        <TextView
+            android:id="@+id/shareTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="24dp"
+            android:text="Current Device Share:"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/shareTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="24dp"
+            tools:text="No device share" />
+
+        <Button
+            android:id="@+id/shareDeleteButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="16dp"
+            android:enabled="false"
+            android:text="Delete device share" />
 
         <View
             android:layout_width="match_parent"
@@ -114,6 +153,16 @@
             android:importantForAutofill="no"
             android:inputType="text" />
 
+        <EditText
+            android:id="@+id/subVerifierEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="8dp"
+            android:hint="Enter Sub Verifier"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
         <Button
             android:id="@+id/confirmButton"
             android:layout_width="match_parent"
@@ -121,6 +170,12 @@
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="16dp"
             android:text="Confirm" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/amp_gray" />
 
     </LinearLayout>
 

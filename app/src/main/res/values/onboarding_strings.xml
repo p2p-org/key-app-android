@@ -1,6 +1,7 @@
 <resources>
     <!--Onboarding-->
     <string name="onboarding_create_text">Create a new wallet</string>
+    <string name="onboarding_continue_with_google">Continue with Google</string>
     <string name="onboarding_restore_text">I already have a wallet</string>
     <string name="onboarding_terms_text">By continuing, you agree to P2P App’s</string>
     <string name="onboarding_terms_and_policy">Terms of Use and Privacy Policy</string>
@@ -9,10 +10,10 @@
 
     <!--Onboarding Slides-->
     <string name="onboarding_slide_1_title">Welcome \nto P2P App</string>
-    <string name="onboarding_slide_1_text">Use our advanced security \nto buy, sell and hold cryptos</string>
+    <string name="onboarding_slide_1_text">Buy, sell and hold cryptocurrency. \nEarn up to 6% on USD</string>
 
     <!--Onboarding - Continue-->
-    <string name="onboarding_continue_title">Choose an option to continue</string>
+    <string name="onboarding_continue_title">Let\'s continue</string>
     <string name="onboarding_continue_subtitle">You have a great start with\n%1s.\nOnly a phone number is needed to create a new wallet.</string>
     <string name="onboarding_continue_button_text">Continue</string>
     <string name="onboarding_continue_starting_button_text">Starting screen</string>
@@ -25,33 +26,35 @@
 
     <!-- Onboarding pin / touch id -->
     <string name="auth_create_wallet_step_3">Step 3 of 3</string>
-    <string name="auth_create_wallet_set_up_your_pin">Set up your passcode</string>
-    <string name="auth_create_wallet_confirm_your_pin">Confirm your passcode</string>
-    <string name="auth_create_wallet_pin_code_error">Passcode doesn\'t  match. Please try again.</string>
-    <string name="auth_create_wallet_pin_code_success">Great! Your new passcode is set.</string>
+    <string name="auth_create_wallet_set_up_your_pin">Create your PIN</string>
+    <string name="auth_create_wallet_confirm_your_pin">Confirm your PIN</string>
+    <string name="auth_create_wallet_pin_code_error">PIN doesn\'t  match. Please try again.</string>
+    <string name="auth_create_wallet_pin_code_success">Great! Your new PIN is set.</string>
 
-    <string name="auth_create_wallet_use_touch_id_title">Use Touch ID?</string>
-    <string name="auth_create_wallet_use_touch_id_subtitle">For logging in and verifying transactions</string>
-    <string name="auth_create_wallet_use_touch_id">Use Touch ID</string>
-    <string name="auth_create_wallet_dont_use">Don\'t use</string>
-
-    <string name="auth_pin_code_enter_up_your_pin">Enter your passcode</string>
-    <string name="auth_pin_code_attempts_format">❌ Wrong passcode. You have %d attempts left.</string>
+    <string name="auth_pin_code_enter_up_your_pin">Enter your PIN</string>
+    <string name="auth_pin_code_attempts_format">❌ Wrong PIN. You have %d attempts left.</string>
     <string name="auth_pin_code_warn_format">❌ After %d more incorrect tries, we\'ll log you out of your current account for your safety.</string>
-    <string name="auth_pin_code_wrong">❌ Wrong passcode. Try again or reset it</string>
+    <string name="auth_pin_code_wrong">❌ Wrong PIN. Try again or reset it</string>
     <string name="auth_pin_code_logout_title">You were logged out</string>
-    <string name="auth_pin_code_logout_description">After 5 incorrect app passcodes</string>
+    <string name="auth_pin_code_logout_description">After 5 incorrect app PIN</string>
     <string name="auth_pin_code_logout_ok_button">Got It</string>
+
+    <string name="auth_pin_code_lockout_title">Wrong code too many times in a row</string>
+    <string name="auth_pin_code_lockout_description">Try again after 30 seconds or login using your PIN</string>
+    <string name="auth_pin_code_lockout_ok_button">Got It</string>
+
+    <string name="auth_pin_code_fingerprint_title">Fingerprint required</string>
+    <string name="auth_pin_code_fingerprint_description">Use your fingerprint to access the security key</string>
 
     <!-- PhoneNumberEnter -->
     <string name="onboarding_search_no_country">‍🏴 Sorry, we don\'t know such country</string>
     <string name="onboarding_step_2">Step 2 of 3</string>
     <string name="onboarding_add_number_title">What\'s your number? 🤙</string>
     <string name="onboarding_add_number_message">Add a phone number to protect your account</string>
+    <string name="onboarding_restore_number_message">Add a phone number to restore your account</string>
     <string name="onboarding_enter_number_to_continue">Enter the number to continue</string>
     <string name="onboarding_country_name">Country name</string>
     <string name="onboarding_fill_your_number">Fill your phone number</string>
-    <string name="onboarding_no_sms_for_number">We can\'t send SMS. Change your number, please</string>
     <string name="onboarding_lets_finish_last_step">Oh, let’s finish the last step!</string>
     <string name="onboarding_phone_enter_error_sms_failed">❌ SMS will not be delivered. Please check your phone settings</string>
     <string name="onboarding_phone_enter_error_phone_confirmed">❌ This phone has already been confirmed. Change phone number</string>
@@ -66,42 +69,53 @@
     <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
     <string name="onboarding_sms_starting_screen">Starting screen</string>
     <string name="onboarding_sms_verify_error_title">It’s okay\nto be wrong</string>
-    <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we frozen\naccount for %s min</string>
+    <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we have frozen\naccount for %s min</string>
 
     <!-- General error timer -->
     <string name="onboarding_general_error_let_breath_title">So, let\’s breathe</string>
     <string name="onboarding_general_error_timer_title">It\'s okay to be wrong</string>
     <string name="onboarding_general_error_timer_enter_phone_subtitle">
-        You used too many numbers. For your safety we\'ve frozen account for %1$s min
+        You used too many numbers. For your safety, we have frozen your account for %1$s min
     </string>
     <string name="onboarding_general_error_too_many_wrong_attempts">
-        You used 5 incorrect codes. For your safety we\'ve frozen account for %1$s min
+        You used 5 incorrect codes. For your safety, we have frozen your account for %1$s min
     </string>
     <string name="onboarding_general_error_retry_button_tries_exceeded">
-        You didn’t use any of 5 codes. For your safety we frozen account for %1$s min
+        You didn\'t use any of 5 codes. For your safety, we have frozen your account for %1$s min
     </string>
     <string name="onboarding_general_error_terms_title">P2P App\'s</string>
     <string name="onboarding_general_error_starting_screen_button_title">Starting screen</string>
     <string name="onboarding_general_error_bug_report_button_title">Support</string>
     <string name="onboarding_general_error_critical_error_title">Well well 🦄</string>
     <string name="onboarding_general_error_critical_error_sub_title">
-        We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n
+        We\'ve broke something really big. Let\'s wait together, finally the app will be repaired. \n\n
         If you wish to report the issue, use error code #%1$s
     </string>
 
     <!--Common Restore-->
-    <string name="restore_title">Restoring your wallet</string>
+    <string name="restore_title">Restore your wallet</string>
     <string name="restore_choose_method">Choose\nthe method</string>
+    <string name="restore_choose_an_option">Choose an option to continue</string>
     <string name="restore_choose_way">Choose the way\nto continue</string>
     <string name="restore_continue_with_google">Continue with Google</string>
     <string name="restore_phone_number">Continue using a phone number</string>
+    <string name="restore_another_phone_number">Use an another phone</string>
     <string name="restore_seed_phrase">Use a seed phrase</string>
+    <string name="restore_no_wallet_found_with_no_device_share_message">%s doesn\'t work. Try another option</string>
+    <string name="restore_no_wallet_found_with_device_share_message">Try another account or use a phone number</string>
+    <string name="restore_starting_screen">Starting screen</string>
+    <string name="restore_go_to_the_starting_screen">Go to the starting screen</string>
+
+    <string name="restore_your_wallet">Restore your wallet</string>
 
     <string name="restore_no_wallet_title">No wallet found</string>
-    <string name="restore_no_wallet_subtitle">With %s.\nTry another option</string>
+    <string name="restore_no_account_title">Account not found</string>
+    <string name="restore_no_wallet_try_another_option">Try another option</string>
+    <string name="restore_how_to_continue">How to continue?</string>
+    <string name="restore_continuation_alternative_text">If you want to continue with %s select phone number. If you made a mistake, please choose another mail</string>
 
     <!-- Seed phrase scree -->
-    <string name="seed_phrase_restore_wallet">Restoring your wallet</string>
+    <string name="seed_phrase_restore_wallet">Restore your wallet</string>
     <string name="seed_phrase_enter_title">Enter your seed phrase</string>
     <string name="seed_phrase_button_disabled_text">Fill 12 or 24 words</string>
     <string name="seed_phrase_verify_checksum_failed">😔 The seed phrase doesn\'t match. Please try again</string>
@@ -116,4 +130,5 @@
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
+    <string name="onboarding_with_email">With %s</string>
 </resources>

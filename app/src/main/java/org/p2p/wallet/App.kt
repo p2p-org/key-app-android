@@ -48,7 +48,6 @@ import timber.log.Timber
 import kotlinx.coroutines.launch
 
 class App : Application() {
-
     private val crashLogger: CrashLogger by inject()
     private val appScope: AppScope by inject()
     private val pushTokenRepository: PushTokenRepository by inject()

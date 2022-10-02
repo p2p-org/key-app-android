@@ -4,7 +4,7 @@
     <string name="settings_item_group_title_profile">Profile</string>
     <string name="settings_item_title_username">Username</string>
     <string name="settings_item_username_not_reserved">Not reserved</string>
-    <string name="settings_item_sign_out_button_title">Sign out</string>
+    <string name="settings_item_sign_out_button_title">Log out</string>
 
     <string name="settings_item_group_title_security">Security</string>
     <string name="settings_item_title_recovery_kit">Recovery kit</string>
@@ -19,15 +19,15 @@
     <string name="settings_item_title_app_version">App version</string>
 
     <!-- Change pin code -->
-    <string name="settings_item_pin_code">PIN code</string>
+    <string name="settings_item_pin_code">PIN</string>
     <string name="settings_item_instruction_first">Firstly we\'ll use it for entrance in P2P App. Sometimes instead of biometric.</string>
     <string name="settings_item_instruction_second">Sometimes it will be useful for showing seed phrase or private key.</string>
     <string name="settings_item_change_pin">Change the PIN</string>
-    <string name="settings_item_change_pin_action">Change the PIN code</string>
-    <string name="settings_item_your_current_pin_code">Your current PIN code</string>
-    <string name="settings_item_create_new_pin_code">Create your new PIN code</string>
-    <string name="settings_item_confirm_new_pin_code">Confirm your new PIN code</string>
-    <string name="settings_item_pin_do_not_match">😢 PIN doesn\'t match. Try again</string>
+    <string name="settings_item_change_pin_action">Change the PIN</string>
+    <string name="settings_item_your_current_pin_code">Your current PIN</string>
+    <string name="settings_item_create_new_pin_code">Create your new PIN</string>
+    <string name="settings_item_confirm_new_pin_code">Confirm your new PIN</string>
+    <string name="settings_item_pin_do_not_match">PIN doesn\'t  match. Please try again</string>
     <string name="settings_item_pin_changed">✌️ Your PIN was changed</string>
     <string name="settings_item_forgot_pin">Forgot your PIN?</string>
     <string name="settings_item_forgot_pin_message">If you forgot your PIN, you can log out and create a new one when you log in again.</string>

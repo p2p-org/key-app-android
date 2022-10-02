@@ -13,11 +13,13 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
+import javax.crypto.Cipher
 import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
 
 class NewCreatePinPresenter(
+    private val analytics: OnboardingAnalytics,
     private val adminAnalytics: AdminAnalytics,
     private val onboardingAnalytics: OnboardingAnalytics,
     private val authInteractor: AuthInteractor,
@@ -63,8 +65,8 @@ class NewCreatePinPresenter(
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
             view?.navigateToMain()
         } else {
-            view?.navigateToBiometrics(pinCode)
             view?.vibrate(VIBRATE_DURATION)
+            enableBiometric()
         }
     }
 
@@ -83,17 +85,47 @@ class NewCreatePinPresenter(
         }
     }
 
+    private fun enableBiometric() {
+        try {
+            val cipher = authInteractor.getPinEncodeCipher()
+            analytics.logBioApproved()
+            view?.showBiometricDialog(cipher.value)
+        } catch (e: Throwable) {
+            Timber.e(e, "Failed to get cipher for biometrics")
+            view?.onAuthFinished()
+        }
+    }
+
+    override fun createPin(biometricCipher: Cipher?) {
+        launch {
+            try {
+                val encoderCipher = if (biometricCipher != null) EncodeCipher(biometricCipher) else null
+                registerComplete(createdPin, encoderCipher)
+                if (biometricCipher == null) analytics.logBioRejected()
+                view?.onAuthFinished()
+            } catch (e: Throwable) {
+                Timber.e(e, "Failed to create pin code")
+                view?.showErrorMessage(R.string.error_general_message)
+                view?.onAuthFinished()
+            }
+        }
+    }
+
+    override fun finishAuthorization() {
+        analytics.logBioRejected()
+        view?.onAuthFinished()
+    }
+
     private fun createPinCode(pinCode: String) {
         view?.showLoading(true)
         launch {
             try {
                 registerComplete(pinCode, null)
-                view?.navigateToMain()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
                 createdPin = emptyString()
                 view?.showCreation()
-                view?.showErrorMessage(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
                 view?.showLoading(false)
