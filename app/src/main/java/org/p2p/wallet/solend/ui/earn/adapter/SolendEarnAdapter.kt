@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import org.p2p.wallet.solend.model.SolendDepositToken
 
-class SolendEarnAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SolendEarnAdapter : RecyclerView.Adapter<SolanaEarnViewHolder>() {
 
     private val data = mutableListOf<SolendDepositToken>()
 
@@ -16,10 +16,10 @@ class SolendEarnAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int = data.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SolanaEarnViewHolder =
         SolanaEarnViewHolder(parent)
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as SolanaEarnViewHolder).onBind(data[position])
+    override fun onBindViewHolder(holder: SolanaEarnViewHolder, position: Int) {
+        holder.onBind(data[position])
     }
 }

@@ -19,6 +19,7 @@ import org.p2p.wallet.common.ui.widget.EarnWidgetState
 import org.p2p.wallet.databinding.FragmentSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.ui.earn.adapter.SolendEarnAdapter
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 
@@ -36,7 +37,7 @@ class SolendEarnFragment :
 
     private var timerJob: Job? = null
 
-    private val earnAdapter: SolendEarnAdapter by lazy {
+    private val earnAdapter: SolendEarnAdapter by unsafeLazy {
         SolendEarnAdapter()
     }
 
