@@ -2,10 +2,7 @@ package org.p2p.wallet.common.ui.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.widget.FrameLayout
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import com.robinhood.ticker.TickerUtils
 import com.robinhood.ticker.TickerView
@@ -15,6 +12,8 @@ import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ui.widget.earnwidget.DepositTokenViewHolder
+import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.databinding.ItemDepositTokenBinding
 import org.p2p.wallet.databinding.WidgetEarnViewBinding
 import org.p2p.wallet.utils.DecimalFormatter
@@ -39,7 +38,7 @@ class EarnWidget @JvmOverloads constructor(
 
     private val glideManager: GlideManager by inject()
 
-    var currentState: EarnWidgetState? = null
+    var currentState: EarnWidgetState = EarnWidgetState.Idle
 
     init {
         binding.tickerViewAmount.apply {
@@ -54,14 +53,17 @@ class EarnWidget @JvmOverloads constructor(
 
     fun setWidgetState(state: EarnWidgetState) = with(binding) {
         currentState = state
-        viewEarnContent.setBackgroundColor(getColor(state.backgroundColor))
+
         val balanceState = state is EarnWidgetState.Balance
         val depositingState = state is EarnWidgetState.Depositing
+
         textViewEarnTitle.isVisible = !depositingState
         tickerViewAmount.isVisible = balanceState
         textViewEarnMessage.isVisible = !balanceState
         viewTokenContainer.isVisible = balanceState
         buttonEarn.isEnabled = !depositingState
+
+        viewEarnContent.setBackgroundColor(getColor(state.backgroundColor))
         when (state) {
             is EarnWidgetState.Balance -> {
                 makeAlignStartContent()
@@ -95,6 +97,15 @@ class EarnWidget @JvmOverloads constructor(
                 textViewEarnMessage.setText(state.messageTextRes)
                 buttonEarn.setText(state.buttonTextRes)
             }
+            else -> { // EarnWidgetState.Idle
+                makeAlignCenterContent()
+                textViewEarnTitle.isVisible = false
+                textViewEarnMessage.isVisible = false
+                buttonEarn.apply {
+                    isEnabled = false
+                    text = null
+                }
+            }
         }
     }
 
@@ -122,13 +133,11 @@ class EarnWidget @JvmOverloads constructor(
         }
     }
 
-    fun setDepositTokens(tokens: List<String>) {
+    fun setDepositTokens(tokensSymbols: List<String>) {
         val container = binding.viewTokenContainer
-        if (container.childCount < tokens.size) {
-            for (i in container.childCount until tokens.size) {
-                val binding = ItemDepositTokenBinding.inflate(
-                    LayoutInflater.from(context), container, true
-                ).apply {
+        if (container.childCount < tokensSymbols.size) {
+            for (i in container.childCount until tokensSymbols.size) {
+                val binding = container.inflateViewBinding<ItemDepositTokenBinding>().apply {
                     val params = tokenImageView.layoutParams as MarginLayoutParams
                     params.marginEnd = (TOKEN_MARGIN_END_DP * i).toPx()
                     tokenImageView.layoutParams = params
@@ -136,48 +145,23 @@ class EarnWidget @JvmOverloads constructor(
                 val holder = DepositTokenViewHolder(binding, glideManager)
                 binding.root.tag = holder
             }
-        } else if (container.childCount > tokens.size) {
-            if (tokens.isEmpty()) {
+        } else if (container.childCount > tokensSymbols.size) {
+            if (tokensSymbols.isEmpty()) {
                 removeAllViews()
             } else {
                 container.removeViewsInLayout(
-                    tokens.size, container.childCount - tokens.size
+                    tokensSymbols.size, container.childCount - tokensSymbols.size
                 )
             }
         }
         for (i in 0 until container.childCount) {
             (container.getChildAt(i)?.tag as? DepositTokenViewHolder)?.apply {
-                bind(tokens[i])
+                bind(tokensSymbols[i])
             }
         }
     }
 }
 
-class DepositTokenViewHolder(
-    private val binding: ItemDepositTokenBinding,
-    private val glideManager: GlideManager
-) {
-
-    companion object {
-        private const val IMAGE_SIZE = 16
-    }
-
-    fun bind(tokenUrl: String) = with(binding) {
-        glideManager.load(tokenImageView, tokenUrl, IMAGE_SIZE)
-    }
-}
-
-fun BigDecimal.formatTicker(): String = this.run {
+private fun BigDecimal.formatTicker(): String = this.run {
     if (isZero()) this.toString() else DecimalFormatter.format(this, TICKER_DECIMALS)
-}
-
-sealed class EarnWidgetState(@ColorRes val backgroundColor: Int = R.color.bg_rain) {
-    object LearnMore : EarnWidgetState(backgroundColor = R.color.bg_lime)
-    data class Depositing(@StringRes val buttonTextRes: Int) : EarnWidgetState()
-    object DepositFoundsFailed : EarnWidgetState()
-    data class Balance(val amount: BigDecimal) : EarnWidgetState()
-    data class Error(
-        @StringRes val messageTextRes: Int,
-        @StringRes val buttonTextRes: Int
-    ) : EarnWidgetState()
 }
