@@ -11,6 +11,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.ui.earn.adapter.SolendEarnAdapter
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class SolendEarnFragment :
@@ -23,7 +24,7 @@ class SolendEarnFragment :
 
     override val presenter: SolendEarnContract.Presenter by inject()
 
-    private val earnAdapter: SolendEarnAdapter by lazy {
+    private val earnAdapter: SolendEarnAdapter by unsafeLazy {
         SolendEarnAdapter()
     }
 
