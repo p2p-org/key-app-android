@@ -6,27 +6,24 @@ import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
+import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.model.RestoreUserResult
-import org.p2p.wallet.auth.repository.RestoreFailureState
-import org.p2p.wallet.auth.repository.RestoreSuccessState
+import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
 import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.removeWhiteSpaces
 import timber.log.Timber
-import kotlin.time.Duration.Companion.minutes
-
-private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
-    private val resourcesProvider: ResourcesProvider,
-    private val restoreUserExceptionHandler: RestoreUserExceptionHandler
+    private val restoreUserExceptionHandler: RestoreUserExceptionHandler,
+    private val gatewayServiceErrorHandler: GatewayServiceErrorHandler
 ) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
 
     override fun attach(view: NewSmsInputContract.View) {
@@ -84,27 +81,21 @@ class NewSmsInputPresenter(
     }
 
     private fun handleGatewayError(error: GatewayServiceError) {
-        when (error) {
-            is GatewayServiceError.TooManyOtpRequests -> {
-                Timber.e(error)
-                val cooldownTtl = error.cooldownTtl
-                val message = resourcesProvider.getString(R.string.error_too_often_otp_requests_message, cooldownTtl)
-                view?.showUiKitSnackBar(message)
+        when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(error)) {
+            is GatewayHandledState.CriticalError -> {
+                view?.navigateToGatewayErrorScreen(gatewayHandledResult)
             }
-            is GatewayServiceError.IncorrectOtpCode -> {
-                Timber.i(error)
+            GatewayHandledState.IncorrectOtpCodeError -> {
                 view?.renderIncorrectSms()
             }
-            is GatewayServiceError.TooManyRequests -> {
-                Timber.i(error)
-                view?.navigateToSmsInputBlocked(
-                    error = GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS,
-                    timerLeftTime = DEFAULT_BLOCK_TIME_IN_MINUTES.minutes.inWholeSeconds
-                )
+            is GatewayHandledState.TimerBlockError -> {
+                view?.navigateToSmsInputBlocked(gatewayHandledResult.error, gatewayHandledResult.cooldownTtl)
             }
-            is GatewayServiceError.CriticalServiceFailure -> {
-                Timber.e(error)
-                // TODO navigate to critical error screen
+            is GatewayHandledState.TitleSubtitleError -> {
+                view?.navigateToGatewayErrorScreen(gatewayHandledResult)
+            }
+            is GatewayHandledState.ToastError -> {
+                view?.showUiKitSnackBar(gatewayHandledResult.message)
             }
         }
     }
@@ -148,10 +139,9 @@ class NewSmsInputPresenter(
     }
 
     private fun handleRestoreResult(result: RestoreUserResult) {
-        val result = restoreUserExceptionHandler.handleRestoreResult(result)
-        when (result) {
+        when (val result = restoreUserExceptionHandler.handleRestoreResult(result)) {
             is RestoreFailureState.TitleSubtitleError -> {
-                view?.navigateToCriticalErrorScreen(result)
+                view?.navigateToRestoreErrorScreen(result)
             }
             is RestoreSuccessState -> {
                 view?.navigateToPinCreate()

@@ -28,7 +28,9 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
+import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.repository.UsernameRemoteRepository
@@ -152,6 +154,9 @@ object AuthModule {
 
         singleOf(::SmsInputTimer)
         factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
+
+        factoryOf(::GatewayServiceErrorHandler)
+        factoryOf(::RestoreUserExceptionHandler)
 
         factory { (error: GeneralErrorTimerScreenError, timerLeftTime: Long) ->
             OnboardingGeneralErrorTimerPresenter(

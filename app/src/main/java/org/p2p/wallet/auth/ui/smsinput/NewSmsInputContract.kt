@@ -1,7 +1,8 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
-import org.p2p.wallet.auth.repository.RestoreHandledState
+import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -19,7 +20,8 @@ interface NewSmsInputContract {
 
         fun navigateToPinCreate()
         fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long)
-        fun navigateToCriticalErrorScreen(handledState: RestoreHandledState)
+        fun navigateToGatewayErrorScreen(handledState: GatewayHandledState)
+        fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError)
         fun requestGoogleSignIn()
     }
 

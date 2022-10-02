@@ -8,9 +8,9 @@ import org.p2p.uikit.components.UiKitFourDigitsLargeInput
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.PhoneNumber
-import org.p2p.wallet.auth.repository.RestoreHandledState
-import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
+import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
@@ -132,11 +132,12 @@ class NewSmsInputFragment :
         )
     }
 
-    override fun navigateToCriticalErrorScreen(errorType: RestoreHandledState) {
-        popAndReplaceFragment(
-            OnboardingGeneralErrorFragment.create(errorType),
-            inclusive = true
-        )
+    override fun navigateToGatewayErrorScreen(handledState: GatewayHandledState) {
+        TODO("Not yet implemented")
+    }
+
+    override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) {
+        TODO("Not yet implemented")
     }
 
     override fun requestGoogleSignIn() {
