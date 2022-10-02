@@ -5,11 +5,16 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import org.p2p.wallet.BuildConfig
 import timber.log.Timber
 
+private const val NO_VALUE = ""
+
 class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
 
     private var isFetchFailed: Boolean = false
 
-    init {
+    private val remoteConfig: FirebaseRemoteConfig
+        get() = FirebaseRemoteConfig.getInstance()
+
+    fun loadRemoteConfig(onConfigLoaded: () -> Unit) {
         // do not put it in release - we don't need to change fetch interval there
         if (BuildConfig.DEBUG) {
             remoteConfig.setConfigSettingsAsync(createRemoteConfigSettings())
@@ -23,15 +28,16 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
                 isFetchFailed = false
                 Timber.d("Remote config fetched and activated")
                 Timber.i("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
+
+                onConfigLoaded.invoke()
             }
             .addOnFailureListener { error ->
                 isFetchFailed = true
                 Timber.e(IllegalStateException("Remote config is not fetched and activated", error))
+
+                onConfigLoaded.invoke()
             }
     }
-
-    private val remoteConfig: FirebaseRemoteConfig
-        get() = FirebaseRemoteConfig.getInstance()
 
     fun allFeatureTogglesRaw(): Map<String, String> = remoteConfig.all.mapValues { it.value.asString() }
 
@@ -57,11 +63,11 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
         return remoteConfig.getString(toggleKey).takeIf(String::isNotBlank)
     }
 
-    override fun getBoolean(toggleKey: String): Boolean {
+    override fun getBoolean(toggleKey: String): Boolean? {
         if (isFetchFailed) {
             return false
         }
-        return remoteConfig.getBoolean(toggleKey)
+        return if(isRemoteValueExists(toggleKey)) remoteConfig.getBoolean(toggleKey) else null
     }
 
     override fun getInt(toggleKey: String): Int? {
@@ -76,5 +82,9 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
             return null
         }
         return remoteConfig.getString(toggleKey).toFloatOrNull()
+    }
+
+    private fun isRemoteValueExists(toggleKey: String): Boolean {
+        return remoteConfig.getString(toggleKey) != NO_VALUE
     }
 }

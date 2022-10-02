@@ -16,10 +16,10 @@ object P2PSdkModule : InjectionModule {
     override fun create() = module {
         singleOf(::SolendSdk)
 
-        initSolendDeps()
+        initSolendSdkLayer()
     }
 
-    private fun Module.initSolendDeps() {
+    private fun Module.initSolendSdkLayer() {
         single {
             SolendSdkFacade(
                 solendSdk = get(),

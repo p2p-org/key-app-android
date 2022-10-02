@@ -11,7 +11,7 @@ class SolendSdkLogger {
         val logText = buildString {
             append(methodName)
             append(" ---------->")
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG && params.isNotEmpty()) {
                 appendLine()
                 append("(")
                 appendLine()
