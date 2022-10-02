@@ -30,12 +30,13 @@ import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.BackupModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
+import org.p2p.wallet.sdk.di.P2PSdkModule
 import org.p2p.wallet.settings.SettingsModule
+import org.p2p.wallet.solend.SolendModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
-import org.p2p.wallet.sdk.di.P2PSdkModule
 
 object AppModule {
     fun create(restartAction: () -> Unit) = module {
@@ -83,7 +84,8 @@ object AppModule {
                 DebugSettingsModule.create(),
                 SwapModule.create(),
                 HistoryStrategyModule.create(),
-                TransactionManagerModule.create()
+                TransactionManagerModule.create(),
+                SolendModule.create()
             )
         )
     }
