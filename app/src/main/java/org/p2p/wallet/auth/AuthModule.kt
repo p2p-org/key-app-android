@@ -17,6 +17,7 @@ import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.FileInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
+import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
@@ -63,6 +64,8 @@ import org.p2p.wallet.auth.ui.restore.common.CommonRestoreContract
 import org.p2p.wallet.auth.ui.restore.common.CommonRestorePresenter
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundPresenter
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenContract
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
@@ -151,6 +154,7 @@ object AuthModule {
         factoryOf(::CountryCodeInteractor)
 
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
+        factoryOf(::RestoreErrorScreenPresenter) bind RestoreErrorScreenContract.Presenter::class
 
         singleOf(::SmsInputTimer)
         factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
@@ -174,5 +178,6 @@ object AuthModule {
         factoryOf(::CustomShareRestoreInteractor)
         factoryOf(::TorusKeyInteractor)
         factoryOf(::UserRestoreInteractor)
+        singleOf(::RestoreStateMachine)
     }
 }

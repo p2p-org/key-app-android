@@ -1,10 +1,11 @@
 package org.p2p.wallet.auth.ui.generalerror
 
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract.Presenter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -29,11 +30,15 @@ class OnboardingGeneralErrorFragment :
 
     private val binding: FragmentOnboardingGeneralErrorBinding by viewBinding()
 
-    private val screenError: GatewayServiceError by args(ARG_ERROR_STATE)
+    private val screenError: GatewayHandledState by args(ARG_ERROR_STATE)
 
     override val presenter: Presenter by inject { parametersOf(screenError) }
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
 }

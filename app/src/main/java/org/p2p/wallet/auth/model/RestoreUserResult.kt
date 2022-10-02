@@ -20,7 +20,11 @@ sealed interface RestoreUserResult {
                 DevicePlusSocialShare(RestoreUserException("DevicePlusSocialShare: Social share not found"))
         }
 
-        data class SocialPlusCustomShare(val exception: RestoreUserException) : RestoreFailure(exception)
+        open class SocialPlusCustomShare(val exception: RestoreUserException) : RestoreFailure(exception) {
+            object TorusKeyNotFound : SocialPlusCustomShare(
+                RestoreUserException("SocialPlusCustomShare: Social share not found")
+            )
+        }
     }
 
     open class RestoreSuccess : RestoreUserResult {

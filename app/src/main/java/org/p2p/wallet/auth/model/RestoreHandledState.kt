@@ -17,6 +17,7 @@ abstract class RestoreFailureState(
         val title: String,
         val subtitle: String,
         val email: String? = null,
+        val imageViewResId: Int? = null,
         override val googleButton: GoogleButton? = null,
         override val primaryFirstButton: PrimaryFirstButton? = null,
         override val secondaryFirstButton: SecondaryFirstButton? = null

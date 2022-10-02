@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.restore.common
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
+import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreFailureState
@@ -14,7 +15,8 @@ class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val accountStorageContract: UserSignUpDetailsStorage,
-    private val restoreUserExceptionHandler: RestoreUserExceptionHandler
+    private val restoreUserExceptionHandler: RestoreUserExceptionHandler,
+    private val restoreStateMachine: RestoreStateMachine
 ) : BasePresenter<CommonRestoreContract.View>(), CommonRestoreContract.Presenter {
 
     override fun useGoogleAccount() {
@@ -22,8 +24,10 @@ class CommonRestorePresenter(
     }
 
     override fun useCustomShare() {
-        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet.DevicePlusCustomShare
-        view?.navigateToPhoneEnter()
+        restoreStateMachine.getAvailableRestoreWithCustomShare()?.let {
+            onboardingInteractor.currentFlow = it
+            view?.navigateToPhoneEnter()
+        }
     }
 
     override fun switchFlowToRestore() {
@@ -44,15 +48,17 @@ class CommonRestorePresenter(
     }
 
     private suspend fun restoreUserWithShares() {
-        val restoreType = OnboardingFlow.RestoreWallet.DevicePlusSocialShare
+        val restoreType = restoreStateMachine.getAvailableRestoreWithSocialShare() ?: return
         onboardingInteractor.currentFlow = restoreType
         val restoreResult = restoreWalletInteractor.tryRestoreUser(restoreType)
         when (val restoreHandledState = restoreUserExceptionHandler.handleRestoreResult(restoreResult)) {
             is RestoreSuccessState -> {
+                restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             }
             is RestoreFailureState.TitleSubtitleError -> {
                 view?.showRestoreErrorScreen(restoreHandledState)
+                restoreUserWithShares()
             }
             is RestoreFailureState.ToastError -> {
                 view?.showUiKitSnackBar(message = restoreHandledState.message)

@@ -58,31 +58,32 @@ class UserRestoreInteractor(
         val customShare = restoreFlowDataLocalRepository.customShare
             ?: error("Social+Custom restore way failed. Third share is null")
         val torusKey = restoreFlowDataLocalRepository.torusKey
-            ?: error("Social+Custom restore way failed. Social share is null")
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
-            ?: error("Social+Custom restore way failed. Social share ID is null")
         val encryptedMnemonic = restoreFlowDataLocalRepository.encryptedMnemonicJson
             ?: error("Social+Custom restore way failed. Mnemonic phrase is null")
 
-        val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(
-            socialShare = torusKey,
-            thirdShare = customShare,
-            encryptedMnemonic = encryptedMnemonic
-        )
+        if (torusKey.isNullOrEmpty() && socialShareUserId.isNullOrEmpty()) {
+            RestoreUserResult.RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound
+        } else {
+            val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(
+                socialShare = torusKey!!,
+                thirdShare = customShare,
+                encryptedMnemonic = encryptedMnemonic
+            )
+            signUpDetailsStorage.save(
+                data = Web3AuthSignUpResponse(
+                    ethereumPublicKey = result.ethereumPublicKey,
+                    mnemonicPhrase = result.mnemonicPhrase,
+                    encryptedMnemonicPhrase = JsonObject(),
+                    deviceShare = null,
+                    customThirdShare = customShare
+                ),
+                userId = socialShareUserId!!
+            )
 
-        signUpDetailsStorage.save(
-            data = Web3AuthSignUpResponse(
-                ethereumPublicKey = result.ethereumPublicKey,
-                mnemonicPhrase = result.mnemonicPhrase,
-                encryptedMnemonicPhrase = JsonObject(),
-                deviceShare = null,
-                customThirdShare = customShare
-            ),
-            userId = socialShareUserId
-        )
-
-        restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-        RestoreUserResult.RestoreSuccess.SocialPlusCustomShare
+            restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+            RestoreUserResult.RestoreSuccess.SocialPlusCustomShare
+        }
     } catch (error: Web3AuthErrorResponse) {
         val errorMessage = error.message.orEmpty()
         RestoreUserResult.RestoreFailure.SocialPlusCustomShare(RestoreUserException(errorMessage, error.errorCode))

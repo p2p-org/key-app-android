@@ -22,7 +22,6 @@ interface NewSmsInputContract {
         fun navigateToSmsInputBlocked(error: GeneralErrorTimerScreenError, timerLeftTime: Long)
         fun navigateToGatewayErrorScreen(handledState: GatewayHandledState)
         fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError)
-        fun requestGoogleSignIn()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -37,6 +36,5 @@ interface NewSmsInputContract {
         fun onSmsInputChanged(smsCode: String)
         fun checkSmsValue(smsCode: String)
         fun resendSms()
-        fun setGoogleSignInToken(userId: String, googleToken: String)
     }
 }

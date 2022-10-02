@@ -7,8 +7,9 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.auth.model.GatewayHandledState
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerFragment
@@ -120,8 +121,8 @@ class PhoneNumberEnterFragment :
         )
     }
 
-    override fun navigateToCriticalErrorScreen(handledState: GatewayServiceError) {
-        // popAndReplaceFragment(OnboardingGeneralErrorFragment.create(handledState), inclusive = true)
+    override fun navigateToCriticalErrorScreen(handledState: GatewayHandledState) {
+        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(handledState), inclusive = true)
     }
 
     override fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState) {

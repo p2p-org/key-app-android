@@ -1,7 +1,5 @@
 package org.p2p.wallet.auth.ui.restore_error
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
@@ -10,10 +8,12 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.UiKitButton
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.model.ButtonAction
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRestoreErrorScreenBinding
@@ -47,15 +47,12 @@ class RestoreErrorScreenFragment :
     private val binding: FragmentRestoreErrorScreenBinding by viewBinding()
 
     private val signInHelper: GoogleSignInHelper by inject()
+    private val restoreStateMachine: RestoreStateMachine by inject()
     private val restoreState: RestoreFailureState.TitleSubtitleError by args(ARG_RESTORE_STATE)
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult(),
         ::handleSignResult
     )
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
 
     override fun onConnectionError() {
         setRestoreByGoogleLoadingState(isLoading = false)
@@ -69,8 +66,7 @@ class RestoreErrorScreenFragment :
 
     private fun handleSignResult(result: ActivityResult) {
         signInHelper.parseSignInResult(requireContext(), result, errorHandler = this)?.let { credential ->
-            // setRestoreByGoogleLoadingState(isRestoringByGoogle = true)
-            // presenter.setGoogleIdToken(credential.id, credential.googleIdToken.orEmpty())
+            presenter.setGoogleIdToken(credential.id, credential.googleIdToken.orEmpty())
         }
     }
 
@@ -84,6 +80,9 @@ class RestoreErrorScreenFragment :
         state.email?.let {
             textViewErrorEmail.text = it
             textViewErrorEmail.isVisible = true
+        }
+        state?.imageViewResId?.let {
+            imageViewBox.setImageResource(it)
         }
         state.googleButton?.let { buttonState ->
             buttonRestoreByGoogle.setText(buttonState.titleResId)
@@ -104,6 +103,22 @@ class RestoreErrorScreenFragment :
         }
     }
 
+    override fun startGoogleFlow() {
+        signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
+    }
+
+    override fun setLoadingState(isLoading: Boolean) {
+        binding.buttonRestoreByGoogle.isLoadingState = isLoading
+    }
+
+    override fun navigateToPinCreate() {
+        popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
+    }
+
+    override fun navigateToPhoneEnter() {
+        popAndReplaceFragment(PhoneNumberEnterFragment.create(), inclusive = true)
+    }
+
     private fun setButtonAction(button: UiKitButton, action: ButtonAction) {
         button.setOnClickListener {
             when (action) {
@@ -113,14 +128,16 @@ class RestoreErrorScreenFragment :
                 ButtonAction.NAVIGATE_GOOGLE_AUTH -> {
                     presenter.useGoogleAccount()
                 }
-                ButtonAction.NAVIGATE_ENTER_PHONE -> popAndReplaceFragment(
-                    PhoneNumberEnterFragment.create(),
-                    inclusive = true
-                )
-                ButtonAction.NAVIGATE_START_SCREEN -> popAndReplaceFragment(
-                    OnboardingRootFragment.create(),
-                    inclusive = true
-                )
+                ButtonAction.NAVIGATE_ENTER_PHONE -> {
+                    presenter.useCustomShare()
+                }
+                ButtonAction.NAVIGATE_START_SCREEN -> {
+                    restoreStateMachine.reset()
+                    popAndReplaceFragment(
+                        OnboardingRootFragment.create(),
+                        inclusive = true
+                    )
+                }
             }
         }
     }

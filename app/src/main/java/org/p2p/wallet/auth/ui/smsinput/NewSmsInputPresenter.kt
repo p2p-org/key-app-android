@@ -133,9 +133,8 @@ class NewSmsInputPresenter(
     }
 
     private suspend fun tryRestoreUser(flow: OnboardingFlow.RestoreWallet) {
-        restoreWalletInteractor.tryRestoreUser(flow).takeIf {
-            restoreWalletInteractor.isUserReadyToBeRestored(flow)
-        }?.let { handleRestoreResult(it) }
+        val result = restoreWalletInteractor.tryRestoreUser(flow)
+        handleRestoreResult(result)
     }
 
     private fun handleRestoreResult(result: RestoreUserResult) {
@@ -177,28 +176,6 @@ class NewSmsInputPresenter(
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
-    }
-
-    override fun setGoogleSignInToken(userId: String, googleToken: String) {
-        launch {
-            restoreWalletInteractor.obtainTorusKey(googleToken, userId)
-            restoreUserWithSocialPlusCustomShare()
-        }
-    }
-
-    private suspend fun restoreUserWithSocialPlusCustomShare() {
-        val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet.SocialPlusCustomShare
-//        val restoreResult =
-//            when (val result = restoreWalletInteractor.tryRestoreUser(restoreFlow)) {
-//                is RestoreUserResult.RestoreSuccessful -> {
-//                    restoreWalletInteractor.finishAuthFlow()
-//                    view?.navigateToPinCreate()
-//                }
-//                is RestoreUserResult.RestoreFailed -> {
-//                    Timber.e(result, "Restoring user social+custom share failed")
-//                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-//                }
-//            }
     }
 
     private fun isSmsCodeFormatValid(smsCode: String): Boolean {

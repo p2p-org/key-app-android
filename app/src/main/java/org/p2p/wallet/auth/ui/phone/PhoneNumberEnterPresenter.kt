@@ -121,13 +121,13 @@ class PhoneNumberEnterPresenter(
     private fun handleGatewayServiceError(gatewayServiceError: GatewayServiceError) {
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(gatewayServiceError)) {
             is GatewayHandledState.CriticalError -> {
-                view?.navigateToCriticalErrorScreen(gatewayServiceError)
+                view?.navigateToCriticalErrorScreen(gatewayHandledResult)
             }
             is GatewayHandledState.TimerBlockError -> {
                 view?.navigateToAccountBlocked(gatewayHandledResult.cooldownTtl)
             }
             is GatewayHandledState.TitleSubtitleError -> {
-                view?.navigateToCriticalErrorScreen(gatewayServiceError)
+                view?.navigateToCriticalErrorScreen(gatewayHandledResult)
             }
             is GatewayHandledState.ToastError -> {
                 view?.showUiKitSnackBar(gatewayHandledResult.message)
