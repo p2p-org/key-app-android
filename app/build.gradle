@@ -209,12 +209,12 @@ dependencies {
     implementation project(':solanaj')
     implementation project(':ui-kit')
 
-    implementation "androidx.appcompat:appcompat:1.4.2"
+    implementation "androidx.appcompat:appcompat:1.5.1"
     implementation "androidx.biometric:biometric:1.1.0"
-    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.core:core-ktx:1.9.0'
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
-    implementation 'androidx.activity:activity-ktx:1.4.0'
-    implementation 'androidx.fragment:fragment-ktx:1.4.1'
+    implementation 'androidx.activity:activity-ktx:1.6.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.3'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation("com.google.android.material:material") {
@@ -224,7 +224,7 @@ dependencies {
     implementation "androidx.browser:browser:1.4.0"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
-    def coroutinesVersion = '1.6.1'
+    def coroutinesVersion = '1.6.2'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
@@ -272,7 +272,7 @@ dependencies {
     implementation 'com.caverock:androidsvg-aar:1.4'
 
     // Room
-    def roomVersion = '2.4.2'
+    def roomVersion = '2.4.3'
     implementation "androidx.room:room-runtime:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
@@ -307,8 +307,7 @@ dependencies {
     implementation "com.tbuonomo:dotsindicator:4.3"
 
     // Google Play Auth
-    implementation 'com.google.android.gms:play-services-auth:20.2.0'
-
+    implementation 'com.google.android.gms:play-services-auth:20.3.0'
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'
