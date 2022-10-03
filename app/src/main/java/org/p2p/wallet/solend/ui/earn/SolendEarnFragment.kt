@@ -35,19 +35,27 @@ class SolendEarnFragment :
         with(binding) {
             tokensRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokensRecyclerView.attachAdapter(earnAdapter)
+
+            refreshLayout.setOnRefreshListener { presenter.refresh() }
         }
 
         presenter.load()
     }
 
-    override fun showTokens(tokens: List<SolendDepositToken>) {
-        earnAdapter.setItems(tokens)
+    override fun showDeposits(deposits: List<SolendDepositToken>) {
+        earnAdapter.setItems(deposits)
     }
 
     override fun showLoading(isLoading: Boolean) {
         with(binding) {
-            progressBar.isVisible = isLoading
+            shimmerView.isVisible = isLoading
             tokensRecyclerView.isVisible = !isLoading
+        }
+    }
+
+    override fun showRefreshing(isRefreshing: Boolean) {
+        with(binding) {
+            refreshLayout.isRefreshing = isRefreshing
         }
     }
 }

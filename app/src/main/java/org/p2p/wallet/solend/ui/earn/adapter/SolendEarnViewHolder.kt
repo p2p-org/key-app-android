@@ -10,13 +10,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.uikit.glide.SvgSoftwareLayerSetter
-import org.p2p.wallet.databinding.ItemSolanaEarnDepositBinding
+import org.p2p.wallet.databinding.ItemSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 
 private const val IMAGE_SIZE = 48
 
-class SolanaEarnViewHolder(
-    private val binding: ItemSolanaEarnDepositBinding
+class SolendEarnViewHolder(
+    private val binding: ItemSolendEarnBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
@@ -24,13 +24,13 @@ class SolanaEarnViewHolder(
         .listener(SvgSoftwareLayerSetter())
 
     constructor(parent: ViewGroup) : this(
-        ItemSolanaEarnDepositBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        ItemSolendEarnBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     fun onBind(item: SolendDepositToken) {
-        loadImage(binding.tokenImageView, item.iconUrl)
+        loadImage(binding.tokenImageView, item.iconUrl.orEmpty())
         binding.textViewTokenName.text = item.tokenName
-        binding.textViewApy.text = "${item.earnApy}%"
+        binding.textViewApy.text = "${item.supplyInterest}%"
 
         if (item is SolendDepositToken.Active) {
             binding.textViewAmount.text = "${item.depositAmount} ${item.tokenSymbol}"

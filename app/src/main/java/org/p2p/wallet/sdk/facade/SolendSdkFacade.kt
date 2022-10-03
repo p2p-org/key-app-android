@@ -1,14 +1,13 @@
 package org.p2p.wallet.sdk.facade
 
 import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
 import org.p2p.solanaj.rpc.NetworkEnvironment
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.sdk.SolendSdk
 import org.p2p.wallet.sdk.facade.mapper.SolendMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountResponse
-import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountsListResponse
 import org.p2p.wallet.sdk.facade.model.SolendConfigResponse
 import org.p2p.wallet.sdk.facade.model.SolendDepositTransactionsResponse
 import org.p2p.wallet.sdk.facade.model.SolendEnvironment
@@ -34,7 +33,8 @@ class SolendSdkFacade(
 ) {
 
     private val currentNetworkEnvironment: NetworkEnvironment
-        get() = networkEnvironmentManager.loadCurrentEnvironment()
+        //        get() = networkEnvironmentManager.loadCurrentEnvironment()
+        get() = NetworkEnvironment.MAINNET
 
     suspend fun createDepositTransactions(
         relayProgramId: String,
@@ -131,7 +131,8 @@ class SolendSdkFacade(
             rpc_url = currentNetworkEnvironment.endpoint,
             owner = ownerAddress.value
         )
-        methodResultMapper.fromSdk<SolendCollateralAccountsListResponse>(response).accounts
+        val data = methodResultMapper.fromSdk<LinkedTreeMap<String, List<SolendCollateralAccountResponse>>>(response)
+        return@withContext data["accounts"].orEmpty()
     }
 
     suspend fun getSolendConfig(): SolendConfigResponse = withContext(dispatchers.io) {
@@ -160,17 +161,18 @@ class SolendSdkFacade(
     }
 
     suspend fun getSolendMarketInfo(
-        tokens: List<Token>,
+        tokenSymbols: List<String>,
         solendPoolName: String
-    ): SolendMarketInformationResponse = withContext(dispatchers.io) {
-        logger.logRequest("getSolendMarketInfo", tokens, solendPoolName)
+    ): SolendMarketInformationResponse? = withContext(dispatchers.io) {
+        logger.logRequest("getSolendMarketInfo", tokenSymbols, solendPoolName)
 
-        val tokenSymbols = tokens.joinToString(separator = ",", transform = Token::tokenSymbol)
         val response = solendSdk.getSolendMarketInfo(
-            tokens = tokenSymbols,
+            tokens = tokenSymbols.joinToString(separator = ","),
             pool = solendPoolName
         )
-        methodResultMapper.fromSdk(response)
+
+        val data = methodResultMapper.fromSdk<LinkedTreeMap<String, SolendMarketInformationResponse>>(response)
+        return@withContext data["market_info"]
     }
 
     suspend fun getSolendUserDepositByTokenSymbol(
