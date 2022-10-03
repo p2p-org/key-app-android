@@ -7,7 +7,5 @@ data class GatewayOnboardingMetadataCiphered(
     @SerializedName("nonce")
     val nonce: Base64String,
     @SerializedName("metadata_ciphered")
-    val metadataCiphered: Base64String,
-    @SerializedName("tag")
-    val tag: Base64String
+    val metadataCiphered: Base64String
 )
