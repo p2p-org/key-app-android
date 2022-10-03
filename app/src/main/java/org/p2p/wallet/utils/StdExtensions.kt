@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken
 import org.koin.ext.getFullName
 import org.p2p.wallet.R
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 
 fun <R> unsafeLazy(initializer: () -> R): Lazy<R> = lazy(LazyThreadSafetyMode.NONE, initializer)
 
@@ -34,3 +33,6 @@ inline fun <reified Type> Gson.fromJsonReified(json: String): Type? {
 fun Result<*>.invokeAndForget() {
     getOrNull()
 }
+
+// can be used for debug purposes
+fun ByteArray.toUIntArray(): String = map(Byte::toUByte).joinToString(prefix = "[", postfix = "]")

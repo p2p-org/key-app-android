@@ -42,8 +42,8 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
 
 enum class ScreenTab(val itemId: Int) {
     HOME_SCREEN(R.id.homeItem),
+    EARN_SCREEN(R.id.earnItem),
     HISTORY_SCREEN(R.id.historyItem),
-    FEEDBACK_SCREEN(R.id.feedbackItem),
     SETTINGS_SCREEN(R.id.settingsItem);
 
     companion object {

@@ -1,16 +1,17 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -21,8 +22,8 @@ import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
@@ -47,15 +48,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         }
         deeplinksManager.mainTabsSwitcher = this
         with(binding) {
-            bottomNavigation.setOnItemSelectedListener {
-                if (it.itemId == R.id.feedbackItem) {
-                    IntercomService.showMessenger()
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
-                    return@setOnItemSelectedListener false
-                }
+            bottomNavigation.setOnItemSelectedListener { tab ->
+                // TODO: remove line when solend is ready or featureFlag is created
+                if (tab == ScreenTab.EARN_SCREEN && !BuildConfig.DEBUG) return@setOnItemSelectedListener false
 
                 triggerTokensUpdateIfNeeded()
-                navigate(it.itemId)
+                navigate(tab.itemId)
                 return@setOnItemSelectedListener true
             }
         }
@@ -85,8 +83,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                     analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN)
                     HomeFragment.create()
                 }
+                ScreenTab.EARN_SCREEN -> {
+                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN)
+                    SolendEarnFragment.create()
+                }
                 ScreenTab.HISTORY_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_HISTORY)
+                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_EARN)
                     HistoryFragment.create()
                 }
                 ScreenTab.SETTINGS_SCREEN -> {
