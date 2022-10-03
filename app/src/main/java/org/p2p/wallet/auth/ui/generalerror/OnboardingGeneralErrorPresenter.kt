@@ -1,13 +1,9 @@
 package org.p2p.wallet.auth.ui.generalerror
 
-import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class OnboardingGeneralErrorPresenter(
-    private val restoreWalletInteractor: RestoreWalletInteractor,
-    private val onboardingInteractor: OnboardingInteractor,
     private val gatewayHandledState: GatewayHandledState
 ) : BasePresenter<OnboardingGeneralErrorContract.View>(),
     OnboardingGeneralErrorContract.Presenter {

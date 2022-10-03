@@ -73,6 +73,10 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.koin.core.parameter.ParametersHolder
+import org.p2p.wallet.auth.model.GatewayHandledState
+import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenContract
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -157,8 +161,9 @@ class CheckModulesTest : KoinTest {
                 withInstance(mockk<TransactionWorker>())
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
-                withParameter<OnboardingGeneralErrorPresenter> { GeneralErrorScreenError.CriticalError(0) }
+                withParameter<OnboardingGeneralErrorPresenter> { GatewayHandledState.ToastError("Test message") }
                 withParameters<OnboardingGeneralErrorTimerPresenter> { ParametersHolder(mutableListOf(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER, 10)) }
+                withParameter<RestoreErrorScreenPresenter> { RestoreFailureState.TitleSubtitleError(title = "Test", subtitle = "Test") }
             }
         )
     }
