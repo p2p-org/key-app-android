@@ -21,6 +21,7 @@ import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.ui.earn.adapter.SolendEarnAdapter
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import timber.log.Timber
 import java.math.BigDecimal
 
 class SolendEarnFragment :
@@ -116,6 +117,7 @@ class SolendEarnFragment :
                 is EarnWidgetState.Error -> {
                     viewEarnWidget.setWidgetState(EarnWidgetState.LearnMore)
                 }
+                else -> Timber.i("Ignored state: $state")
             }
         }
     }

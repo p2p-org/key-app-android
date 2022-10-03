@@ -54,59 +54,73 @@ class EarnWidget @JvmOverloads constructor(
     fun setWidgetState(state: EarnWidgetState) = with(binding) {
         currentState = state
 
-        val balanceState = state is EarnWidgetState.Balance
-        val depositingState = state is EarnWidgetState.Depositing
-
-        textViewEarnTitle.isVisible = !depositingState
-        tickerViewAmount.isVisible = balanceState
-        textViewEarnMessage.isVisible = !balanceState
-        viewTokenContainer.isVisible = balanceState
-        buttonEarn.isEnabled = !depositingState
+        setWidgetViewsVisibility(state)
 
         viewEarnContent.setBackgroundColor(getColor(state.backgroundColor))
         when (state) {
-            is EarnWidgetState.Balance -> {
-                makeAlignStartContent()
-                tickerViewAmount.text = "$${state.amount.formatTicker()}"
-                textViewEarnTitle.setText(R.string.earn_widget_balance_title)
-                buttonEarn.setText(R.string.earn_widget_balance_button)
-            }
-            is EarnWidgetState.LearnMore -> {
-                makeAlignCenterContent()
-                textViewEarnTitle.setText(R.string.earn_widget_learn_more_title)
-                textViewEarnMessage.setText(R.string.earn_widget_learn_more_message)
-                buttonEarn.setText(R.string.earn_widget_learn_more_button)
-            }
-            is EarnWidgetState.Depositing -> {
-                makeAlignStartContent()
-                tickerViewAmount.isVisible = false
-                textViewEarnTitle.isVisible = false
-                textViewEarnMessage.isVisible = false
-                buttonEarn.setText(state.buttonTextRes)
-                buttonEarn.isEnabled = true // TODO remove after tests and real integration
-            }
-            is EarnWidgetState.DepositFoundsFailed -> {
-                makeAlignCenterContent()
-                textViewEarnTitle.setText(R.string.earn_widget_deposit_failed_title)
-                textViewEarnMessage.setText(R.string.earn_widget_deposit_failed_message)
-                buttonEarn.setText(R.string.earn_widget_deposit_failed_button)
-            }
-            is EarnWidgetState.Error -> {
-                makeAlignCenterContent()
-                textViewEarnTitle.setText(R.string.earn_widget_error_title)
-                textViewEarnMessage.setText(state.messageTextRes)
-                buttonEarn.setText(state.buttonTextRes)
-            }
-            else -> { // EarnWidgetState.Idle
-                makeAlignCenterContent()
-                textViewEarnTitle.isVisible = false
-                textViewEarnMessage.isVisible = false
-                buttonEarn.apply {
-                    isEnabled = false
-                    text = null
-                }
-            }
+            is EarnWidgetState.Balance -> state.showBalanceState()
+            is EarnWidgetState.LearnMore -> state.showLearnMoreState()
+            is EarnWidgetState.Depositing -> state.showDepositingState()
+            is EarnWidgetState.DepositFoundsFailed -> state.showDepositFoundsFailedState()
+            is EarnWidgetState.Error -> state.showErrorState()
+            else -> showIdleState()
         }
+    }
+
+    private fun EarnWidgetState.Balance.showBalanceState() = with(binding) {
+        makeAlignStartContent()
+        tickerViewAmount.text = "$${amount.formatTicker()}"
+        textViewEarnTitle.setText(R.string.earn_widget_balance_title)
+        buttonEarn.setText(R.string.earn_widget_balance_button)
+    }
+
+    private fun EarnWidgetState.LearnMore.showLearnMoreState() = with(binding) {
+        makeAlignCenterContent()
+        textViewEarnTitle.setText(R.string.earn_widget_learn_more_title)
+        textViewEarnMessage.setText(R.string.earn_widget_learn_more_message)
+        buttonEarn.setText(R.string.earn_widget_learn_more_button)
+    }
+
+    private fun EarnWidgetState.Depositing.showDepositingState() = with(binding) {
+        makeAlignStartContent()
+        buttonEarn.setText(buttonTextRes)
+        buttonEarn.isEnabled = true // TODO remove after tests and real integration
+    }
+
+    private fun EarnWidgetState.DepositFoundsFailed.showDepositFoundsFailedState() = with(binding) {
+        makeAlignCenterContent()
+        textViewEarnTitle.setText(R.string.earn_widget_deposit_failed_title)
+        textViewEarnMessage.setText(R.string.earn_widget_deposit_failed_message)
+        buttonEarn.setText(R.string.earn_widget_deposit_failed_button)
+    }
+
+    private fun EarnWidgetState.Error.showErrorState() = with(binding) {
+        makeAlignCenterContent()
+        textViewEarnTitle.setText(R.string.earn_widget_error_title)
+        textViewEarnMessage.setText(messageTextRes)
+        buttonEarn.setText(buttonTextRes)
+    }
+
+    private fun showIdleState() = with(binding) {
+        makeAlignCenterContent()
+        textViewEarnTitle.isVisible = false
+        textViewEarnMessage.isVisible = false
+        buttonEarn.apply {
+            isEnabled = false
+            text = null
+        }
+    }
+
+    private fun setWidgetViewsVisibility(state: EarnWidgetState) = with(binding) {
+        val isBalanceState = state is EarnWidgetState.Balance
+        val isDepositingState = state is EarnWidgetState.Depositing
+
+        tickerViewAmount.isVisible = isBalanceState
+        viewTokenContainer.isVisible = isBalanceState
+        textViewEarnMessage.isVisible = !isBalanceState && !isDepositingState
+
+        textViewEarnTitle.isVisible = !isDepositingState
+        buttonEarn.isEnabled = !isDepositingState
     }
 
     private fun makeAlignStartContent() = with(binding) {
