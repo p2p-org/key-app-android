@@ -12,7 +12,9 @@ import timber.log.Timber
 
 private val TAG = RestoreFlowDataLocalRepository::class.simpleName.orEmpty()
 
-class RestoreFlowDataLocalRepository {
+class RestoreFlowDataLocalRepository(
+    private val signUpDetailsStorage: UserSignUpDetailsStorage
+) {
 
     var isRestoreWalletRequestSent = false
 
@@ -37,11 +39,12 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
-    var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
+    var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? =
+        signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare
         set(value) {
-            field = value
-            Timber.tag(TAG).i("deviceShare is received and set")
-        }
+                field = value
+                Timber.tag(TAG).i("deviceShare is received and set")
+            }
 
     var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
         set(value) {
@@ -61,10 +64,10 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("userActualAccount is generated and set")
         }
 
-    var socialShare: String? = null
+    var torusKey: String? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("socialShare is generated and set: ${socialShare?.length}")
+            Timber.tag(TAG).i("socialShare is generated and set: ${torusKey?.length}")
         }
 
     var socialShareUserId: String? = null

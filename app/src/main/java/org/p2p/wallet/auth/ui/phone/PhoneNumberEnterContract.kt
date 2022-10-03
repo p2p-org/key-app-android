@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.ui.phone
 
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
@@ -17,7 +17,7 @@ interface PhoneNumberEnterContract {
         fun navigateToSmsInput()
         fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState)
         fun navigateToAccountBlocked(cooldownTtl: Long)
-        fun navigateToCriticalErrorScreen(error: GeneralErrorScreenError)
+        fun navigateToCriticalErrorScreen(error: GatewayHandledState)
     }
 
     interface Presenter : MvpPresenter<View> {

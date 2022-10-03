@@ -1,17 +1,24 @@
 package org.p2p.wallet.auth.interactor.restore
 
+import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 
 class RestoreWalletInteractor(
     private val customShareRestoreInteractor: CustomShareRestoreInteractor,
-    private val socialShareRestoreInteractor: SocialShareRestoreInteractor,
+    private val socialShareRestoreInteractor: TorusKeyInteractor,
     private val userRestoreInteractor: UserRestoreInteractor,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
-    private val signUpDetailsStorage: UserSignUpDetailsStorage
+    private val smsInputTimer: SmsInputTimer,
+    private val signUpDetailsStorage: UserSignUpDetailsStorage,
+    private val restoreStateMachine: RestoreStateMachine
 ) {
+    init {
+        restoreStateMachine.isDeviceShareSaved = isDeviceShareSaved()
+    }
 
     suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber, isResend: Boolean = false) =
         customShareRestoreInteractor.startRestoreCustomShare(userPhoneNumber, isResend)
@@ -24,8 +31,8 @@ class RestoreWalletInteractor(
         restoreFlowDataLocalRepository.generateRestoreUserKeyPair()
     }
 
-    fun restoreSocialShare(userId: String, idToken: String) {
-        socialShareRestoreInteractor.restoreSocialShare(idToken, userId)
+    suspend fun obtainTorusKey(userId: String, idToken: String) {
+        socialShareRestoreInteractor.obtainTorusKey(idToken, userId)
     }
 
     fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet) =
@@ -49,5 +56,14 @@ class RestoreWalletInteractor(
 
     fun resetUserEnterPhoneNumberTriesCount() {
         restoreFlowDataLocalRepository.resetUserPhoneNumberEnteredCount()
+    }
+
+    fun resetUserPhoneNumber() {
+        restoreFlowDataLocalRepository.userPhoneNumber = null
+        resetTimer()
+    }
+
+    private fun resetTimer() {
+        smsInputTimer.smsResendCount = 0
     }
 }

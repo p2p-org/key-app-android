@@ -17,7 +17,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.updates.ConnectionStateProvider
 import timber.log.Timber
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 
 private const val USER_CANCELED_DIALOG_CODE = 16
 private const val INTERNAL_ERROR_CODE = 8
@@ -25,15 +24,11 @@ private const val PREFS_KEY_TOKEN_EXPIRE_TIME = "PREFS_KEY_TOKEN_EXPIRE_TIME"
 
 class GoogleSignInHelper(
     private val connectionStateProvider: ConnectionStateProvider,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val web3AuthApi: Web3AuthApi
 ) {
     private fun getSignInClient(context: Context): SignInClient {
         return Identity.getSignInClient(context)
-    }
-
-    fun isGoogleTokenExpired(): Boolean {
-        val tokenExpireTime = sharedPreferences.getLong(PREFS_KEY_TOKEN_EXPIRE_TIME, 0L)
-        return System.currentTimeMillis() >= tokenExpireTime
     }
 
     fun showSignInDialog(context: Context, googleSignInLauncher: ActivityResultLauncher<IntentSenderRequest>) {
@@ -66,14 +61,7 @@ class GoogleSignInHelper(
         errorHandler: GoogleSignInErrorHandler
     ): SignInCredential? {
         return try {
-            val result = getSignInClient(context).getSignInCredentialFromIntent(result.data)
-            val tokenCreateTime = System.currentTimeMillis()
-            val minuteInMillis = TimeUnit.MINUTES.toMillis(1)
-            val tokenExpireTime = tokenCreateTime + minuteInMillis
-            sharedPreferences.edit {
-                putLong(PREFS_KEY_TOKEN_EXPIRE_TIME, tokenExpireTime)
-            }
-            result
+            getSignInClient(context).getSignInCredentialFromIntent(result.data)
         } catch (ex: ApiException) {
             sharedPreferences.edit {
                 putLong(PREFS_KEY_TOKEN_EXPIRE_TIME, 0)

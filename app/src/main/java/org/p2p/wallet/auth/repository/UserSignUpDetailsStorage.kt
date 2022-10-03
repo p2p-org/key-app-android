@@ -28,7 +28,6 @@ class UserSignUpDetailsStorage(
         val key = generatePrefsKey(userId)
         val value = SignUpUserDetails(userId, data)
 
-        accountStorage.saveObject(key, value)
         accountStorage.saveObject(KEY_LAST_DEVICE_SHARE_ID, value)
         accountStorage.saveString(KEY_IN_SIGN_UP_PROCESS, key)
 
@@ -53,7 +52,7 @@ class UserSignUpDetailsStorage(
             .getOrNull()
     }
 
-    fun isDeviceShareSaved(): Boolean = getLastSignUpUserDetails() != null
+    fun isDeviceShareSaved(): Boolean = getLastSignUpUserDetails()?.signUpDetails?.deviceShare != null
 
     fun isSignUpInProcess(): Boolean = accountStorage.getString(KEY_IN_SIGN_UP_PROCESS) != null
 

@@ -19,9 +19,6 @@ class CreateWalletInteractor(
     val timer
         get() = smsInputTimer.smsInputTimerFlow
 
-    val resetCount
-        get() = smsInputTimer.smsResendCount
-
     suspend fun startCreatingWallet(userPhoneNumber: PhoneNumber, isResend: Boolean = false) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey
             ?: throw CreateWalletFailure("User public key is null")
@@ -90,9 +87,11 @@ class CreateWalletInteractor(
             userSeedPhrase = userSeedPhrase,
             socialShareOwnerId = socialShareOwnerId
         )
+
+        finishAuthFlow()
     }
 
-    fun finishAuthFlow() {
+    private fun finishAuthFlow() {
         signUpFlowDataRepository.userAccount?.also {
             tokenKeyProvider.secretKey = it.secretKey
             tokenKeyProvider.publicKey = it.publicKey.toBase58()

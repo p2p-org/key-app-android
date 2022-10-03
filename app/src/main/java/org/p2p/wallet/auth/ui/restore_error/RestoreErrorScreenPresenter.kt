@@ -1,50 +1,45 @@
-package org.p2p.wallet.auth.ui.restore.common
+package org.p2p.wallet.auth.ui.restore_error
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
-import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
-import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
 
-class CommonRestorePresenter(
-    private val onboardingInteractor: OnboardingInteractor,
+class RestoreErrorScreenPresenter(
+    private val restoreFailureState: RestoreFailureState.TitleSubtitleError,
     private val restoreWalletInteractor: RestoreWalletInteractor,
-    private val accountStorageContract: UserSignUpDetailsStorage,
+    private val onboardingInteractor: OnboardingInteractor,
     private val restoreUserExceptionHandler: RestoreUserExceptionHandler,
     private val restoreStateMachine: RestoreStateMachine
-) : BasePresenter<CommonRestoreContract.View>(), CommonRestoreContract.Presenter {
+) :
+    BasePresenter<RestoreErrorScreenContract.View>(),
+    RestoreErrorScreenContract.Presenter {
+
+    override fun attach(view: RestoreErrorScreenContract.View) {
+        super.attach(view)
+        view.showState(restoreFailureState)
+    }
 
     override fun useGoogleAccount() {
         view?.startGoogleFlow()
     }
 
-    override fun useCustomShare() {
-        restoreStateMachine.getAvailableRestoreWithCustomShare()?.let {
-            onboardingInteractor.currentFlow = it
-            view?.navigateToPhoneEnter()
-        }
-    }
-
-    override fun switchFlowToRestore() {
-        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
-        restoreWalletInteractor.generateRestoreUserKeyPair()
-        view?.setRestoreViaGoogleFlowVisibility(
-            isVisible = accountStorageContract.isDeviceShareSaved() && !accountStorageContract.isSignUpInProcess()
-        )
-    }
-
     override fun setGoogleIdToken(userId: String, idToken: String) {
         launch {
-            view?.setLoadingState(isScreenLoading = true)
+            view?.setLoadingState(isLoading = true)
             restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
             restoreUserWithShares()
-            view?.setLoadingState(isScreenLoading = false)
+            view?.setLoadingState(isLoading = false)
         }
+    }
+
+    override fun useCustomShare() {
+        onboardingInteractor.currentFlow = restoreStateMachine.getAvailableRestoreWithCustomShare() ?: return
+        view?.navigateToPhoneEnter()
     }
 
     private suspend fun restoreUserWithShares() {
@@ -57,8 +52,7 @@ class CommonRestorePresenter(
                 view?.navigateToPinCreate()
             }
             is RestoreFailureState.TitleSubtitleError -> {
-                view?.showRestoreErrorScreen(restoreHandledState)
-                restoreUserWithShares()
+                view?.showState(restoreHandledState)
             }
             is RestoreFailureState.ToastError -> {
                 view?.showUiKitSnackBar(message = restoreHandledState.message)

@@ -8,7 +8,7 @@ interface Web3AuthApi {
     class Web3AuthSdkInternalError(override val message: String, override val cause: Throwable? = null) : Throwable()
 
     suspend fun triggerSilentSignUp(
-        socialShare: String
+        torusKey: String
     ): Web3AuthSignUpResponse
 
     suspend fun triggerSignInNoCustom(
@@ -27,4 +27,8 @@ interface Web3AuthApi {
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         encryptedMnemonic: JsonObject
     ): Web3AuthSignInResponse
+
+    suspend fun obtainTorusKey(
+        googleUserTokenId: String
+    ): String
 }

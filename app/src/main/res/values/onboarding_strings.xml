@@ -113,7 +113,8 @@
     <string name="restore_no_wallet_try_another_option">Try another option</string>
     <string name="restore_how_to_continue">How to continue?</string>
     <string name="restore_continuation_alternative_text">If you want to continue with %s select phone number. If you made a mistake, please choose another mail</string>
-
+    <string name="restore_shares_not_match_title">Shares aren’t match</string>
+    <string name="restore_shares_not_match_message">So sorry, baby\n\nIf you will write us, use error\ncode #10464</string>
     <!-- Seed phrase scree -->
     <string name="seed_phrase_restore_wallet">Restore your wallet</string>
     <string name="seed_phrase_enter_title">Enter your seed phrase</string>
@@ -130,5 +131,5 @@
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
-    <string name="onboarding_with_email">With %s</string>
+    <string name="onboarding_with_email">%s</string>
 </resources>
