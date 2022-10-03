@@ -80,7 +80,9 @@ class PhoneNumberEnterFragment :
 
     override fun initRestoreWalletViews() {
         binding.toolbar.setNavigationIcon(R.drawable.ic_toolbar_back)
-        binding.toolbar.setNavigationOnClickListener { popBackStack() }
+        binding.toolbar.setNavigationOnClickListener {
+            popAndReplaceFragment(CommonRestoreFragment.create(), inclusive = true)
+        }
         binding.textViewSubtitle.setText(R.string.onboarding_restore_number_message)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -123,6 +125,10 @@ class PhoneNumberEnterFragment :
 
     override fun navigateToCriticalErrorScreen(handledState: GatewayHandledState) {
         popAndReplaceFragment(OnboardingGeneralErrorFragment.create(handledState), inclusive = true)
+    }
+
+    override fun setLoadingState(isLoading: Boolean) {
+        binding.buttonConfirmPhone.isLoadingState = isLoading
     }
 
     override fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState) {

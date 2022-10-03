@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:background="@color/lime">
+    tools:background="@color/lime"
+    android:paddingBottom="24dp">
 
     <ImageView
         android:id="@+id/imageViewSliderIcon"
@@ -13,7 +14,8 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:padding="38dp"
+        android:paddingHorizontal="38dp"
+        android:paddingTop="38dp"
         tools:src="@drawable/onboarding_slide_temp" />
 
     <TextView
@@ -22,7 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="26dp"
         android:gravity="center"
         android:textColor="@color/night"
         tools:text="@string/onboarding_slide_1_title" />

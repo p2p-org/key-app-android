@@ -8,7 +8,12 @@ interface OnboardingGeneralErrorContract {
     interface View : MvpView {
         fun setState(state: GatewayHandledState.TitleSubtitleError)
         fun setState(state: GatewayHandledState.CriticalError)
+        fun navigateToEnterPhone()
+        fun navigateToStartScreen()
     }
 
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun onEnterPhoneClicked()
+        fun onStartScreenClicked()
+    }
 }

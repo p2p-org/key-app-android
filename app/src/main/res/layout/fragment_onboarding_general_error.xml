@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
-            app:srcCompat="@drawable/onboarding_box" />
+            app:srcCompat="@drawable/ic_cat" />
 
         <TextView
             android:id="@+id/textViewErrorTitle"

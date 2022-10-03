@@ -11,11 +11,13 @@ interface RestoreErrorScreenContract {
         fun setLoadingState(isLoading: Boolean)
         fun navigateToPinCreate()
         fun navigateToPhoneEnter()
+        fun navigateToStartScreen()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun useGoogleAccount()
         fun setGoogleIdToken(userId: String, idToken: String)
         fun useCustomShare()
+        fun onStartScreenClicked()
     }
 }

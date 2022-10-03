@@ -28,10 +28,15 @@ sealed interface RestoreUserResult {
             data class SocialShareNotFound(val userEmailAddress: String) : SocialPlusCustomShare(
                 RestoreUserException("SocialPlusCustomShare: Social share not found")
             )
+
             data class SocialShareNotMatch(val userEmailAddress: String) : SocialPlusCustomShare(
                 RestoreUserException("SocialPlusCustomShare: Social share not match")
             )
         }
+
+        open class DevicePlusCustomOrSocialPlusCustom(val exception: RestoreUserException) : RestoreFailure(exception)
+
+        open class DevicePlusSocialOrSocialPlusCustom(val exception: RestoreUserException) : RestoreFailure(exception)
     }
 
     open class RestoreSuccess : RestoreUserResult {

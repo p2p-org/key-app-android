@@ -87,16 +87,10 @@ class OnboardingGeneralErrorFragment :
                     IntercomService.showMessenger()
                 }
                 ButtonAction.NAVIGATE_ENTER_PHONE -> {
-                    popAndReplaceFragment(
-                        PhoneNumberEnterFragment.create(),
-                        inclusive = true
-                    )
+                    presenter.onEnterPhoneClicked()
                 }
                 ButtonAction.NAVIGATE_START_SCREEN -> {
-                    popAndReplaceFragment(
-                        OnboardingRootFragment.create(),
-                        inclusive = true
-                    )
+                    presenter.onStartScreenClicked()
                 }
             }
         }
@@ -104,5 +98,19 @@ class OnboardingGeneralErrorFragment :
 
     override fun setState(state: GatewayHandledState.CriticalError) {
         // TODO
+    }
+
+    override fun navigateToEnterPhone() {
+        popAndReplaceFragment(
+            PhoneNumberEnterFragment.create(),
+            inclusive = true
+        )
+    }
+
+    override fun navigateToStartScreen() {
+        popAndReplaceFragment(
+            OnboardingRootFragment.create(),
+            inclusive = true
+        )
     }
 }

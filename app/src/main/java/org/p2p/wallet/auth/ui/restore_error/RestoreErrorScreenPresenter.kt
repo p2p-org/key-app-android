@@ -2,11 +2,11 @@ package org.p2p.wallet.auth.ui.restore_error
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
-import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
+import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class RestoreErrorScreenPresenter(
@@ -32,20 +32,25 @@ class RestoreErrorScreenPresenter(
         launch {
             view?.setLoadingState(isLoading = true)
             restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
+            onboardingInteractor.currentFlow = restoreStateMachine.getSocialFlow()
             restoreUserWithShares()
             view?.setLoadingState(isLoading = false)
         }
     }
 
     override fun useCustomShare() {
-        onboardingInteractor.currentFlow = restoreStateMachine.getAvailableRestoreWithCustomShare() ?: return
+        onboardingInteractor.currentFlow = restoreStateMachine.getCustomFlow()
+        restoreWalletInteractor.resetUserPhoneNumber()
         view?.navigateToPhoneEnter()
     }
 
+    override fun onStartScreenClicked() {
+        restoreWalletInteractor.resetUserPhoneNumber()
+        view?.navigateToStartScreen()
+    }
+
     private suspend fun restoreUserWithShares() {
-        val restoreType = restoreStateMachine.getAvailableRestoreWithSocialShare() ?: return
-        onboardingInteractor.currentFlow = restoreType
-        val restoreResult = restoreWalletInteractor.tryRestoreUser(restoreType)
+        val restoreResult = restoreWalletInteractor.tryRestoreUser(restoreStateMachine.getSocialFlow())
         when (val restoreHandledState = restoreUserExceptionHandler.handleRestoreResult(restoreResult)) {
             is RestoreSuccessState -> {
                 restoreWalletInteractor.finishAuthFlow()
