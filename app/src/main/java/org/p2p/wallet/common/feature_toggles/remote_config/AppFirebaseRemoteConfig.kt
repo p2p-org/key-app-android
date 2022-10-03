@@ -67,7 +67,7 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
         if (isFetchFailed) {
             return false
         }
-        return if(isRemoteValueExists(toggleKey)) remoteConfig.getBoolean(toggleKey) else null
+        return if (isRemoteValueExists(toggleKey)) remoteConfig.getBoolean(toggleKey) else null
     }
 
     override fun getInt(toggleKey: String): Int? {

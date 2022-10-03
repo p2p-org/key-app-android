@@ -2,22 +2,22 @@ package org.p2p.wallet.sdk.facade.model
 
 import com.google.gson.annotations.SerializedName
 
-data class SolendConfigResponse(
+data class SolendConfigRootResponse(
     @SerializedName("config")
-    val solendConfig: SolendConfig
+    val solendConfig: SolendConfigResponse
 )
 
-data class SolendConfig(
+data class SolendConfigResponse(
     @SerializedName("assets")
-    val assets: List<SolendAsset>,
+    val assets: List<SolendAssetResponse>,
     @SerializedName("markets")
-    val markets: List<SolendMarket>,
+    val markets: List<SolendMarketResponse>,
     @SerializedName("oracles")
-    val oracles: SolendOracles,
+    val oracles: SolendOraclesResponse,
     @SerializedName("programID")
     val programId: String
 ) {
-    data class SolendAsset(
+    data class SolendAssetResponse(
         @SerializedName("decimals")
         val decimals: Int,
         @SerializedName("mintAddress")
@@ -28,7 +28,7 @@ data class SolendConfig(
         val symbol: String
     )
 
-    data class SolendMarket(
+    data class SolendMarketResponse(
         @SerializedName("address")
         val address: String,
         @SerializedName("authorityAddress")
@@ -38,9 +38,9 @@ data class SolendConfig(
         @SerializedName("name")
         val name: String,
         @SerializedName("reserves")
-        val reserves: List<SolendMarketReserve>
+        val reserves: List<SolendMarketReserveResponse>
     ) {
-        data class SolendMarketReserve(
+        data class SolendMarketReserveResponse(
             @SerializedName("address")
             val address: String,
             @SerializedName("asset")
@@ -58,15 +58,15 @@ data class SolendConfig(
         )
     }
 
-    data class SolendOracles(
+    data class SolendOraclesResponse(
         @SerializedName("assets")
-        val assets: List<SolendOracleAsset>,
+        val assets: List<SolendOracleAssetResponse>,
         @SerializedName("pythProgramID")
         val pythProgramID: String,
         @SerializedName("switchboardProgramID")
         val switchboardProgramID: String
     ) {
-        data class SolendOracleAsset(
+        data class SolendOracleAssetResponse(
             @SerializedName("asset")
             val asset: String,
             @SerializedName("priceAddress")

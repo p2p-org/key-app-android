@@ -1,8 +1,8 @@
 package org.p2p.wallet.solend.data
 
-import org.p2p.wallet.sdk.facade.model.SolendConfig
+import org.p2p.wallet.solend.model.SolendConfiguration
 
 interface SolendConfigurationRepository {
     suspend fun loadSolendConfiguration()
-    suspend fun getSolendConfiguration(): SolendConfig
+    suspend fun getSolendConfiguration(): SolendConfiguration
 }

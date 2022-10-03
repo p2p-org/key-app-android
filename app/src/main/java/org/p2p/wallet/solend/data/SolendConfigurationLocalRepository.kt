@@ -1,21 +1,23 @@
 package org.p2p.wallet.solend.data
 
 import org.p2p.wallet.sdk.facade.SolendSdkFacade
-import org.p2p.wallet.sdk.facade.model.SolendConfig
+import org.p2p.wallet.solend.data.mapper.SolendConfigurationRepositoryMapper
+import org.p2p.wallet.solend.model.SolendConfiguration
 import timber.log.Timber
 
 private const val TAG = "SolendConfigurationLocalRepository"
 
 class SolendConfigurationLocalRepository(
-    private val solendSdkFacade: SolendSdkFacade
+    private val solendSdkFacade: SolendSdkFacade,
+    private val mapper: SolendConfigurationRepositoryMapper
 ) : SolendConfigurationRepository {
-    private var solendConfig: SolendConfig? = null
+    private var solendConfig: SolendConfiguration? = null
 
     override suspend fun loadSolendConfiguration() {
-        this.solendConfig = solendSdkFacade.getSolendConfig().solendConfig
+        this.solendConfig = mapper.fromNetwork(solendSdkFacade.getSolendConfig())
     }
 
-    override suspend fun getSolendConfiguration(): SolendConfig {
+    override suspend fun getSolendConfiguration(): SolendConfiguration {
         if (solendConfig == null) {
             Timber.tag(TAG).i("Solend config is not loaded. Loading now...")
             loadSolendConfiguration()
