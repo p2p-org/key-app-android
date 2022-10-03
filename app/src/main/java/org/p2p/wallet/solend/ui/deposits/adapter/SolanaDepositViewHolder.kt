@@ -1,4 +1,4 @@
-package org.p2p.wallet.solend.ui.earn.adapter
+package org.p2p.wallet.solend.ui.deposits.adapter
 
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
@@ -9,15 +9,19 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.uikit.glide.SvgSoftwareLayerSetter
-import org.p2p.wallet.databinding.ItemSolanaEarnBinding
+import org.p2p.wallet.R
+import org.p2p.wallet.databinding.ItemSolanaDepositBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val IMAGE_SIZE = 48
 
-class SolanaEarnViewHolder(
+class SolanaDepositViewHolder(
     parent: ViewGroup,
-    private val binding: ItemSolanaEarnBinding = parent.inflateViewBinding(attachToRoot = false),
+    private val binding: ItemSolanaDepositBinding = parent.inflateViewBinding(attachToRoot = false),
+    private val onAddMoreClicked: (SolendDepositToken) -> Unit,
+    private val onWithdrawClicked: (SolendDepositToken) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
@@ -26,13 +30,19 @@ class SolanaEarnViewHolder(
 
     fun onBind(item: SolendDepositToken) = with(binding) {
         loadImage(tokenImageView, item.iconUrl)
-        textViewTokenName.text = item.tokenName
-        textViewApy.text = "${item.earnApy}%"
+        textViewApy.text = getString(R.string.deposits_yielding_apy, item.earnApy)
+
+        // TODO PWN-5020 make real impl of amount in $
+        textViewAmountUsd.text = if (item is SolendDepositToken.Active) {
+            "$${item.depositAmount}"
+        } else {
+            "$0"
+        }
 
         if (item is SolendDepositToken.Active) {
-            textViewAmount.text = "${item.depositAmount} ${item.tokenSymbol}"
+            textViewTokenAmount.text = "%s %s".format(item.depositAmount.toString(), item.tokenSymbol)
         } else {
-            textViewAmount.text = item.tokenSymbol
+            textViewTokenAmount.text = item.tokenSymbol
         }
     }
 

@@ -18,7 +18,9 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.databinding.FragmentSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.solend.ui.deposits.SolendDepositsFragment
 import org.p2p.wallet.solend.ui.earn.adapter.SolendEarnAdapter
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -37,6 +39,7 @@ class SolendEarnFragment :
     private val binding: FragmentSolendEarnBinding by viewBinding()
 
     private var timerJob: Job? = null
+    private var lastState: EarnWidgetState = EarnWidgetState.LearnMore
 
     private val earnAdapter: SolendEarnAdapter by unsafeLazy {
         SolendEarnAdapter()
@@ -72,7 +75,7 @@ class SolendEarnFragment :
     }
 
     private fun FragmentSolendEarnBinding.setupMockWidgetData() {
-        viewEarnWidget.setWidgetState(EarnWidgetState.LearnMore)
+        viewEarnWidget.setWidgetState(lastState)
         viewEarnWidget.setOnButtonClickListener {
             timerJob?.cancel()
             when (val state = viewEarnWidget.currentState) {
@@ -80,6 +83,7 @@ class SolendEarnFragment :
                     viewEarnWidget.setWidgetState(
                         EarnWidgetState.Depositing(R.string.earn_widget_deposit_withdrawing)
                     )
+                    replaceFragment(SolendDepositsFragment.create())
                 }
                 is EarnWidgetState.Depositing -> {
                     if (state.buttonTextRes == R.string.earn_widget_deposit_withdrawing) {
@@ -119,6 +123,7 @@ class SolendEarnFragment :
                 }
                 else -> Timber.i("Ignored state: $state")
             }
+            lastState = viewEarnWidget.currentState
         }
     }
 }

@@ -67,6 +67,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:itemCount="5"
-            tools:listitem="@layout/item_solana_earn_deposit" />
+            tools:listitem="@layout/item_solana_earn" />
+
     </FrameLayout>
+
 </LinearLayout>
