@@ -9,11 +9,11 @@ import org.p2p.wallet.utils.getErrorMessage
 import timber.log.Timber
 import java.math.BigDecimal
 
-class SolendDepositsPresenter(
+class SolendUserDepositsPresenter(
     private val context: Context
-) : BasePresenter<SolendDepositsContract.View>(), SolendDepositsContract.Presenter {
+) : BasePresenter<SolendUserDepositsContract.View>(), SolendUserDepositsContract.Presenter {
 
-    override fun attach(view: SolendDepositsContract.View) {
+    override fun attach(view: SolendUserDepositsContract.View) {
         super.attach(view)
         loadData()
     }

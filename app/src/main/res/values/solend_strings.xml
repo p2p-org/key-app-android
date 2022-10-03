@@ -33,10 +33,10 @@
     <string name="earn_widget_error_button_try_again">Try again</string>
 
     <!--Deposits-->
-    <string name="deposits_title">Your deposits</string>
-    <string name="deposits_title_with_count">Your deposits (%d)</string>
-    <string name="deposits_yielding_apy">Yielding %.2f%% APY</string>
-    <string name="deposits_add_more">Add more</string>
-    <string name="deposits_withdraw">Withdraw</string>
+    <string name="solend_deposits_title">Your deposits</string>
+    <string name="solend_deposits_title_with_count">Your deposits (%d)</string>
+    <string name="solend_deposits_yielding_apy">Yielding %.2f%% APY</string>
+    <string name="solend_deposits_add_more">Add more</string>
+    <string name="solend_deposits_withdraw">Withdraw</string>
 
 </resources>

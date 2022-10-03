@@ -67,7 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:itemCount="5"
-            tools:listitem="@layout/item_solana_earn" />
+            tools:listitem="@layout/item_solend_earn" />
 
     </FrameLayout>
 

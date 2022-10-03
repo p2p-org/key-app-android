@@ -5,8 +5,8 @@ import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.solend.model.SolendDepositToken
 
 class SolendDepositsAdapter(
-    private val depositClickListener: DepositClickListener
-) : RecyclerView.Adapter<SolanaDepositViewHolder>() {
+    private val depositClickListener: TokenDepositItemClickListener
+) : RecyclerView.Adapter<SolendDepositViewHolder>() {
 
     private val data = mutableListOf<SolendDepositToken>()
 
@@ -21,18 +21,18 @@ class SolendDepositsAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): SolanaDepositViewHolder = SolanaDepositViewHolder(
+    ): SolendDepositViewHolder = SolendDepositViewHolder(
         parent,
         onAddMoreClicked = depositClickListener::onAddMoreClicked,
         onWithdrawClicked = depositClickListener::onWithdrawClicked
     )
 
-    override fun onBindViewHolder(holder: SolanaDepositViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SolendDepositViewHolder, position: Int) {
         holder.onBind(data[position])
     }
 }
 
-interface DepositClickListener {
+interface TokenDepositItemClickListener {
     fun onAddMoreClicked(token: SolendDepositToken)
     fun onWithdrawClicked(token: SolendDepositToken)
 }

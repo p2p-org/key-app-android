@@ -18,7 +18,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.databinding.FragmentSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
-import org.p2p.wallet.solend.ui.deposits.SolendDepositsFragment
+import org.p2p.wallet.solend.ui.deposits.SolendUserDepositsFragment
 import org.p2p.wallet.solend.ui.earn.adapter.SolendEarnAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -83,7 +83,7 @@ class SolendEarnFragment :
                     viewEarnWidget.setWidgetState(
                         EarnWidgetState.Depositing(R.string.earn_widget_deposit_withdrawing)
                     )
-                    replaceFragment(SolendDepositsFragment.create())
+                    replaceFragment(SolendUserDepositsFragment.create())
                 }
                 is EarnWidgetState.Depositing -> {
                     if (state.buttonTextRes == R.string.earn_widget_deposit_withdrawing) {
