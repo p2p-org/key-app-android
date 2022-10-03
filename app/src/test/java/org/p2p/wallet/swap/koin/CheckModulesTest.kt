@@ -29,7 +29,6 @@ import org.koin.test.mock.MockProviderRule
 import org.mockito.Mockito
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
@@ -75,7 +74,6 @@ import kotlinx.coroutines.test.setMain
 import org.koin.core.parameter.ParametersHolder
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.RestoreFailureState
-import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenContract
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
 
 @ExperimentalCoroutinesApi
