@@ -7,6 +7,8 @@ import kotlinx.coroutines.launch
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
@@ -45,6 +47,7 @@ class NewBuyPresenter(
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
     private val resourcesProvider: ResourcesProvider,
     private val moonpayBuyInteractor: MoonpayBuyInteractor,
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
     bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
 
@@ -75,6 +78,13 @@ class NewBuyPresenter(
         super.attach(view)
         loadTokensToBuy()
         loadAvailablePaymentMethods()
+        val prevScreenName =
+            if (analyticsInteractor.getPreviousScreenName() == ScreenNames.Token.TOKEN_SCREEN) {
+                ScreenNames.Token.TOKEN_SCREEN
+            } else {
+                ScreenNames.Main.MAIN
+            }
+        buyAnalytics.logScreenOpened(lastScreenName = prevScreenName)
     }
 
     private fun loadTokensToBuy() {
@@ -195,7 +205,9 @@ class NewBuyPresenter(
     private fun isValidCurrencyForPay(): Boolean {
         val selectedCurrencyCode = selectedCurrency.code
         if (selectedPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
-            if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL || selectedCurrencyCode == Constants.EUR_SYMBOL) {
+            if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
+                (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
+            ) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }

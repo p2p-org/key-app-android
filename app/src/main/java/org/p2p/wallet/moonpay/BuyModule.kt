@@ -83,7 +83,8 @@ object BuyModule : InjectionModule {
                 paymentMethodsInteractor = get(),
                 resourcesProvider = get(),
                 bankTransferFeatureToggle = get(),
-                moonpayBuyInteractor = get()
+                moonpayBuyInteractor = get(),
+                analyticsInteractor = get()
             )
         }
     }
