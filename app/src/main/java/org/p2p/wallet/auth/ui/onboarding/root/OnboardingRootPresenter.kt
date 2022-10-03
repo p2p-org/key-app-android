@@ -23,8 +23,10 @@ class OnboardingRootPresenter(
             userSignUpDetailsStorage.getLastSignUpUserDetails() != null -> {
                 if (userSignUpDetailsStorage.isSignUpInProcess()) {
                     view.navigateToContinueOnboarding()
-                } else {
+                } else if (userSignUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare != null) {
                     view.navigateToRestore()
+                } else {
+                    view.navigateToOnboarding()
                 }
             }
             else -> view.navigateToOnboarding()

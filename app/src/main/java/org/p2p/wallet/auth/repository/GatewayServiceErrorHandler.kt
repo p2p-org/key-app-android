@@ -51,7 +51,7 @@ class GatewayServiceErrorHandler(
                 val firstButtonTitleResId = R.string.restore_continue_with_google.takeIf { isDeviceShareSaved }
                     ?: R.string.restore_another_phone_number
 
-                val firstButtonIcon = R.drawable.ic_google_logo.takeIf { isDeviceShareSaved }
+                val firstButtonIcon = if (isDeviceShareSaved) R.drawable.ic_google_logo else null
                 val buttonAction =
                     ButtonAction.NAVIGATE_GOOGLE_AUTH.takeIf { isDeviceShareSaved } ?: ButtonAction.NAVIGATE_ENTER_PHONE
 

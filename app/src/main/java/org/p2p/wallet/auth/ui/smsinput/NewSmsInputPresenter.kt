@@ -137,12 +137,13 @@ class NewSmsInputPresenter(
         handleRestoreResult(result)
     }
 
-    private fun handleRestoreResult(result: RestoreUserResult) {
+    private suspend fun handleRestoreResult(result: RestoreUserResult) {
         when (val result = restoreUserExceptionHandler.handleRestoreResult(result)) {
             is RestoreFailureState.TitleSubtitleError -> {
                 view?.navigateToRestoreErrorScreen(result)
             }
             is RestoreSuccessState -> {
+                restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             }
         }

@@ -81,8 +81,10 @@ class RestoreErrorScreenFragment :
             textViewErrorEmail.text = it
             textViewErrorEmail.isVisible = true
         }
-        state?.imageViewResId?.let {
-            imageViewBox.setImageResource(it)
+        if (state.imageViewResId != null) {
+            imageViewBox.setImageResource(state.imageViewResId)
+        } else {
+            imageViewBox.setImageResource(R.drawable.ic_cat)
         }
         state.googleButton?.let { buttonState ->
             buttonRestoreByGoogle.setText(buttonState.titleResId)
@@ -126,9 +128,11 @@ class RestoreErrorScreenFragment :
                     IntercomService.showMessenger()
                 }
                 ButtonAction.NAVIGATE_GOOGLE_AUTH -> {
+                    restoreStateMachine.reset()
                     presenter.useGoogleAccount()
                 }
                 ButtonAction.NAVIGATE_ENTER_PHONE -> {
+                    restoreStateMachine.reset()
                     presenter.useCustomShare()
                 }
                 ButtonAction.NAVIGATE_START_SCREEN -> {

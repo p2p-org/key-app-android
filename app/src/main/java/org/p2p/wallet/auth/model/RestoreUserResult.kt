@@ -22,7 +22,14 @@ sealed interface RestoreUserResult {
 
         open class SocialPlusCustomShare(val exception: RestoreUserException) : RestoreFailure(exception) {
             object TorusKeyNotFound : SocialPlusCustomShare(
+                RestoreUserException("SocialPlusCustomShare: Torus key has not been initialized")
+            )
+
+            data class SocialShareNotFound(val userEmailAddress: String) : SocialPlusCustomShare(
                 RestoreUserException("SocialPlusCustomShare: Social share not found")
+            )
+            data class SocialShareNotMatch(val userEmailAddress: String) : SocialPlusCustomShare(
+                RestoreUserException("SocialPlusCustomShare: Social share not match")
             )
         }
     }

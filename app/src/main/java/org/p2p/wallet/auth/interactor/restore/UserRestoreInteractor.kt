@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
+import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreUserException
 import org.p2p.wallet.auth.model.RestoreUserResult
@@ -17,7 +18,8 @@ class UserRestoreInteractor(
     private val web3AuthApi: Web3AuthApi,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val restoreStateMachine: RestoreStateMachine
 ) {
 
     fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet): Boolean {
@@ -85,8 +87,28 @@ class UserRestoreInteractor(
             RestoreUserResult.RestoreSuccess.SocialPlusCustomShare
         }
     } catch (error: Web3AuthErrorResponse) {
-        val errorMessage = error.message.orEmpty()
-        RestoreUserResult.RestoreFailure.SocialPlusCustomShare(RestoreUserException(errorMessage, error.errorCode))
+        when (error.errorType) {
+            Web3AuthErrorResponse.ErrorType.SOCIAL_SHARE_NOT_FOUND -> {
+                val userEmailAddress = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
+                // Reset torus and socialId, cause we not found wallet with this torus key
+                restoreFlowDataLocalRepository.torusKey = null
+                restoreFlowDataLocalRepository.socialShareUserId = null
+                RestoreUserResult.RestoreFailure.SocialPlusCustomShare.SocialShareNotFound(userEmailAddress)
+            }
+            Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT -> {
+                val userEmailAddress = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
+                RestoreUserResult.RestoreFailure.SocialPlusCustomShare.SocialShareNotMatch(userEmailAddress)
+            }
+            else -> {
+                val errorMessage = error.message.orEmpty()
+                RestoreUserResult.RestoreFailure.SocialPlusCustomShare(
+                    RestoreUserException(
+                        errorMessage,
+                        error.errorCode
+                    )
+                )
+            }
+        }
     } catch (e: Throwable) {
         val errorMessage = e.message.orEmpty()
         RestoreUserResult.RestoreFailure.SocialPlusCustomShare(RestoreUserException(errorMessage))
@@ -118,6 +140,7 @@ class UserRestoreInteractor(
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
         if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
+            restoreStateMachine.onRestoreFailure(flow = restoreFlow)
             RestoreUserResult.RestoreFailure.DevicePlusCustomShare.UserNotFound
         } else {
             RestoreUserResult.RestoreFailure.DevicePlusCustomShare.SharesDoesNotMatch
@@ -158,6 +181,7 @@ class UserRestoreInteractor(
         val socialShareId = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
         when (web3AuthError.errorType) {
             Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT -> {
+                restoreStateMachine.onRestoreFailure(flow = restoreFlow)
                 RestoreUserResult.RestoreFailure.DevicePlusSocialShare.DeviceAndSocialShareNotMatch(socialShareId)
             }
             Web3AuthErrorResponse.ErrorType.SOCIAL_SHARE_NOT_FOUND -> {

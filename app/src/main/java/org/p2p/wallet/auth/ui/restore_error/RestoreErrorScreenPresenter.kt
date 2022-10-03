@@ -4,7 +4,6 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
-import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
@@ -26,19 +25,20 @@ class RestoreErrorScreenPresenter(
     }
 
     override fun useGoogleAccount() {
-        view?.setLoadingState(true)
         view?.startGoogleFlow()
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
         launch {
+            view?.setLoadingState(isLoading = true)
             restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
             restoreUserWithShares()
+            view?.setLoadingState(isLoading = false)
         }
     }
 
     override fun useCustomShare() {
-        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet.DevicePlusCustomShare
+        onboardingInteractor.currentFlow = restoreStateMachine.getAvailableRestoreWithCustomShare() ?: return
         view?.navigateToPhoneEnter()
     }
 
@@ -58,6 +58,5 @@ class RestoreErrorScreenPresenter(
                 view?.showUiKitSnackBar(message = restoreHandledState.message)
             }
         }
-        view?.setLoadingState(isLoading = false)
     }
 }

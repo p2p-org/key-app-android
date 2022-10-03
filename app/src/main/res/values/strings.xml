@@ -63,7 +63,7 @@
 
     <string name="error_too_often_otp_requests_message">You request SMS too often. Try again in %1d sec.</string>
     <string name="error_shares_do_not_matches_title">No wallet found</string>
-    <string name="error_shares_do_not_matches_message">Try with another account</string>
+    <string name="error_shares_do_not_matches_message">Try another account</string>
     <string name="error_repeat_social_auth">Repeat social auth</string>
 
     <!-- auth -->

@@ -5,7 +5,6 @@ import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.model.ButtonAction
 import org.p2p.wallet.auth.model.GoogleButton
-import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PrimaryFirstButton
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreHandledState
@@ -57,9 +56,6 @@ class RestoreUserExceptionHandler(
             else -> error("Cannot handle unknown state")
         }
         // Temporary solution for local error handling
-        if (result !is RestoreUserResult.RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound) {
-            restoreStateMachine.onRestoreFailure(onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet)
-        }
         if (!restoreStateMachine.isRestoreAvailable()) {
             return onSharesNotMatch()
         }
@@ -77,6 +73,32 @@ class RestoreUserExceptionHandler(
                         isVisible = true
                     ),
                     imageViewResId = R.drawable.easy_to_start
+                )
+            }
+            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare.SocialShareNotFound -> {
+                RestoreFailureState.TitleSubtitleError(
+                    title = resourcesProvider.getString(R.string.restore_no_wallet_title),
+                    email = resourcesProvider.getString(R.string.onboarding_with_email, result.userEmailAddress),
+                    subtitle = resourcesProvider.getString(R.string.error_shares_do_not_matches_message),
+                    googleButton = GoogleButton(
+                        buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH
+                    ),
+                    secondaryFirstButton = SecondaryFirstButton(
+                        buttonAction = ButtonAction.NAVIGATE_START_SCREEN
+                    )
+                )
+            }
+            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare.SocialShareNotMatch -> {
+                RestoreFailureState.TitleSubtitleError(
+                    title = resourcesProvider.getString(R.string.auth_almost_done_title),
+                    email = resourcesProvider.getString(R.string.onboarding_with_email, result.userEmailAddress),
+                    subtitle = resourcesProvider.getString(R.string.error_shares_do_not_matches_message),
+                    googleButton = GoogleButton(
+                        buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH
+                    ),
+                    secondaryFirstButton = SecondaryFirstButton(
+                        buttonAction = ButtonAction.NAVIGATE_START_SCREEN
+                    )
                 )
             }
             else -> RestoreFailureState.ToastError("Error on restore Social + Custom Share")
