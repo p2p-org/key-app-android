@@ -6,9 +6,11 @@ object Base64Utils {
 
     fun encode(bytes: ByteArray): String =
         Base64.encodeToString(bytes, Base64.NO_WRAP)
+            ?: java.util.Base64.getEncoder().encodeToString(bytes)
 
     fun decode(stringToDecode: String): ByteArray =
         Base64.decode(stringToDecode, Base64.DEFAULT)
+            ?: java.util.Base64.getDecoder().decode(stringToDecode)
 
     fun encodeFromString(string: String) = encode(string.toByteArray())
 
