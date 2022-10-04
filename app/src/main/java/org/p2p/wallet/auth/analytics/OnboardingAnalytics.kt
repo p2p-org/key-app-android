@@ -171,20 +171,20 @@ class OnboardingAnalytics(private val tracker: Analytics) {
         tracker.logEvent(event = ONBOARD_START_BUTTON)
     }
 
-    fun logCreateWalletPinConfirm(result: ConfirmPinResult) {
+    fun logCreateWalletPinConfirmed() {
         tracker.logEvent(
             event = ONBOARD_CREATE_WALLET_CONFIRM_PIN,
             params = mapOf(
-                "Result" to result.value
+                "Result" to true
             )
         )
     }
 
-    fun logRestoreWalletPinConfirm(result: ConfirmPinResult) {
+    fun logRestoreWalletPinConfirmed() {
         tracker.logEvent(
             event = ONBOARD_RESTORE_WALLET_CONFIRM_PIN,
             params = mapOf(
-                "Result" to result.value
+                "Result" to true
             )
         )
     }
@@ -197,7 +197,7 @@ class OnboardingAnalytics(private val tracker: Analytics) {
         tracker.logEvent(
             event = ONBOARD_SELECT_RESTORE_OPTION,
             params = mapOf(
-                "Restore_Option" to restoreWay.value
+                "Restore_option" to restoreWay.value
             )
         )
     }
@@ -211,10 +211,6 @@ class OnboardingAnalytics(private val tracker: Analytics) {
                 return if (username.isEmpty()) FILLED else NOT_FILLED
             }
         }
-    }
-
-    enum class ConfirmPinResult(val value: String) {
-        SUCCESS("success"), FAIL("fail")
     }
 
     enum class AnalyticsRestoreWay(val value: String) {

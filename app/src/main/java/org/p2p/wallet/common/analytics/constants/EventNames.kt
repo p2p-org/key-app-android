@@ -124,8 +124,8 @@ object EventNames {
     const val SWAP_CONFIRM_CLICKED = "Click_approve_button"
     const val SWAP_ACTION_BUTTON_CLICKED = "Action_Button_Swap"
     const val SWAP_START_SCREEN = "Swap_Start_Screen"
-    const val SWAP_CHANGING_TOKEN_A_NEW = "Changing_Token_A"
-    const val SWAP_CHANGING_TOKEN_B_NEW = "Changing_Token_B"
+    const val SWAP_CHANGING_TOKEN_A_NEW = "Swap_Changing_Token_A"
+    const val SWAP_CHANGING_TOKEN_B_NEW = "Swap_Changing_Token_B"
 
     const val BUY_CURRENCY_CHANGED = "Buy_Currency_Changed"
     const val BUY_COIN_CHANGED = "Buy_Coin_Changed"

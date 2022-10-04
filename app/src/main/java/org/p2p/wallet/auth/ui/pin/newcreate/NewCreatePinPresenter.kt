@@ -47,20 +47,15 @@ class NewCreatePinPresenter(
             view?.showConfirmationError()
             view?.vibrate(VIBRATE_DURATION)
             adminAnalytics.logPinRejected(ScreenNames.OnBoarding.PIN_CONFIRM)
-            if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
-                onboardingAnalytics.logCreateWalletPinConfirm(OnboardingAnalytics.ConfirmPinResult.FAIL)
-            } else {
-                onboardingAnalytics.logRestoreWalletPinConfirm(OnboardingAnalytics.ConfirmPinResult.FAIL)
-            }
             return
         }
 
         view?.lockPinKeyboard()
         createPinCode(createdPin)
         if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
-            onboardingAnalytics.logCreateWalletPinConfirm(OnboardingAnalytics.ConfirmPinResult.SUCCESS)
+            onboardingAnalytics.logCreateWalletPinConfirmed()
         } else {
-            onboardingAnalytics.logRestoreWalletPinConfirm(OnboardingAnalytics.ConfirmPinResult.SUCCESS)
+            onboardingAnalytics.logRestoreWalletPinConfirmed()
         }
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
             view?.navigateToMain()

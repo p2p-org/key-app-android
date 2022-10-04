@@ -1,19 +1,18 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
-import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
@@ -52,7 +51,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             bottomNavigation.setOnItemSelectedListener {
                 if (it.itemId == R.id.feedbackItem) {
                     IntercomService.showMessenger()
-                    screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
                     return@setOnItemSelectedListener false
                 }
 
@@ -83,18 +81,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     override fun navigate(itemId: Int) {
         if (!fragments.containsKey(itemId)) {
             val fragment = when (ScreenTab.fromTabId(itemId)) {
-                ScreenTab.HOME_SCREEN -> {
-                    screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN)
-                    HomeFragment.create()
-                }
-                ScreenTab.HISTORY_SCREEN -> {
-                    screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_HISTORY)
-                    HistoryFragment.create()
-                }
-                ScreenTab.SETTINGS_SCREEN -> {
-                    screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.MAIN)
-                    NewSettingsFragment.create()
-                }
+                ScreenTab.HOME_SCREEN -> HomeFragment.create()
+                ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
+                ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
                 else -> error("No tab found for $itemId")
             }
             fragments[itemId] = fragment

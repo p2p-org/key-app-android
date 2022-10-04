@@ -57,7 +57,6 @@ class ReceiveSolanaFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.SOLANA)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             receiveCardView.setOnNetworkClickListener {
