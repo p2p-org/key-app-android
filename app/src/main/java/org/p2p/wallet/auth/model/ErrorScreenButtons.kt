@@ -10,7 +10,7 @@ import org.p2p.wallet.R
 @Parcelize
 data class GoogleButton(
     @StringRes val titleResId: Int = R.string.restore_continue_with_google,
-    @DrawableRes val iconResId: Int? = null,
+    @DrawableRes val iconResId: Int? = R.drawable.ic_google_logo,
     @ColorRes val iconTintResId: Int? = null,
     val buttonAction: ButtonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH,
     val isVisible: Boolean = false

@@ -127,7 +127,7 @@ class CommonRestoreFragment :
     override fun onNoTokenFoundError(userId: String) {
         view?.post {
             with(binding) {
-                imageView.setImageResource(R.drawable.image_box)
+                imageView.setImageResource(R.drawable.ic_cat)
                 textViewTitle.text = getString(R.string.restore_no_wallet_title)
                 textViewSubtitle.apply {
                     isVisible = true

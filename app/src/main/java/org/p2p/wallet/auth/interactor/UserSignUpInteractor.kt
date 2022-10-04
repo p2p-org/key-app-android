@@ -59,8 +59,4 @@ class UserSignUpInteractor(
             ?: error("Torus key is empty")
         return web3AuthApi.triggerSilentSignUp(torusKey)
     }
-
-    private suspend fun obtainTorusKey(idToken: String): String {
-        return web3AuthApi.obtainTorusKey(idToken)
-    }
 }

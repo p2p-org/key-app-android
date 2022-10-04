@@ -34,7 +34,7 @@ class TorusKeyInteractor(
                 }
             }
         } catch (e: Throwable) {
-            Timber.e("Error on obtain a torus key $e")
+            Timber.i("Error on obtain a torus key $e")
         }
     }
 }

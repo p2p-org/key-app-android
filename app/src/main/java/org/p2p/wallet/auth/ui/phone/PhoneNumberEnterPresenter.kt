@@ -87,12 +87,14 @@ class PhoneNumberEnterPresenter(
 
     override fun submitUserPhoneNumber(phoneNumberString: String) {
         launch {
+            view?.setLoadingState(isLoading = true)
             val userPhoneNumber = PhoneNumber(selectedCountryCode?.phoneCode + phoneNumberString)
             onboardingInteractor.temporaryPhoneNumber = userPhoneNumber
             when (onboardingInteractor.currentFlow) {
                 is OnboardingFlow.CreateWallet -> startCreatingWallet(userPhoneNumber)
                 is OnboardingFlow.RestoreWallet -> startRestoringCustomShare(userPhoneNumber)
             }
+            view?.setLoadingState(isLoading = false)
         }
     }
 

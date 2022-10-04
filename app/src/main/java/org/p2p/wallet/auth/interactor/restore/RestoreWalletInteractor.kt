@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.interactor.restore
 
-import org.p2p.wallet.auth.interactor.RestoreStateMachine
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
@@ -13,12 +12,8 @@ class RestoreWalletInteractor(
     private val userRestoreInteractor: UserRestoreInteractor,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val smsInputTimer: SmsInputTimer,
-    private val signUpDetailsStorage: UserSignUpDetailsStorage,
-    private val restoreStateMachine: RestoreStateMachine
+    private val signUpDetailsStorage: UserSignUpDetailsStorage
 ) {
-    init {
-        restoreStateMachine.isDeviceShareSaved = isDeviceShareSaved()
-    }
 
     suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber, isResend: Boolean = false) =
         customShareRestoreInteractor.startRestoreCustomShare(userPhoneNumber, isResend)
@@ -34,9 +29,6 @@ class RestoreWalletInteractor(
     suspend fun obtainTorusKey(userId: String, idToken: String) {
         socialShareRestoreInteractor.obtainTorusKey(idToken, userId)
     }
-
-    fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet) =
-        userRestoreInteractor.isUserReadyToBeRestored(restoreFlow)
 
     suspend fun finishRestoreCustomShare(smsCode: String) =
         customShareRestoreInteractor.finishRestoreCustomShare(smsCode)

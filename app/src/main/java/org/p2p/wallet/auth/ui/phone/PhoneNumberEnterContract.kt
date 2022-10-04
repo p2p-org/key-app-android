@@ -18,6 +18,7 @@ interface PhoneNumberEnterContract {
         fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState)
         fun navigateToAccountBlocked(cooldownTtl: Long)
         fun navigateToCriticalErrorScreen(error: GatewayHandledState)
+        fun setLoadingState(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
