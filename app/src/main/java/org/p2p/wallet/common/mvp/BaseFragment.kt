@@ -25,7 +25,6 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
@@ -120,7 +119,6 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is NetworkSelectionFragment -> ScreenNames.Send.NETWORK
         is OrcaSwapFragment -> ScreenNames.Swap.MAIN
         is TokenHistoryFragment -> ScreenNames.Token.TOKEN_SCREEN
-        is NewBuyFragment -> ScreenNames.Buy.BUY
         else -> emptyString()
     }
 }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -42,11 +43,11 @@ private val TOKENS_VALID_FOR_BUY = setOf(Constants.SOL_SYMBOL, Constants.USDC_SY
 class NewBuyPresenter(
     tokenToBuy: Token,
     private val buyAnalytics: BuyAnalytics,
-    private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
     private val resourcesProvider: ResourcesProvider,
     private val moonpayBuyInteractor: MoonpayBuyInteractor,
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
     bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
 
@@ -77,6 +78,13 @@ class NewBuyPresenter(
         super.attach(view)
         loadTokensToBuy()
         loadAvailablePaymentMethods()
+        val prevScreenName =
+            if (analyticsInteractor.getCurrentScreenName() == ScreenNames.Token.TOKEN_SCREEN) {
+                ScreenNames.Token.TOKEN_SCREEN
+            } else {
+                ScreenNames.Main.MAIN
+            }
+        buyAnalytics.logScreenOpened(lastScreenName = prevScreenName)
     }
 
     private fun loadTokensToBuy() {
@@ -127,8 +135,10 @@ class NewBuyPresenter(
         view?.close()
     }
 
-    override fun onPaymentMethodSelected(selectedMethod: PaymentMethod) {
-        buyAnalytics.logBuyMethodPaymentChanged(selectedMethod)
+    override fun onPaymentMethodSelected(selectedMethod: PaymentMethod, byUser: Boolean) {
+        if (byUser) {
+            buyAnalytics.logBuyMethodPaymentChanged(selectedMethod)
+        }
         selectedPaymentMethod = selectedMethod
         paymentMethods.forEach { paymentMethod ->
             paymentMethod.isSelected = paymentMethod.method == selectedMethod.method
@@ -165,7 +175,7 @@ class NewBuyPresenter(
     }
 
     override fun onTotalClicked() {
-        buyAnalytics.logBuyTotalShown(isShown = buyDetailsState != null)
+        buyAnalytics.logBuyTotalShown()
         buyDetailsState?.let {
             view?.showDetailsBottomSheet(it)
         }
@@ -179,11 +189,13 @@ class NewBuyPresenter(
 
     private fun selectCurrency(currency: BuyCurrency.Currency) {
         view?.setCurrencyCode(currency.code)
-        setCurrency(currency)
+        setCurrency(currency, byUser = false)
     }
 
-    override fun setCurrency(currency: BuyCurrency.Currency) {
-        buyAnalytics.logBuyCurrencyChanged(selectedCurrency.code, currency.code)
+    override fun setCurrency(currency: BuyCurrency.Currency, byUser: Boolean) {
+        if (byUser) {
+            buyAnalytics.logBuyCurrencyChanged(selectedCurrency.code, currency.code)
+        }
         selectedCurrency = currency
         if (isValidCurrencyForPay()) {
             recalculate()
@@ -193,9 +205,11 @@ class NewBuyPresenter(
     private fun isValidCurrencyForPay(): Boolean {
         val selectedCurrencyCode = selectedCurrency.code
         if (selectedPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
-            if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL || selectedCurrencyCode == Constants.EUR_SYMBOL) {
+            if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
+                (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
+            ) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
-                    onPaymentMethodSelected(it)
+                    onPaymentMethodSelected(it, byUser = false)
                 }
                 return false
             } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
@@ -416,9 +430,9 @@ class NewBuyPresenter(
         currentBuyViewData?.let {
             val paymentType = getValidPaymentType()
             buyAnalytics.logBuyButtonPressed(
-                buySumCurrency = it.total,
-                buySumCoin = it.receiveAmount.toBigDecimal(),
-                buyCurrency = it.currencySymbol,
+                buySumCurrency = it.total.formatUsd(),
+                buySumCoin = it.receiveAmount.toBigDecimal().formatUsd(),
+                buyCurrency = selectedCurrency.code,
                 buyCoin = it.tokenSymbol,
                 methodPayment = selectedPaymentMethod
             )

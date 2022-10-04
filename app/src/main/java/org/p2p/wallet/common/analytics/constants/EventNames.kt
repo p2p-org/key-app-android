@@ -58,13 +58,10 @@ object EventNames {
     const val ONBOARD_USERNAME_SAVED = "Username_Saved"
     const val ONBOARD_USERNAME_RESERVED = "Username_Reserved"
 
-    const val BUY_VIEWED = "Buy_Viewed"
-    const val BUY_LIST_VIEWED = "Buy_List_Viewed"
+    const val BUY_SCREEN_OPENED = "Buy_Screen_Opened"
     const val BUY_TOKEN_CHOSEN = "Buy_Token_Chosen"
     const val BUY_GOING_BACK = "Buy_Going_Back"
     const val BUY_CONTINUING = "Buy_Continuing"
-    const val BUY_CHANGING_PROVIDER = "Buy_Changing_Provider"
-    const val BUY_PROVIDER_STEP_VIEWED = "Buy_Provider_Step_Viewed"
     const val BUY_PAYMENT_RESULT_SHOWN = "Buy_Payment_Result_Shown"
 
     const val HOME_USER_HAS_POSITIVE_BALANCE = "User_Has_Positive_Balance"
@@ -115,5 +112,5 @@ object EventNames {
     const val BUY_TOTAL_SHOWED = "Buy_Total_Showed"
     const val BUY_CHOSEN_METHOD_PAYMENT = "Buy_Chosen_Method_Payment"
     const val BUY_BUTTON_PRESSED = "Buy_Button_Pressed"
-    const val BUY_MOONPAY_WINDOW = "Moonpay_Window"
+    const val BUY_MOONPAY_WINDOW_OPENED = "Moonpay_Window_Opened"
 }
