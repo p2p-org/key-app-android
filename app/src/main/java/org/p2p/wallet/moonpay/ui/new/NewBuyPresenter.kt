@@ -79,7 +79,7 @@ class NewBuyPresenter(
         loadTokensToBuy()
         loadAvailablePaymentMethods()
         val prevScreenName =
-            if (analyticsInteractor.getPreviousScreenName() == ScreenNames.Token.TOKEN_SCREEN) {
+            if (analyticsInteractor.getCurrentScreenName() == ScreenNames.Token.TOKEN_SCREEN) {
                 ScreenNames.Token.TOKEN_SCREEN
             } else {
                 ScreenNames.Main.MAIN
