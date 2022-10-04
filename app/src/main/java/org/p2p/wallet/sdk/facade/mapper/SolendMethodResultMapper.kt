@@ -9,14 +9,9 @@ class SolendMethodResultMapper(
     // public due to inline
     val gson: Gson
 ) {
-
     inline fun <reified ResultT> fromSdk(sdkResult: String): ResultT {
-        Timber.tag("SolendMethodResultMapper fromSdk: ").d(sdkResult)
-
         val type = object : TypeToken<SolendResult<ResultT>>() {}.type
         val mapperResponse = gson.fromJson<SolendResult<ResultT>>(sdkResult, type)
-
-        logMethodResponse(mapperResponse, sdkResult)
 
         if (mapperResponse?.error != null) {
             val exception = SolendMethodResultException(mapperResponse.error)
@@ -25,19 +20,5 @@ class SolendMethodResultMapper(
         }
 
         return mapperResponse?.success ?: error("Failed to map result from sdk: $sdkResult")
-    }
-
-    fun <ResultT> logMethodResponse(mapperResponse: SolendResult<ResultT>?, sdkResult: String) {
-        val logMessage = buildString {
-            if (mapperResponse?.error != null) {
-                append("ERROR")
-            } else {
-                append("SUCCESS")
-            }
-            append(" -------> ")
-            appendLine()
-            append(sdkResult)
-        }
-        Timber.tag("SolendMethodResultMapper").d(logMessage)
     }
 }

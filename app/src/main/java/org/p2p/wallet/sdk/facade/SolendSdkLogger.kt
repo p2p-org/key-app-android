@@ -15,8 +15,20 @@ class SolendSdkLogger {
                 appendLine()
                 append("(")
                 appendLine()
-                append(params.withIndex().joinToString { "param ${it.index}: ${it.value}\n" })
+                append(params.withIndex().joinToString(separator = "") { "param ${it.index}: ${it.value}\n" })
                 append(")")
+            }
+        }
+        Timber.tag(TAG).i(logText)
+    }
+
+    fun logResponse(methodName: String, response: String) {
+        val logText = buildString {
+            append(methodName)
+            append("<----------")
+            if (BuildConfig.DEBUG) {
+                appendLine()
+                append(response)
             }
         }
         Timber.tag(TAG).i(logText)
