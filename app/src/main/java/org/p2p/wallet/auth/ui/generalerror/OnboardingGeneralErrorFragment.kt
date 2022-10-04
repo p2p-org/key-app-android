@@ -175,7 +175,7 @@ class OnboardingGeneralErrorFragment :
 
     override fun onConnectionError() {
         setRestoreByGoogleLoadingState(isLoading = false)
-        showUiKitSnackBar(message = getString(R.string.error_general_message))
+        showUiKitSnackBar(messageResId = R.string.onboarding_offline_error)
     }
 
     override fun onCommonError() {
