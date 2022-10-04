@@ -29,7 +29,7 @@ class WalletFoundPresenter(
     override fun setAlternativeIdToken(userId: String, idToken: String) {
         launch {
             view?.setLoadingState(isScreenLoading = true)
-            torusKeyInteractor.obtainTorusKey(idToken, userId)
+            torusKeyInteractor.getTorusKey(idToken, userId)
             when (val result = userSignUpInteractor.trySignUpNewUser()) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet

@@ -41,24 +41,34 @@ class GatewayServiceErrorHandler(
                 val userPhoneNumber = onboardingInteractor.temporaryPhoneNumber?.formattedValue.orEmpty()
 
                 val title = resourcesProvider.getString(
-                    if (isDeviceShareSaved) R.string.restore_no_wallet_title else R.string.restore_no_account_title
+                    if (isDeviceShareSaved) {
+                        R.string.restore_no_wallet_title
+                    } else {
+                        R.string.restore_no_account_title
+                    }
                 )
                 val subtitle = resourcesProvider.getString(
-                    if (isDeviceShareSaved) R.string.restore_no_wallet_found_with_device_share_message else
-                        R.string.restore_no_wallet_found_with_no_device_share_message,
+                    if (isDeviceShareSaved) {
+                        R.string.restore_no_wallet_found_with_device_share_message
+                    } else {
+                        R.string.restore_no_wallet_found_with_no_device_share_message
+                    },
                     userPhoneNumber
                 )
-                val firstButtonTitleResId = R.string.restore_continue_with_google.takeIf { isDeviceShareSaved }
-                    ?: R.string.restore_another_phone_number
+                val firstButtonTitleResId =
+                    R.string.restore_continue_with_google.takeIf { isDeviceShareSaved }
+                        ?: R.string.restore_another_phone_number
 
                 val firstButtonIcon = if (isDeviceShareSaved) R.drawable.ic_google_logo else null
                 val buttonAction =
-                    ButtonAction.NAVIGATE_GOOGLE_AUTH.takeIf { isDeviceShareSaved } ?: ButtonAction.NAVIGATE_ENTER_PHONE
+                    ButtonAction.NAVIGATE_GOOGLE_AUTH.takeIf { isDeviceShareSaved }
+                        ?: ButtonAction.NAVIGATE_ENTER_PHONE
 
                 val primaryFirstButton = PrimaryFirstButton(
                     titleResId = R.string.restore_phone_number,
                     buttonAction = ButtonAction.NAVIGATE_ENTER_PHONE
-                ).takeIf { isDeviceShareSaved }
+                )
+                    .takeIf { isDeviceShareSaved }
 
                 val secondaryFirstButton = SecondaryFirstButton(
                     titleResId = R.string.onboarding_continue_starting_button_text,
@@ -97,7 +107,9 @@ class GatewayServiceErrorHandler(
                 val message = resourcesProvider.getString(R.string.onboarding_phone_enter_error_phone_confirmed)
                 GatewayHandledState.ToastError(message)
             }
-            else -> null
+            else -> {
+                null
+            }
         }
     }
 }

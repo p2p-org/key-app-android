@@ -20,13 +20,13 @@ class TimberCrashTree(
                 crashLogger.logThrowable(t)
             }
             isThrowablePriority && t == null -> {
-                crashLogger.logInformation("[$priorityAsString] $message")
+                crashLogger.logInformation("[$tag] [$priorityAsString] $message")
             }
             isInformationPriority && t != null -> {
-                crashLogger.logInformation("[$priorityAsString] $t ($message)")
+                crashLogger.logInformation("[$tag] [$priorityAsString] $t ($message)")
             }
             isInformationPriority -> {
-                crashLogger.logInformation("[$priorityAsString] $message")
+                crashLogger.logInformation("[$tag] [$priorityAsString] $message")
             }
         }
     }
