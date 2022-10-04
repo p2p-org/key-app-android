@@ -12,6 +12,7 @@ import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSolendDepositBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
@@ -29,8 +30,8 @@ class SolendDepositViewHolder(
         .listener(SvgSoftwareLayerSetter())
 
     fun onBind(item: SolendDepositToken) = with(binding) {
-        loadImage(tokenImageView, item.iconUrl)
-        textViewApy.text = getString(R.string.solend_deposits_yielding_apy, item.earnApy)
+        loadImage(tokenImageView, item.iconUrl.orEmpty())
+        textViewApy.text = getString(R.string.solend_deposits_yielding_apy, item.supplyInterest.scaleShort())
 
         // TODO PWN-5020 make real impl of amount in $
         textViewAmountUsd.text = if (item is SolendDepositToken.Active) {
