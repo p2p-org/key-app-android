@@ -40,10 +40,10 @@ class CreateWalletInteractor(
             )
             signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
             setIsCreateWalletRequestSent(isSent = true)
-            smsInputTimer.resetSmsCount()
             if (!isResend) {
-                smsInputTimer.startSmsInputTimerFlow()
+                smsInputTimer.resetSmsCount()
             }
+            smsInputTimer.startSmsInputTimerFlow()
         }
     }
 
