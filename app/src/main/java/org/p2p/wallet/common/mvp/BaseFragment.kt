@@ -1,16 +1,16 @@
 package org.p2p.wallet.common.mvp
 
+import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.annotation.ColorRes
 import androidx.annotation.LayoutRes
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
-import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
@@ -28,7 +28,6 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
@@ -144,7 +143,6 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is NetworkSelectionFragment -> ScreenNames.Send.NETWORK
         is OrcaSwapFragment -> ScreenNames.Swap.MAIN
         is TokenHistoryFragment -> ScreenNames.Token.TOKEN_SCREEN
-        is NewBuyFragment -> ScreenNames.Buy.BUY
         is SignInPinFragment -> ScreenNames.Lock.SCREEN
         is HistoryFragment -> ScreenNames.Main.MAIN_HISTORY
         is ReceiveSolanaFragment -> ScreenNames.Receive.SOLANA

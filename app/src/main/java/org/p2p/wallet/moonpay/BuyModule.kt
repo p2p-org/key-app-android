@@ -79,12 +79,12 @@ object BuyModule : InjectionModule {
             NewBuyPresenter(
                 tokenToBuy = token,
                 buyAnalytics = get(),
-                analyticsInteractor = get(),
                 userInteractor = get(),
                 paymentMethodsInteractor = get(),
                 resourcesProvider = get(),
                 bankTransferFeatureToggle = get(),
-                moonpayBuyInteractor = get()
+                moonpayBuyInteractor = get(),
+                analyticsInteractor = get()
             )
         }
     }

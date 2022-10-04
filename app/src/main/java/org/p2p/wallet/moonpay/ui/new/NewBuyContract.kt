@@ -34,12 +34,12 @@ interface NewBuyContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onPaymentMethodSelected(selectedMethod: PaymentMethod)
+        fun onPaymentMethodSelected(selectedMethod: PaymentMethod, byUser: Boolean = true)
         fun onSelectTokenClicked()
         fun onSelectCurrencyClicked()
         fun onTotalClicked()
         fun setTokenToBuy(token: Token)
-        fun setCurrency(currency: BuyCurrency.Currency)
+        fun setCurrency(currency: BuyCurrency.Currency, byUser: Boolean = true)
         fun setBuyAmount(amount: String, isDelayEnabled: Boolean = true)
         fun onFocusFieldChanged(focusField: FocusField)
         fun onContinueClicked()
