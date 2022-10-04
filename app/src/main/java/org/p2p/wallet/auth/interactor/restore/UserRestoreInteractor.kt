@@ -172,7 +172,6 @@ class UserRestoreInteractor(
         }
     } catch (e: Throwable) {
         val errorMessage = e.message.orEmpty()
-        Timber.e(errorMessage)
         RestoreFailure.DevicePlusSocialShare(RestoreUserException(errorMessage))
     }
 
@@ -231,5 +230,3 @@ class UserRestoreInteractor(
         } ?: error("User actual account is null, restoring a user is failed")
     }
 }
-
-

@@ -176,7 +176,6 @@ class OnboardingGeneralErrorFragment :
     override fun onConnectionError() {
         setRestoreByGoogleLoadingState(isLoading = false)
         showUiKitSnackBar(message = getString(R.string.error_general_message))
-        TODO("Not yet implemented")
     }
 
     override fun onCommonError() {
