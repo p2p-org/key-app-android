@@ -40,7 +40,7 @@ class UserRestoreInteractor(
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
         val encryptedMnemonic = restoreFlowDataLocalRepository.encryptedMnemonicJson
             ?: error("Social+Custom restore way failed. Mnemonic phrase is null")
-
+        val deviceShare = restoreFlowDataLocalRepository.deviceShare
         if (torusKey.isNullOrEmpty() && socialShareUserId.isNullOrEmpty()) {
             RestoreUserResult.RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound
         } else {
@@ -49,12 +49,13 @@ class UserRestoreInteractor(
                 thirdShare = customShare,
                 encryptedMnemonic = encryptedMnemonic
             )
+
             signUpDetailsStorage.save(
                 data = Web3AuthSignUpResponse(
                     ethereumPublicKey = result.ethereumPublicKey,
                     mnemonicPhrase = result.mnemonicPhrase,
                     encryptedMnemonicPhrase = JsonObject(),
-                    deviceShare = null,
+                    deviceShare = deviceShare,
                     customThirdShare = customShare
                 ),
                 userId = socialShareUserId!!
@@ -169,7 +170,9 @@ class UserRestoreInteractor(
             }
         }
     } catch (e: Throwable) {
-        RestoreUserResult.RestoreFailure.DevicePlusSocialShare(RestoreUserException(e.message.orEmpty()))
+        val errorMessage = e.message.orEmpty()
+        Timber.e(errorMessage)
+        RestoreUserResult.RestoreFailure.DevicePlusSocialShare(RestoreUserException(errorMessage))
     }
 
     private suspend fun tryRestoreUser(

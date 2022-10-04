@@ -157,6 +157,7 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
+            debuggable true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
@@ -306,8 +307,6 @@ dependencies {
 
     // Google Play Auth
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
-
-
 
 
     // core

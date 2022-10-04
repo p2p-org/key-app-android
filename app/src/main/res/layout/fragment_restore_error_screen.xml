@@ -31,8 +31,6 @@
             android:id="@+id/imageViewBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
             app:srcCompat="@drawable/ic_cat" />
 
         <TextView
@@ -40,9 +38,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="16dp"
             android:gravity="center"
             android:text="@string/onboarding_general_error_critical_error_title"
+            android:layout_marginTop="12dp"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
             android:textColor="@color/text_night" />
 
