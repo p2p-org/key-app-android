@@ -10,11 +10,9 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
-private val TAG = RestoreFlowDataLocalRepository::class.simpleName.orEmpty()
+private const val TAG = "RestoreFlowDataLocalRepository"
 
-class RestoreFlowDataLocalRepository(
-    private val signUpDetailsStorage: UserSignUpDetailsStorage
-) {
+class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStorage) {
 
     var isRestoreWalletRequestSent = false
 
@@ -43,19 +41,21 @@ class RestoreFlowDataLocalRepository(
         signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare
         set(value) {
                 field = value
-                Timber.tag(TAG).i("deviceShare is received and set")
+                Timber.tag(TAG).i(
+                    "deviceShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}"
+                )
             }
 
     var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("thirdShare is received and set")
+            Timber.tag(TAG).i("thirdShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}")
         }
 
     var encryptedMnemonicJson: JsonObject? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("encryptedMnemonic is received and set")
+            Timber.tag(TAG).i("encryptedMnemonic is received and set: ${value != null}")
         }
 
     var userActualAccount: Account? = null

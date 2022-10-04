@@ -15,4 +15,8 @@ class OnboardingInteractor {
     // Use this variable when user tried to submit phone number on RESTORE or CREATE
     // But not submitted it successfully yet,
     var temporaryPhoneNumber: PhoneNumber? = null
+        set(value) {
+            field = value
+            Timber.i("Current temporaryPhoneNumber switched to ${field?.formattedValue?.length}")
+        }
 }

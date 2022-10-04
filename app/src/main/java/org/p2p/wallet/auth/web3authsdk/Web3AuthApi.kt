@@ -29,6 +29,6 @@ interface Web3AuthApi {
     ): Web3AuthSignInResponse
 
     suspend fun obtainTorusKey(
-        googleUserTokenId: String
+        googleUserToken: String
     ): String
 }

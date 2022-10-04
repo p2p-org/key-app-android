@@ -12,7 +12,7 @@ import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
-import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
+import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.removeWhiteSpaces
@@ -22,7 +22,7 @@ class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
-    private val restoreUserExceptionHandler: RestoreUserExceptionHandler,
+    private val restoreUserResultHandler: RestoreUserResultHandler,
     private val gatewayServiceErrorHandler: GatewayServiceErrorHandler
 ) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
 
@@ -97,6 +97,9 @@ class NewSmsInputPresenter(
             is GatewayHandledState.ToastError -> {
                 view?.showUiKitSnackBar(gatewayHandledResult.message)
             }
+            else -> {
+                Timber.i("GatewayService error is not handled")
+            }
         }
     }
 
@@ -137,8 +140,8 @@ class NewSmsInputPresenter(
         handleRestoreResult(result)
     }
 
-    private suspend fun handleRestoreResult(result: RestoreUserResult) {
-        when (val result = restoreUserExceptionHandler.handleRestoreResult(result)) {
+    private fun handleRestoreResult(result: RestoreUserResult) {
+        when (val result = restoreUserResultHandler.handleRestoreResult(result)) {
             is RestoreFailureState.TitleSubtitleError -> {
                 view?.navigateToRestoreErrorScreen(result)
             }
