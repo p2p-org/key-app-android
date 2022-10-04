@@ -13,6 +13,7 @@ import org.p2p.wallet.auth.statemachine.RestoreState
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.utils.emptyString
+import timber.log.Timber
 
 class RestoreUserResultHandler(
     private val resourcesProvider: ResourcesProvider,
@@ -27,10 +28,19 @@ class RestoreUserResultHandler(
 
     private fun handleRestoreFailure(result: RestoreUserResult.RestoreFailure): RestoreHandledState =
         when (result) {
-            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare -> handleResult(result)
-            is RestoreUserResult.RestoreFailure.DevicePlusSocialShare -> handleResult(result)
-            is RestoreUserResult.RestoreFailure.DevicePlusCustomShare -> handleResult(result)
-            else -> error("Cannot handle unknown state")
+            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare -> {
+                handleResult(result)
+            }
+            is RestoreUserResult.RestoreFailure.DevicePlusSocialShare -> {
+                handleResult(result)
+            }
+            is RestoreUserResult.RestoreFailure.DevicePlusCustomShare -> {
+                handleResult(result)
+            }
+            else -> {
+                Timber.i(result)
+                error("Unknown restore error state for RestoreFailure: $result")
+            }
         }
 
     private fun handleResult(result: RestoreUserResult.RestoreFailure.SocialPlusCustomShare): RestoreHandledState {
@@ -73,6 +83,7 @@ class RestoreUserResultHandler(
                 )
             }
             else -> {
+                Timber.i(result.exception)
                 RestoreFailureState.ToastError("Error on restore Social + Custom Share")
             }
         }
@@ -115,7 +126,8 @@ class RestoreUserResultHandler(
                 )
             }
             else -> {
-                error("Unknown restore error state")
+                Timber.i(result.exception)
+                error("Unknown restore error state for Device+Social: $result")
             }
         }
     }
@@ -155,7 +167,8 @@ class RestoreUserResultHandler(
                 )
             }
             else -> {
-                error("Unknown error case")
+                Timber.i(result.exception)
+                error("Unknown restore error state for Device+Custom: $result")
             }
         }
 }

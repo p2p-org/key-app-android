@@ -15,9 +15,9 @@ class TorusKeyInteractor(
     private val onboardingInteractor: OnboardingInteractor,
     private val web3AuthApi: Web3AuthApi
 ) {
-    suspend fun getTorusKey(socialShare: String, socialShareUserId: String) {
+    suspend fun getTorusKey(googleSocialToken: String, socialShareUserId: String) {
         try {
-            val torusKey = web3AuthApi.obtainTorusKey(socialShare)
+            val torusKey = web3AuthApi.obtainTorusKey(googleSocialToken)
             when (onboardingInteractor.currentFlow) {
                 is OnboardingFlow.CreateWallet -> {
                     createFlowDataLocalRepository.torusKey = torusKey
@@ -33,6 +33,7 @@ class TorusKeyInteractor(
                     }
                 }
             }
+            Timber.i("Torus key obtained")
         } catch (e: Throwable) {
             Timber.i("Error on obtain a torus key $e")
         }

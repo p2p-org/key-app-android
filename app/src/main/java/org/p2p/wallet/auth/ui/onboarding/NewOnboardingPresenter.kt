@@ -28,7 +28,7 @@ class NewOnboardingPresenter(
     override fun setIdToken(userId: String, idToken: String) {
         launch {
             view?.setButtonLoadingState(isScreenLoading = true)
-            torusKeyRestoreInteractor.getTorusKey(idToken, userId)
+            torusKeyRestoreInteractor.getTorusKey(googleSocialToken = idToken, socialShareUserId = userId)
             when (val result = userSignUpInteractor.trySignUpNewUser()) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
