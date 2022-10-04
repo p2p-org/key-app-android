@@ -65,7 +65,7 @@ class SolendEarnFragment :
 
     override fun showLoading(isLoading: Boolean) {
         with(binding) {
-            shimmerView.isVisible = isLoading
+            shimmerView.root.isVisible = isLoading
             tokensRecyclerView.isVisible = !isLoading
         }
     }

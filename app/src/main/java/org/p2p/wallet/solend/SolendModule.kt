@@ -11,7 +11,6 @@ import org.p2p.wallet.solend.data.SolendConfigurationRepository
 import org.p2p.wallet.solend.data.mapper.SolendConfigurationRepositoryMapper
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
 import org.p2p.wallet.solend.model.SolendDepositMapper
-import org.p2p.wallet.solend.model.SolendDomainMapper
 import org.p2p.wallet.solend.repository.SolendDepositsRemoteRepository
 import org.p2p.wallet.solend.repository.SolendDepositsRepository
 import org.p2p.wallet.solend.ui.deposits.SolendUserDepositsContract
@@ -29,7 +28,6 @@ object SolendModule : InjectionModule {
         singleOf(::SolendDepositsRemoteRepository) bind SolendDepositsRepository::class
 
         factoryOf(::SolendDepositMapper)
-        factoryOf(::SolendDomainMapper)
 
         initDataLayer()
     }

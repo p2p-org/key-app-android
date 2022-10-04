@@ -18,7 +18,7 @@ class SolendEarnPresenter(
         view?.showLoading(isLoading = true)
         launch {
             try {
-                val deposits = solendDepositsInteractor.getAllDeposits(COLLATERAL_ACCOUNTS)
+                val deposits = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
                 view?.showDeposits(deposits)
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
@@ -33,7 +33,7 @@ class SolendEarnPresenter(
         view?.showRefreshing(isRefreshing = true)
         launch {
             try {
-                val deposits = solendDepositsInteractor.getAllDeposits(COLLATERAL_ACCOUNTS)
+                val deposits = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
                 view?.showDeposits(deposits)
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")

@@ -1,9 +1,7 @@
 package org.p2p.wallet.solend.repository
 
-import org.p2p.wallet.solend.model.SolendMarketInfo
-import org.p2p.wallet.solend.model.SolendUserDeposit
+import org.p2p.wallet.solend.model.SolendDepositToken
 
 interface SolendDepositsRepository {
-    suspend fun getDeposits(): List<SolendUserDeposit>
-    suspend fun getSolendMarketInfo(tokens: List<String>): List<SolendMarketInfo>
+    suspend fun getUserDeposits(tokenSymbols: List<String>): List<SolendDepositToken>
 }
