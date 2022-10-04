@@ -124,7 +124,7 @@ class OnboardingGeneralErrorFragment :
             state.errorCode
         )
         with(buttonRestoreByGoogle) {
-            setText(R.string.onboarding_write_to_help_button_title)
+            setText(R.string.onboarding_general_error_bug_report_button_title)
             setIconResource(R.drawable.ic_caution)
             setOnClickListener { IntercomService.showMessenger() }
             isVisible = true
