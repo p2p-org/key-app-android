@@ -15,7 +15,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
 
-private const val MAX_PHONE_NUMBER_TRIES = 40
+private const val MAX_PHONE_NUMBER_TRIES = 5
 private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class PhoneNumberEnterPresenter(
