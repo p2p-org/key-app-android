@@ -27,5 +27,9 @@ abstract class RestoreFailureState(
         secondaryFirstButton = SecondaryFirstButton()
     )
 
-    @Parcelize data class ToastError(val message: String) : RestoreFailureState()
+    @Parcelize
+    data class ToastError(val message: String) : RestoreFailureState()
+
+    @Parcelize
+    data class LogError(val message: String) : RestoreFailureState()
 }

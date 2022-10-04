@@ -97,6 +97,9 @@ class NewSmsInputPresenter(
             is GatewayHandledState.ToastError -> {
                 view?.showUiKitSnackBar(gatewayHandledResult.message)
             }
+            else -> {
+                Timber.i("GatewayService error is not handled")
+            }
         }
     }
 
@@ -137,7 +140,7 @@ class NewSmsInputPresenter(
         handleRestoreResult(result)
     }
 
-    private suspend fun handleRestoreResult(result: RestoreUserResult) {
+    private fun handleRestoreResult(result: RestoreUserResult) {
         when (val result = restoreUserResultHandler.handleRestoreResult(result)) {
             is RestoreFailureState.TitleSubtitleError -> {
                 view?.navigateToRestoreErrorScreen(result)
@@ -145,6 +148,9 @@ class NewSmsInputPresenter(
             is RestoreSuccessState -> {
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
+            }
+            is RestoreFailureState.LogError -> {
+                Timber.i(result.message)
             }
         }
     }

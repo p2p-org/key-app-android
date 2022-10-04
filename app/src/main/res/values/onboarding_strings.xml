@@ -132,4 +132,5 @@
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
     <string name="onboarding_with_email">%s</string>
+    <string name="onboarding_write_to_help_button_title">WRITE TO HEEEEELP</string>
 </resources>

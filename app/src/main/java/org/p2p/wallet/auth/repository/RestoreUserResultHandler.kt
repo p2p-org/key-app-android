@@ -37,11 +37,32 @@ class RestoreUserResultHandler(
             is RestoreUserResult.RestoreFailure.DevicePlusCustomShare -> {
                 handleResult(result)
             }
+            is RestoreUserResult.RestoreFailure.DevicePlusSocialOrSocialPlusCustom -> {
+                handleShareAreNotMatchResult()
+            }
             else -> {
                 Timber.i(result)
                 error("Unknown restore error state for RestoreFailure: $result")
             }
         }
+
+    private fun handleShareAreNotMatchResult(): RestoreHandledState {
+        return RestoreFailureState.TitleSubtitleError(
+            title = resourcesProvider.getString(R.string.error_wallet_not_found_title),
+            subtitle = resourcesProvider.getString(R.string.error_shares_do_not_matches_message),
+            googleButton = GoogleButton(
+                titleResId = R.string.onboarding_write_to_help_button_title,
+                iconResId = R.drawable.ic_caution,
+                iconTintResId = R.color.icons_night,
+                buttonAction = ButtonAction.OPEN_INTERCOM
+            ),
+            secondaryFirstButton = SecondaryFirstButton(
+                titleResId = R.string.restore_starting_screen,
+                buttonAction = ButtonAction.NAVIGATE_START_SCREEN
+            ),
+            imageViewResId = R.drawable.ic_cat
+        )
+    }
 
     private fun handleResult(result: RestoreUserResult.RestoreFailure.SocialPlusCustomShare): RestoreHandledState {
         return when (result) {
@@ -84,7 +105,7 @@ class RestoreUserResultHandler(
             }
             else -> {
                 Timber.i(result.exception)
-                RestoreFailureState.ToastError("Error on restore Social + Custom Share")
+                RestoreFailureState.LogError(result.message ?: result.exception.message.orEmpty())
             }
         }
     }
@@ -127,7 +148,7 @@ class RestoreUserResultHandler(
             }
             else -> {
                 Timber.i(result.exception)
-                error("Unknown restore error state for Device+Social: $result")
+                RestoreFailureState.LogError(result.message ?: result.exception.message.orEmpty())
             }
         }
     }
@@ -168,7 +189,7 @@ class RestoreUserResultHandler(
             }
             else -> {
                 Timber.i(result.exception)
-                error("Unknown restore error state for Device+Custom: $result")
+                RestoreFailureState.LogError(result.message ?: result.exception.message.orEmpty())
             }
         }
 }
