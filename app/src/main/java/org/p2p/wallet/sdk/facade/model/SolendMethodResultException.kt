@@ -5,4 +5,4 @@ import com.google.gson.annotations.SerializedName
 data class SolendMethodResultException(
     @SerializedName("error")
     val error: String,
-) : Throwable(message = error)
+) : Throwable(message = "Solend method failed: $error")
