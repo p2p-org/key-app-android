@@ -57,7 +57,7 @@ class RestoreErrorScreenPresenter(
                 view?.navigateToPinCreate()
             }
             is RestoreFailureState.TitleSubtitleError -> {
-                view?.showState(restoreHandledState)
+                view?.restartWithState(restoreHandledState)
             }
             is RestoreFailureState.ToastError -> {
                 view?.showUiKitSnackBar(message = restoreHandledState.message)

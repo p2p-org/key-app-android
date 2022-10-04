@@ -177,23 +177,49 @@ class UserRestoreInteractor(
     ): RestoreUserResult {
         var result: RestoreUserResult
 
+        // First case try to restore with DEVICE + SOCIAL
         result = tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)
 
         if (result is RestoreUserResult.RestoreFailure) {
+            // if restore was failed
+            // Try last try with SOCIAL + CUSTOM
             result = tryRestoreUser(OnboardingFlow.RestoreWallet.SocialPlusCustomShare)
         }
-        return result
+
+        // if restore is FAILED we throw error thast SHARES ARE NOT MATCH
+        // otherwise Restore is SUCCESSFULL
+        return when (result) {
+            is RestoreUserResult.RestoreFailure -> {
+                RestoreUserResult.RestoreFailure.DevicePlusSocialOrSocialPlusCustom(
+                    RestoreUserException("Shares are not match")
+                )
+            }
+            else -> result
+        }
     }
 
     private suspend fun tryRestoreUser(
         restoreFlow: OnboardingFlow.RestoreWallet.DevicePlusCustomOrSocialPlusCustom
     ): RestoreUserResult {
+        // First case try to restore with DEVICE + CUSTOM
         var result: RestoreUserResult
         result = tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusCustomShare)
+
         if (result is RestoreUserResult.RestoreFailure) {
+            // if restore was failed
+            // try last try with SOCIAL + CUSTOM
             result = tryRestoreUser(OnboardingFlow.RestoreWallet.SocialPlusCustomShare)
         }
-        return result
+        // if restore is FAILED we throw error thast SHARES ARE NOT MATCH
+        // otherwise Restore is SUCCESSFULL
+        return when (result) {
+            is RestoreUserResult.RestoreFailure -> {
+                RestoreUserResult.RestoreFailure.DevicePlusCustomOrSocialPlusCustom(
+                    RestoreUserException("Shares are not match")
+                )
+            }
+            else -> result
+        }
     }
 
     fun finishAuthFlow() {

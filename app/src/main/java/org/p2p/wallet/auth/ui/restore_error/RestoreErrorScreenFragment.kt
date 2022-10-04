@@ -139,6 +139,10 @@ class RestoreErrorScreenFragment :
         )
     }
 
+    override fun restartWithState(state: RestoreFailureState.TitleSubtitleError) {
+        popAndReplaceFragment(create(state))
+    }
+
     private fun setButtonAction(button: UiKitButton, action: ButtonAction) {
         button.setOnClickListener {
             when (action) {

@@ -13,9 +13,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="@string/restore_your_wallet"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:titleTextColor="@color/text_night" />
 

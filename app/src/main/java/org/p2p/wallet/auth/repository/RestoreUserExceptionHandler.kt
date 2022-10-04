@@ -35,9 +35,33 @@ class RestoreUserExceptionHandler(
             is RestoreUserResult.RestoreFailure.DevicePlusCustomShare -> {
                 handleResult(result)
             }
+            is RestoreUserResult.RestoreFailure.DevicePlusSocialOrSocialPlusCustom -> {
+                handleShareAreNotMatchResult()
+            }
+            is RestoreUserResult.RestoreFailure.DevicePlusCustomOrSocialPlusCustom -> {
+                handleShareAreNotMatchResult()
+            }
             else -> error("Cannot handle unknown state")
         }
         return handledResult
+    }
+
+    private fun handleShareAreNotMatchResult(): RestoreHandledState {
+        return RestoreFailureState.TitleSubtitleError(
+            title = resourcesProvider.getString(R.string.error_wallet_not_found_title),
+            subtitle = resourcesProvider.getString(R.string.error_shares_do_not_matches_message),
+            googleButton = GoogleButton(
+                titleResId = R.string.onboarding_write_to_help_button_title,
+                iconResId = R.drawable.ic_caution,
+                iconTintResId = R.color.icons_night,
+                buttonAction = ButtonAction.OPEN_INTERCOM
+            ),
+            secondaryFirstButton = SecondaryFirstButton(
+                titleResId = R.string.restore_starting_screen,
+                buttonAction = ButtonAction.NAVIGATE_START_SCREEN
+            ),
+            imageViewResId = R.drawable.ic_cat
+        )
     }
 
     private fun handleResult(result: RestoreUserResult.RestoreFailure.SocialPlusCustomShare): RestoreHandledState {
@@ -79,7 +103,7 @@ class RestoreUserExceptionHandler(
                     )
                 )
             }
-            else -> RestoreFailureState.ToastError("Error on restore Social + Custom Share")
+            else -> RestoreFailureState.LogError(result.message ?: result.exception.message.orEmpty())
         }
     }
 
@@ -119,7 +143,7 @@ class RestoreUserExceptionHandler(
                     )
                 )
             }
-            else -> error("Unknown restore error state")
+            else -> RestoreFailureState.LogError(result.message ?: result.exception.message.orEmpty())
         }
     }
 
@@ -157,6 +181,6 @@ class RestoreUserExceptionHandler(
                     )
                 )
             }
-            else -> error("Unknown error case")
+            else -> RestoreFailureState.LogError(result.message ?: result.exception.message.orEmpty())
         }
 }

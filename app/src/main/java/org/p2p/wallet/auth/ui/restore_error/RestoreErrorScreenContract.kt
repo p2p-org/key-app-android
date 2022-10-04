@@ -12,6 +12,7 @@ interface RestoreErrorScreenContract {
         fun navigateToPinCreate()
         fun navigateToPhoneEnter()
         fun navigateToStartScreen()
+        fun restartWithState(staet: RestoreFailureState.TitleSubtitleError)
     }
 
     interface Presenter : MvpPresenter<View> {

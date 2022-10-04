@@ -53,6 +53,7 @@ class RestoreWalletInteractor(
     fun resetUserPhoneNumber() {
         restoreFlowDataLocalRepository.userPhoneNumber = null
         resetTimer()
+        resetUserEnterPhoneNumberTriesCount()
     }
 
     private fun resetTimer() {

@@ -47,6 +47,13 @@ class OnboardingGeneralErrorFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.toolbar.inflateMenu(R.menu.menu_onboarding_help)
+        binding.toolbar.setOnMenuItemClickListener {
+            if (it.itemId == R.id.helpItem) {
+                IntercomService.showMessenger()
+            }
+            return@setOnMenuItemClickListener true
+        }
     }
 
     override fun setState(state: GatewayHandledState.TitleSubtitleError): Unit = with(binding) {
@@ -60,10 +67,8 @@ class OnboardingGeneralErrorFragment :
         state.googleButton?.let { buttonState ->
             buttonRestoreByGoogle.setText(buttonState.titleResId)
             buttonState.iconResId?.let { buttonRestoreByGoogle.setIconResource(it) }
-            if (buttonState.iconTintResId == null) {
-                buttonRestoreByGoogle.icon = null
-            } else {
-                buttonRestoreByGoogle.setIconResource(buttonState.iconTintResId)
+            buttonState.iconTintResId?.let {
+                buttonRestoreByGoogle.setIconResource(it)
             }
             setButtonAction(buttonRestoreByGoogle, buttonState.buttonAction)
             buttonRestoreByGoogle.isVisible = true
