@@ -1,7 +1,8 @@
 package org.p2p.wallet.sdk.facade.mapper
 
 import com.google.gson.Gson
-import org.p2p.wallet.utils.fromJsonReified
+import com.google.gson.reflect.TypeToken
+import org.p2p.wallet.sdk.facade.model.SolendMethodResultException
 import timber.log.Timber
 
 class SolendMethodResultMapper(
@@ -10,13 +11,17 @@ class SolendMethodResultMapper(
 ) {
 
     inline fun <reified ResultT> fromSdk(sdkResult: String): ResultT {
-        val mapperResponse = gson.fromJsonReified<SolendResult<ResultT>>(sdkResult)
+        Timber.tag("SolendMethodResultMapper fromSdk: ").d(sdkResult)
+
+        val type = object : TypeToken<SolendResult<ResultT>>() {}.type
+        val mapperResponse = gson.fromJson<SolendResult<ResultT>>(sdkResult, type)
 
         logMethodResponse(mapperResponse, sdkResult)
 
         if (mapperResponse?.error != null) {
-            Timber.e(mapperResponse.error)
-            throw mapperResponse.error
+            val exception = SolendMethodResultException(mapperResponse.error)
+            Timber.e(exception)
+            throw exception
         }
 
         return mapperResponse?.success ?: error("Failed to map result from sdk: $sdkResult")

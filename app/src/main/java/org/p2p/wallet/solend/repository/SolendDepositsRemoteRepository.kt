@@ -26,7 +26,7 @@ class SolendDepositsRemoteRepository(
     }
 
     override suspend fun getSolendMarketInfo(tokens: List<String>): List<SolendMarketInfo> {
-        val response = solanaFacade.getSolendMarketInfo(tokens, currentSolendPool.poolName) ?: return emptyList()
+        val response = solanaFacade.getSolendMarketInfo(tokens, currentSolendPool.poolName)
         return mapper.fromNetwork(response)
     }
 }

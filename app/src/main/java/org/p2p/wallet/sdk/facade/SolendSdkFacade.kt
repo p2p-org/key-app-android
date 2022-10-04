@@ -163,7 +163,7 @@ class SolendSdkFacade(
     suspend fun getSolendMarketInfo(
         tokenSymbols: List<String>,
         solendPoolName: String
-    ): SolendMarketInformationResponse? = withContext(dispatchers.io) {
+    ): SolendMarketInformationResponse = withContext(dispatchers.io) {
         logger.logRequest("getSolendMarketInfo", tokenSymbols, solendPoolName)
 
         val response = solendSdk.getSolendMarketInfo(
@@ -171,8 +171,7 @@ class SolendSdkFacade(
             pool = solendPoolName
         )
 
-        val data = methodResultMapper.fromSdk<LinkedTreeMap<String, SolendMarketInformationResponse>>(response)
-        return@withContext data["market_info"]
+        methodResultMapper.fromSdk(response)
     }
 
     suspend fun getSolendUserDepositByTokenSymbol(
