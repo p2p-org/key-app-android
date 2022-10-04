@@ -15,7 +15,7 @@ class TorusKeyInteractor(
     private val onboardingInteractor: OnboardingInteractor,
     private val web3AuthApi: Web3AuthApi
 ) {
-    suspend fun obtainTorusKey(socialShare: String, socialShareUserId: String) {
+    suspend fun getTorusKey(socialShare: String, socialShareUserId: String) {
         try {
             val torusKey = web3AuthApi.obtainTorusKey(socialShare)
             when (onboardingInteractor.currentFlow) {

@@ -12,8 +12,9 @@ import org.p2p.wallet.auth.model.SecondaryFirstButton
 import org.p2p.wallet.auth.statemachine.RestoreState
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.utils.emptyString
 
-class RestoreUserExceptionHandler(
+class RestoreUserResultHandler(
     private val resourcesProvider: ResourcesProvider,
     private val restoreStateMachine: RestoreStateMachine
 ) {
@@ -24,28 +25,20 @@ class RestoreUserExceptionHandler(
             is RestoreUserResult.RestoreSuccess -> RestoreSuccessState()
         }
 
-    private fun handleRestoreFailure(result: RestoreUserResult.RestoreFailure): RestoreHandledState {
-        val handledResult = when (result) {
-            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare -> {
-                handleResult(result)
-            }
-            is RestoreUserResult.RestoreFailure.DevicePlusSocialShare -> {
-                handleResult(result)
-            }
-            is RestoreUserResult.RestoreFailure.DevicePlusCustomShare -> {
-                handleResult(result)
-            }
+    private fun handleRestoreFailure(result: RestoreUserResult.RestoreFailure): RestoreHandledState =
+        when (result) {
+            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare -> handleResult(result)
+            is RestoreUserResult.RestoreFailure.DevicePlusSocialShare -> handleResult(result)
+            is RestoreUserResult.RestoreFailure.DevicePlusCustomShare -> handleResult(result)
             else -> error("Cannot handle unknown state")
         }
-        return handledResult
-    }
 
     private fun handleResult(result: RestoreUserResult.RestoreFailure.SocialPlusCustomShare): RestoreHandledState {
         return when (result) {
             is RestoreUserResult.RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound -> {
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.restore_how_to_continue),
-                    subtitle = "",
+                    subtitle = emptyString(),
                     googleButton = GoogleButton(
                         buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH,
                         isVisible = true
@@ -79,7 +72,9 @@ class RestoreUserExceptionHandler(
                     )
                 )
             }
-            else -> RestoreFailureState.ToastError("Error on restore Social + Custom Share")
+            else -> {
+                RestoreFailureState.ToastError("Error on restore Social + Custom Share")
+            }
         }
     }
 
@@ -119,7 +114,9 @@ class RestoreUserExceptionHandler(
                     )
                 )
             }
-            else -> error("Unknown restore error state")
+            else -> {
+                error("Unknown restore error state")
+            }
         }
     }
 
@@ -157,6 +154,8 @@ class RestoreUserExceptionHandler(
                     )
                 )
             }
-            else -> error("Unknown error case")
+            else -> {
+                error("Unknown error case")
+            }
         }
 }

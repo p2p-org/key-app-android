@@ -1,12 +1,21 @@
 package org.p2p.wallet.auth.model
 
+class RestoreUserException(
+    message: String,
+    val errorCode: Int? = null
+) : Throwable(message = message)
+
 sealed interface RestoreUserResult {
 
-    open class RestoreFailure(override val cause: Throwable) : Throwable(message = cause.message), RestoreUserResult {
+    open class RestoreFailure(override val cause: Throwable) :
+        Throwable(message = cause.message),
+        RestoreUserResult {
 
         open class DevicePlusCustomShare(val exception: RestoreUserException) : RestoreFailure(exception) {
 
-            object UserNotFound : DevicePlusCustomShare(RestoreUserException("DevicePlusCustomShare: User not found"))
+            object UserNotFound :
+                DevicePlusCustomShare(RestoreUserException("DevicePlusCustomShare: User not found"))
+
             object SharesDoesNotMatch :
                 DevicePlusCustomShare(RestoreUserException("DevicePlusCustomShare: Shares does not match"))
         }
@@ -20,18 +29,16 @@ sealed interface RestoreUserResult {
                 DevicePlusSocialShare(RestoreUserException("DevicePlusSocialShare: Social share not found"))
         }
 
-        open class SocialPlusCustomShare(val exception: RestoreUserException) : RestoreFailure(exception) {
-            object TorusKeyNotFound : SocialPlusCustomShare(
-                RestoreUserException("SocialPlusCustomShare: Torus key has not been initialized")
-            )
+        open class SocialPlusCustomShare(val exception: RestoreUserException) :
+            RestoreFailure(exception) {
+            object TorusKeyNotFound :
+                SocialPlusCustomShare(RestoreUserException("SocialPlusCustomShare: Torus key has not been initialized"))
 
-            data class SocialShareNotFound(val userEmailAddress: String) : SocialPlusCustomShare(
-                RestoreUserException("SocialPlusCustomShare: Social share not found")
-            )
+            data class SocialShareNotFound(val userEmailAddress: String) :
+                SocialPlusCustomShare(RestoreUserException("SocialPlusCustomShare: Social share not found"))
 
-            data class SocialShareNotMatch(val userEmailAddress: String) : SocialPlusCustomShare(
-                RestoreUserException("SocialPlusCustomShare: Social share not match")
-            )
+            data class SocialShareNotMatch(val userEmailAddress: String) :
+                SocialPlusCustomShare(RestoreUserException("SocialPlusCustomShare: Social share not match"))
         }
 
         open class DevicePlusCustomOrSocialPlusCustom(val exception: RestoreUserException) : RestoreFailure(exception)
@@ -40,7 +47,6 @@ sealed interface RestoreUserResult {
     }
 
     open class RestoreSuccess : RestoreUserResult {
-
         object DevicePlusCustomShare : RestoreSuccess()
 
         object DevicePlusSocialShare : RestoreSuccess()
@@ -48,5 +54,3 @@ sealed interface RestoreUserResult {
         object SocialPlusCustomShare : RestoreSuccess()
     }
 }
-
-class RestoreUserException(message: String, val errorCode: Int? = null) : Throwable(message = message)

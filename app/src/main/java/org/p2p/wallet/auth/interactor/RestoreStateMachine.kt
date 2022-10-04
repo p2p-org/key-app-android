@@ -1,20 +1,20 @@
 package org.p2p.wallet.auth.interactor
 
-import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import timber.log.Timber
 
 // Temporary solution of state machine, which allows us to restart restore with another type of restore option
 class RestoreStateMachine {
-    private val restoreFlowFailureMap = mutableMapOf<OnboardingFlow.RestoreWallet, Boolean>()
+    private val restoreFlowFailureMap = mutableMapOf<RestoreWallet, Boolean>()
 
-    fun onRestoreFailure(flow: OnboardingFlow.RestoreWallet) {
+    fun onRestoreFailure(flow: RestoreWallet) {
         restoreFlowFailureMap[flow] = true
         countTriesLeft()
     }
 
     var isDeviceShareSaved: Boolean = false
         set(value) {
-            Timber.tag("Update device share flag")
+            Timber.i("Update device share flag: $value")
             field = value
             reset()
         }
@@ -22,46 +22,51 @@ class RestoreStateMachine {
     fun reset() {
         restoreFlowFailureMap.clear()
         if (!isDeviceShareSaved) {
-            restoreFlowFailureMap[OnboardingFlow.RestoreWallet.DevicePlusCustomShare] = true
-            restoreFlowFailureMap[OnboardingFlow.RestoreWallet.DevicePlusSocialShare] = true
+            restoreFlowFailureMap[RestoreWallet.DevicePlusCustomShare] = true
+            restoreFlowFailureMap[RestoreWallet.DevicePlusSocialShare] = true
         }
     }
 
     fun isRestoreAvailable(): Boolean = countTriesLeft() > 0
 
-    fun getAvailableRestoreWithSocialShare(): OnboardingFlow.RestoreWallet? {
+    fun getAvailableRestoreWithSocialShare(): RestoreWallet? {
         return when {
-            restoreFlowFailureMap[OnboardingFlow.RestoreWallet.DevicePlusSocialShare] == true &&
-                restoreFlowFailureMap[OnboardingFlow.RestoreWallet.SocialPlusCustomShare] == true -> {
+            restoreFlowFailureMap[RestoreWallet.DevicePlusSocialShare] == true &&
+                restoreFlowFailureMap[RestoreWallet.SocialPlusCustomShare] == true -> {
                 null
             }
-            isDeviceShareSaved && restoreFlowFailureMap[OnboardingFlow.RestoreWallet.DevicePlusSocialShare] == null -> {
-                OnboardingFlow.RestoreWallet.DevicePlusSocialShare
+            isDeviceShareSaved && restoreFlowFailureMap[RestoreWallet.DevicePlusSocialShare] == null -> {
+                RestoreWallet.DevicePlusSocialShare
             }
-            else -> OnboardingFlow.RestoreWallet.SocialPlusCustomShare
+            else -> {
+                RestoreWallet.SocialPlusCustomShare
+            }
         }
     }
 
-    fun getAvailableRestoreWithCustomShare(): OnboardingFlow.RestoreWallet? {
+    fun getAvailableRestoreWithCustomShare(): RestoreWallet? {
         return when {
-            restoreFlowFailureMap[OnboardingFlow.RestoreWallet.DevicePlusCustomShare] == true &&
-                restoreFlowFailureMap[OnboardingFlow.RestoreWallet.SocialPlusCustomShare] == true -> {
+            restoreFlowFailureMap[RestoreWallet.DevicePlusCustomShare] == true &&
+                restoreFlowFailureMap[RestoreWallet.SocialPlusCustomShare] == true -> {
                 null
             }
-            isDeviceShareSaved && restoreFlowFailureMap[OnboardingFlow.RestoreWallet.DevicePlusCustomShare] == null -> {
-                OnboardingFlow.RestoreWallet.DevicePlusCustomShare
+            isDeviceShareSaved && restoreFlowFailureMap[RestoreWallet.DevicePlusCustomShare] == null -> {
+                RestoreWallet.DevicePlusCustomShare
             }
-            else -> OnboardingFlow.RestoreWallet.SocialPlusCustomShare
+            else -> {
+                RestoreWallet.SocialPlusCustomShare
+            }
         }
     }
 
     private fun countTriesLeft(): Int {
         return listOf(
-            OnboardingFlow.RestoreWallet.SocialPlusCustomShare,
-            OnboardingFlow.RestoreWallet.DevicePlusSocialShare,
-            OnboardingFlow.RestoreWallet.DevicePlusCustomShare
-        ).map {
-            restoreFlowFailureMap[it]
-        }.filter { it == null }.size
+            RestoreWallet.SocialPlusCustomShare,
+            RestoreWallet.DevicePlusSocialShare,
+            RestoreWallet.DevicePlusCustomShare
+        )
+            .map { restoreFlowFailureMap[it] }
+            .filter { it == null }
+            .size
     }
 }

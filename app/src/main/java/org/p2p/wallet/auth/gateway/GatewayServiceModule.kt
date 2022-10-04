@@ -17,6 +17,7 @@ import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceErrorMapper
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceOnboardingMetadataCipher
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceRestoreWalletMapper
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceSignatureFieldGenerator
+import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
 import org.p2p.wallet.common.di.InjectionModule
 import retrofit2.Retrofit
 import retrofit2.create
@@ -35,6 +36,7 @@ object GatewayServiceModule : InjectionModule {
         factory { ChaCha20Poly1305Decryptor(chaCha20Poly1305 = ChaCha20Poly1305()) }
         factoryOf(::ChaCha20Poly1305SymmetricKeyGenerator)
         factoryOf(::GatewayServiceOnboardingMetadataCipher)
+        factoryOf(::GatewayServiceErrorHandler)
 
         singleOf(::GatewayServiceRemoteRepository) bind GatewayServiceRepository::class
     }

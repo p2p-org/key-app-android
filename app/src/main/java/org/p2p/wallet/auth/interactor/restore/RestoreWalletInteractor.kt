@@ -8,7 +8,7 @@ import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 
 class RestoreWalletInteractor(
     private val customShareRestoreInteractor: CustomShareRestoreInteractor,
-    private val socialShareRestoreInteractor: TorusKeyInteractor,
+    private val torusKeyInteractor: TorusKeyInteractor,
     private val userRestoreInteractor: UserRestoreInteractor,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val smsInputTimer: SmsInputTimer,
@@ -27,7 +27,7 @@ class RestoreWalletInteractor(
     }
 
     suspend fun obtainTorusKey(userId: String, idToken: String) {
-        socialShareRestoreInteractor.obtainTorusKey(idToken, userId)
+        torusKeyInteractor.getTorusKey(idToken, userId)
     }
 
     suspend fun finishRestoreCustomShare(smsCode: String) =

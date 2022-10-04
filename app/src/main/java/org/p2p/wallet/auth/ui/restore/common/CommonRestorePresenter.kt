@@ -6,7 +6,7 @@ import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
-import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
+import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.statemachine.RestoreState
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
@@ -16,7 +16,7 @@ class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val accountStorageContract: UserSignUpDetailsStorage,
-    private val restoreUserExceptionHandler: RestoreUserExceptionHandler,
+    private val restoreUserResultHandler: RestoreUserResultHandler,
     private val restoreStateMachine: RestoreStateMachine
 ) : BasePresenter<CommonRestoreContract.View>(), CommonRestoreContract.Presenter {
 
@@ -52,7 +52,7 @@ class CommonRestorePresenter(
     private suspend fun restoreUserWithShares(currentFlow: OnboardingFlow.RestoreWallet) {
         onboardingInteractor.currentFlow = currentFlow
         val restoreResult = restoreWalletInteractor.tryRestoreUser(currentFlow)
-        when (val restoreHandledState = restoreUserExceptionHandler.handleRestoreResult(restoreResult)) {
+        when (val restoreHandledState = restoreUserResultHandler.handleRestoreResult(restoreResult)) {
             is RestoreSuccessState -> {
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
