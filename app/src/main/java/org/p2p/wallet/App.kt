@@ -13,20 +13,16 @@ import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
-import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
-import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
-import kotlinx.coroutines.launch
 
 class App : Application() {
     private val crashLogger: CrashLogger by inject()
-    private val appScope: AppScope by inject()
-    private val pushTokenRepository: PushTokenRepository by inject()
+    private val appCreatedAction: AppCreatedAction by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -44,9 +40,7 @@ class App : Application() {
 
         SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
 
-        if (BuildConfig.DEBUG) {
-            logFirebaseDevicePushToken()
-        }
+        appCreatedAction.invoke()
     }
 
     private fun setupKoin() {
@@ -83,14 +77,6 @@ class App : Application() {
         // Always plant this tree
         // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag
         Timber.plant(TimberCrashTree(crashLogger))
-    }
-
-    private fun logFirebaseDevicePushToken() {
-        appScope.launch {
-            kotlin.runCatching { pushTokenRepository.getPushToken().value }
-                .onSuccess { Timber.tag("App:device_token").d(it) }
-                .onFailure { Timber.e(it) }
-        }
     }
 
     private fun setupCrashLoggingService() {

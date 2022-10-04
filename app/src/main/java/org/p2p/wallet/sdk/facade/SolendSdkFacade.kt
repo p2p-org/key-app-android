@@ -9,7 +9,7 @@ import org.p2p.wallet.sdk.SolendSdk
 import org.p2p.wallet.sdk.facade.mapper.SolendMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountResponse
 import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountsListResponse
-import org.p2p.wallet.sdk.facade.model.SolendConfigResponse
+import org.p2p.wallet.sdk.facade.model.SolendConfigRootResponse
 import org.p2p.wallet.sdk.facade.model.SolendDepositTransactionsResponse
 import org.p2p.wallet.sdk.facade.model.SolendEnvironment
 import org.p2p.wallet.sdk.facade.model.SolendFeePayerTokenData
@@ -134,7 +134,7 @@ class SolendSdkFacade(
         methodResultMapper.fromSdk<SolendCollateralAccountsListResponse>(response).accounts
     }
 
-    suspend fun getSolendConfig(): SolendConfigResponse = withContext(dispatchers.io) {
+    suspend fun getSolendConfig(): SolendConfigRootResponse = withContext(dispatchers.io) {
         logger.logRequest("getSolendConfig")
 
         val response = solendSdk.getSolendConfig(
