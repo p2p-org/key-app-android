@@ -11,6 +11,7 @@ import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.statemachine.RestoreState
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
@@ -63,6 +64,9 @@ class CommonRestorePresenter(
             }
             is RestoreFailureState.ToastError -> {
                 view?.showUiKitSnackBar(message = restoreHandledState.message)
+            }
+            is RestoreFailureState.LogError -> {
+                Timber.i(restoreHandledState.message)
             }
         }
     }

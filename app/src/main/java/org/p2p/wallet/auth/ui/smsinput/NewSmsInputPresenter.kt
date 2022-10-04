@@ -146,6 +146,9 @@ class NewSmsInputPresenter(
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             }
+            is RestoreFailureState.LogError -> {
+                Timber.i(result.message)
+            }
         }
     }
 

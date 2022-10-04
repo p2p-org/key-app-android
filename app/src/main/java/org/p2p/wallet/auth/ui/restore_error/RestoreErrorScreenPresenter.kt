@@ -8,6 +8,7 @@ import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.repository.RestoreUserExceptionHandler
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 class RestoreErrorScreenPresenter(
     private val restoreFailureState: RestoreFailureState.TitleSubtitleError,
@@ -61,6 +62,9 @@ class RestoreErrorScreenPresenter(
             }
             is RestoreFailureState.ToastError -> {
                 view?.showUiKitSnackBar(message = restoreHandledState.message)
+            }
+            is RestoreFailureState.LogError -> {
+                Timber.i(restoreHandledState.message)
             }
         }
     }

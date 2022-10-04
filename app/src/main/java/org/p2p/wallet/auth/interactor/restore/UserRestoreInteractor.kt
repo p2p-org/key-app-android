@@ -194,7 +194,9 @@ class UserRestoreInteractor(
                     RestoreUserException("Shares are not match")
                 )
             }
-            else -> result
+            else -> {
+                result
+            }
         }
     }
 
@@ -218,7 +220,9 @@ class UserRestoreInteractor(
                     RestoreUserException("Shares are not match")
                 )
             }
-            else -> result
+            else -> {
+                result
+            }
         }
     }
 
