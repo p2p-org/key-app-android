@@ -7,6 +7,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.sdk.SolendSdk
 import org.p2p.wallet.sdk.facade.mapper.SolendMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountResponse
+import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountsListResponse
 import org.p2p.wallet.sdk.facade.model.SolendConfigRootResponse
 import org.p2p.wallet.sdk.facade.model.SolendDepositTransactionsResponse
 import org.p2p.wallet.sdk.facade.model.SolendEnvironment

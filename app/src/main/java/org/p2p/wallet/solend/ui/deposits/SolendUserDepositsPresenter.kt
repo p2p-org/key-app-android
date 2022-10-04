@@ -38,14 +38,14 @@ class SolendUserDepositsPresenter(
                         "SOL",
                         "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/" +
                             "So11111111111111111111111111111111111111112/logo.png",
-                        3.05f, BigDecimal.valueOf(100)
+                        BigDecimal("3.05"), BigDecimal.valueOf(100)
                     ),
                     SolendDepositToken.Inactive(
                         "Tether USD",
                         "USDT",
                         "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/" +
                             "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg",
-                        2.05f
+                        BigDecimal("2.05")
                     )
                 )
                 view?.showTokens(tokens)

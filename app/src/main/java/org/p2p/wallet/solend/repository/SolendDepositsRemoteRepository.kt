@@ -8,6 +8,7 @@ import org.p2p.wallet.solend.model.SolendMarketInfo
 import org.p2p.wallet.solend.model.SolendUserDeposit
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
+import timber.log.Timber
 
 class SolendDepositsRemoteRepository(
     private val solanaFacade: SolendSdkFacade,
@@ -20,9 +21,12 @@ class SolendDepositsRemoteRepository(
     private val ownerAddress: Base58String
         get() = ownerAddressProvider.publicKey.toBase58Instance()
 
-    override suspend fun getDeposits(): List<SolendUserDeposit> {
+    override suspend fun getDeposits(): List<SolendUserDeposit> = try {
         val response = solanaFacade.getAllSolendUserDeposits(ownerAddress, currentSolendPool)
-        return response.map { mapper.fromNetwork(it) }
+        response.map { mapper.fromNetwork(it) }
+    } catch (e: Throwable) {
+        Timber.e(e, "Error loading user deposits")
+        emptyList()
     }
 
     override suspend fun getSolendMarketInfo(tokens: List<String>): List<SolendMarketInfo> {
