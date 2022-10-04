@@ -7,11 +7,13 @@ import org.p2p.wallet.solend.model.SolendDepositToken
 interface SolendEarnContract {
 
     interface View : MvpView {
+        fun showRefreshing(isRefreshing: Boolean)
         fun showLoading(isLoading: Boolean)
-        fun showTokens(tokens: List<SolendDepositToken>)
+        fun showDeposits(deposits: List<SolendDepositToken>)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun load()
+        fun refresh()
     }
 }
