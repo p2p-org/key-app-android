@@ -31,8 +31,3 @@ class SolendDepositsAdapter(
         holder.onBind(data[position])
     }
 }
-
-interface TokenDepositItemClickListener {
-    fun onAddMoreClicked(token: SolendDepositToken)
-    fun onWithdrawClicked(token: SolendDepositToken)
-}

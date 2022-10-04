@@ -44,6 +44,13 @@ class SolendDepositViewHolder(
         } else {
             textViewTokenAmount.text = item.tokenSymbol
         }
+
+        buttonAddMore.setOnClickListener {
+            onAddMoreClicked(item)
+        }
+        buttonWithdraw.setOnClickListener {
+            onWithdrawClicked(item)
+        }
     }
 
     private fun loadImage(imageView: ImageView, url: String) {
