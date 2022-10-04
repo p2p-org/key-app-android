@@ -1,4 +1,4 @@
-package org.p2p.wallet.solend.ui.earn.adapter
+package org.p2p.wallet.solend.ui.deposits.adapter
 
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
@@ -9,33 +9,47 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.uikit.glide.SvgSoftwareLayerSetter
-import org.p2p.wallet.databinding.ItemSolendEarnBinding
+import org.p2p.wallet.R
+import org.p2p.wallet.databinding.ItemSolendDepositBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val IMAGE_SIZE = 48
 
-class SolendEarnViewHolder(
-    private val binding: ItemSolendEarnBinding = parent.inflateViewBinding(attachToRoot = false),
+class SolendDepositViewHolder(
+    parent: ViewGroup,
+    private val binding: ItemSolendDepositBinding = parent.inflateViewBinding(attachToRoot = false),
+    private val onAddMoreClicked: (SolendDepositToken) -> Unit,
+    private val onWithdrawClicked: (SolendDepositToken) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
         .listener(SvgSoftwareLayerSetter())
 
-    constructor(parent: ViewGroup) : this(
-        ItemSolanaEarnDepositBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-    )
+    fun onBind(item: SolendDepositToken) = with(binding) {
+        loadImage(tokenImageView, item.iconUrl)
+        textViewApy.text = getString(R.string.solend_deposits_yielding_apy, item.earnApy)
 
-    fun onBind(item: SolendDepositToken) {
-        loadImage(binding.tokenImageView, item.iconUrl.orEmpty())
-        binding.textViewTokenName.text = item.tokenName
-        binding.textViewApy.text = "${item.supplyInterest}%"
+        // TODO PWN-5020 make real impl of amount in $
+        textViewAmountUsd.text = if (item is SolendDepositToken.Active) {
+            "$${item.depositAmount}"
+        } else {
+            "$0"
+        }
 
         if (item is SolendDepositToken.Active) {
-            binding.textViewAmount.text = "${item.depositAmount} ${item.tokenSymbol}"
+            textViewTokenAmount.text = "%s %s".format(item.depositAmount.toString(), item.tokenSymbol)
         } else {
-            binding.textViewAmount.text = item.tokenSymbol
+            textViewTokenAmount.text = item.tokenSymbol
+        }
+
+        buttonAddMore.setOnClickListener {
+            onAddMoreClicked(item)
+        }
+        buttonWithdraw.setOnClickListener {
+            onWithdrawClicked(item)
         }
     }
 

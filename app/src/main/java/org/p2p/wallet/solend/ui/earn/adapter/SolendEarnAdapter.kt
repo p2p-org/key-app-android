@@ -1,7 +1,7 @@
 package org.p2p.wallet.solend.ui.earn.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.solend.model.SolendDepositToken
 
 class SolendEarnAdapter : RecyclerView.Adapter<SolendEarnViewHolder>() {

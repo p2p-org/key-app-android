@@ -1,14 +1,13 @@
 package org.p2p.wallet.sdk.facade
 
 import com.google.gson.Gson
-import com.google.gson.internal.LinkedTreeMap
 import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.sdk.SolendSdk
 import org.p2p.wallet.sdk.facade.mapper.SolendMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountResponse
-import org.p2p.wallet.sdk.facade.model.SolendConfigResponse
+import org.p2p.wallet.sdk.facade.model.SolendConfigRootResponse
 import org.p2p.wallet.sdk.facade.model.SolendDepositTransactionsResponse
 import org.p2p.wallet.sdk.facade.model.SolendEnvironment
 import org.p2p.wallet.sdk.facade.model.SolendFeePayerTokenData
@@ -131,11 +130,10 @@ class SolendSdkFacade(
             rpc_url = currentNetworkEnvironment.endpoint,
             owner = ownerAddress.value
         )
-        val data = methodResultMapper.fromSdk<LinkedTreeMap<String, List<SolendCollateralAccountResponse>>>(response)
-        return@withContext data["accounts"].orEmpty()
+        methodResultMapper.fromSdk<SolendCollateralAccountsListResponse>(response).accounts
     }
 
-    suspend fun getSolendConfig(): SolendConfigResponse = withContext(dispatchers.io) {
+    suspend fun getSolendConfig(): SolendConfigRootResponse = withContext(dispatchers.io) {
         logger.logRequest("getSolendConfig")
 
         val response = solendSdk.getSolendConfig(
