@@ -157,7 +157,6 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
-            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
