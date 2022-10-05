@@ -6,7 +6,6 @@ import org.p2p.wallet.auth.interactor.FileInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
-import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
@@ -31,7 +30,6 @@ class NewOnboardingPresenter(
             torusKeyRestoreInteractor.getTorusKey(googleSocialToken = idToken, socialShareUserId = userId)
             when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
-                    onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {

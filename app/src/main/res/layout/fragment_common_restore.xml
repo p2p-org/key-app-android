@@ -16,7 +16,7 @@
         app:menu="@menu/menu_onboarding_help"
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="@color/night"
-        app:title="@string/restore_choose_an_option"
+        app:title="@string/restore_title"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:titleTextColor="@color/night" />
 
