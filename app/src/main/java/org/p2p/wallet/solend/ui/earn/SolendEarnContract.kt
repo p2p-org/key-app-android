@@ -10,10 +10,12 @@ interface SolendEarnContract {
         fun showRefreshing(isRefreshing: Boolean)
         fun showLoading(isLoading: Boolean)
         fun showDeposits(deposits: List<SolendDepositToken>)
+        fun showDepositTopUp(deposit: SolendDepositToken)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun load()
         fun refresh()
+        fun onDepositTokenClicked(deposit: SolendDepositToken)
     }
 }

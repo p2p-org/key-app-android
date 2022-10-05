@@ -1,11 +1,12 @@
 package org.p2p.wallet.solend.ui.earn
 
 import android.content.Context
+import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
+import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.getErrorMessage
 import timber.log.Timber
-import kotlinx.coroutines.launch
 
 private val COLLATERAL_ACCOUNTS = listOf("SOL", "USDT", "USDC", "BTC", "ETH")
 
@@ -42,5 +43,9 @@ class SolendEarnPresenter(
                 view?.showRefreshing(isRefreshing = false)
             }
         }
+    }
+
+    override fun onDepositTokenClicked(deposit: SolendDepositToken) {
+        view?.showDepositTopUp(deposit)
     }
 }

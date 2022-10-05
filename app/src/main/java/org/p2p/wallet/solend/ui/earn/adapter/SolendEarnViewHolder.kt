@@ -1,10 +1,10 @@
 package org.p2p.wallet.solend.ui.earn.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
@@ -19,6 +19,7 @@ private const val IMAGE_SIZE = 48
 class SolendEarnViewHolder(
     parent: ViewGroup,
     private val binding: ItemSolendEarnBinding = parent.inflateViewBinding(attachToRoot = false),
+    private val onDepositClickListener: (SolendDepositToken) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
@@ -34,6 +35,9 @@ class SolendEarnViewHolder(
             binding.textViewAmount.text = "${item.depositAmount} ${item.tokenSymbol}"
         } else {
             binding.textViewAmount.text = item.tokenSymbol
+        }
+        binding.root.setOnClickListener {
+            onDepositClickListener(item)
         }
     }
 
