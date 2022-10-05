@@ -22,13 +22,14 @@ import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import timber.log.Timber
 
 class NewSmsInputFragment :
     BaseMvpFragment<NewSmsInputContract.View, Presenter>(R.layout.fragment_new_sms_input),
     NewSmsInputContract.View {
 
     companion object {
-        fun create() = NewSmsInputFragment()
+        fun create(): NewSmsInputFragment = NewSmsInputFragment()
     }
 
     override val presenter: Presenter by inject()
@@ -106,6 +107,9 @@ class NewSmsInputFragment :
                 )
                 binding.continueButton.isEnabled = false
             }
+            else -> {
+                Timber.i("Unknown sms input state: $timerState")
+            }
         }
     }
 
@@ -129,5 +133,10 @@ class NewSmsInputFragment :
 
     override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) {
         popAndReplaceFragment(RestoreErrorScreenFragment.create(handledState))
+    }
+
+    override fun onDestroyView() {
+        binding.smsInputComponent.hideKeyboard()
+        super.onDestroyView()
     }
 }

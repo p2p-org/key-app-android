@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.phone
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
-import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
@@ -47,7 +47,6 @@ class PhoneNumberEnterFragment :
     }
 
     private fun FragmentPhoneNumberEnterBinding.initViews() {
-
         toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.helpItem) {
                 view?.hideKeyboard()
@@ -118,8 +117,8 @@ class PhoneNumberEnterFragment :
         )
     }
 
-    override fun navigateToCriticalErrorScreen(handledState: GatewayHandledState) {
-        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(handledState), inclusive = true)
+    override fun navigateToCriticalErrorScreen(error: GatewayHandledState) {
+        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(error), inclusive = true)
     }
 
     override fun setLoadingState(isLoading: Boolean) {
@@ -154,10 +153,6 @@ class PhoneNumberEnterFragment :
         ) { _, bundle ->
             bundle.getParcelable<CountryCode>(RESULT_KEY)?.let { presenter.onCountryCodeChanged(it) }
         }
-    }
-
-    private fun onCountryCodeChanged(countryCode: String) {
-        presenter.onCountryCodeChanged(countryCode)
     }
 
     private fun onPhoneChanged(phone: String) {
