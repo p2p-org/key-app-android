@@ -29,7 +29,7 @@ class NewOnboardingPresenter(
         launch {
             view?.setButtonLoadingState(isScreenLoading = true)
             torusKeyRestoreInteractor.getTorusKey(googleSocialToken = idToken, socialShareUserId = userId)
-            when (val result = userSignUpInteractor.trySignUpNewUser()) {
+            when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.onSuccessfulSignUp()

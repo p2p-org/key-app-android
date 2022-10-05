@@ -19,6 +19,7 @@ class WalletFoundPresenter(
 
     override fun attach(view: WalletFoundContract.View) {
         super.attach(view)
+        Timber.tag("______wallet found").d(signUpFlowDataRepository.signUpUserId.orEmpty())
         view.setUserId(signUpFlowDataRepository.signUpUserId.orEmpty())
     }
 
@@ -30,7 +31,7 @@ class WalletFoundPresenter(
         launch {
             view?.setLoadingState(isScreenLoading = true)
             torusKeyInteractor.getTorusKey(idToken, userId)
-            when (val result = userSignUpInteractor.trySignUpNewUser()) {
+            when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.onSuccessfulSignUp()

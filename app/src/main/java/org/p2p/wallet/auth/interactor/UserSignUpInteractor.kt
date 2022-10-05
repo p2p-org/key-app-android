@@ -6,6 +6,7 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse.ErrorType
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
+import timber.log.Timber
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -19,13 +20,12 @@ class UserSignUpInteractor(
         class SignUpFailed(override val cause: Throwable) : Error(), SignUpResult
     }
 
-    suspend fun trySignUpNewUser(): SignUpResult {
+    suspend fun trySignUpNewUser(socialShareUserId: String): SignUpResult {
         return try {
             val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare()
-            val idTokenOwnerId = signUpFlowDataRepository.signUpUserId.orEmpty()
-
+            Timber.tag("_______SignUp").d(socialShareUserId)
             signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
-            userSignUpDetailsStorage.save(signUpResponse, idTokenOwnerId)
+            userSignUpDetailsStorage.save(signUpResponse, socialShareUserId)
 
             SignUpResult.SignUpSuccessful
         } catch (web3AuthError: Web3AuthErrorResponse) {
