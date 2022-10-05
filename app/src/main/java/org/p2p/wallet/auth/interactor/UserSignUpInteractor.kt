@@ -6,7 +6,6 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse.ErrorType
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import timber.log.Timber
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
