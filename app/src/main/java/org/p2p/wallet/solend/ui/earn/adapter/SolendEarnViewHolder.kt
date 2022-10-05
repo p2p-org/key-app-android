@@ -1,6 +1,7 @@
 package org.p2p.wallet.solend.ui.earn.adapter
 
 import androidx.recyclerview.widget.RecyclerView
+import android.annotation.SuppressLint
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.ViewGroup
@@ -25,13 +26,14 @@ class SolendEarnViewHolder(
         .`as`(PictureDrawable::class.java)
         .listener(SvgSoftwareLayerSetter())
 
+    @SuppressLint("SetTextI18n")
     fun onBind(item: SolendDepositToken) {
         loadImage(binding.tokenImageView, item.iconUrl.orEmpty())
         binding.textViewTokenName.text = item.tokenName
         binding.textViewApy.text = "${item.supplyInterest.scaleShort()}%"
 
         if (item is SolendDepositToken.Active) {
-            binding.textViewAmount.text = "${item.depositAmount} ${item.tokenSymbol}"
+            binding.textViewAmount.text = "${item.depositAmount.scaleShort()} ${item.tokenSymbol}"
         } else {
             binding.textViewAmount.text = item.tokenSymbol
         }

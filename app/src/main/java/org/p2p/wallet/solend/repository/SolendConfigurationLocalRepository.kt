@@ -1,7 +1,7 @@
-package org.p2p.wallet.solend.data
+package org.p2p.wallet.solend.repository
 
 import org.p2p.wallet.sdk.facade.SolendSdkFacade
-import org.p2p.wallet.solend.data.mapper.SolendConfigurationRepositoryMapper
+import org.p2p.wallet.solend.repository.mapper.SolendConfigurationRepositoryMapper
 import org.p2p.wallet.solend.model.SolendConfiguration
 import timber.log.Timber
 

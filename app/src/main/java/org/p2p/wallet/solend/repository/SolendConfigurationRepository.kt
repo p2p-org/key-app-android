@@ -1,4 +1,4 @@
-package org.p2p.wallet.solend.data
+package org.p2p.wallet.solend.repository
 
 import org.p2p.wallet.solend.model.SolendConfiguration
 

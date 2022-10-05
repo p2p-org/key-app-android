@@ -36,8 +36,9 @@ class SolendDepositsRemoteRepository(
 
         return marketsInfo.mapNotNull { info ->
             val tokenData = userLocalRepository.findTokenDataBySymbol(info.tokenSymbol) ?: return@mapNotNull null
+            val tokenPrice = userLocalRepository.getPriceByToken(info.tokenSymbol) ?: return@mapNotNull null
             val activeDeposit = deposits.find { it.depositTokenSymbol == info.tokenSymbol }
-            mapper.fromNetwork(tokenData, info, activeDeposit)
+            mapper.fromNetwork(tokenData, tokenPrice, info, activeDeposit)
         }
     }
 

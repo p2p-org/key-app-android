@@ -4,13 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
@@ -23,8 +17,6 @@ import org.p2p.wallet.solend.ui.earn.adapter.SolendEarnAdapter
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import timber.log.Timber
-import java.math.BigDecimal
 
 class SolendEarnFragment :
     BaseMvpFragment<SolendEarnContract.View, SolendEarnContract.Presenter>(R.layout.fragment_solend_earn),
@@ -51,15 +43,12 @@ class SolendEarnFragment :
             tokensRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             tokensRecyclerView.attachAdapter(earnAdapter)
             refreshLayout.setOnRefreshListener { presenter.refresh() }
-
-            // Update after real integration
-            setupMockWidgetData()
         }
 
         presenter.load()
     }
 
-    override fun showDeposits(deposits: List<SolendDepositToken>) {
+    override fun showAvailableDeposits(deposits: List<SolendDepositToken>) {
         earnAdapter.setItems(deposits)
     }
 
@@ -76,61 +65,20 @@ class SolendEarnFragment :
         }
     }
 
+    override fun navigateToUserDeposits(deposits: List<SolendDepositToken.Active>) {
+        replaceFragment(SolendUserDepositsFragment.create(deposits))
+    }
+
+    override fun showWidgetState(state: EarnWidgetState) {
+        binding.viewEarnWidget.setWidgetState(state)
+    }
+
+    override fun bindWidgetActionButton(callback: () -> Unit) {
+        binding.viewEarnWidget.setOnButtonClickListener { callback() }
+    }
+
     override fun onDestroyView() {
         timerJob?.cancel()
         super.onDestroyView()
-    }
-
-    private fun FragmentSolendEarnBinding.setupMockWidgetData() {
-        viewEarnWidget.setWidgetState(lastState)
-        viewEarnWidget.setOnButtonClickListener {
-            timerJob?.cancel()
-            when (val state = viewEarnWidget.currentState) {
-                is EarnWidgetState.Balance -> {
-                    viewEarnWidget.setWidgetState(
-                        EarnWidgetState.Depositing(R.string.earn_widget_deposit_withdrawing)
-                    )
-                    replaceFragment(SolendUserDepositsFragment.create())
-                }
-                is EarnWidgetState.Depositing -> {
-                    if (state.buttonTextRes == R.string.earn_widget_deposit_withdrawing) {
-                        viewEarnWidget.setWidgetState(EarnWidgetState.DepositFoundsFailed)
-                    } else {
-                        val timer = (1..Int.MAX_VALUE)
-                            .asSequence()
-                            .asFlow()
-                            .onEach { delay(1_000) }
-
-                        val job = Job()
-                        val uiScope = CoroutineScope(Dispatchers.Main + job)
-                        timerJob = uiScope.launch() {
-                            var balance = 89.5708912487
-                            timer.collect {
-                                balance += (it.toFloat() / 100000000000) // + Random.nextInt(1, 9)
-                                viewEarnWidget.setWidgetState(EarnWidgetState.Balance(BigDecimal(balance)))
-                            }
-                        }
-                    }
-                }
-                EarnWidgetState.LearnMore -> {
-                    viewEarnWidget.setWidgetState(
-                        EarnWidgetState.Depositing(R.string.earn_widget_deposit_sending)
-                    )
-                }
-                EarnWidgetState.DepositFoundsFailed -> {
-                    viewEarnWidget.setWidgetState(
-                        EarnWidgetState.Error(
-                            R.string.earn_widget_error_message_withdrawal,
-                            R.string.earn_widget_error_button_ok
-                        )
-                    )
-                }
-                is EarnWidgetState.Error -> {
-                    viewEarnWidget.setWidgetState(EarnWidgetState.LearnMore)
-                }
-                else -> Timber.i("Ignored state: $state")
-            }
-            lastState = viewEarnWidget.currentState
-        }
     }
 }
