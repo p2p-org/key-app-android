@@ -20,7 +20,6 @@ import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -43,15 +42,11 @@ class PhoneNumberEnterFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.initViews()
         setOnResultListener()
     }
 
     private fun FragmentPhoneNumberEnterBinding.initViews() {
-        toolbar.setNavigationOnClickListener {
-            popBackStack()
-        }
 
         toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.helpItem) {

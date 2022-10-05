@@ -8,6 +8,7 @@ import org.p2p.wallet.auth.model.RestoreUserResult.RestoreFailure
 import org.p2p.wallet.auth.model.RestoreUserResult.RestoreSuccess
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -19,7 +20,8 @@ class UserRestoreInteractor(
     private val web3AuthApi: Web3AuthApi,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val restoreStateMachine: RestoreStateMachine
 ) {
 
     suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult = when (restoreFlow) {
@@ -42,6 +44,7 @@ class UserRestoreInteractor(
         val torusKey = restoreFlowDataLocalRepository.torusKey
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
 
+        val deviceShare = restoreFlowDataLocalRepository.deviceShare
         if (torusKey.isNullOrEmpty() && socialShareUserId.isNullOrEmpty()) {
             RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound
         } else {
@@ -50,12 +53,13 @@ class UserRestoreInteractor(
                 thirdShare = customShare,
                 encryptedMnemonic = encryptedMnemonic
             )
+
             signUpDetailsStorage.save(
                 data = Web3AuthSignUpResponse(
                     ethereumPublicKey = result.ethereumPublicKey,
                     mnemonicPhrase = result.mnemonicPhrase,
                     encryptedMnemonicPhrase = JsonObject(),
-                    deviceShare = null,
+                    deviceShare = deviceShare,
                     customThirdShare = customShare
                 ),
                 userId = socialShareUserId!!
@@ -167,7 +171,8 @@ class UserRestoreInteractor(
             }
         }
     } catch (e: Throwable) {
-        RestoreFailure.DevicePlusSocialShare(RestoreUserException(e.message.orEmpty()))
+        val errorMessage = e.message.orEmpty()
+        RestoreFailure.DevicePlusSocialShare(RestoreUserException(errorMessage))
     }
 
     private suspend fun tryRestoreUser(
@@ -178,14 +183,13 @@ class UserRestoreInteractor(
         // First case try to restore with DEVICE + SOCIAL
         result = tryRestoreUser(RestoreWallet.DevicePlusSocialShare)
 
-        if (result is RestoreFailure) {
+        if (result is RestoreUserResult.RestoreFailure) {
             // if restore was failed
             // Try last try with SOCIAL + CUSTOM
             result = tryRestoreUser(RestoreWallet.SocialPlusCustomShare)
+            // if restore is FAILED we throw error thast SHARES ARE NOT MATCH
+            // otherwise Restore is SUCCESSFULL
         }
-
-        // if restore is FAILED we throw error thast SHARES ARE NOT MATCH
-        // otherwise Restore is SUCCESSFULL
         return if (result is RestoreFailure) {
             RestoreFailure.DevicePlusSocialOrSocialPlusCustom(
                 RestoreUserException("Shares are not match")
@@ -202,11 +206,12 @@ class UserRestoreInteractor(
         var result: RestoreUserResult
         result = tryRestoreUser(RestoreWallet.DevicePlusCustomShare)
 
-        if (result is RestoreFailure) {
+        if (result is RestoreUserResult.RestoreFailure) {
             // if restore was failed
             // try last try with SOCIAL + CUSTOM
             result = tryRestoreUser(RestoreWallet.SocialPlusCustomShare)
         }
+
         // if restore is FAILED we throw error thast SHARES ARE NOT MATCH
         // otherwise Restore is SUCCESSFULL
         return if (result is RestoreFailure) {

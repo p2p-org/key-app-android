@@ -40,6 +40,9 @@ class RestoreUserResultHandler(
             is RestoreUserResult.RestoreFailure.DevicePlusSocialOrSocialPlusCustom -> {
                 handleShareAreNotMatchResult()
             }
+            is RestoreUserResult.RestoreFailure.DevicePlusCustomOrSocialPlusCustom -> {
+                handleShareAreNotMatchResult()
+            }
             else -> {
                 Timber.i(result)
                 error("Unknown restore error state for RestoreFailure: $result")
@@ -51,7 +54,7 @@ class RestoreUserResultHandler(
             title = resourcesProvider.getString(R.string.error_wallet_not_found_title),
             subtitle = resourcesProvider.getString(R.string.error_shares_do_not_matches_message),
             googleButton = GoogleButton(
-                titleResId = R.string.onboarding_write_to_help_button_title,
+                titleResId = R.string.onboarding_general_error_bug_report_button_title,
                 iconResId = R.drawable.ic_caution,
                 iconTintResId = R.color.icons_night,
                 buttonAction = ButtonAction.OPEN_INTERCOM

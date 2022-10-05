@@ -12,7 +12,7 @@ class CreateWalletInteractor(
     private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     private val smsInputTimer: SmsInputTimer,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
 ) {
     class CreateWalletFailure(override val message: String) : Throwable(message)
 
@@ -40,6 +40,9 @@ class CreateWalletInteractor(
             )
             signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
             setIsCreateWalletRequestSent(isSent = true)
+            if (!isResend) {
+                smsInputTimer.resetSmsCount()
+            }
             smsInputTimer.startSmsInputTimerFlow()
         }
     }

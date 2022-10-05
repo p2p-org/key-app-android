@@ -56,7 +56,10 @@ class UserSignUpInteractor(
 
     private suspend fun generateDeviceAndThirdShare(): Web3AuthSignUpResponse {
         val torusKey = signUpFlowDataRepository.torusKey
-            ?: error("Torus key is null")
-        return web3AuthApi.triggerSilentSignUp(torusKey)
+        if (torusKey.isNullOrEmpty()) {
+            error("Torus key is null")
+        } else {
+            return web3AuthApi.triggerSilentSignUp(torusKey)
+        }
     }
 }
