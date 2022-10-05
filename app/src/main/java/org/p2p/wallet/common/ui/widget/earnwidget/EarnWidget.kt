@@ -47,7 +47,7 @@ class EarnWidget @JvmOverloads constructor(
     }
 
     fun setOnButtonClickListener(buttonClickListener: OnClickListener) {
-        binding.buttonEarn.setOnClickListener(buttonClickListener)
+        binding.viewEarnContent.setOnClickListener(buttonClickListener)
     }
 
     fun setWidgetState(state: EarnWidgetState) = with(binding) {

@@ -14,6 +14,7 @@ import org.p2p.wallet.databinding.FragmentSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.ui.deposits.SolendUserDepositsFragment
 import org.p2p.wallet.solend.ui.earn.adapter.SolendEarnAdapter
+import org.p2p.wallet.solend.ui.earn.bottomsheet.SolendTopUpBottomSheetFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -34,7 +35,9 @@ class SolendEarnFragment :
     private var lastState: EarnWidgetState = EarnWidgetState.LearnMore
 
     private val earnAdapter: SolendEarnAdapter by unsafeLazy {
-        SolendEarnAdapter()
+        SolendEarnAdapter {
+            presenter.onDepositTokenClicked(it)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,6 +53,13 @@ class SolendEarnFragment :
 
     override fun showAvailableDeposits(deposits: List<SolendDepositToken>) {
         earnAdapter.setItems(deposits)
+    }
+
+    override fun showDepositTopUp(deposit: SolendDepositToken) {
+        SolendTopUpBottomSheetFragment.show(
+            fragmentManager = parentFragmentManager,
+            deposit = deposit
+        )
     }
 
     override fun showLoading(isLoading: Boolean) {

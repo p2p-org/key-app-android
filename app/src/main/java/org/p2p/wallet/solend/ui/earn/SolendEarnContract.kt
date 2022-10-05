@@ -12,6 +12,7 @@ interface SolendEarnContract {
         fun showWidgetState(state: EarnWidgetState)
         fun showRefreshing(isRefreshing: Boolean)
         fun showLoading(isLoading: Boolean)
+        fun showDepositTopUp(deposit: SolendDepositToken)
         fun showAvailableDeposits(deposits: List<SolendDepositToken>)
         fun navigateToUserDeposits(deposits: List<SolendDepositToken.Active>)
     }
@@ -19,5 +20,6 @@ interface SolendEarnContract {
     interface Presenter : MvpPresenter<View> {
         fun load()
         fun refresh()
+        fun onDepositTokenClicked(deposit: SolendDepositToken)
     }
 }
