@@ -95,7 +95,7 @@ class RestoreUserResultHandler(
             }
             is RestoreUserResult.RestoreFailure.SocialPlusCustomShare.SocialShareNotMatch -> {
                 RestoreFailureState.TitleSubtitleError(
-                    title = resourcesProvider.getString(R.string.auth_almost_done_title),
+                    title = resourcesProvider.getString(R.string.restore_no_wallet_title),
                     email = resourcesProvider.getString(R.string.onboarding_with_email, result.userEmailAddress),
                     subtitle = resourcesProvider.getString(R.string.error_shares_do_not_matches_message),
                     googleButton = GoogleButton(
