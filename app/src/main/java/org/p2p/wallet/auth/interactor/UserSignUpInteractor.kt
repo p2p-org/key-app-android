@@ -19,13 +19,11 @@ class UserSignUpInteractor(
         class SignUpFailed(override val cause: Throwable) : Error(), SignUpResult
     }
 
-    suspend fun trySignUpNewUser(): SignUpResult {
+    suspend fun trySignUpNewUser(socialShareUserId: String): SignUpResult {
         return try {
             val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare()
-            val idTokenOwnerId = signUpFlowDataRepository.signUpUserId.orEmpty()
-
             signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
-            userSignUpDetailsStorage.save(signUpResponse, idTokenOwnerId)
+            userSignUpDetailsStorage.save(signUpResponse, socialShareUserId)
 
             SignUpResult.SignUpSuccessful
         } catch (web3AuthError: Web3AuthErrorResponse) {

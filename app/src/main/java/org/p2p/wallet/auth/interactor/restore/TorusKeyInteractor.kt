@@ -18,6 +18,7 @@ class TorusKeyInteractor(
     suspend fun getTorusKey(googleSocialToken: String, socialShareUserId: String) {
         try {
             val torusKey = web3AuthApi.obtainTorusKey(googleSocialToken)
+
             when (onboardingInteractor.currentFlow) {
                 is OnboardingFlow.CreateWallet -> {
                     createFlowDataLocalRepository.torusKey = torusKey

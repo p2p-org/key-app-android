@@ -30,7 +30,7 @@ class WalletFoundPresenter(
         launch {
             view?.setLoadingState(isScreenLoading = true)
             torusKeyInteractor.getTorusKey(idToken, userId)
-            when (val result = userSignUpInteractor.trySignUpNewUser()) {
+            when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
                     onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.onSuccessfulSignUp()

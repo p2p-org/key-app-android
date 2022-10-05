@@ -52,7 +52,8 @@ class UserSignUpDetailsStorage(
             .getOrNull()
     }
 
-    fun isDeviceShareSaved(): Boolean = getLastSignUpUserDetails()?.signUpDetails?.deviceShare != null
+    fun isDeviceShareSaved(): Boolean =
+        getLastSignUpUserDetails()?.signUpDetails?.deviceShare != null && !isSignUpInProcess()
 
     fun isSignUpInProcess(): Boolean = accountStorage.getString(KEY_IN_SIGN_UP_PROCESS) != null
 
