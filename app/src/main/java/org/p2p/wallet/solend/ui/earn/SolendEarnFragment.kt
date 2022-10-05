@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.Job
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
@@ -30,9 +29,6 @@ class SolendEarnFragment :
     override val presenter: SolendEarnContract.Presenter by inject()
 
     private val binding: FragmentSolendEarnBinding by viewBinding()
-
-    private var timerJob: Job? = null
-    private var lastState: EarnWidgetState = EarnWidgetState.LearnMore
 
     private val earnAdapter: SolendEarnAdapter by unsafeLazy {
         SolendEarnAdapter {
@@ -85,10 +81,5 @@ class SolendEarnFragment :
 
     override fun bindWidgetActionButton(callback: () -> Unit) {
         binding.viewEarnWidget.setOnButtonClickListener { callback() }
-    }
-
-    override fun onDestroyView() {
-        timerJob?.cancel()
-        super.onDestroyView()
     }
 }
