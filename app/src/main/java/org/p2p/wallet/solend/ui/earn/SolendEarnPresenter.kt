@@ -15,17 +15,24 @@ class SolendEarnPresenter(
     private val solendDepositsInteractor: SolendDepositsInteractor
 ) : BasePresenter<SolendEarnContract.View>(), SolendEarnContract.Presenter {
 
+    private var cachedDeposits: List<SolendDepositToken> = emptyList()
+
     override fun load() {
-        view?.showLoading(isLoading = true)
-        launch {
-            try {
-                val deposits = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
-                view?.showDeposits(deposits)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error fetching available deposit tokens")
-                view?.showErrorSnackBar(e.getErrorMessage(context))
-            } finally {
-                view?.showLoading(isLoading = false)
+        if (cachedDeposits.isNotEmpty()) {
+            showDeposits(cachedDeposits)
+            view?.showLoading(isLoading = false)
+            refresh()
+        } else {
+            view?.showLoading(isLoading = true)
+            launch {
+                try {
+                    showDeposits(solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS))
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error fetching available deposit tokens")
+                    view?.showErrorSnackBar(e.getErrorMessage(context))
+                } finally {
+                    view?.showLoading(isLoading = false)
+                }
             }
         }
     }
@@ -34,8 +41,7 @@ class SolendEarnPresenter(
         view?.showRefreshing(isRefreshing = true)
         launch {
             try {
-                val deposits = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
-                view?.showDeposits(deposits)
+                showDeposits(solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS))
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
                 view?.showErrorSnackBar(e.getErrorMessage(context))
@@ -47,5 +53,10 @@ class SolendEarnPresenter(
 
     override fun onDepositTokenClicked(deposit: SolendDepositToken) {
         view?.showDepositTopUp(deposit)
+    }
+
+    private fun showDeposits(deposits: List<SolendDepositToken>) {
+        cachedDeposits = deposits
+        view?.showDeposits(deposits)
     }
 }

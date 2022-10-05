@@ -28,7 +28,8 @@ object SolendModule : InjectionModule {
         factoryOf(::SolendUserDepositsPresenter) bind SolendUserDepositsContract.Presenter::class
         factory { (deposit: SolendDepositToken) ->
             SolendTopUpBottomSheetPresenter(
-                deposit = deposit
+                deposit = deposit,
+                userInteractor = get()
             )
         } bind SolendTopUpBottomSheetContract.Presenter::class
 

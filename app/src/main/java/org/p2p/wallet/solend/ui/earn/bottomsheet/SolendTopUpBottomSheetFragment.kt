@@ -10,8 +10,13 @@ import org.p2p.uikit.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSolendTopUpBinding
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -64,6 +69,13 @@ class SolendTopUpBottomSheetFragment :
             startAmountView.subtitle = item.tokenName
 
             endAmountView.usdAmount = "${item.supplyInterest.scaleShort()}%"
+
+            buttonBuy.setOnClickListener {
+                presenter.onBuyClicked()
+            }
+            buttonReceive.setOnClickListener {
+                presenter.onReceiveClicked()
+            }
         }
     }
 
@@ -74,6 +86,18 @@ class SolendTopUpBottomSheetFragment :
         BottomSheetBehavior.from(requireView().parent as View).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
             skipCollapsed = true
+        }
+    }
+
+    override fun showBuyScreen(token: Token) {
+        replaceFragment(NewBuyFragment.create(token))
+    }
+
+    override fun showReceive(token: Token) {
+        if (token is Token.Active) {
+            replaceFragment(ReceiveTokenFragment.create(token))
+        } else {
+            replaceFragment(ReceiveSolanaFragment.create(token))
         }
     }
 }
