@@ -24,10 +24,9 @@ class ContinueOnboardingPresenter(
     override fun continueSignUp() {
         launch {
             view?.setLoadingState(isScreenLoading = true)
-
+            onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
             when (val result = userSignUpInteractor.continueSignUpUser()) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
-                    onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.navigateToPhoneNumberEnter()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {

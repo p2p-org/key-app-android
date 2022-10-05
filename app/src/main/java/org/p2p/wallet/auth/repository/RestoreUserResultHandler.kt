@@ -120,7 +120,7 @@ class RestoreUserResultHandler(
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.restore_no_wallet_title),
                     email = resourcesProvider.getString(R.string.onboarding_with_email, result.userEmailAddress),
-                    subtitle = resourcesProvider.getString(R.string.restore_no_wallet_found_with_device_share_message),
+                    subtitle = resourcesProvider.getString(R.string.restore_no_wallet_try_another_option),
                     googleButton = GoogleButton(
                         buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH
                     ),
@@ -136,8 +136,11 @@ class RestoreUserResultHandler(
                 restoreStateMachine.updateState(RestoreState.DevicePlusSocialShareNotMatchState())
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.auth_almost_done_title),
-                    email = resourcesProvider.getString(R.string.onboarding_with_email, result.userEmailAddress),
-                    subtitle = resourcesProvider.getString(R.string.restore_no_wallet_found_with_device_share_message),
+                    email = resourcesProvider.getString(
+                        R.string.onboarding_if_you_want_continue_with_email,
+                        result.userEmailAddress
+                    ),
+                    subtitle = resourcesProvider.getString(R.string.restore_select_phone_number_if_you_made_a_mistake),
                     googleButton = GoogleButton(
                         buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH,
                     ),
@@ -161,13 +164,13 @@ class RestoreUserResultHandler(
             is RestoreUserResult.RestoreFailure.DevicePlusCustomShare.SharesDoesNotMatch -> {
                 restoreStateMachine.updateState(RestoreState.DevicePlusCustomShareNotMatchState())
                 RestoreFailureState.TitleSubtitleError(
-                    title = resourcesProvider.getString(R.string.error_shares_do_not_matches_title),
-                    subtitle = resourcesProvider.getString(R.string.error_shares_do_not_matches_message),
+                    title = resourcesProvider.getString(R.string.auth_almost_done_title),
+                    subtitle = resourcesProvider.getString(R.string.restore_use_your_social_account),
                     googleButton = GoogleButton(
-                        titleResId = R.string.onboarding_general_error_bug_report_button_title,
-                        iconResId = R.drawable.ic_caution,
-                        iconTintResId = R.color.icons_night,
-                        buttonAction = ButtonAction.OPEN_INTERCOM
+                        buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH
+                    ),
+                    primaryFirstButton = PrimaryFirstButton(
+                        buttonAction = ButtonAction.NAVIGATE_ENTER_PHONE
                     ),
                     secondaryFirstButton = SecondaryFirstButton(
                         buttonAction = ButtonAction.NAVIGATE_START_SCREEN
@@ -178,7 +181,7 @@ class RestoreUserResultHandler(
                 restoreStateMachine.updateState(RestoreState.DeviceCustomShareNotFound())
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.error_wallet_not_found_title),
-                    subtitle = resourcesProvider.getString(R.string.error_wallet_not_found_message),
+                    subtitle = resourcesProvider.getString(R.string.restore_no_wallet_try_another_option),
                     googleButton = GoogleButton(
                         buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH
                     ),

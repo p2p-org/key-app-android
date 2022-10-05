@@ -24,12 +24,14 @@ class UserSignUpDetailsStorage(
         val signUpDetails: Web3AuthSignUpResponse
     )
 
-    fun save(data: Web3AuthSignUpResponse, userId: String): Boolean {
+    fun save(data: Web3AuthSignUpResponse, userId: String, isCreate: Boolean = true): Boolean {
         val key = generatePrefsKey(userId)
         val value = SignUpUserDetails(userId, data)
 
         accountStorage.saveObject(KEY_LAST_DEVICE_SHARE_ID, value)
-        accountStorage.saveString(KEY_IN_SIGN_UP_PROCESS, key)
+        if (isCreate) {
+            accountStorage.saveString(KEY_IN_SIGN_UP_PROCESS, key)
+        }
 
         Timber.tag(TAG).i("New user sign up details saved!")
         return true

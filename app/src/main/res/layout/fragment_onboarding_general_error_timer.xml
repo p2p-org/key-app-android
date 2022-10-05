@@ -9,14 +9,16 @@
 
     <ImageView
         android:id="@+id/image_view_box"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@+id/text_view_error_title"
+        app:layout_constraintDimensionRatio="2:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2"
         app:layout_constraintVertical_chainStyle="packed"
         app:srcCompat="@drawable/ic_timer_error" />
 

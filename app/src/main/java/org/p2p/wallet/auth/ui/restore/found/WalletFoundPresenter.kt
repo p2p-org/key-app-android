@@ -29,10 +29,10 @@ class WalletFoundPresenter(
     override fun setAlternativeIdToken(userId: String, idToken: String) {
         launch {
             view?.setLoadingState(isScreenLoading = true)
+            onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
             torusKeyInteractor.getTorusKey(idToken, userId)
             when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
-                    onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
