@@ -120,7 +120,7 @@ class RestoreUserResultHandler(
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.restore_no_wallet_title),
                     email = resourcesProvider.getString(R.string.onboarding_with_email, result.userEmailAddress),
-                    subtitle = resourcesProvider.getString(R.string.restore_no_wallet_found_with_device_share_message),
+                    subtitle = resourcesProvider.getString(R.string.restore_no_wallet_try_another_option),
                     googleButton = GoogleButton(
                         buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH
                     ),
