@@ -1,9 +1,7 @@
 package org.p2p.wallet.home.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import androidx.core.content.edit
+import android.content.SharedPreferences
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
@@ -32,11 +30,17 @@ import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private const val BANNER_START_INDEX = 2
 private val TOKENS_VALID_FOR_BUY = setOf(SOL_SYMBOL, USDC_SYMBOL)
 private val POPULAR_TOKENS = setOf(SOL_SYMBOL, USDC_SYMBOL, REN_BTC_SYMBOL)
+
+private const val KEY_EARN_BANNER_VISIBLE = "KEY_EARN_BANNER_VISIBLE"
 
 class HomePresenter(
     private val inAppFeatureFlags: InAppFeatureFlags,
@@ -50,6 +54,7 @@ class HomePresenter(
     private val homeElementItemMapper: HomeElementItemMapper,
     private val resourcesProvider: ResourcesProvider,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
+    private val sharedPreferences: SharedPreferences
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private data class ViewState(
@@ -71,6 +76,9 @@ class HomePresenter(
         view.showEmptyState(isEmpty = true)
 
         view.showUserAddress(tokenKeyProvider.publicKey.ellipsizeAddress())
+
+        val isEarnBannerVisible = sharedPreferences.getBoolean(KEY_EARN_BANNER_VISIBLE, true)
+        view.showEarnBanner(isVisible = isEarnBannerVisible)
 
         updatesManager.start()
 
@@ -317,5 +325,10 @@ class HomePresenter(
             refreshTokens()
             state = state.copy(areZerosHidden = settingsInteractor.areZerosHidden())
         }
+    }
+
+    override fun hideEarnBanner() {
+        sharedPreferences.edit { putBoolean(KEY_EARN_BANNER_VISIBLE, false) }
+        view?.showEarnBanner(isVisible = false)
     }
 }

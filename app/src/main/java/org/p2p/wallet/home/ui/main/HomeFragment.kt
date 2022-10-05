@@ -1,11 +1,12 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.components.ScreenTab
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -17,6 +18,7 @@ import org.p2p.wallet.databinding.LayoutActionButtonsBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
+import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
@@ -122,8 +124,15 @@ class HomeFragment :
             presenter.refreshTokens()
         }
 
-        // hidden. temporary. PWN-4381
-        viewBuyTokenBanner.root.isVisible = false
+        viewEarnBanner.imageViewCloseBanner.setOnClickListener {
+            presenter.hideEarnBanner()
+        }
+
+        val tabsSwitcher = parentFragment as? MainTabsSwitcher
+
+        viewEarnBanner.root.setOnClickListener {
+            tabsSwitcher?.navigate(ScreenTab.EARN_SCREEN.itemId)
+        }
 
         if (BuildConfig.DEBUG) {
             with(layoutToolbar) {
@@ -304,6 +313,10 @@ class HomeFragment :
 
     override fun onHideClicked(token: Token.Active) {
         presenter.toggleTokenVisibility(token)
+    }
+
+    override fun showEarnBanner(isVisible: Boolean) {
+        binding.viewEarnBanner.root.isVisible = isVisible
     }
 
     override fun onDestroy() {

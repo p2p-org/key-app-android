@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
+    <!-- Main screen earn banner -->
+    <string name="earn_banner_title">Earn up to 4%</string>
+    <string name="earn_banner_subtitle">Stake your token &amp; get reward every day</string>
+    <string name="earn_banner_button_text">Earn</string>
 
     <string name="solend_earn_title">Earn a yield</string>
     <string name="solend_deposit_to_earn">Deposit to earn a yield</string>

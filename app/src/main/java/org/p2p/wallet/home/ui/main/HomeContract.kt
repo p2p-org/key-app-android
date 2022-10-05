@@ -22,6 +22,7 @@ interface HomeContract {
         fun showAddressCopied(address: String)
         fun showNewBuyScreen(token: Token)
         fun showOldBuyScreen(token: Token)
+        fun showEarnBanner(isVisible: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -36,5 +37,6 @@ interface HomeContract {
         fun onAddressClicked()
 
         fun updateTokensIfNeeded()
+        fun hideEarnBanner()
     }
 }

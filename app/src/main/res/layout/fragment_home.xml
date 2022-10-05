@@ -63,8 +63,8 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <include
-            android:id="@+id/view_buy_token_banner"
-            layout="@layout/view_home_buy_token_banner"
+            android:id="@+id/view_earn_banner"
+            layout="@layout/view_home_earn_banner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,7 +79,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_buy_token_banner">
+            app:layout_constraintTop_toBottomOf="@+id/view_earn_banner">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/home_recycler_view"

@@ -80,7 +80,8 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper(),
                 resourcesProvider = get(),
-                newBuyFeatureToggle = get()
+                newBuyFeatureToggle = get(),
+                sharedPreferences = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
