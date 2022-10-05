@@ -62,7 +62,8 @@ class UserRestoreInteractor(
                     deviceShare = deviceShare,
                     customThirdShare = customShare
                 ),
-                userId = socialShareUserId!!
+                userId = socialShareUserId!!,
+                isCreate = false
             )
 
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
@@ -151,7 +152,8 @@ class UserRestoreInteractor(
                 deviceShare = deviceShare,
                 customThirdShare = null
             ),
-            userId = socialShareUserId
+            userId = socialShareUserId,
+            isCreate = false
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
         RestoreSuccess.DevicePlusSocialShare

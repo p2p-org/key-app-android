@@ -3,14 +3,14 @@
     <string name="onboarding_create_text">Create a new wallet</string>
     <string name="onboarding_continue_with_google">Continue with Google</string>
     <string name="onboarding_restore_text">I already have a wallet</string>
-    <string name="onboarding_terms_text">By continuing, you agree to P2P App’s</string>
+    <string name="onboarding_terms_text">By continuing, you agree wallet's</string>
     <string name="onboarding_terms_and_policy">Terms of Use and Privacy Policy</string>
     <string name="onboarding_terms_of_use">Terms of Use</string>
     <string name="onboarding_privacy_policy">Privacy Policy</string>
 
     <!--Onboarding Slides-->
-    <string name="onboarding_slide_1_title">Welcome \nto P2P App</string>
-    <string name="onboarding_slide_1_text">Buy, sell and hold cryptocurrency. \nEarn up to 6% on USD</string>
+    <string name="onboarding_slide_1_title">Welcome \nto P2P wallet</string>
+    <string name="onboarding_slide_1_text">Easy way to earn, invest &amp; send crypto with zero fees</string>
 
     <!--Onboarding - Continue-->
     <string name="onboarding_continue_title">Let\'s continue</string>
@@ -69,7 +69,7 @@
     <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
     <string name="onboarding_sms_starting_screen">Starting screen</string>
     <string name="onboarding_sms_verify_error_title">It’s okay\nto be wrong</string>
-    <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we have frozen\naccount for %s min</string>
+    <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we have frozen\n your account for %s min</string>
 
     <!-- General error timer -->
     <string name="onboarding_general_error_let_breath_title">So, let\’s breathe</string>
@@ -129,4 +129,8 @@
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
     <string name="onboarding_with_email">%s</string>
+    <string name="onboarding_if_you_want_continue_with_email">If you want continue with %s</string>
+    <string name="restore_select_phone_number_if_you_made_a_mistake"> select phone number. If you made a mistake, please choose another mail</string>
+    <string name="restore_use_your_social_account">Use your social account to continue</string>
+    <string name="onborading_create_a_new_wallet">Create a new wallet</string>
 </resources>

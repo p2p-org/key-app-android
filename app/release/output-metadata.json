@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "org.p2p.wallet",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 112000,
+      "versionName": "1.12.0",
+      "outputFile": "p2p_wallet_112000_1.12.0_PWN-3713_release.apk"
+    }
+  ],
+  "elementType": "File"
+}
