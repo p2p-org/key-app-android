@@ -12,6 +12,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundFragment
@@ -141,5 +142,9 @@ class NewOnboardingFragment :
 
     override fun showFile(file: File) {
         openFile(file)
+    }
+
+    override fun navigateToContinueCreateWallet() {
+        replaceFragment(ContinueOnboardingFragment.create())
     }
 }

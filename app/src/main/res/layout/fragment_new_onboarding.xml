@@ -50,7 +50,7 @@
             android:layout_height="@dimen/ui_kit_button_large_height"
             android:layout_marginBottom="8dp"
             android:backgroundTint="@color/snow"
-            android:text="@string/onborading_create_a_new_wallet"
+            android:text="@string/onboarding_create_a_new_wallet"
             android:textColor="@color/night"
             app:icon="@drawable/ic_arrow_forward"
             app:iconGravity="textEnd"

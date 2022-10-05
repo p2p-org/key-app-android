@@ -11,6 +11,7 @@ interface NewOnboardingContract {
         fun onSuccessfulSignUp()
         fun setButtonLoadingState(isScreenLoading: Boolean)
         fun showFile(file: File)
+        fun navigateToContinueCreateWallet()
     }
 
     interface Presenter : MvpPresenter<View> {
