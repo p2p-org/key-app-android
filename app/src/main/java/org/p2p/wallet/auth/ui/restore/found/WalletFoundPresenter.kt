@@ -19,7 +19,6 @@ class WalletFoundPresenter(
 
     override fun attach(view: WalletFoundContract.View) {
         super.attach(view)
-        Timber.tag("______wallet found").d(signUpFlowDataRepository.signUpUserId.orEmpty())
         view.setUserId(signUpFlowDataRepository.signUpUserId.orEmpty())
     }
 

@@ -23,7 +23,6 @@ class UserSignUpInteractor(
     suspend fun trySignUpNewUser(socialShareUserId: String): SignUpResult {
         return try {
             val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare()
-            Timber.tag("_______SignUp").d(socialShareUserId)
             signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
             userSignUpDetailsStorage.save(signUpResponse, socialShareUserId)
 
