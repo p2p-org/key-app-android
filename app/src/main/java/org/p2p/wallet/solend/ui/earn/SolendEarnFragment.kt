@@ -57,7 +57,8 @@ class SolendEarnFragment :
 
     override fun showDepositTopUp(deposit: SolendDepositToken) {
         SolendTopUpBottomSheetFragment.show(
-            parentFragmentManager, deposit
+            fragmentManager = parentFragmentManager,
+            deposit = deposit
         )
     }
 

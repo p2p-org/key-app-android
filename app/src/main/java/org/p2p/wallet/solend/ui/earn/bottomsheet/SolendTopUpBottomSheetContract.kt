@@ -8,7 +8,7 @@ interface SolendTopUpBottomSheetContract {
 
     interface View : MvpView {
         fun showBuyScreen(token: Token)
-        fun showReceive(token: Token)
+        fun showReceiveScreen(token: Token)
     }
 
     interface Presenter : MvpPresenter<View> {

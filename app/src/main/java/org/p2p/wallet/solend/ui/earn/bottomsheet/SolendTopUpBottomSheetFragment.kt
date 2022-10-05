@@ -55,20 +55,20 @@ class SolendTopUpBottomSheetFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            val item = deposit
+            val depositToTopUp = deposit
             imageViewClose.setOnClickListener {
                 dismissAllowingStateLoss()
             }
-            glideManager.load(tokenImageView, item.iconUrl.orEmpty())
+            glideManager.load(imageViewToken, depositToTopUp.iconUrl.orEmpty())
 
-            if (item is SolendDepositToken.Active) {
-                startAmountView.title = "${item.depositAmount} ${item.tokenSymbol}"
+            if (depositToTopUp is SolendDepositToken.Active) {
+                amountViewStart.title = "${depositToTopUp.depositAmount} ${depositToTopUp.tokenSymbol}"
             } else {
-                startAmountView.title = item.tokenSymbol
+                amountViewStart.title = depositToTopUp.tokenSymbol
             }
-            startAmountView.subtitle = item.tokenName
+            amountViewStart.subtitle = depositToTopUp.tokenName
 
-            endAmountView.usdAmount = "${item.supplyInterest.scaleShort()}%"
+            amountViewEnd.usdAmount = "${depositToTopUp.supplyInterest.scaleShort()}%"
 
             buttonBuy.setOnClickListener {
                 presenter.onBuyClicked()
@@ -93,7 +93,7 @@ class SolendTopUpBottomSheetFragment :
         replaceFragment(NewBuyFragment.create(token))
     }
 
-    override fun showReceive(token: Token) {
+    override fun showReceiveScreen(token: Token) {
         if (token is Token.Active) {
             replaceFragment(ReceiveTokenFragment.create(token))
         } else {

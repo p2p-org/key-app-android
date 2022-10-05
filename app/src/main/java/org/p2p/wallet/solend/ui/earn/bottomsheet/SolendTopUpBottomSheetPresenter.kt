@@ -18,9 +18,6 @@ class SolendTopUpBottomSheetPresenter(
         super.attach(view)
         launch {
             currentToken = userInteractor.getTokensForBuy(listOf(deposit.tokenSymbol)).firstOrNull()
-            if (currentToken == null) {
-                view.showErrorMessage(IllegalStateException("Token == null!"))
-            }
         }
     }
 
@@ -32,7 +29,7 @@ class SolendTopUpBottomSheetPresenter(
 
     override fun onReceiveClicked() {
         currentToken?.let { token ->
-            view?.showReceive(token)
+            view?.showReceiveScreen(token)
         }
     }
 }
