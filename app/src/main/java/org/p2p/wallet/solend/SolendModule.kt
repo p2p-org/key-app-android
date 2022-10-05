@@ -6,9 +6,9 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.solend.data.SolendConfigurationLocalRepository
-import org.p2p.wallet.solend.data.SolendConfigurationRepository
-import org.p2p.wallet.solend.data.mapper.SolendConfigurationRepositoryMapper
+import org.p2p.wallet.solend.repository.SolendConfigurationLocalRepository
+import org.p2p.wallet.solend.repository.SolendConfigurationRepository
+import org.p2p.wallet.solend.repository.mapper.SolendConfigurationRepositoryMapper
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
 import org.p2p.wallet.solend.model.SolendDepositMapper
 import org.p2p.wallet.solend.model.SolendDepositToken

@@ -5,7 +5,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
-import org.p2p.wallet.solend.data.SolendConfigurationRepository
+import org.p2p.wallet.solend.repository.SolendConfigurationRepository
 import timber.log.Timber
 import kotlinx.coroutines.launch
 

@@ -1,13 +1,16 @@
 package org.p2p.wallet.solend.model
 
+import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.sdk.facade.model.SolendMarketInformationResponse
 import org.p2p.wallet.sdk.facade.model.SolendUserDepositResponse
 import org.p2p.wallet.user.model.TokenData
+import org.p2p.wallet.utils.orZero
 
 class SolendDepositMapper {
 
     fun fromNetwork(
         tokenData: TokenData,
+        tokenPrice: TokenPrice?,
         marketInfo: SolendMarketInfo,
         activeDeposit: SolendUserDeposit?
     ): SolendDepositToken = if (activeDeposit != null) {
@@ -16,7 +19,8 @@ class SolendDepositMapper {
             tokenSymbol = tokenData.symbol,
             iconUrl = tokenData.iconUrl,
             supplyInterest = marketInfo.supplyInterest,
-            depositAmount = activeDeposit.depositedAmount
+            depositAmount = activeDeposit.depositedAmount,
+            usdAmount = activeDeposit.depositedAmount * tokenPrice?.price.orZero()
         )
     } else {
         SolendDepositToken.Inactive(

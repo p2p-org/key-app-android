@@ -16,7 +16,7 @@
         app:titleMargin="16dp"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
-    <org.p2p.wallet.common.ui.widget.EarnWidget
+    <org.p2p.wallet.common.ui.widget.earnwidget.EarnWidget
         android:id="@+id/viewEarnWidget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

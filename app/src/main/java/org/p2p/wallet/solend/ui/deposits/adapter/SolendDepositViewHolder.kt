@@ -35,13 +35,13 @@ class SolendDepositViewHolder(
 
         // TODO PWN-5020 make real impl of amount in $
         textViewAmountUsd.text = if (item is SolendDepositToken.Active) {
-            "$${item.depositAmount}"
+            "$${item.depositAmount.scaleShort()}"
         } else {
             "$0"
         }
 
         if (item is SolendDepositToken.Active) {
-            textViewTokenAmount.text = "%s %s".format(item.depositAmount.toString(), item.tokenSymbol)
+            textViewTokenAmount.text = "%s %s".format(item.depositAmount.scaleShort().toString(), item.tokenSymbol)
         } else {
             textViewTokenAmount.text = item.tokenSymbol
         }

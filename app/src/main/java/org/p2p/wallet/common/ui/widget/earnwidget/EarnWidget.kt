@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.ui.widget
+package org.p2p.wallet.common.ui.widget.earnwidget
 
 import android.content.Context
 import android.util.AttributeSet
@@ -12,12 +12,11 @@ import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ui.widget.earnwidget.DepositTokenViewHolder
-import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.databinding.ItemDepositTokenBinding
 import org.p2p.wallet.databinding.WidgetEarnViewBinding
 import org.p2p.wallet.utils.DecimalFormatter
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
 
@@ -69,9 +68,10 @@ class EarnWidget @JvmOverloads constructor(
 
     private fun EarnWidgetState.Balance.showBalanceState() = with(binding) {
         makeAlignStartContent()
-        tickerViewAmount.text = "$${amount.formatTicker()}"
+        tickerViewAmount.text = "$${amount.scaleLong().formatTicker()}"
         textViewEarnTitle.setText(R.string.earn_widget_balance_title)
         buttonEarn.setText(R.string.earn_widget_balance_button)
+        setDepositTokens(tokenIcons)
     }
 
     private fun EarnWidgetState.LearnMore.showLearnMoreState() = with(binding) {
@@ -147,10 +147,10 @@ class EarnWidget @JvmOverloads constructor(
         }
     }
 
-    fun setDepositTokens(tokensSymbols: List<String>) {
+    private fun setDepositTokens(tokensIcons: List<String>) {
         val container = binding.viewTokenContainer
-        if (container.childCount < tokensSymbols.size) {
-            for (i in container.childCount until tokensSymbols.size) {
+        if (container.childCount < tokensIcons.size) {
+            for (i in container.childCount until tokensIcons.size) {
                 val binding = container.inflateViewBinding<ItemDepositTokenBinding>().apply {
                     val params = tokenImageView.layoutParams as MarginLayoutParams
                     params.marginEnd = (TOKEN_MARGIN_END_DP * i).toPx()
@@ -159,18 +159,18 @@ class EarnWidget @JvmOverloads constructor(
                 val holder = DepositTokenViewHolder(binding, glideManager)
                 binding.root.tag = holder
             }
-        } else if (container.childCount > tokensSymbols.size) {
-            if (tokensSymbols.isEmpty()) {
+        } else if (container.childCount > tokensIcons.size) {
+            if (tokensIcons.isEmpty()) {
                 removeAllViews()
             } else {
                 container.removeViewsInLayout(
-                    tokensSymbols.size, container.childCount - tokensSymbols.size
+                    tokensIcons.size, container.childCount - tokensIcons.size
                 )
             }
         }
         for (i in 0 until container.childCount) {
             (container.getChildAt(i)?.tag as? DepositTokenViewHolder)?.apply {
-                bind(tokensSymbols[i])
+                bind(tokensIcons[i])
             }
         }
     }
