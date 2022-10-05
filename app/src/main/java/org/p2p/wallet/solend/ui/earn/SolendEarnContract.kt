@@ -12,7 +12,6 @@ interface SolendEarnContract {
         fun showWidgetState(state: EarnWidgetState)
         fun showRefreshing(isRefreshing: Boolean)
         fun showLoading(isLoading: Boolean)
-        fun showDeposits(deposits: List<SolendDepositToken>)
         fun showDepositTopUp(deposit: SolendDepositToken)
         fun showAvailableDeposits(deposits: List<SolendDepositToken>)
         fun navigateToUserDeposits(deposits: List<SolendDepositToken.Active>)
