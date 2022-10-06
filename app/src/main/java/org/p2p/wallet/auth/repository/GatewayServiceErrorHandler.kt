@@ -94,7 +94,7 @@ class GatewayServiceErrorHandler(
 
             is GatewayServiceError.TooManyOtpRequests -> {
                 val cooldownTtl = error.cooldownTtl
-                val message = resourcesProvider.getString(R.string.error_too_often_otp_requests_message, cooldownTtl)
+                val message = resourcesProvider.getString(R.string.error_too_often_otp_requests_message)
                 GatewayHandledState.ToastError(message)
             }
             is GatewayServiceError.TooManyRequests -> {
