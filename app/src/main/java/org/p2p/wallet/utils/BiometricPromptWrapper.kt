@@ -22,6 +22,8 @@ class BiometricPromptWrapper(
     private val biometricCallback = object : BiometricPrompt.AuthenticationCallback() {
 
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+            Timber.i("Error on Authentication $errorCode: $errString")
+
             if (errorCode == BiometricPrompt.ERROR_LOCKOUT) {
                 onLockout?.invoke()
             } else {
@@ -33,7 +35,6 @@ class BiometricPromptWrapper(
                         ?.toString()
                 )
             }
-            Timber.i("Error on Authentication $errorCode: $errString")
         }
 
         override fun onAuthenticationFailed() {

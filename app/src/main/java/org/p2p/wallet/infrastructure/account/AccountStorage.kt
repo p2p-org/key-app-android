@@ -42,7 +42,7 @@ class AccountStorage(
     override fun contains(key: Key): Boolean = sharedPreferences.contains(key.prefsValue)
 
     override fun remove(key: Key) {
-        sharedPreferences.edit { remove(key) }
+        sharedPreferences.edit { remove(key.prefsValue) }
         keyStoreWrapper.delete(key.prefsValue)
     }
 

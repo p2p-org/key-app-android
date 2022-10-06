@@ -1,10 +1,9 @@
 package org.p2p.wallet.auth.interactor
 
 import androidx.biometric.BiometricManager
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
-import org.p2p.solanaj.utils.crypto.HashingUtils
+import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.auth.model.SignInResult
@@ -27,17 +26,22 @@ import kotlinx.coroutines.withContext
 class AuthInteractor(
     private val secureStorage: SecureStorageContract,
     private val accountStorage: AccountStorageContract,
-    private val sharedPreferences: SharedPreferences,
     private val biometricManager: BiometricManager,
+    private val pbkdf2Hash: Pbkdf2HashGenerator,
     private val dispatchers: CoroutineDispatchers,
 ) {
 
     // region signing in
-    suspend fun signInByPinCode(pinCode: String): SignInResult = withContext(dispatchers.computation) {
+    suspend fun signInByPinCode(enteredPinCode: String): SignInResult = withContext(dispatchers.computation) {
         val pinSalt = secureStorage.getBytes(KEY_PIN_CODE_SALT) ?: error("Pin salt does not exist")
-        val pinHash = HashingUtils.generatePbkdf2Hex(pinCode, pinSalt)
-        val currentHash = secureStorage.getString(KEY_PIN_CODE_HASH)
-        if (pinHash == currentHash) {
+        val pinHashFromEnteredPin = pbkdf2Hash.generateHash(
+            data = enteredPinCode,
+            salt = pinSalt
+        )
+
+        val currentHashInHex = secureStorage.getString(KEY_PIN_CODE_HASH)
+
+        if (pinHashFromEnteredPin.hashResultInHex == currentHashInHex) {
             SignInResult.Success
         } else {
             SignInResult.WrongPin
@@ -57,27 +61,25 @@ class AuthInteractor(
     // endregion
 
     fun registerComplete(pinCode: String, cipher: EncodeCipher?) {
-        val salt = HashingUtils.generateSalt()
-        val hash = HashingUtils.generatePbkdf2Hex(pinCode, salt)
+        val pinHash = pbkdf2Hash.generateHashWithRandomSalt(data = pinCode)
 
         if (cipher != null) {
-            secureStorage.saveString(KEY_PIN_CODE_BIOMETRIC_HASH, hash, cipher)
+            secureStorage.saveString(KEY_PIN_CODE_BIOMETRIC_HASH, pinHash.hashResultInHex, cipher)
         }
 
-        secureStorage.saveString(KEY_PIN_CODE_HASH, hash)
-        secureStorage.saveBytes(KEY_PIN_CODE_SALT, salt)
+        secureStorage.saveString(KEY_PIN_CODE_HASH, pinHash.hashResultInHex)
+        secureStorage.saveBytes(KEY_PIN_CODE_SALT, pinHash.hashSalt)
     }
 
     suspend fun resetPin(pinCode: String, cipher: EncodeCipher? = null) = withContext(dispatchers.computation) {
-        val salt = HashingUtils.generateSalt()
-        val hash = HashingUtils.generatePbkdf2Hex(pinCode, salt)
+        val hashResult = pbkdf2Hash.generateHashWithRandomSalt(pinCode)
 
         if (isFingerprintEnabled() && cipher != null) {
-            secureStorage.saveString(KEY_PIN_CODE_BIOMETRIC_HASH, hash, cipher)
+            secureStorage.saveString(KEY_PIN_CODE_BIOMETRIC_HASH, hashResult.hashResultInHex, cipher)
         }
 
-        secureStorage.saveString(KEY_PIN_CODE_HASH, hash)
-        secureStorage.saveBytes(KEY_PIN_CODE_SALT, salt)
+        secureStorage.saveString(KEY_PIN_CODE_HASH, hashResult.hashResultInHex)
+        secureStorage.saveBytes(KEY_PIN_CODE_SALT, hashResult.hashSalt)
     }
 
     fun getPinDecodeCipher(): DecodeCipher = secureStorage.getDecodeCipher(KEY_PIN_CODE_BIOMETRIC_HASH)
