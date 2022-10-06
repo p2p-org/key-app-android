@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
@@ -34,7 +35,7 @@ class SolendEarnPresenter(
 
     override fun attach(view: SolendEarnContract.View) {
         super.attach(view)
-        handleResult(deposits)
+        handleDepositsResult(deposits)
     }
 
     override fun load() {
@@ -47,9 +48,10 @@ class SolendEarnPresenter(
         launch {
             try {
                 val result = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
-                handleResult(result)
+                handleDepositsResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
+                showDepositsWidgetError()
                 view?.showErrorSnackBar(e.getErrorMessage(context))
             } finally {
                 view?.showLoading(isLoading = false)
@@ -63,9 +65,10 @@ class SolendEarnPresenter(
             try {
                 val result = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
                 saveLastDepositTicker()
-                handleResult(result)
+                handleDepositsResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
+                showDepositsWidgetError()
                 view?.showErrorSnackBar(e.getErrorMessage(context))
             } finally {
                 view?.showRefreshing(isRefreshing = false)
@@ -77,12 +80,22 @@ class SolendEarnPresenter(
         view?.showDepositTopUp(deposit)
     }
 
-    private fun handleResult(result: List<SolendDepositToken>) {
-        deposits = result
+    private fun showDepositsWidgetError() {
+        view?.showWidgetState(
+            EarnWidgetState.Error(
+                messageTextRes = R.string.earn_widget_error_message_show_info,
+                buttonTextRes = R.string.earn_widget_error_button_try_again,
+            )
+        )
+        view?.bindWidgetActionButton { refresh() }
+    }
+
+    private fun handleDepositsResult(newDeposits: List<SolendDepositToken>) {
+        deposits = newDeposits
 
         when {
-            result.any { it is SolendDepositToken.Active } -> {
-                val activeDeposits = result.filterIsInstance<SolendDepositToken.Active>()
+            newDeposits.any { it is SolendDepositToken.Active } -> {
+                val activeDeposits = newDeposits.filterIsInstance<SolendDepositToken.Active>()
                 val depositBalance = activeDeposits.sumOf { it.usdAmount }
                 val totalYearBalance = activeDeposits.sumOf { it.usdAmount / BigDecimal(100) * it.supplyInterest }
                 val tokenIcons = activeDeposits.map { it.iconUrl.orEmpty() }
@@ -94,8 +107,7 @@ class SolendEarnPresenter(
                 view?.bindWidgetActionButton { view?.navigateToUserDeposits(activeDeposits) }
             }
             else -> {
-                // TODO: add further states
-                view?.showWidgetState(EarnWidgetState.LearnMore)
+                view?.showWidgetState(EarnWidgetState.Idle)
             }
         }
     }
@@ -115,7 +127,7 @@ class SolendEarnPresenter(
     private fun startBalanceTicker(
         initialBalance: BigDecimal,
         totalYearBalance: BigDecimal,
-        tokenIcons: List<String>
+        tokenIconsUrls: List<String>
     ) {
         val delta = (initialBalance - totalYearBalance) / BigDecimal(TimeUnit.DAYS.toSeconds(365))
         timerJob?.cancel()
@@ -128,7 +140,7 @@ class SolendEarnPresenter(
             lastDepositTickerBalance = initialBalance
             timer.collect {
                 lastDepositTickerBalance += delta
-                view?.showWidgetState(EarnWidgetState.Balance(lastDepositTickerBalance, tokenIcons))
+                view?.showWidgetState(EarnWidgetState.Balance(lastDepositTickerBalance, tokenIconsUrls))
             }
         }
     }

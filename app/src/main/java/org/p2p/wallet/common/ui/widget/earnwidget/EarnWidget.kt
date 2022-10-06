@@ -84,7 +84,6 @@ class EarnWidget @JvmOverloads constructor(
     private fun EarnWidgetState.Depositing.showDepositingState() = with(binding) {
         makeAlignStartContent()
         buttonEarn.setText(buttonTextRes)
-        buttonEarn.isEnabled = true // TODO remove after tests and real integration
     }
 
     private fun EarnWidgetState.DepositFoundsFailed.showDepositFoundsFailedState() = with(binding) {
@@ -105,22 +104,26 @@ class EarnWidget @JvmOverloads constructor(
         makeAlignCenterContent()
         textViewEarnTitle.isVisible = false
         textViewEarnMessage.isVisible = false
-        buttonEarn.apply {
-            isEnabled = false
-            text = null
-        }
     }
 
     private fun setWidgetViewsVisibility(state: EarnWidgetState) = with(binding) {
         val isBalanceState = state is EarnWidgetState.Balance
         val isDepositingState = state is EarnWidgetState.Depositing
+        val isIdleState = state is EarnWidgetState.Idle
 
         tickerViewAmount.isVisible = isBalanceState
         viewTokenContainer.isVisible = isBalanceState
         textViewEarnMessage.isVisible = !isBalanceState && !isDepositingState
 
         textViewEarnTitle.isVisible = !isDepositingState
-        buttonEarn.isEnabled = !isDepositingState
+
+        shimmerViewTitle.isVisible = isIdleState
+        shimmerViewSubTitle.isVisible = isIdleState
+
+        buttonEarn.apply {
+            isVisible = !isIdleState
+            isEnabled = !isDepositingState
+        }
     }
 
     private fun makeAlignStartContent() = with(binding) {
