@@ -11,10 +11,10 @@ import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
@@ -22,6 +22,7 @@ import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -29,9 +30,10 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
-    private val fragments = SparseArrayCompat<Fragment>()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val tabCachedFragments = SparseArrayCompat<Fragment>()
     private val deeplinksManager: AppDeeplinksManager by inject()
+    private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
 
     companion object {
         fun create(): MainFragment = MainFragment()
@@ -39,36 +41,44 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (binding.bottomNavigation.getSelectedItemId() != R.id.homeItem) {
-                navigate(R.id.homeItem)
-            } else {
-                requireActivity().finish()
-            }
-        }
         deeplinksManager.mainTabsSwitcher = this
+
         with(binding) {
             bottomNavigation.setOnItemSelectedListener { tab ->
-                // TODO: remove line when solend is ready or featureFlag is created
-                if (tab == ScreenTab.EARN_SCREEN && !BuildConfig.DEBUG) return@setOnItemSelectedListener false
-
                 triggerTokensUpdateIfNeeded()
-                navigate(tab.itemId)
+                navigate(tab)
                 return@setOnItemSelectedListener true
             }
         }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            onActivityBackPressed()
+        }
 
-        if (fragments.isEmpty) {
-            childFragmentManager.fragments.forEach { fragment ->
-                when (fragment) {
-                    is HomeFragment -> fragments.put(R.id.homeItem, fragment)
-                    is HistoryFragment -> fragments.put(R.id.historyItem, fragment)
-                    is SettingsFragment -> fragments.put(R.id.settingsItem, fragment)
-                }
-            }
-            binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
+        inflateBottomNavigation()
+
+        if (tabCachedFragments.isEmpty) {
+            createCachedTabFragments()
         }
         deeplinksManager.handleSavedDeeplinkIntent()
+    }
+
+    private fun onActivityBackPressed() {
+        if (binding.bottomNavigation.getSelectedItemId() != R.id.homeItem) {
+            navigate(ScreenTab.HOME_SCREEN)
+        } else {
+            requireActivity().finish()
+        }
+    }
+
+    private fun createCachedTabFragments() {
+        childFragmentManager.fragments.forEach { fragment ->
+            when (fragment) {
+                is HomeFragment -> tabCachedFragments.put(R.id.homeItem, fragment)
+                is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
+                is SettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
+            }
+        }
+        binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
     }
 
     override fun onDestroyView() {
@@ -76,55 +86,51 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         super.onDestroyView()
     }
 
-    override fun navigate(itemId: Int) {
-        if (!fragments.containsKey(itemId)) {
-            val fragment = when (ScreenTab.fromTabId(itemId)) {
-                ScreenTab.HOME_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN)
-                    HomeFragment.create()
-                }
-                ScreenTab.EARN_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN)
-                    SolendEarnFragment.create()
-                }
-                ScreenTab.HISTORY_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_EARN)
-                    HistoryFragment.create()
-                }
-                ScreenTab.SETTINGS_SCREEN -> {
-                    analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.MAIN)
-                    SettingsFragment.create()
-                }
-                else -> error("No tab found for $itemId")
+    override fun navigate(clickedTab: ScreenTab) {
+        if (clickedTab == ScreenTab.FEEDBACK_SCREEN) {
+            IntercomService.showMessenger()
+            analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
+            return
+        }
+
+        val itemId = clickedTab.itemId
+
+        if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
+            val fragment = when (clickedTab) {
+                ScreenTab.HOME_SCREEN -> HomeFragment.create()
+                ScreenTab.EARN_SCREEN -> SolendEarnFragment.create()
+                ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
+                ScreenTab.SETTINGS_SCREEN -> SettingsFragment.create()
+                else -> error("No tab found for $clickedTab")
             }
-            fragments[itemId] = fragment
+            tabCachedFragments[itemId] = fragment
         }
 
         val prevFragmentId = binding.bottomNavigation.getSelectedItemId()
         childFragmentManager.commit(allowStateLoss = false) {
             if (prevFragmentId != itemId) {
-                if (fragments[prevFragmentId] != null && !fragments[prevFragmentId]!!.isAdded) {
-                    remove(fragments[prevFragmentId]!!)
-                } else if (fragments[prevFragmentId] != null) {
-                    hide(fragments[prevFragmentId]!!)
+                if (tabCachedFragments[prevFragmentId] != null && !tabCachedFragments[prevFragmentId]!!.isAdded) {
+                    remove(tabCachedFragments[prevFragmentId]!!)
+                } else if (tabCachedFragments[prevFragmentId] != null) {
+                    hide(tabCachedFragments[prevFragmentId]!!)
                 }
             }
-            val nextFragmentTag = fragments[itemId]!!.javaClass.name
+            val nextFragmentTag = tabCachedFragments[itemId]!!.javaClass.name
             if (childFragmentManager.findFragmentByTag(nextFragmentTag) == null) {
 
-                if (fragments[itemId]!!.isAdded) {
+                if (tabCachedFragments[itemId]!!.isAdded) {
                     return
                 }
-                add(R.id.fragmentContainer, fragments[itemId]!!, nextFragmentTag)
+                add(R.id.fragmentContainer, tabCachedFragments[itemId]!!, nextFragmentTag)
             } else {
-                if (!fragments[itemId]!!.isAdded) {
-                    remove(fragments[itemId]!!)
-                    if (fragments[itemId]!!.isAdded) {
+                if (!tabCachedFragments[itemId]!!.isAdded) {
+                    remove(tabCachedFragments[itemId]!!)
+                    if (tabCachedFragments[itemId]!!.isAdded) {
                         return
                     }
-                    add(R.id.fragmentContainer, fragments[itemId]!!, nextFragmentTag)
+                    add(R.id.fragmentContainer, tabCachedFragments[itemId]!!, nextFragmentTag)
                 } else {
-                    show(fragments[itemId]!!)
+                    show(tabCachedFragments[itemId]!!)
                 }
             }
         }
@@ -137,7 +143,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        showUI()
+        inflateBottomNavigation()
     }
 
     private fun checkAndDismissLastBottomSheet() {
@@ -151,9 +157,15 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         }
     }
 
-    private fun showUI() {
+    private fun inflateBottomNavigation() {
         binding.bottomNavigation.menu.clear()
-        binding.bottomNavigation.inflateMenu(R.menu.menu_ui_kit_bottom_navigation)
+
+        val menuRes = if (solendFeatureToggle.isFeatureEnabled) {
+            R.menu.menu_ui_kit_bottom_navigation_earn
+        } else {
+            R.menu.menu_ui_kit_bottom_navigation
+        }
+        binding.bottomNavigation.inflateMenu(menuRes)
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
@@ -163,7 +175,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     // TODO: this is a dirty hack on how to trigger data update
     // Find a good solution for tracking the KEY_HIDDEN_ZERO_BALANCE value in SP
     private fun triggerTokensUpdateIfNeeded() {
-        val fragment = fragments[R.id.homeItem] as? HomeFragment ?: return
+        val fragment = tabCachedFragments[R.id.homeItem] as? HomeFragment ?: return
         fragment.updateTokensIfNeeded()
     }
 }

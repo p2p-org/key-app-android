@@ -21,8 +21,7 @@
             app:itemIconTint="@drawable/menu_select_deselect"
             app:itemTextColor="@drawable/menu_select_deselect"
             app:labelVisibilityMode="labeled"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:menu="@menu/menu_ui_kit_bottom_navigation" />
+            app:layout_constraintBottom_toBottomOf="parent" />
     </FrameLayout>
 
 </merge>
