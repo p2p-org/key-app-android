@@ -53,7 +53,7 @@ class CountryCodePickerFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener {
-                popBackStack()
+                popBackStack(hideKeyboard = false)
             }
 
             recyclerViewCountryCodes.adapter = adapter
@@ -62,7 +62,7 @@ class CountryCodePickerFragment :
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (binding.searchView.isBackPressEnabled()) {
-                popBackStack()
+                popBackStack(hideKeyboard = false)
             } else {
                 binding.searchView.closeSearch()
             }
@@ -93,6 +93,6 @@ class CountryCodePickerFragment :
 
     private fun onCountryCodeClicked(code: CountryCode) {
         setFragmentResult(requestKey, bundleOf(resultKey to code))
-        popBackStack()
+        popBackStack(hideKeyboard = false)
     }
 }
