@@ -10,7 +10,6 @@ sealed interface RestoreUserResult {
     open class RestoreFailure(override val cause: Throwable) :
         Throwable(message = cause.message),
         RestoreUserResult {
-
         open class DevicePlusCustomShare(val exception: RestoreUserException) : RestoreFailure(exception) {
 
             object UserNotFound :
