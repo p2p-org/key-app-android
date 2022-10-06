@@ -16,14 +16,12 @@ interface NewCreatePinContract {
         fun navigateBack()
         fun navigateToMain()
         fun showBiometricDialog(biometricCipher: Cipher)
-        fun onAuthFinished()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun setPinMode(pinMode: PinMode)
         fun setPinCode(pinCode: String)
         fun onBackPressed()
-        fun finishAuthorization()
         fun createPin(biometricCipher: Cipher?)
     }
 }

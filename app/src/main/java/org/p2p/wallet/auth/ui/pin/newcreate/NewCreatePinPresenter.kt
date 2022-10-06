@@ -78,7 +78,7 @@ class NewCreatePinPresenter(
             view?.showBiometricDialog(cipher.value)
         } catch (e: Throwable) {
             Timber.e(e, "Failed to get cipher for biometrics")
-            view?.onAuthFinished()
+            view?.navigateToMain()
         }
     }
 
@@ -88,18 +88,13 @@ class NewCreatePinPresenter(
                 val encoderCipher = if (biometricCipher != null) EncodeCipher(biometricCipher) else null
                 registerComplete(createdPin, encoderCipher)
                 if (biometricCipher == null) analytics.logBioRejected()
-                view?.onAuthFinished()
+                view?.navigateToMain()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
                 view?.showErrorMessage(R.string.error_general_message)
-                view?.onAuthFinished()
+                view?.navigateToMain()
             }
         }
-    }
-
-    override fun finishAuthorization() {
-        analytics.logBioRejected()
-        view?.onAuthFinished()
     }
 
     private fun createPinCode(pinCode: String) {
@@ -107,6 +102,7 @@ class NewCreatePinPresenter(
         launch {
             try {
                 registerComplete(pinCode, null)
+                view?.showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success)
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
                 createdPin = emptyString()
