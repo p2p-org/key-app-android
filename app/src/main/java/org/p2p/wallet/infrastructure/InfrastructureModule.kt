@@ -8,6 +8,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
 import org.p2p.uikit.glide.GlideManager
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
@@ -104,5 +105,7 @@ object InfrastructureModule : InjectionModule {
         single { DefaultDispatchers() } bind CoroutineDispatchers::class
 
         single { PushTokenRepository() }
+
+        factoryOf(::Pbkdf2HashGenerator)
     }
 }
