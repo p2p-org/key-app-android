@@ -1,19 +1,24 @@
 package org.p2p.wallet.swap.koin
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -38,11 +43,6 @@ import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -62,6 +62,8 @@ class CheckModulesTest : KoinTest {
             .returns("https://test-solana-fee-relayer.wallet.p2p.org/")
         every { getString(eq("KEY_NOTIFICATION_SERVICE_BASE_URL"), any()) }
             .returns("http://35.234.120.240:9090/")
+        every { getString(eq("KEY_DEPOSIT_TICKER_BALANCE"), any()) }
+            .returns("0")
     }
 
     private val resourcesMock: Resources = mockk(relaxed = true)
