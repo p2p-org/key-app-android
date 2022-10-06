@@ -76,6 +76,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 is HomeFragment -> tabCachedFragments.put(R.id.homeItem, fragment)
                 is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
                 is SettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
+                is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
             }
         }
         binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
