@@ -1,6 +1,7 @@
 package org.p2p.wallet.solend.ui.earn
 
 import android.content.Context
+import androidx.annotation.CallSuper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
@@ -20,10 +21,12 @@ private val COLLATERAL_ACCOUNTS = listOf("SOL", "USDT", "USDC", "BTC", "ETH")
 
 class SolendEarnPresenter(
     private val context: Context,
-    private val solendDepositsInteractor: SolendDepositsInteractor
+    private val solendDepositsInteractor: SolendDepositsInteractor,
+    private val depositTickerManager: DepositTickerManager
 ) : BasePresenter<SolendEarnContract.View>(), SolendEarnContract.Presenter {
 
     private var timerJob: Job? = null
+    private var lastDepositTickerBalance: BigDecimal = depositTickerManager.getTickerBalance(BigDecimal.ZERO)
 
     private var deposits by Delegates.observable(emptyList<SolendDepositToken>()) { _, _, newValue ->
         view?.showAvailableDeposits(newValue)
@@ -59,6 +62,7 @@ class SolendEarnPresenter(
         launch {
             try {
                 val result = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
+                saveLastDepositTicker()
                 handleResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
@@ -82,14 +86,29 @@ class SolendEarnPresenter(
                 val depositBalance = activeDeposits.sumOf { it.usdAmount }
                 val totalYearBalance = activeDeposits.sumOf { it.usdAmount / BigDecimal(100) * it.supplyInterest }
                 val tokenIcons = activeDeposits.map { it.iconUrl.orEmpty() }
-                view?.showWidgetState(EarnWidgetState.Balance(depositBalance, tokenIcons))
+
+                val tickerAmount = depositTickerManager.getTickerBalance(depositBalance)
+                view?.showWidgetState(EarnWidgetState.Balance(tickerAmount, tokenIcons))
+                startBalanceTicker(tickerAmount, totalYearBalance, tokenIcons)
+
                 view?.bindWidgetActionButton { view?.navigateToUserDeposits(activeDeposits) }
-                startBalanceTicker(depositBalance, totalYearBalance, tokenIcons)
             }
             else -> {
                 // TODO: add further states
                 view?.showWidgetState(EarnWidgetState.LearnMore)
             }
+        }
+    }
+
+    @CallSuper
+    override fun detach() {
+        saveLastDepositTicker()
+        super.detach()
+    }
+
+    private fun saveLastDepositTicker() {
+        if (lastDepositTickerBalance != BigDecimal.ZERO) {
+            depositTickerManager.setLastTickerBalance(lastDepositTickerBalance)
         }
     }
 
@@ -106,10 +125,10 @@ class SolendEarnPresenter(
             .onEach { delay(1_000) }
 
         timerJob = launch() {
-            var balance = initialBalance
+            lastDepositTickerBalance = initialBalance
             timer.collect {
-                balance += delta
-                view?.showWidgetState(EarnWidgetState.Balance(balance, tokenIcons))
+                lastDepositTickerBalance += delta
+                view?.showWidgetState(EarnWidgetState.Balance(lastDepositTickerBalance, tokenIcons))
             }
         }
     }
