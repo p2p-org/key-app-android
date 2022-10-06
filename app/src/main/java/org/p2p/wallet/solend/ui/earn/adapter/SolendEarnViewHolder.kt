@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.databinding.ItemSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
@@ -34,7 +35,7 @@ class SolendEarnViewHolder(
         binding.textViewApy.text = "${item.supplyInterest.scaleShort()}%"
 
         if (item is SolendDepositToken.Active) {
-            binding.textViewAmount.text = "${item.depositAmount.scaleShort()} ${item.tokenSymbol}"
+            binding.textViewAmount.text = "${item.depositAmount.formatToken()} ${item.tokenSymbol}"
         } else {
             binding.textViewAmount.text = item.tokenSymbol
         }

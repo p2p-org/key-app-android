@@ -16,6 +16,7 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -62,7 +63,7 @@ class SolendTopUpBottomSheetFragment :
             glideManager.load(imageViewToken, depositToTopUp.iconUrl.orEmpty())
 
             if (depositToTopUp is SolendDepositToken.Active) {
-                amountViewStart.title = "${depositToTopUp.depositAmount} ${depositToTopUp.tokenSymbol}"
+                amountViewStart.title = "${depositToTopUp.depositAmount.formatToken()} ${depositToTopUp.tokenSymbol}"
             } else {
                 amountViewStart.title = depositToTopUp.tokenSymbol
             }
