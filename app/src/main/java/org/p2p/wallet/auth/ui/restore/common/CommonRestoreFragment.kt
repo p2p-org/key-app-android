@@ -27,7 +27,6 @@ import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -74,7 +73,9 @@ class CommonRestoreFragment :
             } else {
                 toolbar.navigationIcon = null
             }
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setNavigationOnClickListener {
+                popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
+            }
             toolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
                     // pass empty string as UserId to launch IntercomService as anonymous user
@@ -105,7 +106,7 @@ class CommonRestoreFragment :
         presenter.switchFlowToRestore()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            popBackStack()
+            popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
         }
     }
 
