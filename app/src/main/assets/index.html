@@ -31196,7 +31196,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _typings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../typings */ "./src/typings/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils */ "./src/utils/index.ts");
 /* harmony import */ var _utils_profiler__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/profiler */ "./src/utils/profiler.ts");
-/* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "../../node_modules/process/browser.js");
 /* provided dependency */ var console = __webpack_require__(/*! ../../node_modules/console-browserify/index.js */ "../../node_modules/console-browserify/index.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
@@ -31270,7 +31269,7 @@ var AbstractMobileFacade = /*#__PURE__*/function () {
                 customAuthParams = {
                   baseUrl: "http://192.168.0.108:3000/",
                   network: this.options.torusNetwork,
-                  networkUrl: this.options.torusNetwork === "testnet" ? process.env.ROPSTEN_NODE_ENDPOINT : undefined
+                  networkUrl: this.options.torusNetwork === "testnet" ? "https://powerful-aged-dew.ropsten.discover.quiknode.pro/a43b5f26d84620b81711edb0e853ff72dae74be4/" : undefined
                 };
                 customAuth = new _toruslabs_customauth__WEBPACK_IMPORTED_MODULE_0__["default"](customAuthParams);
 
