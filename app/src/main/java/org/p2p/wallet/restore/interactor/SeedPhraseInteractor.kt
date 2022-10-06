@@ -1,7 +1,5 @@
 package org.p2p.wallet.restore.interactor
 
-import androidx.core.content.edit
-import android.content.SharedPreferences
 import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.MnemonicException
 import org.p2p.solanaj.core.Account
@@ -26,14 +24,10 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
 
-private const val KEY_PHRASES = "KEY_PHRASES"
-private const val KEY_DERIVATION_PATH = "KEY_DERIVATION_PATH"
-
 class SeedPhraseInteractor(
     private val authRepository: AuthRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val tokenProvider: TokenKeyProvider,
-    private val sharedPreferences: SharedPreferences,
     private val usernameInteractor: UsernameInteractor,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val dispatchers: CoroutineDispatchers,
@@ -90,10 +84,7 @@ class SeedPhraseInteractor(
         tokenProvider.secretKey = account.secretKey
         tokenProvider.publicKey = publicKey
 
-        sharedPreferences.edit {
-            putString(KEY_PHRASES, mnemonicPhrase.joinToString(separator = ","))
-            putString(KEY_DERIVATION_PATH, path.stringValue)
-        }
+        Timber.i("Account: $publicKey restored using $path")
 
         if (lookupForUsername) {
             usernameInteractor.findUsernameByAddress(publicKey)

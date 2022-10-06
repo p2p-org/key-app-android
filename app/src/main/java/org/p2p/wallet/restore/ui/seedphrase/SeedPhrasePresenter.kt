@@ -4,7 +4,8 @@ import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import kotlin.properties.Delegates
+import org.p2p.wallet.restore.interactor.SeedPhraseInteractor.SeedPhraseVerifyResult
+import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
 
 private const val SEED_PHRASE_SIZE_SHORT = 12
@@ -22,7 +23,7 @@ class SeedPhrasePresenter(
     private val seedPhraseInteractor: SeedPhraseInteractor,
 ) : BasePresenter<SeedPhraseContract.View>(), SeedPhraseContract.Presenter {
 
-    private var currentSeedPhrase: List<SeedPhraseWord> by Delegates.observable(emptyList()) { _, _, newValue ->
+    private var currentSeedPhrase: List<SeedPhraseWord> by observable(emptyList()) { _, _, newValue ->
         onSeedPhraseUpdated(newValue)
     }
 
@@ -39,13 +40,9 @@ class SeedPhrasePresenter(
     override fun attach(view: SeedPhraseContract.View) {
         super.attach(view)
 
-        if (currentSeedPhrase.isEmpty()) {
-            view.addFirstKey(SeedPhraseWord.EMPTY_WORD)
-            view.showSeedPhraseValid(isSeedPhraseValid = false)
-        } else {
-            currentSeedPhrase = currentSeedPhrase.toList()
-            view.updateSeedPhrase(currentSeedPhrase)
-        }
+        // clear seedPhrase on each attach for security reasons
+        currentSeedPhrase = emptyList()
+        view.addFirstKey(SeedPhraseWord.EMPTY_WORD)
     }
 
     override fun setNewSeedPhrase(seedPhrase: List<SeedPhraseWord>) {
@@ -56,7 +53,7 @@ class SeedPhrasePresenter(
     override fun verifySeedPhrase() {
         launch {
             when (val result = seedPhraseInteractor.verifySeedPhrase(currentSeedPhrase)) {
-                is SeedPhraseInteractor.SeedPhraseVerifyResult.VerifiedSeedPhrase -> {
+                is SeedPhraseVerifyResult.VerifiedSeedPhrase -> {
                     currentSeedPhrase = result.seedPhraseWord
                     if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
                         view?.navigateToDerievableAccounts(currentSeedPhrase)
@@ -66,7 +63,7 @@ class SeedPhrasePresenter(
                         view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_words_failed)
                     }
                 }
-                is SeedPhraseInteractor.SeedPhraseVerifyResult.VerifyByChecksumFailed -> {
+                is SeedPhraseVerifyResult.VerifyByChecksumFailed -> {
                     view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_checksum_failed)
                 }
             }

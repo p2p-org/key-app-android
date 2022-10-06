@@ -1,27 +1,23 @@
 package org.p2p.wallet.auth.interactor
 
+import androidx.biometric.BiometricManager
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.biometric.BiometricManager
-import androidx.core.content.edit
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.HashingUtils
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.auth.model.SignInResult
-import org.p2p.wallet.auth.repository.KEY_IN_SIGN_UP_PROCESS
 import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
-import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
+import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
-
-private const val KEY_PIN_CODE_BIOMETRIC_HASH = "KEY_PIN_CODE_BIOMETRIC_HASH"
-private const val KEY_PIN_CODE_HASH = "KEY_PIN_CODE_HASH"
-private const val KEY_PIN_CODE_SALT = "KEY_PIN_CODE_SALT"
-private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON_SIGN_IN"
+import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_BIOMETRIC_HASH
+import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_HASH
+import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_SALT
+import kotlinx.coroutines.withContext
 
 /**
  * The secure storage now includes the hash which is encrypted in two ways
@@ -29,7 +25,6 @@ private const val KEY_ENABLE_FINGERPRINT_ON_SIGN_IN = "KEY_ENABLE_FINGERPRINT_ON
  * and make validation via pin code without decrypting hash
  * */
 class AuthInteractor(
-    private val keyStoreWrapper: KeyStoreWrapper,
     private val secureStorage: SecureStorageContract,
     private val accountStorage: AccountStorageContract,
     private val sharedPreferences: SharedPreferences,
@@ -85,9 +80,9 @@ class AuthInteractor(
         secureStorage.saveBytes(KEY_PIN_CODE_SALT, salt)
     }
 
-    fun getPinDecodeCipher(): DecodeCipher = keyStoreWrapper.getDecodeCipher(KEY_PIN_CODE_BIOMETRIC_HASH)
+    fun getPinDecodeCipher(): DecodeCipher = secureStorage.getDecodeCipher(KEY_PIN_CODE_BIOMETRIC_HASH)
 
-    fun getPinEncodeCipher(): EncodeCipher = keyStoreWrapper.getEncodeCipher(KEY_PIN_CODE_BIOMETRIC_HASH)
+    fun getPinEncodeCipher(): EncodeCipher = secureStorage.getEncodeCipher(KEY_PIN_CODE_BIOMETRIC_HASH)
 
     fun getBiometricStatus(): BiometricStatus =
         when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
@@ -132,16 +127,7 @@ class AuthInteractor(
         secureStorage.saveString(KEY_PIN_CODE_BIOMETRIC_HASH, currentHash, cipher)
     }
 
-    fun disableBiometricSignIn(untilNextSignIn: Boolean = false) {
-        if (untilNextSignIn) {
-            sharedPreferences.edit { putBoolean(KEY_ENABLE_FINGERPRINT_ON_SIGN_IN, true) }
-        }
-        secureStorage.remove(KEY_PIN_CODE_BIOMETRIC_HASH)
-    }
-
-    fun isAuthorized() = with(sharedPreferences) {
-        contains(KEY_PIN_CODE_SALT)
-    }
+    fun isAuthorized(): Boolean = secureStorage.contains(KEY_PIN_CODE_SALT)
 
     fun disableBiometricSignIn() {
         secureStorage.remove(KEY_PIN_CODE_BIOMETRIC_HASH)
@@ -150,6 +136,6 @@ class AuthInteractor(
     fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
 
     fun finishSignUp() {
-        accountStorage.remove(KEY_IN_SIGN_UP_PROCESS)
+        accountStorage.remove(Key.KEY_IN_SIGN_UP_PROCESS)
     }
 }
