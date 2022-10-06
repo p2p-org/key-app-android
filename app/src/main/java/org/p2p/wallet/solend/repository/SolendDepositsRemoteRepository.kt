@@ -24,7 +24,12 @@ class SolendDepositsRemoteRepository(
         get() = ownerAddressProvider.publicKey.toBase58Instance()
 
     override suspend fun getUserDeposits(tokenSymbols: List<String>): List<SolendDepositToken> {
-        val marketsInfo = getSolendMarketInfo(tokenSymbols)
+        val marketsInfo = try {
+            getSolendMarketInfo(tokenSymbols)
+        } catch (e: Throwable) {
+            Timber.w(e, "Error loading user marketsInfo")
+            emptyList()
+        }
 
         val deposits = try {
             val response = solanaFacade.getAllSolendUserDeposits(ownerAddress, currentSolendPool)
@@ -34,11 +39,23 @@ class SolendDepositsRemoteRepository(
             emptyList()
         }
 
-        return marketsInfo.mapNotNull { info ->
-            val tokenData = userLocalRepository.findTokenDataBySymbol(info.tokenSymbol) ?: return@mapNotNull null
-            val tokenPrice = userLocalRepository.getPriceByToken(info.tokenSymbol) ?: return@mapNotNull null
-            val activeDeposit = deposits.find { it.depositTokenSymbol == info.tokenSymbol }
-            mapper.fromNetwork(tokenData, tokenPrice, info, activeDeposit)
+        if (marketsInfo.isEmpty() && deposits.isNotEmpty()) {
+            return deposits.mapNotNull { deposit ->
+                val tokenData = userLocalRepository.findTokenDataBySymbol(
+                    deposit.depositTokenSymbol
+                ) ?: return@mapNotNull null
+                val tokenPrice = userLocalRepository.getPriceByToken(
+                    deposit.depositTokenSymbol
+                ) ?: return@mapNotNull null
+                mapper.fromNetwork(tokenData, tokenPrice, null, deposit)
+            }
+        } else {
+            return marketsInfo.mapNotNull { info ->
+                val tokenData = userLocalRepository.findTokenDataBySymbol(info.tokenSymbol) ?: return@mapNotNull null
+                val tokenPrice = userLocalRepository.getPriceByToken(info.tokenSymbol) ?: return@mapNotNull null
+                val activeDeposit = deposits.find { it.depositTokenSymbol == info.tokenSymbol }
+                mapper.fromNetwork(tokenData, tokenPrice, info, activeDeposit)
+            }
         }
     }
 

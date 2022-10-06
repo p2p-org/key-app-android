@@ -5,6 +5,8 @@
     <string name="solend_deposit_to_earn">Deposit to earn a yield</string>
     <string name="solend_apy">APY</string>
 
+    <string name="solend_rates_error">There’s a problem showing the rates. Try again later</string>
+
     <!--Earn Widget-->
 
     <!--Earn Widget -> LearnMore-->

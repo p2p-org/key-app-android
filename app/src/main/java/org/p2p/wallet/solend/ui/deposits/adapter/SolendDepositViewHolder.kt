@@ -15,6 +15,7 @@ import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
+import java.math.BigDecimal
 
 private const val IMAGE_SIZE = 48
 
@@ -31,9 +32,10 @@ class SolendDepositViewHolder(
 
     fun onBind(item: SolendDepositToken) = with(binding) {
         loadImage(tokenImageView, item.iconUrl.orEmpty())
-        textViewApy.text = getString(R.string.solend_deposits_yielding_apy, item.supplyInterest.scaleShort())
 
-        // TODO PWN-5020 make real impl of amount in $
+        val supplyInterestToShow = item.supplyInterest ?: BigDecimal.ZERO
+        textViewApy.text = getString(R.string.solend_deposits_yielding_apy, supplyInterestToShow.scaleShort())
+
         textViewAmountUsd.text = if (item is SolendDepositToken.Active) {
             "$${item.depositAmount.scaleShort()}"
         } else {

@@ -28,6 +28,7 @@ class SolendEarnPresenter(
 
     private var timerJob: Job? = null
     private var lastDepositTickerBalance: BigDecimal = depositTickerManager.getTickerBalance(BigDecimal.ZERO)
+    private var blockedErrorState = true
 
     private var deposits by Delegates.observable(emptyList<SolendDepositToken>()) { _, _, newValue ->
         view?.showAvailableDeposits(newValue)
@@ -77,10 +78,14 @@ class SolendEarnPresenter(
     }
 
     override fun onDepositTokenClicked(deposit: SolendDepositToken) {
-        view?.showDepositTopUp(deposit)
+        if (!blockedErrorState) {
+            view?.showDepositTopUp(deposit)
+        }
     }
 
     private fun showDepositsWidgetError() {
+        timerJob?.cancel()
+        blockedErrorState = true
         view?.showWidgetState(
             EarnWidgetState.Error(
                 messageTextRes = R.string.earn_widget_error_message_show_info,
@@ -94,10 +99,16 @@ class SolendEarnPresenter(
         deposits = newDeposits
 
         when {
+            newDeposits.any { it.supplyInterest == null } -> {
+                showDepositsWidgetError()
+                view?.setRatesErrorVisibility(isVisible = true)
+            }
             newDeposits.any { it is SolendDepositToken.Active } -> {
                 val activeDeposits = newDeposits.filterIsInstance<SolendDepositToken.Active>()
                 val depositBalance = activeDeposits.sumOf { it.usdAmount }
-                val totalYearBalance = activeDeposits.sumOf { it.usdAmount / BigDecimal(100) * it.supplyInterest }
+                val totalYearBalance = activeDeposits.sumOf {
+                    it.usdAmount / BigDecimal(100) * (it.supplyInterest ?: BigDecimal.ZERO)
+                }
                 val tokenIcons = activeDeposits.map { it.iconUrl.orEmpty() }
 
                 val tickerAmount = depositTickerManager.getTickerBalance(depositBalance)
@@ -105,6 +116,8 @@ class SolendEarnPresenter(
                 startBalanceTicker(tickerAmount, totalYearBalance, tokenIcons)
 
                 view?.bindWidgetActionButton { view?.navigateToUserDeposits(activeDeposits) }
+                view?.setRatesErrorVisibility(isVisible = false)
+                blockedErrorState = false
             }
             else -> {
                 view?.showWidgetState(EarnWidgetState.Idle)
