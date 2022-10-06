@@ -20,8 +20,6 @@ class Pbkdf2Hash(
 class Pbkdf2HashGenerator {
 
     fun generateHashWithRandomSalt(data: String): Pbkdf2Hash {
-        require(data.isNotBlank())
-
         return generateHash(data, generateRandomSalt())
     }
 
