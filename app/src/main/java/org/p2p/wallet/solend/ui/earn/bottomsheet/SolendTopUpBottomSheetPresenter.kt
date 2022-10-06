@@ -13,16 +13,19 @@ class SolendTopUpBottomSheetPresenter(
     SolendTopUpBottomSheetContract.Presenter {
 
     private var currentToken: Token? = null
+    private var solToken: Token? = null
 
     override fun attach(view: SolendTopUpBottomSheetContract.View) {
         super.attach(view)
         launch {
             currentToken = userInteractor.getTokensForBuy(listOf(deposit.tokenSymbol)).firstOrNull()
+            solToken = userInteractor.getUserSolToken()
         }
     }
 
     override fun onBuyClicked() {
-        currentToken?.let { token ->
+        val tokenToBuy = currentToken?.takeIf { it.isUSDC } ?: solToken
+        tokenToBuy?.let { token ->
             view?.showBuyScreen(token)
         }
     }
