@@ -6,8 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.onboarding.SliderFragment
-import org.p2p.wallet.auth.ui.onboarding.SliderFragmentArgs
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.common.ui.bottomsheet.BaseCloseBottomSheet
 import org.p2p.wallet.databinding.DialogSolendInfoPagerPartBinding
@@ -26,14 +24,22 @@ class SolendInfoBottomSheet : BaseCloseBottomSheet() {
 
     private lateinit var binding: DialogSolendInfoPagerPartBinding
 
-    private val fragments = List(3) { SliderFragment::class }
-    private val args = List(3) {
-        SliderFragmentArgs(
-            R.drawable.bg_auth_done,
-            R.string.onboarding_slide_1_title,
-            R.string.onboarding_slide_1_text,
-        ).toBundle()
-    }
+    private val fragments = List(3) { SolendInfoSliderFragment::class }
+    private val args: List<Bundle>
+        get() = listOf(
+            SolendInfoSliderFragmentArgs(
+                R.drawable.ic_solend_slider_1,
+                R.string.solend_info_slider_text_1,
+            ).toBundle(),
+            SolendInfoSliderFragmentArgs(
+                R.drawable.ic_solend_slider_2,
+                R.string.solend_info_slider_text_2,
+            ).toBundle(),
+            SolendInfoSliderFragmentArgs(
+                R.drawable.ic_solend_slider_3,
+                R.string.solend_info_slider_text_3,
+            ).toBundle()
+        )
 
     override fun onCreateInnerView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogSolendInfoPagerPartBinding.inflate(inflater, container, false)
