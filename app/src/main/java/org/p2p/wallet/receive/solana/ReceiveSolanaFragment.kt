@@ -54,9 +54,9 @@ class ReceiveSolanaFragment :
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.SOLANA)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             receiveCardView.setOnNetworkClickListener {
@@ -90,6 +90,8 @@ class ReceiveSolanaFragment :
             }
         }
         presenter.loadData()
+
+        receiveAnalytics.logStartScreen(analyticsInteractor.getPreviousScreenName())
     }
 
     override fun showUserData(userPublicKey: String, username: Username?) {

@@ -66,7 +66,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
             val findFragmentError = ClassCastException(
                 "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.rootContainer)}"
             )
-            Timber.w(findFragmentError)
+            Timber.e(findFragmentError)
         }
     }
 

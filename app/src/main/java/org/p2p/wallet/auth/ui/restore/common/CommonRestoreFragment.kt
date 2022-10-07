@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
@@ -65,6 +66,8 @@ class CommonRestoreFragment :
         ::handleSignResult
     )
 
+    private val onboardingAnalytics: OnboardingAnalytics by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
@@ -86,14 +89,18 @@ class CommonRestoreFragment :
                 false
             }
             buttonRestoreByGoogle.setOnClickListener {
+                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.GOOGLE)
                 presenter.useGoogleAccount()
             }
 
             buttonPhone.setOnClickListener {
+                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.PHONE)
                 presenter.useCustomShare()
             }
 
             buttonBottom.setOnClickListener {
+                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.SEED)
+                // TODO make a real restore implementation!
                 replaceFragment(SeedPhraseFragment.create())
             }
             buttonBottom.setOnLongClickListener {

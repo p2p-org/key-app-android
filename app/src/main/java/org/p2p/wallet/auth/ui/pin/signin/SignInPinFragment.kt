@@ -1,16 +1,14 @@
 package org.p2p.wallet.auth.ui.pin.signin
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
-import org.p2p.wallet.common.analytics.constants.ScreenNames
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
 import org.p2p.wallet.home.MainFragment
@@ -34,7 +32,6 @@ class SignInPinFragment :
 
     override val presenter: SignInPinContract.Presenter by inject()
     private val binding: FragmentSignInPinBinding by viewBinding()
-    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
             this,
@@ -51,7 +48,6 @@ class SignInPinFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenNames.Lock.SCREEN)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             requireActivity().finish()
         }

@@ -33,6 +33,8 @@ object EventNames {
     const val ADMIN_PIN_RESET_INVOKED = "PIN_Reset_Invoked"
     const val ADMIN_PIN_RESET_VALIDATED = "PIN_Reset_Validated"
 
+    const val GENERAL_ACTION_BUTTON_CLICKED = "Action_button_click"
+
     const val ONBOARD_SPLASH_VIEWED = "Splash_Viewed"
     const val ONBOARD_SPLASH_SWIPED = "Splash_Swiped"
     const val ONBOARD_SPLASH_RESTORING = "Splash_Restoring"
@@ -57,6 +59,11 @@ object EventNames {
     const val ONBOARD_USERNAME_SKIPPED = "Username_Skipped"
     const val ONBOARD_USERNAME_SAVED = "Username_Saved"
     const val ONBOARD_USERNAME_RESERVED = "Username_Reserved"
+    const val ONBOARD_START_BUTTON = "Onboarding_Start_Button"
+    const val ONBOARD_RESTORE_WALLET_CONFIRM_PIN = "Restore_Confirm_Pin"
+    const val ONBOARD_CREATE_WALLET_CONFIRM_PIN = "Create_Confirm_Pin"
+    const val ONBOARD_RESTORE_WALLET_BUTTON = "Restore_Wallet_Button"
+    const val ONBOARD_SELECT_RESTORE_OPTION = "Select_Restore_Option"
 
     const val BUY_VIEWED = "Buy_Viewed"
     const val BUY_LIST_VIEWED = "Buy_List_Viewed"
@@ -70,6 +77,7 @@ object EventNames {
     const val HOME_USER_HAS_POSITIVE_BALANCE = "User_Has_Positive_Balance"
     const val HOME_USER_AGGREGATE_BALANCE = "User_Aggregate_Balance"
 
+    const val SEND_START_SCREEN = "Send_Start_Screen"
     const val SEND_VIEWED = "Send_Viewed"
     const val SEND_CHANGING_TOKEN = "Send_Changing_Token"
     const val SEND_CHANGING_CURRENCY = "Send_Changing_Currency"
@@ -77,7 +85,7 @@ object EventNames {
     const val SEND_CHOOSING_RECEIPT = "Send_Choosing_Recipient"
     const val SEND_QR_SCANNING = "Send_QR_Scanning"
     const val SEND_QR_GOING_BACK = "Send_QR_Going_Back"
-    const val SEND_PASTING = "Send_Pasting"
+    const val SEND_PASTING = "Send_Paste"
     const val SEND_RESOLVED_AUTO = "Send_Resolved_Auto"
     const val SEND_RESOLVED_MANUALLY = "Send_Resolved_Manually"
     const val SEND_REVIEWING = "Send_Reviewing"
@@ -89,6 +97,10 @@ object EventNames {
     const val SEND_USER_CONFIRMED = "Send_User_Confirmed"
     const val SEND_STARTED = "Send_Started"
     const val SEND_COMPLETED = "Send_Completed"
+    const val SEND_FILLING_ADDRESS = "Send_Filling_Address"
+    const val SEND_CONFIRM_BUTTON_PRESSED = "Send_Confirm_button_pressed"
+    const val SEND_RECIPIENT_SCREEN = "Send_Recipient_screen"
+    const val SEND_ACTION_BUTTON_CLICKED = "Action_Button_Send"
 
     const val SWAP_VIEWED = "Swap_Viewed"
     const val SWAP_CHANGING_TOKEN_A = "Swap_Changing_Token_A"
@@ -109,6 +121,11 @@ object EventNames {
     const val SWAP_USER_CONFIRMED = "Swap_User_Confirmed"
     const val SWAP_STARTED = "Swap_Started"
     const val SWAP_COMPLETED = "Swap_Completed"
+    const val SWAP_CONFIRM_CLICKED = "Click_approve_button"
+    const val SWAP_ACTION_BUTTON_CLICKED = "Action_Button_Swap"
+    const val SWAP_START_SCREEN = "Swap_Start_Screen"
+    const val SWAP_CHANGING_TOKEN_A_NEW = "Swap_Changing_Token_A"
+    const val SWAP_CHANGING_TOKEN_B_NEW = "Swap_Changing_Token_B"
 
     const val BUY_CURRENCY_CHANGED = "Buy_Currency_Changed"
     const val BUY_COIN_CHANGED = "Buy_Coin_Changed"
