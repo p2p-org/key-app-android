@@ -109,7 +109,7 @@
     <string name="restore_no_account_title">Account not found</string>
     <string name="restore_no_wallet_try_another_option">Try another option</string>
     <string name="restore_how_to_continue">How to continue?</string>
-    <string name="restore_continuation_alternative_text">If you want to continue with %s select <phon></phon>e number. If you made a mistake, please choose another mail</string>
+    <string name="restore_continuation_alternative_text">If you want to continue with %s select phone number. If you made a mistake, please choose another mail</string>
     <string name="restore_shares_not_match_title">Shares aren\'t match</string>
     <string name="restore_shares_not_match_message">So sorry, baby\n\nIf you will write us, use error\ncode #10464</string>
     <!-- Seed phrase scree -->
