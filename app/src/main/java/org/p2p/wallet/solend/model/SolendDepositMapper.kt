@@ -11,14 +11,14 @@ class SolendDepositMapper {
     fun fromNetwork(
         tokenData: TokenData,
         tokenPrice: TokenPrice?,
-        marketInfo: SolendMarketInfo,
+        marketInfo: SolendMarketInfo?,
         activeDeposit: SolendUserDeposit?
     ): SolendDepositToken = if (activeDeposit != null) {
         SolendDepositToken.Active(
             tokenName = tokenData.name,
             tokenSymbol = tokenData.symbol,
             iconUrl = tokenData.iconUrl,
-            supplyInterest = marketInfo.supplyInterest,
+            supplyInterest = marketInfo?.supplyInterest,
             depositAmount = activeDeposit.depositedAmount,
             usdAmount = activeDeposit.depositedAmount * tokenPrice?.price.orZero()
         )
@@ -27,7 +27,7 @@ class SolendDepositMapper {
             tokenName = tokenData.name,
             tokenSymbol = tokenData.symbol,
             iconUrl = tokenData.iconUrl,
-            supplyInterest = marketInfo.supplyInterest
+            supplyInterest = marketInfo?.supplyInterest
         )
     }
 

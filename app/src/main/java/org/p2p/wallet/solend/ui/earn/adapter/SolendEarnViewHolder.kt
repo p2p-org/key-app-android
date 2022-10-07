@@ -10,10 +10,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.uikit.utils.getColor
+import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.scaleShort
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val IMAGE_SIZE = 48
@@ -29,17 +32,27 @@ class SolendEarnViewHolder(
         .listener(SvgSoftwareLayerSetter())
 
     @SuppressLint("SetTextI18n")
-    fun onBind(item: SolendDepositToken) {
-        loadImage(binding.tokenImageView, item.iconUrl.orEmpty())
-        binding.textViewTokenName.text = item.tokenName
-        binding.textViewApy.text = "${item.supplyInterest.scaleShort()}%"
+    fun onBind(item: SolendDepositToken) = with(binding) {
+        loadImage(tokenImageView, item.iconUrl.orEmpty())
+        textViewTokenName.text = item.tokenName
+
+        textViewApy.apply {
+            val supplyInterest = item.supplyInterest
+            if (supplyInterest == null) {
+                text = getString(R.string.not_available)
+                setTextColor(getColor(R.color.text_rose))
+            } else {
+                text = "${supplyInterest.scaleShort()}%"
+                setTextColor(getColor(R.color.text_night))
+            }
+        }
 
         if (item is SolendDepositToken.Active) {
-            binding.textViewAmount.text = "${item.depositAmount.formatToken()} ${item.tokenSymbol}"
+            textViewAmount.text = "${item.depositAmount.formatToken()} ${item.tokenSymbol}"
         } else {
-            binding.textViewAmount.text = item.tokenSymbol
+            textViewAmount.text = item.tokenSymbol
         }
-        binding.root.setOnClickListener {
+        root.setOnClickListener {
             onDepositClickListener(item)
         }
     }

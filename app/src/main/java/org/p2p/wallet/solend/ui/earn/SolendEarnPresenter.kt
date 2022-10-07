@@ -13,6 +13,7 @@ import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.getErrorMessage
+import org.p2p.wallet.utils.orZero
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
@@ -28,6 +29,7 @@ class SolendEarnPresenter(
 
     private var timerJob: Job? = null
     private var lastDepositTickerBalance: BigDecimal = depositTickerManager.getTickerBalance(BigDecimal.ZERO)
+    private var blockedErrorState = true
 
     private var deposits by Delegates.observable(emptyList<SolendDepositToken>()) { _, _, newValue ->
         view?.showAvailableDeposits(newValue)
@@ -35,7 +37,9 @@ class SolendEarnPresenter(
 
     override fun attach(view: SolendEarnContract.View) {
         super.attach(view)
-        handleDepositsResult(deposits)
+        if (deposits.isNotEmpty()) {
+            handleDepositsResult(deposits)
+        }
     }
 
     override fun load() {
@@ -45,6 +49,7 @@ class SolendEarnPresenter(
         }
 
         view?.showLoading(isLoading = true)
+        view?.showWidgetState(EarnWidgetState.Idle)
         launch {
             try {
                 val result = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
@@ -77,10 +82,14 @@ class SolendEarnPresenter(
     }
 
     override fun onDepositTokenClicked(deposit: SolendDepositToken) {
-        view?.showDepositTopUp(deposit)
+        if (!blockedErrorState) {
+            view?.showDepositTopUp(deposit)
+        }
     }
 
     private fun showDepositsWidgetError() {
+        timerJob?.cancel()
+        blockedErrorState = true
         view?.showWidgetState(
             EarnWidgetState.Error(
                 messageTextRes = R.string.earn_widget_error_message_show_info,
@@ -94,10 +103,19 @@ class SolendEarnPresenter(
         deposits = newDeposits
 
         when {
+            newDeposits.sumOf { (it as? SolendDepositToken.Active)?.usdAmount.orZero() } == BigDecimal.ZERO -> {
+                view?.showWidgetState(EarnWidgetState.LearnMore)
+            }
+            newDeposits.any { it.supplyInterest == null } -> {
+                showDepositsWidgetError()
+                view?.setRatesErrorVisibility(isVisible = true)
+            }
             newDeposits.any { it is SolendDepositToken.Active } -> {
                 val activeDeposits = newDeposits.filterIsInstance<SolendDepositToken.Active>()
                 val depositBalance = activeDeposits.sumOf { it.usdAmount }
-                val totalYearBalance = activeDeposits.sumOf { it.usdAmount / BigDecimal(100) * it.supplyInterest }
+                val totalYearBalance = activeDeposits.sumOf {
+                    it.usdAmount / BigDecimal(100) * (it.supplyInterest ?: BigDecimal.ZERO)
+                }
                 val tokenIcons = activeDeposits.map { it.iconUrl.orEmpty() }
 
                 val tickerAmount = depositTickerManager.getTickerBalance(depositBalance)
@@ -105,6 +123,8 @@ class SolendEarnPresenter(
                 startBalanceTicker(tickerAmount, totalYearBalance, tokenIcons)
 
                 view?.bindWidgetActionButton { view?.navigateToUserDeposits(activeDeposits) }
+                view?.setRatesErrorVisibility(isVisible = false)
+                blockedErrorState = false
             }
             else -> {
                 view?.showWidgetState(EarnWidgetState.Idle)
