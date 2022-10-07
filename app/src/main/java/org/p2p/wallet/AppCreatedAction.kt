@@ -26,18 +26,18 @@ class AppCreatedAction(
         }
 
         remoteConfig.loadRemoteConfig(onConfigLoaded = {
-            initSolend()
+            if (solendFeatureToggle.isFeatureEnabled) {
+                initSolend()
+            }
         })
     }
 
     private fun initSolend() {
-        if (solendFeatureToggle.isFeatureEnabled) {
-            appScope.launch {
-                try {
-                    solendConfigRepository.loadSolendConfiguration()
-                } catch (error: Throwable) {
-                    Timber.e(error)
-                }
+        appScope.launch {
+            try {
+                solendConfigRepository.loadSolendConfiguration()
+            } catch (error: Throwable) {
+                Timber.e(error, "Failed to init Solend when app is created")
             }
         }
     }
