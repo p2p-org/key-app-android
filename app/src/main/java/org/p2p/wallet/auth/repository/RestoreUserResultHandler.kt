@@ -134,6 +134,7 @@ class RestoreUserResultHandler(
             }
             is RestoreUserResult.RestoreFailure.DevicePlusSocialShare.DeviceAndSocialShareNotMatch -> {
                 restoreStateMachine.updateState(RestoreState.DevicePlusSocialShareNotMatchState())
+
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.auth_almost_done_title),
                     email = resourcesProvider.getString(
