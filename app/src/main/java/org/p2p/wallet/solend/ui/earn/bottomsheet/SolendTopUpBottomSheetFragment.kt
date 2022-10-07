@@ -21,6 +21,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val EXTRA_DEPOSIT = "EXTRA_STATE"
 
@@ -69,7 +70,8 @@ class SolendTopUpBottomSheetFragment :
             }
             amountViewStart.subtitle = depositToTopUp.tokenName
 
-            amountViewEnd.usdAmount = "${depositToTopUp.supplyInterest.scaleShort()}%"
+            val supplyInterestToShow = depositToTopUp.supplyInterest ?: BigDecimal.ZERO
+            amountViewEnd.usdAmount = "${supplyInterestToShow.scaleShort()}%"
 
             buttonBuy.setOnClickListener {
                 presenter.onBuyClicked()

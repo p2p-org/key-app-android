@@ -24,21 +24,47 @@ class SolendDepositsRemoteRepository(
         get() = ownerAddressProvider.publicKey.toBase58Instance()
 
     override suspend fun getUserDeposits(tokenSymbols: List<String>): List<SolendDepositToken> {
-        val marketsInfo = getSolendMarketInfo(tokenSymbols)
+        val marketsInfo = try {
+            getSolendMarketInfo(tokenSymbols)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error loading user marketsInfo")
+            emptyList()
+        }
 
         val deposits = try {
             val response = solanaFacade.getAllSolendUserDeposits(ownerAddress, currentSolendPool)
             response.map { mapper.fromNetwork(it) }
         } catch (e: Throwable) {
-            Timber.w(e, "Error loading user deposits")
+            Timber.e(e, "Error loading user deposits")
             emptyList()
         }
 
-        return marketsInfo.mapNotNull { info ->
-            val tokenData = userLocalRepository.findTokenDataBySymbol(info.tokenSymbol) ?: return@mapNotNull null
-            val tokenPrice = userLocalRepository.getPriceByToken(info.tokenSymbol) ?: return@mapNotNull null
-            val activeDeposit = deposits.find { it.depositTokenSymbol == info.tokenSymbol }
-            mapper.fromNetwork(tokenData, tokenPrice, info, activeDeposit)
+        val noMarketInfoButHasDeposits = marketsInfo.isEmpty() && deposits.isNotEmpty()
+        return if (noMarketInfoButHasDeposits) {
+            deposits.mapNotNull { deposit ->
+                val tokenData =
+                    userLocalRepository.findTokenDataBySymbol(deposit.depositTokenSymbol) ?: return@mapNotNull null
+                val tokenPrice =
+                    userLocalRepository.getPriceByToken(deposit.depositTokenSymbol) ?: return@mapNotNull null
+                mapper.fromNetwork(
+                    tokenData = tokenData,
+                    tokenPrice = tokenPrice,
+                    marketInfo = null,
+                    activeDeposit = deposit
+                )
+            }
+        } else {
+            marketsInfo.mapNotNull { info ->
+                val tokenData = userLocalRepository.findTokenDataBySymbol(info.tokenSymbol) ?: return@mapNotNull null
+                val tokenPrice = userLocalRepository.getPriceByToken(info.tokenSymbol) ?: return@mapNotNull null
+                val activeDeposit = deposits.find { it.depositTokenSymbol == info.tokenSymbol }
+                mapper.fromNetwork(
+                    tokenData = tokenData,
+                    tokenPrice = tokenPrice,
+                    marketInfo = info,
+                    activeDeposit = activeDeposit
+                )
+            }
         }
     }
 

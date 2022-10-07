@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.TransitionManager
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
@@ -62,6 +63,13 @@ class SolendEarnFragment :
         with(binding) {
             shimmerView.root.isVisible = isLoading
             tokensRecyclerView.isVisible = !isLoading
+        }
+    }
+
+    override fun setRatesErrorVisibility(isVisible: Boolean) {
+        binding.root.post {
+            TransitionManager.beginDelayedTransition(binding.root)
+            binding.viewErrorState.isVisible = isVisible
         }
     }
 
