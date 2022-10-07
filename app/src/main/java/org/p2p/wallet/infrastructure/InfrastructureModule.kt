@@ -85,11 +85,14 @@ object InfrastructureModule : InjectionModule {
         // TODO PWN-5418 - extract data to separate prefs from org.p2p.wallet.prefs
         factory {
             val sharedPreferences: SharedPreferences = get()
+
+            val prefsName = "${androidContext().packageName}.account_prefs"
+            val keyStorePrefs = androidContext().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
             SecureStorage(
                 KeyStoreWrapper(
                     encoderDecoder = get(),
                     keyStore = get(),
-                    sharedPreferences = sharedPreferences
+                    sharedPreferences = keyStorePrefs
                 ),
                 sharedPreferences = sharedPreferences,
                 gson = get()
