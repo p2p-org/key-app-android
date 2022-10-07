@@ -1,7 +1,8 @@
 package org.p2p.wallet.infrastructure
 
-import androidx.room.Room
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -80,11 +81,33 @@ object InfrastructureModule : InjectionModule {
 
         single { KeyStore.getInstance("AndroidKeyStore") }
         singleOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class
-        singleOf(::KeyStoreWrapper)
 
         // TODO PWN-5418 - extract data to separate prefs from org.p2p.wallet.prefs
-        factoryOf(::SecureStorage) bind SecureStorageContract::class
-        factoryOf(::AccountStorage) bind AccountStorageContract::class
+        factory {
+            val sharedPreferences: SharedPreferences = get()
+            SecureStorage(
+                KeyStoreWrapper(
+                    encoderDecoder = get(),
+                    keyStore = get(),
+                    sharedPreferences = sharedPreferences
+                ),
+                sharedPreferences = sharedPreferences,
+                gson = get()
+            )
+        } bind SecureStorageContract::class
+        factory {
+            val prefsName = "${androidContext().packageName}.account_prefs"
+            val sharedPreferences = androidContext().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+            AccountStorage(
+                keyStoreWrapper = KeyStoreWrapper(
+                    encoderDecoder = get(),
+                    keyStore = get(),
+                    sharedPreferences = sharedPreferences
+                ),
+                sharedPreferences = sharedPreferences,
+                gson = get()
+            )
+        } bind AccountStorageContract::class
 
         single { GlideManager(get()) }
 

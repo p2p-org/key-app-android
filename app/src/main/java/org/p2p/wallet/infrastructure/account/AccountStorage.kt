@@ -1,20 +1,17 @@
 package org.p2p.wallet.infrastructure.account
 
+import android.content.SharedPreferences
 import androidx.core.content.edit
-import android.content.Context
 import com.google.gson.Gson
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key
 import kotlin.reflect.KClass
 
 class AccountStorage(
-    context: Context,
     private val keyStoreWrapper: KeyStoreWrapper,
+    private val sharedPreferences: SharedPreferences,
     private val gson: Gson
 ) : AccountStorageContract {
-
-    private val prefsName: String = "${context.packageName}.account_prefs"
-    private val sharedPreferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
 
     override fun <T> saveObject(key: Key, data: T) {
         val objectAsJson = gson.toJson(data)
@@ -50,6 +47,6 @@ class AccountStorage(
         sharedPreferences.all.forEach { (key, _) ->
             keyStoreWrapper.delete(key)
         }
-        sharedPreferences.edit().clear()
+        sharedPreferences.edit { clear() }
     }
 }
