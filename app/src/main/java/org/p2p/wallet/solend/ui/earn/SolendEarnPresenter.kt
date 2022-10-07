@@ -13,6 +13,7 @@ import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.utils.getErrorMessage
+import org.p2p.wallet.utils.orZero
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
@@ -99,6 +100,9 @@ class SolendEarnPresenter(
         deposits = newDeposits
 
         when {
+            newDeposits.sumOf { (it as? SolendDepositToken.Active)?.usdAmount.orZero() } == BigDecimal.ZERO -> {
+                view?.showWidgetState(EarnWidgetState.LearnMore)
+            }
             newDeposits.any { it.supplyInterest == null } -> {
                 showDepositsWidgetError()
                 view?.setRatesErrorVisibility(isVisible = true)
