@@ -16,7 +16,14 @@ import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
-import org.p2p.wallet.history.repository.local.db.dao.*
+import org.p2p.wallet.history.repository.local.db.dao.CloseAccountTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.CreateAccountTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.RenBtcBurnOrMintTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.SwapTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.TransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.TransactionsDaoDelegate
+import org.p2p.wallet.history.repository.local.db.dao.TransferTransactionsDao
+import org.p2p.wallet.history.repository.local.db.dao.UnknownTransactionsDao
 import org.p2p.wallet.infrastructure.account.AccountStorage
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.db.WalletDatabase

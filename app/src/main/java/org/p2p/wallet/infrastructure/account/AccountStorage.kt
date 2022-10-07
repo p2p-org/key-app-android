@@ -1,8 +1,7 @@
 package org.p2p.wallet.infrastructure.account
 
-import androidx.core.content.edit
-import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.Gson
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key
@@ -48,6 +47,6 @@ class AccountStorage(
         sharedPreferences.all.forEach { (key, _) ->
             keyStoreWrapper.delete(key)
         }
-        sharedPreferences.edit{ clear() }
+        sharedPreferences.edit { clear() }
     }
 }
