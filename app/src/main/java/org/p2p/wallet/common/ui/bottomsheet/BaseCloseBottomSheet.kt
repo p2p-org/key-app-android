@@ -9,7 +9,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogBaseCloseBinding
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 /**
  * For bottomSheets with just close button without any result - so show info for example
@@ -26,8 +25,7 @@ abstract class BaseCloseBottomSheet : BottomSheetDialogFragment() {
 
     @CallSuper
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        baseDialogBinding = container?.inflateViewBinding(attachToRoot = false)
-            ?: error("Invalid Container for inflating view")
+        baseDialogBinding = DialogBaseCloseBinding.inflate(inflater, container, false)
         val innerView = onCreateInnerView(inflater, container, savedInstanceState)
         baseDialogBinding.viewInner.addView(innerView)
         return baseDialogBinding.root
