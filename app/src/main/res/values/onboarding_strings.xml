@@ -129,7 +129,7 @@
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
     <string name="onboarding_with_email">%s</string>
-    <string name="onboarding_if_you_want_continue_with_email">If you want continue with %s</string>
+    <string name="onboarding_if_you_want_continue_with_email">If you want to continue with %s</string>
     <string name="restore_select_phone_number_if_you_made_a_mistake"> select phone number. If you made a mistake, please choose another mail</string>
     <string name="restore_use_your_social_account">Use your social account to continue</string>
     <string name="onboarding_create_a_new_wallet">Create a new wallet</string>

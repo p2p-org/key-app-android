@@ -30,7 +30,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintVertical_chainStyle="packed"
-        app:srcCompat="@drawable/ic_lock_new_large" />
+        app:srcCompat="@drawable/ic_cat" />
 
     <TextView
         android:id="@+id/textViewErrorTitle"
@@ -53,9 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="8dp"
-        android:ellipsize="middle"
         android:gravity="center"
-        android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
         android:textColor="@color/text_night"
         android:visibility="gone"

@@ -48,7 +48,7 @@ class GatewayServiceErrorHandler(
                 )
                 val subtitle = resourcesProvider.getString(
                     if (isDeviceShareSaved) {
-                        R.string.restore_no_wallet_found_with_device_share_message
+                        R.string.restore_no_wallet_try_another_option
                     } else {
                         R.string.restore_no_wallet_found_with_no_device_share_message
                     },
