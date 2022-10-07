@@ -37,7 +37,9 @@ class SolendEarnPresenter(
 
     override fun attach(view: SolendEarnContract.View) {
         super.attach(view)
-        handleDepositsResult(deposits)
+        if (deposits.isNotEmpty()) {
+            handleDepositsResult(deposits)
+        }
     }
 
     override fun load() {
@@ -47,6 +49,7 @@ class SolendEarnPresenter(
         }
 
         view?.showLoading(isLoading = true)
+        view?.showWidgetState(EarnWidgetState.Idle)
         launch {
             try {
                 val result = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
