@@ -16,9 +16,6 @@ import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.auth.model.ButtonAction
-import org.p2p.wallet.auth.model.GoogleButton
-import org.p2p.wallet.auth.model.SecondaryFirstButton
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
@@ -111,22 +108,6 @@ class CommonRestoreFragment :
                 replaceFragment(DebugSettingsFragment.create())
                 true
             }
-
-            replaceFragment(
-                RestoreErrorScreenFragment.create(
-                    RestoreFailureState.TitleSubtitleError(
-                        title = resourcesProvider.getString(R.string.restore_no_wallet_title),
-                        email = resourcesProvider.getString(R.string.onboarding_with_email, "emailtest@gmail.com"),
-                        subtitle = resourcesProvider.getString(R.string.restore_no_wallet_try_another_option),
-                        googleButton = GoogleButton(
-                            buttonAction = ButtonAction.NAVIGATE_GOOGLE_AUTH
-                        ),
-                        secondaryFirstButton = SecondaryFirstButton(
-                            buttonAction = ButtonAction.NAVIGATE_START_SCREEN
-                        )
-                    )
-                )
-            )
         }
 
         presenter.switchFlowToRestore()
