@@ -7,12 +7,14 @@ import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 
 class WalletFoundPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
     private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
-    private val onboardingInteractor: OnboardingInteractor
+    private val onboardingInteractor: OnboardingInteractor,
+    private val torusKeyInteractor: TorusKeyInteractor
 ) : BasePresenter<WalletFoundContract.View>(), WalletFoundContract.Presenter {
 
     override fun attach(view: WalletFoundContract.View) {
@@ -27,10 +29,10 @@ class WalletFoundPresenter(
     override fun setAlternativeIdToken(userId: String, idToken: String) {
         launch {
             view?.setLoadingState(isScreenLoading = true)
-
-            when (val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)) {
+            onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
+            torusKeyInteractor.getTorusKey(idToken, userId)
+            when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
-                    onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {

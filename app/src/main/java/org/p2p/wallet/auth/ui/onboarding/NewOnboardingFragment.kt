@@ -10,6 +10,9 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.auth.interactor.OnboardingInteractor
+import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundFragment
@@ -35,6 +38,7 @@ class NewOnboardingFragment :
     }
 
     override val presenter: NewOnboardingContract.Presenter by inject()
+    private val onboardingInteractor: OnboardingInteractor by inject()
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_night
@@ -68,6 +72,7 @@ class NewOnboardingFragment :
             dotsIndicatorOnboardingSlider.attachTo(viewPagerOnboardingSlider)
             buttonCreateWalletOnboarding.setOnClickListener {
                 onboardingAnalytics.logCreateWalletClicked()
+                onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                 presenter.onSignUpButtonClicked()
             }
             buttonCreateWalletOnboarding.setOnLongClickListener {
@@ -139,5 +144,9 @@ class NewOnboardingFragment :
 
     override fun showFile(file: File) {
         openFile(file)
+    }
+
+    override fun navigateToContinueCreateWallet() {
+        replaceFragment(ContinueOnboardingFragment.create())
     }
 }

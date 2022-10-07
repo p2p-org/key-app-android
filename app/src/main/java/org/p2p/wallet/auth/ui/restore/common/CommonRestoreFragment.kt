@@ -11,12 +11,14 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.model.GatewayHandledState
+import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
@@ -26,7 +28,6 @@ import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -75,7 +76,9 @@ class CommonRestoreFragment :
             } else {
                 toolbar.navigationIcon = null
             }
-            toolbar.setNavigationOnClickListener { popBackStack() }
+            toolbar.setNavigationOnClickListener {
+                popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
+            }
             toolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
                     // pass empty string as UserId to launch IntercomService as anonymous user
@@ -110,7 +113,7 @@ class CommonRestoreFragment :
         presenter.switchFlowToRestore()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            popBackStack()
+            popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
         }
     }
 
@@ -132,7 +135,7 @@ class CommonRestoreFragment :
     override fun onNoTokenFoundError(userId: String) {
         view?.post {
             with(binding) {
-                imageView.setImageResource(R.drawable.image_box)
+                imageView.setImageResource(R.drawable.ic_cat)
                 textViewTitle.text = getString(R.string.restore_no_wallet_title)
                 textViewSubtitle.apply {
                     isVisible = true
@@ -178,8 +181,12 @@ class CommonRestoreFragment :
         }
     }
 
-    override fun showGeneralErrorScreen(error: GeneralErrorScreenError) {
-        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(error), inclusive = true)
+    override fun showGeneralErrorScreen(handledState: GatewayHandledState) {
+        popAndReplaceFragment(OnboardingGeneralErrorFragment.create(handledState), inclusive = true)
+    }
+
+    override fun showRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) {
+        popAndReplaceFragment(RestoreErrorScreenFragment.create(handledState), inclusive = true)
     }
 
     private fun handleSignResult(result: ActivityResult) {

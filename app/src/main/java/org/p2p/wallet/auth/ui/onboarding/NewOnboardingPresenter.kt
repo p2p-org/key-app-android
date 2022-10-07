@@ -3,20 +3,25 @@ package org.p2p.wallet.auth.ui.onboarding
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.FileInteractor
-import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
-import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
 class NewOnboardingPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
-    private val onboardingInteractor: OnboardingInteractor,
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
+    private val torusKeyRestoreInteractor: TorusKeyInteractor,
     private val fileInteractor: FileInteractor
 ) : BasePresenter<NewOnboardingContract.View>(), NewOnboardingContract.Presenter {
 
     override fun onSignUpButtonClicked() {
-        view?.startGoogleFlow()
+        if (userSignUpDetailsStorage.isSignUpInProcess()) {
+            view?.navigateToContinueCreateWallet()
+        } else {
+            view?.startGoogleFlow()
+        }
     }
 
     override fun onSignInButtonClicked() {
@@ -26,10 +31,9 @@ class NewOnboardingPresenter(
     override fun setIdToken(userId: String, idToken: String) {
         launch {
             view?.setButtonLoadingState(isScreenLoading = true)
-
-            when (val result = userSignUpInteractor.trySignUpNewUser(idToken, userId)) {
+            torusKeyRestoreInteractor.getTorusKey(googleSocialToken = idToken, socialShareUserId = userId)
+            when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
                 is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
-                    onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {

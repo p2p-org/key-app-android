@@ -10,9 +10,9 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
-private val TAG = RestoreFlowDataLocalRepository::class.simpleName.orEmpty()
+private const val TAG = "RestoreFlowDataLocalRepository"
 
-class RestoreFlowDataLocalRepository {
+class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStorage) {
 
     var isRestoreWalletRequestSent = false
 
@@ -37,22 +37,25 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
-    var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
+    var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? =
+        signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare
         set(value) {
-            field = value
-            Timber.tag(TAG).i("deviceShare is received and set")
-        }
+                field = value
+                Timber.tag(TAG).i(
+                    "deviceShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}"
+                )
+            }
 
     var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("thirdShare is received and set")
+            Timber.tag(TAG).i("thirdShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}")
         }
 
     var encryptedMnemonicJson: JsonObject? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("encryptedMnemonic is received and set")
+            Timber.tag(TAG).i("encryptedMnemonic is received and set: ${value != null}")
         }
 
     var userActualAccount: Account? = null
@@ -61,10 +64,10 @@ class RestoreFlowDataLocalRepository {
             Timber.tag(TAG).i("userActualAccount is generated and set")
         }
 
-    var socialShare: String? = null
+    var torusKey: String? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("socialShare is generated and set: ${socialShare?.length}")
+            Timber.tag(TAG).i("socialShare is generated and set: ${torusKey?.length}")
         }
 
     var socialShareUserId: String? = null

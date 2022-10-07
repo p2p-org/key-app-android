@@ -1,11 +1,14 @@
 package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
-import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
+import org.p2p.wallet.auth.model.RestoreUserException
 import org.p2p.wallet.auth.model.RestoreUserResult
+import org.p2p.wallet.auth.model.RestoreUserResult.RestoreFailure
+import org.p2p.wallet.auth.model.RestoreUserResult.RestoreSuccess
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
+import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -18,82 +21,84 @@ class UserRestoreInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val googleSignInHelper: GoogleSignInHelper
+    private val restoreStateMachine: RestoreStateMachine
 ) {
 
-    fun isUserReadyToBeRestored(restoreFlow: OnboardingFlow.RestoreWallet): Boolean {
-        val sharesCount = when (restoreFlow) {
-            is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> {
-                countShare(restoreFlowDataLocalRepository.socialShare) +
-                    countShare(restoreFlowDataLocalRepository.customShare)
-            }
-            is OnboardingFlow.RestoreWallet.DevicePlusSocialShare -> {
-                countShare(restoreFlowDataLocalRepository.deviceShare) +
-                    countShare(restoreFlowDataLocalRepository.socialShare)
-            }
-            is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
-                countShare(restoreFlowDataLocalRepository.deviceShare) +
-                    countShare(restoreFlowDataLocalRepository.customShare)
-            }
-            else -> {
-                0
-            }
-        }
-        return sharesCount > 1
-    }
-
-    private fun countShare(share: Any?): Int {
-        return if (share == null) 0 else 1
-    }
-
-    suspend fun tryRestoreUser(restoreFlow: OnboardingFlow.RestoreWallet): RestoreUserResult = try {
-        when (restoreFlow) {
-            is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> tryRestoreUser(restoreFlow)
-            is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> tryRestoreUser(restoreFlow)
-            is OnboardingFlow.RestoreWallet.DevicePlusSocialShare -> tryRestoreUser(restoreFlow)
-            else -> error("Unknown restore flow")
-        }
-    } catch (error: Throwable) {
-        RestoreUserResult.RestoreFailed(error)
+    suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult = when (restoreFlow) {
+        is RestoreWallet.SocialPlusCustomShare -> tryRestoreUser(restoreFlow)
+        is RestoreWallet.DevicePlusCustomShare -> tryRestoreUser(restoreFlow)
+        is RestoreWallet.DevicePlusSocialShare -> tryRestoreUser(restoreFlow)
+        is RestoreWallet.DevicePlusCustomOrSocialPlusCustom -> tryRestoreUser(restoreFlow)
+        is RestoreWallet.DevicePlusSocialOrSocialPlusCustom -> tryRestoreUser(restoreFlow)
+        else -> error("Unknown restore flow")
     }
 
     private suspend fun tryRestoreUser(
-        restoreWay: OnboardingFlow.RestoreWallet.SocialPlusCustomShare
+        restoreWay: RestoreWallet.SocialPlusCustomShare
     ): RestoreUserResult = try {
         val customShare = restoreFlowDataLocalRepository.customShare
             ?: error("Social+Custom restore way failed. Third share is null")
-        val socialShare = restoreFlowDataLocalRepository.socialShare
-            ?: error("Social+Custom restore way failed. Social share is null")
-        val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
-            ?: error("Social+Custom restore way failed. Social share ID is null")
         val encryptedMnemonic = restoreFlowDataLocalRepository.encryptedMnemonicJson
             ?: error("Social+Custom restore way failed. Mnemonic phrase is null")
 
-        val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(
-            socialShare = socialShare,
-            thirdShare = customShare,
-            encryptedMnemonic = encryptedMnemonic
-        )
+        val torusKey = restoreFlowDataLocalRepository.torusKey
+        val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
 
-        signUpDetailsStorage.save(
-            data = Web3AuthSignUpResponse(
-                ethereumPublicKey = result.ethereumPublicKey,
-                mnemonicPhrase = result.mnemonicPhrase,
-                encryptedMnemonicPhrase = JsonObject(),
-                deviceShare = null,
-                customThirdShare = customShare
-            ),
-            userId = socialShareUserId
-        )
+        val deviceShare = restoreFlowDataLocalRepository.deviceShare
+        if (torusKey.isNullOrEmpty() && socialShareUserId.isNullOrEmpty()) {
+            RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound
+        } else {
+            val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(
+                socialShare = torusKey!!,
+                thirdShare = customShare,
+                encryptedMnemonic = encryptedMnemonic
+            )
 
-        restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-        RestoreUserResult.RestoreSuccessful
-    } catch (error: Throwable) {
-        RestoreUserResult.RestoreFailed(error)
+            signUpDetailsStorage.save(
+                data = Web3AuthSignUpResponse(
+                    ethereumPublicKey = result.ethereumPublicKey,
+                    mnemonicPhrase = result.mnemonicPhrase,
+                    encryptedMnemonicPhrase = JsonObject(),
+                    deviceShare = deviceShare,
+                    customThirdShare = customShare
+                ),
+                userId = socialShareUserId!!,
+                isCreate = false
+            )
+
+            restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+            RestoreSuccess.SocialPlusCustomShare
+        }
+    } catch (error: Web3AuthErrorResponse) {
+        when (error.errorType) {
+            Web3AuthErrorResponse.ErrorType.SOCIAL_SHARE_NOT_FOUND -> {
+                val userEmailAddress = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
+                // Reset torus and socialId, cause we not found wallet with this torus key
+                restoreFlowDataLocalRepository.torusKey = null
+                restoreFlowDataLocalRepository.socialShareUserId = null
+                RestoreFailure.SocialPlusCustomShare.SocialShareNotFound(userEmailAddress)
+            }
+            Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT -> {
+                val userEmailAddress = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
+                RestoreFailure.SocialPlusCustomShare.SocialShareNotMatch(userEmailAddress)
+            }
+            else -> {
+                val errorMessage = error.message.orEmpty()
+                RestoreFailure.SocialPlusCustomShare(
+                    RestoreUserException(
+                        errorMessage,
+                        error.errorCode
+                    )
+                )
+            }
+        }
+    } catch (e: Throwable) {
+        val errorMessage = e.message.orEmpty()
+        RestoreFailure.SocialPlusCustomShare(RestoreUserException(errorMessage))
     }
 
     private suspend fun tryRestoreUser(
-        restoreFlow: OnboardingFlow.RestoreWallet.DevicePlusCustomShare
+        restoreFlow: RestoreWallet.DevicePlusCustomShare
     ): RestoreUserResult = try {
         val customShare = restoreFlowDataLocalRepository.customShare
             ?: error("Device+Custom restore way failed. Third share is null")
@@ -101,46 +106,42 @@ class UserRestoreInteractor(
             ?: error("Device+Custom restore way failed. Mnemonic phrase is null")
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
 
-        when {
-            deviceShare == null -> {
-                Timber.i("Restore Device + Custom. No Device share")
-                RestoreUserResult.DeviceShareNotFound
-            }
-            else -> {
-                Timber.i("Restore Device + Custom. Start restore wallet")
-                val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
-                    deviceShare = deviceShare,
-                    thirdShare = customShare,
-                    encryptedMnemonic = encryptedMnemonic
-                )
-                restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-                RestoreUserResult.RestoreSuccessful
-            }
+        if (deviceShare == null) {
+            RestoreFailure.DevicePlusCustomShare(RestoreUserException("No Device Share"))
+        } else {
+            Timber.i("Restore Device + Custom. Start restore wallet")
+            val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoTorus(
+                deviceShare = deviceShare,
+                thirdShare = customShare,
+                encryptedMnemonic = encryptedMnemonic
+            )
+            restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+            RestoreSuccess.DevicePlusCustomShare
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
         if (web3AuthError.errorType == Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT) {
-            RestoreUserResult.UserNotFound
+            RestoreFailure.DevicePlusCustomShare.SharesDoesNotMatch
         } else {
-            RestoreUserResult.SharesDoNotMatch
+            RestoreFailure.DevicePlusCustomShare.UserNotFound
             // TODO: PWN-5197 check on another error but use this for now
             // RestoreUserResult.RestoreFailed(Throwable("Unknown error type"))
         }
     } catch (error: Throwable) {
-        RestoreUserResult.RestoreFailed(error)
+        RestoreFailure.DevicePlusCustomShare(RestoreUserException(error.message.orEmpty()))
     }
 
     private suspend fun tryRestoreUser(
-        restoreFlow: OnboardingFlow.RestoreWallet.DevicePlusSocialShare
+        restoreFlow: RestoreWallet.DevicePlusSocialShare
     ): RestoreUserResult = try {
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
             ?: error("Device+Social restore way failed. Device share is null")
-        val socialShare = restoreFlowDataLocalRepository.socialShare
+        val torusKey = restoreFlowDataLocalRepository.torusKey
             ?: error("Device+Social restore way failed. Social share is null")
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
             ?: error("Device+Social restore way failed. Social share ID is null")
 
         val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoCustom(
-            socialShare = socialShare,
+            socialShare = torusKey,
             deviceShare = deviceShare
         )
         signUpDetailsStorage.save(
@@ -151,25 +152,77 @@ class UserRestoreInteractor(
                 deviceShare = deviceShare,
                 customThirdShare = null
             ),
-            userId = socialShareUserId
+            userId = socialShareUserId,
+            isCreate = false
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-        RestoreUserResult.RestoreSuccessful
+        RestoreSuccess.DevicePlusSocialShare
     } catch (web3AuthError: Web3AuthErrorResponse) {
         val socialShareId = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
         when (web3AuthError.errorType) {
             Web3AuthErrorResponse.ErrorType.CANNOT_RECONSTRUCT -> {
-                RestoreUserResult.DeviceAndSocialShareNotMatch(socialShareId)
+                RestoreFailure.DevicePlusSocialShare.DeviceAndSocialShareNotMatch(socialShareId)
             }
             Web3AuthErrorResponse.ErrorType.SOCIAL_SHARE_NOT_FOUND -> {
-                RestoreUserResult.SocialShareNotFound(socialShareId)
+                RestoreFailure.DevicePlusSocialShare.SocialShareNotFound(socialShareId)
             }
             else -> {
-                RestoreUserResult.RestoreFailed(web3AuthError)
+                RestoreFailure.DevicePlusSocialShare(
+                    RestoreUserException(web3AuthError.message.orEmpty(), web3AuthError.errorCode)
+                )
             }
         }
     } catch (e: Throwable) {
-        RestoreUserResult.RestoreFailed(e)
+        val errorMessage = e.message.orEmpty()
+        RestoreFailure.DevicePlusSocialShare(RestoreUserException(errorMessage))
+    }
+
+    private suspend fun tryRestoreUser(
+        restoreFlow: RestoreWallet.DevicePlusSocialOrSocialPlusCustom
+    ): RestoreUserResult {
+        var result: RestoreUserResult
+
+        // First case try to restore with DEVICE + SOCIAL
+        result = tryRestoreUser(RestoreWallet.DevicePlusSocialShare)
+
+        if (result is RestoreUserResult.RestoreFailure) {
+            // if restore was failed
+            // Try last try with SOCIAL + CUSTOM
+            result = tryRestoreUser(RestoreWallet.SocialPlusCustomShare)
+            // if restore is FAILED we throw error thast SHARES ARE NOT MATCH
+            // otherwise Restore is SUCCESSFULL
+        }
+        return if (result is RestoreFailure) {
+            RestoreFailure.DevicePlusSocialOrSocialPlusCustom(
+                RestoreUserException("Shares are not match")
+            )
+        } else {
+            result
+        }
+    }
+
+    private suspend fun tryRestoreUser(
+        restoreFlow: RestoreWallet.DevicePlusCustomOrSocialPlusCustom
+    ): RestoreUserResult {
+        // First case try to restore with DEVICE + CUSTOM
+        var result: RestoreUserResult
+        result = tryRestoreUser(RestoreWallet.DevicePlusCustomShare)
+
+        if (result is RestoreUserResult.RestoreFailure) {
+            // if restore was failed
+            // try last try with SOCIAL + CUSTOM
+            result = tryRestoreUser(RestoreWallet.SocialPlusCustomShare)
+        }
+
+        // if restore is FAILED we throw error thast SHARES ARE NOT MATCH
+        // otherwise Restore is SUCCESSFULL
+        return if (result is RestoreFailure) {
+            RestoreFailure.DevicePlusCustomOrSocialPlusCustom(
+                RestoreUserException("Shares are not match")
+            )
+        } else {
+            result
+        }
     }
 
     fun finishAuthFlow() {

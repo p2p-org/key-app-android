@@ -9,5 +9,9 @@ sealed interface OnboardingFlow {
         object DevicePlusCustomShare : RestoreWallet()
 
         object DevicePlusSocialShare : RestoreWallet()
+
+        object DevicePlusSocialOrSocialPlusCustom : RestoreWallet()
+
+        object DevicePlusCustomOrSocialPlusCustom : RestoreWallet()
     }
 }

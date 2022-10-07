@@ -8,7 +8,6 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
-import org.koin.dsl.factory
 import org.koin.dsl.module
 import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
@@ -22,7 +21,7 @@ import org.p2p.wallet.auth.interactor.UserSignUpInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.interactor.restore.CustomShareRestoreInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
-import org.p2p.wallet.auth.interactor.restore.SocialShareRestoreInteractor
+import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
 import org.p2p.wallet.auth.interactor.restore.UserRestoreInteractor
 import org.p2p.wallet.auth.repository.AuthRemoteRepository
 import org.p2p.wallet.auth.repository.AuthRepository
@@ -30,10 +29,12 @@ import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
+import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.repository.UsernameRemoteRepository
 import org.p2p.wallet.auth.repository.UsernameRepository
+import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract
@@ -62,6 +63,8 @@ import org.p2p.wallet.auth.ui.restore.common.CommonRestoreContract
 import org.p2p.wallet.auth.ui.restore.common.CommonRestorePresenter
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundPresenter
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenContract
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
 import org.p2p.wallet.auth.ui.security.SecurityKeyContract
 import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
@@ -150,9 +153,12 @@ object AuthModule {
         factoryOf(::CountryCodeInteractor)
 
         factoryOf(::WalletFoundPresenter) bind WalletFoundContract.Presenter::class
+        factoryOf(::RestoreErrorScreenPresenter) bind RestoreErrorScreenContract.Presenter::class
 
         singleOf(::SmsInputTimer)
         factoryOf(::NewSmsInputPresenter) bind NewSmsInputContract.Presenter::class
+
+        factoryOf(::RestoreUserResultHandler)
 
         factory { (error: GeneralErrorTimerScreenError, timerLeftTime: Long) ->
             OnboardingGeneralErrorTimerPresenter(
@@ -168,7 +174,8 @@ object AuthModule {
 
         singleOf(::RestoreFlowDataLocalRepository)
         factoryOf(::CustomShareRestoreInteractor)
-        factoryOf(::SocialShareRestoreInteractor)
+        factoryOf(::TorusKeyInteractor)
         factoryOf(::UserRestoreInteractor)
+        singleOf(::RestoreStateMachine)
     }
 }

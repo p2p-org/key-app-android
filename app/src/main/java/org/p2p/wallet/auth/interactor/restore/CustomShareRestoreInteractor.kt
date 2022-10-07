@@ -9,7 +9,6 @@ import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreWalletFailure
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
-import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.fromJsonReified
@@ -18,11 +17,9 @@ import timber.log.Timber
 class CustomShareRestoreInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
-    private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val smsInputTimer: SmsInputTimer,
     private val gson: Gson,
 ) {
-
     suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber, isResend: Boolean = false) {
         val temporaryUserPublicKey = restoreFlowDataLocalRepository.userRestorePublicKey
             ?: throw RestoreWalletFailure("User restore public key is null")
@@ -64,7 +61,6 @@ class CustomShareRestoreInteractor(
         restoreFlowDataLocalRepository.apply {
             customShare = convertBase64ToShareWithMeta(result.thirdShareStructBase64)
             encryptedMnemonicJson = convertBase64ToEncryptedMnemonics(result.encryptedMnemonicsStructBase64)
-            deviceShare = signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare
         }
     }
 

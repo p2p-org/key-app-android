@@ -9,7 +9,7 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
-private val TAG = SignUpFlowDataLocalRepository::class.simpleName.orEmpty()
+private const val TAG = "SignUpFlowDataLocalRepository"
 
 /**
  * We're using this class to temporarily keep data that is collected
@@ -54,6 +54,12 @@ class SignUpFlowDataLocalRepository(
             field = value
             ++userPhoneNumberEnteredCount
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
+        }
+
+    var torusKey: String? = null
+        set(value) {
+            field = value
+            Timber.tag(TAG).i("torus key is generated and set: ${torusKey?.length}")
         }
 
     fun generateUserAccount(userMnemonicPhrase: List<String>) {

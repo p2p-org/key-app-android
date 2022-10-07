@@ -3,14 +3,14 @@
     <string name="onboarding_create_text">Create a new wallet</string>
     <string name="onboarding_continue_with_google">Continue with Google</string>
     <string name="onboarding_restore_text">I already have a wallet</string>
-    <string name="onboarding_terms_text">By continuing, you agree to P2P App’s</string>
+    <string name="onboarding_terms_text">By continuing, you agree wallet\'s</string>
     <string name="onboarding_terms_and_policy">Terms of Use and Privacy Policy</string>
     <string name="onboarding_terms_of_use">Terms of Use</string>
     <string name="onboarding_privacy_policy">Privacy Policy</string>
 
     <!--Onboarding Slides-->
-    <string name="onboarding_slide_1_title">Welcome \nto P2P App</string>
-    <string name="onboarding_slide_1_text">Buy, sell and hold cryptocurrency. \nEarn up to 6% on USD</string>
+    <string name="onboarding_slide_1_title">Welcome \nto P2P wallet</string>
+    <string name="onboarding_slide_1_text">Easy way to earn, invest &amp; send crypto with zero fees</string>
 
     <!--Onboarding - Continue-->
     <string name="onboarding_continue_title">Let\'s continue</string>
@@ -69,7 +69,7 @@
     <string name="onboarding_sms_input_phone_number_title">Check the number %1$s</string>
     <string name="onboarding_sms_starting_screen">Starting screen</string>
     <string name="onboarding_sms_verify_error_title">It’s okay\nto be wrong</string>
-    <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we have frozen\naccount for %s min</string>
+    <string name="onboarding_sms_verify_error_message">You used %d incorrect codes.\nFor your safety we have frozen\n your account for %s min</string>
 
     <!-- General error timer -->
     <string name="onboarding_general_error_let_breath_title">So, let\’s breathe</string>
@@ -86,11 +86,8 @@
     <string name="onboarding_general_error_terms_title">P2P App\'s</string>
     <string name="onboarding_general_error_starting_screen_button_title">Starting screen</string>
     <string name="onboarding_general_error_bug_report_button_title">Support</string>
-    <string name="onboarding_general_error_critical_error_title">Well well 🦄</string>
-    <string name="onboarding_general_error_critical_error_sub_title">
-        We\'ve broke something really big. Let\'s wait together, finally the app will be repaired. \n\n
-        If you wish to report the issue, use error code #%1$s
-    </string>
+    <string name="onboarding_general_error_critical_error_title">Well well</string>
+    <string name="onboarding_general_error_critical_error_sub_title">You’ve find a seldon page 🦄 It’s like a unicorn, but it’s a crush. We’re already fixing it.\n\nIf you wish to report the issue, use error code #%d</string>
 
     <!--Common Restore-->
     <string name="restore_title">Restore your wallet</string>
@@ -113,7 +110,8 @@
     <string name="restore_no_wallet_try_another_option">Try another option</string>
     <string name="restore_how_to_continue">How to continue?</string>
     <string name="restore_continuation_alternative_text">If you want to continue with %s select phone number. If you made a mistake, please choose another mail</string>
-
+    <string name="restore_shares_not_match_title">Shares aren\'t match</string>
+    <string name="restore_shares_not_match_message">So sorry, baby\n\nIf you will write us, use error\ncode #10464</string>
     <!-- Seed phrase scree -->
     <string name="seed_phrase_restore_wallet">Restore your wallet</string>
     <string name="seed_phrase_enter_title">Enter your seed phrase</string>
@@ -130,5 +128,9 @@
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
-    <string name="onboarding_with_email">With %s</string>
+    <string name="onboarding_with_email">%s</string>
+    <string name="onboarding_if_you_want_continue_with_email">If you want continue with %s</string>
+    <string name="restore_select_phone_number_if_you_made_a_mistake"> select phone number. If you made a mistake, please choose another mail</string>
+    <string name="restore_use_your_social_account">Use your social account to continue</string>
+    <string name="onboarding_create_a_new_wallet">Create a new wallet</string>
 </resources>

@@ -119,16 +119,10 @@ class NewCreatePinFragment :
     override fun navigateToMain() {
         binding.pinView.onSuccessPin()
 
-        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_pin_code_success)
         popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 
     override fun showBiometricDialog(biometricCipher: Cipher) {
         biometricWrapper.authenticate(biometricCipher)
-    }
-
-    override fun onAuthFinished() {
-        binding.pinView.onSuccessPin()
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
     }
 }

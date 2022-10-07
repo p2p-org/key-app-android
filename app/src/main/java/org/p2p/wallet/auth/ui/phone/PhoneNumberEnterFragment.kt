@@ -1,14 +1,14 @@
 package org.p2p.wallet.auth.ui.phone
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
-import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerFragment
@@ -20,7 +20,6 @@ import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -43,16 +42,11 @@ class PhoneNumberEnterFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.initViews()
         setOnResultListener()
     }
 
     private fun FragmentPhoneNumberEnterBinding.initViews() {
-        toolbar.setNavigationOnClickListener {
-            popBackStack()
-        }
-
         toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.helpItem) {
                 view?.hideKeyboard()
@@ -80,7 +74,9 @@ class PhoneNumberEnterFragment :
 
     override fun initRestoreWalletViews() {
         binding.toolbar.setNavigationIcon(R.drawable.ic_toolbar_back)
-        binding.toolbar.setNavigationOnClickListener { popBackStack() }
+        binding.toolbar.setNavigationOnClickListener {
+            popAndReplaceFragment(CommonRestoreFragment.create(), inclusive = true)
+        }
         binding.textViewSubtitle.setText(R.string.onboarding_restore_number_message)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -121,8 +117,12 @@ class PhoneNumberEnterFragment :
         )
     }
 
-    override fun navigateToCriticalErrorScreen(error: GeneralErrorScreenError) {
+    override fun navigateToCriticalErrorScreen(error: GatewayHandledState) {
         popAndReplaceFragment(OnboardingGeneralErrorFragment.create(error), inclusive = true)
+    }
+
+    override fun setLoadingState(isLoading: Boolean) {
+        binding.buttonConfirmPhone.isLoadingState = isLoading
     }
 
     override fun setContinueButtonState(state: PhoneNumberScreenContinueButtonState) {
@@ -153,10 +153,6 @@ class PhoneNumberEnterFragment :
         ) { _, bundle ->
             bundle.getParcelable<CountryCode>(RESULT_KEY)?.let { presenter.onCountryCodeChanged(it) }
         }
-    }
-
-    private fun onCountryCodeChanged(countryCode: String) {
-        presenter.onCountryCodeChanged(countryCode)
     }
 
     private fun onPhoneChanged(phone: String) {

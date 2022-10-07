@@ -1,96 +1,76 @@
 package org.p2p.wallet.auth.ui.generalerror
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
-import org.p2p.wallet.auth.model.OnboardingFlow
-import org.p2p.wallet.auth.model.RestoreUserResult
-import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.auth.model.GatewayHandledState
+import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.model.RestoreSuccessState
+import org.p2p.wallet.auth.repository.RestoreUserResultHandler
+import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
 class OnboardingGeneralErrorPresenter(
-    private val error: GeneralErrorScreenError,
-    private val resourcesProvider: ResourcesProvider,
+    private val gatewayHandledState: GatewayHandledState,
     private val restoreWalletInteractor: RestoreWalletInteractor,
-    private val onboardingInteractor: OnboardingInteractor
+    private val onboardingInteractor: OnboardingInteractor,
+    private val restoreStateMachine: RestoreStateMachine,
+    private val restoreErrorHandler: RestoreUserResultHandler
 ) : BasePresenter<OnboardingGeneralErrorContract.View>(),
     OnboardingGeneralErrorContract.Presenter {
 
     override fun attach(view: OnboardingGeneralErrorContract.View) {
         super.attach(view)
-
-        when (error) {
-            is GeneralErrorScreenError.CriticalError -> {
-                val title = resourcesProvider.getString(
-                    R.string.onboarding_general_error_critical_error_title
-                )
-                val subTitle = resourcesProvider.getString(
-                    R.string.onboarding_general_error_critical_error_sub_title,
-                    error.errorCode
-                )
-                view.updateText(title, subTitle)
-                view.setViewState(error)
+        when (gatewayHandledState) {
+            is GatewayHandledState.TitleSubtitleError -> {
+                view.setState(gatewayHandledState)
             }
-            else -> {
-                view.setViewState(error)
+            is GatewayHandledState.CriticalError -> {
+                view.setState(gatewayHandledState)
             }
         }
     }
 
-    override fun useGoogleAccount() {
-        view?.startGoogleFlow()
-    }
-
-    override fun onDevicePlusCustomShareRestoreClicked() {
-        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet.DevicePlusCustomShare
+    override fun onEnterPhoneClicked() {
+        restoreWalletInteractor.resetUserPhoneNumber()
         view?.navigateToEnterPhone()
     }
 
+    override fun onStartScreenClicked() {
+        restoreWalletInteractor.resetUserPhoneNumber()
+        view?.navigateToStartScreen()
+    }
+
+    override fun onGoogleAuthClicked() {
+        view?.startGoogleFlow()
+    }
+
     override fun setGoogleIdToken(userId: String, idToken: String) {
-        view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = true)
-        restoreWalletInteractor.restoreSocialShare(userId = userId, idToken = idToken)
-        val flow = if (restoreWalletInteractor.isDeviceShareSaved()) {
-            OnboardingFlow.RestoreWallet.DevicePlusSocialShare
-        } else {
-            OnboardingFlow.RestoreWallet.SocialPlusCustomShare
-        }
-        if (restoreWalletInteractor.isUserReadyToBeRestored(flow)) {
-            launch {
-                restoreUserWithShares(flow)
-            }
-        } else {
-            view?.onNoTokenFoundError(userId)
-            view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
+        launch {
+            view?.setLoadingState(isLoading = true)
+            restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
+            onboardingInteractor.currentFlow = restoreStateMachine.getSocialFlow()
+            restoreUserWithShares()
+            view?.setLoadingState(isLoading = false)
         }
     }
 
-    private suspend fun restoreUserWithShares(flow: OnboardingFlow.RestoreWallet) {
-        when (val result = restoreWalletInteractor.tryRestoreUser(flow)) {
-            is RestoreUserResult.RestoreSuccessful -> {
+    private suspend fun restoreUserWithShares() {
+        val restoreResult = restoreWalletInteractor.tryRestoreUser(restoreStateMachine.getSocialFlow())
+        when (val restoreHandledState = restoreErrorHandler.handleRestoreResult(restoreResult)) {
+            is RestoreSuccessState -> {
                 restoreWalletInteractor.finishAuthFlow()
-                view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
                 view?.navigateToPinCreate()
             }
-            is RestoreUserResult.RestoreFailed -> {
-                Timber.e(result)
-                view?.setRestoreByGoogleLoadingState(isRestoringByGoogle = false)
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            is RestoreFailureState.TitleSubtitleError -> {
+                view?.restartWithState(restoreHandledState)
             }
-            RestoreUserResult.UserNotFound -> {
-                view?.onNoTokenFoundError(restoreWalletInteractor.getUserEmailAddress().orEmpty())
-                view?.setRestoreByGoogleLoadingState(false)
+            is RestoreFailureState.ToastError -> {
+                view?.showUiKitSnackBar(message = restoreHandledState.message)
             }
-            is RestoreUserResult.SocialShareNotFound -> {
-                val error = GeneralErrorScreenError.SocialShareNotFound(result.socialShareUserId)
-                view?.setViewState(error)
-                view?.setRestoreByGoogleLoadingState(false)
-            }
-            is RestoreUserResult.DeviceAndSocialShareNotMatch -> {
-                val error = GeneralErrorScreenError.SharesDoNotMatchError
-                view?.setViewState(error)
-                view?.setRestoreByGoogleLoadingState(false)
+            is RestoreFailureState.LogError -> {
+                Timber.i(restoreHandledState.message)
             }
         }
     }

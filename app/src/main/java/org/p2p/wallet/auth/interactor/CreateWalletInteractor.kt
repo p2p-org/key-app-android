@@ -12,15 +12,12 @@ class CreateWalletInteractor(
     private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     private val smsInputTimer: SmsInputTimer,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
 ) {
     class CreateWalletFailure(override val message: String) : Throwable(message)
 
     val timer
         get() = smsInputTimer.smsInputTimerFlow
-
-    val resetCount
-        get() = smsInputTimer.smsResendCount
 
     suspend fun startCreatingWallet(userPhoneNumber: PhoneNumber, isResend: Boolean = false) {
         val userPublicKey = signUpFlowDataRepository.userPublicKey
@@ -43,6 +40,9 @@ class CreateWalletInteractor(
             )
             signUpFlowDataRepository.userPhoneNumber = userPhoneNumber
             setIsCreateWalletRequestSent(isSent = true)
+            if (!isResend) {
+                smsInputTimer.resetSmsCount()
+            }
             smsInputTimer.startSmsInputTimerFlow()
         }
     }
@@ -90,9 +90,11 @@ class CreateWalletInteractor(
             userSeedPhrase = userSeedPhrase,
             socialShareOwnerId = socialShareOwnerId
         )
+
+        finishAuthFlow()
     }
 
-    fun finishAuthFlow() {
+    private fun finishAuthFlow() {
         signUpFlowDataRepository.userAccount?.also {
             tokenKeyProvider.secretKey = it.secretKey
             tokenKeyProvider.publicKey = it.publicKey.toBase58()

@@ -19,14 +19,12 @@ class UserSignUpInteractor(
         class SignUpFailed(override val cause: Throwable) : Error(), SignUpResult
     }
 
-    suspend fun trySignUpNewUser(idToken: String, idTokenOwnerId: String): SignUpResult {
+    suspend fun trySignUpNewUser(socialShareUserId: String): SignUpResult {
         return try {
-            signUpFlowDataRepository.signUpUserId = idTokenOwnerId
-
-            val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare(idToken)
+            val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare()
             signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
+            userSignUpDetailsStorage.save(signUpResponse, socialShareUserId)
 
-            userSignUpDetailsStorage.save(signUpResponse, idTokenOwnerId)
             SignUpResult.SignUpSuccessful
         } catch (web3AuthError: Web3AuthErrorResponse) {
             if (web3AuthError.errorType == ErrorType.CANNOT_RECONSTRUCT) {
@@ -54,7 +52,12 @@ class UserSignUpInteractor(
         }
     }
 
-    private suspend fun generateDeviceAndThirdShare(idToken: String): Web3AuthSignUpResponse {
-        return web3AuthApi.triggerSilentSignUp(idToken)
+    private suspend fun generateDeviceAndThirdShare(): Web3AuthSignUpResponse {
+        val torusKey = signUpFlowDataRepository.torusKey
+        if (torusKey.isNullOrEmpty()) {
+            error("Torus key is null")
+        } else {
+            return web3AuthApi.triggerSilentSignUp(torusKey)
+        }
     }
 }

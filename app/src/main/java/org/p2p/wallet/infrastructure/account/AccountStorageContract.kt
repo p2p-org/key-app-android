@@ -3,11 +3,19 @@ package org.p2p.wallet.infrastructure.account
 import kotlin.reflect.KClass
 
 interface AccountStorageContract {
-    fun <T> saveObject(key: String, data: T)
-    fun <T : Any> getObject(key: String, type: KClass<T>): T?
-    fun saveString(key: String, data: String)
-    fun getString(key: String): String?
-    fun contains(key: String): Boolean
-    fun remove(key: String)
+    enum class Key(val prefsValue: String) {
+        KEY_LAST_DEVICE_SHARE_ID("KEY_LAST_DEVICE_SHARE_ID"),
+        KEY_IN_SIGN_UP_PROCESS("KEY_IN_SIGN_UP_PROCESS"),
+    }
+
+    fun <T> saveObject(key: Key, data: T)
+    fun <T : Any> getObject(key: Key, type: KClass<T>): T?
+
+    fun saveString(key: Key, data: String)
+    fun getString(key: Key): String?
+
+    fun contains(key: Key): Boolean
+
+    fun remove(key: Key)
     fun removeAll()
 }

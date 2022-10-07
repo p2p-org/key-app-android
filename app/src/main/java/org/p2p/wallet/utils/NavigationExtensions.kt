@@ -28,8 +28,8 @@ inline fun LifecycleOwner.whenStateAtLeast(state: Lifecycle.State, crossinline b
 
 fun Fragment.backStackEntryCount(): Int = requireActivity().supportFragmentManager.backStackEntryCount
 
-fun Fragment.popBackStack() {
-    requireActivity().hideKeyboard()
+fun Fragment.popBackStack(hideKeyboard: Boolean = true) {
+    if (hideKeyboard) requireActivity().hideKeyboard()
     requireActivity().popBackStack()
 }
 

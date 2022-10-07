@@ -1,13 +1,15 @@
 package org.p2p.wallet.auth.ui.restore.common
 
 import kotlinx.coroutines.launch
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
-import org.p2p.wallet.auth.model.RestoreUserResult
+import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.model.RestoreSuccessState
+import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.statemachine.RestoreState
+import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 
@@ -15,6 +17,8 @@ class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val accountStorageContract: UserSignUpDetailsStorage,
+    private val restoreUserResultHandler: RestoreUserResultHandler,
+    private val restoreStateMachine: RestoreStateMachine
 ) : BasePresenter<CommonRestoreContract.View>(), CommonRestoreContract.Presenter {
 
     override fun useGoogleAccount() {
@@ -22,12 +26,14 @@ class CommonRestorePresenter(
     }
 
     override fun useCustomShare() {
-        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet.DevicePlusCustomShare
+        onboardingInteractor.currentFlow = restoreStateMachine.getCustomFlow()
+        restoreWalletInteractor.resetUserPhoneNumber()
         view?.navigateToPhoneEnter()
     }
 
     override fun switchFlowToRestore() {
-        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
+        val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
+        restoreStateMachine.updateState(RestoreState.CommonRestoreScreenState(isDeviceShareSaved))
         restoreWalletInteractor.generateRestoreUserKeyPair()
         view?.setRestoreViaGoogleFlowVisibility(
             isVisible = accountStorageContract.isDeviceShareSaved() && !accountStorageContract.isSignUpInProcess()
@@ -35,40 +41,32 @@ class CommonRestorePresenter(
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {
-        view?.setLoadingState(isScreenLoading = true)
-        restoreWalletInteractor.restoreSocialShare(userId = userId, idToken = idToken)
-        if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)) {
-            launch {
-                restoreUserWithShares()
-            }
-        } else {
-            view?.onNoTokenFoundError(userId)
+        launch {
+            view?.setLoadingState(isScreenLoading = true)
+            onboardingInteractor.currentFlow = restoreStateMachine.getSocialFlow()
+            restoreWalletInteractor.obtainTorusKey(userId = userId, idToken = idToken)
+            restoreUserWithShares(onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet)
             view?.setLoadingState(isScreenLoading = false)
         }
     }
 
-    private suspend fun restoreUserWithShares() {
-        when (val result = restoreWalletInteractor.tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusSocialShare)) {
-            is RestoreUserResult.RestoreSuccessful -> {
+    private suspend fun restoreUserWithShares(currentFlow: OnboardingFlow.RestoreWallet) {
+        onboardingInteractor.currentFlow = currentFlow
+        val restoreResult = restoreWalletInteractor.tryRestoreUser(currentFlow)
+        when (val restoreHandledState = restoreUserResultHandler.handleRestoreResult(restoreResult)) {
+            is RestoreSuccessState -> {
                 restoreWalletInteractor.finishAuthFlow()
-                view?.setLoadingState(isScreenLoading = false)
                 view?.navigateToPinCreate()
             }
-            is RestoreUserResult.RestoreFailed -> {
-                Timber.e(result)
-                view?.setLoadingState(isScreenLoading = false)
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            is RestoreFailureState.TitleSubtitleError -> {
+                view?.showRestoreErrorScreen(restoreHandledState)
+                restoreUserWithShares(currentFlow)
             }
-            is RestoreUserResult.SocialShareNotFound -> {
-                val error = GeneralErrorScreenError.SocialShareNotFound(result.socialShareUserId)
-                view?.showGeneralErrorScreen(error)
+            is RestoreFailureState.ToastError -> {
+                view?.showUiKitSnackBar(message = restoreHandledState.message)
             }
-            is RestoreUserResult.DeviceAndSocialShareNotMatch -> {
-                val error = GeneralErrorScreenError.DeviceAndSocialShareNotMatch(result.socialShareUserId)
-                view?.showGeneralErrorScreen(error)
-            }
-            RestoreUserResult.UserNotFound -> {
-                view?.onNoTokenFoundError(restoreWalletInteractor.getUserEmailAddress().orEmpty())
+            is RestoreFailureState.LogError -> {
+                Timber.i(restoreHandledState.message)
             }
         }
     }

@@ -6,30 +6,29 @@ import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
+import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.model.RestoreUserResult
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
-import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
+import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTimerState
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.removeWhiteSpaces
 import timber.log.Timber
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
-
-private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
 
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
-    private val resourcesProvider: ResourcesProvider
+    private val restoreUserResultHandler: RestoreUserResultHandler,
+    private val gatewayServiceErrorHandler: GatewayServiceErrorHandler
 ) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
 
     override fun attach(view: NewSmsInputContract.View) {
         super.attach(view)
-
+        // Determine which flow of onboard is active
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
         val userPhoneNumber = when (onboardingInteractor.currentFlow) {
             is OnboardingFlow.CreateWallet -> createWalletInteractor.getUserPhoneNumber()
@@ -39,6 +38,7 @@ class NewSmsInputPresenter(
         connectToTimer()
     }
 
+    // Start count down timer
     private fun connectToTimer() {
         createWalletInteractor.timer.let { timer ->
             launch {
@@ -52,6 +52,7 @@ class NewSmsInputPresenter(
         }
     }
 
+    // Launch when sms code has been changed
     override fun onSmsInputChanged(smsCode: String) {
         if (isSmsCodeFormatValid(smsCode)) {
             view?.renderSmsFormatValid()
@@ -60,11 +61,11 @@ class NewSmsInputPresenter(
         }
     }
 
+    // Check for sms code, if is valid - start to CREATE OR RESTORE wallet
     override fun checkSmsValue(smsCode: String) {
         if (smsCode.isBlank()) {
             return
         }
-
         launch {
             val smsCodeRaw = smsCode.removeWhiteSpaces()
             when (onboardingInteractor.currentFlow) {
@@ -74,29 +75,42 @@ class NewSmsInputPresenter(
         }
     }
 
+    override fun resendSms() {
+        tryToResendSms()
+        connectToTimer()
+    }
+
+    private fun handleGatewayError(error: GatewayServiceError) {
+        when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(error)) {
+            is GatewayHandledState.CriticalError -> {
+                view?.navigateToGatewayErrorScreen(gatewayHandledResult)
+            }
+            GatewayHandledState.IncorrectOtpCodeError -> {
+                view?.renderIncorrectSms()
+            }
+            is GatewayHandledState.TimerBlockError -> {
+                view?.navigateToSmsInputBlocked(gatewayHandledResult.error, gatewayHandledResult.cooldownTtl)
+            }
+            is GatewayHandledState.TitleSubtitleError -> {
+                view?.navigateToGatewayErrorScreen(gatewayHandledResult)
+            }
+            is GatewayHandledState.ToastError -> {
+                view?.showUiKitSnackBar(gatewayHandledResult.message)
+            }
+            else -> {
+                Timber.i("GatewayService error is not handled")
+            }
+        }
+    }
+
+    // Finish creating wallet
     private suspend fun finishCreatingWallet(smsCode: String) {
         try {
             view?.renderButtonLoading(isLoading = true)
             createWalletInteractor.finishCreatingWallet(smsCode)
-            createWalletInteractor.finishAuthFlow()
             view?.navigateToPinCreate()
-        } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
-            Timber.e(tooOftenOtpRequests)
-            val cooldownTtl = tooOftenOtpRequests.cooldownTtl
-            val message = resourcesProvider.getString(R.string.error_too_often_otp_requests_message, cooldownTtl)
-            view?.showUiKitSnackBar(message)
-        } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
-            Timber.i(incorrectSms)
-            view?.renderIncorrectSms()
-        } catch (tooManyRequests: GatewayServiceError.TooManyRequests) {
-            Timber.i(tooManyRequests)
-            view?.navigateToSmsInputBlocked(
-                error = GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS,
-                timerLeftTime = DEFAULT_BLOCK_TIME_IN_MINUTES.minutes.inWholeSeconds
-            )
-        } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-            Timber.e(serverError)
-            view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
+        } catch (gatewayError: GatewayServiceError) {
+            handleGatewayError(gatewayError)
         } catch (error: Throwable) {
             Timber.e(error, "Checking sms value failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
@@ -109,24 +123,10 @@ class NewSmsInputPresenter(
         try {
             view?.renderButtonLoading(isLoading = true)
             restoreWalletInteractor.finishRestoreCustomShare(smsCode)
-            restoreUserWithShares()
-        } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
-            Timber.e(tooOftenOtpRequests)
-            val cooldownTtl = tooOftenOtpRequests.cooldownTtl
-            val message = resourcesProvider.getString(R.string.error_too_often_otp_requests_message, cooldownTtl)
-            view?.showUiKitSnackBar(message)
-        } catch (incorrectSms: GatewayServiceError.IncorrectOtpCode) {
-            Timber.i(incorrectSms)
-            view?.renderIncorrectSms()
-        } catch (tooManyRequests: GatewayServiceError.TooManyRequests) {
-            Timber.i(tooManyRequests)
-            view?.navigateToSmsInputBlocked(
-                error = GeneralErrorTimerScreenError.BLOCK_SMS_TOO_MANY_WRONG_ATTEMPTS,
-                timerLeftTime = tooManyRequests.cooldownTtl.seconds.inWholeSeconds
-            )
-        } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-            Timber.e(serverError)
-            view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
+            val onboardFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet
+            tryRestoreUser(onboardFlow)
+        } catch (gatewayError: GatewayServiceError) {
+            handleGatewayError(gatewayError)
         } catch (error: Throwable) {
             Timber.e(error, "Restoring user or custom share failed")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
@@ -135,56 +135,24 @@ class NewSmsInputPresenter(
         }
     }
 
-    private suspend fun restoreUserWithShares() {
-        when (onboardingInteractor.currentFlow) {
-            is OnboardingFlow.RestoreWallet.DevicePlusCustomShare -> {
-                restoreUserWithDevicePlusCustomShare()
-            }
-            is OnboardingFlow.RestoreWallet.SocialPlusCustomShare -> {
-                tryRestoreUserWithSocialPlusCustomShare()
-            }
-        }
+    private suspend fun tryRestoreUser(flow: OnboardingFlow.RestoreWallet) {
+        val result = restoreWalletInteractor.tryRestoreUser(flow)
+        handleRestoreResult(result)
     }
 
-    private suspend fun restoreUserWithDevicePlusCustomShare() {
-        when (val result = restoreWalletInteractor.tryRestoreUser(OnboardingFlow.RestoreWallet.DevicePlusCustomShare)) {
-            RestoreUserResult.RestoreSuccessful -> {
+    private fun handleRestoreResult(result: RestoreUserResult) {
+        when (val result = restoreUserResultHandler.handleRestoreResult(result)) {
+            is RestoreFailureState.TitleSubtitleError -> {
+                view?.navigateToRestoreErrorScreen(result)
+            }
+            is RestoreSuccessState -> {
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             }
-            RestoreUserResult.SharesDoNotMatch -> {
-                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.SharesDoNotMatchError)
-            }
-            RestoreUserResult.UserNotFound -> {
-                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.PhoneNumberDoesNotMatchError)
-            }
-            is RestoreUserResult.RestoreFailed -> {
-                Timber.e(result, "Restoring user device+custom share failed")
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            }
-            is RestoreUserResult.DeviceShareNotFound -> {
-                Timber.e("Restoring user device+ custom, device share not found")
-                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.DeviceShareNotFound)
-            }
-            is RestoreUserResult.SocialAuthRequired -> {
-                Timber.e("Restoring user device + custom, social auth required")
-                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.SocialAuthRepeat)
+            is RestoreFailureState.LogError -> {
+                Timber.i(result.message)
             }
         }
-    }
-
-    private suspend fun tryRestoreUserWithSocialPlusCustomShare() {
-        if (restoreWalletInteractor.isUserReadyToBeRestored(OnboardingFlow.RestoreWallet.SocialPlusCustomShare)) {
-            restoreUserWithSocialPlusCustomShare()
-        } else {
-            // no social share, requesting now
-            view?.requestGoogleSignIn()
-        }
-    }
-
-    override fun resendSms() {
-        tryToResendSms()
-        connectToTimer()
     }
 
     private fun tryToResendSms() {
@@ -208,45 +176,10 @@ class NewSmsInputPresenter(
                         )
                     }
                 }
-            } catch (tooOftenOtpRequests: GatewayServiceError.TooManyOtpRequests) {
-                Timber.e(tooOftenOtpRequests)
-                val message = resourcesProvider.getString(
-                    R.string.error_too_often_otp_requests_message,
-                    tooOftenOtpRequests.cooldownTtl
-                )
-                view?.showUiKitSnackBar(message)
-            } catch (tooManyRequests: GatewayServiceError.TooManyRequests) {
-                Timber.e(tooManyRequests)
-                view?.navigateToSmsInputBlocked(
-                    error = GeneralErrorTimerScreenError.BLOCK_SMS_RETRY_BUTTON_TRIES_EXCEEDED,
-                    timerLeftTime = tooManyRequests.cooldownTtl.seconds.inWholeSeconds
-                )
-            } catch (serverError: GatewayServiceError.CriticalServiceFailure) {
-                Timber.e(serverError)
-                view?.navigateToCriticalErrorScreen(GeneralErrorScreenError.CriticalError(serverError.code))
+            } catch (gatewayError: GatewayServiceError) {
+                handleGatewayError(gatewayError)
             } catch (error: Throwable) {
                 Timber.e(error, "Resending sms failed")
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            }
-        }
-    }
-
-    override fun setGoogleSignInToken(userId: String, googleToken: String) {
-        launch {
-            restoreWalletInteractor.restoreSocialShare(googleToken, userId)
-            restoreUserWithSocialPlusCustomShare()
-        }
-    }
-
-    private suspend fun restoreUserWithSocialPlusCustomShare() {
-        val restoreFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet.SocialPlusCustomShare
-        when (val result = restoreWalletInteractor.tryRestoreUser(restoreFlow)) {
-            is RestoreUserResult.RestoreSuccessful -> {
-                restoreWalletInteractor.finishAuthFlow()
-                view?.navigateToPinCreate()
-            }
-            is RestoreUserResult.RestoreFailed -> {
-                Timber.e(result, "Restoring user social+custom share failed")
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }

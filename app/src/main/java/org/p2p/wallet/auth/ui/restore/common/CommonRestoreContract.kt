@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.ui.restore.common
 
-import org.p2p.wallet.auth.ui.generalerror.GeneralErrorScreenError
+import org.p2p.wallet.auth.model.GatewayHandledState
+import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
@@ -13,7 +14,8 @@ interface CommonRestoreContract {
         fun navigateToPhoneEnter()
         fun setLoadingState(isScreenLoading: Boolean)
         fun setRestoreViaGoogleFlowVisibility(isVisible: Boolean)
-        fun showGeneralErrorScreen(error: GeneralErrorScreenError)
+        fun showGeneralErrorScreen(handledState: GatewayHandledState)
+        fun showRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError)
     }
 
     interface Presenter : MvpPresenter<View> {
