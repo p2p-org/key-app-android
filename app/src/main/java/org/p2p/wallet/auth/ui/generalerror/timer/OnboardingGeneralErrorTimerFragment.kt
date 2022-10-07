@@ -11,6 +11,7 @@ import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerCont
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.openFile
@@ -45,6 +46,13 @@ class OnboardingGeneralErrorTimerFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.toolbar.inflateMenu(R.menu.menu_onboarding_help)
+        binding.toolbar.setOnMenuItemClickListener {
+            if (it.itemId == R.id.helpItem) {
+                IntercomService.showMessenger()
+            }
+            return@setOnMenuItemClickListener true
+        }
         binding.buttonToStartingScreen.setOnClickListener {
             navigateToStartingScreen()
         }
