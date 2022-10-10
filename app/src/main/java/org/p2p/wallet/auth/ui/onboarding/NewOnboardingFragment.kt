@@ -8,6 +8,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
@@ -75,11 +76,7 @@ class NewOnboardingFragment :
                 onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                 presenter.onSignUpButtonClicked()
             }
-            buttonCreateWalletOnboarding.setOnLongClickListener {
-                // TODO PWN-4615 remove after all onboarding testing completed!
-                replaceFragment(DebugSettingsFragment.create())
-                true
-            }
+
             buttonRestoreWalletOnboarding.setOnClickListener {
                 onboardingAnalytics.logAlreadyHaveWalletClicked()
                 replaceFragment(CommonRestoreFragment.create())
@@ -91,6 +88,12 @@ class NewOnboardingFragment :
                     onPolicyClick = { presenter.onPolicyClick() }
                 )
                 movementMethod = LinkMovementMethod.getInstance()
+            }
+            if (BuildConfig.DEBUG) {
+                buttonCreateWalletOnboarding.setOnLongClickListener {
+                    replaceFragment(DebugSettingsFragment.create())
+                    true
+                }
             }
         }
 

@@ -101,7 +101,10 @@ object NetworkModule : InjectionModule {
 
         single(named(FACADE_SERVICE_RETROFIT_QUALIFIER)) {
             getRetrofit(
-                baseUrl = androidContext().getString(R.string.gatewayServiceTestBaseUrl),
+                baseUrl = androidContext().getString(
+                    if (BuildConfig.DEBUG) R.string.gatewayServiceTestBaseUrl
+                    else R.string.gatewayServiceReleaseBaseUrl
+                ),
                 tag = "FacadeService",
                 interceptor = GatewayServiceInterceptor()
             )
