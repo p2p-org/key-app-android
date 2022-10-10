@@ -10,12 +10,13 @@ import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
-import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
@@ -100,13 +101,13 @@ class CommonRestoreFragment :
 
             buttonBottom.setOnClickListener {
                 onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.SEED)
-                // TODO make a real restore implementation!
                 replaceFragment(SeedPhraseFragment.create())
             }
-            buttonBottom.setOnLongClickListener {
-                // TODO PWN-4615 remove after all onboarding testing completed!
-                replaceFragment(DebugSettingsFragment.create())
-                true
+            if (BuildConfig.DEBUG) {
+                buttonBottom.setOnLongClickListener {
+                    replaceFragment(DebugSettingsFragment.create())
+                    true
+                }
             }
         }
 

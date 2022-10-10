@@ -12,11 +12,20 @@
     <string name="feeRelayerBaseUrl">https://fee-relayer.solana.p2p.org/</string>
     <string name="feeRelayerTestBaseUrl">https://test-solana-fee-relayer.wallet.p2p.org/</string>
 
-    <string name="torusBaseUrl">http://localhost</string>
-    <string name="torusTestUrl">http://beardict.net</string>
+    <string name="torusBaseUrl">https://metadata.tor.us</string>
+    <string name="torusTestUrl">http://beardict.net:5051</string>
 
     <string name="torusDebugVerifier">testTkeyD1</string>
     <string name="torusFeatureVerifier">testTketF2</string>
+    <string name="torusReleaseVerifier">key-app-google-cyan</string>
+
+    <string name="torusReleaseSubVerifier">android</string>
+
+    <string name="torusDebugNetwork">testnet</string>
+    <string name="torusReleaseNetwork">cyan</string>
+
+    <string name="torusDebugLogLevel">debug</string>
+    <string name="torusReleaseLogLevel">silent</string>
 
     <string name="moonpayWalletDomain">moonpay.wallet.p2p.org</string>
     <string name="moonpayBaseDomain">buy-staging.moonpay.com</string>
@@ -28,7 +37,9 @@
 
     <string name="notificationServiceBaseUrl">https://push-service.wallet.p2p.org/</string>
     <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/notifier/</string>
-    <string name="gatewayServiceTestBaseUrl">http://35.234.120.240:9090/gateway/</string>
+
+    <string name="gatewayServiceTestBaseUrl">https://web3-auth.keyapp.org/</string>
+    <string name="gatewayServiceReleaseBaseUrl"> https://web3-auth.key.app/</string>
 
     <string name="googleClientId">553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com</string>
     <!--TODO PWN-4266 migrate googleClientId to CI for secure-->

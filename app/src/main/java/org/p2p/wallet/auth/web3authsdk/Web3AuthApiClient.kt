@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import android.content.Context
-import android.os.Build
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.Gson
@@ -9,6 +8,7 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -27,7 +27,9 @@ class Web3AuthApiClient(
     private val torusNetwork: TorusEnvironment,
     private val mapper: Web3AuthClientMapper,
     private val gson: Gson,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val torusNetworkEnv: String,
+    private val torusLogLevel: String,
 ) : Web3AuthApi {
 
     private var continuation: CancellableContinuation<*>? = null
@@ -35,10 +37,7 @@ class Web3AuthApiClient(
     private var userGeneratedSeedPhrase: List<String> = emptyList()
 
     private val onboardingWebView: WebView = WebView(context).apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // TODO PWN-4615 remove or make build related after all onboarding testing completed!
-            WebView.setWebContentsDebuggingEnabled(true)
-        }
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         // loadUrl and addJavascriptInterface is async, so it should be called ASAP
         addJavascriptInterface(
             AndroidCommunicationChannel(),
@@ -152,11 +151,9 @@ class Web3AuthApiClient(
     }
 
     private fun generateFacade(type: String, jsMethodCall: String): String {
-        val host = torusNetwork.baseUrl
         val useNewUth = true
         val torusLoginType = "google"
-        val torusNetworkEnv = "testnet"
-        val torusEndpoint = "$host:5051"
+        val torusEndpoint = torusNetwork.baseUrl
         val torusVerifier = torusNetwork.verifier
         val torusSubVerifier = torusNetwork.subVerifier
 
@@ -174,6 +171,7 @@ class Web3AuthApiClient(
             append("torusLoginType: '$torusLoginType', ")
             append("torusEndpoint: '$torusEndpoint', ")
             append("torusVerifier: '$torusVerifier', ")
+            append("logLevel: '$torusLogLevel', ")
             if (!torusSubVerifier.isNullOrBlank()) {
                 append("torusSubVerifier: '$torusSubVerifier', ")
             }
