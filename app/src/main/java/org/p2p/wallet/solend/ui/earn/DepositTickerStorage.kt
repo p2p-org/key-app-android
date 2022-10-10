@@ -6,7 +6,7 @@ import java.math.BigDecimal
 
 private const val KEY_DEPOSIT_TICKER_BALANCE = "KEY_DEPOSIT_TICKER_BALANCE"
 
-class DepositTickerManager(
+class DepositTickerStorage(
     private val sharedPreferences: SharedPreferences
 ) {
 
