@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -80,19 +79,17 @@ object InfrastructureModule : InjectionModule {
         }
 
         single { KeyStore.getInstance("AndroidKeyStore") }
-        singleOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class
+        factoryOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class
 
         // TODO PWN-5418 - extract data to separate prefs from org.p2p.wallet.prefs
         factory {
             val sharedPreferences: SharedPreferences = get()
 
-            val prefsName = "${androidContext().packageName}.account_prefs"
-            val keyStorePrefs = androidContext().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
             SecureStorage(
                 KeyStoreWrapper(
                     encoderDecoder = get(),
                     keyStore = get(),
-                    sharedPreferences = keyStorePrefs
+                    sharedPreferences = sharedPreferences
                 ),
                 sharedPreferences = sharedPreferences,
                 gson = get()
