@@ -21,9 +21,9 @@ class SolendInfoSliderFragment : BaseFragment(R.layout.fragment_solend_info_slid
         arguments?.let { args ->
             val sliderFragmentArgs = SolendInfoSliderFragmentArgs.fromBundle(args)
             with(binding) {
-                sliderIcon.setImageResource(sliderFragmentArgs.iconRes)
-                sliderText.setText(sliderFragmentArgs.slideText)
+                imageViewSliderIcon.setImageResource(sliderFragmentArgs.iconRes)
+                textViewSliderText.setText(sliderFragmentArgs.slideText)
             }
-        } ?: Timber.w("Error on getting SliderFragmentArgs")
+        } ?: Timber.e("Error on getting SolendInfoSliderFragmentArgs")
     }
 }

@@ -17,9 +17,9 @@ class SolendInfoBottomSheet : BaseCloseBottomSheet() {
         fun show(
             fm: FragmentManager,
             title: String
-        ) = SolendInfoBottomSheet().withArgs(
-            ARG_TITLE to title
-        ).show(fm, SolendInfoBottomSheet::javaClass.name)
+        ) = SolendInfoBottomSheet()
+            .withArgs(ARG_TITLE to title)
+            .show(fm, SolendInfoBottomSheet::javaClass.name)
     }
 
     private lateinit var binding: DialogSolendInfoPagerPartBinding
