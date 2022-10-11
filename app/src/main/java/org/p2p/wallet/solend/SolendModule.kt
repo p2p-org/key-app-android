@@ -8,7 +8,6 @@ import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
 import org.p2p.wallet.solend.model.SolendDepositMapper
-import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.repository.SolendConfigurationLocalRepository
 import org.p2p.wallet.solend.repository.SolendConfigurationRepository
 import org.p2p.wallet.solend.repository.SolendDepositsRemoteRepository
@@ -30,21 +29,9 @@ object SolendModule : InjectionModule {
         factoryOf(::SolendEarnPresenter) bind SolendEarnContract.Presenter::class
         factoryOf(::SolendUserDepositsPresenter) bind SolendUserDepositsContract.Presenter::class
         singleOf(::DepositTickerManager)
-        factory { (deposit: SolendDepositToken) ->
-            SolendTopUpBottomSheetPresenter(
-                deposit = deposit,
-                userInteractor = get()
-            )
-        } bind SolendTopUpBottomSheetContract.Presenter::class
+        factoryOf(::SolendTopUpBottomSheetPresenter) bind SolendTopUpBottomSheetContract.Presenter::class
 
-        factory { (deposit: SolendDepositToken) ->
-            SolendDepositPresenter(
-                resourcesProvider = get(),
-                solendDepositsInteractor = get(),
-                userInteractor = get(),
-                deposit = deposit,
-            )
-        } bind SolendDepositContract.Presenter::class
+        factoryOf(::SolendDepositPresenter) bind SolendDepositContract.Presenter::class
 
         factoryOf(::SolendDepositsInteractor)
         singleOf(::SolendDepositsRemoteRepository) bind SolendDepositsRepository::class

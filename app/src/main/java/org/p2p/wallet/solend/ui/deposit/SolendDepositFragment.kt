@@ -11,6 +11,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSolendDepositBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.ui.bottomsheet.SelectDepositTokenBottomSheet
+import org.p2p.wallet.solend.ui.info.SolendInfoBottomSheet
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.popBackStack
@@ -54,8 +55,11 @@ class SolendDepositFragment :
                     popBackStack()
                 }
                 setOnMenuItemClickListener {
-                    if (it.itemId == R.id.helpItem) {
-                        // TODO PWN-5028 show info bottomSheet
+                    if (it.itemId == R.id.itemHelp) {
+                        SolendInfoBottomSheet.show(
+                            fm = childFragmentManager,
+                            getString(R.string.solend_info_title)
+                        )
                         true
                     } else {
                         false

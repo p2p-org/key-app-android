@@ -5,10 +5,10 @@ import org.p2p.wallet.common.ui.recycler.adapter.BaseSingleSelectionAdapter
 import org.p2p.wallet.solend.model.SolendDepositToken
 
 class SelectDepositTokenAdapter(
-    onItemClicked: (SolendDepositToken) -> Unit = {}
+    onTokenClicked: (SolendDepositToken) -> Unit = {}
 ) : BaseSingleSelectionAdapter<SolendDepositToken, SelectDepositTokenViewHolder>(
     preselectedItem = null,
-    onItemClicked
+    onTokenClicked
 ) {
 
     override fun onCreateViewHolder(

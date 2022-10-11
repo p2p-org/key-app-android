@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/helpItem"
+        android:id="@+id/itemHelp"
         android:icon="@drawable/ic_help_outlined"
         android:iconTint="@color/icons_night"
         android:iconTintMode="multiply"

@@ -13,7 +13,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.withArgs
 
-private const val ARG_ALL_TOKENS = "ARG_ALL_TOKENS"
+private const val ARG_DEPOSIT_TOKENS = "ARG_DEPOSIT_TOKENS"
 
 class SelectDepositTokenBottomSheet : BaseRecyclerDoneBottomSheet() {
 
@@ -26,19 +26,19 @@ class SelectDepositTokenBottomSheet : BaseRecyclerDoneBottomSheet() {
             resultKey: String
         ) = SelectDepositTokenBottomSheet().withArgs(
             ARG_TITLE to title,
-            ARG_ALL_TOKENS to depositTokens,
+            ARG_DEPOSIT_TOKENS to depositTokens,
             ARG_REQUEST_KEY to requestKey,
             ARG_RESULT_KEY to resultKey
         ).show(fm, SelectDepositTokenBottomSheet::javaClass.name)
     }
 
-    private val depositTokens: List<SolendDepositToken> by args(ARG_ALL_TOKENS)
+    private val depositTokens: List<SolendDepositToken> by args(ARG_DEPOSIT_TOKENS)
 
     private val tokenAdapter: SelectDepositTokenAdapter by unsafeLazy {
-        SelectDepositTokenAdapter(onItemClicked = {
+        SelectDepositTokenAdapter {
             setFragmentResult(requestKey, bundleOf(resultKey to it))
             dismissAllowingStateLoss()
-        })
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

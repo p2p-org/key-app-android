@@ -23,15 +23,21 @@ class SolendDepositPresenter(
 
     override fun attach(view: SolendDepositContract.View) {
         super.attach(view)
-        view.showTokenToDeposit(selectedDepositToken, validDeposits.size > 1)
+        view.showTokenToDeposit(
+            depositToken = selectedDepositToken,
+            withChevron = validDeposits.size > 1
+        )
         if (validDeposits.isEmpty()) {
             launch {
                 try {
-                    validDeposits = solendDepositsInteractor.getUserDeposits().filter { depositToken ->
-                        userInteractor.getUserTokens().firstOrNull { token ->
-                            token.tokenSymbol == depositToken.tokenSymbol
-                        }?.totalInUsd.orZero().isNotZero()
-                    }
+                    validDeposits = solendDepositsInteractor.getUserDeposits()
+                        .filter { depositToken ->
+                            userInteractor.getUserTokens()
+                                .firstOrNull { token -> token.tokenSymbol == depositToken.tokenSymbol }
+                                ?.totalInUsd
+                                .orZero()
+                                .isNotZero()
+                        }
                     validDeposits.find { it.tokenSymbol == selectedDepositToken.tokenSymbol }?.let {
                         selectTokenToDeposit(it)
                     }
@@ -47,7 +53,10 @@ class SolendDepositPresenter(
         if (selectedDepositToken != tokenToDeposit) {
             selectedDepositToken = tokenToDeposit
         }
-        view?.showTokenToDeposit(tokenToDeposit, validDeposits.size > 1)
+        view?.showTokenToDeposit(
+            depositToken = tokenToDeposit,
+            withChevron = validDeposits.size > 1
+        )
     }
 
     override fun onTokenDepositClicked() {

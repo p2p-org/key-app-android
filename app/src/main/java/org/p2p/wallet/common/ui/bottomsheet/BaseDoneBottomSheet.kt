@@ -13,6 +13,11 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogBaseDoneBinding
 import org.p2p.wallet.utils.args
 
+/**
+ * BaseDoneBottomSheet made to handle cases where you have Done button at them bottom
+ * or X at top to close (if needed) like [BaseCloseBottomSheet] to cover cases where you do not need logic and Presenter
+ * you need to show some Info content or select something and return as a result with [setFragmentResult]
+ **/
 abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
