@@ -47,4 +47,10 @@
     <string name="solend_top_up_buy_button">Buy</string>
     <string name="solend_top_up_receive_button">Receive</string>
 
+    <!--SolendInfo BottomSheet-->
+    <string name="solend_info_title">What is Solend?</string>
+    <string name="solend_info_slider_text_1">Solend is the most scalable DeFi lending protocol, which allows to earn interest and borrow assets with the lowest fee. That\'s why we integrate it.</string>
+    <string name="solend_info_slider_text_2">Deposit with interest\nDeposit USDT or USDC and get your guaranteed yield on it.</string>
+    <string name="solend_info_slider_text_3">Control your assets\nLow risks all your assets are under your control. Instant withdrawal with all rewards.</string>
+
 </resources>
