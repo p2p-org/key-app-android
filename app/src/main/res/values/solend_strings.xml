@@ -47,4 +47,8 @@
     <string name="solend_top_up_buy_button">Buy</string>
     <string name="solend_top_up_receive_button">Receive</string>
 
+    <!--Deposit To Solend-->
+    <string name="solend_deposit_title">Deposit into Solend</string>
+    <string name="solend_select_token_to_deposit_title">Token to deposit</string>
+
 </resources>

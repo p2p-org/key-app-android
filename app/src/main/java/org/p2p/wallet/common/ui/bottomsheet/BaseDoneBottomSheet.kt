@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
@@ -44,6 +45,7 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(baseDialogBinding) {
             textViewTitle.text = title
+            setCloseClickListener()
             setDoneClickListener()
         }
     }
@@ -51,6 +53,20 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
     abstract fun getResult(): Any?
+
+    protected fun setDoneButtonVisibility(isVisible: Boolean) {
+        baseDialogBinding.buttonDone.isVisible = isVisible
+    }
+
+    protected fun setCloseButtonVisibility(isVisible: Boolean) {
+        baseDialogBinding.imageViewClose.isVisible = isVisible
+    }
+
+    private fun DialogBaseDoneBinding.setCloseClickListener() {
+        imageViewClose.setOnClickListener {
+            dismissAllowingStateLoss()
+        }
+    }
 
     private fun DialogBaseDoneBinding.setDoneClickListener() {
         buttonDone.setOnClickListener {
