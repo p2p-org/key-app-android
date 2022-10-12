@@ -63,7 +63,7 @@ class SolendWithdrawFragment :
             viewDoubleInput.setInputData(
                 inputSymbol = token.tokenSymbol,
                 outputSymbol = USD_READABLE_SYMBOL, // todo: talk to managers about output
-                inputRate = token.usdRate.toFloat()
+                inputRate = token.usdRate.toDouble()
             )
         }
     }

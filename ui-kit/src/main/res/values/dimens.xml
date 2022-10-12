@@ -40,4 +40,6 @@
     <dimen name="ui_kit_skeleton_circle_48">48dp</dimen>
     <dimen name="ui_kit_skeleton_circle_52">52dp</dimen>
 
+    <!-- UiKitDoubleInputView -->
+    <dimen name="uikit_double_input_view_height">60dp</dimen>
 </resources>

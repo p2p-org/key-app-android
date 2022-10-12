@@ -7,10 +7,15 @@ import android.content.Context
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.widget.TextView
 import org.p2p.uikit.databinding.WidgetDoubleInputViewBinding
 import org.p2p.uikit.utils.emptyString
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
 import java.math.BigDecimal
+import java.math.RoundingMode
+
+private const val DECIMAL_SCALE_LONG = 9
 
 class UiKitDoubleInputView @JvmOverloads constructor(
     context: Context,
@@ -22,6 +27,8 @@ class UiKitDoubleInputView @JvmOverloads constructor(
 
     private var textWatcherInput: TextWatcher? = null
     private var textWatcherOutput: TextWatcher? = null
+
+    private var originalTextSize: Float
 
     init {
         with(binding) {
@@ -42,8 +49,10 @@ class UiKitDoubleInputView @JvmOverloads constructor(
                 }
             }
 
-            textViewInputToken.setOnClickListener { editTextInput.requestFocus() }
-            textViewOutputToken.setOnClickListener { editTextOutput.requestFocus() }
+            textViewInputToken.setOnClickListener { editTextInput.focusAndShowKeyboard() }
+            textViewOutputToken.setOnClickListener { editTextOutput.focusAndShowKeyboard() }
+
+            originalTextSize = editTextInput.textSize
         }
     }
 
@@ -60,9 +69,14 @@ class UiKitDoubleInputView @JvmOverloads constructor(
     }
 
     fun setOutputLabelText(text: String, amount: BigDecimal) {
-        binding.textViewOutputLabel.text = text
-        binding.textViewOutputLabel.setOnClickListener {
-            binding.updateInputText(amount.toString(), removeListener = false)
+        with(binding) {
+            textViewOutputLabel.text = text
+            textViewOutputLabel.setOnClickListener {
+                updateInputText(
+                    outputText = amount.scaleLong(),
+                    removeListener = false
+                )
+            }
         }
     }
 
@@ -73,24 +87,22 @@ class UiKitDoubleInputView @JvmOverloads constructor(
     fun setInputData(
         inputSymbol: String,
         outputSymbol: String,
-        inputRate: Float
+        inputRate: Double
     ) = with(binding) {
         textViewInputToken.hint = inputSymbol
         textViewOutputToken.hint = outputSymbol
 
-        val originalInputTextSize = editTextInput.textSize
         textWatcherInput = editTextInput.doOnTextChanged { text, _, _, _ ->
-            resizeInput(text, inputSymbol, originalInputTextSize)
+            resizeInput(text, inputSymbol)
 
-            val inputValue = text?.toString()?.toFloatOrNull() ?: 0f
+            val inputValue = text?.toString()?.toDoubleOrNull() ?: 0.0
             calculateInput(inputValue, inputRate)
         }
 
-        val originalOutputTextSize = editTextOutput.textSize
         textWatcherOutput = editTextOutput.doOnTextChanged { text, _, _, _ ->
-            resizeOutput(text, inputSymbol, originalOutputTextSize)
+            resizeOutput(text, inputSymbol)
 
-            val outputValue = text?.toString()?.toFloatOrNull() ?: 0f
+            val outputValue = text?.toString()?.toDoubleOrNull() ?: 0.0
             val outputRate = 1 / inputRate
             calculateOutput(outputValue, outputRate)
         }
@@ -103,65 +115,72 @@ class UiKitDoubleInputView @JvmOverloads constructor(
     /*
     * todo: maybe move math to presenter? workaround
     * */
-    private fun WidgetDoubleInputViewBinding.calculateInput(inputValue: Float, inputRate: Float) {
-        if (inputValue == 0f) {
+    private fun WidgetDoubleInputViewBinding.calculateInput(inputValue: Double, inputRate: Double) {
+        if (inputValue == 0.0) {
             updateOutputText(emptyString())
             return
         }
 
-        val output = inputValue * inputRate
-        updateOutputText(output.toString())
+        val output = BigDecimal(inputValue * inputRate).scaleLong()
+        updateOutputText(output)
     }
 
-    private fun WidgetDoubleInputViewBinding.calculateOutput(outputValue: Float, outputRate: Float) {
-        if (outputRate == 0f) return
+    private fun WidgetDoubleInputViewBinding.calculateOutput(outputValue: Double, outputRate: Double) {
+        if (outputRate == 0.0) return
 
-        if (outputValue == 0f) {
+        if (outputValue == 0.0) {
             updateInputText(emptyString())
             return
         }
 
-        val output = outputValue * outputRate
-        updateInputText(output.toString())
+        val output = BigDecimal(outputValue * outputRate).scaleLong()
+        updateInputText(output)
     }
 
     private fun WidgetDoubleInputViewBinding.resizeInput(
         text: CharSequence?,
-        inputSymbol: String,
-        originalInputTextSize: Float
+        inputSymbol: String
     ) {
-        textViewAutoSizeInput.text = text.appendSymbol(inputSymbol)
+        textViewAutoSizeInput.setText(text.appendSymbol(inputSymbol), TextView.BufferType.EDITABLE)
 
-        val textSize = if (text.isNullOrBlank()) originalInputTextSize else textViewAutoSizeInput.textSize
-
+        val textSize = if (text.isNullOrBlank()) originalTextSize else textViewAutoSizeInput.textSize
         editTextInput.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         textViewInputToken.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
     }
 
     private fun WidgetDoubleInputViewBinding.resizeOutput(
         text: CharSequence?,
-        inputSymbol: String,
-        originalOutputTextSize: Float
+        inputSymbol: String
     ) {
-        textViewAutoSizeOutput.text = text.appendSymbol(inputSymbol)
+        textViewAutoSizeOutput.setText(text.appendSymbol(inputSymbol), TextView.BufferType.EDITABLE)
 
-        val textSize = if (text.isNullOrBlank()) originalOutputTextSize else textViewAutoSizeOutput.textSize
-
+        val textSize = if (text.isNullOrBlank()) originalTextSize else textViewAutoSizeOutput.textSize
         editTextOutput.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         textViewOutputToken.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
     }
 
     private fun WidgetDoubleInputViewBinding.updateInputText(outputText: String, removeListener: Boolean = true) {
         if (removeListener) editTextInput.removeTextChangedListener(textWatcherInput)
+
         editTextInput.setText(outputText)
+        resizeInput(outputText, textViewInputToken.hint.toString())
+
         if (removeListener) editTextInput.addTextChangedListener(textWatcherInput)
     }
 
     private fun WidgetDoubleInputViewBinding.updateOutputText(outputText: String, removeListener: Boolean = true) {
         if (removeListener) editTextOutput.removeTextChangedListener(textWatcherOutput)
+
         editTextOutput.setText(outputText)
+        resizeOutput(outputText, textViewOutputToken.hint.toString())
+
         if (removeListener) editTextOutput.addTextChangedListener(textWatcherOutput)
     }
 
     private fun CharSequence?.appendSymbol(symbol: String) = "${this?.toString().orEmpty()} $symbol"
+
+    private fun BigDecimal.scaleLong(): String =
+        setScale(DECIMAL_SCALE_LONG, RoundingMode.HALF_EVEN)
+            .stripTrailingZeros()
+            .toPlainString()
 }
