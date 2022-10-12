@@ -14,6 +14,7 @@ interface SolendEarnContract {
         fun showLoading(isLoading: Boolean)
         fun setRatesErrorVisibility(isVisible: Boolean)
         fun showDepositTopUp(deposit: SolendDepositToken)
+        fun showDepositToSolend(deposit: SolendDepositToken)
         fun showAvailableDeposits(deposits: List<SolendDepositToken>)
         fun navigateToUserDeposits(deposits: List<SolendDepositToken.Active>)
     }

@@ -61,4 +61,8 @@
     <string name="solend_info_slider_text_2">Deposit with interest\nDeposit USDT or USDC and get your guaranteed yield on it.</string>
     <string name="solend_info_slider_text_3">Control your assets\nLow risks all your assets are under your control. Instant withdrawal with all rewards.</string>
 
+    <!--Deposit To Solend-->
+    <string name="solend_deposit_title">Deposit into Solend</string>
+    <string name="solend_select_token_to_deposit_title">Token to deposit</string>
+
 </resources>
