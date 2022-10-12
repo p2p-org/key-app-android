@@ -178,7 +178,8 @@ class CheckModulesTest : KoinTest {
             iconUrl = null,
             supplyInterest = BigDecimal.ZERO,
             depositAmount = BigDecimal.ZERO,
-            usdAmount = BigDecimal.ZERO
+            usdAmount = BigDecimal.ZERO,
+            usdRate = BigDecimal.ZERO
         )
     }
 }
