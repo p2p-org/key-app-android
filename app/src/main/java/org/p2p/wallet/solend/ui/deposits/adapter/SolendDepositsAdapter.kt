@@ -8,9 +8,9 @@ class SolendDepositsAdapter(
     private val depositClickListener: TokenDepositItemClickListener
 ) : RecyclerView.Adapter<SolendDepositViewHolder>() {
 
-    private val data = mutableListOf<SolendDepositToken>()
+    private val data = mutableListOf<SolendDepositToken.Active>()
 
-    fun setItems(new: List<SolendDepositToken>) {
+    fun setItems(new: List<SolendDepositToken.Active>) {
         data.clear()
         data += new
         notifyDataSetChanged()

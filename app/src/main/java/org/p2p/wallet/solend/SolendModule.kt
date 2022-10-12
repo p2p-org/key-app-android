@@ -21,10 +21,13 @@ import org.p2p.wallet.solend.ui.earn.SolendEarnContract
 import org.p2p.wallet.solend.ui.earn.SolendEarnPresenter
 import org.p2p.wallet.solend.ui.earn.bottomsheet.SolendTopUpBottomSheetContract
 import org.p2p.wallet.solend.ui.earn.bottomsheet.SolendTopUpBottomSheetPresenter
+import org.p2p.wallet.solend.ui.withdraw.SolendWithdrawContract
+import org.p2p.wallet.solend.ui.withdraw.SolendWithdrawPresenter
 
 object SolendModule : InjectionModule {
 
     override fun create() = module {
+        factoryOf(::SolendWithdrawPresenter) bind SolendWithdrawContract.Presenter::class
         factoryOf(::SolendEarnPresenter) bind SolendEarnContract.Presenter::class
         factoryOf(::SolendUserDepositsPresenter) bind SolendUserDepositsContract.Presenter::class
         singleOf(::DepositTickerStorage)
