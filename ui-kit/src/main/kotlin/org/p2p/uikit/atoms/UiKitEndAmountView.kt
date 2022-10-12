@@ -30,7 +30,7 @@ class UiKitEndAmountView @JvmOverloads constructor(
         }
 
     @DrawableRes
-    var icon: Int = 0
+    var icon: Int? = null
         set(value) {
             binding.actionImageView.withImageOrGone(value)
             field = value

@@ -2,7 +2,6 @@ package org.p2p.wallet.solend.ui.deposits
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.solend.ui.deposits.adapter.TokenDepositItemClickListener
 
 interface SolendUserDepositsContract {
 
@@ -10,5 +9,5 @@ interface SolendUserDepositsContract {
         fun showLoading(isLoading: Boolean)
     }
 
-    interface Presenter : MvpPresenter<View>, TokenDepositItemClickListener
+    interface Presenter : MvpPresenter<View>
 }

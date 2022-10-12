@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import org.p2p.wallet.databinding.DialogBaseRecyclerPartBinding
 
+/**
+ * Base BottomSheet extended from [BaseDoneBottomSheet] used to implement [RecyclerView] as an innerView
+ **/
 abstract class BaseRecyclerDoneBottomSheet : BaseDoneBottomSheet() {
 
     lateinit var recyclerBinding: DialogBaseRecyclerPartBinding
