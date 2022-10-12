@@ -14,13 +14,15 @@ class SolendDepositMapper {
         marketInfo: SolendMarketInfo?,
         activeDeposit: SolendUserDeposit?
     ): SolendDepositToken = if (activeDeposit != null) {
+        val usdRate = tokenPrice?.price.orZero()
         SolendDepositToken.Active(
             tokenName = tokenData.name,
             tokenSymbol = tokenData.symbol,
             iconUrl = tokenData.iconUrl,
             supplyInterest = marketInfo?.supplyInterest,
             depositAmount = activeDeposit.depositedAmount,
-            usdAmount = activeDeposit.depositedAmount * tokenPrice?.price.orZero()
+            usdAmount = activeDeposit.depositedAmount * usdRate,
+            usdRate = usdRate
         )
     } else {
         SolendDepositToken.Inactive(

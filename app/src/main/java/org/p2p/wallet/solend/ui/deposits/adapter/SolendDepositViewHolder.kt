@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import android.annotation.SuppressLint
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
@@ -22,31 +23,23 @@ private const val IMAGE_SIZE = 48
 class SolendDepositViewHolder(
     parent: ViewGroup,
     private val binding: ItemSolendDepositBinding = parent.inflateViewBinding(attachToRoot = false),
-    private val onAddMoreClicked: (SolendDepositToken) -> Unit,
-    private val onWithdrawClicked: (SolendDepositToken) -> Unit
+    private val onAddMoreClicked: (SolendDepositToken.Active) -> Unit,
+    private val onWithdrawClicked: (SolendDepositToken.Active) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
         .listener(SvgSoftwareLayerSetter())
 
-    fun onBind(item: SolendDepositToken) = with(binding) {
+    @SuppressLint("SetTextI18n")
+    fun onBind(item: SolendDepositToken.Active) = with(binding) {
         loadImage(tokenImageView, item.iconUrl.orEmpty())
 
         val supplyInterestToShow = item.supplyInterest ?: BigDecimal.ZERO
         textViewApy.text = getString(R.string.solend_deposits_yielding_apy, supplyInterestToShow.scaleShort())
 
-        textViewAmountUsd.text = if (item is SolendDepositToken.Active) {
-            "$${item.depositAmount.scaleShort()}"
-        } else {
-            "$0"
-        }
-
-        if (item is SolendDepositToken.Active) {
-            textViewTokenAmount.text = "%s %s".format(item.depositAmount.scaleShort().toString(), item.tokenSymbol)
-        } else {
-            textViewTokenAmount.text = item.tokenSymbol
-        }
+        textViewAmountUsd.text = "$${item.depositAmount.scaleShort()}"
+        textViewTokenAmount.text = "%s %s".format(item.depositAmount.scaleShort().toString(), item.tokenSymbol)
 
         buttonAddMore.setOnClickListener {
             onAddMoreClicked(item)

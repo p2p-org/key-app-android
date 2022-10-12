@@ -25,11 +25,11 @@ class SolendEarnPresenter(
     private val resourcesProvider: ResourcesProvider,
     private val solendDepositsInteractor: SolendDepositsInteractor,
     private val userInteractor: UserInteractor,
-    private val depositTickerManager: DepositTickerManager
+    private val depositTickerStorage: DepositTickerStorage
 ) : BasePresenter<SolendEarnContract.View>(), SolendEarnContract.Presenter {
 
     private var timerJob: Job? = null
-    private var lastDepositTickerBalance: BigDecimal = depositTickerManager.getTickerBalance(BigDecimal.ZERO)
+    private var lastDepositTickerBalance: BigDecimal = depositTickerStorage.getTickerBalance(BigDecimal.ZERO)
     private var blockedErrorState = true
 
     private var deposits by Delegates.observable(emptyList<SolendDepositToken>()) { _, _, newValue ->
@@ -128,7 +128,7 @@ class SolendEarnPresenter(
                 }
                 val tokenIcons = activeDeposits.map { it.iconUrl.orEmpty() }
 
-                val tickerAmount = depositTickerManager.getTickerBalance(depositBalance)
+                val tickerAmount = depositTickerStorage.getTickerBalance(depositBalance)
                 view?.showWidgetState(EarnWidgetState.Balance(tickerAmount, tokenIcons))
                 startBalanceTicker(tickerAmount, totalYearBalance, tokenIcons)
 
@@ -150,7 +150,7 @@ class SolendEarnPresenter(
 
     private fun saveLastDepositTicker() {
         if (lastDepositTickerBalance != BigDecimal.ZERO) {
-            depositTickerManager.setLastTickerBalance(lastDepositTickerBalance)
+            depositTickerStorage.setLastTickerBalance(lastDepositTickerBalance)
         }
     }
 

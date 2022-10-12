@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineMiddle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/textViewInputLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
+        app:layout_constraintEnd_toStartOf="@id/guidelineMiddle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="You will withdraw" />
+
+    <TextView
+        android:id="@+id/textViewOutputLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:gravity="end"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_sky"
+        app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guidelineMiddle"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Withdraw all 4 971.77 USDC" />
+
+    <TextView
+        android:id="@+id/textViewAutoSizeInput"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/uikit_double_input_view_height"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingHorizontal="8dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+        android:textColor="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="@id/containerInput"
+        app:layout_constraintEnd_toEndOf="@id/containerInput"
+        app:layout_constraintStart_toStartOf="@id/containerInput"
+        app:layout_constraintTop_toTopOf="@id/containerInput"
+        tools:text="0.0 USDC" />
+
+    <LinearLayout
+        android:id="@+id/containerInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_rounded_smoke_start"
+        android:gravity="center"
+        android:minHeight="@dimen/uikit_double_input_view_height"
+        android:orientation="horizontal"
+        android:paddingVertical="16dp"
+        app:layout_constraintBottom_toTopOf="@id/textViewBottomMessage"
+        app:layout_constraintEnd_toStartOf="@id/guidelineMiddle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewInputLabel"
+        app:layout_constraintVertical_bias="0">
+
+        <EditText
+            android:id="@+id/editTextInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:hint="@string/amounts_view_hint"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2" />
+
+        <TextView
+            android:id="@+id/textViewInputToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            tools:hint="USDC" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="60dp"
+        android:background="@color/bg_rain"
+        app:layout_constraintBottom_toBottomOf="@id/containerInput"
+        app:layout_constraintEnd_toEndOf="@id/guidelineMiddle"
+        app:layout_constraintStart_toStartOf="@id/guidelineMiddle"
+        app:layout_constraintTop_toTopOf="@id/containerInput" />
+
+    <TextView
+        android:id="@+id/textViewAutoSizeOutput"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/uikit_double_input_view_height"
+        android:autoSizeMaxTextSize="22sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingHorizontal="8dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+        android:textColor="@color/bg_smoke"
+        app:layout_constraintBottom_toBottomOf="@id/containerOutput"
+        app:layout_constraintEnd_toEndOf="@id/containerOutput"
+        app:layout_constraintStart_toStartOf="@id/containerOutput"
+        app:layout_constraintTop_toTopOf="@id/containerOutput"
+        tools:text="0.0 USDC" />
+
+    <LinearLayout
+        android:id="@+id/containerOutput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_rounded_smoke_end"
+        android:gravity="center"
+        android:minHeight="@dimen/uikit_double_input_view_height"
+        android:orientation="horizontal"
+        android:paddingVertical="16dp"
+        app:layout_constraintBottom_toTopOf="@id/textViewBottomMessage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guidelineMiddle"
+        app:layout_constraintTop_toBottomOf="@id/textViewInputLabel"
+        app:layout_constraintVertical_bias="0">
+
+        <EditText
+            android:id="@+id/editTextOutput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:hint="@string/amounts_view_hint"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2" />
+
+        <TextView
+            android:id="@+id/textViewOutputToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            android:textColor="@color/text_mountain"
+            tools:hint="USDC" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewBottomMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="A proportional amount of rewards will be withdrawn" />
+
+</merge>
