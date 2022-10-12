@@ -4,6 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
@@ -60,7 +61,13 @@ class BuySolanaPresenter(
                 Timber.e(e, "Error loading currency ask price")
                 view?.showErrorMessage(e)
             } finally {
-                buyAnalytics.logBuyViewed()
+                val prevScreenName =
+                    if (analyticsInteractor.getPreviousScreenName() == ScreenNames.Token.TOKEN_SCREEN) {
+                        ScreenNames.Token.TOKEN_SCREEN
+                    } else {
+                        ScreenNames.Main.MAIN
+                    }
+                buyAnalytics.logScreenOpened(lastScreenName = prevScreenName)
                 view?.showLoading(false)
             }
         }
