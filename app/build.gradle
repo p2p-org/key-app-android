@@ -314,7 +314,6 @@ dependencies {
     implementation 'com.appsflyer:af-android-sdk:6.9.0'
     implementation "com.android.installreferrer:installreferrer:2.2"
 
-
     // TickerView
     implementation 'com.robinhood.ticker:ticker:2.0.4'
 

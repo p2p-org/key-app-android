@@ -3,7 +3,6 @@ package org.p2p.wallet
 import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
-import com.appsflyer.AppsFlyerLib
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -12,6 +11,7 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
+import org.p2p.wallet.appsfly.AppsFlyManager
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 import org.p2p.wallet.intercom.IntercomService
@@ -33,8 +33,6 @@ class App : Application() {
 
         setupCrashLoggingService()
 
-        setupAppsFlyer()
-
         AppNotificationManager.createNotificationChannels(this)
         IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
         AndroidThreeTen.init(this)
@@ -44,6 +42,8 @@ class App : Application() {
         SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
 
         appCreatedAction.invoke()
+
+        AppsFlyManager.install(this)
     }
 
     private fun setupKoin() {
@@ -86,13 +86,5 @@ class App : Application() {
         crashLogger.apply {
             setCustomKey("task_number", BuildConfig.TASK_NUMBER)
         }
-    }
-
-    private fun setupAppsFlyer() {
-        val appsFlyer = AppsFlyerLib.getInstance().apply {
-            setDebugLog(BuildConfig.DEBUG)
-        }
-        appsFlyer.init(BuildConfig.appsFlyerKey, null, this@App)
-        appsFlyer.start(this@App)
     }
 }
