@@ -3,6 +3,7 @@ package org.p2p.wallet
 import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
+import com.appsflyer.AppsFlyerLib
 import com.jakewharton.threetenabp.AndroidThreeTen
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -31,6 +32,8 @@ class App : Application() {
         setupTimber()
 
         setupCrashLoggingService()
+
+        setupAppsFlyer()
 
         AppNotificationManager.createNotificationChannels(this)
         IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
@@ -83,5 +86,13 @@ class App : Application() {
         crashLogger.apply {
             setCustomKey("task_number", BuildConfig.TASK_NUMBER)
         }
+    }
+
+    private fun setupAppsFlyer() {
+        val appsFlyer = AppsFlyerLib.getInstance().apply {
+            setDebugLog(BuildConfig.DEBUG)
+        }
+        appsFlyer.init(BuildConfig.appsFlyerKey, null, this@App)
+        appsFlyer.start(this@App)
     }
 }
