@@ -39,6 +39,7 @@ import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.solend.model.SolendDepositToken
 import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
@@ -122,6 +123,7 @@ class CheckModulesTest : KoinTest {
             parameters = {
                 withInstance(sharedPrefsMock)
                 withInstance(createEmptyActiveToken())
+                withInstance(createEmptySolendDepositToken())
                 withInstance(mockk<SecureStorage>())
                 withInstance(mockk<TransactionWorker>())
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
@@ -166,6 +168,17 @@ class CheckModulesTest : KoinTest {
             serumV3Usdc = null,
             serumV3Usdt = null,
             isWrapped = false
+        )
+    }
+
+    private fun createEmptySolendDepositToken(): SolendDepositToken.Active {
+        return SolendDepositToken.Active(
+            tokenSymbol = "",
+            tokenName = "",
+            iconUrl = null,
+            supplyInterest = BigDecimal.ZERO,
+            depositAmount = BigDecimal.ZERO,
+            usdAmount = BigDecimal.ZERO
         )
     }
 }
