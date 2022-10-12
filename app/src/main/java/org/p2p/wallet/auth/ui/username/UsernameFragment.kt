@@ -40,21 +40,7 @@ class UsernameFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.run {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            receiveCardView.setOnRequestPermissions {
-                checkStatusAndRequestPermissionsIfNotGranted()
-            }
-            receiveCardView.setOnShareQrClickListener { qrValue, qrImage, shareText ->
-                presenter.saveQr(qrValue, qrImage, shareText)
-                receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
-            }
-            receiveCardView.setOnSaveQrClickListener { qrValue, qrImage ->
-                presenter.saveQr(qrValue, qrImage)
-                receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
-            }
-            receiveCardView.setSelectNetworkVisibility(isVisible = false)
-            receiveCardView.setFaqVisibility(isVisible = false)
-            receiveCardView.setTokenSymbol(Constants.SOL_NAME)
-            receiveCardView.hideWatermark()
+            receiveCardView.initReceiveCardView()
             progressButton.setOnClickListener {
                 replaceFragment(TokenListFragment.create())
             }
@@ -62,8 +48,26 @@ class UsernameFragment :
         presenter.loadData()
     }
 
+    private fun ReceiveCardView.initReceiveCardView() {
+        setOnRequestPermissions {
+            checkStatusAndRequestPermissionsIfNotGranted()
+        }
+        setOnShareQrClickListener { qrValue, qrImage, shareText ->
+            presenter.saveQr(qrValue, qrImage, shareText)
+            receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
+        }
+        setOnSaveQrClickListener { qrValue, qrImage ->
+            presenter.saveQr(qrValue, qrImage)
+            receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
+        }
+        setSelectNetworkVisibility(isVisible = false)
+        setFaqVisibility(isVisible = false)
+        setTokenSymbol(Constants.SOL_NAME)
+        hideWatermark()
+    }
+
     override fun showUsername(username: Username) {
-        val fullUsername = username.getFullUsername(requireContext())
+        val fullUsername = username.getUsernameWithKeySolPostfix(requireContext())
         binding.receiveCardView.setQrName(fullUsername)
 
         binding.receiveCardView.setOnCopyQrClickListener {

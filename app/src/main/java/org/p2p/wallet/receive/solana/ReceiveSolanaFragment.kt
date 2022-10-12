@@ -97,7 +97,7 @@ class ReceiveSolanaFragment :
     override fun showUserData(userPublicKey: String, username: Username?) {
         with(binding) {
             receiveCardView.setQrValue(userPublicKey.highlightPublicKey(requireContext()))
-            username?.getFullUsername(requireContext())?.let {
+            username?.getUsernameWithKeySolPostfix(requireContext())?.let {
                 receiveCardView.setQrName(it)
             }
             progressButton.setOnClickListener {

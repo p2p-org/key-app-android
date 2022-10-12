@@ -46,7 +46,7 @@ import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.send.ui.network.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
-import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_RESULT
+import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_SEARCH_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
@@ -133,8 +133,8 @@ class SendFragment :
                 val token = result.getParcelable<Token.Active>(EXTRA_FEE_PAYER)
                 if (token != null) presenter.setFeePayerToken(token)
             }
-            result.containsKey(EXTRA_RESULT) -> {
-                val searchResult = result.getParcelable<SearchResult>(EXTRA_RESULT)
+            result.containsKey(EXTRA_SEARCH_RESULT) -> {
+                val searchResult = result.getParcelable<SearchResult>(EXTRA_SEARCH_RESULT)
                 if (searchResult != null) presenter.setTargetResult(searchResult)
             }
             result.containsKey(EXTRA_NETWORK) -> {

@@ -127,7 +127,7 @@ class ReceiveTokenFragment :
 
     override fun showUserData(userPublicKey: String, directPublicKey: String, username: Username?) {
         binding.directAddressBottomTextView.text = userPublicKey
-        val fullUsername = username?.getFullUsername(requireContext())
+        val fullUsername = username?.getUsernameWithKeySolPostfix(requireContext())
         if (fullUsername != null) {
             binding.receiveCardView.setQrName(fullUsername)
         }

@@ -152,7 +152,6 @@ object NetworkModule : InjectionModule {
                 if (interceptor != null) {
                     addInterceptor(interceptor)
                 }
-
                 if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
                     addInterceptor(httpLoggingInterceptor(tag))
                 }
