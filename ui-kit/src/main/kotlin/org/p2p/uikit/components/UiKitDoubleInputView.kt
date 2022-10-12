@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import org.p2p.uikit.databinding.WidgetDoubleInputViewBinding
 import org.p2p.uikit.utils.emptyString
-import org.p2p.uikit.utils.getString
 import org.p2p.uikit.utils.inflateViewBinding
 import java.math.BigDecimal
 
