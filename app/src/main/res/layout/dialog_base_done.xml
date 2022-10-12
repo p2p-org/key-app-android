@@ -44,7 +44,7 @@
         app:layout_constraintBottom_toBottomOf="@id/textViewTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/textViewTitle"
-        app:tint="@color/textIconPrimary"
+        app:tint="@color/icons_night"
         tools:ignore="ContentDescription" />
 
     <FrameLayout
