@@ -44,12 +44,12 @@ class GoogleSignInHelper(
                     try {
                         googleSignInLauncher.launch(IntentSenderRequest.Builder(it).build())
                     } catch (e: SendIntentException) {
-                        Timber.w(e, "Error on SignInIntent")
+                        Timber.e(e, "Error on SignInIntent")
                         Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
                     }
                 }
                 .addOnFailureListener {
-                    Timber.w(it, "Failure on SignInIntent")
+                    Timber.e(it, "Failure on SignInIntent")
                     Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
                 }
         }
@@ -66,9 +66,8 @@ class GoogleSignInHelper(
             sharedPreferences.edit {
                 putLong(PREFS_KEY_TOKEN_EXPIRE_TIME, 0)
             }
-            Timber.e(ex, "Error on getting Credential from result")
-
             if (shouldErrorBeHandled(ex)) {
+                Timber.e(ex, "Error on getting Credential from result: ${ex.status.statusMessage}")
                 if (connectionStateProvider.hasConnection()) {
                     errorHandler.onCommonError()
                 } else {

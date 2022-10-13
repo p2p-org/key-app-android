@@ -17,13 +17,13 @@ class TimberCrashTree(
         val priorityAsString = priority.priorityToString()
         when {
             isThrowablePriority && t != null -> {
-                crashLogger.logThrowable(t)
+                crashLogger.logThrowable(t, message)
             }
             isThrowablePriority && t == null -> {
                 crashLogger.logInformation("[$tag] [$priorityAsString] $message")
             }
             isInformationPriority && t != null -> {
-                crashLogger.logInformation("[$tag] [$priorityAsString] $t ($message)")
+                crashLogger.logInformation("[$tag] [$priorityAsString] ($message): $t")
             }
             isInformationPriority -> {
                 crashLogger.logInformation("[$tag] [$priorityAsString] $message")
