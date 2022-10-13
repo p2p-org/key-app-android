@@ -128,7 +128,6 @@
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
     <string name="auth_clickable_skip_this_step">skip this step</string>
     <string name="auth_key_sol">.key.sol</string>
-    <string name="auth_name_key_sol">%s.key.sol</string>
     <string name="auth_available_name">%1$s is available</string>
     <string name="auth_unavailable_name">%1$s is unavailable</string>
     <string name="auth_username_length_error">Enter a name under %d characters</string>

@@ -1,11 +1,11 @@
 package org.p2p.wallet.send.interactor
 
+import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.auth.username.repository.UsernameRepository
 
 private const val ZERO_BALANCE = 0L
 
@@ -18,12 +18,17 @@ class SearchInteractor(
     suspend fun searchByName(username: String): List<SearchResult> {
         val usernames = usernameRepository.findUsernameDetailsByUsername(username)
         return usernames.map {
-            val balance = userInteractor.getBalance(it.ownerAddress.base58Value)
+            val balance = userInteractor.getBalance(it.ownerAddress)
             val hasEmptyBalance = balance == ZERO_BALANCE
-            return@map if (hasEmptyBalance) {
-                SearchResult.EmptyBalance(AddressState(it.ownerAddress.base58Value))
+            if (hasEmptyBalance) {
+                SearchResult.EmptyBalance(
+                    AddressState(it.ownerAddress.base58Value)
+                )
             } else {
-                SearchResult.Full(AddressState(it.ownerAddress.base58Value), it.fullUsername)
+                SearchResult.Full(
+                    AddressState(it.ownerAddress.base58Value),
+                    username = it.fullUsername
+                )
             }
         }
     }
@@ -32,9 +37,9 @@ class SearchInteractor(
         val balance = userInteractor.getBalance(address)
         val hasEmptyBalance = balance == ZERO_BALANCE
         val result = if (hasEmptyBalance) {
-            SearchResult.EmptyBalance(AddressState(address.value))
+            SearchResult.EmptyBalance(AddressState(address.base58Value))
         } else {
-            SearchResult.AddressOnly(AddressState(address.value))
+            SearchResult.AddressOnly(AddressState(address.base58Value))
         }
         return listOf(result)
     }

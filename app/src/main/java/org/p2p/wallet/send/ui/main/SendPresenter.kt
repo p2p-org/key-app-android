@@ -1,8 +1,5 @@
 package org.p2p.wallet.send.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
@@ -55,6 +52,7 @@ import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
+import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
@@ -67,6 +65,9 @@ import java.math.RoundingMode
 import java.util.Locale
 import java.util.UUID
 import kotlin.properties.Delegates
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class SendPresenter(
     private val sendInteractor: SendInteractor,
@@ -909,7 +910,7 @@ class SendPresenter(
             return
         }
 
-        val results = searchInteractor.searchByAddress(address)
+        val results = searchInteractor.searchByAddress(address.toBase58Instance())
         if (results.isEmpty()) return
 
         val first = results.first()

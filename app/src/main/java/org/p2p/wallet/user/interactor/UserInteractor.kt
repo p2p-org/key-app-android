@@ -51,7 +51,7 @@ class UserInteractor(
         return allTokens
     }
 
-    suspend fun getBalance(address: Base58String): Long = rpcRepository.getBalance(address.value)
+    suspend fun getBalance(address: Base58String): Long = rpcRepository.getBalance(address.base58Value)
 
     suspend fun loadAllTokensData() {
         val data = userRepository.loadAllTokens()

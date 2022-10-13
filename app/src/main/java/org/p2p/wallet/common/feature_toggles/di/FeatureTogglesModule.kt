@@ -1,5 +1,6 @@
 package org.p2p.wallet.common.feature_toggles.di
 
+import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -14,10 +15,11 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 
 object FeatureTogglesModule : InjectionModule {
     override fun create() = module {
-        single(createdAtStart = true) { AppFirebaseRemoteConfig() }
+        singleOf(::AppFirebaseRemoteConfig) { createdAtStart() }
         singleOf(::LocalFirebaseRemoteConfig)
 
         singleOf(::FeatureTogglesValuesSource) bind RemoteConfigValuesProvider::class
@@ -28,7 +30,8 @@ object FeatureTogglesModule : InjectionModule {
                 get<NewBuyFeatureToggle>(),
                 get<BuyWithTransferFeatureToggle>(),
                 get<SettingsNetworkListFeatureToggle>(),
-                get<SolendEnabledFeatureToggle>()
+                get<SolendEnabledFeatureToggle>(),
+                get<UsernameDomainFeatureToggle>()
             )
         }
 
@@ -37,5 +40,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::BuyWithTransferFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
         factoryOf(::SolendEnabledFeatureToggle)
+        factoryOf(::UsernameDomainFeatureToggle)
     }
 }

@@ -3,11 +3,10 @@ package org.p2p.wallet.auth.interactor
 import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import org.json.JSONObject
-import org.p2p.wallet.auth.model.ResolvedUsernames
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
+import org.p2p.wallet.auth.username.repository.UsernameRepository
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
@@ -19,6 +18,7 @@ class UsernameInteractor(
     private val usernameRepository: UsernameRepository,
     private val fileLocalRepository: FileRepository,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val sharedPreferences: SharedPreferences
 ) {
 
@@ -46,14 +46,15 @@ class UsernameInteractor(
 
     fun getUsername(): Username? {
         val username = sharedPreferences.getString(KEY_USERNAME, null)
-        return username?.let { Username(it) }
+        return username?.let {
+            Username(
+                trimmedUsername = it,
+                domainPrefix = usernameDomainFeatureToggle.value
+            )
+        }
     }
 
     fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? = fileLocalRepository.saveQr(
         name, bitmap, forSharing
     )
-
-    suspend fun searchUsername(enteredQuery: String): List<ResolvedUsernames> {
-        return usernameRepository.resolveUsernames(enteredQuery)
-    }
 }

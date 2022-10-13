@@ -29,6 +29,16 @@ abstract class BooleanFeatureToggle(
     val isFeatureEnabled: Boolean get() = value
 }
 
+abstract class StringFeatureToggle(
+    private val valuesProvider: RemoteConfigValuesProvider
+) : RemoteFeatureToggle<String>() {
+    override val value: String
+        get() = valuesProvider.getString(featureKey) ?: kotlin.run {
+            Timber.i("No value found for $featureKey; using defaults = $defaultValue")
+            defaultValue
+        }
+}
+
 /**
  * Use subclasses to override how should be JSON parsed
  */

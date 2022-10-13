@@ -34,7 +34,7 @@ class SettingsItemMapper(
         ComplexSettingsItem(
             nameRes = R.string.settings_item_title_username,
             iconRes = R.drawable.ic_settings_user,
-            additionalText = username?.getFullUsername(resourcesProvider)
+            additionalText = username?.fullUsername
                 ?: resourcesProvider.getString(R.string.settings_item_username_not_reserved),
             hasSeparator = false
         ),

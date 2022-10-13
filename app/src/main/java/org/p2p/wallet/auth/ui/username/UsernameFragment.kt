@@ -67,8 +67,7 @@ class UsernameFragment :
     }
 
     override fun showUsername(username: Username) {
-        val fullUsername = username.getUsernameWithKeySolPostfix(requireContext())
-        binding.receiveCardView.setQrName(fullUsername)
+        binding.receiveCardView.setQrName(username.fullUsername)
 
         binding.receiveCardView.setOnCopyQrClickListener {
             receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
