@@ -29,6 +29,9 @@ class OnboardingGeneralErrorPresenter(
             is GatewayHandledState.CriticalError -> {
                 view.setState(gatewayHandledState)
             }
+            else -> {
+                // Do nothing
+            }
         }
     }
 

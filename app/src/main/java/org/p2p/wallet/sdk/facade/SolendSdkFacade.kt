@@ -1,7 +1,6 @@
 package org.p2p.wallet.sdk.facade
 
 import com.google.gson.Gson
-import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.sdk.SolendSdk
@@ -21,6 +20,7 @@ import org.p2p.wallet.sdk.facade.model.SolendUserDepositsResponseResponse
 import org.p2p.wallet.sdk.facade.model.SolendWithdrawTransactionsResponse
 import org.p2p.wallet.utils.Base58String
 import kotlinx.coroutines.withContext
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 
 class SolendSdkFacade(
     private val solendSdk: SolendSdk,
@@ -67,14 +67,14 @@ class SolendSdkFacade(
             relay_program_id = relayProgramId,
             amount = depositAmount,
             symbol = currencySymbol,
-            ownerAddres = ownerAddress.value,
+            ownerAddres = ownerAddress.base58Value,
             environment = solendEnvironment.sdkValue,
             lendng_market_address = lendingMarketAddress.orEmpty(),
             blockhash = currentBlockhash,
             free_transactions_count = remainingFreeTransactionsCount,
             need_to_use_relay = payFeeWithRelay,
             pay_fee_in_token = feePayerToken?.let { gson.toJson(it) }.orEmpty(),
-            fee_payer_address = realFeePayerAddress.value
+            fee_payer_address = realFeePayerAddress.base58Value
         )
         logger.logResponse("createDepositTransactions", response)
         methodResultMapper.fromSdk(response)
@@ -111,14 +111,14 @@ class SolendSdkFacade(
             relay_program_id = relayProgramId,
             amount = depositAmount,
             symbol = currencySymbol,
-            owner_address = ownerAddress.value,
+            owner_address = ownerAddress.base58Value,
             environment = solendEnvironment.sdkValue,
             lendng_market_address = lendingMarketAddress.orEmpty(),
             blockhash = currentBlockhash,
             free_transactions_count = remainingFreeTransactionsCount,
             need_to_use_relay = payFeeWithRelay,
             pay_fee_in_token = feePayerToken?.let { gson.toJson(it) }.orEmpty(),
-            fee_payer_address = realFeePayerAddress.value
+            fee_payer_address = realFeePayerAddress.base58Value
         )
         logger.logResponse("createWithdrawTransactions", response)
         methodResultMapper.fromSdk(response)
@@ -131,7 +131,7 @@ class SolendSdkFacade(
 
         val response = solendSdk.getSolendCollateralAccounts(
             rpc_url = currentNetworkEnvironment.endpoint,
-            owner = ownerAddress.value
+            owner = ownerAddress.base58Value
         )
         logger.logResponse("getSolendCollateralAccounts", response)
         methodResultMapper.fromSdk<SolendCollateralAccountsListResponse>(response).accounts
@@ -156,9 +156,9 @@ class SolendSdkFacade(
 
         val response = solendSdk.getSolendDepositFees(
             rpc_url = currentNetworkEnvironment.endpoint,
-            owner = ownerAddress.value,
+            owner = ownerAddress.base58Value,
             token_amount = tokenAmountToDeposit,
-            token_symbol = tokenAddressToDeposit.value
+            token_symbol = tokenAddressToDeposit.base58Value
         )
         logger.logResponse("getSolendDepositFees", response)
         methodResultMapper.fromSdk(response)
@@ -187,9 +187,9 @@ class SolendSdkFacade(
         logger.logRequest("getSolendUserDepositByTokenSymbol", userAddress, tokenSymbol, solendPoolAddress)
 
         val response = solendSdk.getSolendUserDepositBySymbol(
-            owner = userAddress.value,
+            owner = userAddress.base58Value,
             symbol = tokenSymbol,
-            pool = solendPoolAddress.poolAddress.value
+            pool = solendPoolAddress.poolAddress.base58Value
         )
         logger.logResponse("getSolendUserDepositByTokenSymbol", response)
         methodResultMapper.fromSdk<SolendUserDepositByTokenResponseResponse>(response).userDepositBySymbol
@@ -202,8 +202,8 @@ class SolendSdkFacade(
         logger.logRequest("getSolendUserDeposits", userAddress, solendPoolAddress)
 
         val response = solendSdk.getSolendUserDeposits(
-            owner = userAddress.value,
-            pool = solendPoolAddress.poolAddress.value
+            owner = userAddress.base58Value,
+            pool = solendPoolAddress.poolAddress.base58Value
         )
         logger.logResponse("getSolendUserDeposits", response)
         methodResultMapper.fromSdk<SolendUserDepositsResponseResponse>(response).deposits

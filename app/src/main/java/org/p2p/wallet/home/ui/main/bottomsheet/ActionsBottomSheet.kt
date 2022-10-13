@@ -94,6 +94,7 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
             HomeAction.RECEIVE -> receiveAnalytics.logReceiveActionButtonClicked()
             HomeAction.TRADE -> swapAnalytics.logSwapActionButtonClicked()
             HomeAction.SEND -> sendAnalytics.logSendActionButtonClicked()
+            HomeAction.BUY -> {}
         }
     }
 }
