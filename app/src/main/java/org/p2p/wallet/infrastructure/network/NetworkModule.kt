@@ -136,9 +136,6 @@ object NetworkModule : InjectionModule {
             .apply {
                 val certificateManager: CertificateManager = get()
                 certificateManager.setCertificate(this)
-                if (BuildConfig.CRASHLYTICS_ENABLED) {
-                    addInterceptor(CrashHttpLoggingInterceptor())
-                }
 
                 if (interceptor != null) {
                     addInterceptor(interceptor)
@@ -146,6 +143,9 @@ object NetworkModule : InjectionModule {
 
                 if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
                     addInterceptor(httpLoggingInterceptor(tag))
+                }
+                if (BuildConfig.CRASHLYTICS_ENABLED) {
+                    addInterceptor(CrashHttpLoggingInterceptor())
                 }
             }
             .addNetworkInterceptor(ContentTypeInterceptor())
