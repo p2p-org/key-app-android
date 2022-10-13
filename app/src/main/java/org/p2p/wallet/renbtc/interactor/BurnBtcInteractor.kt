@@ -60,7 +60,6 @@ class BurnBtcInteractor(
                 throw e
             }
         }
-        println("txHash ${burnState.txHash} / $hash")
         return@withContext burnDetails.confirmedSignature
     }
 

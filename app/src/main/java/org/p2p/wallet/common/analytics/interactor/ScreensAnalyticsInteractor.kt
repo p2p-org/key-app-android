@@ -8,9 +8,14 @@ class ScreensAnalyticsInteractor(
     private val analyticsLocalRepository: AnalyticsLocalRepository
 ) {
 
-    fun logScreenOpenEvent(screenName: String) {
-        browseAnalytics.logScreenOpened(screenName, getPreviousScreenName())
-        analyticsLocalRepository.onScreenChanged(screenName)
+    fun logScreenOpenEvent(newScreenName: String) {
+        val previousScreenName = getCurrentScreenName()
+        analyticsLocalRepository.changeCurrentScreen(newScreenName)
+
+        val isNewScreenOpened = newScreenName != previousScreenName
+        if (isNewScreenOpened) {
+            browseAnalytics.logScreenOpened(newScreenName, getPreviousScreenName())
+        }
     }
 
     fun getPreviousScreenName(): String = analyticsLocalRepository.getPreviousScreenName()

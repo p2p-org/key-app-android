@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_onboarding_help"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/icons_night"
+        app:title="@string/seed_phrase_restore_wallet"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night" />
+
+    <TextView
+        android:id="@+id/textViewSeedPhraseTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/seed_phrase_enter_title"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textColor="@color/text_mountain" />
+
+    <org.p2p.uikit.organisms.seedphrase.UiKitSeedPhraseView
+        android:id="@+id/seedPhraseView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:minHeight="@dimen/ui_kit_seed_phrase_container_min_height" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonContinue"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:enabled="false"
+        android:padding="18dp"
+        android:text="@string/common_continue"
+        android:textColor="@color/text_lime"
+        app:icon="@drawable/ic_arrow_forward"
+        app:iconGravity="textEnd"
+        app:iconTint="@color/icons_lime"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</LinearLayout>

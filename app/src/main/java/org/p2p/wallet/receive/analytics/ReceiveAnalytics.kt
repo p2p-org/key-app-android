@@ -3,11 +3,27 @@ package org.p2p.wallet.receive.analytics
 import org.p2p.wallet.common.analytics.Analytics
 import java.math.BigDecimal
 
+private const val RECEIVE_VIEWED = "Receive_Viewed"
+private const val RECEIVE_TOKEN_VIEWED = "Token_Receive_Viewed"
+private const val RECEIVE_ADDRESS_COPIED = "Receive_Address_Copied"
+private const val RECEIVE_QR_SAVED = "Receive_QR_Saved"
+private const val RECEIVE_USERCARD_SHARED = "Receive_Usercard_Shared"
+private const val RECEIVE_VIEWING_EXPLORER = "Receive_Viewing_Explorer"
+private const val RECEIVE_CHANGING_NETWORK = "Receive_Changing_Network"
+private const val RECEIVE_SETTING_BITCOIN = "Receive_Setting_Bitcoin"
+private const val RECEIVE_NETWORK_CHANGED = "Receive_Network_Changed"
+private const val RECEIVE_SHOWING_STATUSES = "Receive_Showing_Statuses"
+private const val RECEIVE_SHOWING_STATUS = "Receive_Showing_Status"
+private const val RECEIVE_SHOWING_HISTORY = "Receive_Showing_History"
+private const val RECEIVE_SHOWING_DETAILS = "Receive_Showing_Details"
+private const val RECEIVE_START_SCREEN = "Receive_Start_screen"
+private const val RECEIVE_ACTION_BUTTON = "Action_Button_Receive"
+
 class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logReceiveViewed(isUsernameClaimed: Boolean) {
         tracker.logEvent(
-            "Receive_Viewed",
+            RECEIVE_VIEWED,
             arrayOf(
                 Pair("Username_Claimed", isUsernameClaimed)
             )
@@ -25,7 +41,7 @@ class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logTokenReceiveViewed(tokenName: String) {
         tracker.logEvent(
-            "Token_Receive_Viewed",
+            RECEIVE_TOKEN_VIEWED,
             arrayOf(
                 Pair("Token_Name", tokenName)
             )
@@ -34,7 +50,7 @@ class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logReceiveAddressCopied(lastScreenName: String) {
         tracker.logEvent(
-            "Receive_Address_Copied",
+            RECEIVE_ADDRESS_COPIED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -43,7 +59,7 @@ class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logReceiveQrSaved(lastScreenName: String) {
         tracker.logEvent(
-            "Receive_QR_Saved",
+            RECEIVE_QR_SAVED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -52,7 +68,7 @@ class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logUserCardShared(lastScreenName: String) {
         tracker.logEvent(
-            "Receive_Usercard_Shared",
+            RECEIVE_USERCARD_SHARED,
             arrayOf(
                 Pair("Last_Screen", lastScreenName)
             )
@@ -61,7 +77,7 @@ class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logReceiveViewingExplorer(receiveNetwork: ReceiveNetwork) {
         tracker.logEvent(
-            "Receive_Viewing_Explorer",
+            RECEIVE_VIEWING_EXPLORER,
             arrayOf(
                 Pair("Receive_Network", receiveNetwork.title)
             )
@@ -70,7 +86,7 @@ class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logReceiveChangingNetwork(receiveNetwork: ReceiveNetwork) {
         tracker.logEvent(
-            "Receive_Changing_Network",
+            RECEIVE_CHANGING_NETWORK,
             arrayOf(
                 Pair("Receive_Network", receiveNetwork.title)
             )
@@ -78,12 +94,12 @@ class ReceiveAnalytics(private val tracker: Analytics) {
     }
 
     fun logReceiveSettingBitcoin() {
-        tracker.logEvent("Receive_Setting_Bitcoin")
+        tracker.logEvent(RECEIVE_SETTING_BITCOIN)
     }
 
     fun logReceiveNetworkChanged(receiveNetwork: ReceiveNetwork) {
         tracker.logEvent(
-            "Receive_Network_Changed",
+            RECEIVE_NETWORK_CHANGED,
             arrayOf(
                 Pair("Receive_Network", receiveNetwork.title)
             )
@@ -91,15 +107,15 @@ class ReceiveAnalytics(private val tracker: Analytics) {
     }
 
     fun logReceiveShowingStatuses() {
-        tracker.logEvent("Receive_Showing_Statuses")
+        tracker.logEvent(RECEIVE_SHOWING_STATUSES)
     }
 
     fun logReceiveShowingStatus() {
-        tracker.logEvent("Receive_Showing_Status")
+        tracker.logEvent(RECEIVE_SHOWING_STATUS)
     }
 
     fun logReceiveShowingHistory() {
-        tracker.logEvent("Receive_Showing_History")
+        tracker.logEvent(RECEIVE_SHOWING_HISTORY)
     }
 
     fun logReceiveShowingDetails(
@@ -109,13 +125,34 @@ class ReceiveAnalytics(private val tracker: Analytics) {
         receiveNetwork: ReceiveNetwork
     ) {
         tracker.logEvent(
-            "Receive_Showing_Details",
+            RECEIVE_SHOWING_DETAILS,
             arrayOf(
                 Pair("Receive_Sum", receiveSum),
                 Pair("Receive_USD", receiveUSD),
                 Pair("Token_Name", tokenName),
                 Pair("Receive_Network", receiveNetwork.title)
             )
+        )
+    }
+
+    fun logStartScreen(previousScreenName: String) {
+        tracker.logEvent(
+            event = RECEIVE_START_SCREEN,
+            params = mapOf(
+                "Last_Screen" to previousScreenName
+            )
+        )
+    }
+
+    fun logAddressOnMainClicked() {
+        tracker.logEvent(
+            event = "Main_Copy_address"
+        )
+    }
+
+    fun logReceiveActionButtonClicked() {
+        tracker.logEvent(
+            event = RECEIVE_ACTION_BUTTON
         )
     }
 

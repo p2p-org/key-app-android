@@ -22,7 +22,7 @@ import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
@@ -54,9 +54,9 @@ class ReceiveSolanaFragment :
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.SOLANA)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             receiveCardView.setOnNetworkClickListener {
@@ -90,6 +90,8 @@ class ReceiveSolanaFragment :
             }
         }
         presenter.loadData()
+
+        receiveAnalytics.logStartScreen(analyticsInteractor.getPreviousScreenName())
     }
 
     override fun showUserData(userPublicKey: String, username: Username?) {

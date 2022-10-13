@@ -1,11 +1,14 @@
 package org.p2p.wallet.infrastructure
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
 import org.p2p.uikit.glide.GlideManager
 import org.p2p.wallet.appsfly.AppsFlyerService
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
@@ -21,6 +24,8 @@ import org.p2p.wallet.history.repository.local.db.dao.TransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.TransactionsDaoDelegate
 import org.p2p.wallet.history.repository.local.db.dao.TransferTransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.UnknownTransactionsDao
+import org.p2p.wallet.infrastructure.account.AccountStorage
+import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.db.WalletDatabase
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_NAME
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -35,8 +40,6 @@ import org.p2p.wallet.updates.UpdateHandler
 import org.p2p.wallet.updates.UpdatesManager
 import java.security.KeyStore
 import java.util.concurrent.Executors
-
-private const val ANDROID_KEY_STORE = "AndroidKeyStore"
 
 object InfrastructureModule : InjectionModule {
 
@@ -70,17 +73,42 @@ object InfrastructureModule : InjectionModule {
             TransactionsDaoDelegate(allTransactionDaos)
         }
 
+        // TODO PWN-5418 - extract misc data to separate prefs
         single {
-            val context = get<Context>()
-            val name = "${context.packageName}.prefs"
-            context.getSharedPreferences(name, Context.MODE_PRIVATE)
+            val name = "${androidContext().packageName}.prefs"
+            androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
         }
 
-        single { EncoderDecoderMarshmallow(get()) } bind EncoderDecoder::class
-        single { KeyStore.getInstance(ANDROID_KEY_STORE) }
-        single { KeyStoreWrapper(encoderDecoder = get(), keyStore = get()) }
+        single { KeyStore.getInstance("AndroidKeyStore") }
+        factoryOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class
 
-        factory { SecureStorage(get(), get()) } bind SecureStorageContract::class
+        // TODO PWN-5418 - extract data to separate prefs from org.p2p.wallet.prefs
+        factory {
+            val sharedPreferences: SharedPreferences = get()
+
+            SecureStorage(
+                KeyStoreWrapper(
+                    encoderDecoder = get(),
+                    keyStore = get(),
+                    sharedPreferences = sharedPreferences
+                ),
+                sharedPreferences = sharedPreferences,
+                gson = get()
+            )
+        } bind SecureStorageContract::class
+        factory {
+            val prefsName = "${androidContext().packageName}.account_prefs"
+            val sharedPreferences = androidContext().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+            AccountStorage(
+                keyStoreWrapper = KeyStoreWrapper(
+                    encoderDecoder = get(),
+                    keyStore = get(),
+                    sharedPreferences = sharedPreferences
+                ),
+                sharedPreferences = sharedPreferences,
+                gson = get()
+            )
+        } bind AccountStorageContract::class
 
         single { GlideManager(get()) }
 
@@ -101,6 +129,8 @@ object InfrastructureModule : InjectionModule {
         single { DefaultDispatchers() } bind CoroutineDispatchers::class
 
         single { PushTokenRepository() }
+
+        factoryOf(::Pbkdf2HashGenerator)
         single { AppsFlyerService(androidContext()) }
     }
 }

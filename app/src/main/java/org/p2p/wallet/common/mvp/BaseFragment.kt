@@ -12,10 +12,12 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
@@ -23,17 +25,21 @@ import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
+import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
-import org.p2p.wallet.settings.ui.network.SettingsNetworkFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
-import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.emptyString
+import timber.log.Timber
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
@@ -46,6 +52,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     protected open val statusBarColor: Int = R.color.backgroundPrimary
     protected open val navBarColor: Int = R.color.backgroundPrimary
+    protected open val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
@@ -59,11 +66,29 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setSystemBarsColors(statusBarColor, navBarColor)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        logScreenOpenedEvent()
+    }
+
+    // fragments in the tab are shown using show/hide methods
+    // so no standard lifecycle methods are called
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) logScreenOpenedEvent()
+    }
+
+    private fun logScreenOpenedEvent() {
         val analyticsName = getAnalyticsName()
+
         if (analyticsName.isNotEmpty()) {
             analyticsInteractor.logScreenOpenEvent(analyticsName)
+        } else {
+            Timber.tag("ScreensAnalyticsInteractor").i("No analytic name found for screen: ${javaClass.simpleName}")
         }
-        setSystemBarsColors(statusBarColor, navBarColor)
     }
 
     override fun overrideEnterAnimation(@AnimRes animation: Int) {
@@ -78,7 +103,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
     }
 
-    private fun setSystemBarsColors(@ColorRes colorResId: Int, @ColorRes navBarColor: Int) {
+    protected fun setSystemBarsColors(@ColorRes colorResId: Int, @ColorRes navBarColor: Int) {
         val window = requireActivity().window ?: return
         with(window) {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -103,7 +128,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     // TODO add another screens
     fun getAnalyticsName(): String = when (this) {
         is CreateWalletFragment -> ScreenNames.OnBoarding.WALLET_CREATE
-        is SecretKeyFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
+        is SeedPhraseFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
         is SecurityKeyFragment -> ScreenNames.OnBoarding.CREATE_MANUAL
         is CreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
         is SeedInfoFragment -> ScreenNames.OnBoarding.SEED_INFO
@@ -112,13 +137,17 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
         is AuthDoneFragment -> ScreenNames.OnBoarding.WELCOME_NEW_USERNAME
         is HomeFragment -> ScreenNames.Main.MAIN
-        is SettingsFragment -> ScreenNames.Settings.MAIN
+        is NewSettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
         is SecurityFragment -> ScreenNames.Settings.SECURITY
-        is SettingsNetworkFragment -> ScreenNames.Settings.NETWORK
         is NetworkSelectionFragment -> ScreenNames.Send.NETWORK
         is OrcaSwapFragment -> ScreenNames.Swap.MAIN
         is TokenHistoryFragment -> ScreenNames.Token.TOKEN_SCREEN
+        is SignInPinFragment -> ScreenNames.Lock.SCREEN
+        is HistoryFragment -> ScreenNames.Main.MAIN_HISTORY
+        is ReceiveSolanaFragment -> ScreenNames.Receive.SOLANA
+        is ReceiveNetworkTypeFragment -> ScreenNames.Receive.NETWORK
+        is SendFragment -> ScreenNames.Send.MAIN
         else -> emptyString()
     }
 }

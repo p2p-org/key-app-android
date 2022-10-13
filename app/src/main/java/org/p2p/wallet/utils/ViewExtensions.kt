@@ -38,5 +38,5 @@ fun ViewGroup.snackbar(action: (CustomSnackBar) -> Unit) {
     }
     action.invoke(binding.snackbar)
     binding.snackbar.layoutParams = lp
-    SnackBarView(this, binding.snackbar).apply { duration = Snackbar.LENGTH_SHORT }.show()
+    SnackBarView(this, binding.snackbar).apply { duration = Snackbar.LENGTH_LONG }.show()
 }

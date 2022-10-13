@@ -8,7 +8,10 @@ import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.Snackbar
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.snackbar
 
@@ -64,6 +67,14 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
 
+    override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(e.getErrorMessage(requireContext()))
+                .setIcon(R.drawable.ic_close_red)
+                .setAction(actionResId, block)
+        }
+    }
+
     override fun showSuccessSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(getString(messageResId))
@@ -79,5 +90,41 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
                 .setAction(actionResId, block)
         }
     }
+
+    override fun showInfoSnackBar(message: String, iconResId: Int?, actionResId: Int?, actionBlock: (() -> Unit)?) {
+        snackbar {
+            it.setMessage(message)
+                .setAction(actionResId, actionBlock)
+            iconResId?.let { icon ->
+                it.setIcon(icon)
+            }
+        }
+    }
     //endregion
+
+    override fun showUiKitSnackBar(
+        message: String?,
+        messageResId: Int?,
+        onDismissed: () -> Unit,
+        actionButtonResId: Int?,
+        actionBlock: ((Snackbar) -> Unit)?
+    ) {
+        require(message != null || messageResId != null) {
+            "Snackbar text must be set from `message` or `messageResId` params"
+        }
+        val snackbarText: String = message ?: messageResId?.let(::getString)!!
+        val root = requireActivity().findViewById<View>(android.R.id.content) as ViewGroup
+        if (actionButtonResId != null && actionBlock != null) {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                actionButtonText = getString(actionButtonResId),
+                actionButtonListener = actionBlock
+            )
+        } else {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                onDismissed = onDismissed
+            )
+        }
+    }
 }

@@ -5,28 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:background="@color/lime">
+    tools:background="@color/lime"
+    android:paddingBottom="24dp">
 
     <ImageView
-        android:id="@+id/sliderIcon"
+        android:id="@+id/imageViewSliderIcon"
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:src="@drawable/bg_auth_done" />
+        android:paddingHorizontal="38dp"
+        android:paddingTop="38dp"
+        tools:src="@drawable/onboarding_slide_temp" />
 
     <TextView
-        android:id="@+id/sliderTitle"
+        android:id="@+id/textViewSliderTitle"
         style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="26dp"
         android:gravity="center"
         android:textColor="@color/night"
         tools:text="@string/onboarding_slide_1_title" />
 
     <TextView
-        android:id="@+id/sliderText"
+        android:id="@+id/textViewSliderSubtitle"
         style="@style/UiKit.TextAppearance.Regular.Title3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

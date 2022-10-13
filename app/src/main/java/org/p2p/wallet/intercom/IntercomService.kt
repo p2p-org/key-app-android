@@ -3,10 +3,16 @@ package org.p2p.wallet.intercom
 import android.app.Application
 import io.intercom.android.sdk.Intercom
 import io.intercom.android.sdk.identity.Registration
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import timber.log.Timber
 
-object IntercomService {
+object IntercomService : KoinComponent {
     private const val TAG = "IntercomService"
+
+    private val screenAnalyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     fun setup(app: Application, apiKey: String, appId: String) {
         Timber.tag(TAG).i("Intercom client setup.")
@@ -34,6 +40,8 @@ object IntercomService {
     }
 
     fun showMessenger() {
+        screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
+
         Timber.tag(TAG).i("Intercom client displays messenger.")
         Intercom.client().displayMessenger()
     }
