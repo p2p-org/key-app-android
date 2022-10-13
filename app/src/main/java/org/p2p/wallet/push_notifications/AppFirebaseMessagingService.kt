@@ -4,29 +4,30 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.p2p.wallet.common.di.ServiceScope
+import org.p2p.wallet.appsfly.AppsFlyerService
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.notification.FcmPushNotificationData
 import org.p2p.wallet.notification.NotificationType
-import org.p2p.wallet.utils.NoOp
 import timber.log.Timber
 
 private const val TAG = "AppFirebaseMessagingService"
 
 class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
-    private val serviceScope: ServiceScope by inject()
-
     private val appNotificationManager: AppNotificationManager by inject()
+    private val appsFlyerService: AppsFlyerService by inject()
 
     override fun onNewToken(token: String) {
-        NoOp
+        appsFlyerService.onNewToken(token)
         super.onNewToken(token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
+        if (appsFlyerService.isUninstallTrackingMessage(message)) {
+            return
+        }
         handleForegroundPush(message)
     }
 

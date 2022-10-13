@@ -26,7 +26,6 @@
     <dimen name="ui_kit_tip_corner_radius">16dp</dimen>
 
     <!-- Skeleton circle values -->
-
     <dimen name="ui_kit_skeleton_circle_4">4dp</dimen>
     <dimen name="ui_kit_skeleton_circle_8">8dp</dimen>
     <dimen name="ui_kit_skeleton_circle_12">12dp</dimen>
@@ -50,4 +49,6 @@
     <!-- Seed phrase -->
     <dimen name="ui_kit_seed_phrase_container_min_height">312dp</dimen>
 
+    <!-- UiKitDoubleInputView -->
+    <dimen name="uikit_double_input_view_height">60dp</dimen>
 </resources>

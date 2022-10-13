@@ -15,7 +15,7 @@ class FeatureTogglesValuesSource(
         get() = if (shouldGetValuesFromDebug) debugRemoteConfigValuesSource else appFirebaseRemoteConfig
 
     override fun getString(toggleKey: String): String? = sourceToGetFrom.getString(toggleKey)
-    override fun getBoolean(toggleKey: String): Boolean = sourceToGetFrom.getBoolean(toggleKey)
+    override fun getBoolean(toggleKey: String): Boolean? = sourceToGetFrom.getBoolean(toggleKey)
     override fun getFloat(toggleKey: String): Float? = sourceToGetFrom.getFloat(toggleKey)
     override fun getInt(toggleKey: String): Int? = sourceToGetFrom.getInt(toggleKey)
 }

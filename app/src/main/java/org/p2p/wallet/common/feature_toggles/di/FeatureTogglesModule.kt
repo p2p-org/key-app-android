@@ -12,6 +12,7 @@ import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesPro
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
 
 object FeatureTogglesModule : InjectionModule {
@@ -26,7 +27,8 @@ object FeatureTogglesModule : InjectionModule {
                 get<SslPinningFeatureToggle>(),
                 get<NewBuyFeatureToggle>(),
                 get<BuyWithTransferFeatureToggle>(),
-                get<SettingsNetworkListFeatureToggle>()
+                get<SettingsNetworkListFeatureToggle>(),
+                get<SolendEnabledFeatureToggle>()
             )
         }
 
@@ -34,5 +36,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::NewBuyFeatureToggle)
         factoryOf(::BuyWithTransferFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
+        factoryOf(::SolendEnabledFeatureToggle)
     }
 }

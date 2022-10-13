@@ -1,11 +1,12 @@
 package org.p2p.wallet.deeplinks
 
+import androidx.core.content.getSystemService
+import androidx.fragment.app.FragmentManager
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import androidx.core.content.getSystemService
-import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.notification.NotificationType
@@ -59,7 +60,10 @@ class AppDeeplinksManager(private val context: Context) {
         intent.extras?.apply {
             if (containsKey(DEEPLINK_MAIN_SCREEN_EXTRA)) {
                 popToMainScreen()
-                mainTabsSwitcher?.navigate(getInt(DEEPLINK_MAIN_SCREEN_EXTRA)) ?: savePendingIntent(intent)
+                mainTabsSwitcher?.navigate(
+                    ScreenTab.fromTabId(getInt(DEEPLINK_MAIN_SCREEN_EXTRA))!!
+                )
+                    ?: savePendingIntent(intent)
             }
         }
     }

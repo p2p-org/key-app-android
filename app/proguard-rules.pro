@@ -71,3 +71,9 @@
 
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }
+-keep class com.appsflyer.** { *; }
+-keep public class com.miui.referrer.** {*;}
+-dontwarn com.appsflyer.**
+-keep public class com.google.firebase.messaging.FirebaseMessagingService {
+    public *;
+}

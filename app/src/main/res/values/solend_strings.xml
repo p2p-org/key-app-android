@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="solend_earn_title">Earn a yield</string>
+    <string name="solend_deposit_to_earn">Deposit to earn a yield</string>
+    <string name="solend_apy">APY</string>
+
+    <string name="solend_rates_error">There’s a problem showing the rates. Try again later</string>
+
+    <!--Earn Widget-->
+
+    <!--Earn Widget -> LearnMore-->
+    <string name="earn_widget_learn_more_title">Deposit your tokens and earn</string>
+    <string name="earn_widget_learn_more_message">All your funds are insured. Withdraw your deposit with all rewards at any time.</string>
+    <string name="earn_widget_learn_more_button">Learn More</string>
+
+    <!--Earn Widget -> Deposit-->
+    <string name="earn_widget_deposit_sending">🕑  Sending your deposit…</string>
+    <string name="earn_widget_deposit_withdrawing">🕑  Withdrawing your deposit…</string>
+
+    <!--Earn Widget -> DepositFailed-->
+    <string name="earn_widget_deposit_failed_title">Depositing funds failed</string>
+    <string name="earn_widget_deposit_failed_message">The funds are returned to your wallet. You can try depositing again.</string>
+    <string name="earn_widget_deposit_failed_button">Try again</string>
+
+    <!--Earn Widget -> Balance-->
+    <string name="earn_widget_balance_title">Earn balance</string>
+    <string name="earn_widget_balance_button">Show deposit</string>
+
+    <!--Earn Widget -> Error-->
+    <string name="earn_widget_error_title">An unexpected error occurred </string>
+    <string name="earn_widget_error_message_withdrawal">Don\'t worry, your deposits are safe. Somehow, withdrawal did not happen</string>
+    <string name="earn_widget_error_message_show_info">Don\'t worry, your deposits are safe. We just have issues with showing the info.</string>
+    <string name="earn_widget_error_button_ok">Ok</string>
+    <string name="earn_widget_error_button_try_again">Try again</string>
+
+    <!--Deposits-->
+    <string name="solend_deposits_title">Your deposits</string>
+    <string name="solend_deposits_title_with_count">Your deposits (%d)</string>
+    <string name="solend_deposits_yielding_apy">Yielding %.2f%% APY</string>
+    <string name="solend_deposits_add_more">Add more</string>
+    <string name="solend_deposits_withdraw">Withdraw</string>
+
+    <!--TopUp-->
+    <string name="solend_top_up_title">Top up balance to continue</string>
+    <string name="solend_top_up_apy_title">APY</string>
+    <string name="solend_top_up_buy_button">Buy</string>
+    <string name="solend_top_up_receive_button">Receive</string>
+
+    <!-- Withdraw -->
+    <string name="solend_withdraw_title">Withdraw funds</string>
+    <string name="solend_withdraw_rewards">Rewards</string>
+    <string name="solend_withdraw_yielding_apy_format">Yielding %s%% APY</string>
+    <string name="solend_withdraw_input_label">You will withdraw</string>
+    <string name="solend_withdraw_output_label_format">Withdraw all %s</string>
+    <string name="solend_withdraw_bottom_message">A proportional amount of rewards will be withdrawn</string>
+
+    <!--SolendInfo BottomSheet-->
+    <string name="solend_info_title">What is Solend?</string>
+    <string name="solend_info_slider_text_1">Solend is the most scalable DeFi lending protocol, which allows to earn interest and borrow assets with the lowest fee. That\'s why we integrate it.</string>
+    <string name="solend_info_slider_text_2">Deposit with interest\nDeposit USDT or USDC and get your guaranteed yield on it.</string>
+    <string name="solend_info_slider_text_3">Control your assets\nLow risks all your assets are under your control. Instant withdrawal with all rewards.</string>
+
+    <!--Deposit To Solend-->
+    <string name="solend_deposit_title">Deposit into Solend</string>
+    <string name="solend_select_token_to_deposit_title">Token to deposit</string>
+
+</resources>

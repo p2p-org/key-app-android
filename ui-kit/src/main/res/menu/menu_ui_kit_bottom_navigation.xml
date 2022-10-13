@@ -9,7 +9,6 @@
         android:id="@+id/historyItem"
         android:icon="@drawable/ic_main_history"
         android:title="@string/common_history" />
-
     <item
         android:id="@+id/sendItem"
         android:title="" />

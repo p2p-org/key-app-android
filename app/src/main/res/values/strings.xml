@@ -32,6 +32,7 @@
     <string name="common_commas">…</string>
     <string name="common_transaction_details">Transaction details</string>
     <string name="common_error">Error</string>
+    <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>

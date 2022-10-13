@@ -45,10 +45,7 @@ import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.security.SecureStorage
-import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
-import org.p2p.wallet.push_notifications.PushNotificationsModule
-import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.renbtc.RenBtcModule
@@ -56,6 +53,7 @@ import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
@@ -94,6 +92,8 @@ class CheckModulesTest : KoinTest {
             .returns("https://test-solana-fee-relayer.wallet.p2p.org/")
         every { getString(eq("KEY_NOTIFICATION_SERVICE_BASE_URL"), any()) }
             .returns("http://35.234.120.240:9090/")
+        every { getString(eq("KEY_DEPOSIT_TICKER_BALANCE"), any()) }
+            .returns("0")
     }
 
     private val resourcesMock: Resources = mockk(relaxed = true)
@@ -144,8 +144,10 @@ class CheckModulesTest : KoinTest {
         mockkConstructor(WebView::class)
         every { anyConstructed<WebView>().settings }.returns(RoboWebSettings())
 
+        mockSystemCalls()
+
         checkKoinModules(
-            modules = allModules + javaxDefaultModule,
+            modules = AppModule.create(restartAction = {}) + javaxDefaultModule,
             appDeclaration = {
                 allowOverride(override = true)
 
@@ -155,6 +157,7 @@ class CheckModulesTest : KoinTest {
             parameters = {
                 withInstance(sharedPrefsMock)
                 withInstance(createEmptyActiveToken())
+                withInstance(createEmptySolendDepositToken())
                 withInstance(mockk<SecureStorage>())
                 withInstance(mockk<TransactionWorker>())
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
@@ -176,36 +179,16 @@ class CheckModulesTest : KoinTest {
         every { Cipher.getInstance(any()) } returns mockk(relaxed = true)
     }
 
+    private fun mockSystemCalls() {
+        mockkStatic(System::class)
+        // mock native .so libs loading
+        every { System.loadLibrary(any()) } returns mockk(relaxed = true)
+    }
+
     @After
     fun after() {
         Dispatchers.resetMain()
     }
-
-    private val allModules = listOf(
-        AuthModule.create(),
-        RootModule.create(),
-        RestoreModule.create(),
-        UserModule.create(),
-        TokenPricesModule.create(),
-        HomeModule.create(),
-        RenBtcModule.create(),
-        NetworkModule.create(),
-        ScanQrModule.create(),
-        HistoryModule.create(),
-        HistoryStrategyModule.create(),
-        SettingsModule.create(),
-        DebugSettingsModule.create(),
-        SwapModule.create(),
-        RpcModule.create(),
-        FeeRelayerModule.create(),
-        InfrastructureModule.create(),
-        PushNotificationsModule.create(),
-        TransactionModule.create(),
-        AnalyticsModule.create(),
-        AppModule.create(restartAction = {}),
-        FeatureTogglesModule.create(),
-        TransactionManagerModule.create()
-    )
 
     private fun createEmptyActiveToken(): Token.Active {
         return Token.Active(
@@ -222,6 +205,18 @@ class CheckModulesTest : KoinTest {
             serumV3Usdc = null,
             serumV3Usdt = null,
             isWrapped = false
+        )
+    }
+
+    private fun createEmptySolendDepositToken(): SolendDepositToken.Active {
+        return SolendDepositToken.Active(
+            tokenSymbol = "",
+            tokenName = "",
+            iconUrl = null,
+            supplyInterest = BigDecimal.ZERO,
+            depositAmount = BigDecimal.ZERO,
+            usdAmount = BigDecimal.ZERO,
+            usdRate = BigDecimal.ZERO
         )
     }
 }
