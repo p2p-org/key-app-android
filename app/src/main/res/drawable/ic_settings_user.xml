@@ -1,14 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-
-    <path
-        android:strokeColor="@color/textIconSecondary"
-        android:strokeWidth="2"
-        android:strokeLineJoin="round"
-        android:strokeLineCap="round"
-        android:pathData="M6 21V19C6 17.9391 6.42143 16.9217 7.17157 16.1716C7.92172 15.4214 8.93913 15 10 15H14C15.0609 15 16.0783 15.4214 16.8284 16.1716C17.5786 16.9217 18 17.9391 18 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" />
+    <group>
+        <clip-path android:pathData="M8,0L16,0A8,8 0,0 1,24 8L24,16A8,8 0,0 1,16 24L8,24A8,8 0,0 1,0 16L0,8A8,8 0,0 1,8 0z" />
+        <path
+            android:fillColor="@color/icons_rose"
+            android:pathData="M0,0h24v24h-24z" />
+        <path
+            android:fillColor="@color/icons_snow"
+            android:fillType="evenOdd"
+            android:pathData="M12,12C13.4728,12 14.6667,10.8061 14.6667,9.3334C14.6667,7.8606 13.4728,6.6667 12,6.6667C10.5272,6.6667 9.3333,7.8606 9.3333,9.3334C9.3333,10.8061 10.5272,12 12,12ZM17.8,16.1367C17.9415,15.351 17.4778,14.9836 16.5504,14.2488C15.3,13.2582 13.7191,12.6667 12,12.6667C10.2809,12.6667 8.7,13.2582 7.4496,14.2488C6.5222,14.9836 6.0584,15.351 6.2,16.1368C6.2093,16.1886 6.2324,16.2782 6.2494,16.3281C6.5055,17.0843 7.241,17.2069 8.712,17.452C10.889,17.8149 13.111,17.8149 15.288,17.452C16.759,17.2069 17.4945,17.0843 17.7506,16.3281C17.7675,16.2782 17.7906,16.1886 17.8,16.1367Z" />
+    </group>
 </vector>

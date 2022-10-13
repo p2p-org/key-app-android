@@ -1,17 +1,24 @@
 package org.p2p.wallet.common.crypto.keystore
 
+import android.content.SharedPreferences
 import org.p2p.solanaj.utils.crypto.Hex
 import java.security.KeyStore
 import javax.crypto.Cipher
 
 class KeyStoreWrapper(
     private val encoderDecoder: EncoderDecoder,
-    private val keyStore: KeyStore
+    private val keyStore: KeyStore,
+    sharedPreferences: SharedPreferences
 ) {
 
     init {
         keyStore.apply { load(null) }
-        encoderDecoder.setKeyStore(keyStore = keyStore, providerName = keyStore.type)
+        encoderDecoder.init(
+            keyStore = keyStore,
+            providerName = keyStore.type,
+            // to save iv vector
+            preferences = sharedPreferences
+        )
     }
 
     fun encode(keyAlias: String, data: String): String {
@@ -24,6 +31,7 @@ class KeyStoreWrapper(
         return Hex.encode(bytes)
     }
 
+    @Throws(IllegalArgumentException::class)
     fun decode(keyAlias: String, encoded: String): String {
         val bytes = encoderDecoder.decode(keyAlias, Hex.decode(encoded))
         return String(bytes)

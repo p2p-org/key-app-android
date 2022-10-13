@@ -2,11 +2,10 @@ package org.p2p.wallet.infrastructure.network.environment
 
 import androidx.core.content.edit
 import android.content.SharedPreferences
-import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.solanaj.rpc.RpcEnvironment
+import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 
 private const val KEY_BASE_URL = "KEY_BASE_URL"
@@ -14,6 +13,7 @@ private const val KEY_RPC_BASE_URL = "KEY_RPC_BASE_URL"
 
 class NetworkEnvironmentManager(
     private val sharedPreferences: SharedPreferences,
+    private val crashLogger: CrashLogger,
     private val networkListFeatureToggle: SettingsNetworkListFeatureToggle
 ) {
 
@@ -31,6 +31,7 @@ class NetworkEnvironmentManager(
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
         return NetworkEnvironment.values().filter(isNetworkAvailable)
     }
+
     fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {
         listeners[owner.simpleName.orEmpty()] = listener
     }
@@ -73,12 +74,16 @@ class NetworkEnvironmentManager(
         val newEndpoint = newEnvironment.endpoint
         val newRpcEnvironment = getRpcEnvironmentFromUrl(newEndpoint)
 
-        sharedPreferences.edit {
+        sharedPreferences.edit(commit = true) {
             putString(KEY_BASE_URL, newEndpoint)
             putString(KEY_RPC_BASE_URL, newRpcEnvironment.endpoint)
         }
 
         listeners.values.forEach { it.onEnvironmentChanged(newEnvironment) }
+
+        crashLogger.setCustomKey("network_environment", newEnvironment.endpoint)
+
+        Timber.i("Network changed to ${newEnvironment.endpoint}")
     }
 
     private fun getCurrentNetworkFromUrl(endpoint: String): NetworkEnvironment = when (endpoint) {

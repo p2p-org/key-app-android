@@ -71,6 +71,7 @@ object HomeModule : InjectionModule {
         factory<HomeContract.Presenter> {
             HomePresenter(
                 inAppFeatureFlags = get(),
+                analytics = get(),
                 updatesManager = get(),
                 userInteractor = get(),
                 settingsInteractor = get(),
@@ -79,7 +80,9 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
                 homeElementItemMapper = HomeElementItemMapper(),
                 resourcesProvider = get(),
-                newBuyFeatureToggle = get()
+                newBuyFeatureToggle = get(),
+                accountStorageContract = get(),
+                authInteractor = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

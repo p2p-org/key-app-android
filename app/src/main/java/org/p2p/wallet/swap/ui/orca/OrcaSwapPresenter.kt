@@ -1,9 +1,6 @@
 package org.p2p.wallet.swap.ui.orca
 
 import android.content.res.Resources
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -56,6 +53,9 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.UUID
 import kotlin.properties.Delegates
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TAG_SWAP = "SWAP_STATE"
 
@@ -76,6 +76,8 @@ class OrcaSwapPresenter(
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
     private var destinationToken: Token? by Delegates.observable(null) { _, _, newValue ->
+        newValue?.let { swapAnalytics.logSwapChangingTokenBNew(it.tokenSymbol) }
+
         view?.showDestinationToken(newValue)
     }
 
@@ -155,6 +157,7 @@ class OrcaSwapPresenter(
     }
 
     override fun setNewSourceToken(newToken: Token.Active) {
+        swapAnalytics.logSwapChangingTokenANew(newToken.tokenSymbol)
         setSourceToken(newToken)
         clearDestination()
         updateButtonState()
@@ -689,6 +692,14 @@ class OrcaSwapPresenter(
     }
 
     private fun logSwapStarted() {
+        swapAnalytics.logSwapConfirmButtonClicked(
+            tokenAName = sourceToken.tokenSymbol,
+            tokenBName = destinationToken?.tokenSymbol.orEmpty(),
+            swapSum = sourceAmount,
+            isSwapMax = isMaxClicked,
+            swapUsd = sourceAmount.toBigDecimalOrZero().toUsd(sourceToken) ?: BigDecimal.ZERO,
+        )
+
         swapAnalytics.logSwapStarted(
             tokenAName = sourceToken.tokenSymbol,
             tokenBName = destinationToken?.tokenSymbol.orEmpty(),

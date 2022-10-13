@@ -1,56 +1,42 @@
 package org.p2p.wallet.settings.ui.network
 
-import android.content.Context
-import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.renbtc.service.RenVMService
 import timber.log.Timber
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class SettingsNetworkPresenter(
-    private val context: Context,
     private val inAppFeatureFlags: InAppFeatureFlags,
-    private val mainLocalRepository: HomeLocalRepository,
     private val environmentManager: NetworkEnvironmentManager,
-    private val analytics: BrowseAnalytics
 ) : BasePresenter<SettingsNetworkContract.View>(), SettingsNetworkContract.Presenter {
 
-    private var currentNetworkName: String = environmentManager.loadCurrentEnvironment().name
+    private var currentEnvironment: NetworkEnvironment = environmentManager.loadCurrentEnvironment()
 
-    override fun setNewEnvironment(newNetwork: NetworkEnvironment) {
-        launch {
-            try {
-                currentNetworkName = newNetwork.name
-                environmentManager.chooseEnvironment(newNetwork)
-
-                mainLocalRepository.clear()
-                RenVMService.stopService(context)
-                analytics.logNetworkChanging(currentNetworkName)
-                // Sometimes these operations are completed too quickly
-                // On the UI it shows blinking loading effect which is not good
-                // Adding short delay to show loading state
-                delay(250L)
-            } catch (e: Throwable) {
-                Timber.e(e, "Error switching environment")
-            }
-        }
+    override fun attach(view: SettingsNetworkContract.View) {
+        super.attach(view)
+        loadEnvironments()
     }
 
-    override fun loadData() {
+    private fun loadEnvironments() {
         Timber.d(environmentManager.availableNetworks.toString())
+        val filteredNetworks = if (inAppFeatureFlags.isDevNetEnabled.featureValue) {
+            environmentManager.availableNetworks
+        } else {
+            environmentManager.availableNetworks.filterNot { it == NetworkEnvironment.DEVNET }
+        }
+
         view?.showEnvironment(
-            currentNetwork = environmentManager.loadCurrentEnvironment(),
-            isDevnetEnabled = inAppFeatureFlags.isDevNetEnabled.featureValue,
-            availableNetworks = environmentManager.availableNetworks
+            currentNetwork = currentEnvironment,
+            availableNetworks = filteredNetworks
         )
     }
 
-    override fun save() {
-        view?.onNetworkChanged(newName = currentNetworkName)
+    override fun onNewEnvironmentSelected(newNetwork: NetworkEnvironment) {
+        if (newNetwork != currentEnvironment) {
+            view?.closeWithResult(newNetwork)
+        } else {
+            view?.dismissBottomSheet()
+        }
     }
 }

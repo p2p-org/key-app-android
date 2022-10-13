@@ -1,11 +1,11 @@
 package org.p2p.wallet.updates
 
-import androidx.core.content.getSystemService
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import androidx.core.content.getSystemService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -59,7 +59,7 @@ class ConnectionStateProvider(context: Context) {
 
     // PWN-3970
     @Suppress("DEPRECATION")
-    private fun hasConnection(): Boolean = connectivityManager.allNetworks.any { network ->
+    fun hasConnection(): Boolean = connectivityManager.allNetworks.any { network ->
         connectivityManager.getNetworkCapabilities(network)
             ?.run {
                 hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&

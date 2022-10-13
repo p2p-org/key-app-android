@@ -10,17 +10,17 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_blue_rounded"
-        android:backgroundTint="@color/colorBackgroundNotification">
+        android:background="@drawable/bg_night_rounded">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imageView"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_warning" />
 
@@ -31,9 +31,9 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:layout_marginHorizontal="16dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            android:textColor="@color/textIconButtonPrimary"
+            android:layout_marginHorizontal="8dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_cloud"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/actionImageView"
             app:layout_constraintStart_toEndOf="@id/imageView"
@@ -49,8 +49,8 @@
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
             android:textColor="@color/white"
             android:textSize="12sp"
-            android:visibility="gone"
             android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

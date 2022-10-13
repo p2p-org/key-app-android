@@ -77,12 +77,18 @@ class UiKitAmountsView @JvmOverloads constructor(
     }
 
     fun setOnTokenAmountChangeListener(onTokenAmountChange: (String) -> Unit) {
-        tokenTextWatcher = binding.editTextTokenAmount.doAfterTextChanged { onTokenAmountChange(it.toString()) }
+        tokenTextWatcher = binding.editTextTokenAmount.doAfterTextChanged {
+            val amountWithoutSpaces = it.toString().replace(" ", "")
+            onTokenAmountChange(amountWithoutSpaces)
+        }
     }
 
     fun setOnCurrencyAmountChangeListener(onCurrencyAmountChange: (String) -> Unit) {
         currencyTextWatcher =
-            binding.editTextCurrencyAmount.doAfterTextChanged { onCurrencyAmountChange(it.toString()) }
+            binding.editTextCurrencyAmount.doAfterTextChanged {
+                val amountWithoutSpaces = it.toString().replace(" ", "")
+                onCurrencyAmountChange(amountWithoutSpaces)
+            }
     }
 
     fun setOnSelectTokenClickListener(onSelectTokenClick: () -> Unit) {

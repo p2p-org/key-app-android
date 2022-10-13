@@ -1,24 +1,21 @@
 package org.p2p.wallet.swap.koin
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
+import android.webkit.WebView
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -30,9 +27,11 @@ import org.koin.test.KoinTest
 import org.koin.test.check.checkKoinModules
 import org.koin.test.mock.MockProviderRule
 import org.mockito.Mockito
-import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.AuthModule
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
@@ -44,6 +43,7 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
@@ -52,7 +52,7 @@ import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.renbtc.RenBtcModule
-import org.p2p.wallet.restore.BackupModule
+import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.send.model.NetworkType
@@ -61,10 +61,20 @@ import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
+import org.robolectric.fakes.RoboWebSettings
 import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.koin.core.parameter.ParametersHolder
+import org.p2p.wallet.auth.model.GatewayHandledState
+import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -130,6 +140,10 @@ class CheckModulesTest : KoinTest {
     @Test
     fun verifyKoinApp() {
         mockFirebase()
+
+        mockkConstructor(WebView::class)
+        every { anyConstructed<WebView>().settings }.returns(RoboWebSettings())
+
         checkKoinModules(
             modules = allModules + javaxDefaultModule,
             appDeclaration = {
@@ -145,6 +159,9 @@ class CheckModulesTest : KoinTest {
                 withInstance(mockk<TransactionWorker>())
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
+                withParameter<OnboardingGeneralErrorPresenter> { GatewayHandledState.ToastError("Test message") }
+                withParameters<OnboardingGeneralErrorTimerPresenter> { ParametersHolder(mutableListOf(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER, 10)) }
+                withParameter<RestoreErrorScreenPresenter> { RestoreFailureState.TitleSubtitleError(title = "Test", subtitle = "Test") }
             }
         )
     }
@@ -167,7 +184,7 @@ class CheckModulesTest : KoinTest {
     private val allModules = listOf(
         AuthModule.create(),
         RootModule.create(),
-        BackupModule.create(),
+        RestoreModule.create(),
         UserModule.create(),
         TokenPricesModule.create(),
         HomeModule.create(),

@@ -1,18 +1,26 @@
 package org.p2p.wallet.debug.settings
 
+import android.content.Context
 import android.os.Build
 import android.util.DisplayMetrics
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
+import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class DebugSettingsPresenter(
-    environmentManager: NetworkEnvironmentManager,
+    private val environmentManager: NetworkEnvironmentManager,
+    private val homeLocalRepository: HomeLocalRepository,
+    private val context: Context,
     private val resourcesProvider: ResourcesProvider,
     networkServicesUrlProvider: NetworkServicesUrlProvider
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
@@ -20,14 +28,26 @@ class DebugSettingsPresenter(
     private var networkName = environmentManager.loadCurrentEnvironment().name
     private val feeRelayerUrl = networkServicesUrlProvider.loadFeeRelayerEnvironment().baseUrl
     private val notificationServiceUrl = networkServicesUrlProvider.loadNotificationServiceEnvironment().baseUrl
+    private val torusUrl = networkServicesUrlProvider.loadTorusEnvironment().baseUrl
 
     override fun loadData() {
         val settings = getMainSettings() + getAppInfoSettings() + getDeviceInfo() + getCiInfo()
         view?.showSettings(settings)
     }
 
-    override fun onNetworkChanged(newName: String) {
-        this.networkName = newName
+    override fun onNetworkChanged(newNetworkEnvironment: NetworkEnvironment) {
+        this.networkName = newNetworkEnvironment.name
+
+        launch {
+            try {
+                environmentManager.chooseEnvironment(newNetworkEnvironment)
+                homeLocalRepository.clear()
+                RenVMService.stopService(context)
+            } catch (error: Throwable) {
+                Timber.e(error, "Network changing failed")
+            }
+        }
+
         loadData()
     }
 
@@ -49,6 +69,11 @@ class DebugSettingsPresenter(
             SettingsRow.Section(
                 titleResId = R.string.settings_fee_relayer,
                 subtitle = feeRelayerUrl,
+                iconRes = R.drawable.ic_network
+            ),
+            SettingsRow.Section(
+                titleResId = R.string.settings_torus,
+                subtitle = torusUrl,
                 iconRes = R.drawable.ic_network
             ),
             SettingsRow.Section(

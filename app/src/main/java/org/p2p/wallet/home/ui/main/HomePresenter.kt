@@ -5,12 +5,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
 import org.p2p.wallet.home.model.Token
@@ -26,6 +29,7 @@ import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.ellipsizeAddress
+import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
@@ -38,6 +42,7 @@ private val POPULAR_TOKENS = setOf(SOL_SYMBOL, USDC_SYMBOL, REN_BTC_SYMBOL)
 
 class HomePresenter(
     private val inAppFeatureFlags: InAppFeatureFlags,
+    private val analytics: HomeAnalytics,
     private val updatesManager: UpdatesManager,
     private val userInteractor: UserInteractor,
     private val settingsInteractor: SettingsInteractor,
@@ -47,6 +52,8 @@ class HomePresenter(
     private val homeElementItemMapper: HomeElementItemMapper,
     private val resourcesProvider: ResourcesProvider,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
+    private val accountStorageContract: UserSignUpDetailsStorage,
+    private val authInteractor: AuthInteractor
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private data class ViewState(
@@ -131,7 +138,7 @@ class HomePresenter(
                                         titleTextId = R.string.main_banner_title,
                                         subtitleTextId = R.string.main_banner_subtitle,
                                         buttonTextId = R.string.main_banner_button,
-                                        drawableRes = R.drawable.ic_banner_image,
+                                        drawableRes = R.drawable.ic_main_banner,
                                         backgroundColorRes = R.color.bannerBackgroundColor
                                     ),
                                     resourcesProvider.getString(R.string.main_popular_tokens_header)
@@ -199,6 +206,8 @@ class HomePresenter(
         val balance = getUserBalance()
         view?.showBalance(balance)
 
+        logBalance(balance)
+
         /* Mapping elements according to visibility settings */
         val areZerosHidden = settingsInteractor.areZerosHidden()
         val mappedTokens = homeElementItemMapper.mapToItems(
@@ -208,6 +217,12 @@ class HomePresenter(
         )
 
         view?.showTokens(mappedTokens, areZerosHidden)
+    }
+
+    private fun logBalance(balance: BigDecimal) {
+        val hasPositiveBalance = balance.isMoreThan(BigDecimal.ZERO)
+        analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
+        analytics.logUserAggregateBalanceProperty(balance.toInt())
     }
 
     private fun initialLoadTokens() {
@@ -292,7 +307,7 @@ class HomePresenter(
     }
 
     override fun onProfileClick() {
-        if (usernameInteractor.usernameExists()) {
+        if (usernameInteractor.isUsernameExist()) {
             view?.navigateToProfile()
         } else {
             view?.navigateToReserveUsername()
@@ -304,5 +319,10 @@ class HomePresenter(
             refreshTokens()
             state = state.copy(areZerosHidden = settingsInteractor.areZerosHidden())
         }
+    }
+
+    override fun detach() {
+        environmentManager.removeEnvironmentListener(this::class)
+        super.detach()
     }
 }

@@ -2,6 +2,7 @@ package org.p2p.wallet.common.crashlogging
 
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
+@Suppress("DEPRECATION")
 class CrashLogger(
     private val crashLoggingFacades: List<CrashLoggingFacade>,
     private val tokenKeyProvider: TokenKeyProvider

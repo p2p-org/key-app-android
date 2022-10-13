@@ -1,48 +1,68 @@
 package org.p2p.wallet.utils
 
 import android.content.Context
-import android.graphics.Typeface
-import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
-import androidx.annotation.ColorInt
+import android.text.TextPaint
+import android.text.style.ClickableSpan
+import android.view.View
+import androidx.core.content.ContextCompat
 import org.p2p.wallet.R
 
 object SpanUtils {
 
-    fun highlightText(commonText: String, highlightedText: String, @ColorInt color: Int): SpannableString {
-        val span = SpannableString(commonText)
-        val startIndex = commonText.indexOf(highlightedText)
-        val endIndex = startIndex + highlightedText.length
+    fun buildTermsAndPolicyText(
+        context: Context,
+        onTermsClick: () -> Unit,
+        onPolicyClick: () -> Unit
+    ): SpannableString {
+        val message = context.getString(R.string.onboarding_terms_and_policy)
+        val span = SpannableString(message)
 
-        if (startIndex == -1) return span
+        /*
+        * Applying clickable span for terms of use
+        * */
+        val clickableTermsOfUse = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                onTermsClick()
+            }
 
-        span.setSpan(ForegroundColorSpan(color), startIndex, endIndex, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-        return span
-    }
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.apply {
+                    color = ContextCompat.getColor(context, R.color.text_rain)
+                    isUnderlineText = false
+                }
+            }
+        }
+        val termsOfUse = context.getString(R.string.onboarding_terms_of_use)
+        val termsStart = span.indexOf(termsOfUse)
+        val termsEnd = span.indexOf(termsOfUse) + termsOfUse.length
+        span.setSpan(clickableTermsOfUse, termsStart, termsEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
 
-    fun setTextBold(commonText: String, vararg boldText: String): SpannableString {
-        val stringBuilder = SpannableString(commonText)
+        val privacyPolicy = context.getString(R.string.onboarding_privacy_policy)
 
-        boldText.forEach {
-            val copyStart = stringBuilder.indexOf(it)
-            val copyEnd = stringBuilder.indexOf(it) + it.length
-            if (copyStart == -1) return@forEach
+        /*
+        * Applying clickable span for privacy policy
+        * */
+        val clickablePolicy = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                onPolicyClick()
+            }
 
-            stringBuilder.setSpan(StyleSpan(Typeface.BOLD), copyStart, copyEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.apply {
+                    color = ContextCompat.getColor(context, R.color.text_rain)
+                    isUnderlineText = false
+                }
+            }
         }
 
-        return stringBuilder
-    }
+        val start = span.indexOf(privacyPolicy)
+        val end = span.indexOf(privacyPolicy) + privacyPolicy.length
+        span.setSpan(clickablePolicy, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
 
-    fun String.highlightPublicKey(context: Context): Spannable {
-        val color = context.getColor(R.color.backgroundButtonPrimary)
-        val outPutColoredText: Spannable = SpannableString(this)
-        outPutColoredText.setSpan(ForegroundColorSpan(color), 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        val endIndex = length - 4
-        outPutColoredText.setSpan(ForegroundColorSpan(color), endIndex, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        return outPutColoredText
+        return span
     }
 }

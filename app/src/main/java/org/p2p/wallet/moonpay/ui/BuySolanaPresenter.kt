@@ -4,6 +4,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
@@ -60,7 +61,13 @@ class BuySolanaPresenter(
                 Timber.e(e, "Error loading currency ask price")
                 view?.showErrorMessage(e)
             } finally {
-                buyAnalytics.logBuyViewed()
+                val prevScreenName =
+                    if (analyticsInteractor.getPreviousScreenName() == ScreenNames.Token.TOKEN_SCREEN) {
+                        ScreenNames.Token.TOKEN_SCREEN
+                    } else {
+                        ScreenNames.Main.MAIN
+                    }
+                buyAnalytics.logScreenOpened(lastScreenName = prevScreenName)
                 view?.showLoading(false)
             }
         }
@@ -162,9 +169,13 @@ class BuySolanaPresenter(
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
-            is MoonpayBuyResult.MinimumAmountError -> {
+            is MoonpayBuyResult.MinAmountError -> {
                 // May by only in case of new buy
-                error("MinimumAmountError may be only in case of new buy screen")
+                error("MinAmountError may be only in case of new buy screen")
+            }
+            is MoonpayBuyResult.MaxAmountError -> {
+                // May by only in case of new buy
+                error("MaxAmountError may be only in case of new buy screen")
             }
         }
         buyAnalytics.logBuyPaymentResultShown(buyResultAnalytics)

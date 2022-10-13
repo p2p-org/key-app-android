@@ -1,11 +1,11 @@
 package org.p2p.wallet.utils
 
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import org.bouncycastle.crypto.modes.ChaCha20Poly1305
 import org.koin.ext.getFullName
-import org.p2p.wallet.R
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 
 fun <R> unsafeLazy(initializer: () -> R): Lazy<R> = lazy(LazyThreadSafetyMode.NONE, initializer)
 
@@ -34,3 +34,25 @@ inline fun <reified Type> Gson.fromJsonReified(json: String): Type? {
 fun Result<*>.invokeAndForget() {
     getOrNull()
 }
+
+fun Gson.toJsonObject(obj: Any): JsonObject {
+    val objectAsJsonStr = toJson(obj)
+    return fromJsonReified<JsonObject>(objectAsJsonStr)
+        ?: error("Failed to convert object $objectAsJsonStr ($obj) to JsonObject")
+}
+
+fun JsonObject.toByteArray(): ByteArray = toString().toByteArray()
+
+fun ChaCha20Poly1305.processBytesKt(
+    inBytes: ByteArray,
+    inOff: Int = 0,
+    len: Int,
+    outBytes: ByteArray,
+    outOff: Int = 0
+): Int = processBytes(
+    inBytes,
+    inOff,
+    len,
+    outBytes,
+    outOff
+)

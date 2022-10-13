@@ -67,6 +67,8 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
     }
 
     override suspend fun getTokenAccountsByOwner(owner: String): TokenAccounts {
+        require(owner.isNotBlank()) { "Owner ID cannot be blank" }
+
         val programId = TokenProgram.PROGRAM_ID
         val programIdParam = HashMap<String, String>()
         programIdParam["programId"] = programId.toBase58()

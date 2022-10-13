@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.p2p.solanaj.kits.renBridge.LockAndMint
-import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.model.RenBtcSession

@@ -1,10 +1,10 @@
 package org.p2p.wallet
 
+import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
-import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
-import kotlinx.coroutines.launch
+import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -33,7 +33,7 @@ import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.renbtc.RenBtcModule
-import org.p2p.wallet.restore.BackupModule
+import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
@@ -45,9 +45,9 @@ import org.p2p.wallet.user.UserModule
 import org.p2p.wallet.user.repository.prices.di.TokenPricesModule
 import org.p2p.wallet.utils.SolanajTimberLogger
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class App : Application() {
-
     private val crashLogger: CrashLogger by inject()
     private val appScope: AppScope by inject()
     private val pushTokenRepository: PushTokenRepository by inject()
@@ -101,7 +101,7 @@ class App : Application() {
                     AuthModule.create(),
                     RootModule.create(),
                     PushNotificationsModule.create(),
-                    BackupModule.create(),
+                    RestoreModule.create(),
                     UserModule.create(),
                     TokenPricesModule.create(),
                     HomeModule.create(),
@@ -133,6 +133,12 @@ class App : Application() {
     private fun setupTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+            // for logs in debug drawer
+            Timber.plant(
+                LumberYard.getInstance(this)
+                    .apply { cleanUp() }
+                    .tree()
+            )
         }
         // Always plant this tree
         // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag

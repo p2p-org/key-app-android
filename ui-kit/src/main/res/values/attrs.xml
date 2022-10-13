@@ -45,6 +45,11 @@
         <attr name="iconTint" />
     </declare-styleable>
 
+    <declare-styleable name="UiKitSliderButton">
+        <attr name="sliderIcon" format="reference" />
+        <attr name="sliderText" format="string" />
+    </declare-styleable>
+
     <declare-styleable name="UiKitSectionHeader">
         <attr name="withIcon" format="boolean" />
         <attr name="sectionText" format="string" />
@@ -54,6 +59,17 @@
 
     <declare-styleable name="UiKitSkeletonRectangle">
         <attr name="isRounded" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitFourDigitsLargeInput">
+        <attr name="leftIcon" format="reference" />
+        <attr name="isChevronVisible" format="boolean" />
+        <attr name="rightIcon" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitNumberKeyboardButtonView">
+        <attr name="keyboard_button_text" format="string" />
+        <attr name="keyboard_button_image" format="integer" />
     </declare-styleable>
 
 </resources>

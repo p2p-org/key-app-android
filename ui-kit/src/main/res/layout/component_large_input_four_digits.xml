@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:cardBackgroundColor="@color/bg_rain"
+        app:cardCornerRadius="12dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/contentCardLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_input_stroke_oval"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/leftIconImage"
+                android:layout_width="28dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/fourDigitsInput"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/fourDigitsInput"
+                tools:srcCompat="@tools:sample/avatars"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/chevronImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/leftIconImage"
+                app:layout_constraintStart_toEndOf="@+id/leftIconImage"
+                app:layout_constraintTop_toTopOf="@+id/leftIconImage"
+                app:srcCompat="@drawable/ic_chevron_right"
+                tools:visibility="visible" />
+
+            <EditText
+                android:id="@+id/fourDigitsInput"
+                style="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autofillHints="smsOTPCode"
+                android:digits="1234567890 "
+                android:importantForAutofill="yes"
+                android:includeFontPadding="false"
+                android:inputType="number"
+                android:padding="6dp"
+                android:textAlignment="center"
+                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+                android:textColor="@color/text_night"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/chevronImage"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:hint="000 000" />
+
+            <ImageView
+                android:id="@+id/rightIconImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/fourDigitsInput"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_copy"
+                tools:visibility="gone" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/errorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_rose"
+        android:visibility="gone"
+        tools:text="Incorrect SMS code 😬"
+        tools:visibility="visible" />
+</LinearLayout>

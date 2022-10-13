@@ -2,9 +2,6 @@ package org.p2p.wallet.utils
 
 object Constants {
 
-    const val SEED_PHRASE_SIZE_SHORT = 12
-    const val SEED_PHRASE_SIZE_LONG = 24
-
     const val MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH = 0
 
     const val SYMBOL_ZERO = "0"
@@ -29,4 +26,6 @@ object Constants {
     const val DEVICE_TYPE = "Android"
 
     const val ZERO_AMOUNT = "0"
+
+    const val APP_HASH = "J1y9NEXfoHx"
 }

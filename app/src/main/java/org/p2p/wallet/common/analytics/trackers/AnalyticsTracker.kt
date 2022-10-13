@@ -9,4 +9,5 @@ interface AnalyticsTracker {
     fun setUserId(userId: String?)
     fun appendToArray(property: String, value: Int)
     fun regenerateDeviceId()
+    fun clearUserProperties()
 }

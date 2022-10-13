@@ -16,14 +16,17 @@ class SliderFragment : BaseFragment(R.layout.fragment_onboarding_slide) {
 
     private val binding: FragmentOnboardingSlideBinding by viewBinding()
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let { args ->
             val sliderFragmentArgs = SliderFragmentArgs.fromBundle(args)
             with(binding) {
-                sliderIcon.setImageResource(sliderFragmentArgs.iconRes)
-                sliderTitle.setText(sliderFragmentArgs.slideTitle)
-                sliderText.setText(sliderFragmentArgs.slideText)
+                imageViewSliderIcon.setImageResource(sliderFragmentArgs.iconRes)
+                textViewSliderTitle.setText(sliderFragmentArgs.slideTitle)
+                textViewSliderSubtitle.setText(sliderFragmentArgs.slideText)
             }
         } ?: Timber.w("Error on getting SliderFragmentArgs")
     }

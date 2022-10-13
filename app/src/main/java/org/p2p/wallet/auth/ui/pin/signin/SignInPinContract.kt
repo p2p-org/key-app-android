@@ -8,11 +8,12 @@ interface SignInPinContract {
     interface View : MvpView {
         fun onSignInSuccess()
         fun onLogout()
+        fun setBiometricVisibility(isVisible: Boolean)
         fun showBiometricDialog(cipher: Cipher)
         fun showWrongPinError(attemptsLeft: Int)
+        fun showWarnPinError(attemptsLeft: Int)
         fun showWalletLocked(seconds: Long)
         fun showWalletUnlocked()
-        fun showLoading(isLoading: Boolean)
         fun vibrate(duration: Long)
         fun clearPin()
     }
@@ -22,7 +23,6 @@ interface SignInPinContract {
         fun signInByBiometric(cipher: Cipher)
         fun onBiometricSignInRequested()
         fun checkIfBiometricAvailable()
-        fun stopTimer()
         fun logout()
     }
 }

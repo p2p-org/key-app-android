@@ -66,14 +66,14 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                         blockTime = it.commonInformation.blockTimeSec,
                         slot = it.identifiers.blockId,
                         fee = it.fee,
-                        source = it.aEntity.source?.value,
-                        destination = it.bEntity.destination?.value,
+                        source = it.aEntity.source?.base58Value,
+                        destination = it.bEntity.destination?.base58Value,
                         amountA = it.aEntity.amount,
                         amountB = it.bEntity.amount,
                         mintA = it.aEntity.mint,
                         mintB = it.bEntity.mint,
-                        alternateSource = it.aEntity.alternateSource?.value,
-                        alternateDestination = it.bEntity.alternateDestination?.value
+                        alternateSource = it.aEntity.alternateSource?.base58Value,
+                        alternateDestination = it.bEntity.alternateDestination?.base58Value
                     )
                 }
                 is TransferTransactionEntity -> {
@@ -82,8 +82,8 @@ class TransactionDetailsEntityMapper(private val dispatchers: CoroutineDispatche
                         blockTime = it.commonInformation.blockTimeSec,
                         slot = it.identifiers.blockId,
                         fee = it.fee,
-                        source = it.source?.value,
-                        destination = it.destination?.value,
+                        source = it.source?.base58Value,
+                        destination = it.destination?.base58Value,
                         authority = it.authority,
                         mint = it.mint,
                         amount = it.amount,

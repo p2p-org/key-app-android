@@ -5,11 +5,16 @@
     <string name="common_send">Send</string>
     <string name="common_feedback">Feedback</string>
     <string name="common_settings">Settings</string>
-
+    <string name="common_paste">Paste</string>
+    <string name="common_clear">Clear</string>
     <string name="common_search">Search</string>
 
     <string name="tip_button_next_title">Next</string>
     <string name="tip_button_skip_all_title">Skip all</string>
+
+    <!-- Restore by seed phrase screen -->
+    <string name="seed_phrase_view_invalid">Seed phrase</string>
+    <string name="seed_phrase_view_valid">Seed phrase ✅</string>
 
     <!-- UiKitAmountsView -->
     <string name="amounts_view_hint">0.0</string>

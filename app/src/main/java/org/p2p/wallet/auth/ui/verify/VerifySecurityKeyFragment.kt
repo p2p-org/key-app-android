@@ -1,12 +1,12 @@
 package org.p2p.wallet.auth.ui.verify
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentVerifySecurityKeyBinding
 import org.p2p.wallet.utils.args
@@ -58,7 +58,7 @@ class VerifySecurityKeyFragment :
     }
 
     override fun navigateToReserve() {
-        replaceFragment(CreatePinFragment.create())
+        replaceFragment(NewCreatePinFragment.create())
         // skip this step due to PWN-4377
         // replaceFragment(ReserveUsernameFragment.create(ReserveMode.PIN_CODE))
     }

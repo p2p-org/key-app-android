@@ -1,10 +1,11 @@
 package org.p2p.wallet.common.crypto.keystore
 
+import android.content.SharedPreferences
 import java.security.KeyStore
 import javax.crypto.Cipher
 
 interface EncoderDecoder {
-    fun setKeyStore(keyStore: KeyStore, providerName: String)
+    fun init(keyStore: KeyStore, providerName: String, preferences: SharedPreferences)
 
     fun encode(keyAlias: String, data: ByteArray): ByteArray
     fun decode(keyAlias: String, encodedData: ByteArray): ByteArray

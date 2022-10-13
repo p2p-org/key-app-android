@@ -16,11 +16,17 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ADMIN_SNACKBAR_RECEI
 class AdminAnalytics(private val tracker: Analytics) {
 
     fun logAppOpened(source: AppOpenSource) {
-        tracker.logEvent(ADMIN_APP_OPENED, arrayOf(Pair("Source_Open", source.title)))
+        tracker.logEvent(
+            event = ADMIN_APP_OPENED,
+            params = mapOf("Source_Open" to source.sourceName)
+        )
     }
 
     fun logAppClosed(lastScreenName: String) {
-        tracker.logEvent(ADMIN_APP_CLOSED, arrayOf(Pair("Last_Screen", lastScreenName)))
+        tracker.logEvent(
+            event = ADMIN_APP_CLOSED,
+            params = mapOf("Last_Screen" to lastScreenName)
+        )
     }
 
     fun logPushReceived(campaignName: String) {
@@ -31,13 +37,8 @@ class AdminAnalytics(private val tracker: Analytics) {
         tracker.logEvent(ADMIN_SNACKBAR_RECEIVED, arrayOf(Pair("Snackbar_Type", message)))
     }
 
-    fun logSignOut(backupState: BackupState = BackupState.OFF) {
-        tracker.logEvent(
-            ADMIN_SIGN_OUT,
-            arrayOf(
-                Pair("Backup_State", backupState.title)
-            )
-        )
+    fun logSignOut() {
+        tracker.logEvent(ADMIN_SIGN_OUT)
     }
 
     fun logSignedOut(backupState: BackupState = BackupState.OFF) {
@@ -81,7 +82,11 @@ class AdminAnalytics(private val tracker: Analytics) {
         tracker.logEvent(ADMIN_PASSWORD_CREATED)
     }
 
-    enum class AppOpenSource(val title: String) {
+    fun clearUserProperties() {
+        tracker.clearUserProperties()
+    }
+
+    enum class AppOpenSource(val sourceName: String) {
         DIRECT("Direct"),
         DEEPLINK("Deeplink"),
         PUSH("Push")

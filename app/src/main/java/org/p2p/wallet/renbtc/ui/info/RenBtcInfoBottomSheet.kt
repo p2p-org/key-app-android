@@ -11,7 +11,7 @@ import androidx.fragment.app.setFragmentResult
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
 import org.p2p.wallet.databinding.DialogBtcNetworkInfoBinding
-import org.p2p.wallet.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs

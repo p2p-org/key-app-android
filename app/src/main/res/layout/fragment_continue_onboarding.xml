@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lime">
+
+    <ImageView
+        android:id="@+id/imageViewContinueOnboardingIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_continue_onboarding"
+        app:layout_constraintBottom_toTopOf="@+id/textViewContinueOnboardingTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/textViewContinueOnboardingTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="26dp"
+        android:gravity="center"
+        android:text="@string/onboarding_continue_title"
+        android:textColor="@color/night"
+        app:layout_constraintBottom_toTopOf="@+id/textViewContinueOnboardingSubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewContinueOnboardingIcon" />
+
+    <TextView
+        android:id="@+id/textViewContinueOnboardingSubtitle"
+        style="@style/UiKit.TextAppearance.Regular.Title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textColor="@color/night"
+        app:layout_constraintBottom_toTopOf="@+id/containerBottomContinueOnboarding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewContinueOnboardingTitle"
+        tools:text="@string/onboarding_continue_subtitle" />
+
+    <LinearLayout
+        android:id="@+id/containerBottomContinueOnboarding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_night_top_rounded"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonContinueOnboarding"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/snow"
+            android:text="@string/onboarding_continue_button_text"
+            android:textColor="@color/night"
+            app:iconTint="@color/night" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonContinueStarting"
+            style="@style/UiKit.Components.Button.Large.Text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="20dp"
+            android:text="@string/onboarding_continue_starting_button_text"
+            android:textColor="@color/lime" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
