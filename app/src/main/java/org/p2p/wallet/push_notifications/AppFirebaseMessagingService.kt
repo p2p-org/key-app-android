@@ -27,9 +27,8 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
         super.onMessageReceived(message)
         if (appsFlyerService.isUninstallTrackingMessage(message)) {
             return
-        } else {
-            handleForegroundPush(message)
         }
+        handleForegroundPush(message)
     }
 
     private fun handleForegroundPush(message: RemoteMessage) {
