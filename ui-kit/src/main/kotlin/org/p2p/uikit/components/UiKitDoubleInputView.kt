@@ -88,12 +88,14 @@ class UiKitDoubleInputView @JvmOverloads constructor(
         with(binding) {
             textViewOutputLabel.text = text
             textViewOutputLabel.setOnClickListener {
-                textViewOutputLabel.text = maxAmountOutputLabelText
-                updateInputText(
-                    outputText = amount.scaleLong(),
-                    removeListener = false
-                )
-                context.vibrate()
+                if (textViewOutputLabel.text != maxAmountOutputLabelText) {
+                    textViewOutputLabel.text = maxAmountOutputLabelText
+                    updateInputText(
+                        outputText = amount.scaleLong(),
+                        removeListener = false
+                    )
+                    context.vibrate()
+                }
             }
         }
     }
