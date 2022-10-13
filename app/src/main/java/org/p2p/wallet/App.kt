@@ -11,7 +11,7 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
-import org.p2p.wallet.appsfly.AppsFlyManager
+import org.p2p.wallet.appsfly.AppsFlyerService
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 import org.p2p.wallet.intercom.IntercomService
@@ -24,6 +24,7 @@ import timber.log.Timber
 class App : Application() {
     private val crashLogger: CrashLogger by inject()
     private val appCreatedAction: AppCreatedAction by inject()
+    private val appsFlyerService: AppsFlyerService by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -42,8 +43,7 @@ class App : Application() {
         SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
 
         appCreatedAction.invoke()
-
-        AppsFlyManager.install(this)
+        appsFlyerService.install(this, BuildConfig.appsFlyerKey)
     }
 
     private fun setupKoin() {
