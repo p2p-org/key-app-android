@@ -1,8 +1,8 @@
 package org.p2p.wallet
 
-import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.android.ext.android.inject
@@ -17,11 +17,6 @@ import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.notification.AppNotificationManager
-import org.p2p.wallet.push_notifications.PushNotificationsModule
-import org.p2p.wallet.push_notifications.repository.PushTokenRepository
-import org.p2p.wallet.qr.ScanQrModule
-import org.p2p.wallet.renbtc.RenBtcModule
-import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
