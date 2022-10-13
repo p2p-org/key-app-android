@@ -1,17 +1,20 @@
 package org.p2p.uikit.components
 
-import androidx.annotation.StringRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.widget.doOnTextChanged
 import android.content.Context
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.TextView
+import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.doOnTextChanged
+import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetDoubleInputViewBinding
 import org.p2p.uikit.utils.emptyString
 import org.p2p.uikit.utils.focusAndShowKeyboard
+import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
+import org.p2p.uikit.utils.vibrate
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -29,6 +32,12 @@ class UiKitDoubleInputView @JvmOverloads constructor(
     private var textWatcherOutput: TextWatcher? = null
 
     private var originalTextSize: Float
+
+    private var maxAmountOutputLabelText: String = emptyString()
+    private var defaultOutputLabelText: String = emptyString()
+    private var maxInputAmount: BigDecimal = BigDecimal.ZERO
+
+    var amountsHandler: ((input: BigDecimal, output: BigDecimal) -> Unit)? = null
 
     init {
         with(binding) {
@@ -68,16 +77,29 @@ class UiKitDoubleInputView @JvmOverloads constructor(
         binding.textViewOutputLabel.text = text
     }
 
-    fun setOutputLabelText(text: String, amount: BigDecimal) {
+    fun setOutputLabelText(
+        text: String,
+        amount: BigDecimal,
+        textMaxAmount: String
+    ) {
+        defaultOutputLabelText = text
+        maxAmountOutputLabelText = textMaxAmount
+        maxInputAmount = amount
         with(binding) {
             textViewOutputLabel.text = text
             textViewOutputLabel.setOnClickListener {
+                textViewOutputLabel.text = maxAmountOutputLabelText
                 updateInputText(
                     outputText = amount.scaleLong(),
                     removeListener = false
                 )
+                context.vibrate()
             }
         }
+    }
+
+    fun acceptMaxAmount() {
+        binding.textViewOutputLabel.callOnClick()
     }
 
     fun setOutputLabelText(@StringRes textRes: Int) {
@@ -91,6 +113,8 @@ class UiKitDoubleInputView @JvmOverloads constructor(
     ) = with(binding) {
         textViewInputToken.hint = inputSymbol
         textViewOutputToken.hint = outputSymbol
+
+        clearTextWatchers()
 
         textWatcherInput = editTextInput.doOnTextChanged { text, _, _, _ ->
             resizeInput(text, inputSymbol)
@@ -108,6 +132,20 @@ class UiKitDoubleInputView @JvmOverloads constructor(
         }
     }
 
+    private fun clearTextWatchers() = with(binding) {
+        textWatcherInput?.let {
+            editTextInput.removeTextChangedListener(it)
+        }
+
+        textWatcherOutput?.let {
+            editTextOutput.removeTextChangedListener(it)
+        }
+    }
+
+    fun setBottomMessageText(text: String) {
+        binding.textViewBottomMessage.text = text
+    }
+
     fun setBottomMessageText(@StringRes textRes: Int) {
         binding.textViewBottomMessage.setText(textRes)
     }
@@ -117,24 +155,71 @@ class UiKitDoubleInputView @JvmOverloads constructor(
     * */
     private fun WidgetDoubleInputViewBinding.calculateInput(inputValue: Double, inputRate: Double) {
         if (inputValue == 0.0) {
+            val zero = inputValue.toBigDecimal()
             updateOutputText(emptyString())
+            checkInputMaxValue(zero)
+            amountsHandler?.invoke(zero, zero)
             return
         }
 
-        val output = BigDecimal(inputValue * inputRate).scaleLong()
+        val outputValue = BigDecimal(inputValue * inputRate)
+        val output = outputValue.scaleLong()
         updateOutputText(output)
+        val inputBigDecimal = inputValue.toBigDecimal()
+        amountsHandler?.invoke(inputBigDecimal, outputValue)
+        checkInputMaxValue(inputBigDecimal)
     }
 
     private fun WidgetDoubleInputViewBinding.calculateOutput(outputValue: Double, outputRate: Double) {
+        val outputBigDecimal = outputValue.toBigDecimal()
         if (outputRate == 0.0) return
 
         if (outputValue == 0.0) {
             updateInputText(emptyString())
+            amountsHandler?.invoke(outputBigDecimal, outputBigDecimal)
+            checkInputMaxValue(outputBigDecimal)
             return
         }
 
-        val output = BigDecimal(outputValue * outputRate).scaleLong()
-        updateInputText(output)
+        val inputValue = BigDecimal(outputValue * outputRate)
+        val input = inputValue.scaleLong()
+        updateInputText(input)
+        amountsHandler?.invoke(inputValue, outputBigDecimal)
+        checkInputMaxValue(inputValue)
+    }
+
+    private fun WidgetDoubleInputViewBinding.checkInputMaxValue(outputValue: BigDecimal) {
+        textViewOutputLabel.apply {
+            if (outputValue == maxInputAmount) {
+                text = maxAmountOutputLabelText
+                setTextColor(getColor(R.color.text_night))
+            } else {
+                text = defaultOutputLabelText
+                setTextColor(getColor(R.color.text_sky))
+            }
+        }
+        setInputRelatedTextColors(outputValue > maxInputAmount)
+    }
+
+    private fun WidgetDoubleInputViewBinding.setInputRelatedTextColors(isBiggerThenMax: Boolean) {
+        val inputCheckedTextColor = getColor(
+            if (isBiggerThenMax) {
+                R.color.text_rose
+            } else {
+                R.color.text_night
+            }
+        )
+        editTextInput.setTextColor(inputCheckedTextColor)
+        editTextOutput.setTextColor(inputCheckedTextColor)
+        textViewBottomMessage.setTextColor(
+            getColor(
+                if (isBiggerThenMax) {
+                    R.color.text_rose
+                } else {
+                    R.color.text_mountain
+                }
+            )
+        )
     }
 
     private fun WidgetDoubleInputViewBinding.resizeInput(
