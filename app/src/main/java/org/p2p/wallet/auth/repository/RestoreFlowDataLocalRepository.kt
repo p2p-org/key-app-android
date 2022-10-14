@@ -40,11 +40,11 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? =
         signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare
         set(value) {
-            field = value
-            Timber.tag(TAG).i(
-                "deviceShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}"
-            )
-        }
+                field = value
+                Timber.tag(TAG).i(
+                    "deviceShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}"
+                )
+            }
 
     var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
         set(value) {
