@@ -1,11 +1,11 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
 import org.p2p.wallet.auth.ui.phone.CountryCodeInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
-import kotlinx.coroutines.launch
 
 private const val DEFAULT_KEY = ""
 private const val PLUS_SIGN = '+'

@@ -18,6 +18,7 @@ class Web3AuthClientMapper(private val gson: Gson) {
         Timber.i(responseJson)
         Result.failure(Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError))
     }
+
     fun obtainTorusKey(responseString: String): Result<String> = try {
         Result.success(responseString)
     } catch (error: Throwable) {

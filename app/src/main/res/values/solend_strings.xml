@@ -7,6 +7,17 @@
 
     <string name="solend_rates_error">There’s a problem showing the rates. Try again later</string>
 
+    <!--About Earn-->
+    <string name="about_earn_skip">Skip</string>
+    <string name="about_earn_next">Next</string>
+    <string name="about_earn_continue">Continue</string>
+    <string name="about_earn_slider_title_1">Let your crypto\nwork for you</string>
+    <string name="about_earn_slider_text_1">Deposit your crypto.\nEarn up to 6% on USD.</string>
+    <string name="about_earn_slider_title_2">Convenient and flexible</string>
+    <string name="about_earn_slider_text_2">You can withdraw rewards or funds at any time</string>
+    <string name="about_earn_slider_title_3">Superhero protection</string>
+    <string name="about_earn_slider_text_3">We provide you with the possibility to use secure and trusted protocols</string>
+
     <!--Earn Widget-->
 
     <!--Earn Widget -> LearnMore-->

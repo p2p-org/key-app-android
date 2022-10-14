@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
@@ -15,7 +16,6 @@ import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveListBinding
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.user.model.TokenData
-import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 

@@ -1,7 +1,7 @@
 package org.p2p.uikit.organisms.seedphrase.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseConstants.SEED_PHRASE_SIZE_LONG
 

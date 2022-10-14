@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
@@ -14,7 +15,6 @@ import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.utils.Constants
-import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareScreenShot

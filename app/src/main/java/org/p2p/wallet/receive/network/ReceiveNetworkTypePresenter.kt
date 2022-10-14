@@ -1,5 +1,6 @@
 package org.p2p.wallet.receive.network
 
+import kotlinx.coroutines.launch
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -21,7 +22,6 @@ import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
-import kotlinx.coroutines.launch
 
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,

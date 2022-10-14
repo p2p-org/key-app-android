@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.gateway.repository
 
 import com.google.gson.JsonObject
+import kotlinx.coroutines.withContext
 import org.p2p.wallet.auth.gateway.api.GatewayServiceApi
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
@@ -17,7 +18,6 @@ import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.FlowDurationTimer
 import timber.log.Timber
 import kotlin.time.DurationUnit
-import kotlinx.coroutines.withContext
 
 class GatewayServiceRemoteRepository(
     private val api: GatewayServiceApi,

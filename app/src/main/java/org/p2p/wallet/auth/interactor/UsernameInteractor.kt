@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.interactor
 
-import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import androidx.core.content.edit
 import org.json.JSONObject
 import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.auth.model.Username

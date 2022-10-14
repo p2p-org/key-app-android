@@ -19,15 +19,15 @@
     <string name="torusFeatureVerifier">testTketF2</string>
     <string name="torusReleaseVerifier">key-app-google-cyan</string>
 
-<!--    DECOMMENT THE LINE NEEDED DEPENDING ON BUILD-->
-<!--    FOR LOCAL RELEASE BUILDS-->
+    <!--    DECOMMENT THE LINE NEEDED DEPENDING ON BUILD-->
+    <!--    FOR LOCAL RELEASE BUILDS-->
     <string name="torusReleaseSubVerifier">android</string>
 
-<!--    FOR PLAY STORE RELEASE BUILDS-->
-<!--    <string name="torusReleaseSubVerifier">android-1</string>-->
+    <!--    FOR PLAY STORE RELEASE BUILDS-->
+    <!--    <string name="torusReleaseSubVerifier">android-1</string>-->
 
-<!--    FOR INTERNAL APP TESTING (FIREBASE) BUILDS-->
-<!--    <string name="torusReleaseSubVerifier">android-2</string>-->
+    <!--    FOR INTERNAL APP TESTING (FIREBASE) BUILDS-->
+    <!--    <string name="torusReleaseSubVerifier">android-2</string>-->
 
     <string name="torusDebugNetwork">testnet</string>
     <string name="torusReleaseNetwork">cyan</string>

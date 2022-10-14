@@ -4,7 +4,7 @@
     <style name="WalletTheme.Launcher" parent="WalletTheme">
         <!-- todo: revert back before key app redesign is finished and published -->
         <!-- todo: https://p2pvalidator.atlassian.net/browse/PWN-5100 -->
-<!--        <item name="android:windowBackground">@drawable/bg_splash_screen</item>-->
+        <!--        <item name="android:windowBackground">@drawable/bg_splash_screen</item>-->
     </style>
 
     <style name="WalletTheme" parent="WalletBase.v21" />

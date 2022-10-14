@@ -3,8 +3,8 @@ package org.p2p.wallet.auth.ui.verify
 import kotlinx.coroutines.launch
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import kotlin.random.Random
