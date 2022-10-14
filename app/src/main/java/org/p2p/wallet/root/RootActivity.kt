@@ -1,12 +1,16 @@
 package org.p2p.wallet.root
 
+import androidx.activity.addCallback
+import androidx.lifecycle.lifecycleScope
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.addCallback
+import android.view.LayoutInflater
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
@@ -15,9 +19,13 @@ import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.FragmentLoggingLifecycleListener
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
+import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.solana.SolanaNetworkObserver
+import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.utils.popBackStack
 import timber.log.Timber
+import kotlinx.coroutines.flow.collectLatest
 
 class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
 
@@ -36,6 +44,12 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
 
     private val crashLogger: CrashLogger by inject()
 
+    private val networkObserver: SolanaNetworkObserver by inject()
+
+    private lateinit var binding: ActivityRootBinding
+
+    private var snackbar: Snackbar? = null
+
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         handleDeeplink(intent)
@@ -44,8 +58,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
+        binding = ActivityRootBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
+
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
-        setContentView(R.layout.activity_root)
 
         presenter.loadPricesAndBids()
         onBackPressedDispatcher.addCallback {
@@ -56,6 +72,8 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         checkForGoogleServices()
         deeplinksManager.mainFragmentManager = supportFragmentManager
         handleDeeplink()
+
+        registerNetworkObserver()
     }
 
     private fun logScreenOpenEvent() {
@@ -113,5 +131,35 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     private fun handleDeeplink(newIntent: Intent? = null) {
         val intentToHandle = newIntent ?: intent
         deeplinksManager.handleDeeplinkIntent(intentToHandle)
+    }
+
+    private fun registerNetworkObserver() {
+        lifecycleScope.launchWhenResumed {
+            networkObserver.getStateFlow().collectLatest { state ->
+                when (state) {
+                    is SolanaNetworkState.ShowError -> showSnackbarErrorMessage()
+                    is SolanaNetworkState.Online,
+                    is SolanaNetworkState.Idle -> hideSnackbar()
+                }
+            }
+        }
+
+        networkObserver.start()
+    }
+
+    private fun showSnackbarErrorMessage() {
+        snackbar = binding.root.showSnackbarIndefinite(
+            snackbarText = getString(R.string.error_solana_network),
+            snackbarActionButtonText = getString(R.string.common_hide),
+            snackbarActionButtonListener = { snackbar ->
+                snackbar.dismiss()
+                networkObserver.setSnackbarHidden(isHidden = true)
+            }
+        )
+    }
+
+    private fun hideSnackbar() {
+        snackbar?.dismiss()
+        snackbar = null
     }
 }
