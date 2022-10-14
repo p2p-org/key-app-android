@@ -137,7 +137,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         lifecycleScope.launchWhenResumed {
             networkObserver.getStateFlow().collectLatest { state ->
                 when (state) {
-                    is SolanaNetworkState.ShowError -> showSnackbarErrorMessage()
+                    is SolanaNetworkState.Offline -> showSnackbarErrorMessage()
                     is SolanaNetworkState.Online,
                     is SolanaNetworkState.Idle -> hideSnackbar()
                 }

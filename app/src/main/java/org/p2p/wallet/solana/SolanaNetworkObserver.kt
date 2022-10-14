@@ -11,8 +11,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPe
 import org.p2p.wallet.solana.model.NetworkStatusFrequency
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.solana.model.SolanaNetworkState.Idle
+import org.p2p.wallet.solana.model.SolanaNetworkState.Offline
 import org.p2p.wallet.solana.model.SolanaNetworkState.Online
-import org.p2p.wallet.solana.model.SolanaNetworkState.ShowError
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
@@ -30,7 +30,7 @@ private const val KEY_MESSAGE_HIDDEN = "KEY_MESSAGE_HIDDEN"
 class SolanaNetworkObserver(
     private val observationFeatureToggle: NetworkObservationFeatureToggle,
     private val percentFeatureToggle: NetworkObservationPercentFeatureToggle,
-    private val frequencyFeatureToggle: NetworkObservationFrequencyFeatureToggle,
+    private val errorFrequencyFeatureToggle: NetworkObservationFrequencyFeatureToggle,
     private val rpcSolanaRepository: RpcSolanaRepository,
     private val sharedPreferences: SharedPreferences,
     private val appScope: AppScope
@@ -47,7 +47,7 @@ class SolanaNetworkObserver(
 
     fun start() {
         if (!observationFeatureToggle.isFeatureEnabled) {
-            Timber.tag(TAG).d("Solana network observation is disabled by feature toggle. Skipping the launch")
+            Timber.tag(TAG).i("Solana network observation is disabled by feature toggle. Skipping the launch")
             return
         }
 
@@ -72,14 +72,14 @@ class SolanaNetworkObserver(
     }
 
     private fun handleSamples(samples: List<RecentPerformanceSample>) {
-        val transactions = samples.sumOf { it.numTransactions }
-        val periods = samples.sumOf { it.samplePeriodSecs }
+        val transactions = samples.sumOf { it.numberOfTransactions }
+        val periods = samples.sumOf { it.samplePeriodInSeconds }
         val currentAverageTps = transactions / periods
-        Timber.tag(TAG).d("The average tps is: $currentAverageTps. Saving the value")
+        Timber.tag(TAG).i("The average tps is: $currentAverageTps. Saving the value")
 
         when (val oldState = state.value) {
             is Idle,
-            is ShowError -> updateState(Online(currentAverageTps))
+            is Offline -> updateState(Online(currentAverageTps))
             is Online -> calculateNegativePercent(oldState, currentAverageTps)
         }
     }
@@ -117,13 +117,15 @@ class SolanaNetworkObserver(
     * according to the frequency value from RemoteConfig
     * */
     private fun showError() {
-        when (frequencyFeatureToggle.frequency) {
+        when (errorFrequencyFeatureToggle.frequency) {
             NetworkStatusFrequency.ONCE -> {
                 val isMessageHidden = sharedPreferences.getBoolean(KEY_MESSAGE_HIDDEN, false)
-                val state = if (isMessageHidden) Idle else ShowError
+                val state = if (isMessageHidden) Idle else Offline
                 updateState(state)
             }
-            NetworkStatusFrequency.MORE_THAN_ONCE -> updateState(ShowError)
+            NetworkStatusFrequency.MORE_THAN_ONCE -> {
+                updateState(Offline)
+            }
         }
     }
 

@@ -45,9 +45,9 @@ class RpcSolanaRemoteRepository(
         val response = api.getRecentPerformanceSamples(rpcRequest)
         return response.result.map {
             RecentPerformanceSample(
-                numSlots = it.numSlots,
-                numTransactions = it.numTransactions,
-                samplePeriodSecs = it.samplePeriodSecs,
+                numberOfSlots = it.numSlots,
+                numberOfTransactions = it.numTransactions,
+                samplePeriodInSeconds = it.samplePeriodSecs,
                 slot = it.slot,
             )
         }
