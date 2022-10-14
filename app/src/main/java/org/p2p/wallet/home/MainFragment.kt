@@ -13,6 +13,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
+import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseFragment
@@ -172,7 +173,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
         binding.buttonCenterAction.setOnClickListener {
-            generalAnalytics.logActionButtonClicked(screenAnalyticsInteractor.getCurrentScreenName())
+            generalAnalytics.logActionButtonClicked(analyticsInteractor.getCurrentScreenName())
             block.invoke()
         }
     }
