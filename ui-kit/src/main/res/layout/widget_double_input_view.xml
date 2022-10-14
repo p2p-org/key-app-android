@@ -92,13 +92,15 @@
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:maxLines="1"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2" />
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            android:textColor="@color/text_night" />
 
         <TextView
             android:id="@+id/textViewInputToken"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:focusable="false"
             android:maxLines="1"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
             tools:hint="USDC" />
@@ -160,13 +162,15 @@
             android:importantForAutofill="no"
             android:inputType="numberDecimal"
             android:maxLines="1"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2" />
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
+            android:textColor="@color/text_night" />
 
         <TextView
             android:id="@+id/textViewOutputToken"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:focusable="false"
             android:maxLines="1"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Title2"
             android:textColor="@color/text_mountain"

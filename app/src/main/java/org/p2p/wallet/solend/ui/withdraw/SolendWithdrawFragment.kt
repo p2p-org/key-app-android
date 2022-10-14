@@ -57,7 +57,8 @@ class SolendWithdrawFragment :
             viewDoubleInput.setInputLabelText(R.string.solend_withdraw_input_label)
             viewDoubleInput.setOutputLabelText(
                 text = getString(R.string.solend_withdraw_output_label_format, tokenAmount),
-                amount = token.depositAmount
+                amount = token.depositAmount,
+                textMaxAmount = getString(R.string.solend_output_label_using_max)
             )
             viewDoubleInput.setBottomMessageText(R.string.solend_withdraw_bottom_message)
             viewDoubleInput.setInputData(
