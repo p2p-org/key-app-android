@@ -1,6 +1,7 @@
 package org.p2p.wallet.solend
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -13,6 +14,10 @@ import org.p2p.wallet.solend.repository.SolendConfigurationRepository
 import org.p2p.wallet.solend.repository.SolendDepositsRemoteRepository
 import org.p2p.wallet.solend.repository.SolendDepositsRepository
 import org.p2p.wallet.solend.repository.mapper.SolendConfigurationRepositoryMapper
+import org.p2p.wallet.solend.storage.SolendStorage
+import org.p2p.wallet.solend.storage.SolendStorageContract
+import org.p2p.wallet.solend.ui.aboutearn.SolendAboutEarnContract
+import org.p2p.wallet.solend.ui.aboutearn.SolendAboutEarnPresenter
 import org.p2p.wallet.solend.ui.deposit.SolendDepositContract
 import org.p2p.wallet.solend.ui.deposit.SolendDepositPresenter
 import org.p2p.wallet.solend.ui.deposits.SolendUserDepositsContract
@@ -38,8 +43,11 @@ object SolendModule : InjectionModule {
 
         factoryOf(::SolendDepositsInteractor)
         singleOf(::SolendDepositsRemoteRepository) bind SolendDepositsRepository::class
+        singleOf(::SolendStorage) { bind<SolendStorageContract>() }
 
         factoryOf(::SolendDepositMapper)
+
+        factoryOf(::SolendAboutEarnPresenter) { bind<SolendAboutEarnContract.Presenter>() }
 
         initDataLayer()
     }

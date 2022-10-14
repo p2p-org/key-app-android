@@ -3,6 +3,7 @@ package org.p2p.uikit.utils
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
@@ -163,6 +164,9 @@ fun View.getString(@StringRes resourceId: Int): String =
 
 fun View.getColor(@ColorRes colorRes: Int): Int =
     context.getColor(colorRes)
+
+fun View.getColorStateList(@ColorRes colorRes: Int): ColorStateList =
+    context.getColorStateList(colorRes)
 
 fun Fragment.getColor(@ColorRes colorRes: Int): Int =
     requireContext().getColor(colorRes)

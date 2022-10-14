@@ -13,24 +13,27 @@ class SolendDepositMapper {
         tokenPrice: TokenPrice?,
         marketInfo: SolendMarketInfo?,
         activeDeposit: SolendUserDeposit?
-    ): SolendDepositToken = if (activeDeposit != null) {
+    ): SolendDepositToken {
         val usdRate = tokenPrice?.price.orZero()
-        SolendDepositToken.Active(
-            tokenName = tokenData.name,
-            tokenSymbol = tokenData.symbol,
-            iconUrl = tokenData.iconUrl,
-            supplyInterest = marketInfo?.supplyInterest,
-            depositAmount = activeDeposit.depositedAmount,
-            usdAmount = activeDeposit.depositedAmount * usdRate,
-            usdRate = usdRate
-        )
-    } else {
-        SolendDepositToken.Inactive(
-            tokenName = tokenData.name,
-            tokenSymbol = tokenData.symbol,
-            iconUrl = tokenData.iconUrl,
-            supplyInterest = marketInfo?.supplyInterest
-        )
+        return if (activeDeposit != null) {
+            SolendDepositToken.Active(
+                tokenName = tokenData.name,
+                tokenSymbol = tokenData.symbol,
+                usdRate = usdRate,
+                iconUrl = tokenData.iconUrl,
+                supplyInterest = marketInfo?.supplyInterest,
+                depositAmount = activeDeposit.depositedAmount,
+                usdAmount = activeDeposit.depositedAmount * usdRate,
+            )
+        } else {
+            SolendDepositToken.Inactive(
+                tokenName = tokenData.name,
+                tokenSymbol = tokenData.symbol,
+                usdRate = usdRate,
+                iconUrl = tokenData.iconUrl,
+                supplyInterest = marketInfo?.supplyInterest
+            )
+        }
     }
 
     fun fromNetwork(response: SolendUserDepositResponse): SolendUserDeposit =

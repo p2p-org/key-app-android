@@ -1,8 +1,8 @@
 package org.p2p.wallet.restore.ui.seedphrase
 
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import java.io.File
 
 interface SeedPhraseContract {

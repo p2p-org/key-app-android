@@ -1,8 +1,8 @@
 package org.p2p.wallet.debug.settings
 
-import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R

@@ -3,8 +3,8 @@ package org.p2p.wallet.auth.interactor
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import org.p2p.wallet.common.analytics.Analytics
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository

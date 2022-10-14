@@ -38,6 +38,11 @@ class SettingsItemMapper(
                 ?: resourcesProvider.getString(R.string.settings_item_username_not_reserved),
             hasSeparator = false
         ),
+        ComplexSettingsItem(
+            nameRes = R.string.settings_item_title_support,
+            iconRes = R.drawable.ic_settings_support,
+            hasSeparator = false
+        ),
         SignOutButtonItem,
         SettingsSpaceSeparatorItem
     )

@@ -1,5 +1,9 @@
 package org.p2p.wallet.auth.repository
 
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -7,10 +11,6 @@ import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.mnemoticgenerator.MnemonicGenerator
 import org.p2p.wallet.utils.mnemoticgenerator.Words
 import java.security.SecureRandom
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.withContext
 
 private const val ACCOUNTS_QUANTITY_TO_CREATE = 5
 

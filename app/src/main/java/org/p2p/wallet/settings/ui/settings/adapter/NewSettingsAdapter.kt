@@ -1,9 +1,9 @@
 package org.p2p.wallet.settings.ui.settings.adapter
 
+import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.ComplexSettingsItem

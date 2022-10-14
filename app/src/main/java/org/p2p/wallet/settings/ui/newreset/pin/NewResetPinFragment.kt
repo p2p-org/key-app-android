@@ -1,8 +1,8 @@
 package org.p2p.wallet.settings.ui.newreset.pin
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R

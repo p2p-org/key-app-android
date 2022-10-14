@@ -44,7 +44,7 @@
 
         <attr name="mode">
             <enum name="normal" value="0" />
-            <enum name="same_level"   value="1" />
+            <enum name="same_level" value="1" />
         </attr>
 
         <attr name="flingVelocity" format="integer" />
@@ -63,7 +63,7 @@
         <attr name="android:text" />
         <attr name="android:hint" />
         <attr name="android:drawableEnd" />
-        <attr name="android:textAppearance"/>
+        <attr name="android:textAppearance" />
     </declare-styleable>
 
 </resources>

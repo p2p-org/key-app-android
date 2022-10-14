@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
@@ -14,7 +15,6 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import javax.crypto.Cipher
-import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
 

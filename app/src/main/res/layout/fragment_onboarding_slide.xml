@@ -1,42 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:background="@color/lime"
-    android:paddingBottom="24dp">
+    android:paddingBottom="24dp"
+    tools:background="@color/lime">
 
     <ImageView
         android:id="@+id/imageViewSliderIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
+        android:layout_width="240dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
         android:importantForAccessibility="no"
-        android:paddingHorizontal="38dp"
-        android:paddingTop="38dp"
-        tools:src="@drawable/onboarding_slide_temp" />
+        app:layout_constraintBottom_toTopOf="@+id/textViewSliderTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="wrap"
+        app:layout_constraintHeight_min="150dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:srcCompat="@drawable/onboarding_slide_1" />
 
     <TextView
         android:id="@+id/textViewSliderTitle"
-        style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:gravity="center"
-        android:textColor="@color/night"
-        tools:text="@string/onboarding_slide_1_title" />
+        android:text="@string/onboarding_general_error_critical_error_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSliderSubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewSliderIcon" />
 
     <TextView
         android:id="@+id/textViewSliderSubtitle"
-        style="@style/UiKit.TextAppearance.Regular.Title3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="2dp"
         android:gravity="center"
-        android:textColor="@color/night"
-        tools:text="@string/onboarding_slide_1_text" />
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSliderTitle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n If you will write us, use error code: %1$s" />
 
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

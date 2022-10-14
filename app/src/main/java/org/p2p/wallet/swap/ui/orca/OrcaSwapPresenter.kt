@@ -1,6 +1,9 @@
 package org.p2p.wallet.swap.ui.orca
 
 import android.content.res.Resources
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -53,9 +56,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 private const val TAG_SWAP = "SWAP_STATE"
 

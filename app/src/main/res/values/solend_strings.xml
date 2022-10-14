@@ -7,6 +7,17 @@
 
     <string name="solend_rates_error">There’s a problem showing the rates. Try again later</string>
 
+    <!--About Earn-->
+    <string name="about_earn_skip">Skip</string>
+    <string name="about_earn_next">Next</string>
+    <string name="about_earn_continue">Continue</string>
+    <string name="about_earn_slider_title_1">Let your crypto\nwork for you</string>
+    <string name="about_earn_slider_text_1">Deposit your crypto.\nEarn up to 6% on USD.</string>
+    <string name="about_earn_slider_title_2">Convenient and flexible</string>
+    <string name="about_earn_slider_text_2">You can withdraw rewards or funds at any time</string>
+    <string name="about_earn_slider_title_3">Superhero protection</string>
+    <string name="about_earn_slider_text_3">We provide you with the possibility to use secure and trusted protocols</string>
+
     <!--Earn Widget-->
 
     <!--Earn Widget -> LearnMore-->
@@ -55,14 +66,28 @@
     <string name="solend_withdraw_output_label_format">Withdraw all %s</string>
     <string name="solend_withdraw_bottom_message">A proportional amount of rewards will be withdrawn</string>
 
-    <!--SolendInfo BottomSheet-->
-    <string name="solend_info_title">What is Solend?</string>
-    <string name="solend_info_slider_text_1">Solend is the most scalable DeFi lending protocol, which allows to earn interest and borrow assets with the lowest fee. That\'s why we integrate it.</string>
-    <string name="solend_info_slider_text_2">Deposit with interest\nDeposit USDT or USDC and get your guaranteed yield on it.</string>
-    <string name="solend_info_slider_text_3">Control your assets\nLow risks all your assets are under your control. Instant withdrawal with all rewards.</string>
+    <string name="solend_output_label_using_max">✅ Using the MAX amount</string>
 
     <!--Deposit To Solend-->
     <string name="solend_deposit_title">Deposit into Solend</string>
     <string name="solend_select_token_to_deposit_title">Token to deposit</string>
+    <string name="solend_deposit_input_label">Enter the amount</string>
+    <string name="solend_deposit_output_label_format">Use all %s</string>
+    <string name="solend_deposit_bottom_message_empty">Withdraw your funds with all rewards at any time</string>
+    <string name="solend_deposit_bottom_message_with_amount">Excluding fees, you\'ll deposit %s ($%s)</string>
+    <string name="solend_deposit_bottom_message_with_error">You\'re trying to deposit more than you have</string>
+    <string name="solend_deposit_button_max_amount">MAX amount is %s</string>
+
+    <string name="solend_deposit_max_amount_error_message">You are trying to deposit more funds than possible. If you want to deposit the maximum amount, press “Deposit MAX amount”.</string>
+    <string name="solend_deposit_max_amount_error_positive">Deposit MAX Amount</string>
+
+    <!--SolendInfo BottomSheet-->
+    <string name="solend_info_title">What is Solend?</string>
+    <string name="solend_info_slider_title_1">Easy way to invest</string>
+    <string name="solend_info_slider_title_2">Earn interest on your crypto</string>
+    <string name="solend_info_slider_title_3">Your crypto is under control</string>
+    <string name="solend_info_slider_text_1">Solend is one of the most scalable, fastest and lowest fee DeFi lending protocol, that allows you to earn interest on your assets.</string>
+    <string name="solend_info_slider_text_2">We provide you with the possibility to use secure and trusted protocols.\nDeposit USDT and USDC to earn interest.</string>
+    <string name="solend_info_slider_text_3">Keep control of your assets with instant withdrawals at any time.</string>
 
 </resources>

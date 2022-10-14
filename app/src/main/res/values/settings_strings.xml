@@ -3,6 +3,7 @@
 
     <string name="settings_item_group_title_profile">Profile</string>
     <string name="settings_item_title_username">Username</string>
+    <string name="settings_item_title_support">Support</string>
     <string name="settings_item_username_not_reserved">Not reserved</string>
     <string name="settings_item_sign_out_button_title">Log out</string>
 
