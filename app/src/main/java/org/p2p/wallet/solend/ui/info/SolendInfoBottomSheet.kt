@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
-import org.p2p.wallet.common.ui.bottomsheet.BaseCloseBottomSheet
+import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogSolendInfoPagerPartBinding
 import org.p2p.wallet.utils.withArgs
 
-class SolendInfoBottomSheet : BaseCloseBottomSheet() {
+class SolendInfoBottomSheet : BaseDoneBottomSheet() {
 
     companion object {
         fun show(
@@ -51,6 +51,8 @@ class SolendInfoBottomSheet : BaseCloseBottomSheet() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setDoneButtonVisibility(isVisible = false)
+        setCloseButtonVisibility(isVisible = true)
         with(binding) {
             solendInfoSliderPager.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
             solendInfoSliderDotsIndicator.attachTo(solendInfoSliderPager)

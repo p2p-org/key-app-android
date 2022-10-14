@@ -15,7 +15,7 @@ import org.p2p.wallet.utils.args
 
 /**
  * BaseDoneBottomSheet made to handle cases where you have Done button at them bottom
- * or X at top to close (if needed) like [BaseCloseBottomSheet] to cover cases where you do not need logic and Presenter
+ * or X at top to close (if needed) to cover cases where you do not need logic and Presenter
  * you need to show some Info content or select something and return as a result with [setFragmentResult]
  **/
 abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
@@ -57,7 +57,7 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
-    abstract fun getResult(): Any?
+    protected open fun getResult(): Any? = null
 
     protected fun setDoneButtonVisibility(isVisible: Boolean) {
         baseDialogBinding.buttonDone.isVisible = isVisible

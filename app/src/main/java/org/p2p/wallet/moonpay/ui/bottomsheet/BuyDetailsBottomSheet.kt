@@ -103,6 +103,4 @@ class BuyDetailsBottomSheet : BaseDoneBottomSheet() {
         optionsTextViewProcessingFee.setLabelTextColor(getColor(R.color.text_mountain))
         optionsTextViewNetworkFee.setLabelTextColor(getColor(R.color.text_mountain))
     }
-
-    override fun getResult(): Any? = null
 }
