@@ -1,12 +1,12 @@
 package org.p2p.wallet.common.mvp
 
-import androidx.annotation.CallSuper
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.hideKeyboard

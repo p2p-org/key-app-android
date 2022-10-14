@@ -1,7 +1,5 @@
 package org.p2p.uikit.organisms.pin
 
-import androidx.annotation.ColorRes
-import androidx.core.content.ContextCompat
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
@@ -11,6 +9,8 @@ import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import org.p2p.uikit.R
 
 private const val ANIMATION_DURATION = 400L

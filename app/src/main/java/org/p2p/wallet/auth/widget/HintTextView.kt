@@ -1,9 +1,9 @@
 package org.p2p.wallet.auth.widget
 
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.view.isInvisible
 import android.content.Context
 import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.view.isInvisible
 import org.p2p.wallet.utils.emptyString
 
 class HintTextView @JvmOverloads constructor(

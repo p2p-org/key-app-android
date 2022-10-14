@@ -7,11 +7,11 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import javax.crypto.Cipher
 

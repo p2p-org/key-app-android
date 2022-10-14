@@ -1,9 +1,9 @@
 package org.p2p.wallet.settings.ui.reset.seedphrase
 
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import timber.log.Timber
 import kotlin.properties.Delegates
 

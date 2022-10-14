@@ -8,5 +8,5 @@
         path="device.xml" />
     <exclude
         domain="sharedpref"
-        path="appsflyer-data"/>
+        path="appsflyer-data" />
 </full-backup-content>

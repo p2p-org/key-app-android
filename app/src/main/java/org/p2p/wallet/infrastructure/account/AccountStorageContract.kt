@@ -3,9 +3,28 @@ package org.p2p.wallet.infrastructure.account
 import kotlin.reflect.KClass
 
 interface AccountStorageContract {
-    enum class Key(val prefsValue: String) {
+    enum class Key(
+        private val prefsKey: String,
+        private var customKey: String? = null
+    ) {
         KEY_LAST_DEVICE_SHARE_ID("KEY_LAST_DEVICE_SHARE_ID"),
         KEY_IN_SIGN_UP_PROCESS("KEY_IN_SIGN_UP_PROCESS"),
+        KEY_SOLEND_ONBOARDING_COMPLETED("KEY_SHOW_SOLEND_ONBOARDING");
+
+        val prefsValue
+            get() = customValue?.let {
+                "${prefsKey}_$customValue"
+            } ?: prefsKey
+
+        val customValue
+            get() = customKey
+
+        companion object {
+            fun Key.withCustomKey(custom: String): Key {
+                customKey = custom
+                return this
+            }
+        }
     }
 
     fun <T> saveObject(key: Key, data: T)

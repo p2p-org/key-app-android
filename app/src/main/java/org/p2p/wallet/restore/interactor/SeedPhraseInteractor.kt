@@ -1,5 +1,6 @@
 package org.p2p.wallet.restore.interactor
 
+import kotlinx.coroutines.withContext
 import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.MnemonicException
 import org.p2p.solanaj.core.Account
@@ -22,7 +23,6 @@ import org.p2p.wallet.utils.scaleLong
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.coroutines.withContext
 
 class SeedPhraseInteractor(
     private val authRepository: AuthRepository,

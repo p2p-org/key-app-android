@@ -1,14 +1,14 @@
 package org.p2p.wallet.auth.ui.restore.found
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
+import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
-import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
-import org.p2p.wallet.auth.model.OnboardingFlow
 
 class WalletFoundPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,

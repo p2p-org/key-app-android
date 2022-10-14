@@ -1,7 +1,7 @@
 package org.p2p.wallet.infrastructure.security
 
-import androidx.core.content.edit
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.p2p.solanaj.utils.crypto.Hex

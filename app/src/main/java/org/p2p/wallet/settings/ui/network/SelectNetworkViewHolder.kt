@@ -1,7 +1,7 @@
 package org.p2p.wallet.settings.ui.network
 
-import androidx.core.view.isVisible
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSelectionViewHolder
 import org.p2p.wallet.databinding.ItemSelectNetworkBinding
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment

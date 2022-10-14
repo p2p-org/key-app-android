@@ -1,11 +1,11 @@
 package org.p2p.wallet.solend.ui.deposits.adapter
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import android.annotation.SuppressLint
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions

@@ -1,8 +1,9 @@
 package org.p2p.wallet.auth.interactor
 
-import androidx.biometric.BiometricManager
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.biometric.BiometricManager
+import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
@@ -16,7 +17,6 @@ import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_BIOMETRIC_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_SALT
-import kotlinx.coroutines.withContext
 
 /**
  * The secure storage now includes the hash which is encrypted in two ways
