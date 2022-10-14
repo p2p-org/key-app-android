@@ -15,6 +15,7 @@ import org.p2p.solanaj.model.types.RpcRequest2
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.solanaj.rpc.model.RecentPerformanceSample
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
@@ -35,6 +36,21 @@ class RpcSolanaRemoteRepository(
         val params = arrayListOf(base64Transaction, RpcSendTransactionConfig())
 
         return api.sendTransaction(RpcRequest(method = "sendTransaction", params = params)).result
+    }
+
+    override suspend fun getRecentPerformanceSamples(exampleCount: Int): List<RecentPerformanceSample> {
+        val params = arrayListOf(exampleCount)
+
+        val rpcRequest = RpcRequest(method = "getRecentPerformanceSamples", params = params)
+        val response = api.getRecentPerformanceSamples(rpcRequest)
+        return response.result.map {
+            RecentPerformanceSample(
+                numberOfSlots = it.numSlots,
+                numberOfTransactions = it.numTransactions,
+                samplePeriodInSeconds = it.samplePeriodSecs,
+                slot = it.slot,
+            )
+        }
     }
 
     override suspend fun getConfirmedSignaturesForAddress(

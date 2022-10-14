@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -35,6 +36,7 @@ import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.update.TransactionSignatureHandler
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
+import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.SocketUpdatesManager
 import org.p2p.wallet.updates.UpdateHandler
 import org.p2p.wallet.updates.UpdatesManager
@@ -132,5 +134,7 @@ object InfrastructureModule : InjectionModule {
 
         factoryOf(::Pbkdf2HashGenerator)
         single { AppsFlyerService(androidContext()) }
+
+        singleOf(::SolanaNetworkObserver)
     }
 }

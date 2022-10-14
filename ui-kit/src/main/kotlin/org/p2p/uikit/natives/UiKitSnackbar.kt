@@ -1,6 +1,7 @@
 package org.p2p.uikit.natives
 
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.getColor
@@ -69,6 +70,18 @@ fun View.showSnackbarLong(
         .show()
 }
 
+fun View.showSnackbarIndefinite(
+    snackbarText: CharSequence,
+    snackbarActionButtonText: CharSequence,
+    snackbarActionButtonListener: SnackbarActionButtonClickListener
+): Snackbar = internalMakeSnackbar(
+    this,
+    text = snackbarText,
+    buttonText = snackbarActionButtonText,
+    buttonAction = snackbarActionButtonListener,
+    duration = Snackbar.LENGTH_INDEFINITE
+).apply { show() }
+
 enum class UiKitSnackbarStyle {
     BLACK, WHITE
 }
@@ -85,6 +98,13 @@ private fun internalMakeSnackbar(
         if (buttonText != null && buttonAction != null) {
             setAction(buttonText) { buttonAction.onActionButtonClicked(this) }
         }
+
+        val bottomMargin = context.resources.getDimension(R.dimen.bottom_navigation_height).toInt()
+        val horizontalMargin = context.resources.getDimension(R.dimen.ui_kit_average_horizontal_margin).toInt()
+        val parentParams = this.view.layoutParams as MarginLayoutParams
+        parentParams.setMargins(horizontalMargin, 0, horizontalMargin, bottomMargin)
+        this.view.layoutParams = parentParams
+
         when (style) {
             UiKitSnackbarStyle.BLACK -> {
                 setTextColor(view.getColor(R.color.text_snow))
