@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.glide.GlideManager
@@ -14,7 +16,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSolendDepositBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.solend.model.SolendTransactionDetailsState
+import org.p2p.wallet.solend.model.TransactionDetailsViewData
 import org.p2p.wallet.solend.ui.bottomsheet.SelectDepositTokenBottomSheet
+import org.p2p.wallet.solend.ui.bottomsheet.TransactionDetailsBottomSheet
 import org.p2p.wallet.solend.ui.info.SolendInfoBottomSheet
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
@@ -22,7 +27,6 @@ import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -55,6 +59,11 @@ class SolendDepositFragment :
 
     private val deposit: SolendDepositToken by args(ARG_DEPOSIT_TOKEN)
 
+    private val depositButtonsAnimation = ChangeBounds().apply {
+        duration = 200
+        excludeChildren(R.id.viewDoubleInput, true)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
@@ -73,6 +82,9 @@ class SolendDepositFragment :
                         false
                     }
                 }
+            }
+            sliderDeposit.onSlideCompleteListener = {
+                // TODO call to presenter
             }
 
             viewDoubleInput.setInputLabelText(R.string.solend_deposit_input_label)
@@ -164,7 +176,11 @@ class SolendDepositFragment :
             when {
                 input.isZero() && output.isZero() -> setEmptyAmountState()
                 isBiggerThenMax -> setBiggerThenMaxAmountState(tokenAmount)
-                else -> setValidDepositState(input = input, output = output)
+                else -> setValidDepositState(
+                    input = input,
+                    output = output,
+                    tokenAmount = tokenAmount
+                )
             }
         }
     }
@@ -176,7 +192,7 @@ class SolendDepositFragment :
             setText(R.string.main_enter_the_amount)
             setTextColor(getColor(R.color.text_mountain))
         }
-        buttonInfo.isVisible = false
+        animateButtons(isSliderVisible = false, isInfoButtonVisible = false)
     }
 
     private fun setBiggerThenMaxAmountState(tokenAmount: String) = with(binding) {
@@ -188,7 +204,6 @@ class SolendDepositFragment :
             setTextColor(getColor(R.color.text_night))
             setOnClickListener { maxAmountClickListener.invoke() }
         }
-        buttonInfo.isVisible = true
         buttonInfo.apply {
             setIconResource(R.drawable.ic_warning_solid)
             iconTint = getColorStateList(R.color.icons_rose)
@@ -205,31 +220,58 @@ class SolendDepositFragment :
                     .show()
             }
         }
+        animateButtons(isSliderVisible = false, isInfoButtonVisible = true)
     }
 
-    private fun setValidDepositState(input: BigDecimal, output: BigDecimal) = with(binding) {
+    private fun setValidDepositState(
+        input: BigDecimal, // TODO PWN-5319 remove if won't be used for slider!
+        output: BigDecimal,
+        tokenAmount: String
+    ) = with(binding) {
+        val amount = "$tokenAmount (~$${output.scaleShort()})"
         viewDoubleInput.setBottomMessageText(
             getString(
                 R.string.solend_deposit_bottom_message_with_amount,
-                input.scaleLong(), output.scaleShort()
+                tokenAmount, output.scaleShort()
             )
         )
-        buttonInfo.isVisible = true
         buttonInfo.apply {
             setIconResource(R.drawable.ic_info_outline)
             iconTint = getColorStateList(R.color.icons_night)
             backgroundTintList = getColorStateList(R.color.bg_lime)
             setOnClickListener {
-                // TODO listener for showing info
-                showUiKitSnackBar("Info showing!")
+                TransactionDetailsBottomSheet.run {
+                    show(
+                        childFragmentManager,
+                        getString(R.string.solend_transaction_details_title),
+                        SolendTransactionDetailsState.Deposit(
+                            // TODO PWN-5319 add real data!!
+                            TransactionDetailsViewData(
+                                amount = amount,
+                                transferFee = null,
+                                fee = "0.05 USDC (~\$0.5)",
+                                total = amount
+                            )
+                        )
+                    )
+                }
             }
         }
-        // TODO PWN-5027 show slider here! and hide buttonAction
         buttonAction.apply {
             isEnabled = false
             setText(R.string.main_enter_the_amount)
             setTextColor(getColor(R.color.text_mountain))
         }
+        animateButtons(isSliderVisible = true, isInfoButtonVisible = true)
+    }
+
+    private fun animateButtons(
+        isSliderVisible: Boolean,
+        isInfoButtonVisible: Boolean
+    ) = with(binding) {
+        TransitionManager.beginDelayedTransition(root, depositButtonsAnimation)
+        sliderDeposit.isVisible = isSliderVisible
+        buttonInfo.isVisible = isInfoButtonVisible
     }
 
     override fun showTokensToDeposit(depositTokens: List<SolendDepositToken>) {

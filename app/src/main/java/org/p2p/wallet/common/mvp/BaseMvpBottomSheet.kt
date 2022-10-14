@@ -69,7 +69,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
 
     override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
-            it.setMessage(e.getErrorMessage(requireContext()))
+            it.setMessage(e.getErrorMessage { res -> getString(res) })
                 .setIcon(R.drawable.ic_close_red)
                 .setAction(actionResId, block)
         }

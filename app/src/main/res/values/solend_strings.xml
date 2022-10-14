@@ -77,6 +77,7 @@
     <string name="solend_deposit_bottom_message_with_amount">Excluding fees, you\'ll deposit %s ($%s)</string>
     <string name="solend_deposit_bottom_message_with_error">You\'re trying to deposit more than you have</string>
     <string name="solend_deposit_button_max_amount">MAX amount is %s</string>
+    <string name="solend_deposit_button_slide_text">Slide to deposit</string>
 
     <string name="solend_deposit_max_amount_error_message">You are trying to deposit more funds than possible. If you want to deposit the maximum amount, press “Deposit MAX amount”.</string>
     <string name="solend_deposit_max_amount_error_positive">Deposit MAX Amount</string>
@@ -89,5 +90,20 @@
     <string name="solend_info_slider_text_1">Solend is one of the most scalable, fastest and lowest fee DeFi lending protocol, that allows you to earn interest on your assets.</string>
     <string name="solend_info_slider_text_2">We provide you with the possibility to use secure and trusted protocols.\nDeposit USDT and USDC to earn interest.</string>
     <string name="solend_info_slider_text_3">Keep control of your assets with instant withdrawals at any time.</string>
+
+    <!--Solend TransactionDetails BottomSheet-->
+    <string name="solend_transaction_details_title">Transaction details</string>
+
+    <string name="solend_transaction_details_deposit">Deposit</string>
+    <string name="solend_transaction_details_withdraw">Withdraw</string>
+    <string name="solend_transaction_details_transfer_fee">Transfer fee</string>
+    <string name="solend_transaction_details_deposit_fee">Deposit fees</string>
+    <string name="solend_transaction_details_withdrawal_fee">Withdrawal fees</string>
+    <string name="solend_transaction_details_total">Total</string>
+    <string name="solend_transaction_details_free_fee">Free</string>
+
+    <string name="solend_transaction_free_fee_title">Enjoy free transactions</string>
+    <string name="solend_transaction_free_fee_message">On the Solana network, the first 100 transactions in a day are paid by P2P.org</string>
+    <string name="solend_transaction_free_fee_button">Awesome</string>
 
 </resources>

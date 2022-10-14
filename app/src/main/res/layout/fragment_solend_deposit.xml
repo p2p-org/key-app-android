@@ -96,11 +96,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_goneMarginEnd="16dp" />
 
+    <org.p2p.uikit.components.UiKitSliderButton
+        android:id="@+id/sliderDeposit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:sliderIcon="@drawable/ic_arrow_right"
+        app:sliderText="@string/solend_deposit_button_slide_text" />
+
     <org.p2p.uikit.components.UiKitDoubleInputView
         android:id="@+id/viewDoubleInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonAction" />
+        android:layout_marginBottom="72dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

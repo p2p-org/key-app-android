@@ -75,7 +75,7 @@ class SolendEarnPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
                 showDepositsWidgetError()
-                view?.showErrorSnackBar(e.getErrorMessage(resourcesProvider))
+                view?.showErrorSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
             } finally {
                 view?.showLoading(isLoading = false)
             }
@@ -92,7 +92,7 @@ class SolendEarnPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
                 showDepositsWidgetError()
-                view?.showErrorSnackBar(e.getErrorMessage(resourcesProvider))
+                view?.showErrorSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
             } finally {
                 view?.showRefreshing(isRefreshing = false)
             }
