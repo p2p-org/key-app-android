@@ -29,14 +29,17 @@ class SolendInfoBottomSheet : BaseCloseBottomSheet() {
         get() = listOf(
             SolendInfoSliderFragmentArgs(
                 R.drawable.ic_solend_slider_1,
+                R.string.solend_info_slider_title_1,
                 R.string.solend_info_slider_text_1,
             ).toBundle(),
             SolendInfoSliderFragmentArgs(
                 R.drawable.ic_solend_slider_2,
+                R.string.solend_info_slider_title_2,
                 R.string.solend_info_slider_text_2,
             ).toBundle(),
             SolendInfoSliderFragmentArgs(
                 R.drawable.ic_solend_slider_3,
+                R.string.solend_info_slider_title_3,
                 R.string.solend_info_slider_text_3,
             ).toBundle()
         )

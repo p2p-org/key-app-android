@@ -13,6 +13,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
@@ -100,6 +101,9 @@ class NewSettingsFragment :
                     requestKey = REQUEST_KEY,
                     resultKey = RESULT_KEY_NEW_NETWORK
                 )
+            }
+            R.string.settings_item_title_support -> {
+                IntercomService.showMessenger()
             }
         }
     }

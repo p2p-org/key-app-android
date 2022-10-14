@@ -11,18 +11,19 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerOnboardingSlider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/dotsIndicatorOnboardingSlider"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
         android:id="@+id/dotsIndicatorOnboardingSlider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="37dp"
         app:dotsColor="@color/night_60"
+        android:paddingVertical="24dp"
         app:dotsSize="8dp"
         app:dotsSpacing="4dp"
         app:dotsWidthFactor="4"
@@ -30,7 +31,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:progressMode="false"
-        android:visibility="gone"
         app:selectedDotColor="@color/night" />
 
     <LinearLayout
