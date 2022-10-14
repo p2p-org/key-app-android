@@ -28,6 +28,7 @@ class SolendDepositPresenter(
         if (validDeposits.isEmpty()) {
             launch {
                 try {
+                    // TODO PWN-5319 move this logic in repo
                     val userTokens = userInteractor.getUserTokens()
                     validDeposits = solendDepositsInteractor.getUserDeposits().onEach { depositToken ->
                         depositToken.availableTokensForDeposit = userTokens.firstOrNull { token ->

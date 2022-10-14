@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.getColorStateList
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
@@ -147,7 +148,7 @@ class CommonRestoreFragment :
                 buttonBottom.apply {
                     strokeWidth = 0
                     text = getString(R.string.restore_starting_screen)
-                    backgroundTintList = ContextCompat.getColorStateList(requireContext(), android.R.color.transparent)
+                    backgroundTintList = getColorStateList(android.R.color.transparent)
                     setTextColor(getColor(R.color.text_lime))
                     setOnClickListener {
                         popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)

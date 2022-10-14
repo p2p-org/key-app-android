@@ -15,7 +15,7 @@ sealed class SolendDepositToken(
     var availableTokensForDeposit: BigDecimal? = null
 
     @Parcelize
-    data class Active constructor(
+    data class Active(
         override val tokenName: String,
         override val tokenSymbol: String,
         override val usdRate: BigDecimal,

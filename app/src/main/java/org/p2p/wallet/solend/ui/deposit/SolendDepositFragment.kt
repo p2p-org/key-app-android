@@ -3,12 +3,12 @@ package org.p2p.wallet.solend.ui.deposit
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -191,12 +191,8 @@ class SolendDepositFragment :
         buttonInfo.isVisible = true
         buttonInfo.apply {
             setIconResource(R.drawable.ic_warning_solid)
-            iconTint = ContextCompat.getColorStateList(
-                requireContext(), R.color.icons_rose
-            )
-            backgroundTintList = ContextCompat.getColorStateList(
-                requireContext(), R.color.rose_20
-            )
+            iconTint = getColorStateList(R.color.icons_rose)
+            backgroundTintList = getColorStateList(R.color.rose_20)
             setOnClickListener {
                 AlertDialog.Builder(requireContext())
                     .setMessage(R.string.solend_deposit_max_amount_error_message)
@@ -221,15 +217,11 @@ class SolendDepositFragment :
         buttonInfo.isVisible = true
         buttonInfo.apply {
             setIconResource(R.drawable.ic_info_outline)
-            iconTint = ContextCompat.getColorStateList(
-                requireContext(), R.color.icons_night
-            )
-            backgroundTintList = ContextCompat.getColorStateList(
-                requireContext(), R.color.bg_lime
-            )
+            iconTint = getColorStateList(R.color.icons_night)
+            backgroundTintList = getColorStateList(R.color.bg_lime)
             setOnClickListener {
                 // TODO listener for showing info
-                showSuccessSnackBar("Info showing!")
+                showUiKitSnackBar("Info showing!")
             }
         }
         // TODO PWN-5027 show slider here! and hide buttonAction
