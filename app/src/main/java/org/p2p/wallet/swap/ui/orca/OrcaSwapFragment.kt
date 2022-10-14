@@ -23,6 +23,7 @@ import org.p2p.wallet.common.ui.textwatcher.AmountFractionTextWatcher
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
+import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.SwapConfirmData
 import org.p2p.wallet.swap.model.orca.OrcaSettingsResult
@@ -69,6 +70,7 @@ class OrcaSwapFragment :
     }
     private val binding: FragmentSwapOrcaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val swapAnalytics: SwapAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -102,6 +104,8 @@ class OrcaSwapFragment :
         }
 
         presenter.loadInitialData()
+
+        swapAnalytics.logSwapScreenStarted(analyticsInteractor.getPreviousScreenName())
     }
 
     private fun setupViews() = with(binding) {

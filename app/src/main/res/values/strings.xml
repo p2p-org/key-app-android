@@ -43,7 +43,7 @@
     <!-- Error messages -->
     <string name="error_title">Error occurred</string>
     <string name="error_general_title">Unknown error</string>
-    <string name="error_general_message">Something went wrong, try again later</string>
+    <string name="error_general_message">❌ Something went wrong. Please, try again</string>
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
     <string name="error_invalid_transaction">Invalid transaction, please try again</string>
@@ -58,10 +58,17 @@
     <string name="error_invalid_blockhash">Invalid blockhash</string>
     <string name="error_slippage_limit">Low slippage caused the swap to fail</string>
     <string name="error_history_message">We couldn\'t upload the history.\nTry again later</string>
+    <string name="error_country_not_found">Sorry, we don’t know a such country</string>
+    <string name="error_wallet_not_found_title">No wallet found</string>
+    <string name="error_wallet_not_found_message">Try account or use an another phone number</string>
+
+    <string name="error_too_often_otp_requests_message">You request SMS too often. Try later.</string>
+    <string name="error_shares_do_not_matches_title">No wallet found</string>
+    <string name="error_shares_do_not_matches_message">Try with another account</string>
+    <string name="error_repeat_social_auth">Repeat social auth</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
-    <string name="auth_manually_restore_key">Manually restore a wallet</string>
     <string name="auth_verify_security_key_title">Verify your security key</string>
     <string name="auth_select_word">Select word #%d</string>
     <string name="auth_onboarding_subtitle">Secure non-custodial bank of the future\nSimple finance for everyone</string>
@@ -97,25 +104,18 @@
     <string name="auth_create_pin_code">Set up a wallet PIN</string>
     <string name="auth_enter_pin_code">Enter PIN</string>
     <string name="auth_enter_current_pin_code">Enter current PIN</string>
-    <string name="auth_repeat_new_pin_code">Confirm PIN-code</string>
-    <string name="auth_almost_done_title">Almost done!</string>
+    <string name="auth_repeat_new_pin_code">Confirm PIN</string>
+    <string name="auth_almost_done_title">Almost done</string>
     <string name="auth_quick_access">Quick Access</string>
     <string name="auth_biometric_question">Use biometric for quick access?</string>
-    <string name="auth_pin_codes_match_error">PIN doesn’t match. Try again</string>
-    <string name="auth_pin_code_attempts_format">Wrong PIN-code, %d attempts left</string>
-    <string name="auth_pin_code_wrong">Wrong PIN. Try again or reset it</string>
+    <string name="auth_pin_codes_match_error">PIN doesn\'t  match. Please try again</string>
     <string name="auth_locked_message">We’ve locked your wallet, try again in a %s seconds or reset it with a seed phrase.</string>
     <string name="auth_welcome_back">Welcome back!</string>
     <string name="auth_go_to_wallet">Go to wallet</string>
-    <string name="auth_logout">Logout now</string>
+    <string name="auth_logout">Log out</string>
     <string name="auth_done">Done</string>
-    <string name="auth_wrong_seed_phrase">The wrong security key or words order</string>
     <string name="auth_wrong_seed_phrase_empty">Seed phrase is empty</string>
-    <string name="auth_derivable_accounts">Derivable accounts</string>
-    <string name="auth_derivable_info">This is what you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
     <string name="auth_select_derivation_path">Select Derivation Path</string>
-    <string name="auth_derivation_path_info">By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet. To use an alternative path, try restoring an existing wallet.</string>
-    <string name="auth_derivation_path">Derivation path</string>
     <string name="auth_reserve_username">Reserve your  username</string>
     <string name="auth_you_can_receive">Username is your public address, which allows you to receive any token even if you don\'t have it in the wallet list.\n\nIt is vital you select the exact username you want, as once set, you cannot change it.</string>
     <string name="auth_you_can_skip">You can also skip this step and reserve a username later.</string>
@@ -142,8 +142,8 @@
     <string name="auth_words_does_not_match_message">The words in your security key need to be selected in the right order</string>
     <string name="auth_save_and_continue"><![CDATA[Save & Continue]]></string>
     <string name="auth_lets_verify">I’ve saved it, let’s verify</string>
-    <string name="auth_setup_wallet_pin">Set up a wallet PIN</string>
-    <string name="auth_confirm_wallet_pin">Confirm your wallet PIN</string>
+    <string name="auth_setup_wallet_pin">Create your PIN</string>
+    <string name="auth_confirm_wallet_pin">Confirm your PIN</string>
     <string name="auth_username_searching">searching…</string>
     <string name="auth_welcome_to_p2p_user">Welcome to P2P Family,\n%s!</string>
     <string name="auth_welcome_to_p2p">Welcome to P2P Family</string>
@@ -498,20 +498,21 @@
     <string name="settings_security">Security</string>
     <string name="settings_network">Network</string>
     <string name="settings_fee_relayer">Fee Relayer Environment</string>
+    <string name="settings_torus">Torus Environment</string>
     <string name="settings_notification_service">Notification Service Environment</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
     <string name="settings_security_face_id">FaceID</string>
     <string name="settings_security_fingerprint">Fingerprint</string>
     <string name="settings_security_primary_biometric">Will be as a primary secure check</string>
-    <string name="settings_security_pin_code">PIN-code</string>
+    <string name="settings_security_pin_code">PIN</string>
     <string name="settings_security_pin_code_check">Default secure check</string>
     <string name="settings_security_change_enter_pin">Set up a new PIN</string>
     <string name="settings_security_change_confirm_pin">Confirm your wallet PIN</string>
-    <string name="settings_security_change_pin_success">PIN-code changed!</string>
+    <string name="settings_security_change_pin_success">PIN changed!</string>
     <string name="settings_security_change_pin_info">Physical space is often conceived in three linear dimensions, although modern physicists usually consider it, with time</string>
     <string name="settings_security_go_back">Go back to profile</string>
-    <string name="settings_security_pin_codes_matching">PIN-codes do not match</string>
+    <string name="settings_security_pin_codes_matching">PINs do not match</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_system">System</string>
@@ -554,8 +555,8 @@
     <string name="settings_tokens_with_zero_balances_are_shown">Tokens with zero balances are shown</string>
     <string name="settings_tokens_hidden">Hidden</string>
     <string name="settings_tokens_shown">Shown</string>
-    <string name="settings_logout_title">Are you sure you want to log out?</string>
-    <string name="settings_logout_message">If you have no backup, you may never be able to access this account</string>
+    <string name="settings_logout_title">Do you want to log out?</string>
+    <string name="settings_logout_message">You will need your social account or phone number to log in</string>
     <string name="settings_what_is_a_security_key">What is a security key?</string>
     <string name="settings_slippage_hint">Custom slippage tolerance (%)</string>
     <string name="settings_slippage_max_error">Max price slippage is 50%</string>
@@ -592,4 +593,5 @@
     <string name="receive_token_list_not_found">If there is a token named \"%s\", we don\'t recommend sending it to your Solana address since it will most likely be lost forever.</string>
     <string name="search_menu">Search</string>
     <string name="search_for_a_token">Search for a token</string>
+
 </resources>

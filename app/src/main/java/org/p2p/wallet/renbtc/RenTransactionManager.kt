@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
-import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.renbtc.model.RenBTCPayment

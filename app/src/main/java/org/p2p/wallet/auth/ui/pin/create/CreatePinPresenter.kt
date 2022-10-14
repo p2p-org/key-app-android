@@ -58,7 +58,7 @@ class CreatePinPresenter(
             view?.showBiometricDialog(cipher.value)
         } catch (e: Throwable) {
             Timber.e(e, "Failed to get cipher for biometrics")
-            view?.showErrorMessage(R.string.error_general_message)
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
     }
 
@@ -71,7 +71,7 @@ class CreatePinPresenter(
                 view?.onAuthFinished()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
-                view?.showErrorMessage(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }
@@ -93,7 +93,7 @@ class CreatePinPresenter(
                 Timber.e(e, "Failed to create pin code")
                 createdPin = emptyString()
                 view?.showCreation()
-                view?.showErrorMessage(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
                 view?.showLoading(false)

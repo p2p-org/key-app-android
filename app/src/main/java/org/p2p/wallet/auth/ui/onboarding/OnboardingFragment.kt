@@ -14,7 +14,7 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentOnboardingBinding
-import org.p2p.wallet.restore.ui.keys.SecretKeyFragment
+import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -43,7 +43,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             }
             loginButton.setOnClickListener {
                 analytics.logSplashRestored()
-                runAfterAnimation { replaceFragment(SecretKeyFragment.create()) }
+                runAfterAnimation { replaceFragment(SeedPhraseFragment.create()) }
             }
         }
 

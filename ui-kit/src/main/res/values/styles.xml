@@ -30,4 +30,10 @@
         <!-- Container background colour-->
         <item name="colorPrimary">@color/bg_snow</item>
     </style>
+
+    <style name="UiKit.Native.Switch" parent="Widget.Material3.CompoundButton.Switch">
+        <item name="trackTint">@color/selector_ui_kit_switch_track_color</item>
+        <item name="thumbTint">@color/selector_ui_kit_switch_thumb_color</item>
+    </style>
+
 </resources>

@@ -21,7 +21,7 @@
     <color name="smoke">#F8F9FE</color>
     <color name="rain">#EBEEF5</color>
     <color name="mountain">#6F7D8D</color>
-    <color name="lime">#E4F312</color>
+    <color name="lime">#DDFA2B</color>
     <color name="sky">#003CFF</color>
     <color name="rose">#EB4A7A</color>
     <color name="rose_10">#1AEB4A7A</color>
@@ -44,6 +44,7 @@
     <color name="text_rose">@color/rose</color>
     <color name="text_mint">@color/mint</color>
     <color name="text_sun">@color/sun</color>
+    <color name="text_rain">@color/rain</color>
 
     <color name="icons_snow">@color/snow</color>
     <color name="icons_cloud">@color/cloud</color>

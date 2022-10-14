@@ -1,8 +1,7 @@
 package org.p2p.wallet.common.analytics.repository
 
 interface AnalyticsLocalRepository {
-
-    fun onScreenChanged(screenName: String)
+    fun changeCurrentScreen(newScreenName: String)
     fun getCurrentScreenName(): String
     fun getPreviousScreenName(): String
 }

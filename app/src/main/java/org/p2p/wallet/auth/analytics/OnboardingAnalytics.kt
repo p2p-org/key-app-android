@@ -10,16 +10,21 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BIO_APPROVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BIO_REJECTED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_MANUAL_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_SEED_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_WALLET_CONFIRM_PIN
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_MANY_WALLETS_FOUND
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_NO_WALLET_FOUND
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_APPROVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_REJECTED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_GOOGLE_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_MANUAL_INVOKED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_WALLET_BUTTON
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_WALLET_CONFIRM_PIN
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SELECT_RESTORE_OPTION
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_CREATED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_RESTORING
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_SWIPED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_VIEWED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_START_BUTTON
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_RESERVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SAVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SKIPPED
@@ -162,6 +167,41 @@ class OnboardingAnalytics(private val tracker: Analytics) {
         tracker.logEvent(ONBOARD_USERNAME_RESERVED)
     }
 
+    fun logCreateWalletClicked() {
+        tracker.logEvent(event = ONBOARD_START_BUTTON)
+    }
+
+    fun logCreateWalletPinConfirmed() {
+        tracker.logEvent(
+            event = ONBOARD_CREATE_WALLET_CONFIRM_PIN,
+            params = mapOf(
+                "Result" to true
+            )
+        )
+    }
+
+    fun logRestoreWalletPinConfirmed() {
+        tracker.logEvent(
+            event = ONBOARD_RESTORE_WALLET_CONFIRM_PIN,
+            params = mapOf(
+                "Result" to true
+            )
+        )
+    }
+
+    fun logAlreadyHaveWalletClicked() {
+        tracker.logEvent(event = ONBOARD_RESTORE_WALLET_BUTTON)
+    }
+
+    fun logRestoreOptionClicked(restoreWay: AnalyticsRestoreWay) {
+        tracker.logEvent(
+            event = ONBOARD_SELECT_RESTORE_OPTION,
+            params = mapOf(
+                "Restore_option" to restoreWay.value
+            )
+        )
+    }
+
     enum class UsernameField(val title: String) {
         FILLED("Filled"),
         NOT_FILLED("Not_Filled");
@@ -171,5 +211,9 @@ class OnboardingAnalytics(private val tracker: Analytics) {
                 return if (username.isEmpty()) FILLED else NOT_FILLED
             }
         }
+    }
+
+    enum class AnalyticsRestoreWay(val value: String) {
+        PHONE("phone"), GOOGLE("google"), SEED("seed")
     }
 }

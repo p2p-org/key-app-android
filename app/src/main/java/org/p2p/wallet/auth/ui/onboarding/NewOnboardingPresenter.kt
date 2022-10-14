@@ -1,34 +1,60 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import org.p2p.wallet.auth.common.WalletWeb3AuthManager
-import org.p2p.wallet.auth.model.GoogleAuthFlow
+import kotlinx.coroutines.launch
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.FileInteractor
+import org.p2p.wallet.auth.interactor.UserSignUpInteractor
+import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
+import timber.log.Timber
 
 class NewOnboardingPresenter(
-    private val walletAuthManager: WalletWeb3AuthManager,
+    private val userSignUpInteractor: UserSignUpInteractor,
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
+    private val torusKeyRestoreInteractor: TorusKeyInteractor,
+    private val fileInteractor: FileInteractor
 ) : BasePresenter<NewOnboardingContract.View>(), NewOnboardingContract.Presenter {
 
-    override fun attach(view: NewOnboardingContract.View) {
-        super.attach(view)
-        walletAuthManager.attach()
-    }
-
     override fun onSignUpButtonClicked() {
-        walletAuthManager.flowMode = GoogleAuthFlow.SIGN_UP
-        view?.startGoogleFlow()
+        if (userSignUpDetailsStorage.isSignUpInProcess()) {
+            view?.navigateToContinueCreateWallet()
+        } else {
+            view?.startGoogleFlow()
+        }
     }
 
     override fun onSignInButtonClicked() {
-        walletAuthManager.flowMode = GoogleAuthFlow.SIGN_IN
         view?.startGoogleFlow()
     }
 
     override fun setIdToken(userId: String, idToken: String) {
-        walletAuthManager.setIdToken(userId, idToken)
+        launch {
+            view?.setButtonLoadingState(isScreenLoading = true)
+            torusKeyRestoreInteractor.getTorusKey(googleSocialToken = idToken, socialShareUserId = userId)
+            when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
+                is UserSignUpInteractor.SignUpResult.SignUpSuccessful -> {
+                    view?.onSuccessfulSignUp()
+                }
+                is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
+                    Timber.e(result, "Creating new user with device shared failed")
+                    view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                }
+                UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
+                    view?.onSameTokenFoundError()
+                }
+            }
+            view?.setButtonLoadingState(isScreenLoading = false)
+        }
     }
 
-    override fun detach() {
-        walletAuthManager.detach()
-        super.detach()
+    override fun onTermsClick() {
+        val file = fileInteractor.getTermsOfUseFile()
+        view?.showFile(file)
+    }
+
+    override fun onPolicyClick() {
+        val file = fileInteractor.getPrivacyPolicyFile()
+        view?.showFile(file)
     }
 }

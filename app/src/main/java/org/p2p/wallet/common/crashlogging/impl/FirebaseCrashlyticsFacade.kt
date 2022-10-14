@@ -3,6 +3,7 @@ package org.p2p.wallet.common.crashlogging.impl
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
 
+@Suppress("DEPRECATION")
 class FirebaseCrashlyticsFacade(isFacadeEnabled: Boolean) : CrashLoggingFacade {
     init {
         crashlytics.setCrashlyticsCollectionEnabled(isFacadeEnabled)

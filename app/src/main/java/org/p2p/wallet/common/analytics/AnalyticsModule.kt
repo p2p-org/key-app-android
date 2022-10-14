@@ -6,6 +6,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
+import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
@@ -22,6 +23,7 @@ object AnalyticsModule {
     fun create(): Module = module {
         single { Analytics(TrackersFactory.create(androidApplication())) }
         factory { AdminAnalytics(get()) }
+        factory { GeneralAnalytics(get()) }
         factory { AuthAnalytics(get()) }
         factory { ReceiveAnalytics(get()) }
         factory { BuyAnalytics(get()) }

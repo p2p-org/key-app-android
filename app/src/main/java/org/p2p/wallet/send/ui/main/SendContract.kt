@@ -76,7 +76,7 @@ interface SendContract {
         fun loadFeePayerTokens()
         fun setSourceToken(newToken: Token.Active)
         fun setTargetResult(result: SearchResult?)
-        fun validateTarget(value: String)
+        fun validateTargetAddress(value: String)
         fun setNewSourceAmount(amount: String)
         fun switchCurrency()
         fun setNetworkDestination(networkType: NetworkType)

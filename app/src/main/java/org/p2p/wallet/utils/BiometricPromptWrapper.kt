@@ -6,6 +6,7 @@ import androidx.biometric.BiometricPrompt.CryptoObject
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import org.p2p.wallet.R
+import timber.log.Timber
 import javax.crypto.Cipher
 
 class BiometricPromptWrapper(
@@ -13,19 +14,27 @@ class BiometricPromptWrapper(
     @StringRes private val titleRes: Int = R.string.auth_quick_access,
     @StringRes private val descriptionRes: Int = R.string.auth_biometric_question,
     @StringRes private val negativeRes: Int = R.string.common_cancel,
-    private val onError: ((CharSequence?) -> Unit)? = null,
+    private val onError: ((String?) -> Unit)? = null,
+    private val onLockout: (() -> Unit)? = null,
     private val onSuccess: (Cipher) -> Unit
 ) {
 
     private val biometricCallback = object : BiometricPrompt.AuthenticationCallback() {
 
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-            onError?.invoke(
-                errString.takeIf {
-                    errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
-                        errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON
-                }
-            )
+            Timber.i("Error on Authentication $errorCode: $errString")
+
+            if (errorCode == BiometricPrompt.ERROR_LOCKOUT) {
+                onLockout?.invoke()
+            } else {
+                onError?.invoke(
+                    errString.takeIf {
+                        errorCode != BiometricPrompt.ERROR_USER_CANCELED &&
+                            errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON
+                    }
+                        ?.toString()
+                )
+            }
         }
 
         override fun onAuthenticationFailed() {

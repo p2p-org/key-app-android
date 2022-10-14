@@ -1,12 +1,12 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ReserveMode
@@ -29,10 +29,11 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.send.ui.main.SendFragment
-import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.copyToClipBoard
@@ -68,6 +69,7 @@ class HomeFragment :
     }
 
     private val browseAnalytics: BrowseAnalytics by inject()
+    private val receiveAnalytics: ReceiveAnalytics by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -105,10 +107,11 @@ class HomeFragment :
 
     override fun showAddressCopied(address: String) {
         requireContext().copyToClipBoard(address)
-        binding.root.showSnackbarShort(
-            snackbarText = getString(R.string.home_address_snackbar_text),
-            snackbarActionButtonText = getString(R.string.common_ok)
-        ) { it.dismiss() }
+        showUiKitSnackBar(
+            message = getString(R.string.home_address_snackbar_text),
+            actionButtonResId = R.string.common_ok,
+            actionBlock = Snackbar::dismiss
+        )
     }
 
     private fun FragmentHomeBinding.setupView() {
@@ -137,7 +140,10 @@ class HomeFragment :
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
-        textViewAddress.setOnClickListener { presenter.onAddressClicked() }
+        textViewAddress.setOnClickListener {
+            receiveAnalytics.logAddressOnMainClicked()
+            presenter.onAddressClicked()
+        }
         imageViewProfile.setOnClickListener { presenter.onProfileClick() }
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
@@ -259,7 +265,7 @@ class HomeFragment :
     }
 
     override fun navigateToProfile() {
-        replaceFragment(SettingsFragment.create())
+        replaceFragment(NewSettingsFragment.create())
     }
 
     override fun navigateToReserveUsername() {

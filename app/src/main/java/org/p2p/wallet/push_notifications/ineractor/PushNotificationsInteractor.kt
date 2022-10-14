@@ -60,6 +60,7 @@ class PushNotificationsInteractor(
         )
 
         try {
+            require(publicKey.isNotBlank())
             deviceTokenRepository.deleteDeviceToken(deviceToken)
         } catch (e: Throwable) {
             Timber.tag(TAG_NOTIFICATION_SERVICE).e(e, "Error deleting device token on server")

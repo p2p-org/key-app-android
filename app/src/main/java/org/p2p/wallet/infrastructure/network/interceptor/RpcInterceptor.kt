@@ -1,5 +1,6 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
+import android.net.Uri
 import com.google.gson.Gson
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -11,7 +12,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
-import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
@@ -26,16 +27,11 @@ private const val TAG = "RpcInterceptor"
 
 class RpcInterceptor(
     private val gson: Gson,
-    environmentManager: NetworkEnvironmentManager
+    private val environmentManager: NetworkEnvironmentManager
 ) : Interceptor {
 
-    private var currentEnvironment = environmentManager.loadCurrentEnvironment()
-
-    init {
-        environmentManager.addEnvironmentListener(this::class) { newEnvironment ->
-            currentEnvironment = newEnvironment
-        }
-    }
+    private val currentEnvironment: NetworkEnvironment
+        get() = environmentManager.loadCurrentEnvironment()
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = createRpcRequest(chain)
@@ -98,13 +94,17 @@ class RpcInterceptor(
     }
 
     private fun createRpcUrl(originalUrl: HttpUrl, networkEnvironment: NetworkEnvironment): HttpUrl {
-        return if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
-            originalUrl.newBuilder()
-                .addEncodedPathSegment(BuildConfig.rpcPoolApiKey)
-                .build()
-        } else {
-            originalUrl
-        }
+        val uriFromEnvironment = Uri.parse(networkEnvironment.endpoint)
+        val newHost = uriFromEnvironment.host ?: error("Host cannot be null $uriFromEnvironment")
+
+        return originalUrl.newBuilder()
+            .host(newHost)
+            .apply {
+                if (networkEnvironment == NetworkEnvironment.RPC_POOL) {
+                    addEncodedPathSegment(BuildConfig.rpcPoolApiKey)
+                }
+            }
+            .build()
     }
 
     private fun handleResponse(response: Response): Response {

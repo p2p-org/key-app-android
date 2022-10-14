@@ -9,6 +9,8 @@ import timber.log.Timber
 
 private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
 
+private const val TAG = "UserInMemoryRepository"
+
 class UserInMemoryRepository : UserLocalRepository {
     private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
     private val pricesFlow = MutableStateFlow<List<TokenPrice>>(emptyList())
@@ -91,7 +93,7 @@ class UserInMemoryRepository : UserLocalRepository {
     override fun findTokenData(mintAddress: String): TokenData? {
         val resultToken = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
         if (resultToken == null) {
-            Timber.w("No data found for $mintAddress")
+            Timber.tag(TAG).i("No token found for symbol $mintAddress")
         }
 
         return resultToken
@@ -100,7 +102,7 @@ class UserInMemoryRepository : UserLocalRepository {
     override fun findTokenDataBySymbol(symbol: String): TokenData? {
         val resultToken = allTokensFlow.value.firstOrNull { it.symbol == symbol }
         if (resultToken == null) {
-            Timber.w("No data found for $symbol")
+            Timber.tag(TAG).i("No token found for symbol $symbol")
         }
 
         return resultToken
