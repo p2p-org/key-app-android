@@ -30,8 +30,8 @@ data class SolendInfoSliderFragmentArgs(
 
             return SolendInfoSliderFragmentArgs(
                 bundle.requireInt(ICON_ARG),
-                bundle.requireInt(TEXT_ARG),
-                bundle.requireInt(TITLE_ARG)
+                bundle.requireInt(TITLE_ARG),
+                bundle.requireInt(TEXT_ARG)
             )
         }
     }

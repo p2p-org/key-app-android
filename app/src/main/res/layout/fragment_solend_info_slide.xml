@@ -23,7 +23,7 @@
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:textColor="@color/night"
+        android:textColor="@color/text_night"
         tools:text="Earn interest on your cripto"/>
 
 
@@ -35,7 +35,7 @@
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:textColor="@color/night"
+        android:textColor="@color/text_night"
         tools:text="@string/solend_info_slider_text_1" />
 
 </LinearLayout>
