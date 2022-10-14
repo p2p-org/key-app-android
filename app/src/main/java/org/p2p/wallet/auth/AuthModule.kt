@@ -4,6 +4,7 @@ import androidx.biometric.BiometricManager
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -61,6 +62,9 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
+import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernameContract
+import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernamePresenter
+import org.p2p.wallet.auth.ui.reserveusername.UsernameValidator
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreContract
 import org.p2p.wallet.auth.ui.restore.common.CommonRestorePresenter
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
@@ -181,6 +185,11 @@ object AuthModule {
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
         factoryOf(::RestoreWalletInteractor)
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
+
+        factoryOf(::OnboardingReserveUsernamePresenter) {
+            bind<OnboardingReserveUsernameContract.Presenter>()
+        }
+        factoryOf(::UsernameValidator)
 
         singleOf(::RestoreFlowDataLocalRepository)
         factoryOf(::CustomShareRestoreInteractor)
