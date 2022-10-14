@@ -10,6 +10,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
+import org.p2p.wallet.infrastructure.account.AccountStorage
+import org.p2p.wallet.infrastructure.account.AccountStorageContract
+import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key.Companion.withCustomKey
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -25,12 +29,15 @@ class SolendEarnPresenter(
     private val resourcesProvider: ResourcesProvider,
     private val solendDepositsInteractor: SolendDepositsInteractor,
     private val userInteractor: UserInteractor,
-    private val depositTickerStorage: DepositTickerStorage
+    private val depositTickerStorage: DepositTickerStorage,
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val accountStorage: AccountStorage
 ) : BasePresenter<SolendEarnContract.View>(), SolendEarnContract.Presenter {
 
     private var timerJob: Job? = null
     private var lastDepositTickerBalance: BigDecimal = depositTickerStorage.getTickerBalance(BigDecimal.ZERO)
     private var blockedErrorState = true
+    private var onboardingFirstShowing = true
 
     private var deposits by Delegates.observable(emptyList<SolendDepositToken>()) { _, _, newValue ->
         view?.showAvailableDeposits(newValue)
@@ -38,6 +45,16 @@ class SolendEarnPresenter(
 
     override fun attach(view: SolendEarnContract.View) {
         super.attach(view)
+        val onboardingCompletedKey = accountStorage.getString(
+            AccountStorageContract.Key.KEY_SOLEND_ONBOARDING_COMPLETED.withCustomKey(
+                tokenKeyProvider.publicKey
+            )
+        )
+        val needShowOnboarding = onboardingCompletedKey == null
+        if (needShowOnboarding && onboardingFirstShowing) {
+            onboardingFirstShowing = false
+            view.showSolendOnboarding()
+        }
         if (deposits.isNotEmpty()) {
             handleDepositsResult(deposits)
         }

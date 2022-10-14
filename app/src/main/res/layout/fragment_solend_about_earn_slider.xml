@@ -4,34 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center"
     android:orientation="vertical"
-    tools:background="@color/lime">
+    tools:background="@color/titan_white">
 
     <ImageView
-        android:id="@+id/sliderIcon"
+        android:id="@+id/imageViewSliderIcon"
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:importantForAccessibility="no"
-        android:src="@drawable/bg_auth_done" />
+        android:src="@drawable/ic_about_earn_1" />
 
     <TextView
-        android:id="@+id/sliderTitle"
+        android:id="@+id/textViewSliderTitle"
         style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="26dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:textColor="@color/night"
         tools:text="@string/onboarding_slide_1_title" />
 
     <TextView
-        android:id="@+id/sliderText"
-        style="@style/UiKit.TextAppearance.Regular.Title3"
+        android:id="@+id/textViewSliderText"
+        style="@style/UiKit.TextAppearance.Regular.Text1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
         android:gravity="center"
         android:textColor="@color/night"
         tools:text="@string/onboarding_slide_1_text" />

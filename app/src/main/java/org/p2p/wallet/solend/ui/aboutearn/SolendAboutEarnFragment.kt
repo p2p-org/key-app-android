@@ -6,14 +6,13 @@ import androidx.activity.addCallback
 import androidx.viewpager2.widget.ViewPager2
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.onboarding.SliderFragmentArgs
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentSolendAboutEarnBinding
 import org.p2p.wallet.solend.ui.aboutearn.slider.SolendAboutEarnSliderFragment
+import org.p2p.wallet.solend.ui.aboutearn.slider.SolendAboutEarnSliderFragmentArgs
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import timber.log.Timber
 
 class SolendAboutEarnFragment :
     BaseMvpFragment<SolendAboutEarnContract.View, SolendAboutEarnContract.Presenter>(
@@ -29,19 +28,38 @@ class SolendAboutEarnFragment :
 
     private val binding: FragmentSolendAboutEarnBinding by viewBinding()
 
+    private var pageSelected = 0
+
     private val sliderFragments = List(3) { SolendAboutEarnSliderFragment::class }
-    private val sliderFragmentArgs = List(3) {
-        SliderFragmentArgs(
-            R.drawable.bg_auth_done,
-            R.string.onboarding_slide_1_title,
-            R.string.onboarding_slide_1_text,
+    private val sliderFragmentArgs = listOf(
+        SolendAboutEarnSliderFragmentArgs(
+            R.drawable.ic_about_earn_1,
+            R.string.about_earn_slider_title_1,
+            R.string.about_earn_slider_text_1,
+        ).toBundle(),
+        SolendAboutEarnSliderFragmentArgs(
+            R.drawable.ic_about_earn_2,
+            R.string.about_earn_slider_title_2,
+            R.string.about_earn_slider_text_2,
+        ).toBundle(),
+        SolendAboutEarnSliderFragmentArgs(
+            R.drawable.ic_about_earn_3,
+            R.string.about_earn_slider_title_3,
+            R.string.about_earn_slider_text_3,
         ).toBundle()
-    }
+    )
 
     private val viewPagerSliderChangedCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
-            Timber.d("$position")
+            pageSelected = position
+            binding.buttonNext.setText(
+                if (position == sliderFragments.size - 1) {
+                    R.string.about_earn_continue
+                } else {
+                    R.string.about_earn_next
+                }
+            )
         }
     }
 
@@ -58,13 +76,31 @@ class SolendAboutEarnFragment :
             viewPagerSliderFragments.registerOnPageChangeCallback(viewPagerSliderChangedCallback)
             dotsIndicatorSliderFragments.attachTo(viewPagerSliderFragments)
 
+            buttonSkip.setOnClickListener {
+                closeOnboarding()
+            }
+
             buttonNext.setOnClickListener {
-                presenter.onNextButtonClicked()
+                if (pageSelected == sliderFragments.size - 1) {
+                    presenter.onContinueButtonClicked()
+                } else {
+                    presenter.onNextButtonClicked()
+                }
             }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
+    }
+
+    override fun slideNext() {
+        with(binding) {
+            viewPagerSliderFragments.currentItem = pageSelected + 1
+        }
+    }
+
+    override fun closeOnboarding() {
+        popBackStack()
     }
 }

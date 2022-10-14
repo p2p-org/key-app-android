@@ -15,13 +15,15 @@ class SolendAboutEarnSliderFragment : BaseFragment(R.layout.fragment_solend_abou
 
     private val binding: FragmentSolendAboutEarnSliderBinding by viewBinding()
 
+    override val statusBarColor: Int = R.color.titan_white
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sliderFragmentArgs = SolendAboutEarnSliderFragmentArgs.fromBundle(requireArguments())
         with(binding) {
-            sliderIcon.setImageResource(sliderFragmentArgs.iconRes)
-            sliderTitle.setText(sliderFragmentArgs.slideTitle)
-            sliderText.setText(sliderFragmentArgs.slideText)
+            imageViewSliderIcon.setImageResource(sliderFragmentArgs.iconRes)
+            textViewSliderTitle.setText(sliderFragmentArgs.slideTitle)
+            textViewSliderText.setText(sliderFragmentArgs.slideText)
         }
     }
 }

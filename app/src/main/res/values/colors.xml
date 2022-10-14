@@ -59,4 +59,7 @@
     <color name="shadow_color_2">#050B1F35</color>
     <color name="shadow_color_1">#030B1F35</color>
 
+    <!--Strange colors from designs that are not in a palette-->
+    <color name="titan_white">#EFEDFF</color>
+
 </resources>

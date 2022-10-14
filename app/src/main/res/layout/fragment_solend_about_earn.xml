@@ -2,33 +2,48 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lime">
+    android:background="@color/titan_white">
+
+    <TextView
+        android:id="@+id/buttonSkip"
+        style="@style/UiKit.TextAppearance.Regular.Text3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="18dp"
+        android:text="@string/about_earn_skip"
+        android:textColor="@color/night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerSliderFragments"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/dotsIndicatorSliderFragments"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonNext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/buttonSkip"
+        tools:layout="@layout/fragment_solend_about_earn_slider" />
 
     <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
         android:id="@+id/dotsIndicatorSliderFragments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginTop="24dp"
         app:dotsColor="@color/night_60"
         app:dotsSize="8dp"
         app:dotsSpacing="4dp"
         app:dotsWidthFactor="4"
-        app:layout_constraintBottom_toTopOf="@+id/buttonNext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewPagerSliderFragments"
         app:progressMode="false"
         app:selectedDotColor="@color/night" />
 
@@ -37,18 +52,13 @@
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/rain"
-        android:text="@string/onboarding_create_text"
-        android:textColor="@color/night"
-        app:icon="@drawable/ic_arrow_forward"
-        app:iconGravity="textEnd"
-        app:iconTint="@color/night"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/about_earn_next"
+        android:textColor="@color/text_lime"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
