@@ -22,6 +22,7 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.renbtc.utils.BitcoinAddressValidator
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -64,9 +65,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import java.util.Locale
-import kotlin.properties.Delegates
-import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import java.util.UUID
+import kotlin.properties.Delegates
 
 class SendPresenter(
     private val sendInteractor: SendInteractor,
@@ -151,6 +151,10 @@ class SendPresenter(
     }
 
     override fun setTargetResult(result: SearchResult?) {
+        if (result is SearchResult.Full && result.username.isNotBlank()) {
+            sendAnalytics.isSendTargetUsername = true
+        }
+
         val validatedResult = validateResultByNetwork(result = result, updateNetwork = true)
 
         state.searchResult = validatedResult
@@ -203,23 +207,34 @@ class SendPresenter(
         view?.showNetworkDestination(networkType)
     }
 
-    override fun validateTarget(value: String) {
+    override fun validateTargetAddress(value: String) {
         launch {
             try {
+                sendAnalytics.logFillingAddress()
                 view?.showIndeterminateLoading(true)
 
                 val target = Target(value)
                 selectNetworkType(target.networkType)
 
                 when (target.validation) {
-                    Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-                    Target.Validation.BTC_ADDRESS -> setBitcoinTargetResult(target.value)
-                    Target.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
-                    Target.Validation.EMPTY -> view?.showIdleTarget()
-                    Target.Validation.INVALID -> view?.showWrongAddressTarget(target.value)
+                    Target.Validation.USERNAME -> {
+                        searchByUsername(target.trimmedUsername)
+                    }
+                    Target.Validation.BTC_ADDRESS -> {
+                        setBitcoinTargetResult(target.value)
+                    }
+                    Target.Validation.SOL_ADDRESS -> {
+                        searchBySolAddress(target.value)
+                    }
+                    Target.Validation.EMPTY -> {
+                        view?.showIdleTarget()
+                        sendAnalytics.isSendTargetUsername = false
+                    }
+                    Target.Validation.INVALID -> {
+                        view?.showWrongAddressTarget(target.value)
+                        sendAnalytics.isSendTargetUsername = false
+                    }
                 }
-
-                sendAnalytics.logSendPasting()
             } catch (e: Throwable) {
                 Timber.e(e, "Error validating target: $value")
             } finally {
@@ -252,7 +267,22 @@ class SendPresenter(
         val token = token ?: error("Token cannot be null!")
         val address = state.searchResult?.addressState?.address ?: error("Target address cannot be null!")
 
-        sendAnalytics.logSendStarted(state.networkType, state.tokenAmount, token, state.sendFee, state.usdAmount)
+        sendAnalytics.logSendStarted(
+            networkType = state.networkType,
+            sendAmount = state.tokenAmount,
+            sendToken = token,
+            fee = state.sendFee,
+            usdAmount = state.usdAmount
+        )
+
+        sendAnalytics.logConfirmButtonPressed(
+            network = state.networkType,
+            sendCurrency = token.tokenSymbol,
+            sendSum = state.inputAmount,
+            sendSumInUsd = state.usdAmount.toPlainString(),
+            isSendFree = state.sendFee == null,
+            accountFeeTokenSymbol = state.sendFee?.feePayerSymbol
+        )
 
         when (state.networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
@@ -264,7 +294,13 @@ class SendPresenter(
         val token = token ?: error("Token cannot be null!")
         val address = state.searchResult?.addressState?.address ?: error("Target address cannot be null!")
 
-        sendAnalytics.logUserConfirmedSend(state.networkType, state.tokenAmount, token, state.sendFee, state.usdAmount)
+        sendAnalytics.logUserConfirmedSend(
+            networkType = state.networkType,
+            sendAmount = state.tokenAmount,
+            sendToken = token,
+            fee = state.sendFee,
+            usdAmount = state.usdAmount
+        )
 
         val isConfirmationRequired = settingsInteractor.isBiometricsConfirmationEnabled()
         if (isConfirmationRequired) {
@@ -315,6 +351,7 @@ class SendPresenter(
 
         val message = resourcesProvider.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showSuccessSnackBar(message)
+        sendAnalytics.isSendMaxButtonClickedOnce = true
 
         state.inputAmount = totalAvailable.toString()
 
@@ -850,6 +887,7 @@ class SendPresenter(
 
         val result = usernames.first()
         setTargetResult(result)
+        sendAnalytics.isSendTargetUsername = true
     }
 
     private fun setBitcoinTargetResult(address: String) {
@@ -862,6 +900,7 @@ class SendPresenter(
         } else {
             view?.showWrongAddressTarget(address)
         }
+        sendAnalytics.isSendTargetUsername = false
     }
 
     private suspend fun searchBySolAddress(address: String) {
@@ -875,6 +914,7 @@ class SendPresenter(
 
         val first = results.first()
         setTargetResult(first)
+        sendAnalytics.isSendTargetUsername = false
     }
 
     private fun updateButton(sourceToken: Token.Active, sendFee: SendFee?) {

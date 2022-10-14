@@ -24,9 +24,9 @@ class CrashHttpLoggingInterceptor : Interceptor {
     private fun createRequestLog(request: Request): String = buildString {
         append("NETWORK ${request.url} | ")
 
-        if (request.url.host.contains("rpcpool")) {
-            getRpcMethodName(request)
-                ?.let { append("$it | ") }
+        val jsonRpcMethodName = getRpcMethodName(request)
+        if (jsonRpcMethodName != null) {
+            append("$jsonRpcMethodName | ")
         }
 
         append("${request.method} ")

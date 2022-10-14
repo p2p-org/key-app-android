@@ -14,6 +14,8 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
+import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
@@ -21,8 +23,6 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentResetSeedPhraseBinding
-import org.p2p.wallet.restore.model.SecretKey
-import org.p2p.wallet.restore.ui.keys.adapter.SecretPhraseAdapter
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
@@ -54,11 +54,16 @@ class ResetSeedPhraseFragment :
             )
     }
 
-    private val phraseAdapter: SecretPhraseAdapter by lazy {
-        SecretPhraseAdapter {
-            presenter.setNewKeys(it)
-            clearError()
-        }
+    private val phraseAdapter: SeedPhraseAdapter by lazy {
+        SeedPhraseAdapter(
+            onSeedPhraseChanged = {
+                presenter.setNewKeys(it)
+                clearError()
+            },
+            onShowKeyboardListener = {
+                // TODO: to be done after this screen is redesigned
+            }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,7 +88,7 @@ class ResetSeedPhraseFragment :
             phraseTextView.setOnClickListener {
                 phraseTextView.isVisible = false
                 keysRecyclerView.isVisible = true
-                phraseAdapter.addSecretKey(SecretKey())
+                phraseAdapter.addSecretKey(SeedPhraseWord.EMPTY_WORD)
             }
 
             messageTextView.text = buildSeedInfoText()
@@ -94,8 +99,8 @@ class ResetSeedPhraseFragment :
         setButtonEnabled(itemsCount != 0)
     }
 
-    override fun showSuccess(secretKeys: List<SecretKey>) {
-        setFragmentResult(requestKey, bundleOf(Pair(resultKey, secretKeys)))
+    override fun showSuccess(seedPhrase: List<SeedPhraseWord>) {
+        setFragmentResult(requestKey, bundleOf(Pair(resultKey, seedPhrase)))
         popBackStack()
     }
 

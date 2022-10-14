@@ -12,4 +12,9 @@ object Base58Utils {
     fun encodeFromString(string: String) = encode(string.toByteArray())
 
     fun decodeToString(data: String) = String(decode(data))
+
+    fun isValidBase58(data: String): Boolean = kotlin.runCatching { data.decodeFromBase58() }.isSuccess
 }
+
+fun ByteArray.encodeToBase58(): String = Base58Utils.encode(this)
+fun String.decodeFromBase58(): ByteArray = Base58Utils.decode(this)

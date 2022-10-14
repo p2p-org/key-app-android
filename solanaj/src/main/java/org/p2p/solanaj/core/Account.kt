@@ -8,6 +8,11 @@ import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.crypto.SolanaBip44
 import org.p2p.solanaj.utils.TweetNaclFast
 
+class AccountCreationFailed(
+    derivationPath: String,
+    override val cause: Throwable?
+) : Throwable(message = "Account creation with $derivationPath failed", cause)
+
 class Account {
     private var keyPair: TweetNaclFast.Signature.KeyPair
 
@@ -37,13 +42,15 @@ class Account {
          * @param passphrase seed passphrase
          * @return Solana account
          */
-        fun fromBip32Mnemonic(words: List<String>, walletIndex: Int, passphrase: String = ""): Account {
+        fun fromBip32Mnemonic(words: List<String>, walletIndex: Int, passphrase: String = ""): Account = try {
             val seed = MnemonicCode.toSeed(words, passphrase)
             val masterPrivateKey = HDKeyDerivation.createMasterPrivateKey(seed)
             val deterministicHierarchy = DeterministicHierarchy(masterPrivateKey)
             val child = deterministicHierarchy[HDUtils.parsePath("M/501H/${walletIndex}H/0/0"), true, true]
             val keyPair = TweetNaclFast.Signature.keyPair_fromSeed(child.privKeyBytes)
-            return Account(keyPair)
+            Account(keyPair)
+        } catch (error: Throwable) {
+            throw AccountCreationFailed("BIP32", error)
         }
 
         /**
@@ -53,11 +60,13 @@ class Account {
          * @param passphrase seed passphrase
          * @return Solana account
          */
-        fun fromBip44Mnemonic(words: List<String>, walletIndex: Int, passphrase: String = ""): Account {
+        fun fromBip44Mnemonic(words: List<String>, walletIndex: Int, passphrase: String = ""): Account = try {
             val solanaBip44 = SolanaBip44(walletIndex)
             val seed = MnemonicCode.toSeed(words, passphrase)
             val privateKey: ByteArray = solanaBip44.getPrivateKeyFromSeed(seed, DerivationPath.BIP44)
-            return Account(TweetNaclFast.Signature.keyPair_fromSeed(privateKey))
+            Account(TweetNaclFast.Signature.keyPair_fromSeed(privateKey))
+        } catch (error: Throwable) {
+            throw AccountCreationFailed("BIP44", error)
         }
 
         /**
@@ -67,11 +76,13 @@ class Account {
          * @param passphrase seed passphrase
          * @return Solana account
          */
-        fun fromBip44MnemonicWithChange(words: List<String>, walletIndex: Int, passphrase: String = ""): Account {
+        fun fromBip44MnemonicWithChange(words: List<String>, walletIndex: Int, passphrase: String = ""): Account = try {
             val solanaBip44 = SolanaBip44(walletIndex)
             val seed = MnemonicCode.toSeed(words, passphrase)
             val privateKey: ByteArray = solanaBip44.getPrivateKeyFromSeed(seed, DerivationPath.BIP44CHANGE)
-            return Account(TweetNaclFast.Signature.keyPair_fromSeed(privateKey))
+            Account(TweetNaclFast.Signature.keyPair_fromSeed(privateKey))
+        } catch (error: Throwable) {
+            throw AccountCreationFailed("BIP44-with-change", error)
         }
     }
 }

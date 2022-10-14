@@ -4,6 +4,5 @@ import org.p2p.wallet.common.mvp.BasePresenter
 
 class SolendAboutEarnPresenter : BasePresenter<SolendAboutEarnContract.View>(), SolendAboutEarnContract.Presenter {
     override fun onNextButtonClicked() {
-
     }
 }

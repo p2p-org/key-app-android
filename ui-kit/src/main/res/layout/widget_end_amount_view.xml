@@ -11,18 +11,19 @@
         android:id="@+id/usdAmountTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
         app:layout_constraintEnd_toStartOf="@id/actionImageView"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="$190.91" />
 
     <TextView
         android:id="@+id/tokenAmountTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingTop="8dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
         app:layout_constraintBottom_toBottomOf="parent"

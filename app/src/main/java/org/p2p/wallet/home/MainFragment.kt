@@ -1,17 +1,18 @@
 package org.p2p.wallet.home
 
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
@@ -23,7 +24,7 @@ import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -32,6 +33,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     private val binding: FragmentMainBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val tabCachedFragments = SparseArrayCompat<Fragment>()
+    private val generalAnalytics: GeneralAnalytics by inject()
     private val deeplinksManager: AppDeeplinksManager by inject()
     private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
 
@@ -75,7 +77,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             when (fragment) {
                 is HomeFragment -> tabCachedFragments.put(R.id.homeItem, fragment)
                 is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
-                is SettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
+                is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
             }
         }
@@ -101,7 +103,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
                 ScreenTab.EARN_SCREEN -> SolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
-                ScreenTab.SETTINGS_SCREEN -> SettingsFragment.create()
+                ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
                 else -> error("No tab found for $clickedTab")
             }
             tabCachedFragments[itemId] = fragment
@@ -170,7 +172,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
-        binding.buttonCenterAction.setOnClickListener { block.invoke() }
+        binding.buttonCenterAction.setOnClickListener {
+            generalAnalytics.logActionButtonClicked(analyticsInteractor.getCurrentScreenName())
+            block.invoke()
+        }
     }
 
     // TODO: this is a dirty hack on how to trigger data update

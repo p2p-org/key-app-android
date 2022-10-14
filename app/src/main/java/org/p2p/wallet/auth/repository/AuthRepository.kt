@@ -7,7 +7,7 @@ interface AuthRepository {
     suspend fun getDerivableAccounts(
         path: DerivationPath,
         keys: List<String>
-    ): MutableMap<DerivationPath, List<Account>>
+    ): Map<DerivationPath, List<Account>>
 
     suspend fun createAccount(path: DerivationPath, keys: List<String>): Account
     suspend fun generatePhrase(): List<String>

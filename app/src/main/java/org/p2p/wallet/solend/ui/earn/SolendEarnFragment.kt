@@ -12,6 +12,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.databinding.FragmentSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.solend.ui.deposit.SolendDepositFragment
 import org.p2p.wallet.solend.ui.deposits.SolendUserDepositsFragment
 import org.p2p.wallet.solend.ui.earn.adapter.SolendEarnAdapter
 import org.p2p.wallet.solend.ui.earn.bottomsheet.SolendTopUpBottomSheetFragment
@@ -57,6 +58,10 @@ class SolendEarnFragment :
             fragmentManager = parentFragmentManager,
             deposit = deposit
         )
+    }
+
+    override fun showDepositToSolend(deposit: SolendDepositToken) {
+        replaceFragment(SolendDepositFragment.create(deposit))
     }
 
     override fun showLoading(isLoading: Boolean) {

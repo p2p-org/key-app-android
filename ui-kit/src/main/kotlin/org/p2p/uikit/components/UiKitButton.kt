@@ -20,23 +20,23 @@ class UiKitButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
-    private var currentIcon: Drawable? = null
+    private var buttonIcon: Drawable? = null
     private val circularProgressDrawable = CircularProgressDrawable(context)
 
-    var isLoading: Boolean = false
+    var isLoadingState: Boolean = false
         set(loading) {
-            renderLoading(loading)
+            renderLoadingState(loading)
             field = loading
         }
 
-    private val drawableCallback = object : Drawable.Callback {
-        override fun unscheduleDrawable(who: Drawable, what: Runnable) {}
+    private val progressDrawableCallback = object : Drawable.Callback {
+        override fun unscheduleDrawable(who: Drawable, what: Runnable) = Unit
 
         override fun invalidateDrawable(who: Drawable) {
             this@UiKitButton.invalidate()
         }
 
-        override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) {}
+        override fun scheduleDrawable(who: Drawable, what: Runnable, `when`: Long) = Unit
     }
 
     init {
@@ -60,15 +60,20 @@ class UiKitButton @JvmOverloads constructor(
                 strokeWidth = LOADER_STROKE_WIDTH.toPx()
             }
         }
+
+        this.buttonIcon = icon
     }
 
-    private fun renderLoading(isLoading: Boolean): Unit = if (isLoading) {
-        currentIcon = icon
-        icon = circularProgressDrawable
-        icon.callback = drawableCallback
-        circularProgressDrawable.start()
-    } else {
-        icon = currentIcon
-        circularProgressDrawable.stop()
+    private fun renderLoadingState(isLoading: Boolean) {
+        if (this.isLoadingState == isLoading) return
+        if (isLoading) {
+            buttonIcon = icon
+            icon = circularProgressDrawable
+            icon.callback = progressDrawableCallback
+            circularProgressDrawable.start()
+        } else {
+            icon = buttonIcon
+            circularProgressDrawable.stop()
+        }
     }
 }

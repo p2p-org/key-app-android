@@ -1,8 +1,8 @@
 package org.p2p.wallet.renbtc.repository
 
-import org.p2p.wallet.renbtc.model.RenBTCPayment
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.renbtc.api.RenBTCApi
-import org.p2p.solanaj.rpc.NetworkEnvironment
+import org.p2p.wallet.renbtc.model.RenBTCPayment
 
 class RenRemoteRepository(
     private val api: RenBTCApi

@@ -6,8 +6,11 @@ class AnalyticsInMemoryRepository : AnalyticsLocalRepository {
 
     private val openedScreenList = mutableListOf<String>()
 
-    override fun onScreenChanged(screenName: String) {
-        openedScreenList.add(screenName)
+    override fun changeCurrentScreen(newScreenName: String) {
+        // to remove duplicates when onResume is called
+        if (newScreenName != getCurrentScreenName()) {
+            openedScreenList.add(newScreenName)
+        }
     }
 
     override fun getCurrentScreenName(): String =
@@ -15,6 +18,8 @@ class AnalyticsInMemoryRepository : AnalyticsLocalRepository {
             ?: emptyString()
 
     override fun getPreviousScreenName(): String =
-        kotlin.runCatching { openedScreenList[openedScreenList.lastIndex - 1] }
+        kotlin.runCatching {
+            openedScreenList[openedScreenList.lastIndex - 1]
+        }
             .getOrDefault(emptyString())
 }

@@ -1,10 +1,6 @@
-@file:TargetApi(Build.VERSION_CODES.M)
-
 package org.p2p.wallet.common.crypto.keystore
 
-import android.annotation.TargetApi
 import android.content.SharedPreferences
-import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.core.content.edit
@@ -24,19 +20,19 @@ private const val TRANSFORMATION = "$TRANSFORMATION_ALGORITHM/$TRANSFORMATION_BL
 private const val AES_KEY_SIZE = 256
 private const val PREF_INITIALIZATION_VECTOR_PREFIX = "PREF_KEY_INITIALIZATION_VECTOR"
 
-class EncoderDecoderMarshmallow(
-    private val sharedPreferences: SharedPreferences
-) : EncoderDecoder {
+class EncoderDecoderMarshmallow : EncoderDecoder {
 
     private lateinit var keyStore: KeyStore
     private lateinit var providerName: String
+    private lateinit var sharedPreferences: SharedPreferences
 
     private val cipher by lazy { Cipher.getInstance(TRANSFORMATION) }
     private val randomSecureRandom = SecureRandom()
 
-    override fun setKeyStore(keyStore: KeyStore, providerName: String) {
+    override fun init(keyStore: KeyStore, providerName: String, preferences: SharedPreferences) {
         this.keyStore = keyStore
         this.providerName = providerName
+        this.sharedPreferences = preferences
     }
 
     @Synchronized
@@ -54,6 +50,7 @@ class EncoderDecoderMarshmallow(
         return cipher.doFinal(data)
     }
 
+    @Throws(IllegalArgumentException::class)
     @Synchronized
     override fun decode(keyAlias: String, encodedData: ByteArray): ByteArray {
         val key = keyStore.getKey(keyAlias, null)
@@ -121,5 +118,5 @@ class EncoderDecoderMarshmallow(
         }
     }
 
-    private fun getIvPrefKey(keyAlias: String) = "$keyAlias\\_$PREF_INITIALIZATION_VECTOR_PREFIX"
+    private fun getIvPrefKey(keyAlias: String): String = "$keyAlias\\_$PREF_INITIALIZATION_VECTOR_PREFIX"
 }

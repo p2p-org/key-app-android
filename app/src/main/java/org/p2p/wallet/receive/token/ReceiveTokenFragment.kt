@@ -7,18 +7,20 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentReceiveTokenBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.utils.SpanUtils
-import org.p2p.wallet.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
@@ -48,10 +50,11 @@ class ReceiveTokenFragment :
     override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     private val binding: FragmentReceiveTokenBinding by viewBinding()
-    override val presenter: ReceiveTokenContract.Presenter by inject {
-        parametersOf(token)
-    }
+    override val presenter: ReceiveTokenContract.Presenter by inject { parametersOf(token) }
     private val token: Token.Active by args(EXTRA_TOKEN)
+
+    private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -97,6 +100,8 @@ class ReceiveTokenFragment :
             }
         }
         presenter.loadData()
+
+        receiveAnalytics.logStartScreen(analyticsInteractor.getPreviousScreenName())
     }
 
     override fun onStop() {

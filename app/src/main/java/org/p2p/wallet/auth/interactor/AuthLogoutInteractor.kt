@@ -3,8 +3,8 @@ package org.p2p.wallet.auth.interactor
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import org.p2p.wallet.common.analytics.Analytics
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -16,6 +16,7 @@ import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.updates.UpdatesManager
+import timber.log.Timber
 
 class AuthLogoutInteractor(
     private val context: Context,
@@ -34,6 +35,7 @@ class AuthLogoutInteractor(
     fun onUserLogout() {
         appScope.launch {
             val publicKey = tokenKeyProvider.publicKey
+            Timber.i("Cleaning storages and stopping all services for $publicKey")
 
             analytics.clearUserProperties()
             updatesManager.stop()
@@ -48,20 +50,6 @@ class AuthLogoutInteractor(
             RenVMService.stopService(context)
 
             pushNotificationsInteractor.deleteDeviceToken(publicKey)
-        }
-    }
-
-    fun clearAppData() {
-        appScope.launch {
-            sharedPreferences.edit { clear() }
-            secureStorage.clear()
-            tokenKeyProvider.clear()
-            mainLocalRepository.clear()
-            updatesManager.stop()
-            transactionManager.stop()
-            renBtcInteractor.clearSession()
-            transactionDetailsLocalRepository.deleteAll()
-            RenVMService.stopService(context)
         }
     }
 }

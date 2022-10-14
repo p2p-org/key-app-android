@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
+import android.webkit.WebView
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
@@ -13,6 +14,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,20 +27,29 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.check.checkKoinModules
 import org.koin.test.mock.MockProviderRule
 import org.mockito.Mockito
-import org.p2p.solanaj.rpc.NetworkEnvironment
 import org.p2p.wallet.AppModule
+import org.p2p.wallet.auth.model.GatewayHandledState
+import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
+import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
+import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
+import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenVisibility
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.solend.model.SolendDepositToken
+import org.robolectric.fakes.RoboWebSettings
 import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
@@ -110,7 +121,12 @@ class CheckModulesTest : KoinTest {
     @Test
     fun verifyKoinApp() {
         mockFirebase()
+
+        mockkConstructor(WebView::class)
+        every { anyConstructed<WebView>().settings }.returns(RoboWebSettings())
+
         mockSystemCalls()
+
         checkKoinModules(
             modules = AppModule.create(restartAction = {}) + javaxDefaultModule,
             appDeclaration = {
@@ -122,10 +138,26 @@ class CheckModulesTest : KoinTest {
             parameters = {
                 withInstance(sharedPrefsMock)
                 withInstance(createEmptyActiveToken())
+                withInstance(createEmptySolendDepositToken())
                 withInstance(mockk<SecureStorage>())
                 withInstance(mockk<TransactionWorker>())
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
+                withParameter<OnboardingGeneralErrorPresenter> { GatewayHandledState.ToastError("Test message") }
+                withParameters<OnboardingGeneralErrorTimerPresenter> {
+                    ParametersHolder(
+                        mutableListOf(
+                            GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
+                            10
+                        )
+                    )
+                }
+                withParameter<RestoreErrorScreenPresenter> {
+                    RestoreFailureState.TitleSubtitleError(
+                        title = "Test",
+                        subtitle = "Test"
+                    )
+                }
             }
         )
     }
@@ -166,6 +198,18 @@ class CheckModulesTest : KoinTest {
             serumV3Usdc = null,
             serumV3Usdt = null,
             isWrapped = false
+        )
+    }
+
+    private fun createEmptySolendDepositToken(): SolendDepositToken.Active {
+        return SolendDepositToken.Active(
+            tokenSymbol = "",
+            tokenName = "",
+            iconUrl = null,
+            supplyInterest = BigDecimal.ZERO,
+            depositAmount = BigDecimal.ZERO,
+            usdAmount = BigDecimal.ZERO,
+            usdRate = BigDecimal.ZERO
         )
     }
 }

@@ -38,7 +38,7 @@
         android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
         android:textColor="@color/systemErrorMain"
         android:visibility="invisible"
-        tools:text="PIN-codes do not match"
+        tools:text="PINs do not match"
         tools:visibility="visible" />
 
     <org.p2p.wallet.common.ui.widget.NumberKeyboardView

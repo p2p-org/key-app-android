@@ -6,7 +6,7 @@
 
     <item>
         <bitmap
-            android:gravity="fill"
-            android:src="@drawable/bg_splash" />
+            android:gravity="center"
+            android:src="@drawable/ic_logo_key_app" />
     </item>
 </layer-list>

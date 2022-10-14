@@ -77,7 +77,7 @@ class FileRepository(
         return File(pdfFolder, fileNameWithExt).exists() || File(miscFolder, fileNameWithExt).exists()
     }
 
-    private fun getPdfFile(fileName: String) = File(pdfFolder, "$fileName.pdf")
+    fun getPdfFile(fileName: String) = File(pdfFolder, "$fileName.pdf")
 
     private fun ensurePdfFolderExists() = pdfFolder.mkdirs()
     private fun ensureMiscFolderExists() = miscFolder.mkdirs()

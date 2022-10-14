@@ -1,51 +1,56 @@
 package org.p2p.wallet.auth.repository
 
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.mnemoticgenerator.MnemonicGenerator
 import org.p2p.wallet.utils.mnemoticgenerator.Words
 import java.security.SecureRandom
 
-class AuthRemoteRepository : AuthRepository {
+private const val ACCOUNTS_QUANTITY_TO_CREATE = 5
 
-    companion object {
-        private const val ACCOUNTS_SIZE = 5
-    }
+class AuthRemoteRepository(
+    private val dispatchers: CoroutineDispatchers
+) : AuthRepository {
 
-    override suspend fun createAccount(path: DerivationPath, keys: List<String>): Account =
-        withContext(Dispatchers.IO) {
-            when (path) {
-                DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(keys, 0)
-                DerivationPath.BIP44 -> Account.fromBip44Mnemonic(keys, 0)
-                DerivationPath.BIP44CHANGE -> Account.fromBip44MnemonicWithChange(keys, 0)
-            }
+    override suspend fun createAccount(
+        path: DerivationPath,
+        keys: List<String>
+    ): Account = withContext(dispatchers.io) {
+        when (path) {
+            DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(keys, 0)
+            DerivationPath.BIP44 -> Account.fromBip44Mnemonic(keys, 0)
+            DerivationPath.BIP44CHANGE -> Account.fromBip44MnemonicWithChange(keys, 0)
         }
+    }
 
     override suspend fun getDerivableAccounts(
         path: DerivationPath,
         keys: List<String>
-    ): MutableMap<DerivationPath, List<Account>> {
+    ): Map<DerivationPath, List<Account>> = withContext(dispatchers.io) {
         val data = mutableMapOf<DerivationPath, List<Account>>()
-        val accounts = mutableListOf<Account>()
-
-        for (index in 0 until ACCOUNTS_SIZE) {
-            val account = when (path) {
-                DerivationPath.BIP44 -> Account.fromBip44Mnemonic(keys, index)
-                DerivationPath.BIP44CHANGE -> Account.fromBip44MnemonicWithChange(keys, index)
-                DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(keys, index)
+        val accounts: List<Deferred<Account>> =
+            (0 until ACCOUNTS_QUANTITY_TO_CREATE).map { walletIndex ->
+                async { createAccountWithIndex(path, walletIndex, keys) }
             }
 
-            accounts.add(account)
-        }
-
-        data[path] = accounts
-        return data
+        data[path] = accounts.awaitAll()
+        data
     }
 
-    override suspend fun generatePhrase(): List<String> = withContext(Dispatchers.IO) {
+    private fun createAccountWithIndex(path: DerivationPath, walletIndex: Int, seedPhrase: List<String>): Account =
+        when (path) {
+            DerivationPath.BIP44 -> Account.fromBip44Mnemonic(seedPhrase, walletIndex)
+            DerivationPath.BIP44CHANGE -> Account.fromBip44MnemonicWithChange(seedPhrase, walletIndex)
+            DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(seedPhrase, walletIndex)
+        }
+
+    override suspend fun generatePhrase(): List<String> = withContext(dispatchers.computation) {
         val sb = StringBuilder()
         val entropy = ByteArray(Words.TWENTY_FOUR.byteLength())
         SecureRandom().nextBytes(entropy)

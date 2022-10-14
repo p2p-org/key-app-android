@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import timber.log.Timber
 
+private const val TAG = "FragmentLoggingLifecycleListener"
+
 class FragmentLoggingLifecycleListener : FragmentManager.FragmentLifecycleCallbacks() {
     private fun logLifecycleAction(fragment: Fragment, action: String) {
-        Timber.i("LIFECYCLE ${fragment.javaClass.simpleName}: $action")
+        Timber.tag(TAG).i("LIFECYCLE ${fragment.javaClass.simpleName}: $action")
     }
 
     override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {

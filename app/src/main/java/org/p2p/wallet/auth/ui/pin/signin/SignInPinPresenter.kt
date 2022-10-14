@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.ui.pin.signin
 
-import android.os.CountDownTimer
+import kotlinx.coroutines.launch
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -12,14 +13,11 @@ import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import javax.crypto.Cipher
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
-private const val PIN_CODE_ATTEMPT_COUNT = 3
 
-private const val TIMER_MILLIS = 10000L
-private const val TIMER_INTERVAL = 1000L
+private const val PIN_CODE_WARN_ATTEMPT_COUNT = 3
+private const val PIN_CODE_ATTEMPT_COUNT = 5
 
 class SignInPinPresenter(
     private val authInteractor: AuthInteractor,
@@ -31,8 +29,6 @@ class SignInPinPresenter(
 
     private var wrongPinCounter = 0
     private var authType = AuthAnalytics.AuthType.PIN
-
-    private var timer: CountDownTimer? = null
 
     override fun signIn(pinCode: String) {
         signInActual {
@@ -54,13 +50,18 @@ class SignInPinPresenter(
             try {
                 if (authInteractor.getBiometricStatus() == BiometricStatus.ENABLED) {
                     val cipher = authInteractor.getPinDecodeCipher()
-                    view?.showBiometricDialog(cipher.value)
+                    view?.apply {
+                        showBiometricDialog(cipher.value)
+                        setBiometricVisibility(true)
+                    }
                 } else {
                     authInteractor.disableBiometricSignIn()
+                    view?.setBiometricVisibility(false)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to initialize biometric sign in")
                 authInteractor.disableBiometricSignIn()
+                view?.setBiometricVisibility(false)
             }
         }
     }
@@ -72,12 +73,7 @@ class SignInPinPresenter(
         }
     }
 
-    override fun stopTimer() {
-        timer?.cancel()
-    }
-
     override fun logout() {
-        timer?.cancel()
         launch {
             authLogoutInteractor.onUserLogout()
             view?.onLogout()
@@ -89,16 +85,12 @@ class SignInPinPresenter(
     ) {
         launch {
             try {
-                view?.showLoading(true)
-                delay(500L)
                 val result = performSignIn()
                 handleResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error while signing")
                 view?.clearPin()
-                view?.showErrorMessage(e)
-            } finally {
-                view?.showLoading(false)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }
@@ -108,48 +100,29 @@ class SignInPinPresenter(
         when (result) {
             SignInResult.WrongPin -> {
                 wrongPinCounter++
-
+                authResult = AuthAnalytics.AuthResult.ERROR
                 if (wrongPinCounter >= PIN_CODE_ATTEMPT_COUNT) {
-                    startTimer()
                     view?.vibrate(VIBRATE_DURATION)
                     view?.clearPin()
+                    logout()
                     return
+                } else if (wrongPinCounter >= PIN_CODE_WARN_ATTEMPT_COUNT) {
+                    view?.vibrate(VIBRATE_DURATION)
+                    view?.clearPin()
+                    view?.showWarnPinError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
+                    return
+                } else {
+                    view?.showWrongPinError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
                 }
-                authResult = AuthAnalytics.AuthResult.ERROR
+
                 adminAnalytics.logPinRejected(analyticsInteractor.getCurrentScreenName())
-                view?.showWrongPinError(PIN_CODE_ATTEMPT_COUNT - wrongPinCounter)
                 view?.vibrate(VIBRATE_DURATION)
             }
             is SignInResult.Success -> {
-                timer?.cancel()
                 view?.onSignInSuccess()
                 authResult = AuthAnalytics.AuthResult.SUCCESS
             }
         }
         authAnalytics.logAuthValidated(result = authResult, authType = authType)
-    }
-
-    private fun startTimer() {
-        timer = object : CountDownTimer(TIMER_MILLIS, TIMER_INTERVAL) {
-
-            @SuppressWarnings("MagicNumber")
-            override fun onTick(millisUntilFinished: Long) {
-                val remainingInSeconds = millisUntilFinished / 1000L
-                val seconds = remainingInSeconds % 60
-                view?.showWalletLocked(seconds)
-            }
-
-            override fun onFinish() {
-                wrongPinCounter = 0
-                view?.showWalletUnlocked()
-                view?.showLoading(false)
-            }
-        }.start()
-    }
-
-    override fun detach() {
-        timer?.cancel()
-        timer = null
-        super.detach()
     }
 }

@@ -1,9 +1,10 @@
 package org.p2p.wallet
 
-import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
+import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -11,6 +12,7 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
+import org.p2p.wallet.appsfly.AppsFlyerService
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 import org.p2p.wallet.intercom.IntercomService
@@ -23,6 +25,7 @@ import timber.log.Timber
 class App : Application() {
     private val crashLogger: CrashLogger by inject()
     private val appCreatedAction: AppCreatedAction by inject()
+    private val appsFlyerService: AppsFlyerService by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -41,6 +44,7 @@ class App : Application() {
         SolanjLogger.setLoggerImplementation(SolanajTimberLogger())
 
         appCreatedAction.invoke()
+        appsFlyerService.install(this, BuildConfig.appsFlyerKey)
     }
 
     private fun setupKoin() {
@@ -73,6 +77,12 @@ class App : Application() {
     private fun setupTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+            // for logs in debug drawer
+            Timber.plant(
+                LumberYard.getInstance(this)
+                    .apply { cleanUp() }
+                    .tree()
+            )
         }
         // Always plant this tree
         // events are sent or not internally using CrashLoggingService::isLoggingEnabled flag

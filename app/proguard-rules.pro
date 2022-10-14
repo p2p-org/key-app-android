@@ -36,7 +36,10 @@
 # Saving class name to detect the problem source in Crashlytics
 -keepnames class  * extends org.p2p.wallet.common.mvp.BaseFragment
 -keepnames class  * extends org.p2p.wallet.common.mvp.BaseMvpActivity
+-keepnames class  * extends org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 -keepnames class  * extends com.google.android.material.bottomsheet.BottomSheetDialogFragment
+-keepnames class androidx.biometric.BiometricFragment
+-keepnames class androidx.biometric.FingerprintDialogFragment
 
 # Remove logging
 -assumenosideeffects class android.util.Log {
@@ -67,6 +70,13 @@
 -keep public class org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 -keep public class org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }
+-keep class org.p2p.wallet.auth.model.OnboardingFlow
 
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }
+-keep class com.appsflyer.** { *; }
+-keep public class com.miui.referrer.** {*;}
+-dontwarn com.appsflyer.**
+-keep public class com.google.firebase.messaging.FirebaseMessagingService {
+    public *;
+}

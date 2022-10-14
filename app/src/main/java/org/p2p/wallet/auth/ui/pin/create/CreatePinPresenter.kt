@@ -7,11 +7,11 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import javax.crypto.Cipher
 
@@ -58,7 +58,7 @@ class CreatePinPresenter(
             view?.showBiometricDialog(cipher.value)
         } catch (e: Throwable) {
             Timber.e(e, "Failed to get cipher for biometrics")
-            view?.showErrorMessage(R.string.error_general_message)
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
     }
 
@@ -71,7 +71,7 @@ class CreatePinPresenter(
                 view?.onAuthFinished()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
-                view?.showErrorMessage(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
     }
@@ -93,7 +93,7 @@ class CreatePinPresenter(
                 Timber.e(e, "Failed to create pin code")
                 createdPin = emptyString()
                 view?.showCreation()
-                view?.showErrorMessage(R.string.error_general_message)
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 view?.vibrate(VIBRATE_DURATION)
             } finally {
                 view?.showLoading(false)

@@ -4,8 +4,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
 interface SolendAboutEarnContract {
-    interface View : MvpView {
-    }
+    interface View : MvpView
 
     interface Presenter : MvpPresenter<View> {
         fun onNextButtonClicked()

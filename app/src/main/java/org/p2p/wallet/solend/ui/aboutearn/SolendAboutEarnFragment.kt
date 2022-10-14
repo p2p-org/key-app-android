@@ -1,9 +1,9 @@
 package org.p2p.wallet.solend.ui.aboutearn
 
-import androidx.activity.addCallback
-import androidx.viewpager2.widget.ViewPager2
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
+import androidx.viewpager2.widget.ViewPager2
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.SliderFragmentArgs
@@ -16,7 +16,9 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 
 class SolendAboutEarnFragment :
-    BaseMvpFragment<SolendAboutEarnContract.View, SolendAboutEarnContract.Presenter>(R.layout.fragment_solend_about_earn),
+    BaseMvpFragment<SolendAboutEarnContract.View, SolendAboutEarnContract.Presenter>(
+        R.layout.fragment_solend_about_earn
+    ),
     SolendAboutEarnContract.View {
 
     companion object {

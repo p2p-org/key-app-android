@@ -12,13 +12,14 @@ sealed class SolendDepositToken(
 ) : Parcelable {
 
     @Parcelize
-    data class Active(
+    data class Active constructor(
         override val tokenName: String,
         override val tokenSymbol: String,
         override val iconUrl: String?,
         override val supplyInterest: BigDecimal?,
         val depositAmount: BigDecimal,
-        val usdAmount: BigDecimal
+        val usdAmount: BigDecimal,
+        val usdRate: BigDecimal
     ) : SolendDepositToken(tokenName, tokenSymbol, iconUrl, supplyInterest)
 
     @Parcelize

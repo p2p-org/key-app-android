@@ -32,12 +32,12 @@ object DateTimeUtils {
     private const val DAYS_IN_WEEK = 7
     private const val DAYS_IN_YEAR = 365
 
-    private fun getFormatter(pattern: String, context: Context? = null): SimpleDateFormat {
+    private fun getFormatter(pattern: String, contextForLocale: Context? = null): SimpleDateFormat {
         val locale = when {
-            context == null -> Locale.getDefault()
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> context.resources.configuration.locales[0]
+            contextForLocale == null -> Locale.getDefault()
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> contextForLocale.resources.configuration.locales[0]
             else -> @Suppress("DEPRECATION")
-            context.resources.configuration.locale
+            contextForLocale.resources.configuration.locale
         }
         val formatterKey = FormatterKey(locale, pattern)
         return formatsCache[formatterKey] ?: run {

@@ -1,6 +1,5 @@
 package org.p2p.wallet.solend.ui.earn
 
-import android.content.Context
 import androidx.annotation.CallSuper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -8,27 +7,29 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.earnwidget.EarnWidgetState
 import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.getErrorMessage
+import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
-private val COLLATERAL_ACCOUNTS = listOf("SOL", "USDT", "USDC", "BTC", "ETH")
-
 class SolendEarnPresenter(
-    private val context: Context,
+    private val resourcesProvider: ResourcesProvider,
     private val solendDepositsInteractor: SolendDepositsInteractor,
-    private val depositTickerManager: DepositTickerManager
+    private val userInteractor: UserInteractor,
+    private val depositTickerStorage: DepositTickerStorage
 ) : BasePresenter<SolendEarnContract.View>(), SolendEarnContract.Presenter {
 
     private var timerJob: Job? = null
-    private var lastDepositTickerBalance: BigDecimal = depositTickerManager.getTickerBalance(BigDecimal.ZERO)
+    private var lastDepositTickerBalance: BigDecimal = depositTickerStorage.getTickerBalance(BigDecimal.ZERO)
     private var blockedErrorState = true
 
     private var deposits by Delegates.observable(emptyList<SolendDepositToken>()) { _, _, newValue ->
@@ -52,12 +53,12 @@ class SolendEarnPresenter(
         view?.showWidgetState(EarnWidgetState.Idle)
         launch {
             try {
-                val result = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
+                val result = solendDepositsInteractor.getUserDeposits()
                 handleDepositsResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
                 showDepositsWidgetError()
-                view?.showErrorSnackBar(e.getErrorMessage(context))
+                view?.showErrorSnackBar(e.getErrorMessage(resourcesProvider))
             } finally {
                 view?.showLoading(isLoading = false)
             }
@@ -68,13 +69,13 @@ class SolendEarnPresenter(
         view?.showRefreshing(isRefreshing = true)
         launch {
             try {
-                val result = solendDepositsInteractor.getUserDeposits(COLLATERAL_ACCOUNTS)
+                val result = solendDepositsInteractor.getUserDeposits()
                 saveLastDepositTicker()
                 handleDepositsResult(result)
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
                 showDepositsWidgetError()
-                view?.showErrorSnackBar(e.getErrorMessage(context))
+                view?.showErrorSnackBar(e.getErrorMessage(resourcesProvider))
             } finally {
                 view?.showRefreshing(isRefreshing = false)
             }
@@ -83,7 +84,16 @@ class SolendEarnPresenter(
 
     override fun onDepositTokenClicked(deposit: SolendDepositToken) {
         if (!blockedErrorState) {
-            view?.showDepositTopUp(deposit)
+            launch {
+                val activeToken = userInteractor.getUserTokens().firstOrNull {
+                    it.tokenSymbol == deposit.tokenSymbol
+                }
+                if (activeToken?.totalInUsd.orZero().isZero()) {
+                    view?.showDepositTopUp(deposit)
+                } else {
+                    view?.showDepositToSolend(deposit)
+                }
+            }
         }
     }
 
@@ -118,7 +128,7 @@ class SolendEarnPresenter(
                 }
                 val tokenIcons = activeDeposits.map { it.iconUrl.orEmpty() }
 
-                val tickerAmount = depositTickerManager.getTickerBalance(depositBalance)
+                val tickerAmount = depositTickerStorage.getTickerBalance(depositBalance)
                 view?.showWidgetState(EarnWidgetState.Balance(tickerAmount, tokenIcons))
                 startBalanceTicker(tickerAmount, totalYearBalance, tokenIcons)
 
@@ -140,7 +150,7 @@ class SolendEarnPresenter(
 
     private fun saveLastDepositTicker() {
         if (lastDepositTickerBalance != BigDecimal.ZERO) {
-            depositTickerManager.setLastTickerBalance(lastDepositTickerBalance)
+            depositTickerStorage.setLastTickerBalance(lastDepositTickerBalance)
         }
     }
 

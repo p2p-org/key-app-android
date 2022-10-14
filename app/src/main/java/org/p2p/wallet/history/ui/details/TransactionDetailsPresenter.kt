@@ -2,6 +2,7 @@ package org.p2p.wallet.history.ui.details
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.date.toDateTimeString
@@ -12,7 +13,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
-import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.cutMiddle
 import timber.log.Timber
 
