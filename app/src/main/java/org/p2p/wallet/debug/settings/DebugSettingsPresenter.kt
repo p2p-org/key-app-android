@@ -3,19 +3,19 @@ package org.p2p.wallet.debug.settings
 import android.content.Context
 import android.os.Build
 import android.util.DisplayMetrics
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
 import timber.log.Timber
-import kotlinx.coroutines.launch
 
 class DebugSettingsPresenter(
     private val environmentManager: NetworkEnvironmentManager,

@@ -1,5 +1,8 @@
 package org.p2p.wallet.send.ui.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
@@ -64,9 +67,6 @@ import java.math.RoundingMode
 import java.util.Locale
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class SendPresenter(
     private val sendInteractor: SendInteractor,

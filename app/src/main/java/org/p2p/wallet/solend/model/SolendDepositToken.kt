@@ -1,8 +1,8 @@
 package org.p2p.wallet.solend.model
 
 import android.os.Parcelable
-import java.math.BigDecimal
 import kotlinx.parcelize.Parcelize
+import java.math.BigDecimal
 
 sealed class SolendDepositToken(
     open val tokenName: String,

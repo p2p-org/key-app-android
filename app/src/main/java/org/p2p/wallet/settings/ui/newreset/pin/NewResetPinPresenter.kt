@@ -1,5 +1,7 @@
 package org.p2p.wallet.settings.ui.newreset.pin
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
@@ -7,8 +9,6 @@ import org.p2p.wallet.auth.model.SignInResult
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
 private const val PIN_ANIMATION_DURATION = 500L

@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.ui.pin.signin
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment

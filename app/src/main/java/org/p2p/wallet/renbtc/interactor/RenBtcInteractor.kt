@@ -1,5 +1,6 @@
 package org.p2p.wallet.renbtc.interactor
 
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
@@ -13,10 +14,9 @@ import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.model.RenBtcSession
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
-import org.p2p.wallet.renbtc.repository.RenRepository
 import org.p2p.wallet.renbtc.repository.RenLoaclRepository
+import org.p2p.wallet.renbtc.repository.RenRepository
 import org.p2p.wallet.renbtc.repository.RenStateLocalRepository
-import kotlinx.coroutines.FlowPreview
 
 class RenBtcInteractor(
     private val repository: RenRepository,

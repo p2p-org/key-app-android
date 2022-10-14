@@ -1,12 +1,12 @@
 package org.p2p.wallet.restore.ui.seedphrase
 
+import kotlinx.coroutines.launch
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor.SeedPhraseVerifyResult
 import kotlin.properties.Delegates.observable
-import kotlinx.coroutines.launch
 
 private const val SEED_PHRASE_SIZE_SHORT = 12
 private const val SEED_PHRASE_SIZE_LONG = 24

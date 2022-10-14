@@ -1,7 +1,9 @@
 package org.p2p.wallet.sdk.facade
 
 import com.google.gson.Gson
+import kotlinx.coroutines.withContext
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.sdk.SolendSdk
 import org.p2p.wallet.sdk.facade.mapper.SolendMethodResultMapper
@@ -19,8 +21,6 @@ import org.p2p.wallet.sdk.facade.model.SolendUserDepositResponse
 import org.p2p.wallet.sdk.facade.model.SolendUserDepositsResponseResponse
 import org.p2p.wallet.sdk.facade.model.SolendWithdrawTransactionsResponse
 import org.p2p.wallet.utils.Base58String
-import kotlinx.coroutines.withContext
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 
 class SolendSdkFacade(
     private val solendSdk: SolendSdk,

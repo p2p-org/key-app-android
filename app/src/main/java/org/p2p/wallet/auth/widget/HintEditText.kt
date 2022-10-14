@@ -1,9 +1,9 @@
 package org.p2p.wallet.auth.widget
 
-import androidx.appcompat.widget.AppCompatEditText
 import android.content.Context
 import android.util.AttributeSet
 import android.view.KeyEvent
+import androidx.appcompat.widget.AppCompatEditText
 
 class HintEditText : AppCompatEditText {
 

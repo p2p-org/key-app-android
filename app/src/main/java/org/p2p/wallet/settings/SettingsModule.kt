@@ -7,6 +7,7 @@ import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.interactor.ThemeInteractor
+import org.p2p.wallet.settings.model.SettingsItemMapper
 import org.p2p.wallet.settings.ui.appearance.AppearanceContract
 import org.p2p.wallet.settings.ui.appearance.AppearancePresenter
 import org.p2p.wallet.settings.ui.network.SettingsNetworkContract
@@ -20,7 +21,6 @@ import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhrasePresenter
 import org.p2p.wallet.settings.ui.security.SecurityContract
 import org.p2p.wallet.settings.ui.security.SecurityPresenter
 import org.p2p.wallet.settings.ui.settings.NewSettingsContract
-import org.p2p.wallet.settings.model.SettingsItemMapper
 import org.p2p.wallet.settings.ui.settings.NewSettingsPresenter
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalanceContract
 import org.p2p.wallet.settings.ui.zerobalances.SettingsZeroBalancesPresenter

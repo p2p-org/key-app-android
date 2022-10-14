@@ -1,11 +1,11 @@
 package org.p2p.uikit.organisms.seedphrase.adapter
 
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.ItemSecretKeyBinding
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord

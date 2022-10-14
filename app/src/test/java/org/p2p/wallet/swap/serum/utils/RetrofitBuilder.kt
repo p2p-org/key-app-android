@@ -1,10 +1,10 @@
 package org.p2p.wallet.swap.serum.utils
 
 import com.google.gson.Gson
-import org.p2p.wallet.infrastructure.network.NetworkModule
-import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import okhttp3.OkHttpClient
+import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
+import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit

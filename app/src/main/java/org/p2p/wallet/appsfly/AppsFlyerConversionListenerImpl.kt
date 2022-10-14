@@ -4,6 +4,7 @@ import com.appsflyer.AppsFlyerConversionListener
 import timber.log.Timber
 
 private const val TAG = "AppsFlyConversionListener"
+
 class AppsFlyerConversionListenerImpl : AppsFlyerConversionListener {
 
     override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {

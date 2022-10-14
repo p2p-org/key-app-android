@@ -1,9 +1,9 @@
 package org.p2p.wallet.solend.ui.deposits
 
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
