@@ -48,14 +48,34 @@ class NewOnboardingFragment :
     private val binding: FragmentNewOnboardingBinding by viewBinding()
     private val onboardingAnalytics: OnboardingAnalytics by inject()
 
-    private val fragments = List(1) { SliderFragment::class }
-    private val args = List(1) {
+    private val fragments = List(5) { SliderFragment::class }
+    private val args = listOf(
         SliderFragmentArgs(
-            R.drawable.onboarding_slide_temp,
+            R.drawable.onboarding_slide_1,
             R.string.onboarding_slide_1_title,
             R.string.onboarding_slide_1_text,
+        ).toBundle(),
+        SliderFragmentArgs(
+            R.drawable.onboarding_slide_2,
+            R.string.onboarding_slide_2_title,
+            R.string.onboarding_slide_2_text,
+        ).toBundle(),
+        SliderFragmentArgs(
+            R.drawable.onboarding_slide_3,
+            R.string.onboarding_slide_3_title,
+            R.string.onboarding_slide_3_text,
+        ).toBundle(),
+        SliderFragmentArgs(
+            R.drawable.onboarding_slide_4,
+            R.string.onboarding_slide_4_title,
+            R.string.onboarding_slide_4_text,
+        ).toBundle(),
+        SliderFragmentArgs(
+            R.drawable.onboarding_slide_5,
+            R.string.onboarding_slide_5_title,
+            R.string.onboarding_slide_5_text,
         ).toBundle()
-    }
+    )
 
     private val signInHelper: GoogleSignInHelper by inject()
 

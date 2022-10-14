@@ -16,6 +16,18 @@
         android:src="@drawable/ic_solend_slider_1" />
 
     <TextView
+        android:id="@+id/textViewSliderTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textColor="@color/night"
+        tools:text="Earn interest on your cripto"/>
+
+
+    <TextView
         android:id="@+id/textViewSliderText"
         style="@style/UiKit.TextAppearance.Regular.Text3"
         android:layout_width="match_parent"

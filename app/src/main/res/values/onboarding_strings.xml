@@ -9,8 +9,16 @@
     <string name="onboarding_privacy_policy">Privacy Policy</string>
 
     <!--Onboarding Slides-->
-    <string name="onboarding_slide_1_title">Welcome \nto P2P wallet</string>
+    <string name="onboarding_slide_1_title">Key App</string>
     <string name="onboarding_slide_1_text">Easy way to earn, invest &amp; send crypto with zero fees</string>
+    <string name="onboarding_slide_2_title">Send for free</string>
+    <string name="onboarding_slide_2_text">USDC, USDT, BTC, ETH, SOL and other cryptocurrencies with lightspeed and zero fees</string>
+    <string name="onboarding_slide_3_title">Buy over 150\ncurrencies</string>
+    <string name="onboarding_slide_3_text">Easy swap with credit card or bank transfer</string>
+    <string name="onboarding_slide_4_title">Earn on your funds</string>
+    <string name="onboarding_slide_4_text">Deposit your crypto. Earn up to6% on USD </string>
+    <string name="onboarding_slide_5_title">Never loose access\nto your funds</string>
+    <string name="onboarding_slide_5_text">Only you have access to your funds. Nobody else. You can recover your wallet using your phone or email. No paper backups needed.</string>
 
     <!--Onboarding - Continue-->
     <string name="onboarding_continue_title">Let\'s continue</string>
