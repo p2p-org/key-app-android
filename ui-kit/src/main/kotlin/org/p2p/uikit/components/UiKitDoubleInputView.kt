@@ -134,6 +134,10 @@ class UiKitDoubleInputView @JvmOverloads constructor(
         }
     }
 
+    fun resetInput() {
+        binding.updateInputText(emptyString())
+    }
+
     private fun clearTextWatchers() = with(binding) {
         textWatcherInput?.let {
             editTextInput.removeTextChangedListener(it)
