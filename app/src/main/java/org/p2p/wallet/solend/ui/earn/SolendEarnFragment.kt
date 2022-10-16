@@ -2,6 +2,7 @@ package org.p2p.wallet.solend.ui.earn
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
@@ -72,7 +73,8 @@ class SolendEarnFragment :
 
     override fun showLoading(isLoading: Boolean) {
         with(binding) {
-            shimmerView.root.isVisible = isLoading
+            viewEarnWidget.isInvisible = isLoading
+            shimmerViewContainer.isVisible = isLoading
             tokensRecyclerView.isVisible = !isLoading
         }
     }
