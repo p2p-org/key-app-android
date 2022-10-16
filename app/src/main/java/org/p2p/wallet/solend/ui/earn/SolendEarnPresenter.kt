@@ -114,6 +114,11 @@ class SolendEarnPresenter(
         }
     }
 
+    override fun resetTickerBalance() {
+        lastDepositTickerBalance = BigDecimal.ZERO
+        depositTickerStorage.setLastTickerBalance(lastDepositTickerBalance)
+    }
+
     private fun showDepositsWidgetError() {
         timerJob?.cancel()
         blockedErrorState = true

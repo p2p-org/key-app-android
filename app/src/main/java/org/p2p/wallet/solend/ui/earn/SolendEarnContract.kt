@@ -24,5 +24,6 @@ interface SolendEarnContract {
         fun load()
         fun refresh()
         fun onDepositTokenClicked(deposit: SolendDepositToken)
+        fun resetTickerBalance()
     }
 }

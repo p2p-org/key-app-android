@@ -50,6 +50,11 @@ class SolendEarnFragment :
         presenter.load()
     }
 
+    override fun onDestroy() {
+        presenter.resetTickerBalance()
+        super.onDestroy()
+    }
+
     override fun showAvailableDeposits(deposits: List<SolendDepositToken>) {
         earnAdapter.setItems(deposits)
     }
