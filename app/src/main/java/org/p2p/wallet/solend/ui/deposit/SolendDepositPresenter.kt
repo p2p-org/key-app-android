@@ -40,7 +40,7 @@ class SolendDepositPresenter(
                     }
                 } catch (e: Throwable) {
                     Timber.e(e, "Error fetching available deposit tokens")
-                    view.showErrorSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                    view.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
                 }
             }
         }

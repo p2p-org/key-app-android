@@ -92,7 +92,7 @@ class SolendEarnPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error fetching available deposit tokens")
                 showDepositsWidgetError()
-                view?.showErrorSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                view?.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
             } finally {
                 view?.showRefreshing(isRefreshing = false)
             }
@@ -112,6 +112,11 @@ class SolendEarnPresenter(
                 }
             }
         }
+    }
+
+    override fun resetTickerBalance() {
+        lastDepositTickerBalance = BigDecimal.ZERO
+        depositTickerStorage.setLastTickerBalance(lastDepositTickerBalance)
     }
 
     private fun showDepositsWidgetError() {

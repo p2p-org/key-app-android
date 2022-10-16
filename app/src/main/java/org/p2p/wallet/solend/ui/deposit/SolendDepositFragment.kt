@@ -141,6 +141,7 @@ class SolendDepositFragment :
         amountViewStart.setOnClickListener(onTokenClick)
         amountViewEnd.setOnClickListener(onTokenClick)
         setAmountViews(depositToken)
+        viewDoubleInput.resetInput()
     }
 
     private fun setAmountViews(depositToken: SolendDepositToken) = with(binding.viewDoubleInput) {
