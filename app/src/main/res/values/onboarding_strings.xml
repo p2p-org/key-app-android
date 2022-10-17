@@ -125,6 +125,17 @@
     <string name="derivation_path_info">This is the thing you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
     <string name="derivation_continue_button">Continue</string>
 
+    <!-- Reserve username -->
+    <string name="reserve_username_title">Pick Your Username</string>
+    <string name="reserve_username_subtitle">For easy send and receive crypto with your friends on Key App.</string>
+    <string name="reserve_username_input_username_not_available">😓 name is not available</string>
+    <string name="reserve_username_input_username_hint_message">from 3 till 15 characters 👌</string>
+    <string name="reserve_username_input_username_available">name is available 👌</string>
+    <string name="reserve_username_create_username_button_loading">Wait, name checking is going</string>
+    <string name="reserve_username_create_username_button">Create a name</string>
+    <string name="reserve_username_create_username_button_not_available">Create another name</string>
+    <string name="reserve_username_create_username_error">Something went wrong while the name was booking</string>
+
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
