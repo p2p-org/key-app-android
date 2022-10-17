@@ -25,10 +25,9 @@ class UsernameInteractor(
     suspend fun isUsernameTaken(username: String): Boolean = usernameRepository.isUsernameTaken(username)
 
     suspend fun registerUsername(username: String) {
-        val userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         usernameRepository.createUsername(
             username = username,
-            owner = userPublicKey,
+            ownerPublicKey = tokenKeyProvider.publicKey.toBase58Instance(),
             ownerPrivateKey = tokenKeyProvider.secretKey.toBase58Instance()
         )
         sharedPreferences.edit { putString(KEY_USERNAME, username) }

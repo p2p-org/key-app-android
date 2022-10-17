@@ -10,9 +10,14 @@ import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputViewLis
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingReserveUsernameBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getColorStateListCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+
+private const val ARG_RESERVE_USERNAME_SOURCE = "ARG_RESERVE_USERNAME_SOURCE"
 
 class OnboardingReserveUsernameFragment :
     BaseMvpFragment<OnboardingReserveUsernameContract.View, OnboardingReserveUsernameContract.Presenter>(
@@ -21,38 +26,40 @@ class OnboardingReserveUsernameFragment :
     OnboardingReserveUsernameContract.View {
 
     companion object {
-        fun create(): OnboardingReserveUsernameFragment = OnboardingReserveUsernameFragment()
+        fun create(from: ReserveUsernameOpenedFrom): OnboardingReserveUsernameFragment =
+            OnboardingReserveUsernameFragment()
+                .withArgs(ARG_RESERVE_USERNAME_SOURCE to from)
     }
 
     override val presenter: OnboardingReserveUsernameContract.Presenter by inject()
 
     private val binding: FragmentOnboardingReserveUsernameBinding by viewBinding()
 
+    private val openedFromSource: ReserveUsernameOpenedFrom by args(ARG_RESERVE_USERNAME_SOURCE)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.itemClose) {
-                navigateToMainScreen()
+                close()
                 return@setOnMenuItemClickListener true
             }
             false
         }
         binding.buttonSubmitUsername.isEnabled = false
-        binding.inputViewReserveUsername.listener = object : ReserveUsernameInputViewListener {
-            override fun onInputChanged(newValue: String) {
-                presenter.onUsernameInputChanged(newValue)
-            }
-        }
+        binding.inputViewReserveUsername.listener = ReserveUsernameInputViewListener(presenter::onUsernameInputChanged)
     }
 
     override fun showUsernameInvalid() {
         binding.inputViewReserveUsername.renderState(ReserveUsernameInputView.InputState.USERNAME_INVALID)
+        binding.buttonSubmitUsername.setText(R.string.reserve_username_create_username_button)
         renderDisabledButton()
     }
 
     override fun showUsernameAvailable() {
         binding.inputViewReserveUsername.renderState(ReserveUsernameInputView.InputState.USERNAME_AVAILABLE)
+        binding.buttonSubmitUsername.setText(R.string.reserve_username_create_username_button)
         renderEnabledButton()
     }
 
@@ -72,7 +79,7 @@ class OnboardingReserveUsernameFragment :
         showUiKitSnackBar(
             messageResId = R.string.reserve_username_create_username_error,
             actionButtonResId = R.string.common_skip,
-            actionBlock = { navigateToMainScreen() }
+            actionBlock = { close() }
         )
     }
 
@@ -88,8 +95,15 @@ class OnboardingReserveUsernameFragment :
         binding.buttonSubmitUsername.setTextColorRes(R.color.text_night)
     }
 
-    override fun navigateToMainScreen() {
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+    override fun close() {
+        when (openedFromSource) {
+            ReserveUsernameOpenedFrom.ONBOARDING -> {
+                popAndReplaceFragment(MainFragment.create(), inclusive = true)
+            }
+            ReserveUsernameOpenedFrom.SETTINGS -> {
+                popBackStack()
+            }
+        }
     }
 
     override fun onDestroyView() {

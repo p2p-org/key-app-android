@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.ui.reserveusername.widget
 
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
@@ -11,7 +12,7 @@ import org.p2p.wallet.databinding.WidgetReserveUsernameInputViewBinding
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-interface ReserveUsernameInputViewListener {
+fun interface ReserveUsernameInputViewListener {
     fun onInputChanged(newValue: String)
 }
 
@@ -32,6 +33,9 @@ class ReserveUsernameInputView @JvmOverloads constructor(
     var listener: ReserveUsernameInputViewListener? = null
 
     init {
+        binding.editTextUsername.doAfterTextChanged {
+            it?.toString()?.also { listener?.onInputChanged(it) }
+        }
         binding.imageViewClear.setOnClickListener {
             binding.editTextUsername.setText(emptyString())
         }

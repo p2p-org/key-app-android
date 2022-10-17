@@ -63,20 +63,15 @@ class RegisterUsernameServiceApiMapper(
         userPublicKey: Base58String,
         userPrivateKey: ByteArray
     ): CreateNameRequestCredentials = try {
-        val timestamp = Date()
-        val serializedJson: ByteArray = BorshBuffer.allocate(1024).run {
-            // order matters
-            write(userPublicKey)
-            write(timestamp.time.div(1000)) // in seconds
-            toByteArray()
-        }
+        val requestDate = Date()
+        val serializedCredentials: ByteArray = createSerializedCredentials(userPublicKey.base58Value, requestDate)
         val signature = TweetNaclFast.Signature(byteArrayOf(), userPrivateKey.copyOf())
-            .detached(serializedJson)
+            .detached(serializedCredentials)
             .toBase58Instance()
 
         CreateNameRequestCredentials.Web3AuthCredentials(
             signature = signature,
-            timestamp = formatTimestampField(timestamp)
+            timestamp = formatTimestampField(requestDate)
         )
     } catch (creatingFailure: Throwable) {
         Timber.i(creatingFailure)
@@ -85,6 +80,14 @@ class RegisterUsernameServiceApiMapper(
             cause = creatingFailure
         )
     }
+
+    private fun createSerializedCredentials(userPublicKey: String, requestDate: Date) =
+        BorshBuffer.allocate(1024).run {
+            // order matters
+            write(userPublicKey)
+            write(requestDate.time.div(1000)) // in seconds
+            toByteArray()
+        }
 
     private fun formatTimestampField(timestamp: Date): String {
         return SimpleDateFormat(TIMESTAMP_PATTERN_USERNAME_SERVICE, Locale.getDefault()).format(timestamp)
