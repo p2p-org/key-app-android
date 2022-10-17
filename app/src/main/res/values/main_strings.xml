@@ -32,8 +32,8 @@
     <string name="home_buy_token_banner_button_title">Buy</string>
 
     <!--Buy Info Bottomsheet-->
-    <string name="buy_info_details_title">You\'re going to buy $s</string>
-    <string name="buy_info_details_subtitle">You first need to buy USDC and then swap for %s on the Main Page</string>
+    <string name="buy_info_details_title">You\'re going to buy %s</string>
+    <string name="buy_info_details_subtitle">You first need to buy USDC and then swap for %s\non the Main Page</string>
     <string name="buy_info_details_explain_1">Buying USDC as the base currency</string>
     <string name="buy_info_details_sub_explain_1">Purchasing on the Moonpay\'s website</string>
     <string name="buy_info_details_explain_2">Exchanging USDC → %s</string>

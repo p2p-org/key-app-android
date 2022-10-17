@@ -43,6 +43,12 @@ class BuyInfoDetailsBottomSheet : BaseDoneBottomSheet() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val tokenSymbol = token.tokenSymbol
+        with(binding) {
+            textViewTitle.text = getString(R.string.buy_info_details_title, tokenSymbol)
+            textViewSubTitle.text = getString(R.string.buy_info_details_subtitle, tokenSymbol)
+            textViewExplain2.text = getString(R.string.buy_info_details_explain_2, tokenSymbol)
+        }
         baseDialogBinding.buttonDone.apply {
             text = getString(R.string.buy_info_details_button)
             backgroundTintList = getColorStateList(R.color.bg_night)

@@ -2,69 +2,153 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/linearLayout"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/optionsTextViewTransaction"
+    <TextView
+        android:id="@+id/textViewTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:text="@string/buy_info_details_title"
+        android:textColor="@color/text_night"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:optionsLabelText="@string/solend_transaction_details_deposit" />
-
-    <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/optionsTextViewTransferFee"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/optionsTextViewTransaction"
-        app:optionsLabelText="@string/solend_transaction_details_transfer_fee" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewFreeFee"
-        style="@style/UiKit.TextAppearance.Regular.Text2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:drawablePadding="4dp"
-        android:text="@string/solend_transaction_details_free_fee"
-        android:textColor="@color/text_mint"
-        android:visibility="gone"
-        app:drawableEndCompat="@drawable/ic_info_solid"
-        app:layout_constraintBottom_toBottomOf="@id/optionsTextViewTransferFee"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/optionsTextViewTransferFee" />
-
-    <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/optionsTextViewTransactionFee"
+        android:id="@+id/textViewSubTitle"
+        style="@style/UiKit.TextAppearance.Regular.Title3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:text="@string/buy_info_details_subtitle"
+        android:textColor="@color/text_night"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/optionsTextViewTransferFee"
-        app:optionsLabelText="@string/solend_transaction_details_deposit_fee" />
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
 
-    <org.p2p.wallet.common.ui.widget.OptionsTextView
-        android:id="@+id/optionsTextViewTotal"
-        android:layout_width="0dp"
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="32dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="32dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/optionsTextViewTransactionFee"
-        app:optionsLabelText="@string/solend_transaction_details_total" />
+        app:layout_constraintTop_toBottomOf="@id/textViewSubTitle">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/viewEarnContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_smoke"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/textViewFirst"
+                style="@style/UiKit.TextAppearance.SemiBold.Label1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_circle"
+                android:backgroundTint="@color/bg_night"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:text="1"
+                android:textColor="@color/text_snow"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/textViewExplain1"
+                style="@style/UiKit.TextAppearance.Regular.Text1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/buy_info_details_explain_1"
+                android:textColor="@color/text_night"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textViewFirst"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewSubExplain1"
+                style="@style/UiKit.TextAppearance.Regular.Text4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/buy_info_details_sub_explain_1"
+                android:textColor="@color/text_mountain"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textViewFirst"
+                app:layout_constraintTop_toBottomOf="@id/textViewExplain1" />
+
+            <TextView
+                android:id="@+id/textViewSecond"
+                style="@style/UiKit.TextAppearance.SemiBold.Label1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/ic_checkbox_unchecked"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:text="2"
+                android:textColor="@color/text_night"
+                app:layout_constraintEnd_toEndOf="@id/textViewFirst"
+                app:layout_constraintStart_toStartOf="@id/textViewFirst"
+                app:layout_constraintTop_toBottomOf="@id/textViewSubExplain1"
+                tools:ignore="HardcodedText" />
+
+            <View
+                android:id="@+id/viewSeparator"
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="2dp"
+                android:background="@color/bg_mountain"
+                app:layout_constraintBottom_toTopOf="@id/textViewSecond"
+                app:layout_constraintEnd_toEndOf="@id/textViewFirst"
+                app:layout_constraintStart_toStartOf="@id/textViewFirst"
+                app:layout_constraintTop_toBottomOf="@id/textViewFirst" />
+
+            <TextView
+                android:id="@+id/textViewExplain2"
+                style="@style/UiKit.TextAppearance.Regular.Text1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/buy_info_details_explain_2"
+                android:textColor="@color/text_night"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textViewSecond"
+                app:layout_constraintTop_toBottomOf="@id/textViewSubExplain1" />
+
+            <TextView
+                android:id="@+id/textViewSubExplain2"
+                style="@style/UiKit.TextAppearance.Regular.Text4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/buy_info_details_sub_explain_2"
+                android:textColor="@color/text_mountain"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textViewSecond"
+                app:layout_constraintTop_toBottomOf="@id/textViewExplain2" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
