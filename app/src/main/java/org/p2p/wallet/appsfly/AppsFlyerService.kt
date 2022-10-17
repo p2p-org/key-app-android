@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
+import com.appsflyer.deeplink.DeepLinkResult
 import com.google.firebase.messaging.RemoteMessage
 import org.p2p.wallet.BuildConfig
 import timber.log.Timber
@@ -21,6 +22,7 @@ class AppsFlyerService(private val context: Context) {
             appsFlyer.setDebugLog(BuildConfig.DEBUG)
             appsFlyer.init(devKey, listener, application)
             appsFlyer.start(application)
+            setupListeners()
         }.onSuccess {
             Timber.tag(TAG).i("AppsFlyer service is initialized")
         }.onFailure {
@@ -38,5 +40,24 @@ class AppsFlyerService(private val context: Context) {
     fun isUninstallTrackingMessage(message: RemoteMessage): Boolean {
         val data = message.data
         return data.containsKey(UNINSTALL_APP_KEY)
+    }
+
+    private fun setupListeners() {
+        val appsFlyerInstance = AppsFlyerLib.getInstance()
+        appsFlyerInstance.subscribeForDeepLink { result ->
+            val status = result.status
+            when (status) {
+                DeepLinkResult.Status.FOUND -> {
+                    val deeplink = result.deepLink
+                    Timber.tag(TAG).i("Deeplink found = ${deeplink.values}")
+                }
+                DeepLinkResult.Status.NOT_FOUND -> {
+                    Timber.tag(TAG).i("Deeplink not found")
+                }
+                DeepLinkResult.Status.ERROR -> {
+                    Timber.tag(TAG).i("Error on fetch deeplink = ${result.error.name}")
+                }
+            }
+        }
     }
 }
