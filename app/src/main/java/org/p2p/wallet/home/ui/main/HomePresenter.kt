@@ -52,6 +52,7 @@ class HomePresenter(
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private lateinit var fallBackUsdcTokenForBuy: Token
+    private var nickName: Username? = null
 
     init {
         launch {
@@ -77,7 +78,7 @@ class HomePresenter(
 
         view.showEmptyState(isEmpty = true)
 
-        val nickName = usernameInteractor.getUsername()
+        nickName = usernameInteractor.getUsername()
         view.showUserAddress(nickName?.username ?: tokenKeyProvider.publicKey.ellipsizeAddress())
 
         updatesManager.start()
@@ -100,7 +101,7 @@ class HomePresenter(
     }
 
     override fun onAddressClicked() {
-        view?.showAddressCopied(tokenKeyProvider.publicKey)
+        view?.showAddressCopied(nickName?.username ?: tokenKeyProvider.publicKey)
     }
 
     override fun onBuyClicked() {
