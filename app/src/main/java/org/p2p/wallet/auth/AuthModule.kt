@@ -7,12 +7,10 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
 import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -35,8 +33,6 @@ import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.repository.UsernameRemoteRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
@@ -82,15 +78,14 @@ import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
+import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
-import org.p2p.wallet.feerelayer.FeeRelayerModule.FEE_RELAYER_QUALIFIER
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.splash.SplashContract
 import org.p2p.wallet.splash.SplashPresenter
-import retrofit2.Retrofit
 
 object AuthModule {
 
@@ -117,12 +112,8 @@ object AuthModule {
         factory { UsernameInteractor(get(), get(), get(), get()) }
         factory { ReserveUsernamePresenter(get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
         factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
-        single {
-            val retrofit = get<Retrofit>(named(FEE_RELAYER_QUALIFIER))
-            val api = retrofit.create(UsernameApi::class.java)
-            UsernameRemoteRepository(api)
-        } bind UsernameRepository::class
 
+        includes(RegisterUsernameServiceModule.create())
         includes(GatewayServiceModule.create())
     }
 

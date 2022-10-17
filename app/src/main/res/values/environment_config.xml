@@ -46,8 +46,11 @@
     <string name="notificationServiceBaseUrl">https://push-service.wallet.p2p.org/</string>
     <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/notifier/</string>
 
-    <string name="gatewayServiceTestBaseUrl">https://web3-auth.keyapp.org/</string>
-    <string name="gatewayServiceReleaseBaseUrl"> https://web3-auth.key.app/</string>
+    <string name="web3AuthServiceTestBaseUrl">https://web3-auth.keyapp.org/</string>
+    <string name="web3AuthServiceReleaseBaseUrl"> https://web3-auth.key.app/</string>
+
+    <string name="registerUsernameServiceTestBaseUrl">https://name-register.keyapp.org//</string>
+    <string name="registerUsernameServiceReleaseBaseUrl"> https://name-register.key.app/</string>
 
     <string name="googleClientId">553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com</string>
     <!--TODO PWN-4266 migrate googleClientId to CI for secure-->

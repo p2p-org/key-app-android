@@ -59,7 +59,7 @@ object HomeModule : InjectionModule {
         }
         factory {
             SearchInteractor(
-                usernameInteractor = get(),
+                usernameRepository = get(),
                 userInteractor = get(),
                 tokenKeyProvider = get()
             )

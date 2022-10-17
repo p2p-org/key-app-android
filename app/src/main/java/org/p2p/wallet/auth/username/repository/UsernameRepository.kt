@@ -1,0 +1,12 @@
+package org.p2p.wallet.auth.username.repository
+
+import org.p2p.wallet.auth.username.api.response.CreateNameResponse
+import org.p2p.wallet.auth.username.repository.model.UsernameDetails
+import org.p2p.wallet.utils.Base58String
+
+interface UsernameRepository {
+    suspend fun createUsername(username: String, owner: Base58String, ownerPrivateKey: Base58String): CreateNameResponse
+    suspend fun findUsernameDetailsByUsername(username: String): List<UsernameDetails>
+    suspend fun findUsernameDetailsByAddress(ownerAddress: Base58String): List<UsernameDetails>
+    suspend fun isUsernameTaken(username: String): Boolean
+}

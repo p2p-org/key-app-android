@@ -1,6 +1,6 @@
 package org.p2p.wallet.send.interactor
 
-import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
@@ -9,20 +9,20 @@ import org.p2p.wallet.user.interactor.UserInteractor
 private const val ZERO_BALANCE = 0L
 
 class SearchInteractor(
-    private val usernameInteractor: UsernameInteractor,
+    private val usernameRepository: UsernameRepository,
     private val userInteractor: UserInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     suspend fun searchByName(username: String): List<SearchResult> {
-        val usernames = usernameInteractor.resolveUsername(username)
+        val usernames = usernameRepository.findUsernameDetailsByUsername(username)
         return usernames.map {
-            val balance = userInteractor.getBalance(it.owner)
+            val balance = userInteractor.getBalance(it.ownerAddress.base58Value)
             val hasEmptyBalance = balance == ZERO_BALANCE
             return@map if (hasEmptyBalance) {
-                SearchResult.EmptyBalance(AddressState(it.owner))
+                SearchResult.EmptyBalance(AddressState(it.ownerAddress.base58Value))
             } else {
-                SearchResult.Full(AddressState(it.owner), it.name)
+                SearchResult.Full(AddressState(it.ownerAddress.base58Value), it.fullUsername)
             }
         }
     }

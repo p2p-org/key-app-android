@@ -20,6 +20,7 @@ import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.scaleLong
+import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -87,7 +88,7 @@ class SeedPhraseInteractor(
         Timber.i("Account: $publicKey restored using $path")
 
         if (lookupForUsername) {
-            usernameInteractor.findUsernameByAddress(publicKey)
+            usernameInteractor.checkUsernameByAddress(publicKey.toBase58Instance())
         }
         adminAnalytics.logPasswordCreated()
     }
