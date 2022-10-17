@@ -1,14 +1,14 @@
 package org.p2p.wallet.auth.interactor
 
+import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import androidx.core.content.edit
-import org.json.JSONObject
-import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
+import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.toBase58Instance
 import java.io.File
 
 const val KEY_USERNAME = "KEY_USERNAME"
@@ -20,25 +20,24 @@ class UsernameInteractor(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun checkUsername(username: String): String =
-        usernameRepository.checkUsername(username)
+    suspend fun isUsernameTaken(username: String): Boolean = usernameRepository.isUsernameTaken(username)
 
-    suspend fun checkCaptcha(): JSONObject =
-        usernameRepository.checkCaptcha()
-
-    suspend fun registerUsername(username: String, result: String) {
-        val publicKey = tokenKeyProvider.publicKey
-        usernameRepository.registerUsername(publicKey, username, result)
+    suspend fun registerUsername(username: String) {
+        val userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
+        usernameRepository.createUsername(
+            username = username,
+            owner = userPublicKey,
+            ownerPrivateKey = tokenKeyProvider.secretKey.toBase58Instance()
+        )
         sharedPreferences.edit { putString(KEY_USERNAME, username) }
     }
 
     @Suppress("UNUSED_PARAMETER", "RedundantSuspendModifier")
-    suspend fun findUsernameByAddress(owner: String) {
-        // commented due to constant problems with name service PWN-4377
-//        when (val result = usernameRepository.findUsernameByAddress(owner)) {
-//            is LookupResult.UsernameFound -> sharedPreferences.edit { putString(KEY_USERNAME, result.username) }
-//            is LookupResult.UsernameNotFound -> Unit
-//        }
+    suspend fun checkUsernameByAddress(owner: Base58String) {
+        val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
+        if (usernameDetails != null) {
+            sharedPreferences.edit { putString(KEY_USERNAME, usernameDetails.fullUsername) }
+        }
     }
 
     fun isUsernameExist(): Boolean = sharedPreferences.contains(KEY_USERNAME)
@@ -51,7 +50,4 @@ class UsernameInteractor(
     fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? = fileLocalRepository.saveQr(
         name, bitmap, forSharing
     )
-
-    suspend fun resolveUsername(name: String): List<ResolveUsername> =
-        usernameRepository.resolve(name)
 }

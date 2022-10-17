@@ -12,7 +12,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.api.UsernameApi
+import org.p2p.wallet.auth.username.api.RegisterUsernameServiceApi
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
 import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -31,12 +31,13 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeLocalRepository
 import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.repository.UsernameRemoteRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
+import org.p2p.wallet.auth.username.repository.UsernameRemoteRepository
+import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
@@ -117,10 +118,15 @@ object AuthModule {
         factory { UsernameInteractor(get(), get(), get(), get()) }
         factory { ReserveUsernamePresenter(get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
         factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
+
+        factoryOf(::RegisterUsernameServiceApiMapper)
         single {
             val retrofit = get<Retrofit>(named(FEE_RELAYER_QUALIFIER))
-            val api = retrofit.create(UsernameApi::class.java)
-            UsernameRemoteRepository(api)
+            UsernameRemoteRepository(
+                usernameService = retrofit.create(RegisterUsernameServiceApi::class.java),
+                mapper = get(),
+                dispatchers = get()
+            )
         } bind UsernameRepository::class
 
         includes(GatewayServiceModule.create())
