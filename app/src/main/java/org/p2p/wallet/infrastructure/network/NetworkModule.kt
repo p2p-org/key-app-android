@@ -12,6 +12,7 @@ import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
+import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
@@ -107,6 +108,17 @@ object NetworkModule : InjectionModule {
                 ),
                 tag = "FacadeService",
                 interceptor = GatewayServiceInterceptor()
+            )
+        }
+
+        single(named(REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER)) {
+            getRetrofit(
+                baseUrl = androidContext().getString(
+                    if (BuildConfig.DEBUG) R.string.registerUsernameServiceTestBaseUrl
+                    else R.string.registerUsernameServiceReleaseBaseUrl
+                ),
+                tag = "RegisterUsernameService",
+                interceptor = null
             )
         }
     }
