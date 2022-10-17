@@ -33,18 +33,13 @@ class PopularTokenViewHolder(
 
     fun onBind(token: Token) = with(binding) {
 
-        if (!token.iconUrl.isNullOrEmpty()) {
-            loadImage(imageViewToken, token.iconUrl!!)
+        val tokenIcon = token.iconUrl
+        if (!tokenIcon.isNullOrEmpty()) {
+            loadImage(imageViewToken, tokenIcon)
         }
 
         textViewName.text = token.tokenName
-        textViewValue.text = getString(
-            if (token.isRenBTC) {
-                R.string.main_popular_token_action_receive_button
-            } else {
-                R.string.main_popular_token_action_buy_button
-            }
-        )
+        textViewValue.text = getString(R.string.main_popular_token_action_buy_button)
 
         textViewTotal.withTextOrGone("$ ${token.usdRateOrZero.formatUsd()}")
 
