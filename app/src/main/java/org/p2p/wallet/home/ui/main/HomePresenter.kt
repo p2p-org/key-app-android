@@ -51,12 +51,12 @@ class HomePresenter(
     private val newBuyFeatureToggle: NewBuyFeatureToggle
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
-    private lateinit var fallBackUsdcTokenForBuy: Token
-    private var nickName: Username? = null
+    private var fallbackUsdcTokenForBuy: Token? = null
+    private var userName: Username? = null
 
     init {
         launch {
-            fallBackUsdcTokenForBuy = userInteractor.getTokensForBuy(listOf(USDC_SYMBOL)).first()
+            fallbackUsdcTokenForBuy = userInteractor.getTokensForBuy(listOf(USDC_SYMBOL)).firstOrNull()
         }
     }
 
@@ -78,13 +78,13 @@ class HomePresenter(
 
         view.showEmptyState(isEmpty = true)
 
-        nickName = usernameInteractor.getUsername()
-        view.showUserAddress(nickName?.username ?: tokenKeyProvider.publicKey.ellipsizeAddress())
+        userName = usernameInteractor.getUsername()
+        view.showUserAddress(userName?.value ?: tokenKeyProvider.publicKey.ellipsizeAddress())
 
         updatesManager.start()
 
         state = state.copy(
-            username = nickName,
+            username = userName,
             visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
         )
 
@@ -94,14 +94,14 @@ class HomePresenter(
             startPollingForTokens()
         }
 
-        val userId = nickName?.username ?: tokenKeyProvider.publicKey
+        val userId = userName?.value ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
     }
 
     override fun onAddressClicked() {
-        view?.showAddressCopied(nickName?.username ?: tokenKeyProvider.publicKey)
+        view?.showAddressCopied(userName?.value ?: tokenKeyProvider.publicKey)
     }
 
     override fun onBuyClicked() {
@@ -122,15 +122,16 @@ class HomePresenter(
     override fun onInfoBuyTokenClicked(token: Token) = onBuyToken(token)
 
     private fun onBuyToken(token: Token) {
-        val tokenToBuy = if (token.tokenSymbol !in TOKENS_VALID_FOR_BUY) {
-            fallBackUsdcTokenForBuy
+        if (token.tokenSymbol !in TOKENS_VALID_FOR_BUY) {
+            fallbackUsdcTokenForBuy
         } else {
             token
-        }
-        if (newBuyFeatureToggle.value) {
-            view?.showNewBuyScreen(tokenToBuy)
-        } else {
-            view?.showOldBuyScreen(tokenToBuy)
+        }?.let { tokenToBuy ->
+            if (newBuyFeatureToggle.value) {
+                view?.showNewBuyScreen(tokenToBuy)
+            } else {
+                view?.showOldBuyScreen(tokenToBuy)
+            }
         }
     }
 
