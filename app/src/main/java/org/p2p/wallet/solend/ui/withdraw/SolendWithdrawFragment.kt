@@ -1,11 +1,11 @@
 package org.p2p.wallet.solend.ui.withdraw
 
-import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.glide.GlideManager
@@ -20,10 +20,9 @@ import org.p2p.wallet.solend.model.SolendTransactionDetailsState
 import org.p2p.wallet.solend.model.TransactionDetailsViewData
 import org.p2p.wallet.solend.ui.bottomsheet.SelectDepositTokenBottomSheet
 import org.p2p.wallet.solend.ui.bottomsheet.TransactionDetailsBottomSheet
-import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.scaleShort
@@ -64,21 +63,12 @@ class SolendWithdrawFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            toolbar.apply {
-                setNavigationOnClickListener {
-                    popBackStack()
-                }
-            }
-            sliderDeposit.onSlideCompleteListener = {
-                // TODO call to presenter
-            }
-
+            toolbar.setNavigationOnClickListener { popBackStack() }
+            sliderDeposit.onSlideCompleteListener = { presenter.withdraw() }
             viewDoubleInput.setInputLabelText(R.string.solend_deposit_input_label)
         }
         childFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_TOKEN,
-            viewLifecycleOwner,
-            ::onFragmentResult
+            KEY_REQUEST_TOKEN, viewLifecycleOwner, ::onFragmentResult
         )
     }
 
@@ -139,36 +129,15 @@ class SolendWithdrawFragment :
             textMaxAmount = getString(R.string.solend_output_label_using_max)
         )
         setBottomMessageText(R.string.solend_withdraw_bottom_message)
-        setAmountHandler(
-            maxDepositAmount = depositAmount,
-            tokenAmount = tokenAmount
-        )
+        onAmountsUpdated = { input, output -> presenter.updateInputs(input, output) }
         setInputData(
             inputSymbol = depositToken.tokenSymbol,
-            outputSymbol = Constants.USD_READABLE_SYMBOL, // todo: talk to managers about output
+            outputSymbol = USD_READABLE_SYMBOL, // todo: talk to managers about output
             inputRate = depositToken.usdRate.toDouble()
         )
     }
 
-    private fun setAmountHandler(
-        maxDepositAmount: BigDecimal,
-        tokenAmount: String
-    ) = with(binding) {
-        viewDoubleInput.amountsHandler = { input, output ->
-            val isBiggerThenMax = input > maxDepositAmount
-            when {
-                input.isZero() && output.isZero() -> setEmptyAmountState()
-                isBiggerThenMax -> setBiggerThenMaxAmountState(tokenAmount)
-                else -> setValidDepositState(
-                    input = input,
-                    output = output,
-                    tokenAmount = tokenAmount
-                )
-            }
-        }
-    }
-
-    private fun setEmptyAmountState() = with(binding) {
+    override fun setEmptyAmountState() = with(binding) {
         viewDoubleInput.setBottomMessageText(R.string.solend_withdraw_bottom_message)
         buttonAction.apply {
             isEnabled = false
@@ -178,7 +147,7 @@ class SolendWithdrawFragment :
         animateButtons(isSliderVisible = false, isInfoButtonVisible = false)
     }
 
-    private fun setBiggerThenMaxAmountState(tokenAmount: String) = with(binding) {
+    override fun setBiggerThenMaxAmountState(tokenAmount: String) = with(binding) {
         val maxAmountClickListener = { viewDoubleInput.acceptMaxAmount() }
         viewDoubleInput.setBottomMessageText(R.string.solend_withdraw_bottom_message_with_error)
         buttonAction.apply {
@@ -192,30 +161,25 @@ class SolendWithdrawFragment :
             iconTint = getColorStateList(R.color.icons_rose)
             backgroundTintList = getColorStateList(R.color.rose_20)
             setOnClickListener {
-                AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.solend_withdraw_max_amount_error_message)
+                AlertDialog.Builder(requireContext()).setMessage(R.string.solend_withdraw_max_amount_error_message)
                     .setNegativeButton(
                         R.string.solend_withdraw_max_amount_error_positive
                     ) { _, _ ->
                         maxAmountClickListener.invoke()
-                    }
-                    .setPositiveButton(R.string.common_cancel, null)
-                    .show()
+                    }.setPositiveButton(R.string.common_cancel, null).show()
             }
         }
         animateButtons(isSliderVisible = false, isInfoButtonVisible = true)
     }
 
-    private fun setValidDepositState(
-        input: BigDecimal, // TODO PWN-5319 remove if won't be used for slider!
+    override fun setValidDepositState(
         output: BigDecimal,
         tokenAmount: String
     ) = with(binding) {
         val amount = "$tokenAmount (~$${output.scaleShort()})"
         viewDoubleInput.setBottomMessageText(
             getString(
-                R.string.solend_withdraw_bottom_message_with_amount,
-                tokenAmount, output.scaleShort()
+                R.string.solend_withdraw_bottom_message_with_amount, tokenAmount, output.scaleShort()
             )
         )
         buttonInfo.apply {
@@ -230,10 +194,7 @@ class SolendWithdrawFragment :
                         SolendTransactionDetailsState.Withdraw(
                             // TODO PWN-5319 add real data!!
                             TransactionDetailsViewData(
-                                amount = amount,
-                                transferFee = null,
-                                fee = "0.05 USDC (~\$0.5)",
-                                total = amount
+                                amount = amount, transferFee = null, fee = "0.05 USDC (~\$0.5)", total = amount
                             )
                         )
                     )

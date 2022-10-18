@@ -4,8 +4,6 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.p2p.solanaj.model.types.RpcSendTransactionConfig.Encoding;
-
 public class ConfigObjects {
 
     public static class ConfirmedSignFAddr2 {

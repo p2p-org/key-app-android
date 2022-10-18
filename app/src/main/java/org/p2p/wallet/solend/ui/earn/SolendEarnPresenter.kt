@@ -14,7 +14,7 @@ import org.p2p.wallet.infrastructure.account.AccountStorage
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
+import org.p2p.wallet.solend.interactor.SolendDepositInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.getErrorMessage
@@ -27,7 +27,7 @@ import kotlin.properties.Delegates
 
 class SolendEarnPresenter(
     private val resourcesProvider: ResourcesProvider,
-    private val solendDepositsInteractor: SolendDepositsInteractor,
+    private val solendDepositsInteractor: SolendDepositInteractor,
     private val userInteractor: UserInteractor,
     private val depositTickerStorage: DepositTickerStorage,
     private val tokenKeyProvider: TokenKeyProvider,

@@ -1,7 +1,6 @@
 package org.p2p.solanaj.core;
 
 import org.bitcoinj.core.Base58;
-import org.p2p.solanaj.serumswap.model.MemoryLayout;
 import org.p2p.solanaj.utils.ShortvecEncoding;
 import org.p2p.solanaj.utils.TweetNaclFast;
 
@@ -14,6 +13,7 @@ import java.util.List;
 public class Transaction {
 
     public static final int SIGNATURE_LENGTH = 64;
+    public static final byte[] DEFAULT_SIGNATURE = new byte[64];
 
     private final Message message;
     private final List<Signature> signatures;
@@ -76,7 +76,7 @@ public class Transaction {
         serializedMessage = message.serialize();
 
         for (Account signer : signers) {
-            TweetNaclFast.Signature signatureProvider = new TweetNaclFast.Signature(new byte[0], signer.getSecretKey());
+            TweetNaclFast.Signature signatureProvider = new TweetNaclFast.Signature(new byte[0], signer.getKeypair());
             byte[] signature = signatureProvider.detached(serializedMessage);
 
             Signature newSignature = new Signature(signer.getPublicKey(), Base58.encode(signature));
@@ -98,8 +98,10 @@ public class Transaction {
         out.put(signaturesLength);
 
         for (Signature signature : signatures) {
-            byte[] rawSignature = Base58.decode(signature.getSignature());
-            out.put(rawSignature);
+            if (signature.getSignature() != null) {
+                byte[] rawSignature = Base58.decode(signature.getSignature());
+                out.put(rawSignature);
+            }
         }
 
         out.put(serializedMessage);

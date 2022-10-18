@@ -227,7 +227,7 @@ class UserRestoreInteractor(
 
     fun finishAuthFlow() {
         restoreFlowDataLocalRepository.userActualAccount?.also {
-            tokenKeyProvider.secretKey = it.secretKey
+            tokenKeyProvider.keypair = it.keypair
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
         } ?: error("User actual account is null, restoring a user is failed")
     }

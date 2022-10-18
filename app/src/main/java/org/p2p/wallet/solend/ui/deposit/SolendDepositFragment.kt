@@ -1,11 +1,11 @@
 package org.p2p.wallet.solend.ui.deposit
 
-import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.glide.GlideManager
@@ -24,7 +24,6 @@ import org.p2p.wallet.solend.ui.info.SolendInfoBottomSheet
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.scaleShort
@@ -84,7 +83,7 @@ class SolendDepositFragment :
                 }
             }
             sliderDeposit.onSlideCompleteListener = {
-                // TODO call to presenter
+                presenter.deposit()
             }
 
             viewDoubleInput.setInputLabelText(R.string.solend_deposit_input_label)
@@ -157,10 +156,7 @@ class SolendDepositFragment :
             textMaxAmount = getString(R.string.solend_output_label_using_max)
         )
         setBottomMessageText(R.string.solend_deposit_bottom_message_empty)
-        setAmountHandler(
-            maxDepositAmount = depositAmount,
-            tokenAmount = tokenAmount
-        )
+        onAmountsUpdated = { input, output -> presenter.updateInputs(input, output) }
         setInputData(
             inputSymbol = depositToken.tokenSymbol,
             outputSymbol = Constants.USD_READABLE_SYMBOL, // todo: talk to managers about output
@@ -168,25 +164,7 @@ class SolendDepositFragment :
         )
     }
 
-    private fun setAmountHandler(
-        maxDepositAmount: BigDecimal,
-        tokenAmount: String
-    ) = with(binding) {
-        viewDoubleInput.amountsHandler = { input, output ->
-            val isBiggerThenMax = input > maxDepositAmount
-            when {
-                input.isZero() && output.isZero() -> setEmptyAmountState()
-                isBiggerThenMax -> setBiggerThenMaxAmountState(tokenAmount)
-                else -> setValidDepositState(
-                    input = input,
-                    output = output,
-                    tokenAmount = tokenAmount
-                )
-            }
-        }
-    }
-
-    private fun setEmptyAmountState() = with(binding) {
+    override fun setEmptyAmountState() = with(binding) {
         viewDoubleInput.setBottomMessageText(R.string.solend_deposit_bottom_message_empty)
         buttonAction.apply {
             isEnabled = false
@@ -196,7 +174,7 @@ class SolendDepositFragment :
         animateButtons(isSliderVisible = false, isInfoButtonVisible = false)
     }
 
-    private fun setBiggerThenMaxAmountState(tokenAmount: String) = with(binding) {
+    override fun setBiggerThenMaxAmountState(tokenAmount: String) = with(binding) {
         val maxAmountClickListener = { viewDoubleInput.acceptMaxAmount() }
         viewDoubleInput.setBottomMessageText(R.string.solend_deposit_bottom_message_with_error)
         buttonAction.apply {
@@ -224,8 +202,7 @@ class SolendDepositFragment :
         animateButtons(isSliderVisible = false, isInfoButtonVisible = true)
     }
 
-    private fun setValidDepositState(
-        input: BigDecimal, // TODO PWN-5319 remove if won't be used for slider!
+    override fun setValidDepositState(
         output: BigDecimal,
         tokenAmount: String
     ) = with(binding) {

@@ -49,7 +49,7 @@ class FeeRelayerTopUpInteractor(
         val blockhash = rpcRepository.getRecentBlockhash()
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-        val owner = Account(tokenKeyProvider.secretKey)
+        val owner = Account(tokenKeyProvider.keypair)
 
         // STEP 3: prepare for topUp
         val (swapData, topUpTransaction) = prepareForTopUp(
@@ -70,12 +70,12 @@ class FeeRelayerTopUpInteractor(
 
         // STEP 4: send transaction
         val signatures = topUpTransaction.transaction.allSignatures
-        if (signatures.size < 1) {
+        if (signatures.size < 1 || signatures[0].signature.isNullOrEmpty()) {
             throw IllegalStateException("Invalid signature")
         }
 
         // the second signature is the owner's signature
-        val ownerSignature = signatures[0].signature
+        val ownerSignature = signatures[0].signature!!
 
         val topUpSignatures = SwapTransactionSignatures(
             userAuthoritySignature = ownerSignature,
@@ -361,7 +361,7 @@ class FeeRelayerTopUpInteractor(
         )
 
         // resign transaction
-        val owner = Account(tokenKeyProvider.secretKey)
+        val owner = Account(tokenKeyProvider.keypair)
         val signers = mutableListOf(owner)
 
         transaction.sign(signers)

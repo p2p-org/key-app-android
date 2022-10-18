@@ -143,7 +143,7 @@ class FeeRelayerSwapInteractor(
         feePayerAddress: PublicKey,
         lamportsPerSignature: BigInteger
     ): Pair<PreparedTransaction, BigInteger> {
-        val owner = Account(tokenKeyProvider.secretKey)
+        val owner = Account(tokenKeyProvider.keypair)
 
         val userAuthorityAddress = owner.publicKey
 
