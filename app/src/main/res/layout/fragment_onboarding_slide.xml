@@ -23,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:text="@string/onboarding_general_error_critical_error_title"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
