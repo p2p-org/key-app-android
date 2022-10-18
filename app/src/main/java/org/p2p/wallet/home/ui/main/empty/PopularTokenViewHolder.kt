@@ -60,10 +60,8 @@ class PopularTokenViewHolder(
         }
     }
 
-    fun Token.mapTokenToPopularName(): String = when (tokenSymbol) {
-        Constants.SOL_SYMBOL -> Constants.SOL_NAME
+    private fun Token.mapTokenToPopularName(): String = when (tokenSymbol) {
         Constants.USDC_SYMBOL -> "USDC"
-        "USDT" -> "USDT"
         "BTC" -> "Bitcoin"
         "ETH" -> "Ethereum"
         else -> tokenName
