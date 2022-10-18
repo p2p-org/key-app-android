@@ -17,8 +17,8 @@
     <string name="onboarding_slide_3_text">Easy swap with credit card or bank transfer</string>
     <string name="onboarding_slide_4_title">Earn on your funds</string>
     <string name="onboarding_slide_4_text">Deposit your crypto. Earn up to 6% on USD </string>
-    <string name="onboarding_slide_5_title">Never loose access\nto your funds</string>
-    <string name="onboarding_slide_5_text">Only you have access to your funds. Nobody else. You can recover your wallet using your phone or email. No paper backups needed.</string>
+    <string name="onboarding_slide_5_title">Never lose access\nto your funds</string>
+    <string name="onboarding_slide_5_text">Only you have access to your funds. You can recover your wallet using your phone or email</string>
 
     <!--Onboarding - Continue-->
     <string name="onboarding_continue_title">Let\'s continue</string>
