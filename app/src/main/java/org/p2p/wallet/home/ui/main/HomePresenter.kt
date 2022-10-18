@@ -32,7 +32,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
-val POPULAR_TOKENS = setOf(SOL_SYMBOL, USDC_SYMBOL, "USDT", "BTC", "ETH")
+val POPULAR_TOKENS = setOf(SOL_SYMBOL, USDC_SYMBOL, "BTC", "ETH", "USDT")
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private val TOKENS_VALID_FOR_BUY = setOf(SOL_SYMBOL, USDC_SYMBOL)

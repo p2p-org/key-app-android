@@ -12,6 +12,7 @@ import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemPopularTokenBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -38,7 +39,7 @@ class PopularTokenViewHolder(
             loadImage(imageViewToken, tokenIcon)
         }
 
-        textViewName.text = token.tokenName
+        textViewName.text = token.mapTokenToPopularName()
         textViewValue.text = getString(R.string.main_popular_token_action_buy_button)
 
         textViewTotal.withTextOrGone("$ ${token.usdRateOrZero.formatUsd()}")
@@ -57,5 +58,14 @@ class PopularTokenViewHolder(
         } else {
             Glide.with(imageView).load(url).into(imageView)
         }
+    }
+
+    fun Token.mapTokenToPopularName(): String = when (tokenSymbol) {
+        Constants.SOL_SYMBOL -> Constants.SOL_NAME
+        Constants.USDC_SYMBOL -> "USDC"
+        "USDT" -> "USDT"
+        "BTC" -> "Bitcoin"
+        "ETH" -> "Ethereum"
+        else -> tokenName
     }
 }
