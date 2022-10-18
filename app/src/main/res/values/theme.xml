@@ -16,6 +16,9 @@
         <item name="colorPrimaryDark">@color/backgroundPrimary</item>
         <item name="colorSecondary">@color/backgroundDisabled</item>
         <item name="colorControlHighlight">@color/backgroundDisabled</item>
+        <item name="windowSplashScreenBackground">@color/lime</item>
+       <item name="android:windowBackground">@color/lime</item>
+
 
         <item name="colorAccent">@color/textIconActive</item>
         <item name="colorControlActivated">@color/backgroundButtonPrimary</item>

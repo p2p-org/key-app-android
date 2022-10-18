@@ -22,6 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
+        android:layout_marginBottom="24dp"
         app:srcCompat="@drawable/onboarding_slide_1" />
 
     <TextView
