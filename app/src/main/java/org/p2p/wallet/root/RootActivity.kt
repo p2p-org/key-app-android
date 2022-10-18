@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
@@ -58,6 +59,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
+        val splashScreen = installSplashScreen()
         binding = ActivityRootBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
