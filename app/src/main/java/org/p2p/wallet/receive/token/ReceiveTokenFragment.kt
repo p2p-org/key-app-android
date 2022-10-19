@@ -1,10 +1,10 @@
 package org.p2p.wallet.receive.token
 
+import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.utils.SpanUtils
@@ -127,10 +127,7 @@ class ReceiveTokenFragment :
 
     override fun showUserData(userPublicKey: String, directPublicKey: String, username: Username?) {
         binding.directAddressBottomTextView.text = userPublicKey
-        val fullUsername = username?.getFullUsername(requireContext())
-        if (fullUsername != null) {
-            binding.receiveCardView.setQrName(fullUsername)
-        }
+        username?.fullUsername?.let { binding.receiveCardView.setQrName(it) }
         binding.directAddressBottomTextView.text = directPublicKey
         binding.directTokenAddressView.setOnClickListener {
             requireContext().copyToClipBoard(directPublicKey)

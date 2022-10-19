@@ -10,6 +10,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
 import kotlinx.coroutines.flow.Flow
 
@@ -50,7 +51,7 @@ class UserInteractor(
         return allTokens
     }
 
-    suspend fun getBalance(address: String): Long = rpcRepository.getBalance(address)
+    suspend fun getBalance(address: Base58String): Long = rpcRepository.getBalance(address.base58Value)
 
     suspend fun loadAllTokensData() {
         val data = userRepository.loadAllTokens()

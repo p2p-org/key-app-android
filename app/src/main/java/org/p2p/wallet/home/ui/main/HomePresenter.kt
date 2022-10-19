@@ -89,7 +89,7 @@ class HomePresenter(
             startPollingForTokens()
         }
 
-        val userId = usernameInteractor.getUsername()?.username ?: tokenKeyProvider.publicKey
+        val userId = usernameInteractor.getUsername()?.trimmedUsername ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }

@@ -53,7 +53,7 @@ class ReceiveSolanaPresenter(
             view?.showUserData(publicKey, username)
 
             generateQrCode(publicKey)
-            receiveAnalytics.logReceiveViewed(isUsernameClaimed = !username?.username.isNullOrEmpty())
+            receiveAnalytics.logReceiveViewed(isUsernameClaimed = !username?.trimmedUsername.isNullOrEmpty())
             view?.showFullScreenLoading(false)
         }
     }

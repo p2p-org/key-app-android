@@ -97,9 +97,7 @@ class ReceiveSolanaFragment :
     override fun showUserData(userPublicKey: String, username: Username?) {
         with(binding) {
             receiveCardView.setQrValue(userPublicKey.highlightPublicKey(requireContext()))
-            username?.getFullUsername(requireContext())?.let {
-                receiveCardView.setQrName(it)
-            }
+            username?.fullUsername?.let(receiveCardView::setQrName)
             progressButton.setOnClickListener {
                 val url = getString(R.string.solanaWalletExplorer, userPublicKey)
                 showUrlInCustomTabs(url)

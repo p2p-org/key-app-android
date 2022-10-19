@@ -10,7 +10,7 @@ interface SearchContract {
 
     interface View : MvpView {
         fun showSearchValue(value: String)
-        fun showResult(result: List<SearchResult>)
+        fun showSearchResult(result: List<SearchResult>)
         fun showMessage(@StringRes textRes: Int?)
         fun showLoading(isLoading: Boolean)
         fun submitSearchResult(searchResult: SearchResult)
