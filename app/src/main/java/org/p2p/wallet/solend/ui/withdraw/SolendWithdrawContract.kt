@@ -1,5 +1,6 @@
 package org.p2p.wallet.solend.ui.withdraw
 
+import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.solend.model.SolendDepositToken
@@ -13,6 +14,10 @@ interface SolendWithdrawContract {
         fun setEmptyAmountState()
         fun setBiggerThenMaxAmountState(tokenAmount: String)
         fun setValidDepositState(output: BigDecimal, tokenAmount: String)
+
+        fun showIndefiniteInfoMessage(@StringRes messageRes: Int, @StringRes actionButtonRes: Int)
+
+        fun navigateToEarnScreen()
     }
 
     interface Presenter : MvpPresenter<View> {

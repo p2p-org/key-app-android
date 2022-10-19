@@ -1,5 +1,6 @@
 package org.p2p.wallet.solend.ui.withdraw
 
+import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.solend.interactor.SolendDepositInteractor
@@ -92,6 +93,11 @@ class SolendWithdrawPresenter(
             try {
                 val amountInLamports = currentInput.toLamports(selectedDepositToken.decimals)
                 solendWithdrawInteractor.withdraw(selectedDepositToken, amountInLamports)
+                view?.showIndefiniteInfoMessage(
+                    messageRes = R.string.solend_withdraw_in_progress,
+                    actionButtonRes = R.string.common_hide
+                )
+                view?.navigateToEarnScreen()
             } catch (e: Throwable) {
                 Timber.e(e, "Error withdrawing from ${selectedDepositToken.tokenSymbol}")
                 view?.showErrorMessage(e)

@@ -24,21 +24,25 @@ class SolendWithdrawInteractor(
 ) {
 
     suspend fun withdraw(token: SolendDepositToken, amountInLamports: BigInteger): String {
-        val account = Account(tokenKeyProvider.keypair)
+        val account = Account(tokenKeyProvider.keyPair)
+        val ownerAddress = account.publicKey.toBase58().toBase58Instance()
+
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val remainingFreeTransactionsCount = freeTransactionFeeLimit.remaining
         val relayProgramId = FeeRelayerProgram.getProgramId(isMainnet = true).toBase58()
-        val hasFreeTransactions = freeTransactionFeeLimit.hasFreeTransactions()
-
         val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
+
+        // todo: use `hasFreeTransactions` when fee relayer is fixed
+        val hasFreeTransactions = false /* freeTransactionFeeLimit.hasFreeTransactions() */
         val realFeePayerAddress = if (hasFreeTransactions) relayInfo.feePayerAddress else account.publicKey
 
         val serializedTransaction = solendRepository.createWithdrawTransaction(
             relayProgramId = relayProgramId,
+            ownerAddress = ownerAddress,
             token = token,
             withdrawAmount = amountInLamports,
-            remainingFreeTransactionsCount = remainingFreeTransactionsCount,
+            remainingFreeTransactionsCount = 0,
             lendingMarketAddress = null,
             blockhash = recentBlockhash,
             payFeeWithRelay = hasFreeTransactions,

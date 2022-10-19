@@ -8,11 +8,15 @@ import org.p2p.wallet.utils.Base58String
 import java.math.BigInteger
 
 interface SolendRepository {
-    suspend fun getUserDeposits(tokenSymbols: List<String>): List<SolendDepositToken>
+    suspend fun getUserDeposits(
+        ownerAddress: Base58String,
+        tokenSymbols: List<String>
+    ): List<SolendDepositToken>
     suspend fun getDepositFee(owner: Base58String, tokenAmount: BigInteger, tokenSymbol: String): SolendDepositFee
 
     suspend fun createWithdrawTransaction(
         relayProgramId: String,
+        ownerAddress: Base58String,
         token: SolendDepositToken,
         withdrawAmount: BigInteger,
         remainingFreeTransactionsCount: Int,
@@ -25,6 +29,7 @@ interface SolendRepository {
 
     suspend fun createDepositTransaction(
         relayProgramId: String,
+        ownerAddress: Base58String,
         token: SolendDepositToken,
         depositAmount: BigInteger,
         remainingFreeTransactionsCount: Int,

@@ -81,7 +81,7 @@ class SeedPhraseInteractor(
         val account = authRepository.createAccount(path, mnemonicPhrase)
         val publicKey = account.publicKey.toBase58()
 
-        tokenProvider.keypair = account.keypair
+        tokenProvider.keyPair = account.keypair
         tokenProvider.publicKey = publicKey
 
         Timber.i("Account: $publicKey restored using $path")

@@ -10,6 +10,7 @@ import org.p2p.wallet.relay.RelayRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.repository.SolendRepository
+import org.p2p.wallet.utils.toBase58Instance
 import java.math.BigInteger
 
 private val COLLATERAL_ACCOUNTS = listOf("SOL", "USDT", "USDC", "BTC", "ETH")
@@ -23,8 +24,11 @@ class SolendDepositInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    suspend fun getUserDeposits(tokenSymbols: List<String> = COLLATERAL_ACCOUNTS): List<SolendDepositToken> =
-        solendRepository.getUserDeposits(tokenSymbols)
+    suspend fun getUserDeposits(tokenSymbols: List<String> = COLLATERAL_ACCOUNTS): List<SolendDepositToken> {
+        val account = Account(tokenKeyProvider.keyPair)
+        val ownerAddress = account.publicKey.toBase58().toBase58Instance()
+        return solendRepository.getUserDeposits(ownerAddress, tokenSymbols)
+    }
 
     /**
      * Step 1: Creating the Deposit transaction by [solendRepository.createDepositTransaction].
@@ -38,18 +42,23 @@ class SolendDepositInteractor(
      * @return transactionId
      * */
     suspend fun deposit(token: SolendDepositToken, amountInLamports: BigInteger): String {
-        val account = Account(tokenKeyProvider.keypair)
+        val account = Account(tokenKeyProvider.keyPair)
+        val ownerAddress = account.publicKey.toBase58().toBase58Instance()
+
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val remainingFreeTransactionsCount = freeTransactionFeeLimit.remaining
         val relayProgramId = FeeRelayerProgram.getProgramId(isMainnet = true).toBase58()
-        val hasFreeTransactions = freeTransactionFeeLimit.hasFreeTransactions()
-
         val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
+
+        // todo: use `hasFreeTransactions` when fee relayer is fixed
+        val hasFreeTransactions = false /* freeTransactionFeeLimit.hasFreeTransactions() */
         val realFeePayerAddress = if (hasFreeTransactions) relayInfo.feePayerAddress else account.publicKey
 
+        // sending transaction without fee relayer
         val serializedTransaction = solendRepository.createDepositTransaction(
             relayProgramId = relayProgramId,
+            ownerAddress = ownerAddress,
             token = token,
             depositAmount = amountInLamports,
             remainingFreeTransactionsCount = remainingFreeTransactionsCount,

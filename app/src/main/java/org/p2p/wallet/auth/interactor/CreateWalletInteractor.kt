@@ -96,7 +96,7 @@ class CreateWalletInteractor(
 
     private fun finishAuthFlow() {
         signUpFlowDataRepository.userAccount?.also {
-            tokenKeyProvider.keypair = it.keypair
+            tokenKeyProvider.keyPair = it.keypair
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
         } ?: throw CreateWalletFailure("User account is null, creating a user is failed")
 

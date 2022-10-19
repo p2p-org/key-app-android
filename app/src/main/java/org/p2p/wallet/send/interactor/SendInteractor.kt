@@ -242,7 +242,7 @@ class SendInteractor(
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null
     ): PreparedTransaction {
-        val account = Account(tokenKeyProvider.keypair)
+        val account = Account(tokenKeyProvider.keyPair)
 
         val instruction = SystemProgram.transfer(
             fromPublicKey = account.publicKey,
@@ -274,7 +274,7 @@ class SendInteractor(
         lamportsPerSignature: BigInteger? = null,
         minBalanceForRentExemption: BigInteger? = null
     ): Pair<PreparedTransaction, String> {
-        val account = Account(tokenKeyProvider.keypair)
+        val account = Account(tokenKeyProvider.keyPair)
 
         val feePayer = feePayerPublicKey ?: account.publicKey
 

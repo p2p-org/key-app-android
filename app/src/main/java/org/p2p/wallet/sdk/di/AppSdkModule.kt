@@ -38,7 +38,6 @@ object AppSdkModule : InjectionModule {
         single {
             SolendSdkFacade(
                 solendSdk = get(),
-                solendEnvironment = SolendEnvironment.DEVNET,
                 networkEnvironmentManager = get(),
                 methodResultMapper = get(),
                 logger = AppSdkLogger(),

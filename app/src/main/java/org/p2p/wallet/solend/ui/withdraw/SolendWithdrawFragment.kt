@@ -9,6 +9,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.glide.GlideManager
+import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.toPx
@@ -225,6 +226,18 @@ class SolendWithdrawFragment :
             depositTokens = depositTokens,
             requestKey = KEY_REQUEST_TOKEN,
             resultKey = KEY_RESULT_TOKEN
+        )
+    }
+
+    override fun navigateToEarnScreen() {
+        popBackStack()
+    }
+
+    override fun showIndefiniteInfoMessage(messageRes: Int, actionButtonRes: Int) {
+        binding.root.showSnackbarIndefinite(
+            snackbarText = getString(messageRes),
+            snackbarActionButtonText = getString(actionButtonRes),
+            snackbarActionButtonListener = { it.dismiss() }
         )
     }
 }

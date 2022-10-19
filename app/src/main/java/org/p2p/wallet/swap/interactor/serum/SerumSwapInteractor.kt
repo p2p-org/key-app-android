@@ -254,7 +254,7 @@ class SerumSwapInteractor(
         val signers = signersAndInstructions.map { it.signers }.flatten().toMutableList()
 
         // TODO: If fee relayer is available, remove account as signer
-        signers.add(0, Account(tokenKeyProvider.keypair))
+        signers.add(0, Account(tokenKeyProvider.keyPair))
 
         // serialize transaction
 //        val serializedTransaction = transactionInstruction.serializeTransaction(
@@ -709,7 +709,7 @@ class SerumSwapInteractor(
         instructions += to.instructions
 
         if (feePayer == null) {
-            signers.add(0, Account(tokenKeyProvider.keypair))
+            signers.add(0, Account(tokenKeyProvider.keyPair))
         }
 
 //        val serializedTransaction = serializationInteractor.serializeTransaction(

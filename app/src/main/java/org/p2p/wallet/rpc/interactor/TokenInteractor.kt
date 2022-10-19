@@ -30,7 +30,7 @@ class TokenInteractor(
         val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
         transaction.recentBlockHash = recentBlockhash.recentBlockhash
 
-        val signers = Account(tokenKeyProvider.keypair)
+        val signers = Account(tokenKeyProvider.keyPair)
         transaction.sign(signers)
 
         return rpcRepository.sendTransaction(transaction)
@@ -40,7 +40,7 @@ class TokenInteractor(
         mintAddress: String
     ): String {
 
-        val account = Account(tokenKeyProvider.keypair)
+        val account = Account(tokenKeyProvider.keyPair)
         val feePayer = account.publicKey
 
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
@@ -60,7 +60,7 @@ class TokenInteractor(
             feePayer
         )
 
-        val signers = Account(tokenKeyProvider.keypair)
+        val signers = Account(tokenKeyProvider.keyPair)
         val recentBlockHash = rpcBlockhashRepository.getRecentBlockhash()
 
         val transaction = Transaction().apply {

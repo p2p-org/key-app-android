@@ -186,7 +186,7 @@ class FeeRelayerInteractor(
         }
 
         // transfer sol back to feerelayer's feePayer
-        val owner = Account(tokenKeyProvider.keypair)
+        val owner = Account(tokenKeyProvider.keyPair)
         val transaction = preparedTransaction.transaction
         if (paybackFee.isNotZero()) {
             val minRelayAccountBalance = relayAccount.getMinRemainingBalance(info.minimumRelayAccountRent)

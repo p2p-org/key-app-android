@@ -68,7 +68,7 @@ class RenBtcInteractor(
     }
 
     suspend fun startPolling(session: LockAndMint.Session) {
-        renTransactionManager.startPolling(session, tokenKeyProvider.keypair)
+        renTransactionManager.startPolling(session, tokenKeyProvider.keyPair)
     }
 
     suspend fun getPaymentData(environment: NetworkEnvironment, gatewayAddress: String) =

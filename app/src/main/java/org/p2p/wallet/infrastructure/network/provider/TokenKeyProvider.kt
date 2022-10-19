@@ -43,7 +43,7 @@ class TokenKeyProvider(
         }
     }
 
-    var keypair: ByteArray = getSecretKeyFromStorage()
+    var keyPair: ByteArray = getSecretKeyFromStorage()
         set(value) {
             field = value
             saveSecretKeyToStorage(value)
@@ -70,6 +70,6 @@ class TokenKeyProvider(
 
     fun clear() {
         publicKey = emptyString()
-        keypair = byteArrayOf()
+        keyPair = byteArrayOf()
     }
 }

@@ -49,7 +49,7 @@ class FeeRelayerTopUpInteractor(
         val blockhash = rpcRepository.getRecentBlockhash()
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-        val owner = Account(tokenKeyProvider.keypair)
+        val owner = Account(tokenKeyProvider.keyPair)
 
         // STEP 3: prepare for topUp
         val (swapData, topUpTransaction) = prepareForTopUp(
@@ -361,7 +361,7 @@ class FeeRelayerTopUpInteractor(
         )
 
         // resign transaction
-        val owner = Account(tokenKeyProvider.keypair)
+        val owner = Account(tokenKeyProvider.keyPair)
         val signers = mutableListOf(owner)
 
         transaction.sign(signers)

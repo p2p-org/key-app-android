@@ -75,6 +75,8 @@
     <string name="solend_withdraw_max_amount_error_message">You are trying to withdraw more funds than possible. If you want to withdraw the maximum amount, press “Withdraw MAX amount”.</string>
     <string name="solend_withdraw_max_amount_error_positive">Withdraw MAX Amount</string>
 
+    <string name="solend_withdraw_in_progress">✅ Withdrawing your funds from Solend. Just wait until it\'s done</string>
+
     <!--Deposit To Solend-->
     <string name="solend_deposit_title">Deposit into Solend</string>
     <string name="solend_select_token_to_deposit_title">Token to deposit</string>

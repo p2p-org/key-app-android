@@ -37,6 +37,6 @@ class OnboardingRootPresenter(
     }
 
     private fun userLeftOnPinCreation(): Boolean {
-        return tokenKeyProvider.keypair.isNotEmpty() && !authInteractor.isAuthorized()
+        return tokenKeyProvider.keyPair.isNotEmpty() && !authInteractor.isAuthorized()
     }
 }

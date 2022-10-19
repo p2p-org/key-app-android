@@ -5,6 +5,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.sdk.SolendSdk
 import org.p2p.wallet.sdk.facade.mapper.SdkMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.solend.SolendCollateralAccountResponse
 import org.p2p.wallet.sdk.facade.model.solend.SolendCollateralAccountsListResponse
@@ -19,13 +20,11 @@ import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositByTokenResponseRe
 import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositResponse
 import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositsResponseResponse
 import org.p2p.wallet.sdk.facade.model.solend.SolendWithdrawTransactionsResponse
-import org.p2p.wallet.sdk.SolendSdk
 import org.p2p.wallet.utils.Base58String
 import kotlinx.coroutines.withContext
 
 class SolendSdkFacade(
     private val solendSdk: SolendSdk,
-    private val solendEnvironment: SolendEnvironment,
     private val networkEnvironmentManager: NetworkEnvironmentManager,
     private val methodResultMapper: SdkMethodResultMapper,
     private val logger: AppSdkLogger,
@@ -36,6 +35,9 @@ class SolendSdkFacade(
     private val currentNetworkEnvironment: NetworkEnvironment
         //        get() = networkEnvironmentManager.loadCurrentEnvironment()
         get() = NetworkEnvironment.MAINNET
+
+    private val solendEnvironment: SolendEnvironment
+        get() = SolendEnvironment.PRODUCTION
 
     suspend fun createDepositTransactions(
         relayProgramId: String,

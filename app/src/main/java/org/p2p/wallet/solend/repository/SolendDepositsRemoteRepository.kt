@@ -2,7 +2,6 @@ package org.p2p.wallet.solend.repository
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.sdk.facade.SolendSdkFacade
 import org.p2p.wallet.sdk.facade.model.solend.SolendFeePayerTokenData
 import org.p2p.wallet.sdk.facade.model.solend.SolendPool
@@ -12,13 +11,11 @@ import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendMarketInfo
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigInteger
 
 class SolendDepositsRemoteRepository(
     private val sdkFacade: SolendSdkFacade,
-    private val ownerAddressProvider: TokenKeyProvider,
     private val mapper: SolendDepositMapper,
     private val userLocalRepository: UserLocalRepository,
     private val homeLocalRepository: HomeLocalRepository
@@ -26,10 +23,10 @@ class SolendDepositsRemoteRepository(
 
     private val currentSolendPool = SolendPool.MAIN
 
-    private val ownerAddress: Base58String
-        get() = ownerAddressProvider.publicKey.toBase58Instance()
-
-    override suspend fun getUserDeposits(tokenSymbols: List<String>): List<SolendDepositToken> {
+    override suspend fun getUserDeposits(
+        ownerAddress: Base58String,
+        tokenSymbols: List<String>
+    ): List<SolendDepositToken> {
         val userTokens = homeLocalRepository.getUserTokens()
 
         val marketsInfo = try {
@@ -87,6 +84,7 @@ class SolendDepositsRemoteRepository(
 
     override suspend fun createDepositTransaction(
         relayProgramId: String,
+        ownerAddress: Base58String,
         token: SolendDepositToken,
         depositAmount: BigInteger,
         remainingFreeTransactionsCount: Int,
@@ -114,6 +112,7 @@ class SolendDepositsRemoteRepository(
 
     override suspend fun createWithdrawTransaction(
         relayProgramId: String,
+        ownerAddress: Base58String,
         token: SolendDepositToken,
         withdrawAmount: BigInteger,
         remainingFreeTransactionsCount: Int,
