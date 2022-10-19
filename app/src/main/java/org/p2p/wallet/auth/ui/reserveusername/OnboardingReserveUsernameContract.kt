@@ -10,7 +10,7 @@ interface OnboardingReserveUsernameContract {
         fun showUsernameIsChecking()
         fun showUsernameInvalid()
         fun showCreateUsernameFailed()
-        fun navigateToMainScreen()
+        fun close()
     }
 
     interface Presenter : MvpPresenter<View> {

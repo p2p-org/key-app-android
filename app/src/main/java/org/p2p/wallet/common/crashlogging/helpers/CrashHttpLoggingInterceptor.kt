@@ -7,16 +7,20 @@ import org.json.JSONObject
 import org.p2p.wallet.utils.bodyAsString
 import timber.log.Timber
 
+private const val TAG = "CrashHttpLoggingInterceptor"
+
 class CrashHttpLoggingInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
         val requestLog = createRequestLog(request)
-        Timber.i(requestLog)
+        Timber.tag(TAG).i(requestLog)
+        Timber.tag(TAG).d(request.bodyAsString())
 
         val response = chain.proceed(request)
         val responseLog = createResponseLog(response)
-        Timber.i(responseLog)
+        Timber.tag(TAG).i(responseLog)
+        Timber.tag(TAG).d(response.peekBody(Long.MAX_VALUE).string())
 
         return response
     }
@@ -42,8 +46,7 @@ class CrashHttpLoggingInterceptor : Interceptor {
     private fun createResponseLog(response: Response) = buildString {
         append("NETWORK ${response.request.url} | ")
         if (response.request.url.host.contains("rpcpool")) {
-            getRpcMethodName(response.request)
-                ?.let { append("$it ") }
+            getRpcMethodName(response.request)?.let { append("$it ") }
         }
 
         append("<-- ")

@@ -15,6 +15,6 @@ class UsernameValidator(resourcesProvider: ResourcesProvider) {
 
     fun isUsernameValid(username: String): Boolean {
         return username.length in usernameMinimalLength..usernameMaximalLength &&
-            username.all { usernameSymbol -> usernameSymbol !in usernameAllowedSymbols }
+            username.all { usernameSymbol -> usernameSymbol in usernameAllowedSymbols }
     }
 }

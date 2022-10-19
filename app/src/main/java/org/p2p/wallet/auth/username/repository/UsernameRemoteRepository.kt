@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.username.repository
 
+import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.auth.username.api.RegisterUsernameServiceApi
-import org.p2p.wallet.auth.username.api.response.CreateNameResponse
 import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -12,6 +12,7 @@ import kotlinx.coroutines.withContext
 class UsernameRemoteRepository(
     private val usernameService: RegisterUsernameServiceApi,
     private val mapper: RegisterUsernameServiceApiMapper,
+    private val rpcSolanaRepository: RpcSolanaRepository,
     private val dispatchers: CoroutineDispatchers
 ) : UsernameRepository {
 
@@ -19,10 +20,10 @@ class UsernameRemoteRepository(
         val request = mapper.toGetUsernameNetwork(username)
         val isUsernameTaken: Boolean = try {
             mapper.fromNetwork(usernameService.getUsername(request))
-            false
+            true
         } catch (error: Throwable) {
             Timber.i(error)
-            true
+            false
         }
 
         isUsernameTaken
@@ -30,16 +31,20 @@ class UsernameRemoteRepository(
 
     override suspend fun createUsername(
         username: String,
-        owner: Base58String,
+        ownerPublicKey: Base58String,
         ownerPrivateKey: Base58String
-    ): CreateNameResponse = withContext(dispatchers.io) {
-        val request = mapper.toCreateUsernameNetwork(
-            username = username,
-            userPublicKey = owner,
-            userPrivateKey = ownerPrivateKey.decodeToBytes()
-        )
-        val response = usernameService.createUsername(request)
-        mapper.fromNetwork(response)
+    ) {
+        withContext(dispatchers.io) {
+            val request = mapper.toCreateUsernameNetwork(
+                username = username,
+                userPublicKey = ownerPublicKey,
+                userPrivateKey = ownerPrivateKey.decodeToBytes()
+            )
+            val response = usernameService.createUsername(request)
+            val createNameTransaction = mapper.fromNetwork(response).serializedSignedCreateNameTransaction
+            val resultSignature = rpcSolanaRepository.sendSerializedTransaction(createNameTransaction)
+            Timber.i("Create name transaction is sent: $resultSignature")
+        }
     }
 
     override suspend fun findUsernameDetailsByUsername(

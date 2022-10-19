@@ -1,6 +1,5 @@
 package org.p2p.wallet.restore.interactor
 
-import kotlinx.coroutines.withContext
 import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.MnemonicException
 import org.p2p.solanaj.core.Account
@@ -24,6 +23,7 @@ import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlinx.coroutines.withContext
 
 class SeedPhraseInteractor(
     private val authRepository: AuthRepository,
@@ -88,7 +88,11 @@ class SeedPhraseInteractor(
         Timber.i("Account: $publicKey restored using $path")
 
         if (lookupForUsername) {
-            usernameInteractor.checkUsernameByAddress(publicKey.toBase58Instance())
+            try {
+                usernameInteractor.checkUsernameByAddress(publicKey.toBase58Instance())
+            } catch (error: Throwable) {
+                Timber.e(error)
+            }
         }
         adminAnalytics.logPasswordCreated()
     }

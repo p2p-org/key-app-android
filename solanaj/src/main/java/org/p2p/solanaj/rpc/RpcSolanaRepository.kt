@@ -11,6 +11,7 @@ import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
+import org.p2p.solanaj.utils.crypto.Base64String
 
 interface RpcSolanaRepository {
     suspend fun getQueryMint(txHash: String): ResponseQueryTxMint
@@ -29,4 +30,6 @@ interface RpcSolanaRepository {
         mintLogAccount: PublicKey,
         limit: Int
     ): List<SignatureInformationResponse>
+
+    suspend fun sendSerializedTransaction(serializedTransaction: Base64String): String
 }
