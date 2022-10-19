@@ -55,15 +55,67 @@
         app:tokenAmount="@string/solend_top_up_apy_title"
         tools:usdAmount="2.21%" />
 
-    <org.p2p.uikit.components.UiKitAmountsView
-        android:id="@+id/amountsView"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="30dp"
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonInfo"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="56dp"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/rose_20"
+        android:visibility="gone"
+        app:cornerRadius="28dp"
+        app:icon="@drawable/ic_warning_solid"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="24dp"
+        app:iconTint="@color/icons_rose"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        tools:visibility="visible" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonAction"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:autoSizeMaxTextSize="16sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeTextType="uniform"
+        android:backgroundTint="@color/bg_rain"
+        android:enabled="false"
+        android:maxLines="1"
+        android:text="@string/main_enter_the_amount"
+        android:textColor="@color/text_mountain"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_goneMarginEnd="16dp" />
+
+    <org.p2p.uikit.components.UiKitSliderButton
+        android:id="@+id/sliderDeposit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:sliderIcon="@drawable/ic_arrow_right"
+        app:sliderText="@string/solend_deposit_button_slide_text" />
+
+    <org.p2p.uikit.components.UiKitDoubleInputView
+        android:id="@+id/viewDoubleInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="72dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

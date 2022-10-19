@@ -49,7 +49,7 @@ class ReceiveTokenPresenter(
             view?.showUserData(publicKey, receive.publicKey, username)
 
             generateQrCode(publicKey)
-            receiveAnalytics.logReceiveViewed(isUsernameClaimed = !username?.trimmedUsername.isNullOrEmpty())
+            receiveAnalytics.logReceiveViewed(isUsernameClaimed = !username?.value.isNullOrEmpty())
             view?.showFullScreenLoading(false)
         }
     }

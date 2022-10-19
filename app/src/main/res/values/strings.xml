@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">P2P Wallet</string>
+    <string name="app_name">Key App</string>
 
     <!-- Common -->
     <string name="common_beta">beta</string>
@@ -32,6 +32,7 @@
     <string name="common_commas">…</string>
     <string name="common_transaction_details">Transaction details</string>
     <string name="common_error">Error</string>
+    <string name="common_hide">Hide</string>
     <string name="common_skip">Skip</string>
     <string name="not_available">N/A</string>
 
@@ -67,6 +68,8 @@
     <string name="error_shares_do_not_matches_title">No wallet found</string>
     <string name="error_shares_do_not_matches_message">Try with another account</string>
     <string name="error_repeat_social_auth">Repeat social auth</string>
+
+    <string name="error_solana_network">😞 Solana has some problems</string>
 
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>

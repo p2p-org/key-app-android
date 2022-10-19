@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,114 +11,110 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
-        app:navigationIconTint="@color/night"
+        app:navigationIconTint="@color/icons_night"
         app:title="@string/solend_withdraw_title"
         app:titleMargin="16dp"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewToken"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:src="@tools:sample/avatars" />
 
-        <org.p2p.uikit.atoms.UiKitRoundedImageView
-            android:id="@+id/imageViewToken"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            app:cornerRadius="24dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/avatars" />
+    <org.p2p.uikit.atoms.UiKitStartAmountView
+        android:id="@+id/amountViewStart"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
+        app:layout_constraintStart_toEndOf="@id/imageViewToken"
+        app:layout_constraintTop_toTopOf="@id/imageViewToken"
+        tools:subtitle="USD Coin"
+        tools:title="0 USDC" />
 
-        <TextView
-            android:id="@+id/textViewTokenAmount"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-            app:layout_constraintBottom_toTopOf="@+id/textViewApy"
-            app:layout_constraintEnd_toStartOf="@+id/textViewAmountUsd"
-            app:layout_constraintStart_toEndOf="@id/imageViewToken"
-            app:layout_constraintTop_toTopOf="@id/imageViewToken"
-            tools:text="3 096.19 USDT" />
+    <org.p2p.uikit.atoms.UiKitEndAmountView
+        android:id="@+id/amountViewEnd"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/amountViewStart"
+        app:layout_constraintTop_toTopOf="@id/imageViewToken"
+        app:tokenAmount="@string/solend_top_up_apy_title"
+        tools:usdAmount="2.21%" />
 
-        <TextView
-            android:id="@+id/textViewApy"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="2dp"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-            android:textColor="@color/text_mountain"
-            app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
-            app:layout_constraintEnd_toStartOf="@+id/textViewRewards"
-            app:layout_constraintStart_toEndOf="@id/imageViewToken"
-            app:layout_constraintTop_toBottomOf="@id/textViewTokenAmount"
-            tools:text="Yielding 2.21% APY" />
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonInfo"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="56dp"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/rose_20"
+        android:visibility="gone"
+        app:cornerRadius="28dp"
+        app:icon="@drawable/ic_warning_solid"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="24dp"
+        app:iconTint="@color/icons_rose"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/textViewAmountUsd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="16dp"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-            app:layout_constraintBottom_toBottomOf="@id/textViewTokenAmount"
-            app:layout_constraintEnd_toStartOf="@id/imageViewChevron"
-            app:layout_constraintTop_toTopOf="@id/textViewTokenAmount"
-            tools:text="$4 971.77" />
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonAction"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:autoSizeMaxTextSize="16sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeTextType="uniform"
+        android:backgroundTint="@color/bg_rain"
+        android:enabled="false"
+        android:maxLines="1"
+        android:text="@string/main_enter_the_amount"
+        android:textColor="@color/text_mountain"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_goneMarginEnd="16dp" />
 
-        <TextView
-            android:id="@+id/textViewRewards"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:text="@string/solend_withdraw_rewards"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-            android:textColor="@color/text_mountain"
-            app:layout_constraintEnd_toEndOf="@id/textViewAmountUsd"
-            app:layout_constraintStart_toEndOf="@id/textViewApy"
-            app:layout_constraintTop_toTopOf="@id/textViewApy" />
-
-        <ImageView
-            android:id="@+id/imageViewChevron"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_chevron_right"
-            app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/imageViewToken"
-            app:layout_goneMarginEnd="24dp"
-            tools:ignore="ContentDescription" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+    <org.p2p.uikit.components.UiKitSliderButton
+        android:id="@+id/sliderDeposit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/buttonInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:sliderIcon="@drawable/ic_arrow_right"
+        app:sliderText="@string/solend_withdraw_button_slide_text" />
 
     <org.p2p.uikit.components.UiKitDoubleInputView
         android:id="@+id/viewDoubleInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp" />
-
-    <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonAction"
-        style="@style/UiKit.Components.Button.Large"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/ui_kit_button_large_height"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/bg_night"
-        android:enabled="false"
-        android:text="@string/main_enter_the_amount"
-        android:textColor="@color/text_lime"
-        app:layout_constraintTop_toBottomOf="@id/imageViewToken" />
+        android:layout_marginBottom="72dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

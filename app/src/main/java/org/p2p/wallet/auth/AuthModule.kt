@@ -121,7 +121,6 @@ object AuthModule {
         usernameModule()
         onboardingModule()
         includes(RegisterUsernameServiceModule.create(), GatewayServiceModule.create())
-
     }
 
     private fun Module.usernameModule() {

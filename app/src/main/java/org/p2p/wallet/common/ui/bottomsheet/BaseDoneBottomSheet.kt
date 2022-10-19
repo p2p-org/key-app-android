@@ -12,10 +12,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogBaseDoneBinding
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.withTextOrGone
 
 /**
  * BaseDoneBottomSheet made to handle cases where you have Done button at them bottom
- * or X at top to close (if needed) like [BaseCloseBottomSheet] to cover cases where you do not need logic and Presenter
+ * or X at top to close (if needed) to cover cases where you do not need logic and Presenter
  * you need to show some Info content or select something and return as a result with [setFragmentResult]
  **/
 abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
@@ -26,7 +27,7 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
         const val ARG_RESULT_KEY = "ARG_RESULT_KEY"
     }
 
-    private val title: String by args(ARG_TITLE)
+    private val title: String? by args(ARG_TITLE)
     protected val resultKey: String by args(ARG_RESULT_KEY)
     protected val requestKey: String by args(ARG_REQUEST_KEY)
 
@@ -49,7 +50,7 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(baseDialogBinding) {
-            textViewTitle.text = title
+            textViewTitle.withTextOrGone(title)
             setCloseClickListener()
             setDoneClickListener()
         }
@@ -57,7 +58,7 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
-    abstract fun getResult(): Any?
+    protected open fun getResult(): Any? = null
 
     protected fun setDoneButtonVisibility(isVisible: Boolean) {
         baseDialogBinding.buttonDone.isVisible = isVisible

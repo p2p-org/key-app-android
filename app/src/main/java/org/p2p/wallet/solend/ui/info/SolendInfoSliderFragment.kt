@@ -23,6 +23,7 @@ class SolendInfoSliderFragment : BaseFragment(R.layout.fragment_solend_info_slid
             with(binding) {
                 imageViewSliderIcon.setImageResource(sliderFragmentArgs.iconRes)
                 textViewSliderText.setText(sliderFragmentArgs.slideText)
+                textViewSliderTitle.setText(sliderFragmentArgs.slideTitle)
             }
         } ?: Timber.e("Error on getting SolendInfoSliderFragmentArgs")
     }

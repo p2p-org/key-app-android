@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Common -->
+    <dimen name="ui_kit_average_horizontal_margin">16dp</dimen>
+
     <!-- Button Values -->
 
     <dimen name="ui_kit_button_large_height">56dp</dimen>

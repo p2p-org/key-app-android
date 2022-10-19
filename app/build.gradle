@@ -315,6 +315,8 @@ dependencies {
 
     // TickerView
     implementation 'com.robinhood.ticker:ticker:2.0.4'
+    implementation 'androidx.core:core-splashscreen:1.0.0'
+
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'

@@ -12,6 +12,7 @@ import org.p2p.wallet.databinding.FragmentSolendDepositsBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.ui.deposits.adapter.SolendDepositsAdapter
 import org.p2p.wallet.solend.ui.deposits.adapter.TokenDepositItemClickListener
+import org.p2p.wallet.solend.ui.earn.bottomsheet.SolendTopUpBottomSheetFragment
 import org.p2p.wallet.solend.ui.withdraw.SolendWithdrawFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -67,6 +68,10 @@ class SolendUserDepositsFragment :
     }
 
     override fun onAddMoreClicked(token: SolendDepositToken.Active) {
+        SolendTopUpBottomSheetFragment.show(
+            fragmentManager = parentFragmentManager,
+            deposit = token
+        )
     }
 
     override fun onWithdrawClicked(token: SolendDepositToken.Active) {

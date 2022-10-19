@@ -48,7 +48,7 @@ class UsernameInteractor(
         val username = sharedPreferences.getString(KEY_USERNAME, null)
         return username?.let {
             Username(
-                trimmedUsername = it,
+                value = it,
                 domainPrefix = usernameDomainFeatureToggle.value
             )
         }

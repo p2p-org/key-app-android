@@ -34,8 +34,10 @@
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/animationVideoView"
         app:layout_constraintEnd_toEndOf="@id/animationVideoView"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/animationVideoView"
-        app:layout_constraintTop_toTopOf="@id/animationVideoView" />
+        app:layout_constraintTop_toTopOf="@id/animationVideoView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/titleTextView"

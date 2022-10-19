@@ -2,6 +2,7 @@ package org.p2p.wallet.solend.ui.earn
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
@@ -50,6 +51,11 @@ class SolendEarnFragment :
         presenter.load()
     }
 
+    override fun onDestroy() {
+        presenter.resetTickerBalance()
+        super.onDestroy()
+    }
+
     override fun showAvailableDeposits(deposits: List<SolendDepositToken>) {
         earnAdapter.setItems(deposits)
     }
@@ -67,7 +73,8 @@ class SolendEarnFragment :
 
     override fun showLoading(isLoading: Boolean) {
         with(binding) {
-            shimmerView.root.isVisible = isLoading
+            viewEarnWidget.isInvisible = isLoading
+            shimmerViewContainer.isVisible = isLoading
             tokensRecyclerView.isVisible = !isLoading
         }
     }

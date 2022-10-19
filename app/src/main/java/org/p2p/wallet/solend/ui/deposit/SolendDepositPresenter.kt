@@ -7,8 +7,6 @@ import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.getErrorMessage
-import org.p2p.wallet.utils.isNotZero
-import org.p2p.wallet.utils.orZero
 import timber.log.Timber
 
 class SolendDepositPresenter(
@@ -30,20 +28,19 @@ class SolendDepositPresenter(
         if (validDeposits.isEmpty()) {
             launch {
                 try {
-                    validDeposits = solendDepositsInteractor.getUserDeposits()
-                        .filter { depositToken ->
-                            userInteractor.getUserTokens()
-                                .firstOrNull { token -> token.tokenSymbol == depositToken.tokenSymbol }
-                                ?.totalInUsd
-                                .orZero()
-                                .isNotZero()
-                        }
+                    // TODO PWN-5319 move this logic in repo
+                    val userTokens = userInteractor.getUserTokens()
+                    validDeposits = solendDepositsInteractor.getUserDeposits().onEach { depositToken ->
+                        depositToken.availableTokensForDeposit = userTokens.firstOrNull { token ->
+                            token.tokenSymbol == depositToken.tokenSymbol
+                        }?.total
+                    }.filter { it.availableTokensForDeposit != null }
                     validDeposits.find { it.tokenSymbol == selectedDepositToken.tokenSymbol }?.let {
                         selectTokenToDeposit(it)
                     }
                 } catch (e: Throwable) {
                     Timber.e(e, "Error fetching available deposit tokens")
-                    view.showErrorSnackBar(e.getErrorMessage(resourcesProvider))
+                    view.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
                 }
             }
         }

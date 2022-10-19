@@ -11,6 +11,9 @@ import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesS
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
@@ -30,8 +33,9 @@ object FeatureTogglesModule : InjectionModule {
                 get<NewBuyFeatureToggle>(),
                 get<BuyWithTransferFeatureToggle>(),
                 get<SettingsNetworkListFeatureToggle>(),
+                get<NetworkObservationFeatureToggle>(),
                 get<SolendEnabledFeatureToggle>(),
-                get<UsernameDomainFeatureToggle>()
+                get<UsernameDomainFeatureToggle>(),
             )
         }
 
@@ -40,6 +44,9 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::BuyWithTransferFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
         factoryOf(::SolendEnabledFeatureToggle)
+        factoryOf(::NetworkObservationFeatureToggle)
+        factoryOf(::NetworkObservationPercentFeatureToggle)
+        factoryOf(::NetworkObservationFrequencyFeatureToggle)
         factoryOf(::UsernameDomainFeatureToggle)
     }
 }
