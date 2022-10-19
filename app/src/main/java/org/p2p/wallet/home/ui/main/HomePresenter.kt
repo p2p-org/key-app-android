@@ -32,7 +32,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
-val POPULAR_TOKENS = setOf(SOL_SYMBOL, USDC_SYMBOL, "BTC", "ETH", "USDT")
+val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, "BTC", "ETH", "USDT")
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private val TOKENS_VALID_FOR_BUY = setOf(SOL_SYMBOL, USDC_SYMBOL)
@@ -163,7 +163,9 @@ class HomePresenter(
                                         backgroundColorRes = R.color.bannerBackgroundColor
                                     ),
                                     resourcesProvider.getString(R.string.main_popular_tokens_header)
-                                ) + tokensForBuy
+                                ) + tokensForBuy.sortedBy { tokenToBuy ->
+                                    POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol)
+                                }
                             )
                         }
                         updatedTokens.isNotEmpty() -> {
