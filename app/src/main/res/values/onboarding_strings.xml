@@ -33,6 +33,8 @@
     <string name="wallet_found_restore_button_text">Continue restoring this wallet</string>
 
     <!-- Onboarding pin / touch id -->
+    <string name="auth_create_wallet_introduction">🎉 Your wallet has been created! Just a few moments to start a crypto adventure</string>
+
     <string name="auth_create_wallet_step_3">Step 3 of 3</string>
     <string name="auth_create_wallet_set_up_your_pin">Create your PIN</string>
     <string name="auth_create_wallet_confirm_your_pin">Confirm your PIN</string>

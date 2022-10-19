@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.setTextColorRes
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputView
 import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputViewListener
+import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingReserveUsernameBinding
 import org.p2p.wallet.home.MainFragment
@@ -31,24 +33,52 @@ class OnboardingReserveUsernameFragment :
                 .withArgs(ARG_RESERVE_USERNAME_SOURCE to from)
     }
 
+    override val statusBarColor: Int = R.color.bg_lime
+    override val navBarColor: Int = R.color.bg_night
+
     override val presenter: OnboardingReserveUsernameContract.Presenter by inject()
 
     private val binding: FragmentOnboardingReserveUsernameBinding by viewBinding()
 
     private val openedFromSource: ReserveUsernameOpenedFrom by args(ARG_RESERVE_USERNAME_SOURCE)
+    private val isSkipEnabled: RegisterUsernameSkipEnabledFeatureToggle by inject()
+
+    private var clicksBeforeDebugSkip: Int = 2
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.itemClose) {
-                close()
-                return@setOnMenuItemClickListener true
-            }
-            false
+        if (BuildConfig.DEBUG) {
+            initQaSkipInstrument()
         }
+
+        if (isSkipEnabled.isFeatureEnabled) {
+            binding.toolbar.inflateMenu(R.menu.menu_close)
+            binding.toolbar.setOnMenuItemClickListener {
+                if (it.itemId == R.id.itemClose) {
+                    close()
+                    return@setOnMenuItemClickListener true
+                }
+                false
+            }
+        }
+
         binding.buttonSubmitUsername.isEnabled = false
         binding.inputViewReserveUsername.listener = ReserveUsernameInputViewListener(presenter::onUsernameInputChanged)
+
+        binding.buttonSubmitUsername.setOnClickListener {
+            presenter.onCreateUsernameClicked()
+        }
+    }
+
+    private fun initQaSkipInstrument() {
+        binding.imageViewBanner.setOnClickListener {
+            clicksBeforeDebugSkip--
+            if (clicksBeforeDebugSkip == 0) {
+                close()
+            } else {
+                showUiKitSnackBar("Are you clicking me to skip the username..?! I dare you to click again! 🤬")
+            }
+        }
     }
 
     override fun showUsernameInvalid() {

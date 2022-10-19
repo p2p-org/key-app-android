@@ -1,8 +1,9 @@
 package org.p2p.wallet.infrastructure.network.environment
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
+import android.content.SharedPreferences
 import org.p2p.solanaj.rpc.RpcEnvironment
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import timber.log.Timber
@@ -30,6 +31,7 @@ class NetworkEnvironmentManager(
         val networksFromRemoteConfig = networkListFeatureToggle.value.map { it.url }
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
         return NetworkEnvironment.values().filter(isNetworkAvailable)
+            .let { if (BuildConfig.DEBUG) it + NetworkEnvironment.DEVNET else it }
     }
 
     fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {
@@ -57,11 +59,12 @@ class NetworkEnvironmentManager(
     }
 
     private fun getDefaultAvailableNetwork(): NetworkEnvironment {
-        return if (NetworkEnvironment.RPC_POOL in availableNetworks) {
-            NetworkEnvironment.RPC_POOL
-        } else {
-            availableNetworks.first()
-        }
+        return NetworkEnvironment.DEVNET
+//        return if (NetworkEnvironment.RPC_POOL in availableNetworks) {
+//            NetworkEnvironment.RPC_POOL
+//        } else {
+//            availableNetworks.first()
+//        }
     }
 
     fun loadRpcEnvironment(): RpcEnvironment = if (loadCurrentEnvironment() == NetworkEnvironment.DEVNET) {

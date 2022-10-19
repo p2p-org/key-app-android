@@ -20,7 +20,6 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSearchBinding
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.Target
 import org.p2p.wallet.send.ui.main.KEY_REQUEST_SEND
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
@@ -77,8 +76,7 @@ class SearchFragment :
     }
 
     private fun onSearchQueryChanged(newQuery: String) {
-        val target = Target(newQuery)
-        presenter.search(target)
+        presenter.search(newQuery)
 
         binding.clearImageView.isVisible = newQuery.isNotEmpty()
     }

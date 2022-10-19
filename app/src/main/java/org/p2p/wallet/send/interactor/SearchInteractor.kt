@@ -21,8 +21,9 @@ class SearchInteractor(
             val balance = userInteractor.getBalance(it.ownerAddress)
             val hasEmptyBalance = balance == ZERO_BALANCE
             if (hasEmptyBalance) {
-                SearchResult.EmptyBalance(
-                    AddressState(it.ownerAddress.base58Value)
+                SearchResult.Full(
+                    AddressState(it.ownerAddress.base58Value),
+                    username = it.fullUsername
                 )
             } else {
                 SearchResult.Full(

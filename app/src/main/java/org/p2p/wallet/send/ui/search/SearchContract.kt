@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.Target
 
 interface SearchContract {
 
@@ -17,7 +16,7 @@ interface SearchContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun search(target: Target)
+        fun search(newQuery: String)
         fun loadInitialData()
         fun onSearchResultClick(result: SearchResult)
     }

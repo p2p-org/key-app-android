@@ -1,5 +1,7 @@
 package org.p2p.wallet.restore.interactor
 
+import androidx.core.content.edit
+import android.content.SharedPreferences
 import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.MnemonicException
 import org.p2p.solanaj.core.Account
@@ -25,6 +27,9 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
 
+// duck-taped, extract to storage some day
+const val KEY_IS_AUTH_BY_SEED_PHRASE = "KEY_IS_AUTH_BY_SEED_PHRASE"
+
 class SeedPhraseInteractor(
     private val authRepository: AuthRepository,
     private val rpcRepository: RpcBalanceRepository,
@@ -32,7 +37,8 @@ class SeedPhraseInteractor(
     private val usernameInteractor: UsernameInteractor,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val dispatchers: CoroutineDispatchers,
-    private val adminAnalytics: AdminAnalytics
+    private val adminAnalytics: AdminAnalytics,
+    private val sharedPreferences: SharedPreferences
 ) {
 
     private var solRate: BigDecimal? = null
@@ -114,15 +120,25 @@ class SeedPhraseInteractor(
         }
 
         return if (validatedKeys.any { !it.isValid }) {
+            updateSeedPhraseAuthFlag(isAuthSuccess = false)
             SeedPhraseVerifyResult.VerifiedSeedPhrase(validatedKeys)
         } else {
             try {
                 MnemonicCode.INSTANCE.check(seedWords)
+                updateSeedPhraseAuthFlag(isAuthSuccess = true)
+
                 SeedPhraseVerifyResult.VerifiedSeedPhrase(validatedKeys)
             } catch (checkError: MnemonicException) {
                 Timber.i(checkError)
+                updateSeedPhraseAuthFlag(isAuthSuccess = false)
                 SeedPhraseVerifyResult.VerifyByChecksumFailed
             }
+        }
+    }
+
+    private fun updateSeedPhraseAuthFlag(isAuthSuccess: Boolean) {
+        sharedPreferences.edit {
+            putBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, isAuthSuccess)
         }
     }
 }

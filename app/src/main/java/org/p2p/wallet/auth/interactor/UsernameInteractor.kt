@@ -5,9 +5,12 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.username.repository.UsernameRepository
+import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 import java.io.File
@@ -18,6 +21,8 @@ class UsernameInteractor(
     private val usernameRepository: UsernameRepository,
     private val fileLocalRepository: FileRepository,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
+    private val registerUsernameEnabledFeatureToggle: RegisterUsernameEnabledFeatureToggle,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val sharedPreferences: SharedPreferences
 ) {
@@ -51,6 +56,23 @@ class UsernameInteractor(
                 domainPrefix = usernameDomainFeatureToggle.value
             )
         }
+    }
+
+    fun isUsernameItemVisibleInSettings(): Boolean {
+        val isUserUsedWeb3Auth = userSignUpDetailsStorage.getLastSignUpUserDetails() != null
+        val isRegisterUsernameEnabled = registerUsernameEnabledFeatureToggle.isFeatureEnabled
+        // sometimes user can use seed phrase to login, we cant show item to him too
+        val isUsernameAuthNotBySeedPhrase = !sharedPreferences.getBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, false)
+
+        val isUsernameItemCanBeShown = getUsername() != null
+        val isRegisterUsernameItemCanBeShown =
+            isRegisterUsernameEnabled &&
+                isUserUsedWeb3Auth &&
+                isUsernameAuthNotBySeedPhrase
+
+        // if username already exist - show it
+        // if it's not, check for web3auth sign up and feature toggle
+        return isUsernameItemCanBeShown || isRegisterUsernameItemCanBeShown
     }
 
     fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? = fileLocalRepository.saveQr(

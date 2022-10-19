@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
@@ -20,6 +21,7 @@ import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
@@ -38,7 +40,6 @@ import java.math.BigInteger
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 
 @ExperimentalCoroutinesApi
 @ExtendWith(SpyOnInjectMockKsExtension::class, CoroutineExtension::class)
@@ -82,6 +83,9 @@ class SendPresenterTest {
 
     @MockK
     lateinit var dispatchers: CoroutineDispatchers
+
+    @MockK
+    lateinit var usernameDomainFeatureToggle: UsernameDomainFeatureToggle
 
     @MockK
     lateinit var view: SendContract.View

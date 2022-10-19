@@ -56,6 +56,7 @@ class OnboardingReserveUsernamePresenter(
                 view?.close()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while creating username: $currentUsernameEntered")
+                view?.showUsernameNotAvailable()
                 view?.showCreateUsernameFailed()
             }
         }
