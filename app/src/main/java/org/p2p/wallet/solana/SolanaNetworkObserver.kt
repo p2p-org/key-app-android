@@ -46,10 +46,10 @@ class SolanaNetworkObserver(
     fun getStateFlow(): Flow<SolanaNetworkState> = state
 
     fun start() {
-        if (!observationFeatureToggle.isFeatureEnabled) {
-            Timber.tag(TAG).i("Solana network observation is disabled by feature toggle. Skipping the launch")
-            return
-        }
+//        if (!observationFeatureToggle.isFeatureEnabled) {
+//            Timber.tag(TAG).i("Solana network observation is disabled by feature toggle. Skipping the launch")
+//            return
+//        }
 
         appScope.launch {
             while (isActive) {
