@@ -5,10 +5,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
@@ -25,7 +23,6 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.ellipsizeAddress
@@ -35,10 +32,10 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
+val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, "BTC", "ETH", "USDT")
+
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
-private const val BANNER_START_INDEX = 2
 private val TOKENS_VALID_FOR_BUY = setOf(SOL_SYMBOL, USDC_SYMBOL)
-private val POPULAR_TOKENS = setOf(SOL_SYMBOL, USDC_SYMBOL, REN_BTC_SYMBOL)
 
 class HomePresenter(
     private val inAppFeatureFlags: InAppFeatureFlags,
@@ -51,10 +48,17 @@ class HomePresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper,
     private val resourcesProvider: ResourcesProvider,
-    private val newBuyFeatureToggle: NewBuyFeatureToggle,
-    private val accountStorageContract: UserSignUpDetailsStorage,
-    private val authInteractor: AuthInteractor
+    private val newBuyFeatureToggle: NewBuyFeatureToggle
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
+
+    private var fallbackUsdcTokenForBuy: Token? = null
+    private var userName: Username? = null
+
+    init {
+        launch {
+            fallbackUsdcTokenForBuy = userInteractor.getTokensForBuy(listOf(USDC_SYMBOL)).firstOrNull()
+        }
+    }
 
     private data class ViewState(
         val tokens: List<Token.Active> = emptyList(),
@@ -74,12 +78,13 @@ class HomePresenter(
 
         view.showEmptyState(isEmpty = true)
 
-        view.showUserAddress(tokenKeyProvider.publicKey.ellipsizeAddress())
+        userName = usernameInteractor.getUsername()
+        view.showUserAddress(userName?.value ?: tokenKeyProvider.publicKey.ellipsizeAddress())
 
         updatesManager.start()
 
         state = state.copy(
-            username = usernameInteractor.getUsername(),
+            username = userName,
             visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
         )
 
@@ -89,14 +94,14 @@ class HomePresenter(
             startPollingForTokens()
         }
 
-        val userId = usernameInteractor.getUsername()?.username ?: tokenKeyProvider.publicKey
+        val userId = userName?.value ?: tokenKeyProvider.publicKey
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
     }
 
     override fun onAddressClicked() {
-        view?.showAddressCopied(tokenKeyProvider.publicKey)
+        view?.showAddressCopied(userName?.value ?: tokenKeyProvider.publicKey)
     }
 
     override fun onBuyClicked() {
@@ -107,10 +112,26 @@ class HomePresenter(
     }
 
     override fun onBuyTokenClicked(token: Token) {
-        if (newBuyFeatureToggle.value) {
-            view?.showNewBuyScreen(token)
+        if (token.tokenSymbol !in TOKENS_VALID_FOR_BUY) {
+            view?.showBuyInfoScreen(token)
         } else {
-            view?.showOldBuyScreen(token)
+            onBuyToken(token)
+        }
+    }
+
+    override fun onInfoBuyTokenClicked(token: Token) = onBuyToken(token)
+
+    private fun onBuyToken(token: Token) {
+        if (token.tokenSymbol !in TOKENS_VALID_FOR_BUY) {
+            fallbackUsdcTokenForBuy
+        } else {
+            token
+        }?.let { tokenToBuy ->
+            if (newBuyFeatureToggle.value) {
+                view?.showNewBuyScreen(tokenToBuy)
+            } else {
+                view?.showOldBuyScreen(tokenToBuy)
+            }
         }
     }
 
@@ -129,7 +150,7 @@ class HomePresenter(
                     val isAccountEmpty = updatedTokens.run { size == 1 && first().isSOL && first().isZero }
                     when {
                         isAccountEmpty -> {
-                            val tokensForBuyOrReceive = userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
+                            val tokensForBuy = userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
                             view?.showEmptyState(isEmpty = true)
                             view?.showEmptyViewData(
                                 listOf(
@@ -142,7 +163,9 @@ class HomePresenter(
                                         backgroundColorRes = R.color.bannerBackgroundColor
                                     ),
                                     resourcesProvider.getString(R.string.main_popular_tokens_header)
-                                ) + tokensForBuyOrReceive
+                                ) + tokensForBuy.sortedBy { tokenToBuy ->
+                                    POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol)
+                                }
                             )
                         }
                         updatedTokens.isNotEmpty() -> {

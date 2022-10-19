@@ -20,6 +20,7 @@ interface HomeContract {
         fun navigateToProfile()
         fun navigateToReserveUsername()
         fun showAddressCopied(address: String)
+        fun showBuyInfoScreen(token: Token)
         fun showNewBuyScreen(token: Token)
         fun showOldBuyScreen(token: Token)
     }
@@ -27,6 +28,7 @@ interface HomeContract {
     interface Presenter : MvpPresenter<View> {
         fun onBuyClicked()
         fun onBuyTokenClicked(token: Token)
+        fun onInfoBuyTokenClicked(token: Token)
         fun subscribeToUserTokensFlow()
         fun refreshTokens()
         fun toggleTokenVisibility(token: Token.Active)
