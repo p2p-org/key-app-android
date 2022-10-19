@@ -13,21 +13,25 @@ interface RpcSolanaApi {
 
     @POST
     suspend fun sendTransaction(
-        @Body rpcRequest: RpcRequest, @Url url: String = emptyString()
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = emptyString()
     ): CommonResponse<String>
 
     @POST
     suspend fun getConfirmedSignatureForAddress(
-        @Body rpcRequest: RpcRequest, @Url url: String = emptyString()
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = emptyString()
     ): CommonResponse<List<AbstractMap<String, Any?>>>
 
     @POST
     suspend fun getRecentPerformanceSamples(
-        @Body rpcRequest: RpcRequest, @Url url: String = emptyString()
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = emptyString()
     ): CommonResponse<List<RecentPerformanceSampleResponse>>
 
     @POST
     suspend fun getAccountInfo(
-        @Body rpcRequest: RpcRequest, @Url url: String = emptyString()
+        @Body rpcRequest: RpcRequest,
+        @Url url: String = emptyString()
     ): CommonResponse<AccountInfo>
 }

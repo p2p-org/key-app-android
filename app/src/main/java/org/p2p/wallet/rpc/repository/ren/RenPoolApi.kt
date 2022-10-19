@@ -36,5 +36,4 @@ interface RenPoolApi {
         @Body rpcRequest: RpcRequest2,
         @Url url: String = emptyString()
     ): CommonResponse<ResponseSubmitTxMint>
-
 }

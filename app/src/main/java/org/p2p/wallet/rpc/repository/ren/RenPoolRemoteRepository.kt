@@ -38,7 +38,9 @@ class RenPoolRemoteRepository(
     }
 
     override suspend fun submitTx(
-        hash: String, mintTx: ParamsSubmitMint.MintTransactionInput, selector: String
+        hash: String,
+        mintTx: ParamsSubmitMint.MintTransactionInput,
+        selector: String
     ): ResponseSubmitTxMint {
 
         val baseUrl = environmentManager.loadRpcEnvironment().lightNode
