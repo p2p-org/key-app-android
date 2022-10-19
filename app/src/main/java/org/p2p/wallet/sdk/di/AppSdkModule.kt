@@ -11,7 +11,6 @@ import org.p2p.wallet.sdk.facade.SolendSdkFacade
 import org.p2p.wallet.sdk.facade.AppSdkLogger
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.sdk.facade.mapper.SdkMethodResultMapper
-import org.p2p.wallet.sdk.facade.model.solend.SolendEnvironment
 
 object AppSdkModule : InjectionModule {
 
