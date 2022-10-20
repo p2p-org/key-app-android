@@ -143,8 +143,6 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
                 }
             }
         }
-
-        networkObserver.start()
     }
 
     private fun showSnackbarErrorMessage() {

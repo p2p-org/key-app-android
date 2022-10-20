@@ -6,7 +6,7 @@ import org.p2p.wallet.solana.model.NetworkStatusFrequency
 class NetworkObservationFrequencyFeatureToggle(
     valuesProvider: RemoteConfigValuesProvider
 ) : StringFeatureToggle(valuesProvider) {
-    override val featureKey: String = "solana_negative_status_frequency"
+    override val featureKey: String = "solana_negative_status_time_frequency"
     override val featureDescription: String = "The frequency of error shown to the user in case of the network error"
     override val defaultValue: String = "Once"
 

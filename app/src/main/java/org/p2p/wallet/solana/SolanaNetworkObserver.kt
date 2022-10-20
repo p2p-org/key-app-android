@@ -1,14 +1,11 @@
 package org.p2p.wallet.solana
 
-import androidx.core.content.edit
-import android.content.SharedPreferences
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationTimeFrequencyFeatureToggle
 import org.p2p.wallet.solana.model.NetworkStatusFrequency
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.solana.model.SolanaNetworkState.Idle
@@ -16,28 +13,30 @@ import org.p2p.wallet.solana.model.SolanaNetworkState.Offline
 import org.p2p.wallet.solana.model.SolanaNetworkState.Online
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
 
 private const val SAMPLE_COUNT = 3
 private const val TAG = "NETWORK_OBSERVER"
-
-private const val KEY_MESSAGE_HIDDEN = "KEY_MESSAGE_HIDDEN"
+private const val SECOND_IN_MS = 1000L
 
 class SolanaNetworkObserver(
     private val observationFeatureToggle: NetworkObservationFeatureToggle,
     private val percentFeatureToggle: NetworkObservationPercentFeatureToggle,
-    private val timerFrequencyFeatureToggle: NetworkObservationTimeFrequencyFeatureToggle,
     private val errorFrequencyFeatureToggle: NetworkObservationFrequencyFeatureToggle,
+    private val debounceFeatureToggle: NetworkObservationDebounceFeatureToggle,
     private val rpcSolanaRepository: RpcSolanaRepository,
-    private val sharedPreferences: SharedPreferences,
     private val appScope: AppScope
 ) {
 
     private val state = MutableStateFlow<SolanaNetworkState>(Idle)
+    private var isSnackBarHidden: Boolean = false
+    private var observeJob: Job? = null
 
     private fun updateState(newState: SolanaNetworkState) {
         Timber.tag(TAG).d("Updating the network state: $newState")
@@ -52,7 +51,7 @@ class SolanaNetworkObserver(
             return
         }
 
-        appScope.launch {
+        observeJob = appScope.launch {
             while (isActive) {
                 try {
                     val samples = rpcSolanaRepository.getRecentPerformanceSamples(SAMPLE_COUNT)
@@ -67,9 +66,14 @@ class SolanaNetworkObserver(
                 /*
                 * Checking the network state every 10 seconds
                 * */
-                delay(timerFrequencyFeatureToggle.secondsInMillis)
+                delay(debounceFeatureToggle.value * SECOND_IN_MS)
             }
         }
+    }
+
+    fun stop() {
+        observeJob?.cancel()
+        Timber.tag(TAG).i("Solana network observation has been stopped")
     }
 
     private fun handleSamples(samples: List<RecentPerformanceSample>) {
@@ -90,7 +94,13 @@ class SolanaNetworkObserver(
         currentAverageTps: Int
     ) {
         val oldAverageTps = oldState.averageTps
-        val minAllowedTpsInPercent = percentFeatureToggle.value
+
+        /**
+         * Calculating min allowed TPS decrease
+         * @example
+         * if [percentFeatureToggle.value] -> 70% then [minAllowedTpsInPercent]  is 30%
+         */
+        val minAllowedTpsInPercent = 100 - percentFeatureToggle.value
 
         /*
          * Converting percent in actual TPS (Transactions Per Second) value
@@ -120,9 +130,8 @@ class SolanaNetworkObserver(
     private fun showError() {
         when (errorFrequencyFeatureToggle.frequency) {
             NetworkStatusFrequency.ONCE -> {
-                val isMessageHidden = sharedPreferences.getBoolean(KEY_MESSAGE_HIDDEN, false)
-                val state = if (isMessageHidden) Idle else Offline
-                updateState(state)
+                updateState(Offline)
+                stop()
             }
             NetworkStatusFrequency.MORE_THAN_ONCE -> {
                 updateState(Offline)
@@ -131,6 +140,6 @@ class SolanaNetworkObserver(
     }
 
     fun setSnackbarHidden(isHidden: Boolean) {
-        sharedPreferences.edit { putBoolean(KEY_MESSAGE_HIDDEN, isHidden) }
+        isSnackBarHidden = isHidden
     }
 }
