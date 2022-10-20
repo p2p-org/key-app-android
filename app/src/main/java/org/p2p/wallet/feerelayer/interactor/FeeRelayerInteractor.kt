@@ -220,4 +220,36 @@ class FeeRelayerInteractor(
             feeRelayerRepository.relayTransaction(transaction, statistics)
         }
     }
+
+    suspend fun relayTransactionWithoutPayback(
+        preparedTransaction: PreparedTransaction,
+        additionalPaybackFee: BigInteger,
+        statistics: FeeRelayerStatistics
+    ) {
+        val info = feeRelayerAccountInteractor.getRelayInfo()
+        val feePayer = info.feePayerAddress
+        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+
+        // verify fee payer
+        if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
+            throw IllegalStateException("Invalid fee payer")
+        }
+
+        // Calculate the fee to send back to feePayer
+        // Account creation fee (accountBalances) is a must-pay-back fee
+        var paybackFee = additionalPaybackFee + preparedTransaction.expectedFee.accountBalances
+
+        // The transaction fee, on the other hand, is only be paid if user used more than number of free transaction fee
+        if (!freeTransactionFeeLimit.isFreeTransactionFeeAvailable(preparedTransaction.expectedFee.transaction)) {
+            paybackFee += preparedTransaction.expectedFee.transaction
+        }
+
+        /*
+        * Retrying 3 times to avoid some errors
+        * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
+        * */
+        return retryRequest {
+            feeRelayerRepository.relayTransaction(preparedTransaction.transaction, statistics)
+        }
+    }
 }

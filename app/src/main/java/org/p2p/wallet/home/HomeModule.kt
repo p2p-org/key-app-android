@@ -95,7 +95,8 @@ object HomeModule : InjectionModule {
                 receiveAnalytics = get(),
                 environmentManager = get(),
                 newBuyFeatureToggle = get(),
-                networkType = type
+                networkType = type,
+                userSignUpDetailsStorage = get()
             )
         }
         factory<SendContract.Presenter> {

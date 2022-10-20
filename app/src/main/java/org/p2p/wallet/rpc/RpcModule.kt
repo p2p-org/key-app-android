@@ -77,7 +77,7 @@ object RpcModule : InjectionModule {
         factory {
             TransactionInteractor(get(), get(), get(), get())
         }
-        factory { TokenInteractor(get(), get(), get(), get()) }
+        factory { TokenInteractor(get(), get(), get(), get(), get(), get()) }
 
         factory { RpcSolanaInteractor(get(), get<NetworkEnvironmentManager>().loadRpcEnvironment(), get<AppScope>()) }
 
