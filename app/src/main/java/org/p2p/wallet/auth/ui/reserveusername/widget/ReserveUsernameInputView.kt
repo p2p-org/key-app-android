@@ -32,6 +32,12 @@ class ReserveUsernameInputView @JvmOverloads constructor(
 
     var listener: ReserveUsernameInputViewListener? = null
 
+    var usernamePostfixText: String
+        get() = binding.textViewKeyPostfix.text.toString()
+        set(value) {
+            binding.textViewKeyPostfix.text = value
+        }
+
     init {
         binding.editTextUsername.doAfterTextChanged {
             it?.toString()?.also { listener?.onInputChanged(it) }

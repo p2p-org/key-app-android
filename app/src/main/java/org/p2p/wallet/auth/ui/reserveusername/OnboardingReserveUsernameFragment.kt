@@ -9,6 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputView
 import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputViewListener
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingReserveUsernameBinding
 import org.p2p.wallet.home.MainFragment
@@ -33,8 +34,21 @@ class OnboardingReserveUsernameFragment :
                 .withArgs(ARG_RESERVE_USERNAME_SOURCE to from)
     }
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
+    override val statusBarColor: Int
+        get() = when (openedFromSource) {
+            ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime
+            ReserveUsernameOpenedFrom.SETTINGS -> R.color.backgroundPrimary
+        }
+    override val navBarColor: Int
+        get() = when (openedFromSource) {
+            ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_night
+            ReserveUsernameOpenedFrom.SETTINGS -> R.color.bg_night
+        }
+    private val backgroundColorRes: Int
+        get() = when (openedFromSource) {
+            ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime
+            ReserveUsernameOpenedFrom.SETTINGS -> R.color.bg_rain
+        }
 
     override val presenter: OnboardingReserveUsernameContract.Presenter by inject()
 
@@ -42,6 +56,7 @@ class OnboardingReserveUsernameFragment :
 
     private val openedFromSource: ReserveUsernameOpenedFrom by args(ARG_RESERVE_USERNAME_SOURCE)
     private val isSkipEnabled: RegisterUsernameSkipEnabledFeatureToggle by inject()
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle by inject()
 
     private var clicksBeforeDebugSkip: Int = 2
 
@@ -64,10 +79,13 @@ class OnboardingReserveUsernameFragment :
 
         binding.buttonSubmitUsername.isEnabled = false
         binding.inputViewReserveUsername.listener = ReserveUsernameInputViewListener(presenter::onUsernameInputChanged)
+        binding.inputViewReserveUsername.usernamePostfixText = usernameDomainFeatureToggle.value
 
         binding.buttonSubmitUsername.setOnClickListener {
             presenter.onCreateUsernameClicked()
         }
+
+        binding.root.backgroundTintList = requireContext().getColorStateListCompat(backgroundColorRes)
     }
 
     private fun initQaSkipInstrument() {
