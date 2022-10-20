@@ -83,7 +83,6 @@ class SeedPhraseInteractor(
     suspend fun createAndSaveAccount(
         path: DerivationPath,
         mnemonicPhrase: List<String>,
-        lookupForUsername: Boolean = true
     ) {
         val account = authRepository.createAccount(path, mnemonicPhrase)
         val publicKey = account.publicKey.toBase58()
@@ -93,12 +92,10 @@ class SeedPhraseInteractor(
 
         Timber.i("Account: $publicKey restored using $path")
 
-        if (lookupForUsername) {
-            try {
-                usernameInteractor.checkUsernameByAddress(publicKey.toBase58Instance())
-            } catch (error: Throwable) {
-                Timber.e(error)
-            }
+        try {
+            usernameInteractor.checkUsernameByAddress(publicKey.toBase58Instance())
+        } catch (error: Throwable) {
+            Timber.e(error)
         }
         adminAnalytics.logPasswordCreated()
     }

@@ -145,6 +145,7 @@
     <string name="reserve_username_create_username_button">Create a name</string>
     <string name="reserve_username_create_username_button_not_available">Create another name</string>
     <string name="reserve_username_create_username_error">Something went wrong while the name was booking</string>
+    <string name="reserve_username_create_username_success">🎉 Name was booked</string>
 
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>

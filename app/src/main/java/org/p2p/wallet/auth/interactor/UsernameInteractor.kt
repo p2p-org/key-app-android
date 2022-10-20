@@ -38,7 +38,6 @@ class UsernameInteractor(
         sharedPreferences.edit { putString(KEY_USERNAME, username) }
     }
 
-    @Suppress("UNUSED_PARAMETER", "RedundantSuspendModifier")
     suspend fun checkUsernameByAddress(owner: Base58String) {
         val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
         if (usernameDetails != null) {
