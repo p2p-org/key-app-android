@@ -13,6 +13,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatu
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationTimeFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
@@ -44,5 +45,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::NetworkObservationFeatureToggle)
         factoryOf(::NetworkObservationPercentFeatureToggle)
         factoryOf(::NetworkObservationFrequencyFeatureToggle)
+        factoryOf(::NetworkObservationTimeFrequencyFeatureToggle)
     }
 }

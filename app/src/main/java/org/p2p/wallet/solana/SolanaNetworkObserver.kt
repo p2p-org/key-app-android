@@ -8,6 +8,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationTimeFrequencyFeatureToggle
 import org.p2p.wallet.solana.model.NetworkStatusFrequency
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.solana.model.SolanaNetworkState.Idle
@@ -23,13 +24,13 @@ import kotlinx.coroutines.launch
 
 private const val SAMPLE_COUNT = 3
 private const val TAG = "NETWORK_OBSERVER"
-private const val REQUEST_REPEAT_TIME_IN_MS = 10000L
 
 private const val KEY_MESSAGE_HIDDEN = "KEY_MESSAGE_HIDDEN"
 
 class SolanaNetworkObserver(
     private val observationFeatureToggle: NetworkObservationFeatureToggle,
     private val percentFeatureToggle: NetworkObservationPercentFeatureToggle,
+    private val timerFrequencyFeatureToggle: NetworkObservationTimeFrequencyFeatureToggle,
     private val errorFrequencyFeatureToggle: NetworkObservationFrequencyFeatureToggle,
     private val rpcSolanaRepository: RpcSolanaRepository,
     private val sharedPreferences: SharedPreferences,
@@ -66,7 +67,7 @@ class SolanaNetworkObserver(
                 /*
                 * Checking the network state every 10 seconds
                 * */
-                delay(REQUEST_REPEAT_TIME_IN_MS)
+                delay(timerFrequencyFeatureToggle.secondsInMillis)
             }
         }
     }
