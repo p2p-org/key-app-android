@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogBaseDoneBinding
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.withTextOrGone
 
 /**
  * BaseDoneBottomSheet made to handle cases where you have Done button at them bottom
@@ -26,7 +27,7 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
         const val ARG_RESULT_KEY = "ARG_RESULT_KEY"
     }
 
-    private val title: String by args(ARG_TITLE)
+    private val title: String? by args(ARG_TITLE)
     protected val resultKey: String by args(ARG_RESULT_KEY)
     protected val requestKey: String by args(ARG_REQUEST_KEY)
 
@@ -49,7 +50,7 @@ abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(baseDialogBinding) {
-            textViewTitle.text = title
+            textViewTitle.withTextOrGone(title)
             setCloseClickListener()
             setDoneClickListener()
         }

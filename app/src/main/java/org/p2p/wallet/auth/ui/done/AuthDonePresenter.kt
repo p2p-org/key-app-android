@@ -13,7 +13,7 @@ class AuthDonePresenter(
 ) : BasePresenter<AuthDoneContract.View>(), AuthDoneContract.Presenter {
 
     override fun load() {
-        val username = usernameInteractor.getUsername()?.username
+        val username = usernameInteractor.getUsername()?.value
         view?.showUsername(username)
 
         // Send device push token to NotificationService on creation and restoring the wallet

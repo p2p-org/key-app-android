@@ -21,7 +21,7 @@
 
     <!--    DECOMMENT THE LINE NEEDED DEPENDING ON BUILD-->
     <!--    FOR LOCAL RELEASE BUILDS-->
-    <string name="torusReleaseSubVerifier">android</string>
+    <string name="torusReleaseSubVerifier">android-1</string>
 
     <!--    FOR PLAY STORE RELEASE BUILDS-->
     <!--    <string name="torusReleaseSubVerifier">android-1</string>-->
