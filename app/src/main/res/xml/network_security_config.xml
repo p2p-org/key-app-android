@@ -5,8 +5,12 @@
             <certificates src="user" />
         </trust-anchors>
     </debug-overrides>
-    <!--<base-config cleartextTrafficPermitted="true" />-->
+<!--    <base-config cleartextTrafficPermitted="true" />-->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">35.234.120.240:9090</domain>
+    </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">beardict.net:5051</domain>
+        <domain includeSubdomains="true">beardict.net</domain>
     </domain-config>
 </network-security-config>
