@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.ui.reserveusername
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -15,6 +16,7 @@ import org.p2p.wallet.databinding.FragmentOnboardingReserveUsernameBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getColorStateListCompat
+import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -49,6 +51,11 @@ class OnboardingReserveUsernameFragment :
             ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime
             ReserveUsernameOpenedFrom.SETTINGS -> R.color.bg_rain
         }
+    private val isNavigationBackVisible: Boolean
+        get() = when (openedFromSource) {
+            ReserveUsernameOpenedFrom.ONBOARDING -> false
+            ReserveUsernameOpenedFrom.SETTINGS -> true
+        }
 
     override val presenter: OnboardingReserveUsernameContract.Presenter by inject()
 
@@ -66,16 +73,7 @@ class OnboardingReserveUsernameFragment :
             initQaSkipInstrument()
         }
 
-        if (isSkipEnabled.isFeatureEnabled) {
-            binding.toolbar.inflateMenu(R.menu.menu_close)
-            binding.toolbar.setOnMenuItemClickListener {
-                if (it.itemId == R.id.itemClose) {
-                    close()
-                    return@setOnMenuItemClickListener true
-                }
-                false
-            }
-        }
+        binding.toolbar.initToolbar()
 
         binding.buttonSubmitUsername.isEnabled = false
         binding.inputViewReserveUsername.listener = ReserveUsernameInputViewListener(presenter::onUsernameInputChanged)
@@ -96,6 +94,23 @@ class OnboardingReserveUsernameFragment :
             } else {
                 showUiKitSnackBar("Are you clicking me to skip the username..?! I dare you to click again! 🤬")
             }
+        }
+    }
+
+    private fun UiKitToolbar.initToolbar() {
+        if (isSkipEnabled.isFeatureEnabled) {
+            inflateMenu(R.menu.menu_close)
+            setOnMenuItemClickListener {
+                if (it.itemId == R.id.itemClose) {
+                    close()
+                    return@setOnMenuItemClickListener true
+                }
+                false
+            }
+        }
+        if (isNavigationBackVisible) {
+            navigationIcon = requireContext().getDrawableCompat(R.drawable.ic_back_night)
+            setNavigationOnClickListener { close() }
         }
     }
 
