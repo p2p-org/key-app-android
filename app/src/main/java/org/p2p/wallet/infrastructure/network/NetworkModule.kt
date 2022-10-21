@@ -31,7 +31,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
-import org.p2p.wallet.rpc.RpcModule.RPC_SOLANA_RETROFIT_QUALIFIER
+import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 import retrofit2.Retrofit
@@ -81,7 +81,7 @@ object NetworkModule : InjectionModule {
                 interceptor = RpcInterceptor(get(), get())
             )
         }
-        single(named(RPC_SOLANA_RETROFIT_QUALIFIER)) {
+        single(named(REN_POOL_RETROFIT_QUALIFIER)) {
             val environment = get<NetworkEnvironmentManager>().loadRpcEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(

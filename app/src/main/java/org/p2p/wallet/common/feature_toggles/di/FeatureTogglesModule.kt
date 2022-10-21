@@ -11,6 +11,7 @@ import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesS
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
@@ -36,8 +37,8 @@ object FeatureTogglesModule : InjectionModule {
                 get<BuyWithTransferFeatureToggle>(),
                 get<SettingsNetworkListFeatureToggle>(),
                 get<NetworkObservationFeatureToggle>(),
-                get<UsernameDomainFeatureToggle>(),
                 get<SolendEnabledFeatureToggle>(),
+                get<UsernameDomainFeatureToggle>(),
                 get<UsernameDomainFeatureToggle>(),
                 get<RegisterUsernameEnabledFeatureToggle>(),
                 get<RegisterUsernameSkipEnabledFeatureToggle>(),
@@ -52,6 +53,7 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::NetworkObservationFeatureToggle)
         factoryOf(::NetworkObservationPercentFeatureToggle)
         factoryOf(::NetworkObservationFrequencyFeatureToggle)
+        factoryOf(::NetworkObservationDebounceFeatureToggle)
         factoryOf(::UsernameDomainFeatureToggle)
         factoryOf(::RegisterUsernameEnabledFeatureToggle)
         factoryOf(::RegisterUsernameSkipEnabledFeatureToggle)

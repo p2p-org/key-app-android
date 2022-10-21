@@ -113,4 +113,13 @@
     <string name="solend_transaction_free_fee_message">On the Solana network, the first 100 transactions in a day are paid by P2P.org</string>
     <string name="solend_transaction_free_fee_button">Awesome</string>
 
+    <!--Solend Stub-->
+    <string name="solend_stub_title">Earn on your funds</string>
+    <string name="solend_stub_feature_1">• Deposit your crypto</string>
+    <string name="solend_stub_feature_2">• Earn up to 6% on USD</string>
+    <string name="solend_stub_feature_3">• Convenient and flexible</string>
+    <string name="solend_stub_feature_4_dot">•</string>
+    <string name="solend_stub_feature_4">Withdraw rewards or funds at any time</string>
+    <string name="solend_stub_button">Coming soon…</string>
+
 </resources>
