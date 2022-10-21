@@ -308,13 +308,16 @@
     <string name="receive_solana_info">The Solana Program Library (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain.\n\nSimilar to ERC-20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications.</string>
     <string name="receive_bitcoin_info">When you choose the Bitcoin network, your address accepts only Bitcoin. You may lose assets by sending another coin.\n\n0.000144 BTC is the minimum transaction amount, and you have 36 hours to complete the transaction after receiving the address.</string>
     <string name="receive_via_bitcoin_network">Receiving via Bitcoin network</string>
+    <string name="create_bitcoin_address">Create Bitcoin address</string>
     <string name="receive_via_bitcoin_network_info">Make sure you understand these aspects</string>
     <string name="receive_understand">I understand</string>
     <string name="receive_token_list_search">Search for a token</string>
     <string name="receive_no_transactions_yet_message">After first transaction you will be\nable to view it here</string>
     <string name="receive_btc_buy_info">• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b> You can choose\n\t\twhich currency to pay in below.</string>
     <string name="receive_btc_topup_info">• A <b>renBTC account is required</b> to receive\n\t\tbitcoins over the Bitcoin network.\n\n• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b>\n\n• You <b>don\'t have funds</b> to pay for account\n\t\tcreation, but if someone sends renBTC to\n\t\tyour address, it will be created for you.</string>
+    <string name="receive_btc_for_free_info">• You\'re going to create a public Bitcoin\n\t\taddress that will be valid for the next <b>24\n\t\thours</b>. You still can hold and send Bitcoin\n\t\twithout restrictions.\n\n• It\'s a <b>one-time address</b>, so if you send\n\t\tmultiple transactions, your money will be\n\t\tlost.</string>
     <string name="receive_topup_your_account">Top up your account</string>
+    <string name="receive_create_address">Create address</string>
     <string name="receive_share_your_solana_network_address">Share your Solana network address</string>
     <string name="receive_you_can_receive_token_message">You can receive %s by providing this\naddress, QR code or username:</string>
     <string name="receive_direct_token_address">Direct %s Address</string>

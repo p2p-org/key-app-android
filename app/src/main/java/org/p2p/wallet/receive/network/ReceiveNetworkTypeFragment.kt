@@ -16,6 +16,7 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.renbtc.ui.info.RenBtcBuyBottomSheet
+import org.p2p.wallet.renbtc.ui.info.RenBtcCreateByFeeRelayBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcInfoBottomSheet
 import org.p2p.wallet.renbtc.ui.info.RenBtcTopupBottomSheet
 import org.p2p.wallet.send.model.NetworkType
@@ -128,6 +129,14 @@ class ReceiveNetworkTypeFragment :
             fm = childFragmentManager,
             priceInSol = priceInSol,
             priceInUsd = priceInUsd,
+            requestKey = REQUEST_KEY,
+            resultKey = BUNDLE_KEY_IS_BUY_SELECTED
+        )
+    }
+
+    override fun showCreateByFeeRelay() {
+        RenBtcCreateByFeeRelayBottomSheet.show(
+            fm = childFragmentManager,
             requestKey = REQUEST_KEY,
             resultKey = BUNDLE_KEY_IS_BUY_SELECTED
         )

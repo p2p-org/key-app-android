@@ -1,6 +1,7 @@
 package org.p2p.wallet.rpc
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -85,7 +86,7 @@ object RpcModule : InjectionModule {
         factory {
             TransactionInteractor(get(), get(), get(), get())
         }
-        factory { TokenInteractor(get(), get(), get(), get()) }
+        factoryOf(::TokenInteractor)
 
         factory { RpcSolanaInteractor(get(), get<NetworkEnvironmentManager>().loadRpcEnvironment(), get<AppScope>()) }
 
