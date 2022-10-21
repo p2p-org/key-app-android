@@ -52,7 +52,7 @@ class TokenInteractor(
         return if (isWeb3AuthUser) {
             createAccountByFeeRelayer(mintAddress)
         } else {
-            createAccount(mintAddress)
+            createTokenAccount(mintAddress)
         }
     }
 
