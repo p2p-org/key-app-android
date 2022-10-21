@@ -31,7 +31,6 @@ class NetworkEnvironmentManager(
         val networksFromRemoteConfig = networkListFeatureToggle.value.map { it.url }
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
         return NetworkEnvironment.values().filter(isNetworkAvailable)
-            .let { if (BuildConfig.DEBUG) it + NetworkEnvironment.DEVNET else it }
     }
 
     fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {
@@ -59,12 +58,11 @@ class NetworkEnvironmentManager(
     }
 
     private fun getDefaultAvailableNetwork(): NetworkEnvironment {
-        return NetworkEnvironment.DEVNET
-//        return if (NetworkEnvironment.RPC_POOL in availableNetworks) {
-//            NetworkEnvironment.RPC_POOL
-//        } else {
-//            availableNetworks.first()
-//        }
+        return if (NetworkEnvironment.RPC_POOL in availableNetworks) {
+            NetworkEnvironment.RPC_POOL
+        } else {
+            availableNetworks.first()
+        }
     }
 
     fun loadRpcEnvironment(): RpcEnvironment = if (loadCurrentEnvironment() == NetworkEnvironment.DEVNET) {
