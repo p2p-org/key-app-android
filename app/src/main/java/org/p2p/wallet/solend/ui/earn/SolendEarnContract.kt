@@ -17,6 +17,7 @@ interface SolendEarnContract {
         fun showDepositToSolend(deposit: SolendDepositToken)
         fun showAvailableDeposits(deposits: List<SolendDepositToken>)
         fun navigateToUserDeposits(deposits: List<SolendDepositToken.Active>)
+        fun navigateToFaq()
         fun showSolendOnboarding()
     }
 

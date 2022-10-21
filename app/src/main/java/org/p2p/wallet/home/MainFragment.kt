@@ -26,7 +26,6 @@ import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
-import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
@@ -102,7 +101,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
             val fragment = when (clickedTab) {
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
-                ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
+                ScreenTab.EARN_SCREEN -> SolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
                 else -> error("No tab found for $clickedTab")
