@@ -10,6 +10,7 @@ import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
+import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.solanaj.utils.crypto.Base64Utils
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 
@@ -43,6 +44,16 @@ class RpcSolanaRemoteRepository(
                 slot = it.slot,
             )
         }
+    }
+
+    /**
+     * @return confirmed signature
+     */
+    override suspend fun sendSerializedTransaction(serializedTransaction: Base64String): String {
+        val params = listOf(serializedTransaction, RpcSendTransactionConfig())
+        return api.sendTransaction(
+            RpcRequest(method = "sendTransaction", params = params)
+        ).result
     }
 
     override suspend fun getConfirmedSignaturesForAddress(

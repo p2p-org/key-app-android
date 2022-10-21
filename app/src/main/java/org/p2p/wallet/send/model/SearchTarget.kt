@@ -1,16 +1,16 @@
 package org.p2p.wallet.send.model
 
-import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.renbtc.utils.BitcoinAddressValidator
+import kotlinx.parcelize.IgnoredOnParcel
 
-data class Target constructor(
-    val value: String
+data class SearchTarget(
+    val value: String,
+    val keyAppDomainIfUsername: String
 ) {
 
     companion object {
         private const val USERNAME_MAX_LENGTH = 15
-        private const val P2P_DOMAIN = ".p2p.sol"
         private const val SOL_DOMAIN = ".sol"
     }
 
@@ -37,7 +37,7 @@ data class Target constructor(
 
     private fun checkAndTrimName(value: String): String {
         return when {
-            value.endsWith(P2P_DOMAIN) ||
+            value.endsWith(keyAppDomainIfUsername) ||
                 value.endsWith(SOL_DOMAIN) ||
                 value.contains(".") -> {
                 val firstDotIndex = value.indexOf(".")
@@ -47,7 +47,9 @@ data class Target constructor(
                     value
                 }
             }
-            else -> value.replace(".", "")
+            else -> {
+                value.replace(".", "")
+            }
         }
     }
 

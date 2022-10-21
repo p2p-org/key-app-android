@@ -75,14 +75,14 @@
         android:gravity="center"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
         android:textColor="@color/text_night"
-        app:layout_constraintBottom_toTopOf="@id/containerBottomButtons"
+        app:layout_constraintBottom_toTopOf="@id/containerBottomButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewErrorEmail"
         tools:text="We’ve broke something really big. Let’s wait together, finally the app will be repaired. \n\n If you will write us, use error code: %1$s" />
 
     <LinearLayout
-        android:id="@+id/containerBottomButtons"
+        android:id="@+id/containerBottomButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_night_top_rounded"

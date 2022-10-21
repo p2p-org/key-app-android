@@ -6,7 +6,6 @@ import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.appsflyer.deeplink.DeepLinkResult
 import com.google.firebase.messaging.RemoteMessage
-import org.p2p.wallet.BuildConfig
 import timber.log.Timber
 
 private const val UNINSTALL_APP_KEY = "af-uinstall-tracking"
@@ -19,7 +18,7 @@ class AppsFlyerService(private val context: Context) {
     fun install(application: Application, devKey: String) {
         val appsFlyer = AppsFlyerLib.getInstance()
         kotlin.runCatching {
-            appsFlyer.setDebugLog(BuildConfig.DEBUG)
+            appsFlyer.setDebugLog(false) // turn to true if needed
             appsFlyer.init(devKey, listener, application)
             appsFlyer.start(application)
             setupListeners()

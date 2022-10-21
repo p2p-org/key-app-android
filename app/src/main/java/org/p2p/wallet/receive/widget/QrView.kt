@@ -73,7 +73,7 @@ class QrView @JvmOverloads constructor(
         }
     }
 
-    fun getName() = binding.nameTextView.text.toString()
+    fun getName(): String = binding.nameTextView.text.toString()
 
     fun setImage(bitmap: Bitmap) {
         binding.qrImageView.setImageBitmap(bitmap)

@@ -1,7 +1,7 @@
 package org.p2p.wallet.infrastructure.network.environment
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
+import android.content.SharedPreferences
 import org.p2p.solanaj.rpc.RpcEnvironment
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle

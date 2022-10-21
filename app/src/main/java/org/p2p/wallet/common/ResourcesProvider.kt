@@ -1,9 +1,10 @@
 package org.p2p.wallet.common
 
+import androidx.annotation.ColorRes
+import androidx.annotation.IntegerRes
+import androidx.annotation.StringRes
 import android.content.Context
 import android.content.res.Resources
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
 
 class ResourcesProvider(private val context: Context) {
 
@@ -18,4 +19,6 @@ class ResourcesProvider(private val context: Context) {
     } else {
         getString(stringRes)
     }
+
+    fun getInteger(@IntegerRes integerRes: Int): Int = context.resources.getInteger(integerRes)
 }

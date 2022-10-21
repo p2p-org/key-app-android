@@ -6,6 +6,7 @@ import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
+import org.p2p.solanaj.utils.crypto.Base64String
 
 interface RpcSolanaRepository {
     suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo
@@ -15,4 +16,6 @@ interface RpcSolanaRepository {
         mintLogAccount: PublicKey,
         limit: Int
     ): List<SignatureInformationResponse>
+
+    suspend fun sendSerializedTransaction(serializedTransaction: Base64String): String
 }

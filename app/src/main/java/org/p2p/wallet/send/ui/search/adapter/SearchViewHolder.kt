@@ -1,28 +1,21 @@
 package org.p2p.wallet.send.ui.search.adapter
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
 
 class SearchViewHolder(
-    binding: ItemSearchBinding,
-    private val onItemClicked: (SearchResult) -> Unit
+    parent: ViewGroup,
+    private val onItemClicked: (SearchResult) -> Unit,
+    binding: ItemSearchBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : RecyclerView.ViewHolder(binding.root) {
-
-    constructor(
-        parent: ViewGroup,
-        onItemClicked: (SearchResult) -> Unit
-    ) : this(
-        binding = ItemSearchBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-        onItemClicked = onItemClicked
-    )
 
     private val topTextView = binding.topTextView
     private val bottomTextView = binding.bottomTextView

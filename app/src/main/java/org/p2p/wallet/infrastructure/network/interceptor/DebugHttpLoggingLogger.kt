@@ -6,6 +6,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.p2p.wallet.utils.invokeAndForget
 import timber.log.Timber
 
+private const val TAG = "_DebugLogger"
+
 class DebugHttpLoggingLogger(
     private val gson: Gson,
     private val logTag: String
@@ -17,16 +19,16 @@ class DebugHttpLoggingLogger(
         }
 
         if (!message.startsWith('{') && !message.startsWith('[')) {
-            Timber.tag(logTag).d(message)
+            Timber.tag(logTag + TAG).d(message)
             return
         }
 
         kotlin.runCatching {
             val parsedJson = JsonParser.parseString(message).let { gson.toJson(it) }
-            Timber.tag(logTag).d(parsedJson)
+            Timber.tag(logTag + TAG).d(parsedJson)
         }
             .onFailure {
-                with(Timber.tag(logTag)) {
+                with(Timber.tag(logTag + TAG)) {
                     d(message)
                     w(it)
                 }

@@ -1,11 +1,13 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
-import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernameFragment
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -60,6 +62,8 @@ class NewCreatePinFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             presenter.onBackPressed()
         }
+
+        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_introduction)
     }
 
     private fun UiKitToolbar.initToolbar() {
@@ -120,6 +124,15 @@ class NewCreatePinFragment :
         binding.pinView.onSuccessPin()
 
         popAndReplaceFragment(MainFragment.create(), inclusive = true)
+    }
+
+    override fun navigateToRegisterUsername() {
+        binding.pinView.onSuccessPin()
+
+        popAndReplaceFragment(
+            OnboardingReserveUsernameFragment.create(ReserveUsernameOpenedFrom.ONBOARDING),
+            inclusive = true
+        )
     }
 
     override fun showBiometricDialog(biometricCipher: Cipher) {

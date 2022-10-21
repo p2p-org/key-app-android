@@ -59,7 +59,7 @@ object HomeModule : InjectionModule {
         }
         factory {
             SearchInteractor(
-                usernameInteractor = get(),
+                usernameRepository = get(),
                 userInteractor = get(),
                 tokenKeyProvider = get()
             )
@@ -111,11 +111,12 @@ object HomeModule : InjectionModule {
                 sendAnalytics = get(),
                 transactionManager = get(),
                 resourcesProvider = get(),
-                dispatchers = get(),
+                usernameDomainFeatureToggle = get(),
+                dispatchers = get()
             )
         }
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            SearchPresenter(usernames = usernames, searchInteractor = get())
+            SearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
         }
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(
