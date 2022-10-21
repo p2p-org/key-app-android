@@ -11,6 +11,7 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
     val isPollingEnabled = PollingFeatureFlag(prefs)
     var isDevNetEnabled = DevNetFeatureFlag(prefs)
     var useCoinGeckoForPrices = CoinGeckoFeatureFlag(prefs)
+
     /**
      * Allows to override values from FirebaseRemoteConfig
      */
