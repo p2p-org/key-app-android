@@ -123,9 +123,9 @@ class ReceiveNetworkTypePresenter(
 
                     val isWeb3AuthUser = userSignUpDetailsStorage.getLastSignUpUserDetails() != null
                     if (isWeb3AuthUser) {
-                        createBtcWallet(sol)
-                    } else {
                         showCreateByFeeRelay()
+                    } else {
+                        createBtcWallet(sol)
                     }
                 } else {
                     launchRenBtcSession()
