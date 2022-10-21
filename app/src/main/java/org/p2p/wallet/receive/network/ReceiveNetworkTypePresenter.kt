@@ -90,6 +90,7 @@ class ReceiveNetworkTypePresenter(
     override fun onBuySelected(isSelected: Boolean) {
         launch {
             try {
+                view?.showLoading(true)
                 val mintAddress = when (environmentManager.loadCurrentEnvironment()) {
                     NetworkEnvironment.DEVNET -> Constants.REN_BTC_DEVNET_MINT
                     else -> Constants.REN_BTC_DEVNET_MINT_ALTERNATE
@@ -99,6 +100,8 @@ class ReceiveNetworkTypePresenter(
             } catch (e: Exception) {
                 Timber.e("Error on launching RenBtc session $e")
                 view?.showErrorMessage(e)
+                view?.showLoading(false)
+
             }
         }
     }
