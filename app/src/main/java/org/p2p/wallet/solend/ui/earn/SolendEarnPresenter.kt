@@ -137,6 +137,7 @@ class SolendEarnPresenter(
         when {
             newDeposits.sumOf { (it as? SolendDepositToken.Active)?.usdAmount.orZero() } == BigDecimal.ZERO -> {
                 view?.showWidgetState(EarnWidgetState.LearnMore)
+                view?.bindWidgetActionButton { view?.navigateToFaq() }
             }
             newDeposits.any { it.supplyInterest == null } -> {
                 showDepositsWidgetError()
