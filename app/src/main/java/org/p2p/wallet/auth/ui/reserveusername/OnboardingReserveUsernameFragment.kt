@@ -14,6 +14,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingReserveUsernameBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getColorStateListCompat
 import org.p2p.wallet.utils.getDrawableCompat
@@ -158,10 +159,26 @@ class OnboardingReserveUsernameFragment :
         binding.buttonSubmitUsername.setTextColorRes(R.color.text_night)
     }
 
-    override fun close() {
+    override fun closeWithSuccess() {
+        close(isUsernameCreated = true)
+    }
+
+    private fun close(isUsernameCreated: Boolean = false) {
         when (openedFromSource) {
             ReserveUsernameOpenedFrom.ONBOARDING -> {
-                popAndReplaceFragment(MainFragment.create(), inclusive = true)
+                val mainFragmentActions = if (isUsernameCreated) {
+                    arrayOf(
+                        MainFragmentOnCreateAction.ShowSnackbar(R.string.reserve_username_create_username_success),
+                        MainFragmentOnCreateAction.PlayAnimation(R.raw.raw_animation_applause)
+                    )
+                } else {
+                    emptyArray()
+                }
+
+                popAndReplaceFragment(
+                    MainFragment.create(mainFragmentActions),
+                    inclusive = true
+                )
             }
             ReserveUsernameOpenedFrom.SETTINGS -> {
                 popBackStack()

@@ -1,18 +1,21 @@
 package org.p2p.wallet.common.mvp
 
-import android.os.Bundle
-import android.view.View
-import android.view.WindowManager
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.annotation.ColorRes
 import androidx.annotation.LayoutRes
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
+import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
+import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
@@ -149,5 +152,33 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is ReceiveNetworkTypeFragment -> ScreenNames.Receive.NETWORK
         is SendFragment -> ScreenNames.Send.MAIN
         else -> emptyString()
+    }
+
+    override fun showUiKitSnackBar(
+        message: String?,
+        messageResId: Int?,
+        onDismissed: () -> Unit,
+        actionButtonResId: Int?,
+        actionBlock: ((Snackbar) -> Unit)?
+    ) {
+        require(message != null || messageResId != null) {
+            "Snackbar text must be set from `message` or `messageResId` params"
+        }
+        val snackbarText: String = message ?: messageResId?.let(::getString)!!
+        val root = requireActivity().findViewById<View>(android.R.id.content) as ViewGroup
+        if (actionButtonResId != null && actionBlock != null) {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                actionButtonText = getString(actionButtonResId),
+                actionButtonListener = actionBlock,
+                style = snackbarStyle
+            )
+        } else {
+            root.showSnackbarShort(
+                snackbarText = snackbarText,
+                onDismissed = onDismissed,
+                style = snackbarStyle
+            )
+        }
     }
 }

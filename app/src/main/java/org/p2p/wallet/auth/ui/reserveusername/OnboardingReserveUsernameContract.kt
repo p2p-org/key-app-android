@@ -10,7 +10,7 @@ interface OnboardingReserveUsernameContract {
         fun showUsernameIsChecking()
         fun showUsernameInvalid()
         fun showCreateUsernameFailed()
-        fun close()
+        fun closeWithSuccess()
     }
 
     interface Presenter : MvpPresenter<View> {
