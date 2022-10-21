@@ -9,8 +9,8 @@
 
     <string name="solanaTokensBaseUrl">https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/</string>
 
-    <string name="feeRelayerBaseUrl">https://fee-relayer.solana.p2p.org/</string>
-    <string name="feeRelayerTestBaseUrl">https://test-solana-fee-relayer.wallet.p2p.org/</string>
+    <string name="feeRelayerBaseUrl">https://fee-relayer.key.app/</string>
+    <string name="feeRelayerTestBaseUrl">https://fee-relayer.keyapp.org/</string>
 
     <string name="torusBaseUrl">https://metadata.tor.us</string>
     <string name="torusTestUrl">http://beardict.net:5051</string>

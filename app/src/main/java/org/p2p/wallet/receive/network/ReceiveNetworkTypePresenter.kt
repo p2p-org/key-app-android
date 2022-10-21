@@ -1,8 +1,6 @@
 package org.p2p.wallet.receive.network
 
-import kotlinx.coroutines.launch
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
-import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
@@ -23,6 +21,7 @@ import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,
@@ -32,7 +31,6 @@ class ReceiveNetworkTypePresenter(
     private val tokenInteractor: TokenInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val environmentManager: NetworkEnvironmentManager,
-    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
@@ -94,13 +92,7 @@ class ReceiveNetworkTypePresenter(
                     NetworkEnvironment.DEVNET -> Constants.REN_BTC_DEVNET_MINT
                     else -> Constants.REN_BTC_DEVNET_MINT_ALTERNATE
                 }
-                val isWeb3AuthUser =
-                    userSignUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey != null
-                if (isWeb3AuthUser) {
-                    tokenInteractor.createAccountForFree(mintAddress)
-                } else {
-                    tokenInteractor.createAccount(mintAddress)
-                }
+                tokenInteractor.createAccount(mintAddress)
                 view?.navigateToReceive(selectedNetworkType)
             } catch (e: Exception) {
                 Timber.e("Error on launching RenBtc session $e")

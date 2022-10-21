@@ -1,6 +1,5 @@
 package org.p2p.wallet.feerelayer.interactor
 
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
@@ -9,8 +8,8 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenInfo
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
@@ -22,6 +21,7 @@ import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
 import org.p2p.wallet.utils.retryRequest
 import java.math.BigInteger
+import kotlinx.coroutines.withContext
 
 class FeeRelayerInteractor(
     private val feeRelayerRepository: FeeRelayerRepository,
@@ -223,25 +223,14 @@ class FeeRelayerInteractor(
 
     suspend fun relayTransactionWithoutPayback(
         preparedTransaction: PreparedTransaction,
-        additionalPaybackFee: BigInteger,
         statistics: FeeRelayerStatistics
-    ) {
+    ): String {
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val feePayer = info.feePayerAddress
-        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
         // verify fee payer
         if (!feePayer.equals(preparedTransaction.transaction.feePayer)) {
             throw IllegalStateException("Invalid fee payer")
-        }
-
-        // Calculate the fee to send back to feePayer
-        // Account creation fee (accountBalances) is a must-pay-back fee
-        var paybackFee = additionalPaybackFee + preparedTransaction.expectedFee.accountBalances
-
-        // The transaction fee, on the other hand, is only be paid if user used more than number of free transaction fee
-        if (!freeTransactionFeeLimit.isFreeTransactionFeeAvailable(preparedTransaction.expectedFee.transaction)) {
-            paybackFee += preparedTransaction.expectedFee.transaction
         }
 
         /*
@@ -249,7 +238,7 @@ class FeeRelayerInteractor(
         * For example: fee relayer balance is not updated yet and request will fail with insufficient balance error
         * */
         return retryRequest {
-            feeRelayerRepository.relayTransaction(preparedTransaction.transaction, statistics)
+            feeRelayerRepository.relayTransaction(preparedTransaction.transaction, statistics).firstOrNull().orEmpty()
         }
     }
 }

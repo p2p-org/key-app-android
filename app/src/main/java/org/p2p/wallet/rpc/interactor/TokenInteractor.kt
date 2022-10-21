@@ -6,6 +6,7 @@ import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
@@ -13,7 +14,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.history.RpcHistoryRepository
 import org.p2p.wallet.utils.toPublicKey
-import java.math.BigInteger
 
 class TokenInteractor(
     private val rpcRepository: RpcHistoryRepository,
@@ -21,6 +21,7 @@ class TokenInteractor(
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
@@ -45,7 +46,17 @@ class TokenInteractor(
         return rpcRepository.sendTransaction(transaction)
     }
 
-    suspend fun createAccount(
+    suspend fun createAccount(mintAddress: String): String {
+        val signUpDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails
+        val isWeb3AuthUser = signUpDetails?.ethereumPublicKey != null
+        return if (isWeb3AuthUser) {
+            createAccountByFeeRelayer(mintAddress)
+        } else {
+            createAccount(mintAddress)
+        }
+    }
+
+    suspend fun createTokenAccount(
         mintAddress: String
     ): String {
 
@@ -81,9 +92,7 @@ class TokenInteractor(
         return rpcRepository.sendTransaction(transaction)
     }
 
-    suspend fun createAccountForFree(
-        mintAddress: String
-    ) {
+    private suspend fun createAccountByFeeRelayer(mintAddress: String): String {
         val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
 
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
@@ -113,6 +122,6 @@ class TokenInteractor(
 
         val preparedTransaction = PreparedTransaction(transaction, emptyList(), FeeAmount())
         val statistics = FeeRelayerStatistics(OperationType.OTHER, mintAddress)
-        feeRelayerInteractor.relayTransactionWithoutPayback(preparedTransaction, BigInteger.ZERO, statistics)
+        return feeRelayerInteractor.relayTransactionWithoutPayback(preparedTransaction, statistics)
     }
 }
