@@ -6,6 +6,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
+import io.intercom.android.sdk.Intercom
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
@@ -94,6 +95,10 @@ class SolendEarnFragment :
 
     override fun navigateToUserDeposits(deposits: List<SolendDepositToken.Active>) {
         replaceFragment(SolendUserDepositsFragment.create(deposits))
+    }
+
+    override fun navigateToFaq() {
+        Intercom.client().displayHelpCenter()
     }
 
     override fun showSolendOnboarding() {

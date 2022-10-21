@@ -94,6 +94,7 @@ class SolendTopUpBottomSheetFragment :
 
     override fun showBuyScreen(token: Token) {
         replaceFragment(NewBuyFragment.create(token))
+        dismissAllowingStateLoss()
     }
 
     override fun showReceiveScreen(token: Token) {
@@ -102,5 +103,6 @@ class SolendTopUpBottomSheetFragment :
         } else {
             replaceFragment(ReceiveSolanaFragment.create(token))
         }
+        dismissAllowingStateLoss()
     }
 }

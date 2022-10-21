@@ -20,7 +20,6 @@ class FeatureTogglesPresenter(
         inAppFeatureFlags.findFeatureFlagByName(toggle.toggleName)
             ?.let { inAppFlag -> inAppFlag.featureValue = newValue.toBoolean() }
             ?: debugRemoteConfigValuesSource.changeFeatureToggle(toggle.toggleName, newValue)
-
         load()
     }
 

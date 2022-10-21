@@ -21,6 +21,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
+import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
@@ -48,7 +49,8 @@ class HomePresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val homeElementItemMapper: HomeElementItemMapper,
     private val resourcesProvider: ResourcesProvider,
-    private val newBuyFeatureToggle: NewBuyFeatureToggle
+    private val newBuyFeatureToggle: NewBuyFeatureToggle,
+    private val networkObserver: SolanaNetworkObserver
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var fallbackUsdcTokenForBuy: Token? = null
@@ -57,6 +59,10 @@ class HomePresenter(
     init {
         launch {
             fallbackUsdcTokenForBuy = userInteractor.getTokensForBuy(listOf(USDC_SYMBOL)).firstOrNull()
+        }
+        // TODO maybe we can find better place to start this service
+        launch {
+            networkObserver.start()
         }
     }
 

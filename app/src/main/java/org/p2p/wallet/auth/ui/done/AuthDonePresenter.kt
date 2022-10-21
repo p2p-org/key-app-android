@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.ui.done
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
+import kotlinx.coroutines.launch
 
 class AuthDonePresenter(
     private val usernameInteractor: UsernameInteractor,

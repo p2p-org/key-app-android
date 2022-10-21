@@ -40,6 +40,7 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
+import org.p2p.wallet.utils.viewbinding.getColor
 import java.math.BigDecimal
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
@@ -267,7 +268,6 @@ class HomeFragment :
 
     override fun showBalance(balance: BigDecimal) {
         binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatUsd())
-        binding.viewBalance.textViewTitle.setText(R.string.home_balance_title)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
@@ -283,7 +283,10 @@ class HomeFragment :
             viewActionButtons.root.isVisible = !isEmpty
             viewBalance.root.isVisible = !isEmpty
             val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
-            if (homeRecyclerView.adapter != updatedAdapter) homeRecyclerView.adapter = updatedAdapter
+            if (homeRecyclerView.adapter != updatedAdapter) {
+                homeRecyclerView.adapter = updatedAdapter
+            }
+            homeRecyclerView.setBackgroundColor(getColor(if (isEmpty) R.color.bg_smoke else R.color.bg_snow))
         }
     }
 

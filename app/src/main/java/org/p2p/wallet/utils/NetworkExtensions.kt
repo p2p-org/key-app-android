@@ -1,6 +1,7 @@
 package org.p2p.wallet.utils
 
 import okhttp3.Request
+import okhttp3.Response
 import okio.Buffer
 import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.data.ServerException
@@ -20,3 +21,5 @@ fun Request.bodyAsString(): String = kotlin.runCatching {
     buffer.readUtf8()
 }
     .getOrDefault("")
+
+fun Response.bodyAsString(): String = peekBody(Long.MAX_VALUE).string()

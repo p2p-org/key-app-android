@@ -4,14 +4,13 @@ import androidx.biometric.BiometricManager
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.api.UsernameApi
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
 import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -34,8 +33,6 @@ import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.repository.UsernameRemoteRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.ui.done.AuthDoneContract
 import org.p2p.wallet.auth.ui.done.AuthDonePresenter
@@ -61,6 +58,9 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
+import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernameContract
+import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernamePresenter
+import org.p2p.wallet.auth.ui.reserveusername.UsernameValidator
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreContract
 import org.p2p.wallet.auth.ui.restore.common.CommonRestorePresenter
 import org.p2p.wallet.auth.ui.restore.found.WalletFoundContract
@@ -78,48 +78,55 @@ import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyPresenter
+import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
-import org.p2p.wallet.feerelayer.FeeRelayerModule.FEE_RELAYER_QUALIFIER
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.splash.SplashContract
 import org.p2p.wallet.splash.SplashPresenter
-import retrofit2.Retrofit
 
 object AuthModule {
 
     fun create() = module {
-
-        onboardingModule()
-
         single { BiometricManager.from(androidContext()) }
 
         factoryOf(::AuthInteractor)
-        factory {
-            AuthLogoutInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
-        }
         factoryOf(::AuthRemoteRepository) bind AuthRepository::class
-        factory { FileRepository(get(), get()) }
-        factory { SecurityKeyPresenter(get(), get(), get(), get()) } bind SecurityKeyContract.Presenter::class
-        factory { CreatePinPresenter(get(), get(), get(), get(), get()) } bind CreatePinContract.Presenter::class
-        factory { SignInPinPresenter(get(), get(), get(), get(), get()) } bind SignInPinContract.Presenter::class
-        factory { SplashPresenter(get()) } bind SplashContract.Presenter::class
-        factory { VerifySecurityKeyPresenter(get(), get(), get()) } bind VerifySecurityKeyContract.Presenter::class
-        factory { AuthDonePresenter(get(), get(), get()) } bind AuthDoneContract.Presenter::class
+        factoryOf(::FileRepository)
+        factoryOf(::SecurityKeyPresenter) bind SecurityKeyContract.Presenter::class
+        factoryOf(::CreatePinPresenter) bind CreatePinContract.Presenter::class
+        factoryOf(::SignInPinPresenter) bind SignInPinContract.Presenter::class
+        factoryOf(::SplashPresenter) bind SplashContract.Presenter::class
+        factoryOf(::VerifySecurityKeyPresenter) bind VerifySecurityKeyContract.Presenter::class
+        factoryOf(::AuthDonePresenter) bind AuthDoneContract.Presenter::class
+        factory {
+            AuthLogoutInteractor(
+                context = get(),
+                secureStorage = get(),
+                renBtcInteractor = get(),
+                sharedPreferences = get(),
+                tokenKeyProvider = get(),
+                mainLocalRepository = get(),
+                updatesManager = get(),
+                transactionManager = get(),
+                transactionDetailsLocalRepository = get(),
+                pushNotificationsInteractor = get(),
+                appScope = get(),
+                analytics = get(),
+            )
+        }
 
-        // reserving username
-        factory { UsernameInteractor(get(), get(), get(), get()) }
-        factory { ReserveUsernamePresenter(get(), get(), get()) } bind ReserveUsernameContract.Presenter::class
-        factory { UsernamePresenter(get(), get(), get()) } bind UsernameContract.Presenter::class
-        single {
-            val retrofit = get<Retrofit>(named(FEE_RELAYER_QUALIFIER))
-            val api = retrofit.create(UsernameApi::class.java)
-            UsernameRemoteRepository(api)
-        } bind UsernameRepository::class
+        usernameModule()
+        onboardingModule()
+        includes(RegisterUsernameServiceModule.create(), GatewayServiceModule.create())
+    }
 
-        includes(GatewayServiceModule.create())
+    private fun Module.usernameModule() {
+        factoryOf(::UsernameInteractor)
+        factoryOf(::ReserveUsernamePresenter) { bind<ReserveUsernameContract.Presenter>() }
+        factoryOf(::UsernamePresenter) { bind<UsernameContract.Presenter>() }
     }
 
     private fun Module.onboardingModule() {
@@ -181,6 +188,11 @@ object AuthModule {
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
         factoryOf(::RestoreWalletInteractor)
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
+
+        factoryOf(::OnboardingReserveUsernamePresenter) {
+            bind<OnboardingReserveUsernameContract.Presenter>()
+        }
+        factoryOf(::UsernameValidator)
 
         singleOf(::RestoreFlowDataLocalRepository)
         factoryOf(::CustomShareRestoreInteractor)

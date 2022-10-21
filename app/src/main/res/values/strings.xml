@@ -33,6 +33,7 @@
     <string name="common_transaction_details">Transaction details</string>
     <string name="common_error">Error</string>
     <string name="common_hide">Hide</string>
+    <string name="common_skip">Skip</string>
     <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
@@ -129,13 +130,11 @@
     <string name="auth_use_any_latin">No more than 15 alphanumerical latin lowercase characters and dashes</string>
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
     <string name="auth_clickable_skip_this_step">skip this step</string>
-    <string name="auth_p2p_sol">.p2p.sol</string>
-    <string name="auth_name_p2p_sol">%s.p2p.sol</string>
     <string name="auth_available_name">%1$s is available</string>
     <string name="auth_unavailable_name">%1$s is unavailable</string>
     <string name="auth_username_length_error">Enter a name under %d characters</string>
     <string name="auth_username">Your username</string>
-    <string name="auth_your_p2p_username">Your P2P username allows you to receive any token within the Solana network even if it is not included in your wallet token list..</string>
+    <string name="auth_your_key_username">Your username allows you to receive any token within the Solana network even if it is not included in your wallet token list..</string>
     <string name="auth_copy">Copy</string>
     <string name="auth_share">Share</string>
     <string name="auth_save">Save</string>
@@ -246,7 +245,7 @@
     <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_p2p_username_sol_address">Username / address</string>
-    <string name="main_reserve_username">Reserve your P2P username now</string>
+    <string name="main_reserve_username">Reserve your username now</string>
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>
     <string name="main_free_transactions_info"><![CDATA[On the Solana network, the first %1$d transactions in a day are paid by P2P.org. You have <b>%2$d</b> free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.]]></string>
@@ -349,7 +348,7 @@
     <string name="send_multiple_accounts">Multiple accounts were found</string>
     <string name="send_no_tokens">The token not found. Try to change name</string>
     <string name="send_account_found">Account was found</string>
-    <string name="send_p2p_username_sol_address">P2P username / SOL address</string>
+    <string name="send_p2p_username_sol_address">Your username / SOL address</string>
     <string name="send_type_paste">Type or paste</string>
     <string name="send_no_address">There\'s no address like this</string>
     <string name="send_current_price">Current price</string>

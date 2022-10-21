@@ -57,8 +57,8 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
             }
 
             releaseVerifierButton.setOnClickListener {
-                val releaseVerifier = "key-app-google-testnet"
-                val releaseSubVerifier = "android"
+                val releaseVerifier = getString(R.string.torusReleaseVerifier)
+                val releaseSubVerifier = getString(R.string.torusReleaseSubVerifier)
                 updateEnvironmentAndRestart(newVerifier = releaseVerifier, newSubVerifier = releaseSubVerifier)
             }
 

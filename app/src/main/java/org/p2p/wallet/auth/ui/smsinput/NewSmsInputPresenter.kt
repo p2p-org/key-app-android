@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.smsinput
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
@@ -17,6 +16,7 @@ import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract.Presenter.SmsInputTim
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.removeWhiteSpaces
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
@@ -140,7 +140,7 @@ class NewSmsInputPresenter(
         handleRestoreResult(result)
     }
 
-    private fun handleRestoreResult(result: RestoreUserResult) {
+    private suspend fun handleRestoreResult(result: RestoreUserResult) {
         when (val result = restoreUserResultHandler.handleRestoreResult(result)) {
             is RestoreFailureState.TitleSubtitleError -> {
                 view?.navigateToRestoreErrorScreen(result)
