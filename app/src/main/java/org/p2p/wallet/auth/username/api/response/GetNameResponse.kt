@@ -1,6 +1,6 @@
 package org.p2p.wallet.auth.username.api.response
 
-import com.google.gson.JsonObject
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import org.p2p.wallet.utils.Base58String
 
@@ -12,5 +12,5 @@ data class GetNameResponse(
     @SerializedName("class")
     val classAddress: Base58String,
     @SerializedName("data")
-    val additionalData: JsonObject
+    val additionalData: JsonElement
 )

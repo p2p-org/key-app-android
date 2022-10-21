@@ -1,8 +1,9 @@
 package org.p2p.wallet.infrastructure.network.environment
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.edit
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
@@ -51,9 +52,10 @@ class NetworkServicesUrlProvider(
             KEY_TORUS_BASE_VERIFIER,
             context.getString(R.string.torusReleaseVerifier)
         ).orEmpty()
+
         val subVerifier = sharedPreferences.getString(
             KEY_TORUS_BASE_SUB_VERIFIER,
-            context.getString(R.string.torusReleaseSubVerifier)
+            context.getString(R.string.torusReleaseSubVerifier).takeUnless { BuildConfig.DEBUG }
         ).orEmpty()
         return TorusEnvironment(url, verifier, subVerifier)
     }

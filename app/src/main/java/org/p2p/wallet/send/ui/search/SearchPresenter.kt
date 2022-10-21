@@ -1,25 +1,27 @@
 package org.p2p.wallet.send.ui.search
 
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.send.interactor.SearchInteractor
+import org.p2p.wallet.send.model.AddressState
+import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SearchTarget
+import org.p2p.wallet.utils.toBase58Instance
+import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.R
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.send.interactor.SearchInteractor
-import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.Target
-import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
 
 private const val DELAY_IN_MS = 250L
 
 class SearchPresenter(
     private val usernames: List<SearchResult>?,
-    private val searchInteractor: SearchInteractor
+    private val searchInteractor: SearchInteractor,
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
 ) : BasePresenter<SearchContract.View>(), SearchContract.Presenter {
 
     private var searchJob: Job? = null
@@ -39,7 +41,12 @@ class SearchPresenter(
         view?.showSearchValue(value)
     }
 
-    override fun search(target: Target) {
+    override fun search(newQuery: String) {
+        val target = SearchTarget(
+            value = newQuery,
+            keyAppDomainIfUsername = usernameDomainFeatureToggle.value
+        )
+
         searchJob?.cancel()
         searchJob = launch {
             try {
@@ -65,13 +72,13 @@ class SearchPresenter(
         }
     }
 
-    private suspend fun validateAndSearch(target: Target) {
+    private suspend fun validateAndSearch(target: SearchTarget) {
         when (target.validation) {
-            Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-            Target.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
-            Target.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
-            Target.Validation.EMPTY -> showEmptyState()
-            Target.Validation.INVALID -> showNotFound()
+            SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
+            SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
+            SearchTarget.Validation.EMPTY -> showEmptyState()
+            SearchTarget.Validation.INVALID -> showNotFound()
         }
     }
 

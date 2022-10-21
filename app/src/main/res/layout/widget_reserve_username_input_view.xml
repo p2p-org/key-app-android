@@ -20,13 +20,15 @@
         <EditText
             android:id="@+id/editTextUsername"
             android:layout_width="wrap_content"
-            android:digits="@string/common_username_allowed_symbols"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="16dp"
-            android:maxLength="15"
             android:layout_weight="5"
             android:background="@android:color/transparent"
+            android:digits="@string/common_username_allowed_symbols"
+            android:imeOptions="actionDone"
+            android:maxLength="15"
+            android:singleLine="true"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
             tools:text="pfiliph-kirkorov" />
 
@@ -36,9 +38,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="0.2"
-            android:text=".key"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
-            android:textColor="@color/text_mountain" />
+            android:textColor="@color/text_mountain"
+            tools:text=".key" />
 
         <ImageView
             android:id="@+id/imageViewClear"
@@ -55,9 +57,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:visibility="gone"
-        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"

@@ -1,6 +1,8 @@
 package org.p2p.wallet.auth.ui.reserveusername
 
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
@@ -42,6 +44,9 @@ class OnboardingReserveUsernamePresenter(
                 } else {
                     view?.showUsernameAvailable()
                 }
+            } catch (invalidUsername: UsernameServiceError.InvalidUsername) {
+                Timber.e(invalidUsername, "Invalid username returned: $newUsername")
+                view?.showUsernameNotAvailable()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while checking username: $newUsername")
             }
@@ -54,8 +59,10 @@ class OnboardingReserveUsernamePresenter(
                 view?.showUsernameIsChecking()
                 usernameInteractor.registerUsername(currentUsernameEntered)
                 view?.close()
+                view?.showUiKitSnackBar(messageResId = R.string.reserve_username_create_username_success)
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while creating username: $currentUsernameEntered")
+                view?.showUsernameNotAvailable()
                 view?.showCreateUsernameFailed()
             }
         }

@@ -33,6 +33,8 @@
     <string name="wallet_found_restore_button_text">Continue restoring this wallet</string>
 
     <!-- Onboarding pin / touch id -->
+    <string name="auth_create_wallet_introduction">🎉 Your wallet has been created! Just a few moments to start a crypto adventure</string>
+
     <string name="auth_create_wallet_step_3">Step 3 of 3</string>
     <string name="auth_create_wallet_set_up_your_pin">Create your PIN</string>
     <string name="auth_create_wallet_confirm_your_pin">Confirm your PIN</string>
@@ -137,12 +139,13 @@
     <string name="reserve_username_title">Pick Your Username</string>
     <string name="reserve_username_subtitle">For easy send and receive crypto with your friends on Key App.</string>
     <string name="reserve_username_input_username_not_available">😓 name is not available</string>
-    <string name="reserve_username_input_username_hint_message">from 3 till 15 characters 👌</string>
+    <string name="reserve_username_input_username_hint_message">from 6 till 15 characters 👌</string>
     <string name="reserve_username_input_username_available">name is available 👌</string>
     <string name="reserve_username_create_username_button_loading">Wait, name checking is going</string>
     <string name="reserve_username_create_username_button">Create a name</string>
     <string name="reserve_username_create_username_button_not_available">Create another name</string>
     <string name="reserve_username_create_username_error">Something went wrong while the name was booking</string>
+    <string name="reserve_username_create_username_success">🎉 Name was booked</string>
 
     <!--Common Errors-->
     <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>

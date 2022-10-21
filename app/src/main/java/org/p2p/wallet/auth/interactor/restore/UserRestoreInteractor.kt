@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreUserException
 import org.p2p.wallet.auth.model.RestoreUserResult
@@ -14,6 +15,7 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
 class UserRestoreInteractor(
@@ -21,7 +23,8 @@ class UserRestoreInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val restoreStateMachine: RestoreStateMachine
+    private val restoreStateMachine: RestoreStateMachine,
+    private val usernameInteractor: UsernameInteractor
 ) {
 
     suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult = when (restoreFlow) {
@@ -225,10 +228,16 @@ class UserRestoreInteractor(
         }
     }
 
-    fun finishAuthFlow() {
+    suspend fun finishAuthFlow() {
         restoreFlowDataLocalRepository.userActualAccount?.also {
             tokenKeyProvider.secretKey = it.secretKey
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
         } ?: error("User actual account is null, restoring a user is failed")
+
+        try {
+            usernameInteractor.checkUsernameByAddress(tokenKeyProvider.publicKey.toBase58Instance())
+        } catch (error: Throwable) {
+            Timber.e(error)
+        }
     }
 }

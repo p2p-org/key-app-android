@@ -1,8 +1,6 @@
 package org.p2p.wallet.settings.ui.settings
 
 import android.content.Context
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -20,6 +18,8 @@ import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.model.SettingsItemMapper
 import timber.log.Timber
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val NETWORK_CHANGE_DELAY = 250L
 
@@ -47,6 +47,7 @@ class NewSettingsPresenter(
         try {
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
+                isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()
