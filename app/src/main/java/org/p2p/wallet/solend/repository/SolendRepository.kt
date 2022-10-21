@@ -12,7 +12,20 @@ interface SolendRepository {
         ownerAddress: Base58String,
         tokenSymbols: List<String>
     ): List<SolendDepositToken>
-    suspend fun getDepositFee(owner: Base58String, tokenAmount: BigInteger, tokenSymbol: String): SolendDepositFee
+
+    suspend fun getDepositFee(
+        owner: Base58String,
+        feePayer: Base58String,
+        tokenAmount: BigInteger,
+        tokenSymbol: String
+    ): SolendDepositFee
+
+    suspend fun getWithdrawFee(
+        owner: Base58String,
+        feePayer: Base58String,
+        tokenAmount: BigInteger,
+        tokenSymbol: String
+    ): SolendDepositFee
 
     suspend fun createWithdrawTransaction(
         relayProgramId: String,

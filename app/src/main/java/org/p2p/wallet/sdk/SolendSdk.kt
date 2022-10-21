@@ -64,9 +64,20 @@ class SolendSdk {
         environment: JString
     ): JString
 
+    @JvmName("getSolendDepositFees")
     external fun getSolendDepositFees(
         rpc_url: JString,
         owner: JString,
+        fee_payer: JString,
+        token_amount: jlong,
+        token_symbol: JString
+    ): JString
+
+    @JvmName("getSolendWithdrawFees")
+    external fun getSolendWithdrawFees(
+        rpc_url: JString,
+        owner: JString,
+        fee_payer: JString,
         token_amount: jlong,
         token_symbol: JString
     ): JString

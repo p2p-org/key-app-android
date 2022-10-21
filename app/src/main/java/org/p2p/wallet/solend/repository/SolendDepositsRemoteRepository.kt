@@ -140,11 +140,32 @@ class SolendDepositsRemoteRepository(
 
     override suspend fun getDepositFee(
         owner: Base58String,
+        feePayer: Base58String,
         tokenAmount: BigInteger,
         tokenSymbol: String
     ): SolendDepositFee {
         val response = sdkFacade.getSolendDepositFees(
             ownerAddress = owner,
+            feePayer = feePayer,
+            tokenAmount = tokenAmount.toLong(),
+            tokenSymbol = tokenSymbol
+        )
+
+        return SolendDepositFee(
+            accountCreationFee = response.fee.toBigInteger(),
+            rent = response.rent.toBigInteger()
+        )
+    }
+
+    override suspend fun getWithdrawFee(
+        owner: Base58String,
+        feePayer: Base58String,
+        tokenAmount: BigInteger,
+        tokenSymbol: String
+    ): SolendDepositFee {
+        val response = sdkFacade.getSolendWithdrawFees(
+            ownerAddress = owner,
+            feePayer = feePayer,
             tokenAmount = tokenAmount.toLong(),
             tokenSymbol = tokenSymbol
         )

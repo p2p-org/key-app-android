@@ -152,6 +152,7 @@ class SolendSdkFacade(
 
     suspend fun getSolendDepositFees(
         ownerAddress: Base58String,
+        feePayer: Base58String,
         tokenAmount: Long,
         tokenSymbol: String
     ): SolendTokenDepositFeesResponse = withContext(dispatchers.io) {
@@ -160,10 +161,30 @@ class SolendSdkFacade(
         val response = solendSdk.getSolendDepositFees(
             rpc_url = currentNetworkEnvironment.endpoint,
             owner = ownerAddress.base58Value,
+            fee_payer = feePayer.base58Value,
             token_amount = tokenAmount,
             token_symbol = tokenSymbol
         )
         logger.logResponse("getSolendDepositFees", response)
+        methodResultMapper.fromSdk(response)
+    }
+
+    suspend fun getSolendWithdrawFees(
+        ownerAddress: Base58String,
+        feePayer: Base58String,
+        tokenAmount: Long,
+        tokenSymbol: String
+    ): SolendTokenDepositFeesResponse = withContext(dispatchers.io) {
+        logger.logRequest("getSolendWithdrawFees", ownerAddress, tokenAmount, tokenSymbol)
+
+        val response = solendSdk.getSolendWithdrawFees(
+            rpc_url = currentNetworkEnvironment.endpoint,
+            owner = ownerAddress.base58Value,
+            fee_payer = feePayer.base58Value,
+            token_amount = tokenAmount,
+            token_symbol = tokenSymbol
+        )
+        logger.logResponse("getSolendWithdrawFees", response)
         methodResultMapper.fromSdk(response)
     }
 

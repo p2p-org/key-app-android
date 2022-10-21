@@ -26,17 +26,17 @@ class SolendWithdrawInteractor(
     suspend fun withdraw(token: SolendDepositToken, amountInLamports: BigInteger): String {
         val account = Account(tokenKeyProvider.keyPair)
         val ownerAddress = account.publicKey.toBase58().toBase58Instance()
-
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+
         val remainingFreeTransactionsCount = freeTransactionFeeLimit.remaining
         val relayProgramId = FeeRelayerProgram.getProgramId(isMainnet = true).toBase58()
-        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
 
         // todo: use `hasFreeTransactions` when fee relayer is fixed
         val hasFreeTransactions = false /* freeTransactionFeeLimit.hasFreeTransactions() */
         val realFeePayerAddress = if (hasFreeTransactions) relayInfo.feePayerAddress else account.publicKey
 
+        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
         val serializedTransaction = solendRepository.createWithdrawTransaction(
             relayProgramId = relayProgramId,
             ownerAddress = ownerAddress,
@@ -59,10 +59,32 @@ class SolendWithdrawInteractor(
         )
     }
 
+    suspend fun calculateWithdrawFee(amountInLamports: BigInteger, token: SolendDepositToken.Active): FeeAmount {
+        val account = Account(tokenKeyProvider.keyPair)
+
+        val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
+        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
+
+        val hasFreeTransactions = freeTransactionFeeLimit.hasFreeTransactions()
+        val feePayer = if (hasFreeTransactions) relayInfo.feePayerAddress else account.publicKey
+        val fee = solendRepository.getWithdrawFee(
+            owner = account.publicKey.toBase58().toBase58Instance(),
+            feePayer = feePayer.toBase58().toBase58Instance(),
+            tokenAmount = amountInLamports,
+            tokenSymbol = token.tokenSymbol
+        )
+
+        return FeeAmount(
+            transaction = fee.rent,
+            accountBalances = fee.accountCreationFee
+        )
+    }
+
     private suspend fun getDepositFee(amountInLamports: BigInteger, symbol: String): FeeAmount {
         val owner = tokenKeyProvider.publicKey.toBase58Instance()
         val feeInSol = solendRepository.getDepositFee(
             owner = owner,
+            feePayer = owner,
             tokenAmount = amountInLamports,
             tokenSymbol = symbol
         )
