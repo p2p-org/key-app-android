@@ -22,6 +22,7 @@ import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,
@@ -32,6 +33,7 @@ class ReceiveNetworkTypePresenter(
     private val receiveAnalytics: ReceiveAnalytics,
     private val environmentManager: NetworkEnvironmentManager,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
@@ -118,7 +120,13 @@ class ReceiveNetworkTypePresenter(
                     val userPublicKey = tokenKeyProvider.publicKey
                     val sol = userTokens.find { it.isSOL && it.publicKey == userPublicKey }
                         ?: throw IllegalStateException("No SOL account found")
-                    createBtcWallet(sol)
+
+                    val isWeb3AuthUser = userSignUpDetailsStorage.getLastSignUpUserDetails() != null
+                    if (isWeb3AuthUser) {
+                        createBtcWallet(sol)
+                    } else {
+                        showCreateByFeeRelay()
+                    }
                 } else {
                     launchRenBtcSession()
                 }
@@ -159,5 +167,9 @@ class ReceiveNetworkTypePresenter(
         } else {
             view?.showTopup()
         }
+    }
+
+    private fun showCreateByFeeRelay() {
+        view?.showCreateByFeeRelay()
     }
 }

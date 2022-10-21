@@ -13,6 +13,7 @@ interface ReceiveNetworkTypeContract {
         fun navigateToReceive(type: NetworkType)
         fun showLoading(isLoading: Boolean)
         fun showBuy(priceInSol: BigDecimal, priceInUsd: BigDecimal?)
+        fun showCreateByFeeRelay()
         fun showTokensForBuy(tokens: List<Token>)
         fun showTopup()
         fun close()

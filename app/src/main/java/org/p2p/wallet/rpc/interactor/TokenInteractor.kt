@@ -47,8 +47,7 @@ class TokenInteractor(
     }
 
     suspend fun createAccount(mintAddress: String): String {
-        val signUpDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails
-        val isWeb3AuthUser = signUpDetails?.ethereumPublicKey != null
+        val isWeb3AuthUser = userSignUpDetailsStorage.getLastSignUpUserDetails() != null
         return if (isWeb3AuthUser) {
             createAccountByFeeRelayer(mintAddress)
         } else {
