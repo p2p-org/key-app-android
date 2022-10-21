@@ -101,7 +101,6 @@ class ReceiveNetworkTypePresenter(
                 Timber.e("Error on launching RenBtc session $e")
                 view?.showErrorMessage(e)
                 view?.showLoading(false)
-
             }
         }
     }
