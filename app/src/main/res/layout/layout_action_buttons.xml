@@ -10,9 +10,9 @@
         layout="@layout/item_home_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintEnd_toStartOf="@+id/view_action_receive"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent" />
 
     <include
@@ -20,8 +20,8 @@
         layout="@layout/item_home_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintEnd_toStartOf="@+id/view_action_send"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/view_action_buy" />
 
     <include
@@ -29,8 +29,8 @@
         layout="@layout/item_home_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintEnd_toStartOf="@+id/view_action_trade"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/view_action_receive" />
 
     <include
@@ -38,8 +38,8 @@
         layout="@layout/item_home_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/view_action_send" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
