@@ -110,7 +110,7 @@
     <string name="solend_transaction_details_free_fee">Free</string>
 
     <string name="solend_transaction_free_fee_title">Enjoy free transactions</string>
-    <string name="solend_transaction_free_fee_message">On the Solana network, the first 100 transactions in a day are paid by P2P.org</string>
+    <string name="solend_transaction_free_fee_message">On the Solana network, the first 100 transactions in a day are paid by Key App</string>
     <string name="solend_transaction_free_fee_button">Awesome</string>
 
     <!--Solend Stub-->

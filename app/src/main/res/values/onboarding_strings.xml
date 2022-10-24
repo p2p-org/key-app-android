@@ -93,7 +93,7 @@
     <string name="onboarding_general_error_retry_button_tries_exceeded">
         You didn\'t use any of 5 codes. For your safety, we have frozen your account for %1$s min
     </string>
-    <string name="onboarding_general_error_terms_title">P2P App\'s</string>
+    <string name="onboarding_general_error_terms_title">Key App\'s</string>
     <string name="onboarding_general_error_starting_screen_button_title">Starting screen</string>
     <string name="onboarding_general_error_bug_report_button_title">Support</string>
     <string name="onboarding_general_error_critical_error_title">Well well</string>
@@ -132,7 +132,7 @@
     <!--Derivable Accounts-->
     <string name="derivable_accounts_title">Derivable Accounts</string>
     <string name="derivation_path_title">Derivation path</string>
-    <string name="derivation_path_info">This is the thing you use to get all your accounts from your mnemonic phrase. By default, P2P wallet will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
+    <string name="derivation_path_info">This is the thing you use to get all your accounts from your mnemonic phrase. By default, Key App will use m/44\'/501\'/0\'/0\' as the derivation path for the main wallet.</string>
     <string name="derivation_continue_button">Continue</string>
 
     <!-- Reserve username -->
