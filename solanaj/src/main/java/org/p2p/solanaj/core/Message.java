@@ -157,15 +157,15 @@ public class Message {
         return out.array();
     }
 
-    public static Message deserialize(byte[] byteArray) {
+    public static Message deserialize(byte[] messageInBytes) {
         int cursor = 0;
-        byte numRequiredSignatures = byteArray[cursor++];
-        byte numReadonlySignedAccounts = byteArray[cursor++];
-        byte numReadonlyUnsignedAccounts = byteArray[cursor++];
+        byte numRequiredSignatures = messageInBytes[cursor++];
+        byte numReadonlySignedAccounts = messageInBytes[cursor++];
+        byte numReadonlyUnsignedAccounts = messageInBytes[cursor++];
 
         List<PublicKey> accountKeys = new ArrayList<>();
 
-        byte[] updatedByteArray = Arrays.copyOfRange(byteArray, cursor, byteArray.length);
+        byte[] updatedByteArray = Arrays.copyOfRange(messageInBytes, cursor, messageInBytes.length);
         int accountKeysCount = ShortvecEncoding.decodeLength(updatedByteArray);
 
         for (int i = 0; i < accountKeysCount; i++) {

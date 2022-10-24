@@ -5,7 +5,7 @@ import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
-import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -91,7 +91,7 @@ class FeeRelayerInteractor(
     * */
     suspend fun topUpAndRelayTransaction(
         preparedTransaction: PreparedTransaction,
-        payingFeeToken: TokenInfo,
+        payingFeeToken: TokenAccount,
         additionalPaybackFee: BigInteger,
         statistics: FeeRelayerStatistics
     ): List<String> {
@@ -110,7 +110,7 @@ class FeeRelayerInteractor(
 
     private suspend fun checkAndTopUp(
         expectedFee: FeeAmount,
-        payingFeeToken: TokenInfo
+        payingFeeToken: TokenAccount
     ): List<String>? {
         if (payingFeeToken.isSOL) return null
 
@@ -161,7 +161,7 @@ class FeeRelayerInteractor(
 
     private suspend fun relayTransaction(
         preparedTransaction: PreparedTransaction,
-        payingFeeToken: TokenInfo,
+        payingFeeToken: TokenAccount,
         additionalPaybackFee: BigInteger,
         statistics: FeeRelayerStatistics
     ): List<String> {

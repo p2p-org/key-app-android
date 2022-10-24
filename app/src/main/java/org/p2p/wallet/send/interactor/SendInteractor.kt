@@ -14,7 +14,7 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
-import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -165,7 +165,7 @@ class SendInteractor(
             )
             feeRelayerInteractor.topUpAndRelayTransaction(
                 preparedTransaction = preparedTransaction,
-                payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress),
+                payingFeeToken = TokenAccount(feePayerToken.publicKey, feePayerToken.mintAddress),
                 additionalPaybackFee = BigInteger.ZERO,
                 statistics = statistics
             )

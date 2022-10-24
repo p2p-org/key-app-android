@@ -2,7 +2,7 @@ package org.p2p.wallet.feerelayer.model
 
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 
-class TokenInfo(
+class TokenAccount(
     val address: String,
     val mint: String
 ) {

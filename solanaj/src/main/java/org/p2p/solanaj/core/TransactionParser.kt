@@ -1,6 +1,5 @@
 package org.p2p.solanaj.core
 
-import android.util.Log
 import org.p2p.solanaj.core.Transaction.DEFAULT_SIGNATURE
 import org.p2p.solanaj.core.Transaction.SIGNATURE_LENGTH
 import org.p2p.solanaj.utils.ShortvecEncoding
@@ -14,7 +13,6 @@ object TransactionParser {
         val signatureLength = ShortvecEncoding.decodeLength(byteArray)
 
         var updatedByteArray = byteArray
-        Log.d("###", "parser $signatureLength")
 
         for (i in 0 until signatureLength) {
             val signatureData: ByteArray = updatedByteArray.copyOf(SIGNATURE_LENGTH)

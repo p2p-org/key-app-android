@@ -5,7 +5,9 @@
     <string name="solend_deposit_to_earn">Deposit to earn a yield</string>
     <string name="solend_apy">APY</string>
 
+    <!-- Error -->
     <string name="solend_rates_error">There’s a problem showing the rates. Try again later</string>
+    <string name="error_calculating_fees">Error occurred while calculating fees</string>
 
     <!--About Earn-->
     <string name="about_earn_skip">Skip</string>

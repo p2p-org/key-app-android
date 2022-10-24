@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class TransactionDetailsViewData(
+data class SolendTransactionDetails(
     val amount: String,
     val transferFee: String?, // null == free
     val fee: String,

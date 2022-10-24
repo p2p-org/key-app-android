@@ -17,7 +17,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSolendDepositBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendTransactionDetailsState
-import org.p2p.wallet.solend.model.TransactionDetailsViewData
 import org.p2p.wallet.solend.ui.bottomsheet.SelectDepositTokenBottomSheet
 import org.p2p.wallet.solend.ui.bottomsheet.TransactionDetailsBottomSheet
 import org.p2p.wallet.solend.ui.info.SolendInfoBottomSheet
@@ -103,6 +102,15 @@ class SolendDepositFragment :
                 }
             }
         }
+    }
+
+    override fun showFullScreenLoading(isLoading: Boolean) {
+        binding.progressView.isVisible = isLoading
+    }
+
+    override fun showFeeLoading(isLoading: Boolean) {
+        animateButtons(isSliderVisible = !isLoading, isInfoButtonVisible = isLoading)
+        binding.buttonAction.isLoadingState = isLoading
     }
 
     override fun showTokenToDeposit(
@@ -204,9 +212,9 @@ class SolendDepositFragment :
 
     override fun setValidDepositState(
         output: BigDecimal,
-        tokenAmount: String
+        tokenAmount: String,
+        state: SolendTransactionDetailsState
     ) = with(binding) {
-        val amount = "$tokenAmount (~$${output.scaleShort()})"
         viewDoubleInput.setBottomMessageText(
             getString(
                 R.string.solend_deposit_bottom_message_with_amount,
@@ -218,21 +226,11 @@ class SolendDepositFragment :
             iconTint = getColorStateList(R.color.icons_night)
             backgroundTintList = getColorStateList(R.color.bg_lime)
             setOnClickListener {
-                TransactionDetailsBottomSheet.run {
-                    show(
-                        childFragmentManager,
-                        getString(R.string.solend_transaction_details_title),
-                        SolendTransactionDetailsState.Deposit(
-                            // TODO PWN-5319 add real data!!
-                            TransactionDetailsViewData(
-                                amount = amount,
-                                transferFee = null,
-                                fee = "0.05 USDC (~\$0.5)",
-                                total = amount
-                            )
-                        )
-                    )
-                }
+                TransactionDetailsBottomSheet.show(
+                    childFragmentManager,
+                    getString(R.string.solend_transaction_details_title),
+                    state
+                )
             }
         }
         buttonAction.apply {

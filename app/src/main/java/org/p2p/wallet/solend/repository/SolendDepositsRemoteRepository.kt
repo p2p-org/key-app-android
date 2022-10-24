@@ -5,7 +5,7 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.sdk.facade.SolendSdkFacade
 import org.p2p.wallet.sdk.facade.model.solend.SolendFeePayerTokenData
 import org.p2p.wallet.sdk.facade.model.solend.SolendPool
-import org.p2p.wallet.solend.model.SolendDepositFee
+import org.p2p.wallet.solend.model.SolendTokenFee
 import org.p2p.wallet.solend.model.SolendDepositMapper
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendMarketInfo
@@ -93,7 +93,7 @@ class SolendDepositsRemoteRepository(
         payFeeWithRelay: Boolean,
         feePayerToken: SolendFeePayerTokenData?,
         realFeePayerAddress: PublicKey,
-    ): String? {
+    ): String {
         val response = sdkFacade.createDepositTransactions(
             relayProgramId = relayProgramId,
             depositAmount = depositAmount.toLong().toULong(),
@@ -107,7 +107,8 @@ class SolendDepositsRemoteRepository(
             realFeePayerAddress = realFeePayerAddress
         )
 
-        return response.transactions.firstOrNull()
+        val transactionId = response.transactions.firstOrNull()
+        return transactionId ?: error("Error occurred while creating a withdraw transaction")
     }
 
     override suspend fun createWithdrawTransaction(
@@ -143,7 +144,7 @@ class SolendDepositsRemoteRepository(
         feePayer: Base58String,
         tokenAmount: BigInteger,
         tokenSymbol: String
-    ): SolendDepositFee {
+    ): SolendTokenFee {
         val response = sdkFacade.getSolendDepositFees(
             ownerAddress = owner,
             feePayer = feePayer,
@@ -151,8 +152,8 @@ class SolendDepositsRemoteRepository(
             tokenSymbol = tokenSymbol
         )
 
-        return SolendDepositFee(
-            accountCreationFee = response.fee.toBigInteger(),
+        return SolendTokenFee(
+            transaction = response.fee.toBigInteger(),
             rent = response.rent.toBigInteger()
         )
     }
@@ -162,7 +163,7 @@ class SolendDepositsRemoteRepository(
         feePayer: Base58String,
         tokenAmount: BigInteger,
         tokenSymbol: String
-    ): SolendDepositFee {
+    ): SolendTokenFee {
         val response = sdkFacade.getSolendWithdrawFees(
             ownerAddress = owner,
             feePayer = feePayer,
@@ -170,8 +171,8 @@ class SolendDepositsRemoteRepository(
             tokenSymbol = tokenSymbol
         )
 
-        return SolendDepositFee(
-            accountCreationFee = response.fee.toBigInteger(),
+        return SolendTokenFee(
+            transaction = response.fee.toBigInteger(),
             rent = response.rent.toBigInteger()
         )
     }

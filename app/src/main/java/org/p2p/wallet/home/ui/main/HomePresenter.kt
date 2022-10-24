@@ -260,15 +260,17 @@ class HomePresenter(
             view?.showRefreshing(isRefreshing = true)
             // We are waiting when tokenlist.json is being parsed and saved into the memory
             delay(1000L)
-            kotlin.runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }.onSuccess {
-                Timber.d("Successfully initial loaded tokens")
-            }.onFailure {
-                if (it is CancellationException) {
-                    Timber.i("Cancelled initial tokens remote update")
-                } else {
-                    Timber.e(it, "Error initial loading tokens from remote")
+            kotlin
+                .runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }.onSuccess {
+                    Timber.d("Successfully initial loaded tokens")
                 }
-            }
+                .onFailure {
+                    if (it is CancellationException) {
+                        Timber.i("Cancelled initial tokens remote update")
+                    } else {
+                        Timber.e(it, "Error initial loading tokens from remote")
+                    }
+                }
 
             view?.showRefreshing(isRefreshing = false)
             startPollingForTokens()
@@ -301,7 +303,10 @@ class HomePresenter(
     }
 
     private fun getUserBalance(): BigDecimal =
-        state.tokens.mapNotNull { it.totalInUsd }.fold(BigDecimal.ZERO, BigDecimal::add).scaleShort()
+        state.tokens
+            .mapNotNull { it.totalInUsd }
+            .fold(BigDecimal.ZERO, BigDecimal::add)
+            .scaleShort()
 
     private fun getBanners(): List<Banner> {
         val usernameExists = state.username != null
@@ -324,7 +329,8 @@ class HomePresenter(
                 R.color.backgroundBanner
             )
             listOf(
-                usernameBanner, feedbackBanner
+                usernameBanner,
+                feedbackBanner
             )
         }
     }

@@ -5,12 +5,17 @@ import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
+import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.relay.RelayRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.solend.model.SolendFee
+import org.p2p.wallet.solend.model.SolendTokenFee
 import org.p2p.wallet.solend.repository.SolendRepository
+import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toBase58Instance
 import java.math.BigInteger
 
@@ -20,12 +25,14 @@ class SolendWithdrawInteractor(
     private val solendRepository: SolendRepository,
     private val relayRepository: RelayRepository,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
+    private val feeRelayerInteractor: FeeRelayerInteractor,
+    private val userInteractor: UserInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     suspend fun withdraw(token: SolendDepositToken, amountInLamports: BigInteger): String {
         val account = Account(tokenKeyProvider.keyPair)
-        val ownerAddress = account.publicKey.toBase58().toBase58Instance()
+        val ownerAddress = account.publicKey.toBase58Instance()
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
@@ -59,40 +66,65 @@ class SolendWithdrawInteractor(
         )
     }
 
-    suspend fun calculateWithdrawFee(amountInLamports: BigInteger, token: SolendDepositToken.Active): FeeAmount {
+    suspend fun calculateWithdrawFee(
+        amountInLamports: BigInteger,
+        token: SolendDepositToken
+    ): SolendFee {
         val account = Account(tokenKeyProvider.keyPair)
-
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
 
         val hasFreeTransactions = freeTransactionFeeLimit.hasFreeTransactions()
         val feePayer = if (hasFreeTransactions) relayInfo.feePayerAddress else account.publicKey
-        val fee = solendRepository.getWithdrawFee(
-            owner = account.publicKey.toBase58().toBase58Instance(),
-            feePayer = feePayer.toBase58().toBase58Instance(),
+
+        val withdrawFeeInSol = solendRepository.getWithdrawFee(
+            owner = account.publicKey.toBase58Instance(),
+            feePayer = feePayer.toBase58Instance(),
             tokenAmount = amountInLamports,
             tokenSymbol = token.tokenSymbol
         )
 
-        return FeeAmount(
-            transaction = fee.rent,
-            accountBalances = fee.accountCreationFee
-        )
-    }
+        // calculating fee in SPL token
+        val feeInSplToken = try {
+            feeRelayerInteractor.calculateFeeInPayingToken(
+                feeInSOL = FeeAmount(
+                    transaction = withdrawFeeInSol.transaction,
+                    accountBalances = withdrawFeeInSol.rent
+                ),
+                payingFeeTokenMint = token.mintAddress
+            )
+        } catch (e: IllegalStateException) {
+            null
+        }
 
-    private suspend fun getDepositFee(amountInLamports: BigInteger, symbol: String): FeeAmount {
-        val owner = tokenKeyProvider.publicKey.toBase58Instance()
-        val feeInSol = solendRepository.getDepositFee(
-            owner = owner,
-            feePayer = owner,
-            tokenAmount = amountInLamports,
-            tokenSymbol = symbol
+        val solToken = userInteractor.getUserSolToken() ?: error("No SOL token account found")
+
+        val feeInSol = SolendFee(
+            symbol = solToken.tokenSymbol,
+            decimals = solToken.decimals,
+            usdRate = solToken.usdRateOrZero,
+            fee = withdrawFeeInSol,
+            feePayer = TokenAccount(
+                address = solToken.publicKey,
+                mint = solToken.mintAddress
+            )
         )
 
-        val hasFreeTransactions = feeRelayerAccountInteractor.getFreeTransactionFeeLimit().hasFreeTransactions()
-        return FeeAmount(
-            transaction = if (hasFreeTransactions) BigInteger.ZERO else feeInSol.rent,
-            accountBalances = feeInSol.accountCreationFee
+        val splToken = userInteractor.findUserToken(token.mintAddress)
+        if (splToken == null || feeInSplToken == null) return feeInSol
+
+        if (feeInSplToken.total > (splToken.totalInLamports)) return feeInSol
+
+        // calculated fee in SPL token
+        return SolendFee(
+            symbol = token.tokenSymbol,
+            decimals = splToken.decimals,
+            usdRate = splToken.usdRateOrZero,
+            fee = SolendTokenFee(feeInSplToken),
+            feePayer = TokenAccount(
+                address = splToken.publicKey,
+                mint = splToken.mintAddress
+            )
         )
     }
 }

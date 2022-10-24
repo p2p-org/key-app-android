@@ -13,7 +13,7 @@ import org.p2p.solanaj.programs.TokenSwapProgram
 import org.p2p.wallet.feerelayer.model.FeesAndPools
 import org.p2p.wallet.feerelayer.model.FixedDestination
 import org.p2p.wallet.feerelayer.model.SwapData
-import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TopUpAndActionPreparedParams
 import org.p2p.wallet.feerelayer.model.TopUpPreparedParams
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
@@ -42,10 +42,10 @@ class FeeRelayerSwapInteractor(
     // Prepare swap transaction for relay
     suspend fun prepareSwapTransaction(
         feeRelayerProgramId: PublicKey,
-        sourceToken: TokenInfo,
+        sourceToken: TokenAccount,
         destinationTokenMint: String,
         destinationAddress: String?,
-        payingFeeToken: TokenInfo,
+        payingFeeToken: TokenAccount,
         swapPools: OrcaPoolsPair,
         inputAmount: BigInteger,
         slippage: Double
@@ -132,8 +132,8 @@ class FeeRelayerSwapInteractor(
 
     private suspend fun prepareSwapTransaction(
         feeRelayerProgramId: PublicKey,
-        sourceToken: TokenInfo,
-        destinationToken: TokenInfo,
+        sourceToken: TokenAccount,
+        destinationToken: TokenAccount,
         pools: OrcaPoolsPair,
         inputAmount: BigInteger,
         slippage: Double,
@@ -344,10 +344,10 @@ class FeeRelayerSwapInteractor(
     }
 
     private suspend fun prepareForTopUpAndSwap(
-        sourceToken: TokenInfo,
+        sourceToken: TokenAccount,
         destinationTokenMint: String,
         destinationAddress: String?,
-        payingFeeToken: TokenInfo,
+        payingFeeToken: TokenAccount,
         swapPools: OrcaPoolsPair,
         reuseCache: Boolean
     ): TopUpAndActionPreparedParams {
@@ -439,7 +439,7 @@ class FeeRelayerSwapInteractor(
             }
         }
 
-        val destinationToken = TokenInfo(
+        val destinationToken = TokenAccount(
             address = addressData.destinationAddress.toBase58(),
             mint = destinationTokenMint
         )

@@ -1,22 +1,36 @@
 package org.p2p.wallet.solend.ui.deposit
 
+import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.solend.interactor.SolendDepositInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.solend.model.SolendTransactionDetails
+import org.p2p.wallet.solend.model.SolendTransactionDetailsState
+import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.formatToken
+import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
+import org.p2p.wallet.utils.scaleLong
+import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toLamports
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+private const val FEE_DELAY_IN_MS = 250L
 
 class SolendDepositPresenter(
     private val resourcesProvider: ResourcesProvider,
     private val solendDepositInteractor: SolendDepositInteractor,
+    private val depositInteractor: SolendDepositInteractor,
+    private val orcaInfoInteractor: OrcaInfoInteractor,
     deposit: SolendDepositToken
 ) : BasePresenter<SolendDepositContract.View>(), SolendDepositContract.Presenter {
 
@@ -26,13 +40,19 @@ class SolendDepositPresenter(
     private var currentInput: BigDecimal = BigDecimal.ZERO
     private var currentOutput: BigDecimal = BigDecimal.ZERO
 
+    private var calculateFeeJob: Job? = null
+
     override fun attach(view: SolendDepositContract.View) {
         super.attach(view)
+        loadOrcaInfo()
+
         view.showTokenToDeposit(
             depositToken = selectedDepositToken,
             withChevron = validDeposits.size > 1
         )
+
         if (validDeposits.isEmpty()) {
+            view.showFullScreenLoading(isLoading = true)
             launch {
                 try {
                     validDeposits = solendDepositInteractor.getUserDeposits().filter { deposit ->
@@ -44,6 +64,8 @@ class SolendDepositPresenter(
                 } catch (e: Throwable) {
                     Timber.e(e, "Error fetching available deposit tokens")
                     view.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                } finally {
+                    view.showFullScreenLoading(isLoading = false)
                 }
             }
         }
@@ -67,18 +89,7 @@ class SolendDepositPresenter(
         this.currentInput = input
         this.currentOutput = output
 
-        val maxDepositAmount = selectedDepositToken.availableTokensForDeposit.orZero()
-        val tokenAmount = buildString {
-            append(maxDepositAmount.formatToken())
-            append(" ")
-            append(selectedDepositToken.tokenSymbol)
-        }
-        val isBiggerThenMax = input > maxDepositAmount
-        when {
-            input.isZero() && output.isZero() -> view?.setEmptyAmountState()
-            isBiggerThenMax -> view?.setBiggerThenMaxAmountState(tokenAmount)
-            else -> view?.setValidDepositState(output, tokenAmount)
-        }
+        calculateFee(input, output)
     }
 
     override fun deposit() {
@@ -89,6 +100,88 @@ class SolendDepositPresenter(
             } catch (e: Throwable) {
                 Timber.e(e, "Error while depositing to ${selectedDepositToken.tokenSymbol}")
                 view?.showErrorMessage(e)
+            }
+        }
+    }
+
+    private fun calculateFee(input: BigDecimal, output: BigDecimal) {
+        calculateFeeJob?.cancel()
+        calculateFeeJob = launch {
+            delay(FEE_DELAY_IN_MS)
+
+            view?.showFeeLoading(isLoading = true)
+            val amountInLamports = currentInput.toLamports(selectedDepositToken.decimals)
+            val amountInUsd = (currentInput * selectedDepositToken.usdRate).scaleShort()
+
+            val fee = try {
+                depositInteractor.calculateDepositFee(
+                    amountInLamports = amountInLamports,
+                    token = selectedDepositToken
+                )
+            } catch (e: CancellationException) {
+                Timber.w(e, "Calculate deposit fees was cancelled")
+                return@launch
+            } catch (e: Throwable) {
+                Timber.e(e, "Error calculating deposit fees")
+                view?.showUiKitSnackBar(messageResId = R.string.error_calculating_fees)
+                return@launch
+            }
+
+            val transferFee = fee.getTransferFeeInDecimals()
+            val transferFeeUsd = (transferFee * fee.usdRate).scaleShort()
+
+            val rentFee = fee.getRentFeeInDecimals()
+            val rentFeeUsd = (rentFee * fee.usdRate).scaleShort()
+
+            var totalInLamports = amountInLamports
+            var totalInUsd = (currentInput * selectedDepositToken.usdRate).scaleShort()
+
+            val tokenSymbol = fee.symbol
+            if (selectedDepositToken.tokenSymbol == fee.symbol) {
+                totalInLamports += fee.fee.total
+                totalInUsd = totalInLamports.fromLamports(fee.decimals).scaleShort()
+            } else {
+                totalInUsd = totalInUsd + transferFeeUsd + rentFeeUsd
+            }
+
+            val total = totalInLamports.fromLamports(fee.decimals).scaleLong()
+            val detailsData = SolendTransactionDetails(
+                amount = "$input $tokenSymbol (~$ $amountInUsd)",
+                transferFee = if (transferFee.isNotZero()) "$transferFee $tokenSymbol (~$ $transferFeeUsd)" else null,
+                fee = "$rentFee $tokenSymbol (~$ $rentFeeUsd)",
+                total = "$total $tokenSymbol (~$ $totalInUsd)"
+            )
+            updateDepositState(input, output, detailsData)
+
+            view?.showFeeLoading(isLoading = false)
+        }
+    }
+
+    private fun updateDepositState(input: BigDecimal, output: BigDecimal, data: SolendTransactionDetails) {
+        val maxDepositAmount = selectedDepositToken.availableTokensForDeposit.orZero()
+        val tokenAmount = buildString {
+            append(maxDepositAmount.formatToken())
+            append(" ")
+            append(selectedDepositToken.tokenSymbol)
+        }
+        val isBiggerThenMax = input > maxDepositAmount
+        when {
+            input.isZero() && output.isZero() -> view?.setEmptyAmountState()
+            isBiggerThenMax -> view?.setBiggerThenMaxAmountState(tokenAmount)
+            else -> view?.setValidDepositState(output, tokenAmount, SolendTransactionDetailsState.Deposit(data))
+        }
+    }
+
+    private fun loadOrcaInfo() {
+        view?.showFullScreenLoading(isLoading = true)
+        launch {
+            try {
+                orcaInfoInteractor.load()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error initializing orca")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            } finally {
+                view?.showFullScreenLoading(isLoading = false)
             }
         }
     }

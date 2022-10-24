@@ -206,6 +206,7 @@ class CheckModulesTest : KoinTest {
             tokenSymbol = "",
             tokenName = "",
             decimals = 6,
+            mintAddress = "some address",
             iconUrl = null,
             availableTokensForDeposit = BigDecimal.TEN,
             supplyInterest = BigDecimal.ZERO,

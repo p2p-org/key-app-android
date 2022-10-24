@@ -18,7 +18,6 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSolendWithdrawBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendTransactionDetailsState
-import org.p2p.wallet.solend.model.TransactionDetailsViewData
 import org.p2p.wallet.solend.ui.bottomsheet.SelectDepositTokenBottomSheet
 import org.p2p.wallet.solend.ui.bottomsheet.TransactionDetailsBottomSheet
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
@@ -81,6 +80,15 @@ class SolendWithdrawFragment :
                 }
             }
         }
+    }
+
+    override fun showFullScreenLoading(isLoading: Boolean) {
+        binding.progressView.isVisible = isLoading
+    }
+
+    override fun showFeeLoading(isLoading: Boolean) {
+        animateButtons(isSliderVisible = !isLoading, isInfoButtonVisible = isLoading)
+        binding.buttonAction.isLoadingState = isLoading
     }
 
     override fun showTokenToWithdraw(
@@ -161,23 +169,25 @@ class SolendWithdrawFragment :
             setIconResource(R.drawable.ic_warning_solid)
             iconTint = getColorStateList(R.color.icons_rose)
             backgroundTintList = getColorStateList(R.color.rose_20)
-            setOnClickListener {
-                AlertDialog.Builder(requireContext()).setMessage(R.string.solend_withdraw_max_amount_error_message)
-                    .setNegativeButton(
-                        R.string.solend_withdraw_max_amount_error_positive
-                    ) { _, _ ->
-                        maxAmountClickListener.invoke()
-                    }.setPositiveButton(R.string.common_cancel, null).show()
-            }
+            setOnClickListener { showAmoutDialog(maxAmountClickListener) }
         }
         animateButtons(isSliderVisible = false, isInfoButtonVisible = true)
     }
 
+    private fun showAmoutDialog(maxAmountClickListener: () -> Unit) {
+        AlertDialog.Builder(requireContext()).setMessage(R.string.solend_withdraw_max_amount_error_message)
+            .setNegativeButton(
+                R.string.solend_withdraw_max_amount_error_positive
+            ) { _, _ ->
+                maxAmountClickListener.invoke()
+            }.setPositiveButton(R.string.common_cancel, null).show()
+    }
+
     override fun setValidDepositState(
         output: BigDecimal,
-        tokenAmount: String
+        tokenAmount: String,
+        state: SolendTransactionDetailsState.Withdraw
     ) = with(binding) {
-        val amount = "$tokenAmount (~$${output.scaleShort()})"
         viewDoubleInput.setBottomMessageText(
             getString(
                 R.string.solend_withdraw_bottom_message_with_amount, tokenAmount, output.scaleShort()
@@ -188,18 +198,11 @@ class SolendWithdrawFragment :
             iconTint = getColorStateList(R.color.icons_night)
             backgroundTintList = getColorStateList(R.color.bg_lime)
             setOnClickListener {
-                TransactionDetailsBottomSheet.run {
-                    show(
-                        childFragmentManager,
-                        getString(R.string.solend_transaction_details_title),
-                        SolendTransactionDetailsState.Withdraw(
-                            // TODO PWN-5319 add real data!!
-                            TransactionDetailsViewData(
-                                amount = amount, transferFee = null, fee = "0.05 USDC (~\$0.5)", total = amount
-                            )
-                        )
-                    )
-                }
+                TransactionDetailsBottomSheet.show(
+                    childFragmentManager,
+                    getString(R.string.solend_transaction_details_title),
+                    state
+                )
             }
         }
         buttonAction.apply {

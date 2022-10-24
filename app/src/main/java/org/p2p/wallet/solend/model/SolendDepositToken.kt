@@ -11,6 +11,7 @@ sealed interface SolendDepositToken : Parcelable {
     val iconUrl: String?
     val supplyInterest: BigDecimal?
     val decimals: Int
+    val mintAddress: String
     val availableTokensForDeposit: BigDecimal
 
     @Parcelize
@@ -21,6 +22,7 @@ sealed interface SolendDepositToken : Parcelable {
         override val iconUrl: String?,
         override val supplyInterest: BigDecimal?,
         override val decimals: Int,
+        override val mintAddress: String,
         override val availableTokensForDeposit: BigDecimal,
         val depositAmount: BigDecimal,
         val usdAmount: BigDecimal,
@@ -34,6 +36,7 @@ sealed interface SolendDepositToken : Parcelable {
         override val iconUrl: String?,
         override val supplyInterest: BigDecimal?,
         override val decimals: Int,
+        override val mintAddress: String,
         override val availableTokensForDeposit: BigDecimal,
     ) : SolendDepositToken
 }

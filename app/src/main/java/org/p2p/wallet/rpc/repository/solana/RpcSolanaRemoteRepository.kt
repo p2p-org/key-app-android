@@ -59,8 +59,8 @@ class RpcSolanaRemoteRepository(
     /**
      * @return confirmed signature
      */
-    override suspend fun sendSerializedTransaction(serializedTransaction: Base64String): String {
-        val params = listOf(serializedTransaction, RpcSendTransactionConfig())
+    override suspend fun sendSerializedTransaction(serializedTransaction: Base64String, encoding: Encoding): String {
+        val params = listOf(serializedTransaction, RpcSendTransactionConfig(encoding))
         return api.sendTransaction(
             RpcRequest(method = "sendTransaction", params = params)
         ).result

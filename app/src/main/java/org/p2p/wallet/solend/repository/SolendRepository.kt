@@ -2,8 +2,8 @@ package org.p2p.wallet.solend.repository
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.sdk.facade.model.solend.SolendFeePayerTokenData
-import org.p2p.wallet.solend.model.SolendDepositFee
 import org.p2p.wallet.solend.model.SolendDepositToken
+import org.p2p.wallet.solend.model.SolendTokenFee
 import org.p2p.wallet.utils.Base58String
 import java.math.BigInteger
 
@@ -18,14 +18,14 @@ interface SolendRepository {
         feePayer: Base58String,
         tokenAmount: BigInteger,
         tokenSymbol: String
-    ): SolendDepositFee
+    ): SolendTokenFee
 
     suspend fun getWithdrawFee(
         owner: Base58String,
         feePayer: Base58String,
         tokenAmount: BigInteger,
         tokenSymbol: String
-    ): SolendDepositFee
+    ): SolendTokenFee
 
     suspend fun createWithdrawTransaction(
         relayProgramId: String,
@@ -51,5 +51,5 @@ interface SolendRepository {
         payFeeWithRelay: Boolean,
         feePayerToken: SolendFeePayerTokenData?,
         realFeePayerAddress: PublicKey,
-    ): String?
+    ): String
 }

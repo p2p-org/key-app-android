@@ -14,7 +14,7 @@ import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
-import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TopUpPreparedParams
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -41,7 +41,7 @@ class FeeRelayerTopUpInteractor(
     suspend fun topUp(
         feeRelayerProgramId: PublicKey,
         needsCreateUserRelayAddress: Boolean,
-        sourceToken: TokenInfo,
+        sourceToken: TokenAccount,
         targetAmount: BigInteger,
         topUpPools: OrcaPoolsPair,
         expectedFee: BigInteger,
@@ -101,7 +101,7 @@ class FeeRelayerTopUpInteractor(
 
     suspend fun prepareForTopUp(
         topUpAmount: BigInteger,
-        payingFeeToken: TokenInfo,
+        payingFeeToken: TokenAccount,
         relayAccount: RelayAccount,
         freeTransactionFeeLimit: FreeTransactionFeeLimit?
     ): TopUpPreparedParams {
@@ -234,7 +234,7 @@ class FeeRelayerTopUpInteractor(
    * */
     private suspend fun prepareForTopUp(
         feeRelayerProgramId: PublicKey,
-        sourceToken: TokenInfo,
+        sourceToken: TokenAccount,
         userAuthorityAddress: PublicKey,
         relayAccountPublicKey: PublicKey,
         topUpPools: OrcaPoolsPair,

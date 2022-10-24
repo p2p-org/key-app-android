@@ -19,5 +19,5 @@ interface RpcSolanaRepository {
         limit: Int
     ): List<SignatureInformationResponse>
 
-    suspend fun sendSerializedTransaction(serializedTransaction: Base64String): String
+    suspend fun sendSerializedTransaction(serializedTransaction: Base64String, encoding: Encoding): String
 }

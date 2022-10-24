@@ -213,7 +213,7 @@ class SolendSdkFacade(
         val response = solendSdk.getSolendUserDepositBySymbol(
             owner = userAddress.base58Value,
             symbol = tokenSymbol,
-            pool = solendPoolAddress.poolAddress.base58Value
+            pool = solendPoolAddress.poolName
         )
         logger.logResponse("getSolendUserDepositByTokenSymbol", response)
         methodResultMapper.fromSdk<SolendUserDepositByTokenResponseResponse>(response).userDepositBySymbol
@@ -227,7 +227,7 @@ class SolendSdkFacade(
 
         val response = solendSdk.getSolendUserDeposits(
             owner = userAddress.base58Value,
-            pool = solendPoolAddress.poolAddress.base58Value
+            pool = solendPoolAddress.poolName
         )
         logger.logResponse("getSolendUserDeposits", response)
         methodResultMapper.fromSdk<SolendUserDepositsResponseResponse>(response).deposits

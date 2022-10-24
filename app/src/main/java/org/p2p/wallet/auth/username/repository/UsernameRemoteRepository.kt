@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.username.repository
 
+import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.auth.username.api.RegisterUsernameServiceApi
 import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
@@ -42,7 +43,7 @@ class UsernameRemoteRepository(
             )
             val response = usernameService.createUsername(request)
             val createNameTransaction = mapper.fromNetwork(response).serializedSignedCreateNameTransaction
-            val resultSignature = rpcSolanaRepository.sendSerializedTransaction(createNameTransaction)
+            val resultSignature = rpcSolanaRepository.sendSerializedTransaction(createNameTransaction, Encoding.BASE64)
             Timber.i("Create name transaction is sent: $resultSignature")
         }
     }
