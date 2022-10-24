@@ -108,7 +108,7 @@ class SolendEarnPresenter(
                 if (activeToken?.totalInUsd.orZero().isZero()) {
                     view?.showDepositTopUp(deposit)
                 } else {
-                    view?.showDepositToSolend(deposit)
+                    view?.showDepositToSolend(deposit, deposits)
                 }
             }
         }

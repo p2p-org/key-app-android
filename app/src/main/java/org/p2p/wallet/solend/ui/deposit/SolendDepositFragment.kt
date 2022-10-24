@@ -31,6 +31,7 @@ import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
 private const val ARG_DEPOSIT_TOKEN = "ARG_DEPOSIT_TOKEN"
+private const val ARG_ALL_DEPOSITS = "ARG_ALL_DEPOSITS"
 
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
@@ -42,10 +43,17 @@ class SolendDepositFragment :
     SolendDepositContract.View {
 
     companion object {
-        fun create(deposit: SolendDepositToken) = SolendDepositFragment().withArgs(
-            ARG_DEPOSIT_TOKEN to deposit
+        fun create(
+            deposit: SolendDepositToken,
+            userDeposits: List<SolendDepositToken>
+        ) = SolendDepositFragment().withArgs(
+            ARG_DEPOSIT_TOKEN to deposit,
+            ARG_ALL_DEPOSITS to userDeposits
         )
     }
+
+    private val deposit: SolendDepositToken by args(ARG_DEPOSIT_TOKEN)
+    private val userDeposits: List<SolendDepositToken> by args(ARG_ALL_DEPOSITS)
 
     override val presenter: SolendDepositContract.Presenter by inject {
         parametersOf(deposit)
@@ -54,8 +62,6 @@ class SolendDepositFragment :
     private val glideManager: GlideManager by inject()
 
     private val binding: FragmentSolendDepositBinding by viewBinding()
-
-    private val deposit: SolendDepositToken by args(ARG_DEPOSIT_TOKEN)
 
     private val depositButtonsAnimation = ChangeBounds().apply {
         duration = 200
@@ -92,6 +98,8 @@ class SolendDepositFragment :
             viewLifecycleOwner,
             ::onFragmentResult
         )
+
+        presenter.initialize(userDeposits)
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
@@ -109,7 +117,8 @@ class SolendDepositFragment :
     }
 
     override fun showFeeLoading(isLoading: Boolean) {
-        animateButtons(isSliderVisible = !isLoading, isInfoButtonVisible = isLoading)
+        binding.sliderDeposit.isVisible = !isLoading
+        binding.buttonInfo.isVisible = !isLoading
         binding.buttonAction.isLoadingState = isLoading
     }
 

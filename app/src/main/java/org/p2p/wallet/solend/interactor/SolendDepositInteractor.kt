@@ -97,7 +97,7 @@ class SolendDepositInteractor(
         val hasFreeTransactions = freeTransactionFeeLimit.hasFreeTransactions()
         val feePayer = if (hasFreeTransactions) relayInfo.feePayerAddress else account.publicKey
 
-        val withdrawFeeInSol = solendRepository.getDepositFee(
+        val depositFeeInSol = solendRepository.getDepositFee(
             owner = account.publicKey.toBase58Instance(),
             feePayer = feePayer.toBase58Instance(),
             tokenAmount = amountInLamports,
@@ -108,8 +108,8 @@ class SolendDepositInteractor(
         val feeInSplToken = try {
             feeRelayerInteractor.calculateFeeInPayingToken(
                 feeInSOL = FeeAmount(
-                    transaction = withdrawFeeInSol.transaction,
-                    accountBalances = withdrawFeeInSol.rent
+                    transaction = if (hasFreeTransactions) BigInteger.ZERO else depositFeeInSol.transaction,
+                    accountBalances = depositFeeInSol.rent
                 ),
                 payingFeeTokenMint = token.mintAddress
             )
@@ -120,10 +120,10 @@ class SolendDepositInteractor(
         val solToken = userInteractor.getUserSolToken() ?: error("No SOL token account found")
 
         val feeInSol = SolendFee(
-            symbol = solToken.tokenSymbol,
+            tokenSymbol = solToken.tokenSymbol,
             decimals = solToken.decimals,
             usdRate = solToken.usdRateOrZero,
-            fee = withdrawFeeInSol,
+            fee = depositFeeInSol,
             feePayer = TokenAccount(
                 address = solToken.publicKey,
                 mint = solToken.mintAddress
@@ -137,7 +137,7 @@ class SolendDepositInteractor(
 
         // calculated fee in SPL token
         return SolendFee(
-            symbol = token.tokenSymbol,
+            tokenSymbol = token.tokenSymbol,
             decimals = splToken.decimals,
             usdRate = splToken.usdRateOrZero,
             fee = SolendTokenFee(feeInSplToken),

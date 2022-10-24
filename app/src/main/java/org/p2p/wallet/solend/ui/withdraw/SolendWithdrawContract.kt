@@ -31,6 +31,7 @@ interface SolendWithdrawContract {
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun initialize(userDeposits: List<SolendDepositToken>)
         fun selectTokenToWithdraw(tokenToWithdraw: SolendDepositToken.Active)
         fun onTokenWithdrawClicked()
         fun updateInputs(input: BigDecimal, output: BigDecimal)

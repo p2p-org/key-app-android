@@ -20,6 +20,7 @@ interface SolendDepositContract {
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun initialize(userDeposits: List<SolendDepositToken>)
         fun selectTokenToDeposit(tokenToDeposit: SolendDepositToken)
         fun onTokenDepositClicked()
         fun updateInputs(input: BigDecimal, output: BigDecimal)

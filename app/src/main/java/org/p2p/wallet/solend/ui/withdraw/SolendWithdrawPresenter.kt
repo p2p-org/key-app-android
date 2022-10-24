@@ -3,20 +3,16 @@ package org.p2p.wallet.solend.ui.withdraw
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.solend.interactor.SolendDepositInteractor
 import org.p2p.wallet.solend.interactor.SolendWithdrawInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendTransactionDetails
 import org.p2p.wallet.solend.model.SolendTransactionDetailsState
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.isMoreThan
-import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toLamports
 import timber.log.Timber
@@ -31,7 +27,6 @@ private const val FEE_DELAY_IN_MS = 250L
 class SolendWithdrawPresenter(
     token: SolendDepositToken.Active,
     private val resourcesProvider: ResourcesProvider,
-    private val depositsInteractor: SolendDepositInteractor,
     private val withdrawInteractor: SolendWithdrawInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor
 ) : BasePresenter<SolendWithdrawContract.View>(), SolendWithdrawContract.Presenter {
@@ -46,12 +41,11 @@ class SolendWithdrawPresenter(
 
     override fun attach(view: SolendWithdrawContract.View) {
         super.attach(view)
-        initializeTokens(view)
         loadOrcaInfo()
     }
 
-    private fun initializeTokens(view: SolendWithdrawContract.View) {
-        view.showTokenToWithdraw(
+    override fun initialize(userDeposits: List<SolendDepositToken>) {
+        view?.showTokenToWithdraw(
             depositToken = selectedDepositToken,
             withChevron = validDeposits.size > 1
         )
@@ -59,7 +53,7 @@ class SolendWithdrawPresenter(
         if (validDeposits.isEmpty()) {
             launch {
                 try {
-                    validDeposits = depositsInteractor.getUserDeposits()
+                    validDeposits = userDeposits
                         .filterIsInstance<SolendDepositToken.Active>()
                         .filter { it.depositAmount.isMoreThan(BigDecimal.ZERO) }
 
@@ -67,7 +61,7 @@ class SolendWithdrawPresenter(
                     validDeposit?.let { selectTokenToWithdraw(it) }
                 } catch (e: Throwable) {
                     Timber.e(e, "Error fetching available withdraw tokens")
-                    view.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                    view?.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
                 }
             }
         }
@@ -112,6 +106,12 @@ class SolendWithdrawPresenter(
     }
 
     private fun calculateFee(input: BigDecimal, output: BigDecimal) {
+        if (input.isZero()) {
+            calculateFeeJob?.cancel()
+            view?.setEmptyAmountState()
+            return
+        }
+
         calculateFeeJob?.cancel()
         calculateFeeJob = launch {
             delay(FEE_DELAY_IN_MS)
@@ -134,29 +134,17 @@ class SolendWithdrawPresenter(
                 return@launch
             }
 
-            val transferFee = fee.getTransferFeeInDecimals()
-            val transferFeeUsd = (transferFee * fee.usdRate).scaleShort()
+            val total = fee.getTotalFee(
+                currentInput = currentInput,
+                selectedDepositToken = selectedDepositToken,
+                amountInLamports = amountInLamports
+            )
 
-            val rentFee = fee.getRentFeeInDecimals()
-            val rentFeeUsd = (rentFee * fee.usdRate).scaleShort()
-
-            var totalInLamports = amountInLamports
-            var totalInUsd = (currentInput * selectedDepositToken.usdRate).scaleShort()
-
-            val tokenSymbol = fee.symbol
-            if (selectedDepositToken.tokenSymbol == fee.symbol) {
-                totalInLamports += fee.fee.total
-                totalInUsd = totalInLamports.fromLamports(fee.decimals).scaleShort()
-            } else {
-                totalInUsd = totalInUsd + transferFeeUsd + rentFeeUsd
-            }
-
-            val total = totalInLamports.fromLamports(fee.decimals).scaleLong()
             val detailsData = SolendTransactionDetails(
-                amount = "$input $tokenSymbol (~$ $amountInUsd)",
-                transferFee = if (transferFee.isNotZero()) "$transferFee $tokenSymbol (~$ $transferFeeUsd)" else null,
-                fee = "$rentFee $tokenSymbol (~$ $rentFeeUsd)",
-                total = "$total $tokenSymbol (~$ $totalInUsd)"
+                amount = "$input ${fee.tokenSymbol} (~$ $amountInUsd)",
+                transferFee = fee.getTransferFee(),
+                fee = fee.getRentFee(),
+                total = total
             )
             updateWithdrawState(input, output, detailsData)
 

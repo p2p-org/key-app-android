@@ -9,12 +9,10 @@ import org.p2p.wallet.solend.model.SolendTransactionDetails
 import org.p2p.wallet.solend.model.SolendTransactionDetailsState
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.isNotZero
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.orZero
-import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toLamports
 import timber.log.Timber
@@ -27,11 +25,11 @@ import kotlinx.coroutines.launch
 private const val FEE_DELAY_IN_MS = 250L
 
 class SolendDepositPresenter(
+    deposit: SolendDepositToken,
     private val resourcesProvider: ResourcesProvider,
     private val solendDepositInteractor: SolendDepositInteractor,
     private val depositInteractor: SolendDepositInteractor,
-    private val orcaInfoInteractor: OrcaInfoInteractor,
-    deposit: SolendDepositToken
+    private val orcaInfoInteractor: OrcaInfoInteractor
 ) : BasePresenter<SolendDepositContract.View>(), SolendDepositContract.Presenter {
 
     private var selectedDepositToken = deposit
@@ -50,22 +48,22 @@ class SolendDepositPresenter(
             depositToken = selectedDepositToken,
             withChevron = validDeposits.size > 1
         )
+    }
 
+    override fun initialize(userDeposits: List<SolendDepositToken>) {
         if (validDeposits.isEmpty()) {
-            view.showFullScreenLoading(isLoading = true)
+            view?.showFullScreenLoading(isLoading = true)
             launch {
                 try {
-                    validDeposits = solendDepositInteractor.getUserDeposits().filter { deposit ->
-                        deposit.availableTokensForDeposit.isNotZero()
-                    }
+                    validDeposits = userDeposits.filter { deposit -> deposit.availableTokensForDeposit.isNotZero() }
 
                     val validDeposit = validDeposits.find { it.tokenSymbol == selectedDepositToken.tokenSymbol }
                     if (validDeposit != null) selectTokenToDeposit(validDeposit)
                 } catch (e: Throwable) {
                     Timber.e(e, "Error fetching available deposit tokens")
-                    view.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
+                    view?.showUiKitSnackBar(e.getErrorMessage { res -> resourcesProvider.getString(res) })
                 } finally {
-                    view.showFullScreenLoading(isLoading = false)
+                    view?.showFullScreenLoading(isLoading = false)
                 }
             }
         }
@@ -105,6 +103,12 @@ class SolendDepositPresenter(
     }
 
     private fun calculateFee(input: BigDecimal, output: BigDecimal) {
+        if (input.isZero()) {
+            calculateFeeJob?.cancel()
+            view?.setEmptyAmountState()
+            return
+        }
+
         calculateFeeJob?.cancel()
         calculateFeeJob = launch {
             delay(FEE_DELAY_IN_MS)
@@ -127,29 +131,17 @@ class SolendDepositPresenter(
                 return@launch
             }
 
-            val transferFee = fee.getTransferFeeInDecimals()
-            val transferFeeUsd = (transferFee * fee.usdRate).scaleShort()
+            val total = fee.getTotalFee(
+                currentInput = currentInput,
+                selectedDepositToken = selectedDepositToken,
+                amountInLamports = amountInLamports
+            )
 
-            val rentFee = fee.getRentFeeInDecimals()
-            val rentFeeUsd = (rentFee * fee.usdRate).scaleShort()
-
-            var totalInLamports = amountInLamports
-            var totalInUsd = (currentInput * selectedDepositToken.usdRate).scaleShort()
-
-            val tokenSymbol = fee.symbol
-            if (selectedDepositToken.tokenSymbol == fee.symbol) {
-                totalInLamports += fee.fee.total
-                totalInUsd = totalInLamports.fromLamports(fee.decimals).scaleShort()
-            } else {
-                totalInUsd = totalInUsd + transferFeeUsd + rentFeeUsd
-            }
-
-            val total = totalInLamports.fromLamports(fee.decimals).scaleLong()
             val detailsData = SolendTransactionDetails(
-                amount = "$input $tokenSymbol (~$ $amountInUsd)",
-                transferFee = if (transferFee.isNotZero()) "$transferFee $tokenSymbol (~$ $transferFeeUsd)" else null,
-                fee = "$rentFee $tokenSymbol (~$ $rentFeeUsd)",
-                total = "$total $tokenSymbol (~$ $totalInUsd)"
+                amount = "$input ${fee.tokenSymbol} (~$ $amountInUsd)",
+                transferFee = fee.getTransferFee(),
+                fee = fee.getRentFee(),
+                total = total
             )
             updateDepositState(input, output, detailsData)
 

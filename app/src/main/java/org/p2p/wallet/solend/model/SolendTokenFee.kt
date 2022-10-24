@@ -3,7 +3,7 @@ package org.p2p.wallet.solend.model
 import org.p2p.solanaj.core.FeeAmount
 import java.math.BigInteger
 
-data class SolendTokenFee(
+data class SolendTokenFee constructor(
     val transaction: BigInteger,
     val rent: BigInteger
 ) {

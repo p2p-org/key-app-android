@@ -1,6 +1,7 @@
 package org.p2p.wallet.solend.model
 
 import android.os.Parcelable
+import org.p2p.uikit.utils.emptyString
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -9,4 +10,14 @@ data class SolendTransactionDetails(
     val transferFee: String?, // null == free
     val fee: String,
     val total: String
-) : Parcelable
+) : Parcelable {
+
+    companion object {
+        val EMPTY = SolendTransactionDetails(
+            amount = emptyString(),
+            transferFee = null,
+            fee = emptyString(),
+            total = emptyString()
+        )
+    }
+}

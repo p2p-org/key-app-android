@@ -88,7 +88,7 @@ class SolendWithdrawInteractor(
         val feeInSplToken = try {
             feeRelayerInteractor.calculateFeeInPayingToken(
                 feeInSOL = FeeAmount(
-                    transaction = withdrawFeeInSol.transaction,
+                    transaction = if (hasFreeTransactions) BigInteger.ZERO else withdrawFeeInSol.transaction,
                     accountBalances = withdrawFeeInSol.rent
                 ),
                 payingFeeTokenMint = token.mintAddress
@@ -100,7 +100,7 @@ class SolendWithdrawInteractor(
         val solToken = userInteractor.getUserSolToken() ?: error("No SOL token account found")
 
         val feeInSol = SolendFee(
-            symbol = solToken.tokenSymbol,
+            tokenSymbol = solToken.tokenSymbol,
             decimals = solToken.decimals,
             usdRate = solToken.usdRateOrZero,
             fee = withdrawFeeInSol,
@@ -117,7 +117,7 @@ class SolendWithdrawInteractor(
 
         // calculated fee in SPL token
         return SolendFee(
-            symbol = token.tokenSymbol,
+            tokenSymbol = token.tokenSymbol,
             decimals = splToken.decimals,
             usdRate = splToken.usdRateOrZero,
             fee = SolendTokenFee(feeInSplToken),

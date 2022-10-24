@@ -6,6 +6,7 @@ import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isZero
+import org.p2p.wallet.utils.isZeroOrLess
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigDecimal
@@ -88,7 +89,9 @@ data class OrcaPool(
             STABLE -> {
                 if (amp == null) throw IllegalStateException("Amp doesn't exist in pool config")
                 val inputAmountLessFee = computeInputAmount(estimatedAmount, poolInputAmount, poolOutputAmount, amp)
-                return inputAmountLessFee * feeDenominator / feeDenominator - feeNumerator
+
+                val stableInputAmount = inputAmountLessFee * feeDenominator / feeDenominator - feeNumerator
+                return if (stableInputAmount.isZeroOrLess()) BigInteger.ZERO else stableInputAmount
             }
             CONSTANT_PRODUCT -> {
                 val invariant = poolInputAmount * poolOutputAmount
@@ -106,11 +109,11 @@ data class OrcaPool(
                     feeRatioNumerator = feeDenominator * ownerTradeFeeDenominator
                     feeRatioDenominator =
                         feeDenominator * ownerTradeFeeDenominator -
-                        (feeNumerator * ownerTradeFeeDenominator) - (ownerTradeFeeNumerator * feeDenominator)
+                            (feeNumerator * ownerTradeFeeDenominator) - (ownerTradeFeeNumerator * feeDenominator)
                 }
 
                 val inputAmount = inputAmountLessFee * feeRatioNumerator / feeRatioDenominator
-                return inputAmount
+                return if (inputAmount.isZeroOrLess()) BigInteger.ZERO else inputAmount
             }
             else ->
                 return null

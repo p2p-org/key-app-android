@@ -31,6 +31,7 @@ import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
 private const val ARG_WITHDRAW_TOKEN = "ARG_Withdraw_TOKEN"
+private const val ARG_ALL_DEPOSITS = "ARG_ALL_DEPOSITS"
 
 private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
@@ -40,20 +41,25 @@ class SolendWithdrawFragment :
     SolendWithdrawContract.View {
 
     companion object {
-        fun create(token: SolendDepositToken.Active): SolendWithdrawFragment = SolendWithdrawFragment().withArgs(
-            ARG_WITHDRAW_TOKEN to token
+        fun create(
+            deposit: SolendDepositToken.Active,
+            userDeposits: List<SolendDepositToken>
+        ): SolendWithdrawFragment = SolendWithdrawFragment().withArgs(
+            ARG_WITHDRAW_TOKEN to deposit,
+            ARG_ALL_DEPOSITS to userDeposits
         )
     }
 
+    private val deposit: SolendDepositToken.Active by args(ARG_WITHDRAW_TOKEN)
+    private val userDeposits: List<SolendDepositToken> by args(ARG_ALL_DEPOSITS)
+
     override val presenter: SolendWithdrawContract.Presenter by inject() {
-        parametersOf(token)
+        parametersOf(deposit)
     }
 
     private val glideManager: GlideManager by inject()
 
     private val binding: FragmentSolendWithdrawBinding by viewBinding()
-
-    private val token: SolendDepositToken.Active by args(ARG_WITHDRAW_TOKEN)
 
     private val depositButtonsAnimation = ChangeBounds().apply {
         duration = 200
@@ -70,6 +76,8 @@ class SolendWithdrawFragment :
         childFragmentManager.setFragmentResultListener(
             KEY_REQUEST_TOKEN, viewLifecycleOwner, ::onFragmentResult
         )
+
+        presenter.initialize(userDeposits)
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
@@ -87,7 +95,8 @@ class SolendWithdrawFragment :
     }
 
     override fun showFeeLoading(isLoading: Boolean) {
-        animateButtons(isSliderVisible = !isLoading, isInfoButtonVisible = isLoading)
+        binding.sliderDeposit.isVisible = !isLoading
+        binding.buttonInfo.isVisible = !isLoading
         binding.buttonAction.isLoadingState = isLoading
     }
 
