@@ -21,7 +21,7 @@
 
     <!-- Change pin code -->
     <string name="settings_item_pin_code">PIN</string>
-    <string name="settings_item_instruction_first">Firstly we\'ll use it for entrance in P2P App. Sometimes instead of biometric.</string>
+    <string name="settings_item_instruction_first">Firstly we\'ll use it for entrance in Key App. Sometimes instead of biometric.</string>
     <string name="settings_item_instruction_second">Sometimes it will be useful for showing seed phrase or private key.</string>
     <string name="settings_item_change_pin">Change the PIN</string>
     <string name="settings_item_change_pin_action">Change the PIN</string>

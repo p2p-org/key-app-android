@@ -4,6 +4,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import android.content.Context
+import android.text.Editable
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import org.p2p.uikit.utils.setTextColorRes
@@ -11,10 +12,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetReserveUsernameInputViewBinding
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 fun interface ReserveUsernameInputViewListener {
     fun onInputChanged(newValue: String)
 }
+
+private val UPPER_CASE_REGEX: Pattern = Pattern.compile("[A-Z]")
 
 class ReserveUsernameInputView @JvmOverloads constructor(
     context: Context,
@@ -39,15 +44,30 @@ class ReserveUsernameInputView @JvmOverloads constructor(
         }
 
     init {
-        binding.editTextUsername.doAfterTextChanged {
-            it?.toString()?.also { listener?.onInputChanged(it) }
+        binding.editTextUsername.doAfterTextChanged { editable ->
+            if (editable == null) return@doAfterTextChanged
+
+            replaceUppercaseWithLowercase(editable)
+            listener?.onInputChanged(editable.toString().lowercase())
         }
         binding.imageViewClear.setOnClickListener {
             binding.editTextUsername.setText(emptyString())
         }
     }
 
-    fun renderState(state: InputState) {
+    private fun replaceUppercaseWithLowercase(editable: Editable) {
+        val matcher: Matcher = UPPER_CASE_REGEX.matcher(editable)
+        while (matcher.find()) {
+            val upperCaseRegion = editable.subSequence(matcher.start(), matcher.end()).toString()
+            editable.replace(
+                matcher.start(),
+                matcher.end(),
+                upperCaseRegion.lowercase()
+            )
+        }
+    }
+
+    fun renderState(state: ReserveUsernameInputView.InputState) {
         when (state) {
             InputState.USERNAME_INVALID -> {
                 binding.progressBar.isVisible = false
