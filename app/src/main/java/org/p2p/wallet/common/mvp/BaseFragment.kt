@@ -21,6 +21,7 @@ import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
 import org.p2p.wallet.auth.ui.done.AuthDoneFragment
 import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyFragment

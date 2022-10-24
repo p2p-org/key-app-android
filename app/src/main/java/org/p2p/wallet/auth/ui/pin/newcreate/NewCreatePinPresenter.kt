@@ -144,7 +144,8 @@ class NewCreatePinPresenter(
         if (isUserCanRegisterUsername) {
             view?.navigateToRegisterUsername()
         } else {
-            view?.navigateToMain()
+            val isWalletCreated = onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet
+            view?.navigateToMain(isWalletCreated)
         }
     }
 

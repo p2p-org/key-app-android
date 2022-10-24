@@ -13,6 +13,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -120,10 +121,18 @@ class NewCreatePinFragment :
         requireContext().vibrate(duration)
     }
 
-    override fun navigateToMain() {
+    override fun navigateToMain(isWalletCreated: Boolean) {
         binding.pinView.onSuccessPin()
 
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        val actions = if (isWalletCreated) {
+            arrayOf<MainFragmentOnCreateAction>(MainFragmentOnCreateAction.PlayAnimation(R.raw.raw_animation_applause))
+        } else {
+            emptyArray()
+        }
+        popAndReplaceFragment(
+            MainFragment.create(actions),
+            inclusive = true
+        )
     }
 
     override fun navigateToRegisterUsername() {
