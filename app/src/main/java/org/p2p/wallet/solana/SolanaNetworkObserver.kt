@@ -3,6 +3,7 @@ package org.p2p.wallet.solana
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
 
 private const val SAMPLE_COUNT = 3
 private const val TAG = "NETWORK_OBSERVER"
@@ -60,7 +60,6 @@ class SolanaNetworkObserver(
                     Timber.w("Fetching recent performance samples cancelled")
                 } catch (e: Throwable) {
                     Timber.e(e, "Error loading recent samples")
-                    showError()
                 }
 
                 /*
