@@ -12,6 +12,7 @@ import org.p2p.uikit.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemPopularTokenBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -33,18 +34,13 @@ class PopularTokenViewHolder(
 
     fun onBind(token: Token) = with(binding) {
 
-        if (!token.iconUrl.isNullOrEmpty()) {
-            loadImage(imageViewToken, token.iconUrl!!)
+        val tokenIcon = token.iconUrl
+        if (!tokenIcon.isNullOrEmpty()) {
+            loadImage(imageViewToken, tokenIcon)
         }
 
-        textViewName.text = token.tokenName
-        textViewValue.text = getString(
-            if (token.isRenBTC) {
-                R.string.main_popular_token_action_receive_button
-            } else {
-                R.string.main_popular_token_action_buy_button
-            }
-        )
+        textViewName.text = token.mapTokenToPopularName()
+        textViewValue.text = getString(R.string.main_popular_token_action_buy_button)
 
         textViewTotal.withTextOrGone("$ ${token.usdRateOrZero.formatUsd()}")
 
@@ -62,5 +58,12 @@ class PopularTokenViewHolder(
         } else {
             Glide.with(imageView).load(url).into(imageView)
         }
+    }
+
+    private fun Token.mapTokenToPopularName(): String = when (tokenSymbol) {
+        Constants.USDC_SYMBOL -> "USDC"
+        "BTC" -> "Bitcoin"
+        "ETH" -> "Ethereum"
+        else -> tokenName
     }
 }

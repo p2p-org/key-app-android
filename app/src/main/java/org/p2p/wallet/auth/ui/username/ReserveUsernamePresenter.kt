@@ -1,15 +1,15 @@
 package org.p2p.wallet.auth.ui.username
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val USERNAME_MAX_LENGTH = 15
 
@@ -44,7 +44,7 @@ class ReserveUsernamePresenter(
                 * */
                 delay(300)
                 view?.showUsernameLoading(true)
-                usernameInteractor.checkUsername(username)
+//                usernameInteractor.checkUsername(username)
                 view?.showUnavailableName(username)
             } catch (e: CancellationException) {
                 Timber.w(e, "Cancelled request for checking username: $username")
@@ -58,8 +58,8 @@ class ReserveUsernamePresenter(
     override fun checkCaptcha() {
         launch {
             try {
-                val params = usernameInteractor.checkCaptcha()
-                view?.showCaptcha(params)
+//                val params = usernameInteractor.checkCaptcha()
+//                view?.showCaptcha(params)
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while checking captcha")
                 view?.showCaptchaFailed()
@@ -72,7 +72,7 @@ class ReserveUsernamePresenter(
         view?.showLoading(true)
         launch {
             try {
-                usernameInteractor.registerUsername(username, result)
+//                usernameInteractor.registerUsername(username, result)
                 analytics.logUsernameReserved()
                 view?.showSuccess()
             } catch (e: Throwable) {

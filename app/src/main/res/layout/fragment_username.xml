@@ -61,7 +61,7 @@
                     android:gravity="start"
                     android:lineSpacingExtra="5dp"
                     android:padding="16dp"
-                    android:text="@string/auth_your_p2p_username"
+                    android:text="@string/auth_your_key_username"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

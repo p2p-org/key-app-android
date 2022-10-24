@@ -62,6 +62,16 @@ public class Transaction {
         sign(Arrays.asList(signer));
     }
 
+    public void signWithoutSignatures(PublicKey owner) {
+
+        if (feePayer == null) {
+            feePayer = owner;
+        }
+        message.setFeePayer(feePayer);
+
+        serializedMessage = message.serialize();
+    }
+
     public void sign(List<Account> signers) {
 
         if (signers.size() == 0) {

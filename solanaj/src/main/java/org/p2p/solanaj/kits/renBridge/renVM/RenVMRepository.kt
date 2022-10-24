@@ -5,7 +5,7 @@ import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryBlockState
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryConfig
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
-import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.solanaj.rpc.RenPoolRepository
 import org.p2p.solanaj.rpc.RpcException
 import org.p2p.solanaj.utils.Utils
 import org.p2p.solanaj.utils.crypto.Base64UrlUtils
@@ -16,7 +16,7 @@ const val MINT_TRANSACTION_INPUT =
         "pp8o7GWQxmsp52gsDrfbipkyeQZnXigCmscJY4aJDxF9tT8DQP3XRa1cBzQL8S8PTzi9nPnBkAxBhtNv6q1"
 
 class RenVMRepository(
-    private val rpcSolanaApi: RpcSolanaRepository
+    private val rpcSolanaApi: RenPoolRepository
 ) {
 
     companion object {

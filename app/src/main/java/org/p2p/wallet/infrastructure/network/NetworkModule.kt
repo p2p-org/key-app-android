@@ -12,6 +12,7 @@ import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_QUALIFIER
+import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
@@ -30,7 +31,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
-import org.p2p.wallet.rpc.RpcModule.RPC_SOLANA_RETROFIT_QUALIFIER
+import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 import retrofit2.Retrofit
@@ -80,7 +81,7 @@ object NetworkModule : InjectionModule {
                 interceptor = RpcInterceptor(get(), get())
             )
         }
-        single(named(RPC_SOLANA_RETROFIT_QUALIFIER)) {
+        single(named(REN_POOL_RETROFIT_QUALIFIER)) {
             val environment = get<NetworkEnvironmentManager>().loadRpcEnvironment()
             val rpcApiUrl = environment.endpoint
             getRetrofit(
@@ -102,11 +103,22 @@ object NetworkModule : InjectionModule {
         single(named(FACADE_SERVICE_RETROFIT_QUALIFIER)) {
             getRetrofit(
                 baseUrl = androidContext().getString(
-                    if (BuildConfig.DEBUG) R.string.gatewayServiceTestBaseUrl
-                    else R.string.gatewayServiceReleaseBaseUrl
+                    if (BuildConfig.DEBUG) R.string.web3AuthServiceTestBaseUrl
+                    else R.string.web3AuthServiceReleaseBaseUrl
                 ),
                 tag = "FacadeService",
                 interceptor = GatewayServiceInterceptor()
+            )
+        }
+
+        single(named(REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER)) {
+            getRetrofit(
+                baseUrl = androidContext().getString(
+                    if (BuildConfig.DEBUG) R.string.registerUsernameServiceTestBaseUrl
+                    else R.string.registerUsernameServiceReleaseBaseUrl
+                ),
+                tag = "RegisterUsernameService",
+                interceptor = null
             )
         }
     }
@@ -140,7 +152,6 @@ object NetworkModule : InjectionModule {
                 if (interceptor != null) {
                     addInterceptor(interceptor)
                 }
-
                 if (BuildConfig.DEBUG && !tag.isNullOrBlank()) {
                     addInterceptor(httpLoggingInterceptor(tag))
                 }

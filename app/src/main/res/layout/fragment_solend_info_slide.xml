@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="24dp">
 
     <ImageView
         android:id="@+id/imageViewSliderIcon"
@@ -24,15 +25,15 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:textColor="@color/text_night"
-        tools:text="Earn interest on your cripto"/>
-
+        tools:text="Earn interest on your cripto" />
 
     <TextView
         android:id="@+id/textViewSliderText"
         style="@style/UiKit.TextAppearance.Regular.Text3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
+        android:layout_marginHorizontal="20dp"
+        android:minHeight="140dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:textColor="@color/text_night"

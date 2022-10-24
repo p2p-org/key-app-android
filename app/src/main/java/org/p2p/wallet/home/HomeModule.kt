@@ -59,7 +59,7 @@ object HomeModule : InjectionModule {
         }
         factory {
             SearchInteractor(
-                usernameInteractor = get(),
+                usernameRepository = get(),
                 userInteractor = get(),
                 tokenKeyProvider = get()
             )
@@ -81,8 +81,7 @@ object HomeModule : InjectionModule {
                 homeElementItemMapper = HomeElementItemMapper(),
                 resourcesProvider = get(),
                 newBuyFeatureToggle = get(),
-                accountStorageContract = get(),
-                authInteractor = get()
+                networkObserver = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
@@ -95,7 +94,8 @@ object HomeModule : InjectionModule {
                 receiveAnalytics = get(),
                 environmentManager = get(),
                 newBuyFeatureToggle = get(),
-                networkType = type
+                networkType = type,
+                userSignUpDetailsStorage = get()
             )
         }
         factory<SendContract.Presenter> {
@@ -112,11 +112,12 @@ object HomeModule : InjectionModule {
                 sendAnalytics = get(),
                 transactionManager = get(),
                 resourcesProvider = get(),
-                dispatchers = get(),
+                usernameDomainFeatureToggle = get(),
+                dispatchers = get()
             )
         }
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            SearchPresenter(usernames = usernames, searchInteractor = get())
+            SearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
         }
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(

@@ -139,12 +139,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
                 when (state) {
                     is SolanaNetworkState.Offline -> showSnackbarErrorMessage()
                     is SolanaNetworkState.Online,
-                    is SolanaNetworkState.Idle -> hideSnackbar()
+                    is SolanaNetworkState.Idle -> Unit
                 }
             }
         }
-
-        networkObserver.start()
     }
 
     private fun showSnackbarErrorMessage() {
@@ -156,10 +154,5 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
                 networkObserver.setSnackbarHidden(isHidden = true)
             }
         )
-    }
-
-    private fun hideSnackbar() {
-        snackbar?.dismiss()
-        snackbar = null
     }
 }
