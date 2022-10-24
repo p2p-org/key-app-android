@@ -272,7 +272,7 @@ class SendFragment :
         with(binding) {
             targetImageView.setBackgroundResource(R.drawable.bg_gray_secondary_rounded_small)
             targetImageView.setImageResource(R.drawable.ic_search)
-            targetTextView.setText(R.string.main_p2p_username_sol_address)
+            targetTextView.setText(R.string.main_key_app_username_sol_address)
             targetTextView.setTextColor(colorFromTheme(R.attr.colorSecondary))
 
             messageTextView.isVisible = false
