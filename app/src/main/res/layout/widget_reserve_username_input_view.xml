@@ -17,14 +17,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- text|textNoSuggestions to remove text duplication when `_` entered -->
         <EditText
             android:id="@+id/editTextUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="16dp"
-            android:textAllCaps="false"
             android:layout_weight="5"
+            android:inputType="text|textNoSuggestions"
             android:background="@android:color/transparent"
             android:digits="@string/common_username_allowed_symbols"
             android:imeOptions="actionDone"
