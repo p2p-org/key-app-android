@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.reserveusername
 
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -10,17 +9,17 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class OnboardingReserveUsernamePresenter(
+class ReserveUsernamePresenter(
     private val usernameValidator: UsernameValidator,
     private val usernameInteractor: UsernameInteractor,
-) : BasePresenter<OnboardingReserveUsernameContract.View>(),
-    OnboardingReserveUsernameContract.Presenter {
+) : BasePresenter<ReserveUsernameContract.View>(),
+    ReserveUsernameContract.Presenter {
 
     private var currentUsernameEntered = emptyString()
 
     private var checkUsernameJob: Job? = null
 
-    override fun attach(view: OnboardingReserveUsernameContract.View) {
+    override fun attach(view: ReserveUsernameContract.View) {
         super.attach(view)
         view.showUsernameInvalid()
     }
@@ -58,8 +57,7 @@ class OnboardingReserveUsernamePresenter(
             try {
                 view?.showUsernameIsChecking()
                 usernameInteractor.registerUsername(currentUsernameEntered)
-                view?.close()
-                view?.showUiKitSnackBar(messageResId = R.string.reserve_username_create_username_success)
+                view?.closeWithSuccess()
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while creating username: $currentUsernameEntered")
                 view?.showUsernameNotAvailable()

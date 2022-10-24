@@ -6,7 +6,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernameFragment
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -130,7 +130,7 @@ class NewCreatePinFragment :
         binding.pinView.onSuccessPin()
 
         popAndReplaceFragment(
-            OnboardingReserveUsernameFragment.create(ReserveUsernameOpenedFrom.ONBOARDING),
+            ReserveUsernameFragment.create(ReserveUsernameOpenedFrom.ONBOARDING),
             inclusive = true
         )
     }

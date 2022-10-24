@@ -1,13 +1,14 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
@@ -23,10 +24,16 @@ import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
+import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+
+private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
 class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
 
@@ -38,8 +45,14 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
 
     companion object {
-        fun create(): MainFragment = MainFragment()
+        fun create(actions: Array<MainFragmentOnCreateAction> = emptyArray()): MainFragment =
+            MainFragment()
+                .withArgs(ARG_MAIN_FRAGMENT_ACTIONS to actions)
     }
+
+    private val onCreateActions: Array<MainFragmentOnCreateAction> by args(
+        key = ARG_MAIN_FRAGMENT_ACTIONS, defaultValue = emptyArray()
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,6 +75,24 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             createCachedTabFragments()
         }
         deeplinksManager.handleSavedDeeplinkIntent()
+
+        onCreateActions.forEach(::doOnCreateAction)
+    }
+
+    private fun doOnCreateAction(action: MainFragmentOnCreateAction) {
+        when (action) {
+            is MainFragmentOnCreateAction.ShowSnackbar -> {
+                showUiKitSnackBar(messageResId = action.messageResId)
+            }
+            is MainFragmentOnCreateAction.PlayAnimation -> {
+                with(binding.animationView) {
+                    setAnimation(action.animationRes)
+                    isVisible = true
+                    doOnAnimationEnd { isVisible = false }
+                    playAnimation()
+                }
+            }
+        }
     }
 
     private fun onActivityBackPressed() {

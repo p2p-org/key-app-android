@@ -292,7 +292,7 @@ dependencies {
     implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
 
     // Lottie
-    def lottieVersion = '3.5.0'
+    def lottieVersion = '4.0.0'
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Sentry
