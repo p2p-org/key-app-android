@@ -153,7 +153,7 @@ class HomePresenter(
                         username = usernameInteractor.getUsername(),
                     )
 
-                    val isAccountEmpty = updatedTokens.run { size == 1 && first().isSOL && first().isZero }
+                    val isAccountEmpty = updatedTokens.all { it.isZero }
                     when {
                         isAccountEmpty -> {
                             val tokensForBuy = userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
