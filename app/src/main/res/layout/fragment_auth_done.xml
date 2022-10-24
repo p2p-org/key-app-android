@@ -23,7 +23,7 @@
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:text="@string/auth_welcome_to_p2p"
+        android:text="@string/auth_welcome_to_key_app"
         android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
