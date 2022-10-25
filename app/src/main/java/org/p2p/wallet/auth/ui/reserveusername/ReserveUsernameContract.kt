@@ -10,7 +10,7 @@ interface ReserveUsernameContract {
         fun showUsernameIsChecking()
         fun showUsernameInvalid()
         fun showCreateUsernameFailed()
-        fun closeWithSuccess()
+        fun close(isUsernameCreated: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

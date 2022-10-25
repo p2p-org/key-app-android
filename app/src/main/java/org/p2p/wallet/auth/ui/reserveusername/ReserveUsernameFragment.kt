@@ -15,6 +15,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.PlayAnimation
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.ShowSnackbar
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getColorStateListCompat
 import org.p2p.wallet.utils.getDrawableCompat
@@ -91,7 +93,7 @@ class ReserveUsernameFragment :
         binding.imageViewBanner.setOnClickListener {
             clicksBeforeDebugSkip--
             if (clicksBeforeDebugSkip == 0) {
-                close()
+                close(isUsernameCreated = false)
             } else {
                 showUiKitSnackBar("Are you clicking me to skip the username..?! I dare you to click again! 🤬")
             }
@@ -103,7 +105,7 @@ class ReserveUsernameFragment :
             inflateMenu(R.menu.menu_close)
             setOnMenuItemClickListener {
                 if (it.itemId == R.id.itemClose) {
-                    close()
+                    close(isUsernameCreated = false)
                     return@setOnMenuItemClickListener true
                 }
                 false
@@ -111,7 +113,7 @@ class ReserveUsernameFragment :
         }
         if (isNavigationBackVisible) {
             navigationIcon = requireContext().getDrawableCompat(R.drawable.ic_back_night)
-            setNavigationOnClickListener { close() }
+            setNavigationOnClickListener { close(isUsernameCreated = false) }
         }
     }
 
@@ -143,7 +145,7 @@ class ReserveUsernameFragment :
         showUiKitSnackBar(
             messageResId = R.string.reserve_username_create_username_error,
             actionButtonResId = R.string.common_skip,
-            actionBlock = { close() }
+            actionBlock = { close(isUsernameCreated = false) }
         )
     }
 
@@ -159,25 +161,16 @@ class ReserveUsernameFragment :
         binding.buttonSubmitUsername.setTextColorRes(R.color.text_night)
     }
 
-    override fun closeWithSuccess() {
-        close(isUsernameCreated = true)
-    }
-
-    private fun close(isUsernameCreated: Boolean = false) {
+    override fun close(isUsernameCreated: Boolean) {
         when (openedFromSource) {
             ReserveUsernameOpenedFrom.ONBOARDING -> {
-                popAndReplaceFragment(MainFragment.create(), inclusive = true)
-                val mainFragmentActions = if (isUsernameCreated) {
-                    arrayOf(
-                        MainFragmentOnCreateAction.ShowSnackbar(R.string.reserve_username_create_username_success),
-                        MainFragmentOnCreateAction.PlayAnimation(R.raw.raw_animation_applause)
-                    )
-                } else {
-                    emptyArray()
+                val actions = mutableListOf<MainFragmentOnCreateAction>(PlayAnimation(R.raw.raw_animation_applause))
+                if (isUsernameCreated) {
+                    actions.add(ShowSnackbar(R.string.reserve_username_create_username_success))
                 }
 
                 popAndReplaceFragment(
-                    MainFragment.create(mainFragmentActions),
+                    MainFragment.create(actions.toTypedArray()),
                     inclusive = true
                 )
             }

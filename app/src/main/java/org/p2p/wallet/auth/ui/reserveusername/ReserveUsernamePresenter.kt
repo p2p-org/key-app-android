@@ -57,7 +57,7 @@ class ReserveUsernamePresenter(
             try {
                 view?.showUsernameIsChecking()
                 usernameInteractor.registerUsername(currentUsernameEntered)
-                view?.closeWithSuccess()
+                view?.close(isUsernameCreated = true)
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while creating username: $currentUsernameEntered")
                 view?.showUsernameNotAvailable()
