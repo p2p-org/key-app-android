@@ -1,9 +1,5 @@
 package org.p2p.wallet.home.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
@@ -32,6 +28,10 @@ import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, "BTC", "ETH", "USDT")
 
@@ -85,7 +85,7 @@ class HomePresenter(
         view.showEmptyState(isEmpty = true)
 
         userName = usernameInteractor.getUsername()
-        view.showUserAddress(userName?.value ?: tokenKeyProvider.publicKey.ellipsizeAddress())
+        view.showUserAddress(userName?.fullUsername ?: tokenKeyProvider.publicKey.ellipsizeAddress())
 
         updatesManager.start()
 
