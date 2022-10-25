@@ -95,7 +95,7 @@ class NewOnboardingFragment :
         ::handleSignResult
     )
 
-    var creationProgressJob: Job? = null
+    private var creationProgressJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
