@@ -59,7 +59,7 @@ class EarnWidget @JvmOverloads constructor(
         when (state) {
             is EarnWidgetState.Balance -> state.showBalanceState()
             is EarnWidgetState.LearnMore -> state.showLearnMoreState()
-            is EarnWidgetState.Depositing -> state.showDepositingState()
+            is EarnWidgetState.TransactionInProgress -> state.showDepositingState()
             is EarnWidgetState.DepositFoundsFailed -> state.showDepositFoundsFailedState()
             is EarnWidgetState.Error -> state.showErrorState()
             else -> showIdleState()
@@ -81,7 +81,7 @@ class EarnWidget @JvmOverloads constructor(
         buttonEarn.setText(R.string.earn_widget_learn_more_button)
     }
 
-    private fun EarnWidgetState.Depositing.showDepositingState() = with(binding) {
+    private fun EarnWidgetState.TransactionInProgress.showDepositingState() = with(binding) {
         makeAlignStartContent()
         buttonEarn.setText(buttonTextRes)
     }
@@ -108,7 +108,7 @@ class EarnWidget @JvmOverloads constructor(
 
     private fun setWidgetViewsVisibility(state: EarnWidgetState) = with(binding) {
         val isBalanceState = state is EarnWidgetState.Balance
-        val isDepositingState = state is EarnWidgetState.Depositing
+        val isDepositingState = state is EarnWidgetState.TransactionInProgress
         val isIdleState = state is EarnWidgetState.Idle
 
         tickerViewAmount.isVisible = isBalanceState

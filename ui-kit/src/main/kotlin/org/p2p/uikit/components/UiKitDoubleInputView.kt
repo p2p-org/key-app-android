@@ -37,7 +37,7 @@ class UiKitDoubleInputView @JvmOverloads constructor(
     private var defaultOutputLabelText: String = emptyString()
     private var maxInputAmount: BigDecimal = BigDecimal.ZERO
 
-    var amountsHandler: ((input: BigDecimal, output: BigDecimal) -> Unit)? = null
+    var onAmountsUpdated: ((input: BigDecimal, output: BigDecimal) -> Unit)? = null
 
     init {
         with(binding) {
@@ -164,7 +164,7 @@ class UiKitDoubleInputView @JvmOverloads constructor(
             val zero = inputValue.toBigDecimal()
             updateOutputText(emptyString())
             checkInputMaxValue(zero)
-            amountsHandler?.invoke(zero, zero)
+            onAmountsUpdated?.invoke(zero, zero)
             return
         }
 
@@ -172,7 +172,7 @@ class UiKitDoubleInputView @JvmOverloads constructor(
         val output = outputValue.scaleLong()
         updateOutputText(output)
         val inputBigDecimal = inputValue.toBigDecimal()
-        amountsHandler?.invoke(inputBigDecimal, outputValue)
+        onAmountsUpdated?.invoke(inputBigDecimal, outputValue)
         checkInputMaxValue(inputBigDecimal)
     }
 
@@ -182,7 +182,7 @@ class UiKitDoubleInputView @JvmOverloads constructor(
 
         if (outputValue == 0.0) {
             updateInputText(emptyString())
-            amountsHandler?.invoke(outputBigDecimal, outputBigDecimal)
+            onAmountsUpdated?.invoke(outputBigDecimal, outputBigDecimal)
             checkInputMaxValue(outputBigDecimal)
             return
         }
@@ -190,7 +190,7 @@ class UiKitDoubleInputView @JvmOverloads constructor(
         val inputValue = BigDecimal(outputValue * outputRate)
         val input = inputValue.scaleLong()
         updateInputText(input)
-        amountsHandler?.invoke(inputValue, outputBigDecimal)
+        onAmountsUpdated?.invoke(inputValue, outputBigDecimal)
         checkInputMaxValue(inputValue)
     }
 

@@ -75,6 +75,6 @@ class SolendUserDepositsFragment :
     }
 
     override fun onWithdrawClicked(token: SolendDepositToken.Active) {
-        replaceFragment(SolendWithdrawFragment.create(token))
+        replaceFragment(SolendWithdrawFragment.create(token, deposits))
     }
 }
