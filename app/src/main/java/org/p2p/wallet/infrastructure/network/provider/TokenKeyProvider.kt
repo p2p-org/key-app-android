@@ -1,16 +1,16 @@
 package org.p2p.wallet.infrastructure.network.provider
 
-import kotlinx.coroutines.runBlocking
 import org.p2p.solanaj.utils.crypto.Base58Utils
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
+import kotlinx.coroutines.runBlocking
 
 private const val TAG = "TokenKeyProvider"
 
 class TokenKeyProvider(
-    private val secureStorage: SecureStorageContract,
+    private val secureStorage: SecureStorageContract
 ) {
 
     fun interface TokenKeyProviderListener {
@@ -19,24 +19,24 @@ class TokenKeyProvider(
 
     private val listeners = mutableListOf<TokenKeyProviderListener>()
 
-    var publicKey: String = getPublicKeyFromStorage()
+    var publicKey: String = emptyString()
+        get() = getPublicKeyFromStorage()
         set(value) {
             field = value
             savePublicKeyToStorage(value)
             Timber.tag(TAG).i("updating user public key: $value")
         }
 
-    private fun getPublicKeyFromStorage(): String {
-        return runBlocking {
-            try {
-                val base58String = secureStorage.getString(Key.KEY_PUBLIC_KEY).orEmpty()
-                Base58Utils.decodeToString(base58String)
-            } catch (e: Throwable) {
-                emptyString()
-            }
+    private fun getPublicKeyFromStorage(): String = runBlocking {
+        try {
+            val base58String = secureStorage.getString(Key.KEY_PUBLIC_KEY).orEmpty()
+            Base58Utils.decodeToString(base58String)
+        } catch (e: Throwable) {
+            Timber.tag(TAG).e(e)
+            throw e
         }
-            .also { Timber.tag(TAG).i("getting user public key: $it") }
     }
+        .also { Timber.tag(TAG).i("getting user public key: $it") }
 
     private fun savePublicKeyToStorage(value: String) {
         runBlocking {
@@ -47,7 +47,8 @@ class TokenKeyProvider(
         }
     }
 
-    var secretKey: ByteArray = getSecretKeyFromStorage()
+    var secretKey: ByteArray = ByteArray(0)
+        get() = getSecretKeyFromStorage()
         set(value) {
             field = value
             saveSecretKeyToStorage(value)
