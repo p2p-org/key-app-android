@@ -12,7 +12,7 @@
     <string name="onboarding_loading_title">Creating wallet…</string>
     <string name="onboarding_loading_title_1">Creating wallet</string>
     <string name="onboarding_loading_title_2">Securing key</string>
-    <string name="onboarding_loading_title_3">All done!</string>
+    <string name="onboarding_loading_title_3">Almost Done!</string>
     <string name="onboarding_loading_message">Please wait it\'s not long :)</string>
 
     <!--Onboarding Slides-->
