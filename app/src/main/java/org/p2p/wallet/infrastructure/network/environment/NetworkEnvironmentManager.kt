@@ -3,6 +3,7 @@ package org.p2p.wallet.infrastructure.network.environment
 import androidx.core.content.edit
 import android.content.SharedPreferences
 import org.p2p.solanaj.rpc.RpcEnvironment
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import timber.log.Timber
@@ -30,6 +31,7 @@ class NetworkEnvironmentManager(
         val networksFromRemoteConfig = networkListFeatureToggle.value.map { it.url }
         val isNetworkAvailable = { network: NetworkEnvironment -> network.endpoint in networksFromRemoteConfig }
         return NetworkEnvironment.values().filter(isNetworkAvailable)
+            .let { if (BuildConfig.DEBUG) it + NetworkEnvironment.DEVNET else it }
     }
 
     fun addEnvironmentListener(owner: KClass<*>, listener: EnvironmentManagerListener) {
