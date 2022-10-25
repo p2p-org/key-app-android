@@ -213,14 +213,15 @@ class NewOnboardingFragment :
             .asFlow()
             .onEach {
                 with(binding) {
-                    textViewCreationTitle.setText(it.title)
+                    textViewCreationTitle.setText(it.titleRes)
                     val hasProgress = it.progress > 0
                     textViewCreationMessage.isVisible = !hasProgress
                     progressBarCreation.isVisible = hasProgress
                     progressBarCreation.setProgress(it.progress, true)
                 }
                 delay(2.seconds.inWholeMilliseconds)
-            }.launchIn(viewLifecycleOwner.lifecycleScope)
+            }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onDestroyView() {
@@ -229,7 +230,7 @@ class NewOnboardingFragment :
     }
 
     data class TimerState(
-        @StringRes val title: Int,
+        @StringRes val titleRes: Int,
         val progress: Int = 0
     )
 }
