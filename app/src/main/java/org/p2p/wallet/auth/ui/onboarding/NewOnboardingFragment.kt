@@ -205,19 +205,17 @@ class NewOnboardingFragment :
 
     private fun startCreationProgressJob() {
         creationProgressJob = listOf(
-            TimerState(R.string.onboarding_loading_title),
-            TimerState(R.string.onboarding_loading_title_1, 33),
-            TimerState(R.string.onboarding_loading_title_2, 55),
-            TimerState(R.string.onboarding_loading_title_3, 100),
+            TimerState(R.string.onboarding_loading_title, withProgress = false),
+            TimerState(R.string.onboarding_loading_title_1),
+            TimerState(R.string.onboarding_loading_title_2),
+            TimerState(R.string.onboarding_loading_title_3),
         ).asSequence()
             .asFlow()
             .onEach {
                 with(binding) {
                     textViewCreationTitle.setText(it.titleRes)
-                    val hasProgress = it.progress > 0
-                    textViewCreationMessage.isVisible = !hasProgress
-                    progressBarCreation.isVisible = hasProgress
-                    progressBarCreation.setProgress(it.progress, true)
+                    textViewCreationMessage.isVisible = !it.withProgress
+                    progressBarCreation.isVisible = it.withProgress
                 }
                 delay(2.seconds.inWholeMilliseconds)
             }
@@ -231,6 +229,6 @@ class NewOnboardingFragment :
 
     data class TimerState(
         @StringRes val titleRes: Int,
-        val progress: Int = 0
+        val withProgress: Boolean = true
     )
 }

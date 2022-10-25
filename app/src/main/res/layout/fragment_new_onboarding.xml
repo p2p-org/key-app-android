@@ -94,6 +94,7 @@
         android:clickable="true"
         android:gravity="center"
         android:orientation="vertical"
+        android:paddingBottom="150dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -127,7 +128,6 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="18dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="150dp"
             android:gravity="center"
             android:text="@string/onboarding_loading_message"
             android:textColor="@color/text_night" />
@@ -138,6 +138,8 @@
             android:layout_width="113dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="60dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/bg_night"
             android:progressTint="@color/bg_night"
             android:visibility="gone" />
 
