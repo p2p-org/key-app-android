@@ -48,7 +48,7 @@ class OrcaNativeSwapInteractor(
         amount: BigInteger,
         slippage: Double
     ): OrcaSwapResult {
-        val owner = Account(tokenKeyProvider.secretKey)
+        val owner = Account(tokenKeyProvider.keyPair)
         val info = orcaInfoInteractor.getInfo() ?: throw IllegalStateException("Swap info missing")
 
         if (bestPoolsPair.isEmpty()) {
@@ -75,7 +75,7 @@ class OrcaNativeSwapInteractor(
                 bestPoolsPair = bestPoolsPair,
                 feePayer = owner.publicKey,
                 info = info,
-                owner = Account(tokenKeyProvider.secretKey),
+                owner = Account(tokenKeyProvider.keyPair),
                 lamports = amount,
                 slippage = slippage,
                 minRenExemption = minRenExemption
@@ -427,7 +427,7 @@ class OrcaNativeSwapInteractor(
         val blockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
         transaction.recentBlockHash = blockhash
 
-        val signers = listOf(Account(tokenKeyProvider.secretKey))
+        val signers = listOf(Account(tokenKeyProvider.keyPair))
         transaction.sign(signers)
 
         val serializedMessage = transaction.serialize()

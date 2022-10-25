@@ -76,6 +76,7 @@ fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isNotZero() = this.compareTo(BigDecimal.ZERO) != 0
 fun BigDecimal.isMoreThan(value: BigDecimal) = this.compareTo(value) == 1
 fun BigDecimal.isLessThan(value: BigDecimal) = this.compareTo(value) == -1
+fun BigDecimal.isZeroOrLess() = isZero() || isLessThan(BigDecimal.ZERO)
 
 fun BigDecimal?.orZero(): BigDecimal = this ?: BigDecimal.ZERO
 fun BigInteger?.orZero(): BigInteger = this ?: BigInteger.ZERO
@@ -84,6 +85,7 @@ fun BigInteger.isZero() = this.compareTo(BigInteger.ZERO) == 0
 fun BigInteger.isNotZero() = this.compareTo(BigInteger.ZERO) != 0
 fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
+fun BigInteger.isZeroOrLess() = isZero() || isLessThan(BigInteger.ZERO)
 
 fun BigDecimal.asCurrency(currency: String): String =
     if (lessThenMinValue()) "<$currency 0.01" else "$currency ${formatUsd()}"

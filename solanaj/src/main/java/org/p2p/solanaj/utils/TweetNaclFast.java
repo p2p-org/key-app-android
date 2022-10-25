@@ -820,18 +820,18 @@ public final class TweetNaclFast {
             crypto_sign_keypair(kp.getPublicKey(), kp.getSecretKey(), false);
             return kp;
         }
-        public static KeyPair keyPair_fromSecretKey(byte [] secretKey) {
+        public static KeyPair keyPair_fromSecretKey(byte [] keypair) {
             KeyPair kp = new KeyPair();
             byte [] pk = kp.getPublicKey();
             byte [] sk = kp.getSecretKey();
 
             // copy sk
             for (int i = 0; i < kp.getSecretKey().length; i ++)
-                sk[i] = secretKey[i];
+                sk[i] = keypair[i];
 
             // copy pk from sk
             for (int i = 0; i < kp.getPublicKey().length; i ++)
-                pk[i] = secretKey[32+i]; // hard-copy
+                pk[i] = keypair[32+i]; // hard-copy
 
             return kp;
         }
