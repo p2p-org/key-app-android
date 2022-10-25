@@ -1,6 +1,7 @@
 package org.p2p.wallet.send.ui.main
 
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.utils.BtcAddressValidator
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
@@ -475,6 +476,9 @@ class SendPresenter(
 
     private fun checkAddress(address: String?) {
         if (address.isNullOrEmpty()) return
+
+        if (state.isRenBTCNetwork() && BtcAddressValidator.isValid(address)) return
+
         val token = token ?: return
 
         checkAddressJob?.cancel()
@@ -685,6 +689,8 @@ class SendPresenter(
         feePayerToken: Token.Active?,
         strategy: FeePayerSelectionStrategy
     ) {
+        if (state.networkType == NetworkType.BITCOIN) return
+
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
 
         feePayerJob?.cancel()
