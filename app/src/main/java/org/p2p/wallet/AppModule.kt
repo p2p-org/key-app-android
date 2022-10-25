@@ -30,7 +30,7 @@ import org.p2p.wallet.renbtc.RenBtcModule
 import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
-import org.p2p.wallet.sdk.di.P2PSdkModule
+import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.solend.SolendModule
 import org.p2p.wallet.swap.SwapModule
@@ -67,7 +67,7 @@ object AppModule {
                 TransactionModule.create(),
                 AnalyticsModule.create(),
                 FeatureTogglesModule.create(),
-                P2PSdkModule.create(),
+                AppSdkModule.create(),
 
                 // feature screens
                 AuthModule.create(),

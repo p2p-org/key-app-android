@@ -8,7 +8,7 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerSwapInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
-import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
@@ -133,10 +133,10 @@ class OrcaSwapInteractor(
     ): OrcaSwapResult {
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
 
-        val payingFeeToken = TokenInfo(feePayerToken.publicKey, feePayerToken.mintAddress)
+        val payingFeeToken = TokenAccount(feePayerToken.publicKey, feePayerToken.mintAddress)
         val (transaction, additionalPaybackFee) = feeRelayerSwapInteractor.prepareSwapTransaction(
             feeRelayerProgramId = feeRelayerProgramId,
-            sourceToken = TokenInfo(sourceAddress, sourceTokenMint),
+            sourceToken = TokenAccount(sourceAddress, sourceTokenMint),
             destinationTokenMint = destinationTokenMint,
             destinationAddress = destinationAddress,
             payingFeeToken = payingFeeToken,

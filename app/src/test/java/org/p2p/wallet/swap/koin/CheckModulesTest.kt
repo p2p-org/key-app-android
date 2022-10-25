@@ -205,7 +205,10 @@ class CheckModulesTest : KoinTest {
         return SolendDepositToken.Active(
             tokenSymbol = "",
             tokenName = "",
+            decimals = 6,
+            mintAddress = "some address",
             iconUrl = null,
+            availableTokensForDeposit = BigDecimal.TEN,
             supplyInterest = BigDecimal.ZERO,
             depositAmount = BigDecimal.ZERO,
             usdAmount = BigDecimal.ZERO,

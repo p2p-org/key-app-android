@@ -12,5 +12,5 @@
     android:ellipsize="end"
     android:maxLines="1"
     android:textColor="@color/text_night"
-    tools:text="Popular Coins" />
+    tools:text="Header" />
 

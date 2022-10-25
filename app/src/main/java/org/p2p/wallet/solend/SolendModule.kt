@@ -7,12 +7,15 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
+import org.p2p.wallet.relay.RelayRemoteRepository
+import org.p2p.wallet.relay.RelayRepository
+import org.p2p.wallet.solend.interactor.SolendDepositInteractor
+import org.p2p.wallet.solend.interactor.SolendWithdrawInteractor
 import org.p2p.wallet.solend.model.SolendDepositMapper
 import org.p2p.wallet.solend.repository.SolendConfigurationLocalRepository
 import org.p2p.wallet.solend.repository.SolendConfigurationRepository
 import org.p2p.wallet.solend.repository.SolendDepositsRemoteRepository
-import org.p2p.wallet.solend.repository.SolendDepositsRepository
+import org.p2p.wallet.solend.repository.SolendRepository
 import org.p2p.wallet.solend.repository.mapper.SolendConfigurationRepositoryMapper
 import org.p2p.wallet.solend.storage.SolendStorage
 import org.p2p.wallet.solend.storage.SolendStorageContract
@@ -41,8 +44,9 @@ object SolendModule : InjectionModule {
 
         factoryOf(::SolendDepositPresenter) bind SolendDepositContract.Presenter::class
 
-        factoryOf(::SolendDepositsInteractor)
-        singleOf(::SolendDepositsRemoteRepository) bind SolendDepositsRepository::class
+        factoryOf(::SolendDepositInteractor)
+        factoryOf(::SolendWithdrawInteractor)
+        singleOf(::SolendDepositsRemoteRepository) bind SolendRepository::class
         singleOf(::SolendStorage) { bind<SolendStorageContract>() }
 
         factoryOf(::SolendDepositMapper)
@@ -55,5 +59,6 @@ object SolendModule : InjectionModule {
     private fun Module.initDataLayer() {
         factoryOf(::SolendConfigurationRepositoryMapper)
         singleOf(::SolendConfigurationLocalRepository) bind SolendConfigurationRepository::class
+        singleOf(::RelayRemoteRepository) bind RelayRepository::class
     }
 }

@@ -1,8 +1,9 @@
 package org.p2p.wallet.solend.model
 
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenPrice
-import org.p2p.wallet.sdk.facade.model.SolendMarketInformationResponse
-import org.p2p.wallet.sdk.facade.model.SolendUserDepositResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendMarketInformationResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositResponse
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.orZero
 
@@ -11,6 +12,7 @@ class SolendDepositMapper {
     fun fromNetwork(
         tokenData: TokenData,
         tokenPrice: TokenPrice?,
+        userToken: Token.Active?,
         marketInfo: SolendMarketInfo?,
         activeDeposit: SolendUserDeposit?
     ): SolendDepositToken {
@@ -19,19 +21,25 @@ class SolendDepositMapper {
             SolendDepositToken.Active(
                 tokenName = tokenData.name,
                 tokenSymbol = tokenData.symbol,
+                decimals = tokenData.decimals,
                 usdRate = usdRate,
+                mintAddress = tokenData.mintAddress,
                 iconUrl = tokenData.iconUrl,
                 supplyInterest = marketInfo?.supplyInterest,
                 depositAmount = activeDeposit.depositedAmount,
                 usdAmount = activeDeposit.depositedAmount * usdRate,
+                availableTokensForDeposit = userToken?.total.orZero()
             )
         } else {
             SolendDepositToken.Inactive(
                 tokenName = tokenData.name,
                 tokenSymbol = tokenData.symbol,
+                decimals = tokenData.decimals,
+                mintAddress = tokenData.mintAddress,
                 usdRate = usdRate,
                 iconUrl = tokenData.iconUrl,
-                supplyInterest = marketInfo?.supplyInterest
+                supplyInterest = marketInfo?.supplyInterest,
+                availableTokensForDeposit = userToken?.total.orZero()
             )
         }
     }

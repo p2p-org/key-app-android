@@ -223,7 +223,7 @@
                     android:maxLines="1"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                     android:textColor="@color/textIconActive"
-                    tools:text="Free by p2p.org" />
+                    tools:text="Free by Key App" />
 
             </LinearLayout>
 

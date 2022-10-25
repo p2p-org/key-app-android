@@ -5,6 +5,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
+import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformationResponse
@@ -19,15 +20,24 @@ class RpcSolanaRemoteRepository(
     private val blockHashRepository: RpcBlockhashRepository,
 ) : RpcSolanaRepository {
 
-    override suspend fun sendTransaction(transaction: Transaction, signer: Account): String {
+    override suspend fun sendTransaction(
+        transaction: Transaction,
+        signer: Account,
+        encoding: Encoding
+    ): String {
         val blockHash = blockHashRepository.getRecentBlockhash().recentBlockhash
         transaction.recentBlockHash = blockHash
         transaction.sign(signer)
 
         val serializedTransaction = transaction.serialize()
         val base64Transaction = Base64Utils.encode(serializedTransaction)
-        val params = arrayListOf(base64Transaction, RpcSendTransactionConfig())
+        val params = arrayListOf(base64Transaction, RpcSendTransactionConfig(encoding))
 
+        return api.sendTransaction(RpcRequest(method = "sendTransaction", params = params)).result
+    }
+
+    override suspend fun sendTransaction(serializedTransaction: String, encoding: Encoding): String {
+        val params = arrayListOf(serializedTransaction, RpcSendTransactionConfig(encoding))
         return api.sendTransaction(RpcRequest(method = "sendTransaction", params = params)).result
     }
 
@@ -49,8 +59,8 @@ class RpcSolanaRemoteRepository(
     /**
      * @return confirmed signature
      */
-    override suspend fun sendSerializedTransaction(serializedTransaction: Base64String): String {
-        val params = listOf(serializedTransaction, RpcSendTransactionConfig())
+    override suspend fun sendSerializedTransaction(serializedTransaction: Base64String, encoding: Encoding): String {
+        val params = listOf(serializedTransaction, RpcSendTransactionConfig(encoding))
         return api.sendTransaction(
             RpcRequest(method = "sendTransaction", params = params)
         ).result
@@ -69,7 +79,8 @@ class RpcSolanaRemoteRepository(
     }
 
     override suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo {
-        val params = arrayListOf(stateKey.toString(), RpcSendTransactionConfig())
+        val encoding = Encoding.BASE64
+        val params = arrayListOf(stateKey.toString(), RpcSendTransactionConfig(encoding))
         return api.getAccountInfo(RpcRequest(method = "getAccountInfo", params = params)).result
     }
 }

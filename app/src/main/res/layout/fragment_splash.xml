@@ -6,7 +6,7 @@
     android:background="@color/lime">
 
     <!-- todo: revert back before key app redesign is finished and published -->
-    <!-- todo: https://p2pvalidator.atlassian.net/browse/PWN-5100 -->
+    <!-- todo: PWN-5100 PWN-5297 -->
 
     <!--    <com.airbnb.lottie.LottieAnimationView-->
     <!--        android:id="@+id/animationView"-->
