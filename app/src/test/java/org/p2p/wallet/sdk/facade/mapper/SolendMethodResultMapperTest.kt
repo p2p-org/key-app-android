@@ -6,15 +6,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.intellij.lang.annotations.Language
 import org.junit.Test
-import org.p2p.wallet.sdk.facade.model.SolendMarketInformationResponse
-import org.p2p.wallet.sdk.facade.model.SolendMethodResultException
+import org.p2p.wallet.sdk.facade.model.solend.SolendMarketInformationResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendMethodResultException
 
 class SolendMethodResultMapperTest {
 
     @Test
     fun `given success json when fromSdk called then return success model`() {
         // when
-        val mapper = SolendMethodResultMapper(Gson())
+        val mapper = SdkMethodResultMapper(Gson())
         val result = mapper.fromSdk<SolendMarketInformationResponse>(givenSuccessJson)
         // then
         assertThat(result)
@@ -24,7 +24,7 @@ class SolendMethodResultMapperTest {
     @Test
     fun `given error json when fromSdk called then throw error model`() {
         // when
-        val mapper = SolendMethodResultMapper(Gson())
+        val mapper = SdkMethodResultMapper(Gson())
         // then
         assertThatThrownBy { mapper.fromSdk<SolendMarketInformationResponse>(givenErrorJson) }
             .isInstanceOf(SolendMethodResultException::class.java)
@@ -36,7 +36,7 @@ class SolendMethodResultMapperTest {
     @Test
     fun `given empty json when fromSdk called then throw IllegalStateException`() {
         // when
-        val mapper = SolendMethodResultMapper(Gson())
+        val mapper = SdkMethodResultMapper(Gson())
         // then
         assertThatThrownBy { mapper.fromSdk<SolendMarketInformationResponse>("{}") }
             .isInstanceOf(IllegalStateException::class.java)
@@ -45,7 +45,7 @@ class SolendMethodResultMapperTest {
     @Test
     fun `given invalid json when fromSdk called then throw JsonSyntaxException from gson`() {
         // when
-        val mapper = SolendMethodResultMapper(Gson())
+        val mapper = SdkMethodResultMapper(Gson())
         // then
         assertThatThrownBy { mapper.fromSdk<SolendMarketInformationResponse>("231--") }
             .isInstanceOf(JsonSyntaxException::class.java)

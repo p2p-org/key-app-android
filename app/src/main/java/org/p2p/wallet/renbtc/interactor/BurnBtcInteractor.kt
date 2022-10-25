@@ -39,7 +39,7 @@ class BurnBtcInteractor(
 
     suspend fun submitBurnTransaction(recipient: String, amount: BigInteger): String = withContext(Dispatchers.IO) {
         val signer = tokenKeyProvider.publicKey.toPublicKey()
-        val signerSecretKey = tokenKeyProvider.secretKey
+        val signerSecretKey = tokenKeyProvider.keyPair
 
         val burnDetails = submitBurnTransaction(
             signer,

@@ -19,10 +19,11 @@ typealias u32 = UInt
 class SolendSdk {
     companion object {
         init {
-            System.loadLibrary("p2p_sdk_android")
+            System.loadLibrary("keyapp_sdk_android")
         }
     }
 
+    @JvmName("createSolendDepositTransactions")
     external fun createSolendDepositTransactions(
         solana_rpc_url: String,
         relay_program_id: JString,
@@ -38,6 +39,7 @@ class SolendSdk {
         fee_payer_address: JString,
     ): JString
 
+    @JvmName("createSolendWithdrawTransactions")
     external fun createSolendWithdrawTransactions(
         solana_rpc_url: JString,
         relay_program_id: JString,
@@ -62,9 +64,20 @@ class SolendSdk {
         environment: JString
     ): JString
 
+    @JvmName("getSolendDepositFees")
     external fun getSolendDepositFees(
         rpc_url: JString,
         owner: JString,
+        fee_payer: JString,
+        token_amount: jlong,
+        token_symbol: JString
+    ): JString
+
+    @JvmName("getSolendWithdrawFees")
+    external fun getSolendWithdrawFees(
+        rpc_url: JString,
+        owner: JString,
+        fee_payer: JString,
         token_amount: jlong,
         token_symbol: JString
     ): JString

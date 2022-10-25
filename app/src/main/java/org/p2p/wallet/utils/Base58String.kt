@@ -1,5 +1,6 @@
 package org.p2p.wallet.utils
 
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.utils.crypto.decodeFromBase58
 import org.p2p.solanaj.utils.crypto.encodeToBase58
 
@@ -10,4 +11,5 @@ data class Base58String(val base58Value: String) {
 }
 
 fun String.toBase58Instance(): Base58String = Base58String(this)
+fun PublicKey.toBase58Instance(): Base58String = Base58String(this.toBase58())
 fun ByteArray.toBase58Instance(): Base58String = Base58String(this)
