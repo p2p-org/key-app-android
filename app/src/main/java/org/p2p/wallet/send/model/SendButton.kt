@@ -20,7 +20,8 @@ class SendButton(
     private val sendFee: SendFee?,
     private val tokenAmount: BigDecimal,
     private val currentNetworkType: NetworkType,
-    private var minRentExemption: BigInteger
+    private var minRentExemption: BigInteger,
+    private val btcAddressValidator: BtcAddressValidator
 ) {
 
     sealed class State {
@@ -51,7 +52,7 @@ class SendButton(
             val isValidAddress = if (currentNetworkType == NetworkType.SOLANA) {
                 PublicKeyValidator.isValid(address) && isSameNetwork
             } else {
-                BtcAddressValidator.isValid(address)
+                btcAddressValidator.isValid(address)
             }
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)

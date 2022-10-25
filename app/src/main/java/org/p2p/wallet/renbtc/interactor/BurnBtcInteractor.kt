@@ -21,8 +21,7 @@ import kotlinx.coroutines.withContext
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val renVMRepository: RenVMRepository,
-    private val rpcSolanaInteractor: RpcSolanaInteractor,
-    private val state: LockAndMint.State
+    private val rpcSolanaInteractor: RpcSolanaInteractor
 ) {
 
     companion object {
@@ -30,6 +29,8 @@ class BurnBtcInteractor(
         private const val REN_BTC_DECIMALS = 6
         private const val BURN_FEE_VALUE = 20000L
     }
+
+    private val state: LockAndMint.State = LockAndMint.State()
 
     private var nonceBuffer: ByteArray = byteArrayOf()
     private var recepient: String = ""

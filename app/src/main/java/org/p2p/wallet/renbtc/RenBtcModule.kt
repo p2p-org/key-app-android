@@ -2,9 +2,9 @@ package org.p2p.wallet.renbtc
 
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.InjectionModule
@@ -49,7 +49,7 @@ object RenBtcModule : InjectionModule {
         single { RenBtcInteractor(get(), get(), get(), get(), get()) }
 
         single { RenTransactionManager(get(), get(), get(), get()) }
-        single { BurnBtcInteractor(get(), get(), get(), LockAndMint.State()) }
+        singleOf(::BurnBtcInteractor)
 
         factory { RenBTCPresenter(get(), get(), get(), get(), get()) } bind RenBTCContract.Presenter::class
         factory { RenTransactionsPresenter(get(), get()) } bind RenTransactionsContract.Presenter::class

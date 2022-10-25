@@ -85,6 +85,7 @@ class SendPresenter(
     private val transactionManager: TransactionManager,
     private val resourcesProvider: ResourcesProvider,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
+    private val addressValidator: BtcAddressValidator,
     private val dispatchers: CoroutineDispatchers
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -477,7 +478,7 @@ class SendPresenter(
     private fun checkAddress(address: String?) {
         if (address.isNullOrEmpty()) return
 
-        if (state.isRenBTCNetwork() && BtcAddressValidator.isValid(address)) return
+        if (state.isRenBTCNetwork() && addressValidator.isValid(address)) return
 
         val token = token ?: return
 
@@ -933,6 +934,7 @@ class SendPresenter(
             tokenAmount = state.tokenAmount,
             sendFee = sendFee,
             currentNetworkType = state.networkType,
+            btcAddressValidator = addressValidator,
             minRentExemption = state.minRentExemption
         )
 
