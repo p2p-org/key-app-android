@@ -28,8 +28,12 @@ class TokenKeyProvider(
 
     private fun getPublicKeyFromStorage(): String {
         return runBlocking {
-            val base58String = secureStorage.getString(Key.KEY_PUBLIC_KEY).orEmpty()
-            Base58Utils.decodeToString(base58String)
+            try {
+                val base58String = secureStorage.getString(Key.KEY_PUBLIC_KEY).orEmpty()
+                Base58Utils.decodeToString(base58String)
+            } catch (e: Throwable) {
+                emptyString()
+            }
         }
             .also { Timber.tag(TAG).i("getting user public key: $it") }
     }
