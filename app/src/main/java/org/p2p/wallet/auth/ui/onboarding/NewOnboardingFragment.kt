@@ -193,9 +193,11 @@ class NewOnboardingFragment :
             loadingAnimationView.isVisible = isScreenLoading
             animationView.apply {
                 if (isScreenLoading) {
+                    setSystemBarsColors(statusBarColor, R.color.bg_lime)
                     startCreationProgressJob()
                     playAnimation()
                 } else {
+                    setSystemBarsColors(statusBarColor, navBarColor)
                     creationProgressJob?.cancel()
                     cancelAnimation()
                 }
