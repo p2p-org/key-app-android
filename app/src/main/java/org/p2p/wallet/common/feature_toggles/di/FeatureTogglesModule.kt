@@ -1,5 +1,6 @@
 package org.p2p.wallet.common.feature_toggles.di
 
+import org.koin.core.module.dsl.createdAtStart
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -10,13 +11,21 @@ import org.p2p.wallet.common.feature_toggles.remote_config.FeatureTogglesValuesS
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 
 object FeatureTogglesModule : InjectionModule {
     override fun create() = module {
-        single(createdAtStart = true) { AppFirebaseRemoteConfig() }
+        singleOf(::AppFirebaseRemoteConfig) { createdAtStart() }
         singleOf(::LocalFirebaseRemoteConfig)
 
         singleOf(::FeatureTogglesValuesSource) bind RemoteConfigValuesProvider::class
@@ -26,7 +35,13 @@ object FeatureTogglesModule : InjectionModule {
                 get<SslPinningFeatureToggle>(),
                 get<NewBuyFeatureToggle>(),
                 get<BuyWithTransferFeatureToggle>(),
-                get<SettingsNetworkListFeatureToggle>()
+                get<SettingsNetworkListFeatureToggle>(),
+                get<NetworkObservationFeatureToggle>(),
+                get<SolendEnabledFeatureToggle>(),
+                get<UsernameDomainFeatureToggle>(),
+                get<UsernameDomainFeatureToggle>(),
+                get<RegisterUsernameEnabledFeatureToggle>(),
+                get<RegisterUsernameSkipEnabledFeatureToggle>(),
             )
         }
 
@@ -34,5 +49,13 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::NewBuyFeatureToggle)
         factoryOf(::BuyWithTransferFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
+        factoryOf(::SolendEnabledFeatureToggle)
+        factoryOf(::NetworkObservationFeatureToggle)
+        factoryOf(::NetworkObservationPercentFeatureToggle)
+        factoryOf(::NetworkObservationFrequencyFeatureToggle)
+        factoryOf(::NetworkObservationDebounceFeatureToggle)
+        factoryOf(::UsernameDomainFeatureToggle)
+        factoryOf(::RegisterUsernameEnabledFeatureToggle)
+        factoryOf(::RegisterUsernameSkipEnabledFeatureToggle)
     }
 }

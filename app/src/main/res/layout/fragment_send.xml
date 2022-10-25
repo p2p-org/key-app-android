@@ -246,7 +246,7 @@
                                 android:ellipsize="end"
                                 android:paddingVertical="2dp"
                                 android:singleLine="true"
-                                android:text="@string/main_p2p_username_sol_address"
+                                android:text="@string/main_key_app_username_sol_address"
                                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                                 android:textColor="?colorSecondary" />
 
@@ -410,7 +410,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
                             android:padding="8dp"
-                            android:src="@drawable/ic_arrow_right"
+                            android:src="@drawable/ic_chevron_right"
                             app:layout_constraintBottom_toBottomOf="@id/networkImageView"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/networkImageView"

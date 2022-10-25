@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.gateway.repository
 
 import com.google.gson.JsonObject
-import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
+import org.p2p.wallet.auth.gateway.api.response.ConfirmRestoreWalletResponse
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceStandardResponse
 import org.p2p.wallet.auth.gateway.api.response.RegisterWalletResponse
 import org.p2p.wallet.auth.model.PhoneNumber

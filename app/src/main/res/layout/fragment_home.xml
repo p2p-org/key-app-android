@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
@@ -27,6 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_toolbar_height"
                 android:orientation="vertical"
+                android:background="@color/bg_smoke"
                 app:layout_collapseMode="none">
 
                 <include
@@ -41,8 +41,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="30dp" />
 
             </LinearLayout>
 

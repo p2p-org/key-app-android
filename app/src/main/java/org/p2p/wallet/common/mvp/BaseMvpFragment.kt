@@ -1,12 +1,12 @@
 package org.p2p.wallet.common.mvp
 
-import androidx.annotation.CallSuper
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.hideKeyboard
@@ -68,7 +68,7 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
 
     override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
-            it.setMessage(e.getErrorMessage(requireContext()))
+            it.setMessage(e.getErrorMessage { res -> getString(res) })
                 .setIcon(R.drawable.ic_close_red)
                 .setAction(actionResId, block)
         }

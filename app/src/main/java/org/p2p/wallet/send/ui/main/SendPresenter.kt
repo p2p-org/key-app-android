@@ -6,6 +6,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
@@ -32,13 +33,13 @@ import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SearchTarget
 import org.p2p.wallet.send.model.SendButton
 import org.p2p.wallet.send.model.SendConfirmData
 import org.p2p.wallet.send.model.SendFee
 import org.p2p.wallet.send.model.SendPresenterState
 import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.send.model.SolanaAddress
-import org.p2p.wallet.send.model.Target
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -52,6 +53,7 @@ import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.fromLamports
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
+import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
@@ -81,6 +83,7 @@ class SendPresenter(
     private val sendAnalytics: SendAnalytics,
     private val transactionManager: TransactionManager,
     private val resourcesProvider: ResourcesProvider,
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val dispatchers: CoroutineDispatchers
 ) : BasePresenter<SendContract.View>(), SendContract.Presenter {
 
@@ -213,24 +216,24 @@ class SendPresenter(
                 sendAnalytics.logFillingAddress()
                 view?.showIndeterminateLoading(true)
 
-                val target = Target(value)
+                val target = SearchTarget(value, usernameDomainFeatureToggle.value)
                 selectNetworkType(target.networkType)
 
                 when (target.validation) {
-                    Target.Validation.USERNAME -> {
+                    SearchTarget.Validation.USERNAME -> {
                         searchByUsername(target.trimmedUsername)
                     }
-                    Target.Validation.BTC_ADDRESS -> {
+                    SearchTarget.Validation.BTC_ADDRESS -> {
                         setBitcoinTargetResult(target.value)
                     }
-                    Target.Validation.SOL_ADDRESS -> {
+                    SearchTarget.Validation.SOL_ADDRESS -> {
                         searchBySolAddress(target.value)
                     }
-                    Target.Validation.EMPTY -> {
+                    SearchTarget.Validation.EMPTY -> {
                         view?.showIdleTarget()
                         sendAnalytics.isSendTargetUsername = false
                     }
-                    Target.Validation.INVALID -> {
+                    SearchTarget.Validation.INVALID -> {
                         view?.showWrongAddressTarget(target.value)
                         sendAnalytics.isSendTargetUsername = false
                     }
@@ -350,7 +353,7 @@ class SendPresenter(
         view?.showInputValue(totalAvailable, forced = false)
 
         val message = resourcesProvider.getString(R.string.send_using_max_amount, token.tokenSymbol)
-        view?.showSuccessSnackBar(message)
+        view?.showUiKitSnackBar(message)
         sendAnalytics.isSendMaxButtonClickedOnce = true
 
         state.inputAmount = totalAvailable.toString()
@@ -909,7 +912,7 @@ class SendPresenter(
             return
         }
 
-        val results = searchInteractor.searchByAddress(address)
+        val results = searchInteractor.searchByAddress(address.toBase58Instance())
         if (results.isEmpty()) return
 
         val first = results.first()

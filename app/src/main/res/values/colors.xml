@@ -50,7 +50,7 @@
     <!--Android Overridden colors-->
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/backgroundDisabled</color>
 
-    <color name="bannerBackgroundColor">#644AFF</color>
+    <color name="bannerBackgroundColor">#CDF6CD</color>
 
     <!-- Home toolbar buttons shadow -->
     <color name="shadow_color">#1A0B1F35</color>
@@ -58,5 +58,8 @@
     <color name="shadow_color_5">#0D0B1F35</color>
     <color name="shadow_color_2">#050B1F35</color>
     <color name="shadow_color_1">#030B1F35</color>
+
+    <!--Strange colors from designs that are not in a palette-->
+    <color name="titan_white">#EFEDFF</color>
 
 </resources>

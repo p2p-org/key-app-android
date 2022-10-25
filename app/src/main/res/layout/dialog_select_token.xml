@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:padding="12dp"
         android:rotation="90"
-        android:src="@drawable/ic_arrow_right"
+        android:src="@drawable/ic_chevron_right"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/textIconActive"

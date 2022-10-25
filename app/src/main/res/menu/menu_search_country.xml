@@ -5,6 +5,6 @@
     <item
         android:id="@+id/menu_search_country"
         android:title="@string/search_menu"
-        app:actionLayout = "@layout/item_country_search_bar"
+        app:actionLayout="@layout/item_country_search_bar"
         app:showAsAction="always" />
 </menu>

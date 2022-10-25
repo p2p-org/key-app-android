@@ -20,6 +20,7 @@
             android:layout_width="@dimen/home_toolbar_shadow_view_size"
             android:layout_height="@dimen/home_toolbar_shadow_view_size"
             android:background="@drawable/bg_circle_with_shadow"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/image_view_profile"
             app:layout_constraintEnd_toEndOf="@id/image_view_profile"
             app:layout_constraintStart_toStartOf="@id/image_view_profile"
@@ -38,6 +39,7 @@
             android:foreground="@drawable/ripple_circle"
             android:padding="10dp"
             android:src="@drawable/ic_tennis"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,6 +51,7 @@
             android:background="@drawable/bg_home_address"
             android:drawablePadding="8dp"
             android:foreground="@drawable/ripple_address_button"
+            android:gravity="end"
             android:maxLines="1"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
@@ -56,10 +59,10 @@
             android:textColor="@color/text_mountain"
             app:drawableStartCompat="@drawable/ic_wallet_home"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/image_view_qr"
-            app:layout_constraintStart_toEndOf="@id/image_view_profile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="3gmX…EX2z" />
+            tools:text="123456789012345" />
 
         <View
             android:id="@+id/view_debug_shadow"
@@ -99,6 +102,7 @@
             android:layout_width="@dimen/home_toolbar_shadow_view_size"
             android:layout_height="@dimen/home_toolbar_shadow_view_size"
             android:background="@drawable/bg_circle_with_shadow"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/image_view_qr"
             app:layout_constraintEnd_toEndOf="@id/image_view_qr"
             app:layout_constraintStart_toStartOf="@id/image_view_qr"
@@ -117,6 +121,7 @@
             android:foreground="@drawable/ripple_circle"
             android:padding="10dp"
             android:src="@drawable/ic_qr_home"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

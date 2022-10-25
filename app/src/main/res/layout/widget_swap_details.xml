@@ -141,7 +141,7 @@
             android:layout_weight="1"
             android:gravity="end|center_vertical"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            app:drawableEndCompat="@drawable/ic_arrow_right"
+            app:drawableEndCompat="@drawable/ic_chevron_right"
             tools:text="SOL" />
 
     </LinearLayout>
@@ -179,7 +179,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="8dp"
-            android:text="@string/details_paid_by_p2p_brackets"
+            android:text="@string/details_paid_by_key_app_brackets"
             android:textAlignment="textEnd"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
             android:textColor="@color/color_green"
@@ -252,7 +252,7 @@
             android:layout_weight="1"
             android:gravity="end|center_vertical"
             android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            app:drawableEndCompat="@drawable/ic_arrow_right"
+            app:drawableEndCompat="@drawable/ic_chevron_right"
             tools:text="0.5%" />
 
     </LinearLayout>

@@ -368,7 +368,7 @@
                     android:background="@drawable/bg_success_stroked"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="4dp"
-                    android:text="@string/details_paid_by_p2p"
+                    android:text="@string/details_paid_by_key_app"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
                     android:textColor="@color/systemSuccessMain"
                     android:visibility="gone"

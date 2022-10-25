@@ -1,39 +1,46 @@
 package org.p2p.wallet.send.interactor
 
-import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Base58String
 
 private const val ZERO_BALANCE = 0L
 
 class SearchInteractor(
-    private val usernameInteractor: UsernameInteractor,
+    private val usernameRepository: UsernameRepository,
     private val userInteractor: UserInteractor,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     suspend fun searchByName(username: String): List<SearchResult> {
-        val usernames = usernameInteractor.resolveUsername(username)
+        val usernames = usernameRepository.findUsernameDetailsByUsername(username)
         return usernames.map {
-            val balance = userInteractor.getBalance(it.owner)
+            val balance = userInteractor.getBalance(it.ownerAddress)
             val hasEmptyBalance = balance == ZERO_BALANCE
-            return@map if (hasEmptyBalance) {
-                SearchResult.EmptyBalance(AddressState(it.owner))
+            if (hasEmptyBalance) {
+                SearchResult.Full(
+                    AddressState(it.ownerAddress.base58Value),
+                    username = it.fullUsername
+                )
             } else {
-                SearchResult.Full(AddressState(it.owner), it.name)
+                SearchResult.Full(
+                    AddressState(it.ownerAddress.base58Value),
+                    username = it.fullUsername
+                )
             }
         }
     }
 
-    suspend fun searchByAddress(address: String): List<SearchResult> {
-        val balance = userInteractor.getBalance(address.trim())
+    suspend fun searchByAddress(address: Base58String): List<SearchResult> {
+        val balance = userInteractor.getBalance(address)
         val hasEmptyBalance = balance == ZERO_BALANCE
         val result = if (hasEmptyBalance) {
-            SearchResult.EmptyBalance(AddressState(address))
+            SearchResult.EmptyBalance(AddressState(address.base58Value))
         } else {
-            SearchResult.AddressOnly(AddressState(address))
+            SearchResult.AddressOnly(AddressState(address.base58Value))
         }
         return listOf(result)
     }

@@ -134,6 +134,9 @@ class PhoneNumberEnterPresenter(
             is GatewayHandledState.ToastError -> {
                 view?.showUiKitSnackBar(gatewayHandledResult.message)
             }
+            else -> {
+                // Do nothing
+            }
         }
     }
 

@@ -1,8 +1,5 @@
 package org.p2p.wallet.settings.ui.reset.seedphrase
 
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -10,6 +7,9 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent

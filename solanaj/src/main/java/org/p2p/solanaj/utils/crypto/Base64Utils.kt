@@ -27,5 +27,6 @@ fun String.toBase64String(): Base64String = Base64String(base64Value = this)
 
 data class Base64String(val base64Value: String) {
     constructor(bytes: ByteArray) : this(bytes.copyOf().encodeToBase64())
+
     fun decodeToBytes(): ByteArray = base64Value.decodeFromBase64()
 }

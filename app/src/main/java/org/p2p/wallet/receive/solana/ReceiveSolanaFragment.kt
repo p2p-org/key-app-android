@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
@@ -22,7 +23,6 @@ import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.Constants
-import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
@@ -97,9 +97,7 @@ class ReceiveSolanaFragment :
     override fun showUserData(userPublicKey: String, username: Username?) {
         with(binding) {
             receiveCardView.setQrValue(userPublicKey.highlightPublicKey(requireContext()))
-            username?.getFullUsername(requireContext())?.let {
-                receiveCardView.setQrName(it)
-            }
+            username?.fullUsername?.let(receiveCardView::setQrName)
             progressButton.setOnClickListener {
                 val url = getString(R.string.solanaWalletExplorer, userPublicKey)
                 showUrlInCustomTabs(url)

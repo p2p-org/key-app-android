@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
@@ -14,7 +15,6 @@ import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.utils.Constants
-import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareScreenShot
@@ -40,21 +40,7 @@ class UsernameFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.run {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            receiveCardView.setOnRequestPermissions {
-                checkStatusAndRequestPermissionsIfNotGranted()
-            }
-            receiveCardView.setOnShareQrClickListener { qrValue, qrImage, shareText ->
-                presenter.saveQr(qrValue, qrImage, shareText)
-                receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
-            }
-            receiveCardView.setOnSaveQrClickListener { qrValue, qrImage ->
-                presenter.saveQr(qrValue, qrImage)
-                receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
-            }
-            receiveCardView.setSelectNetworkVisibility(isVisible = false)
-            receiveCardView.setFaqVisibility(isVisible = false)
-            receiveCardView.setTokenSymbol(Constants.SOL_NAME)
-            receiveCardView.hideWatermark()
+            receiveCardView.initReceiveCardView()
             progressButton.setOnClickListener {
                 replaceFragment(TokenListFragment.create())
             }
@@ -62,9 +48,26 @@ class UsernameFragment :
         presenter.loadData()
     }
 
+    private fun ReceiveCardView.initReceiveCardView() {
+        setOnRequestPermissions {
+            checkStatusAndRequestPermissionsIfNotGranted()
+        }
+        setOnShareQrClickListener { qrValue, qrImage, shareText ->
+            presenter.saveQr(qrValue, qrImage, shareText)
+            receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
+        }
+        setOnSaveQrClickListener { qrValue, qrImage ->
+            presenter.saveQr(qrValue, qrImage)
+            receiveAnalytics.logReceiveQrSaved(analyticsInteractor.getPreviousScreenName())
+        }
+        setSelectNetworkVisibility(isVisible = false)
+        setFaqVisibility(isVisible = false)
+        setTokenSymbol(Constants.SOL_NAME)
+        hideWatermark()
+    }
+
     override fun showUsername(username: Username) {
-        val fullUsername = username.getFullUsername(requireContext())
-        binding.receiveCardView.setQrName(fullUsername)
+        binding.receiveCardView.setQrName(username.fullUsername)
 
         binding.receiveCardView.setOnCopyQrClickListener {
             receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())

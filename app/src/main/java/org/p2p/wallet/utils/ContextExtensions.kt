@@ -1,20 +1,22 @@
 package org.p2p.wallet.utils
 
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import androidx.annotation.DrawableRes
-import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -73,4 +75,8 @@ fun Context.shareScreenShot(image: File, providedText: String = "Save Screenshot
 
 fun Context.getDrawableCompat(@DrawableRes drawableId: Int): Drawable? {
     return ContextCompat.getDrawable(this, drawableId)
+}
+
+fun Context.getColorStateListCompat(@ColorRes colorRes: Int): ColorStateList? {
+    return ContextCompat.getColorStateList(this, colorRes)
 }

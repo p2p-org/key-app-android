@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">P2P Wallet</string>
+    <string name="app_name">Key App</string>
 
     <!-- Common -->
     <string name="common_beta">beta</string>
@@ -32,6 +32,9 @@
     <string name="common_commas">…</string>
     <string name="common_transaction_details">Transaction details</string>
     <string name="common_error">Error</string>
+    <string name="common_hide">Hide</string>
+    <string name="common_skip">Skip</string>
+    <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -66,6 +69,8 @@
     <string name="error_shares_do_not_matches_message">Try with another account</string>
     <string name="error_repeat_social_auth">Repeat social auth</string>
 
+    <string name="error_solana_network">😞 Solana has some problems</string>
+
     <!-- auth -->
     <string name="auth_security_key_title">New wallet creation</string>
     <string name="auth_verify_security_key_title">Verify your security key</string>
@@ -90,14 +95,14 @@
     <string name="auth_create_new_wallet">Create a new wallet</string>
     <string name="auth_create_new_wallet_message">The following words are the security key that you must keep in a safe place, written in the correct sequence.\n\nIf lost, no one can restore it.\nKeep it private, even from us</string>
     <string name="auth_reset_pin">Reset PIN with a seed phrase</string>
-    <string name="auth_finish_setup">Start using P2P Wallet</string>
+    <string name="auth_finish_setup">Start using Key App</string>
     <string name="auth_enable_faceid">Enable FaceID</string>
     <string name="auth_enable_touchid">Enable TouchID</string>
     <string name="auth_enable_faceid_question">Use your FaceID for quick access?</string>
     <string name="auth_enable_touchid_question">Use your TouchID for quick access?</string>
     <string name="auth_no_biometric_detected">No biometric detected, cannot enable quick access</string>
     <string name="auth_do_later">Do this later</string>
-    <string name="auth_intro_message"> Your P2P Wallet is fully set up.\nGet ready to explore the Crypto world</string>
+    <string name="auth_intro_message"> Your Key App is fully set up.\nGet ready to explore the Crypto world</string>
     <string name="auth_refresh">Refresh</string>
     <string name="auth_copied">Copied!</string>
     <string name="auth_create_pin_code">Set up a wallet PIN</string>
@@ -125,13 +130,11 @@
     <string name="auth_use_any_latin">No more than 15 alphanumerical latin lowercase characters and dashes</string>
     <string name="auth_skip_this_step">You can also skip this step and reserve a username later.</string>
     <string name="auth_clickable_skip_this_step">skip this step</string>
-    <string name="auth_p2p_sol">.p2p.sol</string>
-    <string name="auth_name_p2p_sol">%s.p2p.sol</string>
     <string name="auth_available_name">%1$s is available</string>
     <string name="auth_unavailable_name">%1$s is unavailable</string>
     <string name="auth_username_length_error">Enter a name under %d characters</string>
     <string name="auth_username">Your username</string>
-    <string name="auth_your_p2p_username">Your P2P username allows you to receive any token within the Solana network even if it is not included in your wallet token list..</string>
+    <string name="auth_your_key_username">Your username allows you to receive any token within the Solana network even if it is not included in your wallet token list..</string>
     <string name="auth_copy">Copy</string>
     <string name="auth_share">Share</string>
     <string name="auth_save">Save</string>
@@ -144,8 +147,8 @@
     <string name="auth_setup_wallet_pin">Create your PIN</string>
     <string name="auth_confirm_wallet_pin">Confirm your PIN</string>
     <string name="auth_username_searching">searching…</string>
-    <string name="auth_welcome_to_p2p_user">Welcome to P2P Family,\n%s!</string>
-    <string name="auth_welcome_to_p2p">Welcome to P2P Family</string>
+    <string name="auth_welcome_to_key_app_user">Welcome to Key App Family,\n%s!</string>
+    <string name="auth_welcome_to_key_app">Welcome to Key App Family</string>
     <string name="auth_create_pin_code_success">You have successfully set your PIN</string>
     <string name="auth_show_your_secret_key">Show your security key</string>
     <string name="auth_renew">Renew</string>
@@ -161,7 +164,7 @@
 
     <string name="home_username_banner_option">Get your own short crypto address</string>
     <string name="main_username_banner_action">Reserve your username</string>
-    <string name="home_feedback_banner_option">Suggest ways to improve P2P wallet</string>
+    <string name="home_feedback_banner_option">Suggest ways to improve Key App</string>
     <string name="main_feedback_banner_action">Leave feedback</string>
     <string name="main_combined_token_value">Combined token value</string>
     <string name="home_receive">Receive</string>
@@ -202,7 +205,7 @@
     <string name="main_hide">Hide</string>
     <string name="main_price">Current price</string>
     <string name="main_max_price_slippage">Max price slippage</string>
-    <string name="main_zero_fee_info">Will be paid by p2p.org \nWe take care of all transfers costs.</string>
+    <string name="main_zero_fee_info">Will be paid by Key App \nWe take care of all transfers costs.</string>
     <string name="main_slippage_settings">Slippage settings</string>
     <string name="main_slippage_description">Slippage refers to the difference between the expected price of a trade and the price at which the trade is executed. Slippage can occur at any time but is most prevalent during periods of higher volatility when market orders are used.</string>
     <string name="main_min_receive">Minimum receive:</string>
@@ -241,11 +244,11 @@
     <string name="main_burn_renbtc">Burn renBTC</string>
     <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
-    <string name="main_p2p_username_sol_address">Username / address</string>
-    <string name="main_reserve_username">Reserve your P2P username now</string>
+    <string name="main_key_app_username_sol_address">Username / address</string>
+    <string name="main_reserve_username">Reserve your username now</string>
     <string name="main_reserve_username_message">Any token can be received using username regardless of whether it is in your wallets list</string>
     <string name="main_no_tokens_for_swap">No tokens found</string>
-    <string name="main_free_transactions_info"><![CDATA[On the Solana network, the first %1$d transactions in a day are paid by P2P.org. You have <b>%2$d</b> free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.]]></string>
+    <string name="main_free_transactions_info"><![CDATA[On the Solana network, the first %1$d transactions in a day are paid by Key App. You have <b>%2$d</b> free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.]]></string>
     <string name="home_balance_title">Balance</string>
     <string name="main_empty_title">Top up your account to get started</string>
     <string name="main_empty_subtitle">Make your first deposit or make a purchase using your credit card or Google Pay</string>
@@ -305,13 +308,16 @@
     <string name="receive_solana_info">The Solana Program Library (SPL) is a collection of on-chain programs maintained by the Solana team. The SPL Token program is the token standard of the Solana blockchain.\n\nSimilar to ERC-20 tokens on the Ethereum network, SPL Tokens are designed for DeFi applications.</string>
     <string name="receive_bitcoin_info">When you choose the Bitcoin network, your address accepts only Bitcoin. You may lose assets by sending another coin.\n\n0.000144 BTC is the minimum transaction amount, and you have 36 hours to complete the transaction after receiving the address.</string>
     <string name="receive_via_bitcoin_network">Receiving via Bitcoin network</string>
+    <string name="create_bitcoin_address">Create Bitcoin address</string>
     <string name="receive_via_bitcoin_network_info">Make sure you understand these aspects</string>
     <string name="receive_understand">I understand</string>
     <string name="receive_token_list_search">Search for a token</string>
     <string name="receive_no_transactions_yet_message">After first transaction you will be\nable to view it here</string>
     <string name="receive_btc_buy_info">• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b> You can choose\n\t\twhich currency to pay in below.</string>
     <string name="receive_btc_topup_info">• A <b>renBTC account is required</b> to receive\n\t\tbitcoins over the Bitcoin network.\n\n• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b>\n\n• You <b>don\'t have funds</b> to pay for account\n\t\tcreation, but if someone sends renBTC to\n\t\tyour address, it will be created for you.</string>
+    <string name="receive_btc_for_free_info">• You\'re going to create a public Bitcoin\n\t\taddress that will be valid for the next <b>24\n\t\thours</b>. You still can hold and send Bitcoin\n\t\twithout restrictions.\n\n• It\'s a <b>one-time address</b>, so if you send\n\t\tmultiple transactions, your money will be\n\t\tlost.</string>
     <string name="receive_topup_your_account">Top up your account</string>
+    <string name="receive_create_address">Create address</string>
     <string name="receive_share_your_solana_network_address">Share your Solana network address</string>
     <string name="receive_you_can_receive_token_message">You can receive %s by providing this\naddress, QR code or username:</string>
     <string name="receive_direct_token_address">Direct %s Address</string>
@@ -342,7 +348,7 @@
     <string name="send_multiple_accounts">Multiple accounts were found</string>
     <string name="send_no_tokens">The token not found. Try to change name</string>
     <string name="send_account_found">Account was found</string>
-    <string name="send_p2p_username_sol_address">P2P username / SOL address</string>
+    <string name="send_key_app_username_sol_address">Your username / SOL address</string>
     <string name="send_type_paste">Type or paste</string>
     <string name="send_no_address">There\'s no address like this</string>
     <string name="send_current_price">Current price</string>
@@ -358,8 +364,8 @@
     <string name="send_transaction_being_processed">The transaction is being processed</string>
     <string name="send_make_another_transaction">Make another transaction</string>
     <string name="send_error_with_fee_payer">Unexpected error when trying to pay with current token</string>
-    <string name="send_choose_network_info">P2P Wallet will automatically match your withdrawal target address to the correct network for most withdrawals. \n\nHowever, before sending your funds, make sure to double-check the selected network.</string>
-    <string name="send_network_limit_info">On the Solana network, the first 100 transactions in a day are paid by P2P.org. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
+    <string name="send_choose_network_info">Key App will automatically match your withdrawal target address to the correct network for most withdrawals. \n\nHowever, before sending your funds, make sure to double-check the selected network.</string>
+    <string name="send_network_limit_info">On the Solana network, the first 100 transactions in a day are paid by Key App. You have 100 free transactions left for today. \n\nSubsequent transactions will be charged based on the Solana blockchain gas fee.</string>
     <string name="send_network_selected_format">%s network selected</string>
     <string name="send_confirm_transaction">Confirm your transaction</string>
     <string name="send_transfer_confirm_message">You are going to transfer</string>
@@ -452,8 +458,8 @@
     <string name="details_pending">Pending</string>
     <string name="details_error">Error</string>
     <string name="details_value">Value</string>
-    <string name="details_paid_by_p2p">Paid by p2p.org</string>
-    <string name="details_paid_by_p2p_brackets">(Paid by p2p.org)</string>
+    <string name="details_paid_by_key_app">Paid by Key App</string>
+    <string name="details_paid_by_key_app_brackets">(Paid by Key App)</string>
     <string name="details_info">Info</string>
     <string name="details_history">History</string>
     <string name="details_show_wallet_address">Show wallet address</string>
@@ -469,7 +475,7 @@
     <string name="transaction_details_to">To</string>
     <string name="transaction_details_status">Status</string>
     <string name="transaction_details_fee">Fee</string>
-    <string name="transaction_details_fee_free">Free by p2p.org</string>
+    <string name="transaction_details_fee_free">Free by Key App</string>
     <string name="transaction_details_number">Block number</string>
 
     <string name="transaction_details_done_button">@string/common_done</string>

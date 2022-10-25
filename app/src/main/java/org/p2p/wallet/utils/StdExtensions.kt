@@ -35,6 +35,9 @@ fun Result<*>.invokeAndForget() {
     getOrNull()
 }
 
+// can be used for debug purposes
+fun ByteArray.toUIntArray(): String = map(Byte::toUByte).joinToString(prefix = "[", postfix = "]")
+
 fun Gson.toJsonObject(obj: Any): JsonObject {
     val objectAsJsonStr = toJson(obj)
     return fromJsonReified<JsonObject>(objectAsJsonStr)

@@ -1,6 +1,7 @@
 package org.p2p.wallet.common.feature_toggles.toggles.remote
 
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
+import timber.log.Timber
 
 sealed class RemoteFeatureToggle<ValueType> {
     /**
@@ -20,8 +21,32 @@ sealed class RemoteFeatureToggle<ValueType> {
 abstract class BooleanFeatureToggle(
     private val valuesProvider: RemoteConfigValuesProvider
 ) : RemoteFeatureToggle<Boolean>() {
-    override val value: Boolean get() = valuesProvider.getBoolean(featureKey)
+    override val value: Boolean
+        get() = valuesProvider.getBoolean(featureKey) ?: kotlin.run {
+            Timber.i("No value found for $featureKey; using defaults = $defaultValue")
+            defaultValue
+        }
     val isFeatureEnabled: Boolean get() = value
+}
+
+abstract class IntFeatureToggle(
+    private val valuesProvider: RemoteConfigValuesProvider
+) : RemoteFeatureToggle<Int>() {
+    override val value: Int
+        get() = valuesProvider.getInt(featureKey) ?: kotlin.run {
+            Timber.i("No value found for $featureKey; using defaults = $defaultValue")
+            defaultValue
+        }
+}
+
+abstract class StringFeatureToggle(
+    private val valuesProvider: RemoteConfigValuesProvider
+) : RemoteFeatureToggle<String>() {
+    override val value: String
+        get() = valuesProvider.getString(featureKey) ?: kotlin.run {
+            Timber.i("No value found for $featureKey; using defaults = $defaultValue")
+            defaultValue
+        }
 }
 
 /**

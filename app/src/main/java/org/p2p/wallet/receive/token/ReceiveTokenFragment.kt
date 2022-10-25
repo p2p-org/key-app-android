@@ -1,26 +1,26 @@
 package org.p2p.wallet.receive.token
 
+import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResultListener
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.uikit.utils.SpanUtils
+import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
+import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentReceiveTokenBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.uikit.utils.SpanUtils
-import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
@@ -127,10 +127,7 @@ class ReceiveTokenFragment :
 
     override fun showUserData(userPublicKey: String, directPublicKey: String, username: Username?) {
         binding.directAddressBottomTextView.text = userPublicKey
-        val fullUsername = username?.getFullUsername(requireContext())
-        if (fullUsername != null) {
-            binding.receiveCardView.setQrName(fullUsername)
-        }
+        username?.fullUsername?.let { binding.receiveCardView.setQrName(it) }
         binding.directAddressBottomTextView.text = directPublicKey
         binding.directTokenAddressView.setOnClickListener {
             requireContext().copyToClipBoard(directPublicKey)

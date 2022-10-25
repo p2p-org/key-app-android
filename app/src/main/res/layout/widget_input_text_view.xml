@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/placeholderTextView"
+        android:indeterminateTint="@color/elements_night"
         app:layout_constraintStart_toStartOf="@id/textInputLayout"
         app:layout_constraintTop_toTopOf="@id/placeholderTextView"
         tools:visibility="visible" />

@@ -26,8 +26,8 @@
         android:layout_height="@dimen/ui_kit_button_medium_height"
         android:layout_marginHorizontal="62dp"
         android:layout_marginBottom="18dp"
-        android:backgroundTint="@color/lime"
-        android:textColor="@color/night"
+        android:backgroundTint="@color/bg_snow"
+        android:textColor="@color/text_night"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:text="@string/main_banner_button" />
 
@@ -39,7 +39,7 @@
         android:layout_marginHorizontal="32dp"
         android:layout_marginBottom="20dp"
         android:gravity="center"
-        android:textColor="@color/rain"
+        android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@id/button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +64,7 @@
         android:layout_marginHorizontal="32dp"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        android:textColor="@color/snow"
+        android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@id/text_view_banner_subtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

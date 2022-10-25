@@ -3,12 +3,16 @@ package org.p2p.wallet.auth.interactor
 import androidx.core.content.edit
 import android.content.SharedPreferences
 import android.graphics.Bitmap
-import org.json.JSONObject
-import org.p2p.wallet.auth.model.ResolveUsername
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
-import org.p2p.wallet.auth.repository.UsernameRepository
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.username.repository.UsernameRepository
+import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
+import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.toBase58Instance
 import java.io.File
 
 const val KEY_USERNAME = "KEY_USERNAME"
@@ -17,41 +21,60 @@ class UsernameInteractor(
     private val usernameRepository: UsernameRepository,
     private val fileLocalRepository: FileRepository,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
+    private val registerUsernameEnabledFeatureToggle: RegisterUsernameEnabledFeatureToggle,
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val sharedPreferences: SharedPreferences
 ) {
 
-    suspend fun checkUsername(username: String): String =
-        usernameRepository.checkUsername(username)
+    suspend fun isUsernameTaken(username: String): Boolean = usernameRepository.isUsernameTaken(username)
 
-    suspend fun checkCaptcha(): JSONObject =
-        usernameRepository.checkCaptcha()
-
-    suspend fun registerUsername(username: String, result: String) {
-        val publicKey = tokenKeyProvider.publicKey
-        usernameRepository.registerUsername(publicKey, username, result)
+    suspend fun registerUsername(username: String) {
+        usernameRepository.createUsername(
+            username = username,
+            ownerPublicKey = tokenKeyProvider.publicKey.toBase58Instance(),
+            ownerPrivateKey = tokenKeyProvider.secretKey.toBase58Instance()
+        )
         sharedPreferences.edit { putString(KEY_USERNAME, username) }
     }
 
-    @Suppress("UNUSED_PARAMETER", "RedundantSuspendModifier")
-    suspend fun findUsernameByAddress(owner: String) {
-        // commented due to constant problems with name service PWN-4377
-//        when (val result = usernameRepository.findUsernameByAddress(owner)) {
-//            is LookupResult.UsernameFound -> sharedPreferences.edit { putString(KEY_USERNAME, result.username) }
-//            is LookupResult.UsernameNotFound -> Unit
-//        }
+    suspend fun checkUsernameByAddress(owner: Base58String) {
+        val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
+        if (usernameDetails != null) {
+            sharedPreferences.edit { putString(KEY_USERNAME, usernameDetails.fullUsername) }
+        }
     }
 
     fun isUsernameExist(): Boolean = sharedPreferences.contains(KEY_USERNAME)
 
     fun getUsername(): Username? {
         val username = sharedPreferences.getString(KEY_USERNAME, null)
-        return username?.let { Username(it) }
+        return username?.let {
+            Username(
+                value = it,
+                domainPrefix = usernameDomainFeatureToggle.value
+            )
+        }
+    }
+
+    fun isUsernameItemVisibleInSettings(): Boolean {
+        val isUserUsedWeb3Auth = userSignUpDetailsStorage.getLastSignUpUserDetails() != null
+        val isRegisterUsernameEnabled = registerUsernameEnabledFeatureToggle.isFeatureEnabled
+        // sometimes user can use seed phrase to login, we cant show item to him too
+        val isUsernameAuthNotBySeedPhrase = !sharedPreferences.getBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, false)
+
+        val isUsernameItemCanBeShown = getUsername() != null
+        val isRegisterUsernameItemCanBeShown =
+            isRegisterUsernameEnabled &&
+                isUserUsedWeb3Auth &&
+                isUsernameAuthNotBySeedPhrase
+
+        // if username already exist - show it
+        // if it's not, check for web3auth sign up and feature toggle
+        return isUsernameItemCanBeShown || isRegisterUsernameItemCanBeShown
     }
 
     fun saveQr(name: String, bitmap: Bitmap, forSharing: Boolean): File? = fileLocalRepository.saveQr(
         name, bitmap, forSharing
     )
-
-    suspend fun resolveUsername(name: String): List<ResolveUsername> =
-        usernameRepository.resolve(name)
 }

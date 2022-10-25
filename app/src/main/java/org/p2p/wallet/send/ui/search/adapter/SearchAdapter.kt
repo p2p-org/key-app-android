@@ -7,7 +7,7 @@ import org.p2p.wallet.send.model.SearchResult
 
 class SearchAdapter(
     private val onItemClicked: (SearchResult) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<SearchViewHolder>() {
 
     private val data = mutableListOf<SearchResult>()
 
@@ -21,13 +21,14 @@ class SearchAdapter(
 
     override fun getItemCount(): Int = data.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        SearchViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
+        return SearchViewHolder(
             parent = parent,
             onItemClicked = onItemClicked
         )
+    }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as SearchViewHolder).onBind(data[position])
+    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
+        holder.onBind(data[position])
     }
 }

@@ -10,4 +10,4 @@
     app:iconifiedByDefault="false"
     app:queryBackground="@android:color/transparent"
     app:searchHintIcon="@null"
-    app:searchIcon="@null"/>
+    app:searchIcon="@null" />

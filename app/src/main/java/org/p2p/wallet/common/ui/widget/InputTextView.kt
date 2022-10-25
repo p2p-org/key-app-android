@@ -1,14 +1,14 @@
 package org.p2p.wallet.common.ui.widget
 
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import android.content.Context
 import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.InputFilter
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetInputTextViewBinding
@@ -30,7 +30,6 @@ class InputTextView @JvmOverloads constructor(
     private val colorSuccess = context.getColor(R.color.systemSuccessMain)
 
     init {
-
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.InputTextView)
 
         val suffixText = typedArray.getText(R.styleable.InputTextView_suffixText)

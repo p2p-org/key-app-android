@@ -1,7 +1,6 @@
 package org.p2p.wallet.settings.ui.settings
 
 import android.content.Context
-import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -12,6 +11,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.service.RenVMService
@@ -47,6 +47,7 @@ class NewSettingsPresenter(
         try {
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
+                isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()

@@ -10,7 +10,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminateTint="@color/night"
+        android:indeterminateTint="@color/elements_night"
         android:paddingBottom="24dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,26 +18,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/text_view_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/home_balance_title"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
-        android:textColor="@color/text_mountain"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progress_bar" />
-
-    <TextView
         android:id="@+id/text_view_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="30dp"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
         android:textColor="@color/text_night"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_title"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="$ 1 000.97" />
 
     <org.p2p.uikit.atoms.UiKitSkeletonRectangle
@@ -49,6 +38,6 @@
         app:isRounded="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_title" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

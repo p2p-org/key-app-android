@@ -1,10 +1,5 @@
 package org.p2p.uikit.components
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.res.use
-import androidx.core.view.isVisible
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PorterDuff
@@ -12,6 +7,11 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewOutlineProvider
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.use
+import androidx.core.view.isVisible
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSliderButtonBinding
 import org.p2p.uikit.utils.dip

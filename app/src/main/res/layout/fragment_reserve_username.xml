@@ -48,8 +48,7 @@
                 android:digits="@string/common_username_allowed_symbols"
                 android:paddingVertical="8dp"
                 app:hint="@string/auth_your_username"
-                app:layout_constraintTop_toBottomOf="@id/receiveTextView"
-                app:suffixText="@string/auth_p2p_sol" />
+                app:layout_constraintTop_toBottomOf="@id/receiveTextView" />
 
             <TextView
                 android:id="@+id/skipTextView"

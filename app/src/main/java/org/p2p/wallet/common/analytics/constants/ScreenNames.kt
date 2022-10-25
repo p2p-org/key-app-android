@@ -23,6 +23,7 @@ object ScreenNames {
         const val MAIN = "Main_Screen"
         const val MAIN_FEEDBACK = "Main_Feedback"
         const val MAIN_HISTORY = "Main_History"
+        const val MAIN_EARN = "Main_Earn"
     }
 
     object Token {

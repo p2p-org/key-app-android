@@ -1,17 +1,17 @@
 package org.p2p.wallet.utils
 
-import android.content.Context
 import okhttp3.Request
+import okhttp3.Response
 import okio.Buffer
 import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import java.net.UnknownHostException
 
-fun Throwable?.getErrorMessage(context: Context): String =
+fun Throwable?.getErrorMessage(resourceDelegate: (res: Int) -> String): String =
     when (this) {
-        is UnknownHostException -> context.getString(R.string.error_network_message)
-        is ServerException -> getDirectMessage() ?: context.getString(R.string.error_general_message)
-        else -> this?.message ?: context.getString(R.string.error_general_message)
+        is UnknownHostException -> resourceDelegate(R.string.error_network_message)
+        is ServerException -> getDirectMessage() ?: resourceDelegate(R.string.error_general_message)
+        else -> this?.message ?: resourceDelegate(R.string.error_general_message)
     }
 
 fun Request.bodyAsString(): String = kotlin.runCatching {
@@ -21,3 +21,5 @@ fun Request.bodyAsString(): String = kotlin.runCatching {
     buffer.readUtf8()
 }
     .getOrDefault("")
+
+fun Response.bodyAsString(): String = peekBody(Long.MAX_VALUE).string()

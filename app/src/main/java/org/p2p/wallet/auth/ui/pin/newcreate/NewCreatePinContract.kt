@@ -16,6 +16,7 @@ interface NewCreatePinContract {
         fun navigateBack()
         fun navigateToMain()
         fun showBiometricDialog(biometricCipher: Cipher)
+        fun navigateToRegisterUsername()
     }
 
     interface Presenter : MvpPresenter<View> {

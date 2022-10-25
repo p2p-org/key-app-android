@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
+import android.content.SharedPreferences
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
@@ -7,10 +8,13 @@ import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
+import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import javax.crypto.Cipher
@@ -24,7 +28,10 @@ class NewCreatePinPresenter(
     private val onboardingAnalytics: OnboardingAnalytics,
     private val authInteractor: AuthInteractor,
     private val onboardingInteractor: OnboardingInteractor,
-    private val analyticsInteractor: ScreensAnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
+    private val registerUsernameEnabledFeatureToggle: RegisterUsernameEnabledFeatureToggle,
+    private val signUpDetailsStorage: UserSignUpDetailsStorage,
+    private val sharedPreferences: SharedPreferences
 ) : BasePresenter<NewCreatePinContract.View>(),
     NewCreatePinContract.Presenter {
 
@@ -58,7 +65,7 @@ class NewCreatePinPresenter(
             onboardingAnalytics.logRestoreWalletPinConfirmed()
         }
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
-            view?.navigateToMain()
+            closeCreatePinFlow()
         } else {
             view?.vibrate(VIBRATE_DURATION)
             enableBiometric()
@@ -76,7 +83,9 @@ class NewCreatePinPresenter(
                     view?.navigateBack()
                 }
             }
-            PinMode.CONFIRM -> view?.showCreation()
+            PinMode.CONFIRM -> {
+                view?.showCreation()
+            }
         }
     }
 
@@ -87,7 +96,7 @@ class NewCreatePinPresenter(
             view?.showBiometricDialog(cipher.value)
         } catch (e: Throwable) {
             Timber.e(e, "Failed to get cipher for biometrics")
-            view?.navigateToMain()
+            closeCreatePinFlow()
         }
     }
 
@@ -97,11 +106,11 @@ class NewCreatePinPresenter(
                 val encoderCipher = if (biometricCipher != null) EncodeCipher(biometricCipher) else null
                 registerComplete(createdPin, encoderCipher)
                 if (biometricCipher == null) analytics.logBioRejected()
-                view?.navigateToMain()
+                closeCreatePinFlow()
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to create pin code")
                 view?.showErrorMessage(R.string.error_general_message)
-                view?.navigateToMain()
+                closeCreatePinFlow()
             }
         }
     }
@@ -121,6 +130,21 @@ class NewCreatePinPresenter(
             } finally {
                 view?.showLoading(false)
             }
+        }
+    }
+
+    private fun closeCreatePinFlow() {
+        // sometimes user can use seed phrase to login, we cant show item to him too
+        val isUsernameAuthNotBySeedPhrase = !sharedPreferences.getBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, false)
+        val isUserCanRegisterUsername =
+            registerUsernameEnabledFeatureToggle.isFeatureEnabled &&
+                signUpDetailsStorage.getLastSignUpUserDetails() != null &&
+                isUsernameAuthNotBySeedPhrase
+
+        if (isUserCanRegisterUsername) {
+            view?.navigateToRegisterUsername()
+        } else {
+            view?.navigateToMain()
         }
     }
 

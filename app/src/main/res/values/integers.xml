@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="reserve_username_input_view_max_length">15</integer>
+    <integer name="reserve_username_input_view_min_length">6</integer>
+</resources>

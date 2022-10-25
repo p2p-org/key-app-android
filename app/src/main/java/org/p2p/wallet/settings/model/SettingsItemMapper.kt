@@ -10,37 +10,47 @@ import org.p2p.wallet.settings.model.SettingsItem.SettingsSpaceSeparatorItem
 import org.p2p.wallet.settings.model.SettingsItem.SignOutButtonItem
 import org.p2p.wallet.settings.model.SettingsItem.SwitchSettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.TextSettingsItem
-import timber.log.Timber
 
 class SettingsItemMapper(
     private val resourcesProvider: ResourcesProvider
 ) {
     fun createItems(
         username: Username?,
+        isUsernameItemVisible: Boolean,
         isBiometricLoginEnabled: Boolean,
         isZeroBalanceTokenHidden: Boolean,
         isBiometricLoginAvailable: Boolean
     ): List<SettingsItem> = buildList {
-        Timber.i(isZeroBalanceTokenHidden.toString())
-        this += profileBlock(username)
+        this += profileBlock(username, isUsernameItemVisible)
         this += securityBlock(isBiometricLoginEnabled, isBiometricLoginAvailable)
         this += appearanceBlock(isZeroBalanceTokenHidden)
         this += appInfoBlock()
     }
 
-    private fun profileBlock(username: Username?): List<SettingsItem> = listOf(
-        SettingsSpaceSeparatorItem,
-        SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_profile),
-        ComplexSettingsItem(
-            nameRes = R.string.settings_item_title_username,
-            iconRes = R.drawable.ic_settings_user,
-            additionalText = username?.getFullUsername(resourcesProvider)
-                ?: resourcesProvider.getString(R.string.settings_item_username_not_reserved),
-            hasSeparator = false
-        ),
-        SignOutButtonItem,
-        SettingsSpaceSeparatorItem
-    )
+    private fun profileBlock(
+        username: Username?,
+        isUsernameItemVisible: Boolean
+    ): List<SettingsItem> = buildList {
+        add(SettingsSpaceSeparatorItem)
+        add(SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_profile))
+        if (isUsernameItemVisible) {
+            addUsernameItem(username)
+        }
+        add(SignOutButtonItem)
+        add(SettingsSpaceSeparatorItem)
+    }
+
+    private fun MutableList<SettingsItem>.addUsernameItem(username: Username?) {
+        add(
+            ComplexSettingsItem(
+                nameRes = R.string.settings_item_title_username,
+                iconRes = R.drawable.ic_settings_user,
+                additionalText = username?.fullUsername
+                    ?: resourcesProvider.getString(R.string.settings_item_username_not_reserved),
+                hasSeparator = false
+            )
+        )
+    }
 
     private fun securityBlock(
         isBiometricLoginEnabled: Boolean,

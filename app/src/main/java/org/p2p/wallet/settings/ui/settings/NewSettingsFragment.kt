@@ -5,14 +5,15 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.ReserveMode
-import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
+import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernameFragment
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
+import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
@@ -101,6 +102,9 @@ class NewSettingsFragment :
                     resultKey = RESULT_KEY_NEW_NETWORK
                 )
             }
+            R.string.settings_item_title_support -> {
+                IntercomService.showMessenger()
+            }
         }
     }
 
@@ -136,7 +140,7 @@ class NewSettingsFragment :
 
     override fun openReserveUsernameScreen() {
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.USERNAME_RESERVE)
-        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP, isSkipStepEnabled = false))
+        replaceFragment(OnboardingReserveUsernameFragment.create(ReserveUsernameOpenedFrom.SETTINGS))
     }
 
     override fun openUsernameScreen() {

@@ -16,7 +16,7 @@
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold20"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="konstantink.p2p.sol" />
+        tools:text="konstantink.key.sol" />
 
     <FrameLayout
         android:id="@+id/qrFrame"
@@ -61,7 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"
+        android:indeterminateTint="@color/elements_night"
         app:layout_constraintBottom_toBottomOf="@id/qrFrame"
         app:layout_constraintEnd_toEndOf="@id/qrFrame"
         app:layout_constraintStart_toStartOf="@id/qrFrame"

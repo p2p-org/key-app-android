@@ -1,6 +1,5 @@
 package org.p2p.uikit.utils
 
-import androidx.annotation.ColorInt
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
@@ -9,6 +8,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import androidx.annotation.ColorInt
 
 object SpanUtils {
 

@@ -1,7 +1,7 @@
 package org.p2p.wallet.settings.interactor
 
-import androidx.core.content.edit
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 

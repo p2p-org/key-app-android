@@ -108,7 +108,7 @@ fun Fragment.showErrorDialog(throwable: Throwable? = null, dismissCallback: (() 
         fragment = this,
         iconRes = R.drawable.ic_common_error,
         title = TextContainer(R.string.error_title),
-        message = TextContainer(throwable.getErrorMessage(requireContext())),
+        message = TextContainer(throwable.getErrorMessage { res -> getString(res) }),
         actionCallback = dismissCallback,
         dismissCallback = null
     )
@@ -119,7 +119,7 @@ fun FragmentActivity.showErrorDialog(throwable: Throwable? = null) {
         activity = this,
         iconRes = R.drawable.ic_common_error,
         title = TextContainer(R.string.error_title),
-        message = TextContainer(throwable.getErrorMessage(this)),
+        message = TextContainer(throwable.getErrorMessage { res -> getString(res) }),
         actionCallback = null,
         dismissCallback = null
     )

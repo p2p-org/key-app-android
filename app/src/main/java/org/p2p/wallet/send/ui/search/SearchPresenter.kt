@@ -1,24 +1,27 @@
 package org.p2p.wallet.send.ui.search
 
+import org.p2p.solanaj.core.PublicKey
+import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
+import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.send.interactor.SearchInteractor
+import org.p2p.wallet.send.model.AddressState
+import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SearchTarget
+import org.p2p.wallet.utils.toBase58Instance
+import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.R
-import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.send.interactor.SearchInteractor
-import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.Target
-import timber.log.Timber
 
 private const val DELAY_IN_MS = 250L
 
 class SearchPresenter(
     private val usernames: List<SearchResult>?,
-    private val searchInteractor: SearchInteractor
+    private val searchInteractor: SearchInteractor,
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
 ) : BasePresenter<SearchContract.View>(), SearchContract.Presenter {
 
     private var searchJob: Job? = null
@@ -34,17 +37,22 @@ class SearchPresenter(
 
         val value = (data.first() as SearchResult.Full).username
         view?.showMessage(message)
-        view?.showResult(data)
+        view?.showSearchResult(data)
         view?.showSearchValue(value)
     }
 
-    override fun search(target: Target) {
+    override fun search(newQuery: String) {
+        val target = SearchTarget(
+            value = newQuery,
+            keyAppDomainIfUsername = usernameDomainFeatureToggle.value
+        )
+
         searchJob?.cancel()
         searchJob = launch {
             try {
                 delay(DELAY_IN_MS)
-                view?.showLoading(true)
-                validate(target)
+                view?.showLoading(isLoading = true)
+                validateAndSearch(target)
             } catch (e: CancellationException) {
                 Timber.w("Cancelled search target validation: ${target.value}")
             } catch (e: Throwable) {
@@ -64,13 +72,13 @@ class SearchPresenter(
         }
     }
 
-    private suspend fun validate(target: Target) {
+    private suspend fun validateAndSearch(target: SearchTarget) {
         when (target.validation) {
-            Target.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-            Target.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
-            Target.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
-            Target.Validation.EMPTY -> showEmptyState()
-            Target.Validation.INVALID -> showNotFound()
+            SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
+            SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
+            SearchTarget.Validation.EMPTY -> showEmptyState()
+            SearchTarget.Validation.INVALID -> showNotFound()
         }
     }
 
@@ -88,36 +96,37 @@ class SearchPresenter(
         }
 
         view?.showMessage(message)
-        view?.showResult(usernames)
+        view?.showSearchResult(usernames)
     }
 
     private suspend fun searchBySolAddress(address: String) {
         val publicKey = try {
             PublicKey(address)
         } catch (e: Throwable) {
+            Timber.i(e)
             showNotFound()
             return
         }
 
-        val result = searchInteractor.searchByAddress(publicKey.toBase58())
+        val result = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance())
         view?.showMessage(R.string.send_account_found)
-        view?.showResult(result)
+        view?.showSearchResult(result)
     }
 
     private fun showBtcAddress(address: String) {
         val searchResult = SearchResult.AddressOnly(AddressState(address, NetworkType.BITCOIN))
         val resultList = listOf(searchResult)
         view?.showMessage(null)
-        view?.showResult(resultList)
+        view?.showSearchResult(resultList)
     }
 
     private fun showEmptyState() {
         view?.showMessage(null)
-        view?.showResult(emptyList())
+        view?.showSearchResult(emptyList())
     }
 
     private fun showNotFound() {
         view?.showMessage(R.string.send_no_address)
-        view?.showResult(emptyList())
+        view?.showSearchResult(emptyList())
     }
 }

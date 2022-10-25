@@ -1,11 +1,11 @@
 package org.p2p.wallet.auth.ui.phone.countrypicker
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
