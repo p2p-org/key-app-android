@@ -1,9 +1,9 @@
 ext.VERSION_NAME = VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_HOTFIX
 
-ext.VERSION_CODE = VERSION_BUILD as Integer
-/*1_000_00 * (VERSION_MAJOR as Integer) +
-1_000 * (VERSION_MINOR as Integer) +
-1_0 * (VERSION_HOTFIX as Integer)*/
+ext.VERSION_CODE = 1_000_00 * (VERSION_MAJOR as Integer) +
+        1_000 * (VERSION_MINOR as Integer) +
+        1_0 * (VERSION_HOTFIX as Integer) +
+        VERSION_PATCH as Integer
 
 // example './gradlew setVersionBuild -Pversion=10'
 task setVersionBuild(group: 'versioning', description: 'Sets build version') {
