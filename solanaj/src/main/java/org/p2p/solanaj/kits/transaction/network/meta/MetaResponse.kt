@@ -15,5 +15,11 @@ data class MetaResponse(
     val postTokenBalances: List<TokenBalanceResponse>?,
 
     @SerializedName("preTokenBalances")
-    val preTokenBalances: List<TokenBalanceResponse>
+    val preTokenBalances: List<TokenBalanceResponse>?,
+
+    @SerializedName("preBalances")
+    val preBalances: List<String>?,
+
+    @SerializedName("postBalances")
+    val postBalances: List<String>?
 )

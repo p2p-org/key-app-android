@@ -32,7 +32,7 @@ class SerumSwapParsingContext : TransactionParsingContext {
             ?: return parseError("($signature) swapInstruction is null")
 
         // get all mints
-        val mints = preTokenBalances.map { it.mint }.distinct().toMutableList()
+        val mints = preTokenBalances?.map { it.mint }?.distinct()?.toMutableList() ?: mutableListOf()
         if (mints.size < 2) return parseError("($signature) preTokenBalance.mint < 2")
 
         // transitive swap: remove usdc or usdt if exists

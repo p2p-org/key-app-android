@@ -15,7 +15,6 @@ class OrcaSwapParsingContext : TransactionParsingContext {
     private val orcaSwapProgramIds = setOf(
         "DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1", // swap ocra,
         "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP", // swap ocra v2
-        "12YKFL4mnZz6CBEGePrf293mEzueQM3h8VLPUJsKpGs9",
         "9qvG1zUp8xF1Bi4m6UdRNby1BAAuaDrUxSpv4CmRRMjL", // main deprecated
         "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8", // main deprecated
     )
