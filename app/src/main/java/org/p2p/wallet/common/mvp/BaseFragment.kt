@@ -17,9 +17,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.createwallet.CreateWalletFragment
-import org.p2p.wallet.auth.ui.done.AuthDoneFragment
-import org.p2p.wallet.auth.ui.pin.create.CreatePinFragment
+import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.security.SecurityKeyFragment
@@ -130,15 +128,13 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     // TODO add another screens
     fun getAnalyticsName(): String = when (this) {
-        is CreateWalletFragment -> ScreenNames.OnBoarding.WALLET_CREATE
         is SeedPhraseFragment -> ScreenNames.OnBoarding.IMPORT_MANUAL
         is SecurityKeyFragment -> ScreenNames.OnBoarding.CREATE_MANUAL
-        is CreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
+        is NewCreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
         is SeedInfoFragment -> ScreenNames.OnBoarding.SEED_INFO
         is VerifySecurityKeyFragment -> ScreenNames.OnBoarding.SEED_VERIFY
         is DerivableAccountsFragment -> ScreenNames.OnBoarding.DERIVATION
         is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
-        is AuthDoneFragment -> ScreenNames.OnBoarding.WELCOME_NEW_USERNAME
         is HomeFragment -> ScreenNames.Main.MAIN
         is NewSettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
