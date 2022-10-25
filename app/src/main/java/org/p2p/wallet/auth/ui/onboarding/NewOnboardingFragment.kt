@@ -6,6 +6,15 @@ import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.transition.TransitionManager
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.BuildConfig
@@ -28,6 +37,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 class NewOnboardingFragment :
     BaseMvpFragment<NewOnboardingContract.View, NewOnboardingContract.Presenter>(R.layout.fragment_new_onboarding),
@@ -48,7 +58,6 @@ class NewOnboardingFragment :
     private val binding: FragmentNewOnboardingBinding by viewBinding()
     private val onboardingAnalytics: OnboardingAnalytics by inject()
 
-    private val fragments = List(5) { SliderFragment::class }
     private val args = listOf(
         SliderFragmentArgs(
             R.drawable.onboarding_slide_1,
@@ -70,13 +79,14 @@ class NewOnboardingFragment :
             R.string.onboarding_slide_3_title,
             R.string.onboarding_slide_3_text,
         ).toBundle(),
-        SliderFragmentArgs(
+        // TODO PWN-5663 temporary disable earn slide for this release
+        /*SliderFragmentArgs(
             R.drawable.onboarding_slide_4,
             R.string.onboarding_slide_4_title,
             R.string.onboarding_slide_4_text,
-        ).toBundle(),
-
+        ).toBundle(),*/
     )
+    private val fragments = List(args.size) { SliderFragment::class }
 
     private val signInHelper: GoogleSignInHelper by inject()
 
@@ -84,6 +94,8 @@ class NewOnboardingFragment :
         ActivityResultContracts.StartIntentSenderForResult(),
         ::handleSignResult
     )
+
+    var creationProgressJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -140,6 +152,7 @@ class NewOnboardingFragment :
     }
 
     override fun setButtonLoadingState(isScreenLoading: Boolean) {
+        setLoadingAnimationState(isScreenLoading = isScreenLoading)
         with(binding) {
             buttonCreateWalletOnboarding.apply {
                 isLoadingState = isScreenLoading
@@ -173,4 +186,50 @@ class NewOnboardingFragment :
     override fun navigateToContinueCreateWallet() {
         replaceFragment(ContinueOnboardingFragment.create())
     }
+
+    private fun setLoadingAnimationState(isScreenLoading: Boolean) {
+        with(binding) {
+            TransitionManager.beginDelayedTransition(root)
+            loadingAnimationView.isVisible = isScreenLoading
+            animationView.apply {
+                if (isScreenLoading) {
+                    startCreationProgressJob()
+                    playAnimation()
+                } else {
+                    creationProgressJob?.cancel()
+                    cancelAnimation()
+                }
+            }
+        }
+    }
+
+    private fun startCreationProgressJob() {
+        creationProgressJob = listOf(
+            TimerState(R.string.onboarding_loading_title),
+            TimerState(R.string.onboarding_loading_title_1, 33),
+            TimerState(R.string.onboarding_loading_title_2, 55),
+            TimerState(R.string.onboarding_loading_title_3, 100),
+        ).asSequence()
+            .asFlow()
+            .onEach {
+                with(binding) {
+                    textViewCreationTitle.setText(it.title)
+                    val hasProgress = it.progress > 0
+                    textViewCreationMessage.isVisible = !hasProgress
+                    progressBarCreation.isVisible = hasProgress
+                    progressBarCreation.setProgress(it.progress, true)
+                }
+                delay(2.seconds.inWholeMilliseconds)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
+    }
+
+    override fun onDestroyView() {
+        creationProgressJob?.cancel()
+        super.onDestroyView()
+    }
+
+    data class TimerState(
+        @StringRes val title: Int,
+        val progress: Int = 0
+    )
 }

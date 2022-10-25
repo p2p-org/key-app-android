@@ -14,17 +14,17 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/dotsIndicatorOnboardingSlider"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintVertical_bias="1" />
 
     <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
         android:id="@+id/dotsIndicatorOnboardingSlider"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:dotsColor="@color/night_60"
-        android:paddingBottom="24dp"
         android:paddingTop="16dp"
+        android:paddingBottom="24dp"
+        app:dotsColor="@color/night_60"
         app:dotsSize="8dp"
         app:dotsSpacing="4dp"
         app:dotsWidthFactor="4"
@@ -83,6 +83,63 @@
             android:gravity="center"
             android:textColor="@color/text_rain"
             tools:text="@string/onboarding_terms_and_policy" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loadingAnimationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_lime"
+        android:clickable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animationView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/creating_wallet_animation"
+            tools:layout_height="300dp" />
+
+        <TextView
+            android:id="@+id/textViewCreationTitle"
+            style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="18dp"
+            android:layout_marginTop="36dp"
+            android:gravity="center"
+            android:text="@string/onboarding_loading_title"
+            android:textColor="@color/text_night" />
+
+        <TextView
+            android:id="@+id/textViewCreationMessage"
+            style="@style/UiKit.TextAppearance.Regular.Title3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="18dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="150dp"
+            android:gravity="center"
+            android:text="@string/onboarding_loading_message"
+            android:textColor="@color/text_night" />
+
+        <ProgressBar
+            android:id="@+id/progressBarCreation"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="113dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:progressTint="@color/bg_night"
+            android:visibility="gone" />
 
     </LinearLayout>
 
