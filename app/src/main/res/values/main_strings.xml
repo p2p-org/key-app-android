@@ -24,7 +24,7 @@
     <string name="home_actions_send_subtitle">to username or address</string>
 
     <!--Main Screen Empty-->
-    <string name="main_popular_tokens_header">Popular coins</string>
+    <string name="main_popular_tokens_header">Currencies available</string>
     <string name="main_popular_token_action_buy_button">Buy</string>
 
     <string name="home_buy_token_banner_title">Buy your first token</string>
