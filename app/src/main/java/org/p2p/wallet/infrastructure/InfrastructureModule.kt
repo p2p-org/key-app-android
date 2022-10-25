@@ -44,7 +44,7 @@ import java.security.KeyStore
 import java.util.concurrent.Executors
 
 object InfrastructureModule : InjectionModule {
-
+    private const val ACCOUNT_PREFS = "ACCOUNT_PREFS"
     override fun create() = module {
         single {
             Room
@@ -80,6 +80,10 @@ object InfrastructureModule : InjectionModule {
             val name = "${androidContext().packageName}.prefs"
             androidContext().getSharedPreferences(name, Context.MODE_PRIVATE)
         }
+        single(named(ACCOUNT_PREFS)) {
+            val prefsName = "${androidContext().packageName}.account_prefs"
+            androidContext().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+        }
 
         single { KeyStore.getInstance("AndroidKeyStore") }
         factoryOf(::EncoderDecoderMarshmallow) bind EncoderDecoder::class
@@ -99,15 +103,13 @@ object InfrastructureModule : InjectionModule {
             )
         } bind SecureStorageContract::class
         factory {
-            val prefsName = "${androidContext().packageName}.account_prefs"
-            val sharedPreferences = androidContext().getSharedPreferences(prefsName, Context.MODE_PRIVATE)
             AccountStorage(
                 keyStoreWrapper = KeyStoreWrapper(
                     encoderDecoder = get(),
                     keyStore = get(),
-                    sharedPreferences = sharedPreferences
+                    sharedPreferences = get(named(ACCOUNT_PREFS))
                 ),
-                sharedPreferences = sharedPreferences,
+                sharedPreferences = get(named(ACCOUNT_PREFS)),
                 gson = get()
             )
         } bind AccountStorageContract::class
