@@ -95,7 +95,8 @@ object HomeModule : InjectionModule {
                 environmentManager = get(),
                 newBuyFeatureToggle = get(),
                 networkType = type,
-                userSignUpDetailsStorage = get()
+                userSignUpDetailsStorage = get(),
+                renBtcAnalytics = get()
             )
         }
         factory<SendContract.Presenter> {

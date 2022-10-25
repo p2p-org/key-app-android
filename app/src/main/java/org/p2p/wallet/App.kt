@@ -1,8 +1,8 @@
 package org.p2p.wallet
 
+import androidx.appcompat.app.AppCompatDelegate
 import android.app.Application
 import android.content.Intent
-import androidx.appcompat.app.AppCompatDelegate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.palaima.debugdrawer.timber.data.LumberYard
 import org.koin.android.ext.android.inject
@@ -92,6 +92,8 @@ class App : Application() {
     private fun setupCrashLoggingService() {
         crashLogger.apply {
             setCustomKey("task_number", BuildConfig.TASK_NUMBER)
+            setCustomKey("amplitude_enabled", BuildConfig.AMPLITUDE_ENABLED)
+            setCustomKey("crashlytics_enabled", BuildConfig.CRASHLYTICS_ENABLED)
         }
     }
 }

@@ -1,7 +1,5 @@
 package org.p2p.wallet.renbtc.interactor
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.bitcoinj.core.Base58
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
@@ -13,20 +11,25 @@ import org.p2p.solanaj.rpc.RpcSolanaInteractor
 import org.p2p.solanaj.utils.Hash
 import org.p2p.solanaj.utils.Utils
 import org.p2p.solanaj.utils.crypto.Hex
+import org.p2p.wallet.auth.analytics.RenBtcAnalytics
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 import java.nio.ByteBuffer
+import kotlinx.coroutines.withContext
 
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val rpcAmountRepository: RpcAmountRepository,
     private val renVMRepository: RenVMRepository,
     private val rpcSolanaInteractor: RpcSolanaInteractor,
-    private val state: LockAndMint.State = LockAndMint.State()
+    private val renBtcAnalytics: RenBtcAnalytics,
+    private val dispatchers: CoroutineDispatchers
 ) {
+    private val state: LockAndMint.State = LockAndMint.State()
 
     companion object {
         private const val BURN_FEE_LENGTH = 97
@@ -37,21 +40,23 @@ class BurnBtcInteractor(
     private var nonceBuffer: ByteArray = byteArrayOf()
     private var recepient: String = ""
 
-    suspend fun submitBurnTransaction(recipient: String, amount: BigInteger): String = withContext(Dispatchers.IO) {
+    suspend fun submitBurnTransaction(recipient: String, amount: BigInteger): String = withContext(dispatchers.io) {
         val signer = tokenKeyProvider.publicKey.toPublicKey()
         val signerSecretKey = tokenKeyProvider.secretKey
 
-        val burnDetails = submitBurnTransaction(
-            signer,
-            amount.toString(),
-            recipient,
-            Account(signerSecretKey)
+        val burnDetails: BurnDetails = submitBurnTransaction(
+            account = signer,
+            amount = amount.toString(),
+            recepient = recipient,
+            signer = Account(signerSecretKey)
         )
 
         val burnState = getBurnState(burnDetails, amount.toString())
         val hash = try {
             release()
+            renBtcAnalytics.logRenBtcSend(sendSuccess = true)
         } catch (e: RpcException) {
+            renBtcAnalytics.logRenBtcSend(sendSuccess = false)
             // TODO: Handle this error [invalid burn info: cannot get burn info: decoding solana burn log: expected data len=97, got=0]
             // TODO: It crashes even if transaction is valid
             if (e.message?.startsWith("invalid burn info") == true) {

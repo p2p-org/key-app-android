@@ -16,7 +16,7 @@ private const val RECEIVE_SHOWING_STATUSES = "Receive_Showing_Statuses"
 private const val RECEIVE_SHOWING_STATUS = "Receive_Showing_Status"
 private const val RECEIVE_SHOWING_HISTORY = "Receive_Showing_History"
 private const val RECEIVE_SHOWING_DETAILS = "Receive_Showing_Details"
-private const val RECEIVE_START_SCREEN = "Receive_Start_screen"
+private const val RECEIVE_START_SCREEN = "Receive_Start_Screen"
 private const val RECEIVE_ACTION_BUTTON = "Action_Button_Receive"
 
 class ReceiveAnalytics(private val tracker: Analytics) {
@@ -146,7 +146,7 @@ class ReceiveAnalytics(private val tracker: Analytics) {
 
     fun logAddressOnMainClicked() {
         tracker.logEvent(
-            event = "Main_Copy_address"
+            event = "Main_Copy_Address"
         )
     }
 

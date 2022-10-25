@@ -7,6 +7,7 @@ import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.UsernameAnalytics
 import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputView
 import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputViewListener
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
@@ -65,10 +66,14 @@ class OnboardingReserveUsernameFragment :
     private val isSkipEnabled: RegisterUsernameSkipEnabledFeatureToggle by inject()
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle by inject()
 
+    private val usernameAnalytics: UsernameAnalytics by inject()
+
     private var clicksBeforeDebugSkip: Int = 2
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        usernameAnalytics.logUsernameCreationScreenOpened()
+
         if (BuildConfig.DEBUG) {
             initQaSkipInstrument()
         }
@@ -80,6 +85,7 @@ class OnboardingReserveUsernameFragment :
         binding.inputViewReserveUsername.usernamePostfixText = usernameDomainFeatureToggle.value
 
         binding.buttonSubmitUsername.setOnClickListener {
+            usernameAnalytics.logCreateUsernameClicked()
             presenter.onCreateUsernameClicked()
         }
 
@@ -102,6 +108,7 @@ class OnboardingReserveUsernameFragment :
             inflateMenu(R.menu.menu_close)
             setOnMenuItemClickListener {
                 if (it.itemId == R.id.itemClose) {
+                    usernameAnalytics.logSkipUsernameClicked()
                     close()
                     return@setOnMenuItemClickListener true
                 }
@@ -142,7 +149,10 @@ class OnboardingReserveUsernameFragment :
         showUiKitSnackBar(
             messageResId = R.string.reserve_username_create_username_error,
             actionButtonResId = R.string.common_skip,
-            actionBlock = { close() }
+            actionBlock = {
+                usernameAnalytics.logSkipUsernameClicked()
+                close()
+            }
         )
     }
 

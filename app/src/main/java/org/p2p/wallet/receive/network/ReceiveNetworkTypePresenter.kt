@@ -1,6 +1,8 @@
 package org.p2p.wallet.receive.network
 
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
+import org.p2p.wallet.auth.analytics.RenBtcAnalytics
+import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.Token
@@ -22,7 +24,6 @@ import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import kotlinx.coroutines.launch
-import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 
 class ReceiveNetworkTypePresenter(
     private val renBtcInteractor: RenBtcInteractor,
@@ -34,6 +35,7 @@ class ReceiveNetworkTypePresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
+    private val renBtcAnalytics: RenBtcAnalytics,
     networkType: NetworkType
 ) : BasePresenter<ReceiveNetworkTypeContract.View>(),
     ReceiveNetworkTypeContract.Presenter {
@@ -96,9 +98,12 @@ class ReceiveNetworkTypePresenter(
                     else -> Constants.REN_BTC_DEVNET_MINT_ALTERNATE
                 }
                 tokenInteractor.createAccount(mintAddress)
+                renBtcAnalytics.logRenBtcAccountCreated(creationSuccess = true)
                 view?.navigateToReceive(selectedNetworkType)
             } catch (e: Exception) {
                 Timber.e("Error on launching RenBtc session $e")
+                renBtcAnalytics.logRenBtcAccountCreated(creationSuccess = false)
+
                 view?.showErrorMessage(e)
                 view?.showLoading(false)
             }
