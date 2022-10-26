@@ -18,6 +18,8 @@ class SendPresenterState(
     var minRentExemption: BigInteger = BigInteger.ZERO
 ) {
 
+    fun isRenBTCNetwork(): Boolean = networkType == NetworkType.BITCOIN
+
     fun updateInitialToken(initialToken: Token.Active) {
         this.initialToken = initialToken
         mode = CurrencyMode.Token(initialToken.tokenSymbol)
