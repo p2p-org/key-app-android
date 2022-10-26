@@ -189,8 +189,8 @@ class HomeFragment :
                 replaceFragment(SendFragment.create())
             }
         }
-        viewActionTrade.apply {
-            textViewButtonTitle.setText(R.string.home_trade)
+        viewActionSwap.apply {
+            textViewButtonTitle.setText(R.string.home_swap)
             imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
             imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(OrcaSwapFragment.create())
@@ -226,7 +226,7 @@ class HomeFragment :
             HomeAction.RECEIVE -> {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
-            HomeAction.TRADE -> {
+            HomeAction.SWAP -> {
                 replaceFragment(OrcaSwapFragment.create())
             }
             HomeAction.SEND -> {
