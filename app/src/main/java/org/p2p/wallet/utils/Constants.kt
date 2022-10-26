@@ -13,6 +13,9 @@ object Constants {
     const val REN_BTC_SYMBOL = "renBTC"
     const val SOL_SYMBOL = "SOL"
     const val USDC_SYMBOL = "USDC"
+    const val USDT_SYMBOL = "USDT"
+    const val BTC_SYMBOL = "BTC"
+    const val ETH_SYMBOL = "ETH"
 
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
     const val REN_BTC_DEVNET_MINT = "FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD"

@@ -33,7 +33,7 @@ class UsernameInteractor(
         usernameRepository.createUsername(
             username = username,
             ownerPublicKey = tokenKeyProvider.publicKey.toBase58Instance(),
-            ownerPrivateKey = tokenKeyProvider.secretKey.toBase58Instance()
+            ownerPrivateKey = tokenKeyProvider.keyPair.toBase58Instance()
         )
         sharedPreferences.edit { putString(KEY_USERNAME, username) }
     }

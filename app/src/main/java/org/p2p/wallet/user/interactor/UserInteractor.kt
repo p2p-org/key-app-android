@@ -97,6 +97,9 @@ class UserInteractor(
     suspend fun getUserSolToken(): Token.Active? =
         mainLocalRepository.getUserTokens().find { it.isSOL }
 
+    suspend fun findUserToken(mintAddress: String): Token.Active? =
+        mainLocalRepository.getUserTokens().find { it.mintAddress == mintAddress }
+
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
 

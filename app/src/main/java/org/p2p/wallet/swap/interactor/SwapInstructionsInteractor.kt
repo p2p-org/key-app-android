@@ -114,7 +114,7 @@ class SwapInstructionsInteractor(
                 )
             ),
             signers = listOf(newAccount),
-            secretKey = newAccount.secretKey
+            secretKey = newAccount.keypair
         )
     }
 

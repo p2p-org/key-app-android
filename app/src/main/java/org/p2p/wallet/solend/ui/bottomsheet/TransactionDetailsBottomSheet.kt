@@ -13,7 +13,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogSolendTransactionDetailsPartBinding
 import org.p2p.wallet.solend.model.SolendTransactionDetailsState
-import org.p2p.wallet.solend.model.TransactionDetailsViewData
+import org.p2p.wallet.solend.model.SolendTransactionDetails
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.withArgs
 
@@ -70,21 +70,21 @@ class TransactionDetailsBottomSheet : BaseDoneBottomSheet() {
         }
     }
 
-    private fun showDepositData(viewData: TransactionDetailsViewData) = with(binding) {
+    private fun showDepositData(viewData: SolendTransactionDetails) = with(binding) {
         optionsTextViewTransaction.labelText = getString(R.string.solend_transaction_details_deposit)
         optionsTextViewTransactionFee.labelText = getString(R.string.solend_transaction_details_deposit_fee)
 
         setViewData(viewData)
     }
 
-    private fun showWithdrawData(viewData: TransactionDetailsViewData) = with(binding) {
+    private fun showWithdrawData(viewData: SolendTransactionDetails) = with(binding) {
         optionsTextViewTransaction.labelText = getString(R.string.solend_transaction_details_withdraw)
         optionsTextViewTransactionFee.labelText = getString(R.string.solend_transaction_details_withdrawal_fee)
 
         setViewData(viewData)
     }
 
-    private fun setViewData(viewData: TransactionDetailsViewData) = with(binding) {
+    private fun setViewData(viewData: SolendTransactionDetails) = with(binding) {
         with(viewData) {
             optionsTextViewTransaction.setValueText(amount)
             textViewFreeFee.isVisible = transferFee == null
