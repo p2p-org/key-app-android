@@ -1,12 +1,14 @@
 package org.p2p.wallet.send.ui.search.adapter
 
+import androidx.recyclerview.widget.RecyclerView
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.send.model.SearchResult
 
 class SearchAdapter(
-    private val onItemClicked: (SearchResult) -> Unit
+    private val onItemClicked: (SearchResult) -> Unit,
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
 ) : RecyclerView.Adapter<SearchViewHolder>() {
 
     private val data = mutableListOf<SearchResult>()
@@ -24,7 +26,8 @@ class SearchAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         return SearchViewHolder(
             parent = parent,
-            onItemClicked = onItemClicked
+            onItemClicked = onItemClicked,
+            usernameDomainFeatureToggle = usernameDomainFeatureToggle
         )
     }
 
