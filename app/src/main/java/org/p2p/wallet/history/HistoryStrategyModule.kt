@@ -7,6 +7,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.history.strategy.context.AllTransactionParsingContext
 import org.p2p.wallet.history.strategy.context.OrcaSwapParsingContext
+import org.p2p.wallet.history.strategy.context.FeeRelayerSwapParsingContext
 import org.p2p.wallet.history.strategy.context.SerumSwapParsingContext
 import org.p2p.wallet.history.strategy.context.SolanaParsingContext
 import org.p2p.wallet.history.strategy.types.BurnCheckParsingStrategy
@@ -25,8 +26,9 @@ object HistoryStrategyModule : InjectionModule {
         factory(named(STRATEGY_CONTEXTS_QUALIFIER)) {
             listOf(
                 SerumSwapParsingContext(),
+                FeeRelayerSwapParsingContext(),
                 OrcaSwapParsingContext(),
-                SolanaParsingContext(get(named(STRATEGY_PARSERS_QUALIFIER)), get())
+                SolanaParsingContext(strategies = get(named(STRATEGY_PARSERS_QUALIFIER)), serviceScope = get()),
             )
         }
 
@@ -35,14 +37,22 @@ object HistoryStrategyModule : InjectionModule {
                 BurnCheckParsingStrategy(),
                 CreateAccountParsingStrategy(),
                 CloseAccountParsingStrategy(),
-                TransferParsingStrategy(get(), get(), get()),
+                TransferParsingStrategy(
+                    tokenKeyProvider = get(),
+                    userInteractor = get(),
+                    userAccountRepository = get()
+                ),
                 UnknownParsingStrategy(),
-                CheckedTransferParsingStrategy(get(), get(), get())
+                CheckedTransferParsingStrategy(
+                    tokenKeyProvider = get(),
+                    userInteractor = get(),
+                    userAccountRepository = get()
+                )
             )
         }
 
         factory<TransactionParsingContext> {
-            AllTransactionParsingContext(get(named(STRATEGY_CONTEXTS_QUALIFIER)))
+            AllTransactionParsingContext(contexts = get(named(STRATEGY_CONTEXTS_QUALIFIER)))
         }
     }
 }

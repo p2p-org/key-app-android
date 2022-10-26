@@ -21,7 +21,7 @@ class CloseAccountParsingStrategy : TransactionParsingStrategy {
         }
 
         val closedTokenPublicKey = parsedInfo?.info?.account
-        val preBalances = transactionRoot.meta.preTokenBalances.firstOrNull()?.mint
+        val preBalances = transactionRoot.meta.preTokenBalances?.firstOrNull()?.mint
         return ParsingResult.Transaction.create(
             CloseAccountDetails(
                 signature = signature,
