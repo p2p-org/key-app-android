@@ -78,15 +78,27 @@
         app:layout_constraintTop_toBottomOf="@id/qrFrame"
         tools:text="5faZRizz9rm8S9tampULb2G6JwcdJPoQ1DK4bdRAzbXz" />
 
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingBottom="16dp"
+        android:src="@drawable/ic_key_app_logo"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/valueTextView" />
+
     <LinearLayout
         android:id="@+id/actionContainer"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/bg_app_bottom_rounded"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/valueTextView">
+        app:layout_constraintTop_toBottomOf="@id/logoImageView">
 
         <org.p2p.wallet.common.ui.widget.ProgressButton
             android:id="@+id/copyButton"

@@ -1,8 +1,5 @@
 package org.p2p.wallet.receive.widget
 
-import androidx.annotation.DrawableRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.Bitmap
 import android.text.Spannable
@@ -11,6 +8,9 @@ import android.view.LayoutInflater
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
+import androidx.annotation.DrawableRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import org.p2p.uikit.utils.createBitmap
 import org.p2p.uikit.utils.toast
@@ -114,11 +114,13 @@ class QrView @JvmOverloads constructor(
 
             override fun onAnimationStart(animation: Animation?) {
                 binding.actionContainer.isVisible = false
+                binding.logoImageView.isVisible = true
             }
 
             override fun onAnimationEnd(animation: Animation?) {
                 onSnapshotReady(binding.root.createBitmap(), action)
                 binding.actionContainer.isVisible = true
+                binding.logoImageView.isVisible = false
             }
 
             override fun onAnimationRepeat(animation: Animation?) = Unit
