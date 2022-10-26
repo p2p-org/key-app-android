@@ -37,12 +37,12 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
             }
 
             testUrlButton.setOnClickListener {
-                val testUrl = getString(R.string.torusBaseUrl)
+                val testUrl = getString(R.string.torusTestUrl)
                 updateEnvironmentAndRestart(testUrl)
             }
 
             releaseUrlButton.setOnClickListener {
-                val releaseUrl = getString(R.string.torusTestUrl)
+                val releaseUrl = getString(R.string.torusBaseUrl)
                 updateEnvironmentAndRestart(releaseUrl)
             }
 
