@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
 import android.content.SharedPreferences
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
@@ -18,7 +19,6 @@ import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import javax.crypto.Cipher
-import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
 
@@ -34,6 +34,8 @@ class NewCreatePinPresenter(
     private val sharedPreferences: SharedPreferences
 ) : BasePresenter<NewCreatePinContract.View>(),
     NewCreatePinContract.Presenter {
+
+    private val wasCreationFlow = signUpDetailsStorage.isSignUpInProcess()
 
     private var createdPin = emptyString()
     private var pinMode = PinMode.CREATE
@@ -139,13 +141,12 @@ class NewCreatePinPresenter(
         val isUserCanRegisterUsername =
             registerUsernameEnabledFeatureToggle.isFeatureEnabled &&
                 signUpDetailsStorage.getLastSignUpUserDetails() != null &&
-                isUsernameAuthNotBySeedPhrase
+                isUsernameAuthNotBySeedPhrase && wasCreationFlow
 
         if (isUserCanRegisterUsername) {
             view?.navigateToRegisterUsername()
         } else {
-            val isWalletCreated = onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet
-            view?.navigateToMain(isWalletCreated)
+            view?.navigateToMain(withAnimation = true)
         }
     }
 

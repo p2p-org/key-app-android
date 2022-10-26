@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
-import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
@@ -121,10 +121,10 @@ class NewCreatePinFragment :
         requireContext().vibrate(duration)
     }
 
-    override fun navigateToMain(isWalletCreated: Boolean) {
+    override fun navigateToMain(withAnimation: Boolean) {
         binding.pinView.onSuccessPin()
 
-        val actions = if (isWalletCreated) {
+        val actions = if (withAnimation) {
             arrayOf<MainFragmentOnCreateAction>(MainFragmentOnCreateAction.PlayAnimation(R.raw.raw_animation_applause))
         } else {
             emptyArray()
