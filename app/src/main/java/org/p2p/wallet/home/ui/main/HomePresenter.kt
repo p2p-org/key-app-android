@@ -88,7 +88,7 @@ class HomePresenter(
         view.showEmptyState(isEmpty = true)
 
         userName = usernameInteractor.getUsername()
-        view.showUserAddress(userName?.value ?: tokenKeyProvider.publicKey.ellipsizeAddress())
+        view.showUserAddress(userName?.fullUsername ?: tokenKeyProvider.publicKey.ellipsizeAddress())
 
         updatesManager.start()
 
