@@ -71,7 +71,7 @@
 -keep public class org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 -keep public class org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }
--keep class org.p2p.wallet.auth.model.OnboardingFlow
+-keep public class * implements org.p2p.wallet.auth.model.OnboardingFlow
 
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }

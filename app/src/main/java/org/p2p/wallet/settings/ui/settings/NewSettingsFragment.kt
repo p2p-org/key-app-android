@@ -5,7 +5,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernameFragment
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.auth.ui.username.UsernameFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -140,7 +140,7 @@ class NewSettingsFragment :
 
     override fun openReserveUsernameScreen() {
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Settings.USERNAME_RESERVE)
-        replaceFragment(OnboardingReserveUsernameFragment.create(ReserveUsernameOpenedFrom.SETTINGS))
+        replaceFragment(ReserveUsernameFragment.create(ReserveUsernameOpenedFrom.SETTINGS))
     }
 
     override fun openUsernameScreen() {
