@@ -123,7 +123,7 @@ class QrView @JvmOverloads constructor(
                 binding.logoImageView.isVisible = false
             }
 
-            override fun onAnimationRepeat(animation: Animation?) {}
+            override fun onAnimationRepeat(animation: Animation?) = Unit
         })
         binding.root.startAnimation(animation)
     }
