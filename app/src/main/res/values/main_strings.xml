@@ -17,8 +17,8 @@
     <string name="home_actions_receive_title">Receive</string>
     <string name="home_actions_receive_subtitle">from another wallet or exchange</string>
 
-    <string name="home_actions_trade_title">Trade</string>
-    <string name="home_actions_trade_subtitle">one crypto for another</string>
+    <string name="home_actions_swap_title">Swap</string>
+    <string name="home_actions_swap_subtitle">one crypto for another</string>
 
     <string name="home_actions_send_title">Send</string>
     <string name="home_actions_send_subtitle">to username or address</string>
