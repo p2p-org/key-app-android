@@ -28,10 +28,12 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
             fm: FragmentManager,
             requestKey: String,
             resultKey: String
-        ) = HomeActionsBottomSheet().withArgs(
-            EXTRA_REQUEST_KEY to requestKey,
-            EXTRA_RESULT_KEY to resultKey
-        ).show(fm, HomeActionsBottomSheet::javaClass.name)
+        ) = HomeActionsBottomSheet()
+            .withArgs(
+                EXTRA_REQUEST_KEY to requestKey,
+                EXTRA_RESULT_KEY to resultKey
+            )
+            .show(fm, HomeActionsBottomSheet::javaClass.name)
     }
 
     private val resultKey: String by args(EXTRA_RESULT_KEY)
@@ -63,11 +65,11 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
                 textViewActionTitle.setText(R.string.home_actions_receive_title)
                 textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
             }
-            viewActionTrade.apply {
-                setResultClickListener(HomeAction.TRADE)
-                imageViewAction.setImageResource(R.drawable.action_trade_icon)
-                textViewActionTitle.setText(R.string.home_actions_trade_title)
-                textViewActionSubtitle.setText(R.string.home_actions_trade_subtitle)
+            viewActionSwap.apply {
+                setResultClickListener(HomeAction.SWAP)
+                imageViewAction.setImageResource(R.drawable.action_swap_icon)
+                textViewActionTitle.setText(R.string.home_actions_swap_title)
+                textViewActionSubtitle.setText(R.string.home_actions_swap_subtitle)
             }
             viewActionSend.apply {
                 setResultClickListener(HomeAction.SEND)
@@ -92,13 +94,13 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
     private fun logActionButtonClicked(clickedActionButton: HomeAction) {
         when (clickedActionButton) {
             HomeAction.RECEIVE -> receiveAnalytics.logReceiveActionButtonClicked()
-            HomeAction.TRADE -> swapAnalytics.logSwapActionButtonClicked()
+            HomeAction.SWAP -> swapAnalytics.logSwapActionButtonClicked()
             HomeAction.SEND -> sendAnalytics.logSendActionButtonClicked()
-            HomeAction.BUY -> {}
+            HomeAction.BUY -> Unit
         }
     }
 }
 
 enum class HomeAction {
-    BUY, RECEIVE, TRADE, SEND
+    BUY, RECEIVE, SWAP, SEND
 }

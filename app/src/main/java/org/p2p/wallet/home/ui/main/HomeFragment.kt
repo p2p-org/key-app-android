@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
@@ -189,8 +189,8 @@ class HomeFragment :
                 replaceFragment(SendFragment.create())
             }
         }
-        viewActionTrade.apply {
-            textViewButtonTitle.setText(R.string.home_trade)
+        viewActionSwap.apply {
+            textViewButtonTitle.setText(R.string.home_swap)
             imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
             imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(OrcaSwapFragment.create())
@@ -226,7 +226,7 @@ class HomeFragment :
             HomeAction.RECEIVE -> {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
-            HomeAction.TRADE -> {
+            HomeAction.SWAP -> {
                 replaceFragment(OrcaSwapFragment.create())
             }
             HomeAction.SEND -> {
