@@ -11,6 +11,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CONFIRM_BUTTON_
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_CREATING_ANOTHER
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_FILLING_ADDRESS
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_GOING_BACK
+import org.p2p.wallet.common.analytics.constants.EventNames.SEND_IS_USERNAME
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_PASTING
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_PROCESS_SHOWN
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_QR_GOING_BACK
@@ -319,6 +320,13 @@ class SendAnalytics(private val tracker: Analytics) {
 
     fun logSendActionButtonClicked() {
         tracker.logEvent(SEND_ACTION_BUTTON_CLICKED)
+    }
+
+    fun logIsSendByUsername() {
+        tracker.logEvent(
+            event = SEND_IS_USERNAME,
+            params = mapOf("Result" to isSendTargetUsername)
+        )
     }
 
     enum class QrTab(val title: String) {

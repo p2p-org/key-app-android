@@ -1,5 +1,7 @@
 package org.p2p.wallet.auth.interactor.restore
 
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics.UsernameRestoreMethod
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.model.RestoreUserResult
@@ -13,7 +15,8 @@ class RestoreWalletInteractor(
     private val userRestoreInteractor: UserRestoreInteractor,
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val smsInputTimer: SmsInputTimer,
-    private val signUpDetailsStorage: UserSignUpDetailsStorage
+    private val signUpDetailsStorage: UserSignUpDetailsStorage,
+    private val onboardingAnalytics: OnboardingAnalytics
 ) {
 
     suspend fun startRestoreCustomShare(userPhoneNumber: PhoneNumber, isResend: Boolean = false) =
@@ -38,6 +41,7 @@ class RestoreWalletInteractor(
         userRestoreInteractor.tryRestoreUser(restoreFlow)
 
     suspend fun finishAuthFlow() {
+        onboardingAnalytics.setUserRestoreMethod(UsernameRestoreMethod.WEB3AUTH)
         userRestoreInteractor.finishAuthFlow()
     }
 

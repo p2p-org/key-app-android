@@ -1,23 +1,25 @@
 package org.p2p.wallet.renbtc.service
 
-import kotlinx.coroutines.delay
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
+import org.p2p.wallet.auth.analytics.RenBtcAnalytics
+import org.p2p.wallet.receive.renbtc.BTC_DECIMALS
 import org.p2p.wallet.renbtc.model.MintStatus
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.renbtc.model.RenTransactionStatus.WaitingDepositConfirm
-import org.p2p.wallet.receive.renbtc.BTC_DECIMALS
 import org.p2p.wallet.utils.fromLamports
 import timber.log.Timber
+import kotlinx.coroutines.delay
 
 private const val HALF_MINUTE_DELAY = 1000L * 30L
 
 class RenStatusExecutor(
     private val lockAndMint: LockAndMint,
     private val transaction: RenTransaction,
-    private val secretKey: ByteArray
+    private val secretKey: ByteArray,
+    private val renBtcAnalytics: RenBtcAnalytics,
 ) : RenTransactionExecutor {
 
     companion object {
@@ -82,8 +84,10 @@ class RenStatusExecutor(
         try {
             val signature = lockAndMint.mint(Account(secretKey))
             Timber.tag(REN_TAG).d("Mint signature received: $signature")
+            renBtcAnalytics.logRenBtcReceived(receiveSuccess = true)
         } catch (e: Throwable) {
-            Timber.e(e, "Error minting transaction: $transactionHash")
+            Timber.tag(REN_TAG).e(e, "Error minting transaction: $transactionHash")
+            renBtcAnalytics.logRenBtcReceived(receiveSuccess = false)
         }
         val amount = response.valueOut.amount.toBigInteger().fromLamports(BTC_DECIMALS)
         setStatus(RenTransactionStatus.SuccessfullyMinted(transactionHash, amount))

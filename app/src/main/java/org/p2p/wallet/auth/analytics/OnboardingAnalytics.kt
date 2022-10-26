@@ -11,8 +11,11 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BIO_REJECTED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_MANUAL_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_SEED_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_WALLET_CONFIRM_PIN
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATION_PHONE_SCREEN
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_MANY_WALLETS_FOUND
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_NO_WALLET_FOUND
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PROPERTY_USER_DEVICE_SHARE
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PROPERTY_USER_RESTORE_METHOD
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_APPROVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_REJECTED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_GOOGLE_INVOKED
@@ -200,6 +203,29 @@ class OnboardingAnalytics(private val tracker: Analytics) {
                 "Restore_option" to restoreWay.value
             )
         )
+    }
+
+    fun logPhoneEnterScreenOpened() {
+        tracker.logEvent(ONBOARD_CREATION_PHONE_SCREEN)
+    }
+
+    fun setUserRestoreMethod(restoreMethod: UsernameRestoreMethod) {
+        tracker.setUserProperty(
+            key = ONBOARD_PROPERTY_USER_RESTORE_METHOD,
+            value = restoreMethod.analyticValue
+        )
+    }
+
+    fun setUserHasDeviceShare(hasDeviceShare: Boolean) {
+        tracker.setUserProperty(
+            key = ONBOARD_PROPERTY_USER_DEVICE_SHARE,
+            value = hasDeviceShare
+        )
+    }
+
+    enum class UsernameRestoreMethod(val analyticValue: String) {
+        WEB3AUTH("web3auth"),
+        SEED_PHRASE("seed_phrase")
     }
 
     enum class UsernameField(val title: String) {

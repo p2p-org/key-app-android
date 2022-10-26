@@ -64,6 +64,9 @@ object EventNames {
     const val ONBOARD_CREATE_WALLET_CONFIRM_PIN = "Create_Confirm_Pin"
     const val ONBOARD_RESTORE_WALLET_BUTTON = "Restore_Wallet_Button"
     const val ONBOARD_SELECT_RESTORE_OPTION = "Select_Restore_Option"
+    const val ONBOARD_CREATION_PHONE_SCREEN = "Creation_phone_screen"
+    const val ONBOARD_PROPERTY_USER_RESTORE_METHOD = "User_Restore_Method"
+    const val ONBOARD_PROPERTY_USER_DEVICE_SHARE = "User_Deviceshare"
 
     const val BUY_SCREEN_OPENED = "Buy_Screen_Opened"
     const val BUY_TOKEN_CHOSEN = "Buy_Token_Chosen"
@@ -98,6 +101,7 @@ object EventNames {
     const val SEND_CONFIRM_BUTTON_PRESSED = "Send_Confirm_button_pressed"
     const val SEND_RECIPIENT_SCREEN = "Send_Recipient_screen"
     const val SEND_ACTION_BUTTON_CLICKED = "Action_Button_Send"
+    const val SEND_IS_USERNAME = "Send_Username"
 
     const val SWAP_VIEWED = "Swap_Viewed"
     const val SWAP_CHANGING_TOKEN_A = "Swap_Changing_Token_A"
@@ -118,7 +122,7 @@ object EventNames {
     const val SWAP_USER_CONFIRMED = "Swap_User_Confirmed"
     const val SWAP_STARTED = "Swap_Started"
     const val SWAP_COMPLETED = "Swap_Completed"
-    const val SWAP_CONFIRM_CLICKED = "Click_approve_button"
+    const val SWAP_CONFIRM_CLICKED = "Swap_Click_Approve_Button"
     const val SWAP_ACTION_BUTTON_CLICKED = "Action_Button_Swap"
     const val SWAP_START_SCREEN = "Swap_Start_Screen"
     const val SWAP_CHANGING_TOKEN_A_NEW = "Swap_Changing_Token_A"

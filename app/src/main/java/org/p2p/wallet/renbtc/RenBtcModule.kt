@@ -50,7 +50,7 @@ object RenBtcModule : InjectionModule {
         single { RenStateInMemoryRepository() } bind RenStateLocalRepository::class
         single { RenBtcInteractor(get(), get(), get(), get(), get()) }
 
-        single { RenTransactionManager(get(), get(), get(), get()) }
+        single { RenTransactionManager(get(), get(), get(), get(), get()) }
         singleOf(::BurnBtcInteractor)
 
         factoryOf(::BtcAddressValidator)
