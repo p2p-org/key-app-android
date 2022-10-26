@@ -1,6 +1,5 @@
 package org.p2p.solanaj.kits.transaction.network
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -21,17 +20,15 @@ object MessageResponseDeserialization : JsonDeserializer<MessageResponse?> {
             if (instructions == null) {
                 return null
             } else {
-                gson.fromJsonReified<MessageResponse?>(json.asJsonObject.toString())
+                val result = gson.fromJson<MessageResponse?>(
+                    json.asJsonObject.toString(),
+                    object :
+                        TypeToken<MessageResponse?>() {}.type
+                )
+                result
             }
-            val result = gson.fromJsonReified<MessageResponse?>(json.asJsonObject.toString())
-            result
         } catch (e: Throwable) {
             null
         }
     }
-}
-
-inline fun <reified Type> Gson.fromJsonReified(json: String): Type? {
-    val result = fromJson<Type>(json, object : TypeToken<Type>() {}.type)
-    return result
 }
