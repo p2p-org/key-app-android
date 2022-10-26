@@ -14,8 +14,6 @@ import org.p2p.solanaj.utils.crypto.Hex
 import org.p2p.wallet.auth.analytics.RenBtcAnalytics
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 import java.nio.ByteBuffer
@@ -23,26 +21,25 @@ import kotlinx.coroutines.withContext
 
 class BurnBtcInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val rpcAmountRepository: RpcAmountRepository,
     private val renVMRepository: RenVMRepository,
     private val rpcSolanaInteractor: RpcSolanaInteractor,
     private val renBtcAnalytics: RenBtcAnalytics,
     private val dispatchers: CoroutineDispatchers
 ) {
-    private val state: LockAndMint.State = LockAndMint.State()
-
     companion object {
         private const val BURN_FEE_LENGTH = 97
         private const val REN_BTC_DECIMALS = 6
-        private const val BURN_FEE_VALUE = "0.000005"
+        private const val BURN_FEE_VALUE = 20000L
     }
+
+    private val state: LockAndMint.State = LockAndMint.State()
 
     private var nonceBuffer: ByteArray = byteArrayOf()
     private var recepient: String = ""
 
     suspend fun submitBurnTransaction(recipient: String, amount: BigInteger): String = withContext(dispatchers.io) {
         val signer = tokenKeyProvider.publicKey.toPublicKey()
-        val signerSecretKey = tokenKeyProvider.secretKey
+        val signerSecretKey = tokenKeyProvider.keyPair
 
         val burnDetails: BurnDetails = submitBurnTransaction(
             account = signer,
@@ -51,27 +48,36 @@ class BurnBtcInteractor(
             signer = Account(signerSecretKey)
         )
 
-        val burnState = getBurnState(burnDetails, amount.toString())
-        val hash = try {
-            release()
-            renBtcAnalytics.logRenBtcSend(sendSuccess = true)
-        } catch (e: RpcException) {
-            renBtcAnalytics.logRenBtcSend(sendSuccess = false)
-            // TODO: Handle this error [invalid burn info: cannot get burn info: decoding solana burn log: expected data len=97, got=0]
-            // TODO: It crashes even if transaction is valid
-            if (e.message?.startsWith("invalid burn info") == true) {
-                return@withContext burnDetails.confirmedSignature
-            } else {
-                throw e
-            }
-        }
+        // TODO: We are not using state and hash.
+        // TODO: WORKAROUND. it's crashing anyway. Temporary commenting it.
+//        val burnState = try {
+//            getBurnState(burnDetails, amount.toString())
+//        } catch (e: Throwable) {
+//            // TODO: We are not using state, therefore ignoring errors for now
+//            Timber.e(e, "Error getting state")
+//        }
+
+//        val hash = try {
+//            release()
+
+//        } catch (e: RpcException) {
+//            renBtcAnalytics.logRenBtcSend(sendSuccess = false)
+//            // TODO: Handle this error [invalid burn info: cannot get burn info: decoding solana burn log: expected data len=97, got=0]
+//            // TODO: It crashes even if transaction is valid
+//            if (e.message?.startsWith("invalid burn info") == true) {
+//                return@withContext burnDetails.confirmedSignature
+//            } else {
+//                throw e
+//            }
+//        }
+        renBtcAnalytics.logRenBtcSend(sendSuccess = true)
         return@withContext burnDetails.confirmedSignature
     }
 
-    suspend fun getBurnFee(): BigInteger {
-        val fee = rpcAmountRepository.getMinBalanceForRentExemption(BURN_FEE_LENGTH)
-        val feeLamports = BURN_FEE_VALUE.toBigDecimal().toLamports(REN_BTC_DECIMALS)
-        return fee + feeLamports
+    // TODO: WORKAROUND. it's crashing anyway. Temporary commenting it.
+    fun getBurnFee(): BigInteger {
+//        val feeLamports = BURN_FEE_VALUE.toBigDecimal().toLamports(REN_BTC_DECIMALS)
+        return BURN_FEE_VALUE.toBigInteger()
     }
 
     private suspend fun submitBurnTransaction(

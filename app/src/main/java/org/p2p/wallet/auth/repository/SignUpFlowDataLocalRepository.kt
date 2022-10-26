@@ -38,7 +38,7 @@ class SignUpFlowDataLocalRepository(
     val userPublicKey: Base58String?
         get() = userAccount?.publicKey?.toBase58()?.toBase58Instance()
     val userPrivateKeyB58: Base58String?
-        get() = userAccount?.secretKey?.toBase58Instance()
+        get() = userAccount?.keypair?.toBase58Instance()
 
     val ethereumPublicKey: String?
         get() = signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey

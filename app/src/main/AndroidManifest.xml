@@ -32,7 +32,6 @@
         android:theme="@style/WalletTheme"
         tools:replace="android:fullBackupContent">
 
-
         <meta-data
             android:name="io.sentry.dsn"
             android:value="${SENTRY_DSN}" />

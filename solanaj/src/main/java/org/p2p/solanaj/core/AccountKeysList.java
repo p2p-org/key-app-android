@@ -20,6 +20,10 @@ public class AccountKeysList {
         accountsList.addAll(metas);
     }
 
+    public int size() {
+        return accountsList.size();
+    }
+
     public List<AccountMeta> getList() {
         ArrayList<AccountMeta> uniqueMetas = new ArrayList<AccountMeta>();
 
@@ -28,10 +32,13 @@ public class AccountKeysList {
 
             int index = AccountMeta.Companion.findAccountIndex(uniqueMetas, pubKey);
             if (index > -1) {
-                uniqueMetas.set(index,
-                        new AccountMeta(pubKey,
+                uniqueMetas.set(
+                        index,
+                        new AccountMeta(
+                                pubKey,
                                 uniqueMetas.get(index).isSigner() || accountMeta.isSigner(),
-                                uniqueMetas.get(index).isWritable() || accountMeta.isWritable())
+                                uniqueMetas.get(index).isWritable() || accountMeta.isWritable()
+                        )
                 );
             } else {
                 uniqueMetas.add(accountMeta);

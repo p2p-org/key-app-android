@@ -68,8 +68,8 @@ class SolendEarnFragment :
         )
     }
 
-    override fun showDepositToSolend(deposit: SolendDepositToken) {
-        replaceFragment(SolendDepositFragment.create(deposit))
+    override fun showDepositToSolend(selectedDeposit: SolendDepositToken, allDeposits: List<SolendDepositToken>) {
+        replaceFragment(SolendDepositFragment.create(selectedDeposit, allDeposits))
     }
 
     override fun showLoading(isLoading: Boolean) {

@@ -2,7 +2,7 @@ package org.p2p.wallet.feerelayer.interactor
 
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.feerelayer.model.SwapData
-import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
@@ -119,7 +119,7 @@ class FeeRelayerInstructionsInteractor(
 
     fun getTransitToken(
         pools: OrcaPoolsPair
-    ): TokenInfo? {
+    ): TokenAccount? {
         val owner = tokenKeyProvider.publicKey
         val transitTokenMintPubkey = getTransitTokenMintPubkey(pools)
 
@@ -132,7 +132,7 @@ class FeeRelayerInstructionsInteractor(
         }
 
         if (transitTokenMintPubkey != null && transitTokenAccountAddress != null) {
-            return TokenInfo(
+            return TokenAccount(
                 address = transitTokenAccountAddress.toBase58(),
                 mint = transitTokenMintPubkey.toBase58()
             )

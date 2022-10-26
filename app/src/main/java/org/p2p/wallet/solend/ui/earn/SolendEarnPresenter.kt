@@ -1,11 +1,6 @@
 package org.p2p.wallet.solend.ui.earn
 
 import androidx.annotation.CallSuper
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -14,7 +9,7 @@ import org.p2p.wallet.infrastructure.account.AccountStorage
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key.Companion.withCustomKey
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.solend.interactor.SolendDepositsInteractor
+import org.p2p.wallet.solend.interactor.SolendDepositInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.getErrorMessage
@@ -24,10 +19,15 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class SolendEarnPresenter(
     private val resourcesProvider: ResourcesProvider,
-    private val solendDepositsInteractor: SolendDepositsInteractor,
+    private val solendDepositsInteractor: SolendDepositInteractor,
     private val userInteractor: UserInteractor,
     private val depositTickerStorage: DepositTickerStorage,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -108,7 +108,7 @@ class SolendEarnPresenter(
                 if (activeToken?.totalInUsd.orZero().isZero()) {
                     view?.showDepositTopUp(deposit)
                 } else {
-                    view?.showDepositToSolend(deposit)
+                    view?.showDepositToSolend(deposit, deposits)
                 }
             }
         }

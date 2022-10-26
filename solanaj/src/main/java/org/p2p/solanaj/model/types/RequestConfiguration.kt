@@ -19,11 +19,6 @@ data class RequestConfiguration(
     val until: String? = null
 )
 
-enum class Encoding(val encoding: String) {
-    @SerializedName("base64")
-    BASE64("base64");
-}
-
 data class DataSlice(
     @SerializedName("offset")
     val offset: Int,
