@@ -287,6 +287,8 @@ class SendPresenter(
             accountFeeTokenSymbol = state.sendFee?.feePayerSymbol
         )
 
+        sendAnalytics.logIsSendByUsername()
+
         when (state.networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
             NetworkType.BITCOIN -> sendInBitcoin(token, address)

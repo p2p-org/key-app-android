@@ -101,6 +101,7 @@ object EventNames {
     const val SEND_CONFIRM_BUTTON_PRESSED = "Send_Confirm_button_pressed"
     const val SEND_RECIPIENT_SCREEN = "Send_Recipient_screen"
     const val SEND_ACTION_BUTTON_CLICKED = "Action_Button_Send"
+    const val SEND_IS_USERNAME = "Send_Username"
 
     const val SWAP_VIEWED = "Swap_Viewed"
     const val SWAP_CHANGING_TOKEN_A = "Swap_Changing_Token_A"
