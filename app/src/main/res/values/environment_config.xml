@@ -20,8 +20,11 @@
     <string name="torusReleaseVerifier">key-app-google-cyan</string>
 
     <!--    DECOMMENT THE LINE NEEDED DEPENDING ON BUILD-->
+    <string name="torusLocalReleaseSubVerifier">android</string>
+    <string name="torusFirebaseReleaseSubVerifier">android-1</string>
+    <string name="torusProdReleaseSubVerifier">android-2</string>
     <!--    FOR LOCAL RELEASE BUILDS-->
-    <string name="torusReleaseSubVerifier">android</string>
+    <string name="torusReleaseSubVerifier">@string/torusLocalReleaseSubVerifier</string>
 
     <!--    FOR PLAY STORE RELEASE BUILDS-->
     <!--    <string name="torusReleaseSubVerifier">android-1</string>-->
