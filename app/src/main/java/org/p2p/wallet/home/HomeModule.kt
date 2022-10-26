@@ -113,6 +113,7 @@ object HomeModule : InjectionModule {
                 transactionManager = get(),
                 resourcesProvider = get(),
                 usernameDomainFeatureToggle = get(),
+                addressValidator = get(),
                 dispatchers = get()
             )
         }
