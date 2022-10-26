@@ -38,10 +38,9 @@ class FeeRelayerSwapParsingContext : TransactionParsingContext {
 
         var destinationAddress = extractedSwapInstruction.accounts[5]
         var destinationMintAndAmount = parseToken(root, destinationAddress)
-
         val closeInstruction = root.transaction
             ?.message
-            ?.instructions?.get(swapInstructionIndex + 1)
+            ?.instructions?.getOrNull(swapInstructionIndex + 1)
         if (destinationMintAndAmount.second == "0") {
 
             if (closeInstruction?.parsed?.type == "closeAccount") {
