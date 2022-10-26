@@ -34,8 +34,6 @@ import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
-import org.p2p.wallet.auth.ui.done.AuthDoneContract
-import org.p2p.wallet.auth.ui.done.AuthDonePresenter
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorContract
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
@@ -52,14 +50,12 @@ import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterContract
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterPresenter
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerContract
 import org.p2p.wallet.auth.ui.phone.countrypicker.CountryCodePickerPresenter
-import org.p2p.wallet.auth.ui.pin.create.CreatePinContract
-import org.p2p.wallet.auth.ui.pin.create.CreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
-import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernameContract
-import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernamePresenter
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameContract
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.reserveusername.UsernameValidator
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreContract
 import org.p2p.wallet.auth.ui.restore.common.CommonRestorePresenter
@@ -72,8 +68,6 @@ import org.p2p.wallet.auth.ui.security.SecurityKeyPresenter
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputContract
 import org.p2p.wallet.auth.ui.smsinput.NewSmsInputPresenter
 import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
-import org.p2p.wallet.auth.ui.username.ReserveUsernameContract
-import org.p2p.wallet.auth.ui.username.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.username.UsernameContract
 import org.p2p.wallet.auth.ui.username.UsernamePresenter
 import org.p2p.wallet.auth.ui.verify.VerifySecurityKeyContract
@@ -96,11 +90,9 @@ object AuthModule {
         factoryOf(::AuthRemoteRepository) bind AuthRepository::class
         factoryOf(::FileRepository)
         factoryOf(::SecurityKeyPresenter) bind SecurityKeyContract.Presenter::class
-        factoryOf(::CreatePinPresenter) bind CreatePinContract.Presenter::class
         factoryOf(::SignInPinPresenter) bind SignInPinContract.Presenter::class
         factoryOf(::SplashPresenter) bind SplashContract.Presenter::class
         factoryOf(::VerifySecurityKeyPresenter) bind VerifySecurityKeyContract.Presenter::class
-        factoryOf(::AuthDonePresenter) bind AuthDoneContract.Presenter::class
         factory {
             AuthLogoutInteractor(
                 context = get(),
@@ -127,6 +119,7 @@ object AuthModule {
         factoryOf(::UsernameInteractor)
         factoryOf(::ReserveUsernamePresenter) { bind<ReserveUsernameContract.Presenter>() }
         factoryOf(::UsernamePresenter) { bind<UsernameContract.Presenter>() }
+        factoryOf(::UsernameValidator)
     }
 
     private fun Module.onboardingModule() {
@@ -188,11 +181,6 @@ object AuthModule {
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
         factoryOf(::RestoreWalletInteractor)
         factoryOf(::NewCreatePinPresenter) bind NewCreatePinContract.Presenter::class
-
-        factoryOf(::OnboardingReserveUsernamePresenter) {
-            bind<OnboardingReserveUsernameContract.Presenter>()
-        }
-        factoryOf(::UsernameValidator)
 
         singleOf(::RestoreFlowDataLocalRepository)
         factoryOf(::CustomShareRestoreInteractor)
