@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.text.TextWatcher
 import android.view.View
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.utils.attachAdapter
@@ -17,6 +18,7 @@ import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSearchBinding
 import org.p2p.wallet.send.model.SearchResult
@@ -48,7 +50,7 @@ class SearchFragment :
     private lateinit var textWatcher: TextWatcher
 
     private val searchAdapter: SearchAdapter by unsafeLazy {
-        SearchAdapter(presenter::onSearchResultClick)
+        SearchAdapter(presenter::onSearchResultClick, get<UsernameDomainFeatureToggle>())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
