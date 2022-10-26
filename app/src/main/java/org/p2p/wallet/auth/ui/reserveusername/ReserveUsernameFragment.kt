@@ -12,8 +12,11 @@ import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputViewLis
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentOnboardingReserveUsernameBinding
+import org.p2p.wallet.databinding.FragmentReserveUsernameBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.PlayAnimation
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.ShowSnackbar
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getColorStateListCompat
 import org.p2p.wallet.utils.getDrawableCompat
@@ -24,15 +27,15 @@ import org.p2p.wallet.utils.withArgs
 
 private const val ARG_RESERVE_USERNAME_SOURCE = "ARG_RESERVE_USERNAME_SOURCE"
 
-class OnboardingReserveUsernameFragment :
-    BaseMvpFragment<OnboardingReserveUsernameContract.View, OnboardingReserveUsernameContract.Presenter>(
-        R.layout.fragment_onboarding_reserve_username
+class ReserveUsernameFragment :
+    BaseMvpFragment<ReserveUsernameContract.View, ReserveUsernameContract.Presenter>(
+        R.layout.fragment_reserve_username
     ),
-    OnboardingReserveUsernameContract.View {
+    ReserveUsernameContract.View {
 
     companion object {
-        fun create(from: ReserveUsernameOpenedFrom): OnboardingReserveUsernameFragment =
-            OnboardingReserveUsernameFragment()
+        fun create(from: ReserveUsernameOpenedFrom): ReserveUsernameFragment =
+            ReserveUsernameFragment()
                 .withArgs(ARG_RESERVE_USERNAME_SOURCE to from)
     }
 
@@ -57,9 +60,9 @@ class OnboardingReserveUsernameFragment :
             ReserveUsernameOpenedFrom.SETTINGS -> true
         }
 
-    override val presenter: OnboardingReserveUsernameContract.Presenter by inject()
+    override val presenter: ReserveUsernameContract.Presenter by inject()
 
-    private val binding: FragmentOnboardingReserveUsernameBinding by viewBinding()
+    private val binding: FragmentReserveUsernameBinding by viewBinding()
 
     private val openedFromSource: ReserveUsernameOpenedFrom by args(ARG_RESERVE_USERNAME_SOURCE)
     private val isSkipEnabled: RegisterUsernameSkipEnabledFeatureToggle by inject()
@@ -90,7 +93,7 @@ class OnboardingReserveUsernameFragment :
         binding.imageViewBanner.setOnClickListener {
             clicksBeforeDebugSkip--
             if (clicksBeforeDebugSkip == 0) {
-                close()
+                close(isUsernameCreated = false)
             } else {
                 showUiKitSnackBar("Are you clicking me to skip the username..?! I dare you to click again! 🤬")
             }
@@ -102,7 +105,7 @@ class OnboardingReserveUsernameFragment :
             inflateMenu(R.menu.menu_close)
             setOnMenuItemClickListener {
                 if (it.itemId == R.id.itemClose) {
-                    close()
+                    close(isUsernameCreated = false)
                     return@setOnMenuItemClickListener true
                 }
                 false
@@ -110,7 +113,7 @@ class OnboardingReserveUsernameFragment :
         }
         if (isNavigationBackVisible) {
             navigationIcon = requireContext().getDrawableCompat(R.drawable.ic_back_night)
-            setNavigationOnClickListener { close() }
+            setNavigationOnClickListener { close(isUsernameCreated = false) }
         }
     }
 
@@ -142,7 +145,7 @@ class OnboardingReserveUsernameFragment :
         showUiKitSnackBar(
             messageResId = R.string.reserve_username_create_username_error,
             actionButtonResId = R.string.common_skip,
-            actionBlock = { close() }
+            actionBlock = { close(isUsernameCreated = false) }
         )
     }
 
@@ -158,10 +161,18 @@ class OnboardingReserveUsernameFragment :
         binding.buttonSubmitUsername.setTextColorRes(R.color.text_night)
     }
 
-    override fun close() {
+    override fun close(isUsernameCreated: Boolean) {
         when (openedFromSource) {
             ReserveUsernameOpenedFrom.ONBOARDING -> {
-                popAndReplaceFragment(MainFragment.create(), inclusive = true)
+                val actions = mutableListOf<MainFragmentOnCreateAction>(PlayAnimation(R.raw.raw_animation_applause))
+                if (isUsernameCreated) {
+                    actions.add(ShowSnackbar(R.string.reserve_username_create_username_success))
+                }
+
+                popAndReplaceFragment(
+                    MainFragment.create(actions.toTypedArray()),
+                    inclusive = true
+                )
             }
             ReserveUsernameOpenedFrom.SETTINGS -> {
                 popBackStack()

@@ -2,90 +2,112 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/lime"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
+    <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:navigationIcon="@drawable/ic_back"
-        app:title="@string/auth_reserve_username"
-        app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
+        app:collapseIcon="@drawable/ic_close"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night"
+        tools:menu="@menu/menu_close" />
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
+            android:id="@+id/containerContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/receiveTextView"
+            <ImageView
+                android:id="@+id/imageViewBanner"
                 android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:layout_marginHorizontal="20dp"
+                android:importantForAccessibility="no"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="wrap"
+                app:layout_constraintHeight_min="wrap"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:srcCompat="@drawable/onboarding_reserve_username_image" />
+
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/bg_app_rounded"
-                android:lineSpacingExtra="5dp"
-                android:padding="16dp"
-                android:paddingBottom="16dp"
-                android:text="@string/auth_you_can_receive"
-                android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
+                android:gravity="center"
+                android:text="@string/reserve_username_title"
+                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+                android:textColor="@color/text_night"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHeight="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <org.p2p.wallet.common.ui.widget.InputTextView
-                android:id="@+id/inputTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:digits="@string/common_username_allowed_symbols"
-                android:paddingVertical="8dp"
-                app:hint="@string/auth_your_username"
-                app:layout_constraintTop_toBottomOf="@id/receiveTextView" />
+                app:layout_constraintTop_toBottomOf="@id/imageViewBanner" />
 
             <TextView
-                android:id="@+id/skipTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="44dp"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                android:text="@string/auth_you_can_skip"
-                android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-                app:layout_constraintBottom_toTopOf="@id/usernameButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/inputTextView"
-                app:layout_constraintVertical_bias="0" />
-
-            <org.p2p.wallet.common.ui.widget.ProgressButton
-                android:id="@+id/usernameButton"
+                android:id="@+id/textViewSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="12dp"
-                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                app:buttonDrawableStart="@drawable/ic_done"
-                app:buttonDrawableTint="@color/textIconButtonPrimary"
-                app:buttonEnabled="false"
-                app:buttonText="@string/auth_reserve"
-                app:buttonTextColor="@color/textIconButtonPrimary"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="@string/reserve_username_subtitle"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
+                android:textColor="@color/text_night"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
+
+            <org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputView
+                android:id="@+id/inputViewReserveUsername"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewSubtitle" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
-    </androidx.core.widget.NestedScrollView>
+    <LinearLayout
+        android:id="@+id/containerBottomButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_night_top_rounded"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonSubmitUsername"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:backgroundTint="@color/bg_snow"
+            android:text="@string/reserve_username_create_username_button"
+            android:textColor="@color/text_night" />
+
+    </LinearLayout>
 
 </LinearLayout>
