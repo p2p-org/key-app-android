@@ -10,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.p2p.solanaj.utils.BtcAddressValidator
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
@@ -83,6 +84,9 @@ class SendPresenterTest {
 
     @MockK
     lateinit var dispatchers: CoroutineDispatchers
+
+    @MockK
+    lateinit var btcAddressValidator: BtcAddressValidator
 
     @MockK
     lateinit var usernameDomainFeatureToggle: UsernameDomainFeatureToggle
