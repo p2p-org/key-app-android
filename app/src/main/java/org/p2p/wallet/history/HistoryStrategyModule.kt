@@ -28,7 +28,7 @@ object HistoryStrategyModule : InjectionModule {
                 SerumSwapParsingContext(),
                 FeeRelayerSwapParsingContext(),
                 OrcaSwapParsingContext(),
-                SolanaParsingContext(get(named(STRATEGY_PARSERS_QUALIFIER)), get()),
+                SolanaParsingContext(strategies = get(named(STRATEGY_PARSERS_QUALIFIER)), serviceScope = get()),
             )
         }
 
@@ -37,14 +37,22 @@ object HistoryStrategyModule : InjectionModule {
                 BurnCheckParsingStrategy(),
                 CreateAccountParsingStrategy(),
                 CloseAccountParsingStrategy(),
-                TransferParsingStrategy(get(), get(), get()),
+                TransferParsingStrategy(
+                    tokenKeyProvider = get(),
+                    userInteractor = get(),
+                    userAccountRepository = get()
+                ),
                 UnknownParsingStrategy(),
-                CheckedTransferParsingStrategy(get(), get(), get())
+                CheckedTransferParsingStrategy(
+                    tokenKeyProvider = get(),
+                    userInteractor = get(),
+                    userAccountRepository = get()
+                )
             )
         }
 
         factory<TransactionParsingContext> {
-            AllTransactionParsingContext(get(named(STRATEGY_CONTEXTS_QUALIFIER)))
+            AllTransactionParsingContext(contexts = get(named(STRATEGY_CONTEXTS_QUALIFIER)))
         }
     }
 }

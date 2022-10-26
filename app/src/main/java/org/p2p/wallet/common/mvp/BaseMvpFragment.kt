@@ -1,14 +1,12 @@
 package org.p2p.wallet.common.mvp
 
+import androidx.annotation.CallSuper
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.CallSuper
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
-import com.google.android.material.snackbar.Snackbar
-import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.uikit.utils.keyboardIsVisible
 import org.p2p.wallet.R
@@ -97,34 +95,6 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
             iconResId?.let { icon ->
                 it.setIcon(icon)
             }
-        }
-    }
-
-    override fun showUiKitSnackBar(
-        message: String?,
-        messageResId: Int?,
-        onDismissed: () -> Unit,
-        actionButtonResId: Int?,
-        actionBlock: ((Snackbar) -> Unit)?
-    ) {
-        require(message != null || messageResId != null) {
-            "Snackbar text must be set from `message` or `messageResId` params"
-        }
-        val snackbarText: String = message ?: messageResId?.let(::getString)!!
-        val root = requireActivity().findViewById<View>(android.R.id.content) as ViewGroup
-        if (actionButtonResId != null && actionBlock != null) {
-            root.showSnackbarShort(
-                snackbarText = snackbarText,
-                actionButtonText = getString(actionButtonResId),
-                actionButtonListener = actionBlock,
-                style = snackbarStyle
-            )
-        } else {
-            root.showSnackbarShort(
-                snackbarText = snackbarText,
-                onDismissed = onDismissed,
-                style = snackbarStyle
-            )
         }
     }
 }

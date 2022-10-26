@@ -3,6 +3,7 @@ package org.p2p.wallet.send.model
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import org.p2p.solanaj.utils.BtcAddressValidator
 import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
@@ -19,7 +20,8 @@ class SendButton(
     private val sendFee: SendFee?,
     private val tokenAmount: BigDecimal,
     private val currentNetworkType: NetworkType,
-    private var minRentExemption: BigInteger
+    private var minRentExemption: BigInteger,
+    private val btcAddressValidator: BtcAddressValidator
 ) {
 
     sealed class State {
@@ -47,7 +49,11 @@ class SendButton(
 
             val isEnoughBalance = !total.isLessThan(inputAmount)
             val isEnoughToCoverExpenses = sendFee == null || sendFee.isEnoughToCoverExpenses(total, inputAmount)
-            val isValidAddress = PublicKeyValidator.isValid(address) && isSameNetwork
+            val isValidAddress = if (currentNetworkType == NetworkType.SOLANA) {
+                PublicKeyValidator.isValid(address) && isSameNetwork
+            } else {
+                btcAddressValidator.isValid(address)
+            }
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
 

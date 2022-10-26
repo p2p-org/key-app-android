@@ -1,16 +1,16 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.model.ReserveMode
-import org.p2p.wallet.auth.ui.username.ReserveUsernameFragment
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutActionButtonsBinding
@@ -189,8 +189,8 @@ class HomeFragment :
                 replaceFragment(SendFragment.create())
             }
         }
-        viewActionTrade.apply {
-            textViewButtonTitle.setText(R.string.home_trade)
+        viewActionSwap.apply {
+            textViewButtonTitle.setText(R.string.home_swap)
             imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
             imageButtonButtonIcon.setOnClickListener {
                 replaceFragment(OrcaSwapFragment.create())
@@ -226,7 +226,7 @@ class HomeFragment :
             HomeAction.RECEIVE -> {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
-            HomeAction.TRADE -> {
+            HomeAction.SWAP -> {
                 replaceFragment(OrcaSwapFragment.create())
             }
             HomeAction.SEND -> {
@@ -295,7 +295,7 @@ class HomeFragment :
     }
 
     override fun navigateToReserveUsername() {
-        replaceFragment(ReserveUsernameFragment.create(mode = ReserveMode.POP, isSkipStepEnabled = false))
+        replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
     }
 
     override fun onBannerClicked(bannerId: Int) {
@@ -305,7 +305,7 @@ class HomeFragment :
             }
             R.string.home_username_banner_option -> {
                 browseAnalytics.logBannerUsernamePressed()
-                replaceFragment(ReserveUsernameFragment.create(ReserveMode.POP, isSkipStepEnabled = false))
+                replaceFragment(ReserveUsernameFragment.create(from = ReserveUsernameOpenedFrom.SETTINGS))
             }
             R.string.home_feedback_banner_option -> {
                 browseAnalytics.logBannerFeedbackPressed()
