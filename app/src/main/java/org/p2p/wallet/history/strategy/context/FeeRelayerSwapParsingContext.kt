@@ -6,7 +6,6 @@ import org.p2p.solanaj.utils.crypto.Base58Utils
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.utils.Constants
-import timber.log.Timber
 import java.math.BigInteger
 
 class FeeRelayerSwapParsingContext : TransactionParsingContext {
@@ -16,7 +15,6 @@ class FeeRelayerSwapParsingContext : TransactionParsingContext {
     override fun canParse(transaction: ConfirmedTransactionRootResponse): Boolean {
         val instructions = transaction.transaction?.message?.instructions
         val orcaSwapInstruction = instructions?.firstOrNull { it.programId in orcaSwapProgramIds }
-        Timber.tag("CanParse = P2POrcaSwapParsing ${orcaSwapInstruction != null}")
         return orcaSwapInstruction != null
     }
 
@@ -28,21 +26,25 @@ class FeeRelayerSwapParsingContext : TransactionParsingContext {
             val isFirstByteEqualsToFour = it.data?.let { it1 -> Base58Utils.decode(it1).first().toInt() } == 4
             isP2PSwapProgram && isFirstByteEqualsToFour
         }
-        val swapInstructionIndex = (if (swapInstruction != null) instructions.indexOf(swapInstruction) else null)
-            ?: return ParsingResult.Error(Throwable("It's not parcelable transaction"))
+        val swapInstructionIndex = if (swapInstruction != null) {
+            instructions.indexOf(swapInstruction)
+        } else {
+            null
+        } ?: return ParsingResult.Error(Throwable("It's not parcelable transaction"))
 
         val extractedSwapInstruction = instructions[swapInstructionIndex]
 
-        var sourceAddress = extractedSwapInstruction.accounts[3]
-        var sourceMintAndAmount = parseToken(root, sourceAddress)
+        val sourceAddress = extractedSwapInstruction.accounts[3]
+        val sourceMintAndAmount = parseToken(root, sourceAddress)
 
-        var destinationAddress = extractedSwapInstruction.accounts[5]
+        val destinationAddress = extractedSwapInstruction.accounts[5]
         var destinationMintAndAmount = parseToken(root, destinationAddress)
         val closeInstruction = root.transaction
             ?.message
-            ?.instructions?.getOrNull(swapInstructionIndex + 1)
-        if (destinationMintAndAmount.second == "0") {
+            ?.instructions
+            ?.getOrNull(swapInstructionIndex + 1)
 
+        if (destinationMintAndAmount.second == "0") {
             if (closeInstruction?.parsed?.type == "closeAccount") {
                 closeInstruction
                     .parsed
@@ -93,7 +95,8 @@ class FeeRelayerSwapParsingContext : TransactionParsingContext {
         } else {
             addressIndex?.let {
                 root.meta
-                    .preTokenBalances?.get(it)
+                    .preTokenBalances
+                    ?.get(it)
                     ?.uiTokenAmountDetails
                     ?.amount
             } ?: Constants.ZERO_AMOUNT
@@ -102,7 +105,8 @@ class FeeRelayerSwapParsingContext : TransactionParsingContext {
         if (mintAddress == Constants.WRAPPED_SOL_MINT) {
             preBalance = addressIndex?.let {
                 root.meta
-                    .preBalances?.get(it)
+                    .preBalances
+                    ?.get(it)
             } ?: Constants.ZERO_AMOUNT
             postBalance = addressIndex?.let {
                 root.meta
