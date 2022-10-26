@@ -8,7 +8,7 @@ const val KEY_PREFS_BACKUP = "prefs"
 class AppPrefsBackupAgent : BackupAgentHelper() {
     override fun onCreate() {
         val context = this
-        val prefsName = "${context.packageName}.prefs"
+        val prefsName = "${context.packageName}.account_prefs"
         SharedPreferencesBackupHelper(context, prefsName).also {
             addHelper(KEY_PREFS_BACKUP, it)
         }
