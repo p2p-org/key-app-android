@@ -4,8 +4,8 @@
     <string name="onboarding_continue_with_google">Continue with Google</string>
     <string name="onboarding_restore_text">I already have a wallet</string>
     <string name="onboarding_terms_text">By continuing, you agree wallet\'s</string>
-    <string name="onboarding_terms_and_policy">Terms of Use and Privacy Policy</string>
-    <string name="onboarding_terms_of_use">Terms of Use</string>
+    <string name="onboarding_terms_and_policy">Terms of Service and Privacy Policy</string>
+    <string name="onboarding_terms_of_use">Terms of Service</string>
     <string name="onboarding_privacy_policy">Privacy Policy</string>
 
     <!--Onboarding Loading-->
