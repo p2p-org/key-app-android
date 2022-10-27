@@ -10,7 +10,7 @@ import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.history.strategy.TransactionParsingStrategy
-import java.lang.IllegalStateException
+import kotlin.IllegalStateException
 
 class SolanaParsingContext(
     private val strategies: List<TransactionParsingStrategy>,
@@ -23,7 +23,6 @@ class SolanaParsingContext(
         val instructions =
             root.transaction?.message
                 ?.instructions
-                ?.filter { it.parsed != null }
                 ?.map { async { toParsingResult(root, it) } }
                 ?.awaitAll()
 
@@ -42,7 +41,9 @@ class SolanaParsingContext(
             ?: return ParsingResult.Error(IllegalStateException("Signature cannot be null"))
 
         val type = TransactionDetailsType.valueOf(instruction.parsed?.type)
-        val parsingStrategy = strategies.first { it.getType() == type }
+
+        val parsingStrategy = strategies.firstOrNull { it.getType() == type }
+            ?: return ParsingResult.Error(IllegalStateException("Unknown type of transaction"))
 
         return parsingStrategy.parseTransaction(
             signature = signature,

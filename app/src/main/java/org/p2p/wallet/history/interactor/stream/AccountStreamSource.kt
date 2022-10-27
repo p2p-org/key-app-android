@@ -4,6 +4,9 @@ import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.utils.toPublicKey
+import timber.log.Timber
+
+private const val TAG = "HistoryStreamSource"
 
 class AccountStreamSource(
     private val account: String,
@@ -30,6 +33,10 @@ class AccountStreamSource(
             return null
         } catch (e: EmptyDataException) {
             isPagingEnded = true
+            Timber.tag(TAG).e(e)
+            return null
+        } catch (e: Throwable) {
+            Timber.tag(TAG).e(e)
             return null
         }
     }
@@ -62,7 +69,10 @@ class AccountStreamSource(
             lastFetchedSignature = signatures.lastOrNull()?.signature
             buffer.addAll(signatures)
         } catch (e: EmptyDataException) {
+            Timber.tag(TAG).e(e)
             isPagingEnded = true
+        } catch (e: Throwable) {
+            Timber.tag(TAG).e(e)
         }
     }
 }

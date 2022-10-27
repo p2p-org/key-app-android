@@ -3,11 +3,13 @@ package org.p2p.uikit.atoms
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import androidx.annotation.DrawableRes
 import androidx.core.content.res.use
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionSwapImageBinding
 import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.utils.inflateViewBinding
+import org.p2p.uikit.utils.withImageOrGone
 
 private const val IMAGE_SIZE = 28
 
@@ -51,5 +53,9 @@ class TransactionSwapImageView @JvmOverloads constructor(
             params.height = tokenIconSize
             params.width = tokenIconSize
         }
+    }
+
+    fun setStatusIcon(@DrawableRes statusIcon: Int?) {
+        binding.transactionStatus.withImageOrGone(statusIcon)
     }
 }
