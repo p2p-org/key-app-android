@@ -19,7 +19,7 @@ interface HomeContract {
         fun showUserAddress(ellipsizedAddress: String)
         fun navigateToProfile()
         fun navigateToReserveUsername()
-        fun showAddressCopied(address: String)
+        fun showAddressCopied(addressAndUsername: String)
         fun showBuyInfoScreen(token: Token)
         fun showNewBuyScreen(token: Token)
         fun showOldBuyScreen(token: Token)
