@@ -42,9 +42,14 @@ class UsernameInteractor(
     suspend fun tryRestoreUsername(owner: Base58String) {
         try {
             val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
-            if (usernameDetails != null) {
-                sharedPreferences.edit { putString(KEY_USERNAME, usernameDetails.fullUsername) }
-                Timber.i("Username restored for ${owner.base58Value}")
+            sharedPreferences.edit {
+                if (usernameDetails != null) {
+                    putString(KEY_USERNAME, usernameDetails.fullUsername)
+                    Timber.i("Username restored for ${owner.base58Value}")
+                } else {
+                    // removing legacy usernames .p2p.sol
+                    remove(KEY_USERNAME)
+                }
             }
         } catch (error: Throwable) {
             Timber.i(error, "Failed to restore username for ${owner.base58Value}")
