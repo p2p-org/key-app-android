@@ -9,7 +9,7 @@ inputs:
     description: "Slack bot token"
   build-type:
     required: true
-    description: "debug,feature,internal,release"
+    description: "debug,feature,releaseLocal,releaseFirebase,release"
   artifact-type:
     required: true
     description: "apk,bundle"

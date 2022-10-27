@@ -29,7 +29,6 @@ android {
 
         initApiKeys(it)
         initSentry(it)
-        checkForSslPinning()
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
@@ -105,20 +104,14 @@ android {
             matchingFallbacks = ["release"]
         }
 
-        internal {
+        releaseFirebase {
             signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
-            debuggable false
+            initReleaseType(it)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             def torusProperties = getTorusProperties()
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
             resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_FIREBASE']
-
-            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
-            buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
-            manifestPlaceholders = [SENTRY_ENV: "release"]
 
             firebaseAppDistribution {
                 artifactType = "AAB"
@@ -129,20 +122,26 @@ android {
             matchingFallbacks = ["release"]
         }
 
+        releaseLocal {
+            signingConfig signingConfigs.release
+            initReleaseType(it)
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            def torusProperties = getTorusProperties()
+            resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
+            resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_LOCAL']
+
+            matchingFallbacks = ["release"]
+        }
+
         release {
             signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
-            debuggable false
+            initReleaseType(it)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             def torusProperties = getTorusProperties()
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
             resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_STORE']
-
-            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
-            buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
-            manifestPlaceholders = [SENTRY_ENV: "release"]
         }
     }
 
@@ -181,7 +180,6 @@ android {
         }
     }
 }
-
 dependencies {
     implementation project(':solanaj')
     implementation project(':ui-kit')

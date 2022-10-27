@@ -81,7 +81,8 @@ jobs:
           torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
           torus-subverifier-release: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-          torus-subverifier-internal: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
 
       - name: "Create apikey.properties"
         uses: ./.github/actions/setup-apikey
@@ -132,8 +133,6 @@ jobs:
           bash slack_deploy_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
           bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
-
-
 
       - name: "Send finish deploy message to slack"
         run: |

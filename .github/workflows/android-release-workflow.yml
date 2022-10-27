@@ -49,7 +49,7 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebug
 
-  android-build-internal:
+  android-build-pre-release:
     name: "Run build internal artifacts"
     needs:
       - android-lint
@@ -80,7 +80,8 @@ jobs:
           torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
           torus-subverifier-release: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-          torus-subverifier-internal: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
 
       - name: "Create apikey.properties"
         uses: ./.github/actions/setup-apikey
@@ -110,25 +111,32 @@ jobs:
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
 
-      - name: "Build APK and AAB artifact"
+      - name: "Build Firebase APK and AAB artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleInternal bundleInternal
+        run: ./gradlew assembleReleaseFirebase bundleReleaseFirebase
+
+      - name: "Build Slack APK and AAB artifact"
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleReleaseLocal bundleReleaseLocal
 
       - name: "Upload APK to Firebase App Distribution"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew appDistributionUploadInternal
+        run: ./gradlew appDistributionUploadReleaseFirebase
 
       - name: "Upload APK to Slack Channel"
         uses: ./.github/actions/setup-slack
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "internal"
+          build-type: "releaseLocal"
           artifact-type: "apk"
 
       - name: "Upload Bundle to Slack Channel"
@@ -136,7 +144,7 @@ jobs:
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "internal"
+          build-type: "releaseLocal"
           artifact-type: "bundle"
 
       - name: "Upload git changelog and Jira ticket to Slack channel"
@@ -153,7 +161,6 @@ jobs:
           cd bash_scripts
           value=`cat timestamp.txt`
           bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-
 
 
   android-build-store-release:
