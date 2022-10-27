@@ -25,6 +25,7 @@ import org.p2p.wallet.utils.Constants.ETH_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.Constants.USDT_SYMBOL
+import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.scaleShort
@@ -109,7 +110,15 @@ class HomePresenter(
     }
 
     override fun onAddressClicked() {
-        view?.showAddressCopied(userName?.value ?: tokenKeyProvider.publicKey)
+        // example result: "test-android.key 4vwfPYdvv9vkX5mTC6BBh4cQcWFTQ7Q7WR42JyTfZwi7"
+        val userDataToCopy = buildString {
+            userName?.fullUsername?.let {
+                append(it)
+                appendWhitespace()
+            }
+            append(tokenKeyProvider.publicKey)
+        }
+        view?.showAddressCopied(userDataToCopy)
     }
 
     override fun onBuyClicked() {
