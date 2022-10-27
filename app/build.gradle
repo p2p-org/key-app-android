@@ -125,6 +125,8 @@ android {
                 releaseNotes = releaseChangelog(VERSION_NAME)
                 groups = "wallet.release.test"
             }
+
+            matchingFallbacks = ["release"]
         }
 
         release {

@@ -61,7 +61,7 @@ class NetworkServicesUrlProvider(
         ).orEmpty()
 
         if (!BuildConfig.DEBUG && subVerifier.isBlank()) {
-            Timber.e("torusSubVerifier is missing for release builds!")
+            Timber.e(IllegalArgumentException("torusSubVerifier is missing for release builds!"))
         }
 
         return TorusEnvironment(url, verifier, subVerifier)

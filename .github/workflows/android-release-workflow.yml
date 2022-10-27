@@ -83,6 +83,7 @@ jobs:
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
           amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
 
       - name: "Create cert.pem file"
         env:
@@ -146,6 +147,7 @@ jobs:
           bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
 
 
+
   android-build-store-release:
     name: "Run build store release artifacts"
     needs:
@@ -180,6 +182,7 @@ jobs:
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
           amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
 
       - name: "Create cert.pem file"
         env:

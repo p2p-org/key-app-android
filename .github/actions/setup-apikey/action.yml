@@ -19,6 +19,9 @@ inputs:
   amplitude-secret:
     description: "Amplitude api key"
     required: true
+  apps-flyer-secret:
+    description: "AppsFlyer key"
+    required: true
 
 runs:
   using: composite
@@ -33,4 +36,5 @@ runs:
         echo "intercomApiKey=\"${{ inputs.intercom-key-secret }}\"" >> apikey.properties
         echo "intercomAppId=\"${{ inputs.intercom-id-secret }}\"" >> apikey.properties
         echo "amplitudeKey=\"${{ inputs.amplitude-secret }}\"" >> apikey.properties
+        echo "appsFlyerKey=\"${{ inputs.apps-flyer-secret }}\"" >> apikey.properties
         echo "apikeys.properties succesfully created"
