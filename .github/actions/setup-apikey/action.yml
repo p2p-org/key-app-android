@@ -37,4 +37,4 @@ runs:
         echo "intercomAppId=\"${{ inputs.intercom-id-secret }}\"" >> apikey.properties
         echo "amplitudeKey=\"${{ inputs.amplitude-secret }}\"" >> apikey.properties
         echo "appsFlyerKey=\"${{ inputs.apps-flyer-secret }}\"" >> apikey.properties
-        echo "apikeys.properties succesfully created"
+        echo "apikeys.properties successfully created"

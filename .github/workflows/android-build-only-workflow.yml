@@ -63,9 +63,6 @@ jobs:
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
 
-      - name: "Build APK artifact"
-        run: ./gradlew assembleFeature
-
       - name: "Upload APK to Firebase App Distribution"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
