@@ -17,7 +17,7 @@ inputs:
     description: "Torus sub-verifier - FIREBASE"
     required: true
   torus-subverifier-local:
-    description: "Torus sub-verifier - SLACK"
+    description: "Torus sub-verifier - LOCAL/SLACK"
     required: true
 
 runs:
