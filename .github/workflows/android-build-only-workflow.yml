@@ -23,11 +23,19 @@ jobs:
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
-
       - name: "Create Firebase App file"
         uses: ./.github/actions/setup-firebase
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+
+      - name: "Create torus.properties"
+        uses: ./.github/actions/setup-torus
+        with:
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-release: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-internal: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
 
       - name: "Create apikey.properties"
         uses: ./.github/actions/setup-apikey
