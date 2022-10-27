@@ -1,0 +1,62 @@
+ext.initApiKeys = { defaultConfig ->
+    def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
+    def emptyString = "\"\""
+
+    defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrDefault('rpcPoolApiKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrDefault('moonpayKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrDefault('comparePublicKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrDefault('intercomApiKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrDefault('intercomAppId', emptyString)}")
+    defaultConfig.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrDefault('amplitudeKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "appsFlyerKey", "${apiKeysProperties.getOrDefault('appsFlyerKey', emptyString)}")
+}
+
+ext.initSentry = { defaultConfig ->
+    def sentryProperties = new PropertiesFile(rootProject.file("sentry.properties"), logger)
+    defaultConfig.manifestPlaceholders = [SENTRY_DSN: sentryProperties.getOrThrow("auth.dsn")]
+}
+
+ext.checkForSslPinning = { ->
+    def sslCertificate = rootProject.file("app/src/main/res/raw/cert.pem")
+    if (sslCertificate.exists() && sslCertificate.length() != 0) {
+        logger.quiet "(SSL): PEM for SSL pinning is found"
+    } else {
+        logger.quiet "(SSL): PEM for SSL pinning is NOT found"
+    }
+}
+
+ext.getSigningProperties = { ->
+    def signingProperties = new Properties()
+
+    def signingPropertiesFile = rootProject.file("signing.properties")
+    if (signingPropertiesFile.canRead()) {
+        logger.quiet "(SIGNING): using signing properties file"
+        signingProperties.load(new FileInputStream(signingPropertiesFile))
+    } else {
+        logger.quiet "(SIGNING): using signing properties from CI"
+        signingProperties["keystorePath"] = "${System.getenv('KEYSTORE_PATH')}"
+        signingProperties["keystorePassword"] = "${System.getenv('KEYSTORE_PASSWORD')}"
+        signingProperties["keyAlias"] = "${System.getenv('KEY_ALIAS')}"
+        signingProperties["keyPassword"] = "${System.getenv('KEY_PASSWORD')}"
+    }
+
+    return signingProperties
+}
+
+ext.getTorusProperties = { ->
+    def torusProperties = new Properties()
+
+    def torusPropertiesFile = rootProject.file("torus.properties")
+    if (torusPropertiesFile.canRead()) {
+        logger.quiet "(TORUS): using torus properties file"
+        torusProperties.load(new FileInputStream(torusPropertiesFile))
+    } else {
+        logger.quiet "(TORUS): using torus properties from CI"
+        torusProperties["TORUS_VERIFIER_FEATURE"] = "${System.getenv('TORUS_VERIFIER_FEATURE')}"
+        torusProperties["TORUS_VERIFIER_RELEASE"] = "${System.getenv('TORUS_VERIFIER_RELEASE')}"
+        torusProperties["TORUS_SUB_VERIFIER_RELEASE_STORE"] = "${System.getenv('TORUS_SUB_VERIFIER_RELEASE_STORE')}"
+        torusProperties["TORUS_SUB_VERIFIER_RELEASE_FIREBASE"] = "${System.getenv('TORUS_SUB_VERIFIER_RELEASE_FIREBASE')}"
+    }
+
+    return torusProperties
+}

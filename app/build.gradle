@@ -11,7 +11,7 @@ plugins {
 
 apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
-apply from: "$project.rootDir/scripts/properties.gradle"
+apply from: "$project.rootDir/scripts/config.gradle"
 
 android {
     compileSdkVersion sdkCompileVersion
@@ -47,34 +47,20 @@ android {
     }
 
     signingConfigs {
+
         debug {
             storeFile file("p2pwallet_debug.keystore")
             storePassword "Test2RAMzxGb"
             keyAlias "p2pwallet"
             keyPassword "Test2RAMzxGb"
         }
+
         release {
-            def secretProperties = new Properties()
-
-            def signingPropertiesFile = rootProject.file("signing.properties")
-            if (signingPropertiesFile.canRead()) {
-                logger.quiet "(SIGNING): using signing properties file"
-                secretProperties.load(new FileInputStream(signingPropertiesFile))
-                storeFile file(secretProperties['keystorePath'])
-                storePassword secretProperties['keystorePassword']
-                keyAlias secretProperties['keyAlias']
-                keyPassword secretProperties['keyPassword']
-            } else {
-                logger.quiet "(SIGNING): using signing properties from CI"
-                secretProperties["KEYSTORE_PASSWORD"] = "${System.getenv('KEYSTORE_PASSWORD')}"
-                secretProperties["KEY_PASSWORD"] = "${System.getenv('KEY_PASSWORD')}"
-                secretProperties["KEY_ALIAS"] = "${System.getenv('KEY_ALIAS')}"
-
-                storeFile rootProject.file("p2p-wallet.jks")
-                storePassword secretProperties["KEYSTORE_PASSWORD"]
-                keyPassword secretProperties["KEY_PASSWORD"]
-                keyAlias secretProperties["KEY_ALIAS"]
-            }
+            def signingProperties = getSigningProperties()
+            storeFile file(signingProperties['keystorePath'])
+            storePassword signingProperties['keystorePassword']
+            keyAlias signingProperties['keyAlias']
+            keyPassword signingProperties['keyPassword']
         }
     }
 
@@ -86,6 +72,9 @@ android {
             versionNameSuffix ".${getVersionBuild()}-debug"
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
             manifestPlaceholders = [SENTRY_ENV: "debug"]
+
+            def torusProperties = getTorusProperties()
+            resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_DEBUG']
         }
 
         feature {
@@ -96,6 +85,9 @@ android {
             shrinkResources true
             versionNameSuffix ".${getVersionBuild()}-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            def torusProperties = getTorusProperties()
+            resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_FEATURE']
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             manifestPlaceholders = [SENTRY_ENV: "feature"]
@@ -113,12 +105,16 @@ android {
             matchingFallbacks = ["release"]
         }
 
-        release {
+        internal {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            def torusProperties = getTorusProperties()
+            resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
+            resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_FIREBASE']
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
@@ -129,6 +125,22 @@ android {
                 releaseNotes = releaseChangelog(VERSION_NAME)
                 groups = "wallet.release.test"
             }
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            def torusProperties = getTorusProperties()
+            resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
+            resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_STORE']
+
+            buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+            buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
+            manifestPlaceholders = [SENTRY_ENV: "release"]
         }
     }
 
@@ -177,8 +189,8 @@ dependencies {
     implementation "androidx.biometric:biometric:1.1.0"
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
-    implementation 'androidx.activity:activity-ktx:1.6.0'
-    implementation 'androidx.fragment:fragment-ktx:1.5.3'
+    implementation 'androidx.activity:activity-ktx:1.6.1'
+    implementation 'androidx.fragment:fragment-ktx:1.5.4'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation("com.google.android.material:material") {

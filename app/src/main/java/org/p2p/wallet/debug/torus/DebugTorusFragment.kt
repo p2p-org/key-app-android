@@ -33,33 +33,21 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
 
             networkServicesUrlProvider.loadTorusEnvironment().apply {
                 environmentTextView.text = baseUrl
-                verifierTextView.text = "verifier = $verifier\nsubVerifier = ${subVerifier ?: "-"}"
+                verifierTextView.text = buildString {
+                    append("verifier = $verifier")
+                    append("\n")
+                    append("subVerifier = ${subVerifier ?: "Not applied"}")
+                }
             }
 
             testUrlButton.setOnClickListener {
-                val testUrl = getString(R.string.torusBaseUrl)
+                val testUrl = getString(R.string.torusTestUrl)
                 updateEnvironmentAndRestart(testUrl)
             }
 
             releaseUrlButton.setOnClickListener {
-                val releaseUrl = getString(R.string.torusTestUrl)
+                val releaseUrl = getString(R.string.torusBaseUrl)
                 updateEnvironmentAndRestart(releaseUrl)
-            }
-
-            testVerifierButton.setOnClickListener {
-                val testVerifier = getString(R.string.torusDebugVerifier)
-                updateEnvironmentAndRestart(newVerifier = testVerifier, newSubVerifier = null)
-            }
-
-            featureVerifierButton.setOnClickListener {
-                val releaseVerifier = getString(R.string.torusFeatureVerifier)
-                updateEnvironmentAndRestart(newVerifier = releaseVerifier, newSubVerifier = null)
-            }
-
-            releaseVerifierButton.setOnClickListener {
-                val releaseVerifier = getString(R.string.torusReleaseVerifier)
-                val releaseSubVerifier = getString(R.string.torusReleaseSubVerifier)
-                updateEnvironmentAndRestart(newVerifier = releaseVerifier, newSubVerifier = releaseSubVerifier)
             }
 
             confirmButton.setOnClickListener {

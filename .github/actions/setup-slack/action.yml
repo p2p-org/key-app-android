@@ -1,5 +1,5 @@
 name: "Publish APK/Bundle to slack channel"
-description: "Publish release or feature artifact to slack channel"
+description: "Publish release, internal or feature artifact to slack channel"
 inputs:
   channel-id:
     required: true
@@ -9,7 +9,7 @@ inputs:
     description: "Slack bot token"
   build-type:
     required: true
-    description: "debug,feature,release"
+    description: "debug,feature,internal,release"
   artifact-type:
     required: true
     description: "apk,bundle"
