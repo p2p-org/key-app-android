@@ -65,7 +65,7 @@ class ReserveUsernameFragment :
 
     private val binding: FragmentReserveUsernameBinding by viewBinding()
 
-    private val openedFromSource: ReserveUsernameOpenedFrom by args(ARG_RESERVE_USERNAME_SOURCE)
+    private var openedFromSource: ReserveUsernameOpenedFrom by args(ARG_RESERVE_USERNAME_SOURCE)
     private val isSkipEnabled: RegisterUsernameSkipEnabledFeatureToggle by inject()
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle by inject()
 
