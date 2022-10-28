@@ -234,10 +234,6 @@ class UserRestoreInteractor(
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
         } ?: error("User actual account is null, restoring a user is failed")
 
-        try {
-            usernameInteractor.checkUsernameByAddress(tokenKeyProvider.publicKey.toBase58Instance())
-        } catch (error: Throwable) {
-            Timber.e(error)
-        }
+        usernameInteractor.tryRestoreUsername(tokenKeyProvider.publicKey.toBase58Instance())
     }
 }
