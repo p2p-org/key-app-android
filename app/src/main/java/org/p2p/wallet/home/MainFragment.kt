@@ -81,7 +81,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
         if (onCreateActions.isNotEmpty()) {
             onCreateActions.forEach(::doOnCreateAction)
-            onCreateActions = emptyArray()
+            onCreateActions = arrayListOf()
         }
     }
 
