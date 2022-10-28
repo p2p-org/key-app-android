@@ -92,11 +92,7 @@ class SeedPhraseInteractor(
 
         Timber.i("Account: $publicKey restored using $path")
 
-        try {
-            usernameInteractor.checkUsernameByAddress(publicKey.toBase58Instance())
-        } catch (error: Throwable) {
-            Timber.e(error)
-        }
+        usernameInteractor.tryRestoreUsername(publicKey.toBase58Instance())
         adminAnalytics.logPasswordCreated()
     }
 
