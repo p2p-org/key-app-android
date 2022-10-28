@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
-import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
@@ -14,6 +14,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.PlayAnimation
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -125,9 +126,9 @@ class NewCreatePinFragment :
         binding.pinView.onSuccessPin()
 
         val actions = if (withAnimation) {
-            arrayOf<MainFragmentOnCreateAction>(MainFragmentOnCreateAction.PlayAnimation(R.raw.raw_animation_applause))
+            arrayListOf<MainFragmentOnCreateAction>(PlayAnimation(R.raw.raw_animation_applause))
         } else {
-            emptyArray()
+            arrayListOf()
         }
         popAndReplaceFragment(
             MainFragment.create(actions),
