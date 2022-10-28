@@ -174,18 +174,21 @@ class ReserveUsernameFragment :
     override fun close(isUsernameCreated: Boolean) {
         when (openedFromSource) {
             ReserveUsernameOpenedFrom.ONBOARDING -> {
-                val actions = mutableListOf<MainFragmentOnCreateAction>(PlayAnimation(R.raw.raw_animation_applause))
+                val actions = arrayListOf<MainFragmentOnCreateAction>(PlayAnimation(R.raw.raw_animation_applause))
                 if (isUsernameCreated) {
                     actions.add(ShowSnackbar(R.string.reserve_username_create_username_success))
                 }
 
                 popAndReplaceFragment(
-                    MainFragment.create(actions.toTypedArray()),
+                    MainFragment.create(actions),
                     inclusive = true
                 )
             }
             ReserveUsernameOpenedFrom.SETTINGS -> {
                 popBackStack()
+                if (isUsernameCreated) {
+                    showUiKitSnackBar(messageResId = R.string.reserve_username_create_username_success)
+                }
             }
         }
     }
