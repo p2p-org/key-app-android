@@ -42,7 +42,6 @@ class HistoryInteractor(
          * Handle state when user tokens have not loaded tokens
          * Reload user tokens, then try to fetch signatures of each user token
          */
-
         if (userInteractor.getUserTokens().isEmpty()) {
             userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = false)
         }
@@ -137,14 +136,10 @@ class HistoryInteractor(
         val allTransactionSignatures = tokenSignaturesMap[account] ?: return emptyList()
 
         while (true) {
-
             val firstItem = accountStreamSource.currentItem() ?: break
             val lastSignatureBlockTime = firstItem.streamSource?.blockTime ?: break
-
             val time = lastSignatureBlockTime - DAY_IN_MILLISECONDS
-
             while (true) {
-
                 val currentItem = accountStreamSource.next(StreamSourceConfiguration(time))
 
                 if (!allTransactionSignatures.contains(currentItem)) {

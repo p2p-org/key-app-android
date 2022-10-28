@@ -65,11 +65,14 @@ class AccountStreamSource(
                 account.toPublicKey(),
                 lastFetchedSignature,
                 batchSize
-            ).map { RpcTransactionSignature(it.signature, it.confirmationStatus, it.blockTime) }
+            ).map {
+                val error = it.transactionFailure
+                RpcTransactionSignature(it.signature, it.confirmationStatus, it.blockTime, error)
+            }
             lastFetchedSignature = signatures.lastOrNull()?.signature
             buffer.addAll(signatures)
         } catch (e: EmptyDataException) {
-            Timber.tag(TAG).e(e)
+            Timber.tag(TAG).e(e, "Failed to get next HistoryStreamItem because it is empty")
             isPagingEnded = true
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e)

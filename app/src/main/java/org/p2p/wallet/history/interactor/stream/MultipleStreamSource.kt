@@ -29,7 +29,7 @@ class MultipleStreamSource(
             }
             maxValue
         } catch (e: Throwable) {
-            Timber.tag(TAG).e(e)
+            Timber.tag(TAG).e(e, "Failed to get nextItem")
             null
         }
     }
@@ -53,8 +53,11 @@ class MultipleStreamSource(
         withContext(serviceScope.coroutineContext) {
             val items = sources.map {
                 async { it.nextItems(configuration) }
-            }.awaitAll().flatten()
-            val sortedItems = items.sortedWith(compareBy { it.streamSource?.blockTime }).asReversed()
+            }
+                .awaitAll()
+                .flatten()
+            val sortedItems = items.sortedWith(compareBy { it.streamSource?.blockTime })
+                .asReversed()
             buffer.addAll(sortedItems)
         }
 }

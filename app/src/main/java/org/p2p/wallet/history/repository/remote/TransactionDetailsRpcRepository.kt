@@ -45,9 +45,9 @@ class TransactionDetailsRpcRepository(
 
         return fromNetworkToDomain(transactions).onEach { transactionDetails ->
             val signatureItem =
-                transactionSignatures.first { it.streamSource?.signature == transactionDetails.signature }
-            transactionDetails.status = signatureItem.streamSource?.status
-            transactionDetails.account = signatureItem.account
+                transactionSignatures.firstOrNull { it.streamSource?.signature == transactionDetails.signature }
+            transactionDetails.status = signatureItem?.streamSource?.status
+            transactionDetails.account = signatureItem?.account
         }
     }
 
@@ -56,7 +56,6 @@ class TransactionDetailsRpcRepository(
     ): List<TransactionDetails> {
         val transactionDetails = mutableListOf<TransactionDetails>()
         transactions.forEach { transaction ->
-
             when (val parsingResult = transactionParsingContext.parseTransaction(transaction)) {
                 is ParsingResult.Transaction -> {
                     transactionDetails.addAll(parsingResult.details)
@@ -66,13 +65,16 @@ class TransactionDetailsRpcRepository(
                 }
             }
         }
-        transactionDetails.forEach { data ->
-            data.error = transactions.firstOrNull {
-                it.transaction?.getTransactionId() == data.signature
+        val result = transactionDetails.distinctBy { it.signature }
+        val errorTransactions = transactions.filter { it.meta?.error != null }
+        errorTransactions.forEach { root ->
+            val foundTransaction = result.firstOrNull { it.signature in root.transaction?.signatures.orEmpty() }
+            val indexOfTransaction = result.indexOf(foundTransaction)
+            if (indexOfTransaction != -1) {
+                result.getOrNull(indexOfTransaction)
+                    ?.let { it.error = root.meta?.error }
             }
-                ?.meta
-                ?.error
         }
-        return transactionDetails.distinctBy { it.signature }
+        return result
     }
 }

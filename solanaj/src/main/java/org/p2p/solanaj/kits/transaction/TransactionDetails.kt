@@ -1,6 +1,5 @@
 package org.p2p.solanaj.kits.transaction
 
-import org.p2p.solanaj.kits.transaction.network.meta.InstructionErrorResponse
 import org.p2p.solanaj.model.types.ConfirmationStatus
 import java.util.concurrent.TimeUnit
 
@@ -8,7 +7,7 @@ sealed class TransactionDetails(
     val signature: String,
     val blockTimeSeconds: Long,
     val slot: Int,
-    var error: InstructionErrorResponse? = null,
+    var error: Any? = null,
     var status: ConfirmationStatus? = null,
     open var account: String? = null
 ) {

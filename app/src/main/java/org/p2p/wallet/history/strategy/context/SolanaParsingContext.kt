@@ -4,6 +4,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.TransactionDetailsType
+import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.wallet.common.di.ServiceScope
@@ -20,11 +21,18 @@ class SolanaParsingContext(
     override suspend fun parseTransaction(
         root: ConfirmedTransactionRootResponse
     ): ParsingResult = withContext(serviceScope.coroutineContext) {
-        val instructions =
-            root.transaction?.message
-                ?.instructions
-                ?.map { async { toParsingResult(root, it) } }
-                ?.awaitAll()
+        val messageResponse = root.transaction?.message
+            ?: return@withContext ParsingResult.Transaction.create(
+                UnknownDetails(
+                    signature = root.transaction?.getTransactionId()!!,
+                    blockTime = root.blockTime,
+                    slot = root.slot,
+                )
+            )
+        val instructions = messageResponse
+            .instructions
+            .map { async { toParsingResult(root, it) } }
+            .awaitAll()
 
         val details = instructions?.filterIsInstance<ParsingResult.Transaction>()
             ?.flatMap { it.details }

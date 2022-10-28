@@ -17,7 +17,7 @@ abstract class AbstractStreamSource : HistoryStreamSource {
             }
             sequence
         } catch (e: Throwable) {
-            Timber.tag(TAG).e(e)
+            Timber.tag(TAG).e(e, "Failed to fetch next items")
             emptyList()
         }
     }
