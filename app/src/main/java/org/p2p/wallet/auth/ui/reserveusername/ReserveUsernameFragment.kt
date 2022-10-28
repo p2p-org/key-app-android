@@ -186,7 +186,9 @@ class ReserveUsernameFragment :
             }
             ReserveUsernameOpenedFrom.SETTINGS -> {
                 popBackStack()
-                showUiKitSnackBar(messageResId = R.string.reserve_username_create_username_success)
+                if (isUsernameCreated) {
+                    showUiKitSnackBar(messageResId = R.string.reserve_username_create_username_success)
+                }
             }
         }
     }
