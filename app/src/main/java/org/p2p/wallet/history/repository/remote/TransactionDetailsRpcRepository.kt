@@ -8,6 +8,7 @@ import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcHistoryApi
+import timber.log.Timber
 
 class TransactionDetailsRpcRepository(
     private val rpcApi: RpcHistoryApi,
@@ -18,6 +19,7 @@ class TransactionDetailsRpcRepository(
         userPublicKey: String,
         transactionSignatures: List<HistoryStreamItem>
     ): List<TransactionDetails> {
+
         val encoding = buildMap {
             this[RpcConstants.REQUEST_PARAMETER_KEY_ENCODING] =
                 RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED
@@ -25,18 +27,27 @@ class TransactionDetailsRpcRepository(
                 RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
         }
         val requestsBatch = transactionSignatures.map { streamItem ->
-            val signature = streamItem.streamSource?.signature ?: return emptyList()
+
+            val signature = streamItem.streamSource
+                ?.signature
+                ?: return emptyList()
+
             val params = listOf(signature, encoding)
-            RpcRequest(method = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS, params = params)
+
+            RpcRequest(
+                method = RpcConstants.REQUEST_METHOD_VALUE_GET_CONFIRMED_TRANSACTIONS,
+                params = params
+            )
         }
 
-        val transactions = rpcApi.getConfirmedTransactions(requestsBatch).map { it.result }
+        val transactions = rpcApi.getConfirmedTransactions(requestsBatch)
+            .map { it.result }
 
         return fromNetworkToDomain(transactions).onEach { transactionDetails ->
             val signatureItem =
-                transactionSignatures.first { it.streamSource?.signature == transactionDetails.signature }
-            transactionDetails.status = signatureItem.streamSource?.status
-            transactionDetails.account = signatureItem.account
+                transactionSignatures.firstOrNull { it.streamSource?.signature == transactionDetails.signature }
+            transactionDetails.status = signatureItem?.streamSource?.status
+            transactionDetails.account = signatureItem?.account
         }
     }
 
@@ -45,15 +56,25 @@ class TransactionDetailsRpcRepository(
     ): List<TransactionDetails> {
         val transactionDetails = mutableListOf<TransactionDetails>()
         transactions.forEach { transaction ->
-
-            transactionDetails.forEach {
-                it.error = transaction.meta.error?.instructionError
-            }
-            val parsingResult = transactionParsingContext.parseTransaction(transaction)
-            if (parsingResult is ParsingResult.Transaction) {
-                transactionDetails.addAll(parsingResult.details)
+            when (val parsingResult = transactionParsingContext.parseTransaction(transaction)) {
+                is ParsingResult.Transaction -> {
+                    transactionDetails.addAll(parsingResult.details)
+                }
+                is ParsingResult.Error -> {
+                    Timber.i("Error on parsing transaction ${parsingResult.error.message}")
+                }
             }
         }
-        return transactionDetails
+        val result = transactionDetails.distinctBy { it.signature }
+        val errorTransactions = transactions.filter { it.meta?.error != null }
+        errorTransactions.forEach { root ->
+            val foundTransaction = result.firstOrNull { it.signature in root.transaction?.signatures.orEmpty() }
+            val indexOfTransaction = result.indexOf(foundTransaction)
+            if (indexOfTransaction != -1) {
+                result.getOrNull(indexOfTransaction)
+                    ?.let { it.error = root.meta?.error }
+            }
+        }
+        return result
     }
 }
