@@ -219,7 +219,7 @@ class RpcSolanaInteractor(
         val burnDetails = BurnDetails().apply {
             confirmedSignature = signature
             nonce = nonceBN
-            this.recepient = recepient
+            this.recipient = recepient
         }
         return burnDetails
     }

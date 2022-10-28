@@ -13,8 +13,10 @@ import org.p2p.solanaj.utils.Utils
 import org.p2p.solanaj.utils.crypto.Hex
 import org.p2p.wallet.auth.analytics.RenBtcAnalytics
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toPublicKey
+import timber.log.Timber
 import java.math.BigInteger
 import java.nio.ByteBuffer
 import kotlinx.coroutines.withContext
@@ -35,7 +37,7 @@ class BurnBtcInteractor(
     private val state: LockAndMint.State = LockAndMint.State()
 
     private var nonceBuffer: ByteArray = byteArrayOf()
-    private var recepient: String = ""
+    private var recipient: String = ""
 
     suspend fun submitBurnTransaction(recipient: String, amount: BigInteger): String = withContext(dispatchers.io) {
         val signer = tokenKeyProvider.publicKey.toPublicKey()
@@ -44,32 +46,31 @@ class BurnBtcInteractor(
         val burnDetails: BurnDetails = submitBurnTransaction(
             account = signer,
             amount = amount.toString(),
-            recepient = recipient,
+            recipient = recipient,
             signer = Account(signerSecretKey)
         )
 
         // TODO: We are not using state and hash.
         // TODO: WORKAROUND. it's crashing anyway. Temporary commenting it.
-//        val burnState = try {
-//            getBurnState(burnDetails, amount.toString())
-//        } catch (e: Throwable) {
-//            // TODO: We are not using state, therefore ignoring errors for now
-//            Timber.e(e, "Error getting state")
-//        }
+        val burnState = try {
+            getBurnState(burnDetails, amount.toString())
+        } catch (e: Throwable) {
+            // TODO: We are not using state, therefore ignoring errors for now
+            Timber.e(e, "Error getting state")
+        }
 
-//        val hash = try {
-//            release()
-
-//        } catch (e: RpcException) {
-//            renBtcAnalytics.logRenBtcSend(sendSuccess = false)
-//            // TODO: Handle this error [invalid burn info: cannot get burn info: decoding solana burn log: expected data len=97, got=0]
-//            // TODO: It crashes even if transaction is valid
-//            if (e.message?.startsWith("invalid burn info") == true) {
-//                return@withContext burnDetails.confirmedSignature
-//            } else {
-//                throw e
-//            }
-//        }
+        val hash = try {
+            release()
+        } catch (e: ServerException) {
+            // TODO: Handle this error [invalid burn info: cannot get burn info: decoding solana burn log: expected data len=97, got=0]
+            // TODO: It crashes even if transaction is valid
+            if (e.message?.contains("invalid burn info") == true) {
+                return@withContext burnDetails.confirmedSignature
+            } else {
+                renBtcAnalytics.logRenBtcSend(sendSuccess = false)
+                throw e
+            }
+        }
         renBtcAnalytics.logRenBtcSend(sendSuccess = true)
         return@withContext burnDetails.confirmedSignature
     }
@@ -83,11 +84,11 @@ class BurnBtcInteractor(
     private suspend fun submitBurnTransaction(
         account: PublicKey,
         amount: String,
-        recepient: String,
+        recipient: String,
         signer: Account
     ): BurnDetails {
-        this.recepient = recepient
-        return rpcSolanaInteractor.submitBurn(account, amount, recepient, signer)
+        this.recipient = recipient
+        return rpcSolanaInteractor.submitBurn(account, amount, recipient, signer)
     }
 
     private fun getBurnState(burnDetails: BurnDetails, amount: String): LockAndMint.State {
@@ -98,7 +99,7 @@ class BurnBtcInteractor(
         val sHash = Hash.generateSHash("BTC/toBitcoin")
         val gHash =
             Hash.generateGHash(
-                Hex.encode(Utils.addressToBytes(burnDetails.recepient)),
+                Hex.encode(Utils.addressToBytes(burnDetails.recipient)),
                 Hex.encode(sHash),
                 nonceBuffer
             )
@@ -111,7 +112,7 @@ class BurnBtcInteractor(
             nonce = nonceBuffer,
             amount = amount,
             pHash = pHash,
-            to = burnDetails.recepient,
+            to = burnDetails.recipient,
             txIndex = "0",
             txId = txId
         )
@@ -139,7 +140,7 @@ class BurnBtcInteractor(
             nonce = nonceBuffer,
             amount = state.amount,
             pHash = state.pHash,
-            to = recepient,
+            to = recipient,
             txIndex = state.txIndex,
             txId = state.txId
         )
