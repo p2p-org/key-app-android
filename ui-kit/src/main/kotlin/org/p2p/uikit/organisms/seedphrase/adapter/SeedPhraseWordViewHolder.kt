@@ -28,6 +28,7 @@ class SeedPhraseWordViewHolder(
     private var textWatcher: SeedPhraseWatcher? = null
 
     fun onBind(item: SeedPhraseWord) = with(binding) {
+        SeedPhraseWatcher.uninstallFrom(binding.editTextWord)
         textWatcher?.isLastKey = adapterPosition == SEED_PHRASE_SIZE_LONG
 
         if (item.text.isEmpty()) {
@@ -71,6 +72,10 @@ class SeedPhraseWordViewHolder(
                 editTextWord.setSelection(it.text.length)
             }
         }
+    }
+
+    fun onViewRecycled() {
+        SeedPhraseWatcher.uninstallFrom(binding.editTextWord)
     }
 
     fun requestFocus() {
