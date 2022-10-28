@@ -21,10 +21,8 @@
 
     <!--    FOR LOCAL RELEASE BUILDS-->
     <string name="torusLocalReleaseSubVerifier">android</string>
-    <!--    FOR INTERNAL APP TESTING (FIREBASE) BUILDS-->
-    <string name="torusFirebaseReleaseSubVerifier">android-2</string>
-    <!--    FOR PLAY STORE RELEASE BUILDS-->
-    <string name="torusProdReleaseSubVerifier">android-1</string>
+    <string name="torusFirebaseReleaseSubVerifier">android-1</string>
+    <string name="torusProdReleaseSubVerifier">android-2</string>
 
     <string name="torusReleaseSubVerifier">@string/torusProdReleaseSubVerifier</string>
 
