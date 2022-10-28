@@ -6,7 +6,6 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -35,12 +34,12 @@ class DerivableAccountsFragment :
 
     companion object {
         private const val EXTRA_SECRET_KEYS = "EXTRA_SECRET_KEYS"
-        fun create(secretKeys: List<SeedPhraseWord>) = DerivableAccountsFragment().withArgs(
+        fun create(secretKeys: List<String>) = DerivableAccountsFragment().withArgs(
             EXTRA_SECRET_KEYS to secretKeys
         )
     }
 
-    private val secretKeys: List<SeedPhraseWord> by args(EXTRA_SECRET_KEYS)
+    private val secretKeys: List<String> by args(EXTRA_SECRET_KEYS)
 
     override val presenter: DerivableAccountsContract.Presenter by inject { parametersOf(secretKeys) }
 
