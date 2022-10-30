@@ -12,8 +12,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.ui.widget.ActionButtonsView
+import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
-import org.p2p.wallet.databinding.LayoutActionButtonsBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
@@ -167,33 +168,21 @@ class HomeFragment :
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
-    private fun LayoutActionButtonsBinding.setupActionButtons() {
-        viewActionBuy.apply {
-            textViewButtonTitle.setText(R.string.home_buy)
-            imageButtonButtonIcon.setImageResource(R.drawable.ic_plus)
-            imageButtonButtonIcon.setOnClickListener {
-                presenter.onBuyClicked()
-            }
-        }
-        viewActionReceive.apply {
-            textViewButtonTitle.setText(R.string.home_receive)
-            imageButtonButtonIcon.setImageResource(R.drawable.ic_receive_simple)
-            imageButtonButtonIcon.setOnClickListener {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
-            }
-        }
-        viewActionSend.apply {
-            textViewButtonTitle.setText(R.string.home_send)
-            imageButtonButtonIcon.setImageResource(R.drawable.ic_send_medium)
-            imageButtonButtonIcon.setOnClickListener {
-                replaceFragment(SendFragment.create())
-            }
-        }
-        viewActionSwap.apply {
-            textViewButtonTitle.setText(R.string.home_swap)
-            imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
-            imageButtonButtonIcon.setOnClickListener {
-                replaceFragment(OrcaSwapFragment.create())
+    private fun ActionButtonsView.setupActionButtons() {
+        listener = ActionButtonsViewClickListener {
+            when (it) {
+                ActionButtonsView.ActionButton.BUY_BUTTON -> {
+                    presenter.onBuyClicked()
+                }
+                ActionButtonsView.ActionButton.RECEIVE_BUTTON -> {
+                    replaceFragment(ReceiveSolanaFragment.create(token = null))
+                }
+                ActionButtonsView.ActionButton.SEND_BUTTON -> {
+                    replaceFragment(SendFragment.create())
+                }
+                ActionButtonsView.ActionButton.SWAP_BUTTON -> {
+                    replaceFragment(OrcaSwapFragment.create())
+                }
             }
         }
     }
@@ -280,7 +269,7 @@ class HomeFragment :
 
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
-            viewActionButtons.root.isVisible = !isEmpty
+            viewActionButtons.isVisible = !isEmpty
             viewBalance.root.isVisible = !isEmpty
             val updatedAdapter = if (isEmpty) emptyAdapter else contentAdapter
             if (homeRecyclerView.adapter != updatedAdapter) {
