@@ -1,9 +1,9 @@
 package org.p2p.wallet.history.ui.history
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.utils.attachAdapter
@@ -93,10 +93,13 @@ class HistoryFragment :
             is HistoryTransaction.BurnOrMint -> {
                 val state = TransactionDetailsLaunchState.History(transaction)
                 TransactionDetailsBottomSheetFragment.show(
-                    parentFragmentManager, state
+                    fragmentManager = parentFragmentManager,
+                    state = state
                 )
             }
-            else -> Timber.e("Unsupported transaction type: $transaction")
+            else -> {
+                Timber.e("Unsupported transaction type: $transaction")
+            }
         }
     }
 

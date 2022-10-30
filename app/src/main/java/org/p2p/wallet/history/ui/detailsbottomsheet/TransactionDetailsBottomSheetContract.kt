@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.utils.Base58String
 
 interface TransactionDetailsBottomSheetContract {
 
@@ -14,12 +15,14 @@ interface TransactionDetailsBottomSheetContract {
         fun showDate(date: String)
         fun showStatus(status: TransactionStatus)
         fun showSignature(signature: String)
-        fun showAddresses(source: String, destination: String)
         fun showAmount(amountToken: String, amountUsd: String?)
         fun showFee(renBtcFee: String? = null)
         fun showBlockNumber(blockNumber: String?)
         fun showLoading(isLoading: Boolean)
         fun showError(@StringRes messageId: Int)
+        fun showSenderAddress(senderAddress: Base58String, senderUsername: String?)
+        fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?)
+        fun showAddresses(source: String, destination: String)
     }
 
     interface Presenter : MvpPresenter<View> {

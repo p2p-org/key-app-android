@@ -76,7 +76,8 @@ object HistoryModule : InjectionModule {
         factory { (state: TransactionDetailsLaunchState) ->
             TransactionDetailsBottomSheetPresenter(
                 state = state,
-                historyInteractor = get()
+                historyInteractor = get(),
+                usernameInteractor = get()
             )
         } bind TransactionDetailsBottomSheetContract.Presenter::class
     }
