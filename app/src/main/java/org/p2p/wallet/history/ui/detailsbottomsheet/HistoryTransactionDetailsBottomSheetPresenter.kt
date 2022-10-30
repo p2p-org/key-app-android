@@ -13,14 +13,14 @@ import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import kotlinx.coroutines.launch
 
-class TransactionDetailsBottomSheetPresenter(
+class HistoryTransactionDetailsBottomSheetPresenter(
     private val state: TransactionDetailsLaunchState,
     private val historyInteractor: HistoryInteractor,
     private val usernameInteractor: UsernameInteractor
-) : BasePresenter<TransactionDetailsBottomSheetContract.View>(),
-    TransactionDetailsBottomSheetContract.Presenter {
+) : BasePresenter<HistoryTransactionDetailsContract.View>(),
+    HistoryTransactionDetailsContract.Presenter {
 
-    override fun attach(view: TransactionDetailsBottomSheetContract.View) {
+    override fun attach(view: HistoryTransactionDetailsContract.View) {
         super.attach(view)
         load()
     }
@@ -107,11 +107,13 @@ class TransactionDetailsBottomSheetPresenter(
         if (isSend) {
             view?.showReceiverAddress(
                 receiverAddress = transferActorAddress,
-                receiverUsername = transferActorUsername?.fullUsername)
+                receiverUsername = transferActorUsername?.fullUsername
+            )
         } else {
             view?.showSenderAddress(
                 senderAddress = transferActorAddress,
-                senderUsername = transferActorUsername?.fullUsername)
+                senderUsername = transferActorUsername?.fullUsername
+            )
         }
     }
 

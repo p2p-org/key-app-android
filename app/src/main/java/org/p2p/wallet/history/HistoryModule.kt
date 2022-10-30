@@ -17,8 +17,8 @@ import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteReposito
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
-import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetContract
-import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetPresenter
+import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
+import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetPresenter
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
@@ -74,12 +74,12 @@ object HistoryModule : InjectionModule {
             )
         } bind TransactionDetailsContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
-            TransactionDetailsBottomSheetPresenter(
+            HistoryTransactionDetailsBottomSheetPresenter(
                 state = state,
                 historyInteractor = get(),
                 usernameInteractor = get()
             )
-        } bind TransactionDetailsBottomSheetContract.Presenter::class
+        } bind HistoryTransactionDetailsContract.Presenter::class
     }
 
     private fun Module.dataLayer() {

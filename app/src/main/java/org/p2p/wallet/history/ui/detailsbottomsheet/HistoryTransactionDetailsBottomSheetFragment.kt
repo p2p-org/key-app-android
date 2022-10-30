@@ -14,7 +14,7 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
-import org.p2p.wallet.databinding.DialogTransactionDetailsBinding
+import org.p2p.wallet.databinding.DialogHistoryTransactionDetailsBinding
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.utils.Base58String
@@ -29,32 +29,32 @@ import org.p2p.wallet.utils.withTextOrGone
 
 private const val EXTRA_STATE = "EXTRA_STATE"
 
-class TransactionDetailsBottomSheetFragment :
-    BaseMvpBottomSheet<TransactionDetailsBottomSheetContract.View, TransactionDetailsBottomSheetContract.Presenter>(
-        R.layout.dialog_transaction_details
+class HistoryTransactionDetailsBottomSheetFragment :
+    BaseMvpBottomSheet<HistoryTransactionDetailsContract.View, HistoryTransactionDetailsContract.Presenter>(
+        R.layout.dialog_history_transaction_details
     ),
-    TransactionDetailsBottomSheetContract.View {
+    HistoryTransactionDetailsContract.View {
 
     companion object {
         fun show(fragmentManager: FragmentManager, state: TransactionDetailsLaunchState) {
-            TransactionDetailsBottomSheetFragment()
+            HistoryTransactionDetailsBottomSheetFragment()
                 .withArgs(EXTRA_STATE to state)
-                .show(fragmentManager, TransactionDetailsBottomSheetFragment::javaClass.name)
+                .show(fragmentManager, HistoryTransactionDetailsBottomSheetFragment::javaClass.name)
         }
 
         fun hide(fragmentManager: FragmentManager) {
-            val dialog = fragmentManager.findFragmentByTag(TransactionDetailsBottomSheetFragment::javaClass.name)
-            (dialog as? TransactionDetailsBottomSheetFragment)?.dismissAllowingStateLoss()
+            val dialog = fragmentManager.findFragmentByTag(HistoryTransactionDetailsBottomSheetFragment::javaClass.name)
+            (dialog as? HistoryTransactionDetailsBottomSheetFragment)?.dismissAllowingStateLoss()
         }
     }
 
     private val state: TransactionDetailsLaunchState by args(EXTRA_STATE)
 
-    private val binding: DialogTransactionDetailsBinding by viewBinding()
+    private val binding: DialogHistoryTransactionDetailsBinding by viewBinding()
 
     private val glideManager: GlideManager by inject()
 
-    override val presenter: TransactionDetailsBottomSheetContract.Presenter by inject { parametersOf(state) }
+    override val presenter: HistoryTransactionDetailsContract.Presenter by inject { parametersOf(state) }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 

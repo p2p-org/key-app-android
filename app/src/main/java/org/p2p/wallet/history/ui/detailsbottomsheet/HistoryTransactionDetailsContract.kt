@@ -7,7 +7,7 @@ import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.utils.Base58String
 
-interface TransactionDetailsBottomSheetContract {
+interface HistoryTransactionDetailsContract {
 
     interface View : MvpView {
         fun showTransferView(@DrawableRes iconRes: Int)
