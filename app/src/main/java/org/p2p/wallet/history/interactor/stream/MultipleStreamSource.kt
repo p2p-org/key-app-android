@@ -2,9 +2,11 @@ package org.p2p.wallet.history.interactor.stream
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.common.di.ServiceScope
+import timber.log.Timber
+
+private const val TAG = "HistoryStreamSource"
 
 class MultipleStreamSource(
     private val sources: List<HistoryStreamSource>,
@@ -12,26 +14,24 @@ class MultipleStreamSource(
 ) : AbstractStreamSource() {
     private val buffer = mutableListOf<HistoryStreamItem>()
 
-    override suspend fun currentItem(): HistoryStreamItem? = withContext(context = serviceScope.coroutineContext) {
+    override suspend fun currentItem(): HistoryStreamItem? = withContext((serviceScope.coroutineContext)) {
         var maxValue: HistoryStreamItem?
-
-        val items = sources.map {
-            async { it.currentItem() }
-        }
-            .awaitAll()
-            .filterNotNull()
-
-        if (items.isEmpty()) {
-            return@withContext null
-        }
-
-        maxValue = items.firstOrNull()
-        for (item in items) {
-            if (maxValue?.streamSource!!.blockTime <= item.streamSource!!.blockTime) {
-                maxValue = item
+        return@withContext try {
+            val items = sources.map { async { it.currentItem() } }.awaitAll()
+            maxValue = items.firstOrNull()
+            for (item in items) {
+                if (item?.streamSource?.blockTime == null) {
+                    continue
+                }
+                if (maxValue?.streamSource!!.blockTime <= item.streamSource.blockTime) {
+                    maxValue = item
+                }
             }
+            maxValue
+        } catch (e: Throwable) {
+            Timber.tag(TAG).e(e, "Failed to get nextItem")
+            null
         }
-        return@withContext maxValue
     }
 
     override suspend fun next(configuration: StreamSourceConfiguration): HistoryStreamItem? {
@@ -49,11 +49,15 @@ class MultipleStreamSource(
         sources.forEach { it.reset() }
     }
 
-    private suspend fun fillBuffer(configuration: StreamSourceConfiguration) = supervisorScope {
-        val items = sources.map {
-            async { it.nextItems(configuration) }
-        }.awaitAll().flatten()
-        val sortedItems = items.sortedWith(compareBy { it.streamSource?.blockTime }).asReversed()
-        buffer.addAll(sortedItems)
-    }
+    private suspend fun fillBuffer(configuration: StreamSourceConfiguration) =
+        withContext(serviceScope.coroutineContext) {
+            val items = sources.map {
+                async { it.nextItems(configuration) }
+            }
+                .awaitAll()
+                .flatten()
+            val sortedItems = items.sortedWith(compareBy { it.streamSource?.blockTime })
+                .asReversed()
+            buffer.addAll(sortedItems)
+        }
 }

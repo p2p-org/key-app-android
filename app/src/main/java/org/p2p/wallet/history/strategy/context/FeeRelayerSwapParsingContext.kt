@@ -6,6 +6,7 @@ import org.p2p.solanaj.utils.crypto.Base58Utils
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.orZero
 import java.math.BigInteger
 
 class FeeRelayerSwapParsingContext : TransactionParsingContext {
@@ -35,16 +36,36 @@ class FeeRelayerSwapParsingContext : TransactionParsingContext {
         val extractedSwapInstruction = instructions[swapInstructionIndex]
 
         val sourceAddress = extractedSwapInstruction.accounts[3]
-        val sourceMintAndAmount = parseToken(root, sourceAddress)
+        var sourceMintAndAmount = parseToken(root, sourceAddress)
 
         val destinationAddress = extractedSwapInstruction.accounts[5]
         var destinationMintAndAmount = parseToken(root, destinationAddress)
-        val closeInstruction = root.transaction
-            ?.message
-            ?.instructions
-            ?.getOrNull(swapInstructionIndex + 1)
 
-        if (destinationMintAndAmount.second == "0") {
+        val instructionsCount = root.transaction?.message?.instructions?.count().orZero()
+
+        if (sourceMintAndAmount.second == "0" && swapInstructionIndex + 1 < instructionsCount) {
+            val closeInstruction = root.transaction
+                ?.message
+                ?.instructions
+                ?.getOrNull(swapInstructionIndex + 1)
+
+            if (closeInstruction?.parsed?.type == "closeAccount") {
+                closeInstruction
+                    .parsed
+                    ?.info
+                    ?.destination
+                    ?.let {
+                        sourceMintAndAmount = parseToken(root, it)
+                    }
+            }
+        }
+
+        if (destinationMintAndAmount.second == "0" && swapInstructionIndex + 1 < instructionsCount) {
+            val closeInstruction = root.transaction
+                ?.message
+                ?.instructions
+                ?.getOrNull(swapInstructionIndex + 1)
+
             if (closeInstruction?.parsed?.type == "closeAccount") {
                 closeInstruction
                     .parsed

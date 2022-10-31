@@ -5,6 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/bg_snow"
+    android:minHeight="?attr/actionBarSize"
     app:contentInsetStart="0dp">
 
     <!-- Should have Toolbar as root view to work with AppBarLayout -->
@@ -12,7 +14,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         tools:ignore="ContentDescription">
 
         <View

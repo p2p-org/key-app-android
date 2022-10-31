@@ -14,8 +14,8 @@ enum class TransactionStatus(@StringRes val resValue: Int) {
         fun from(response: TransactionDetails): TransactionStatus {
             return when {
                 response.status == ConfirmationStatus.CONFIRMED -> PENDING
-                response.error.isNullOrEmpty() -> COMPLETED
-                else -> ERROR
+                response.error != null -> ERROR
+                else -> COMPLETED
             }
         }
     }
