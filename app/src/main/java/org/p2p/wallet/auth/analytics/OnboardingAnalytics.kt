@@ -200,7 +200,7 @@ class OnboardingAnalytics(private val tracker: Analytics) {
         tracker.logEvent(
             event = ONBOARD_SELECT_RESTORE_OPTION,
             params = mapOf(
-                "Restore_option" to restoreWay.value
+                "Restore_Option" to restoreWay.value
             )
         )
     }
