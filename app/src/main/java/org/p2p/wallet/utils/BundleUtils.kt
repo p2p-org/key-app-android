@@ -1,9 +1,9 @@
 package org.p2p.wallet.utils
 
-import android.app.Activity
-import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import android.app.Activity
+import android.os.Bundle
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -52,15 +52,20 @@ class BundleExtractorDelegate<in R, T>(private val initializer: (R, KProperty<*>
 }
 
 inline fun <reified T> extractFromBundle(bundle: Bundle?, key: String? = null, defaultValue: T? = null): T {
-    val result = bundle?.get(key) ?: defaultValue
+    val result: Any? = bundle?.get(key) ?: defaultValue
 
     if (result != null && result !is T) {
-        throw ClassCastException("Property for $key has different class type")
+        throw ClassCastException(
+            buildString {
+                append("Property for $key has different class type; ")
+                append("expected: ${T::class.simpleName} actual: ${result::class.simpleName}")
+            }
+        )
     }
     return result as T
 }
 
-inline fun <reified T> Fragment.getArg(key: String, defaultValue: T? = null) =
+inline fun <reified T> Fragment.getArg(key: String, defaultValue: T? = null): T & Any =
     extractFromBundle(arguments, key, defaultValue)
 
 fun Bundle.toStringMap(): Map<String, String> = keySet().associateWith { getString(it, emptyString()) }

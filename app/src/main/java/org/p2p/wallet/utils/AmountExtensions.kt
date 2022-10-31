@@ -1,5 +1,6 @@
 package org.p2p.wallet.utils
 
+import org.p2p.uikit.utils.DecimalFormatter
 import org.p2p.wallet.home.model.Token
 import java.math.BigDecimal
 import java.math.BigInteger

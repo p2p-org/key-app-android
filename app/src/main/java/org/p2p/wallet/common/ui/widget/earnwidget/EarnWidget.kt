@@ -9,12 +9,12 @@ import com.robinhood.ticker.TickerView
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.uikit.glide.GlideManager
+import org.p2p.uikit.utils.DecimalFormatter
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemDepositTokenBinding
 import org.p2p.wallet.databinding.WidgetEarnViewBinding
-import org.p2p.wallet.utils.DecimalFormatter
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
