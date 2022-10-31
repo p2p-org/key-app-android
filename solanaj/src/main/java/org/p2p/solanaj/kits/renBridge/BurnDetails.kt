@@ -5,5 +5,5 @@ class BurnDetails {
 
     var confirmedSignature: String = ""
     var nonce: BigInteger = BigInteger.ZERO
-    var recepient: String = ""
+    var recipient: String = ""
 }

@@ -2,7 +2,6 @@
 <resources>
     <item name="edgetoedge" type="id" />
     <item name="prefix_watcher_tag_id" type="id" />
-    <item name="length_watcher_tag_id" type="id" />
 
     <!--feature toggle ids-->
     <item name="enable_dev_net" type="id" />

@@ -7,6 +7,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTransactionSwapBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.utils.setStatus
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -46,5 +47,10 @@ class TransactionSwapViewHolder(
                 subtitleTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
             }
         }
+        setStatus(transaction)
+    }
+
+    private fun setStatus(transaction: HistoryTransaction) {
+        binding.transactionTokenImageView.setStatus(transaction.status)
     }
 }

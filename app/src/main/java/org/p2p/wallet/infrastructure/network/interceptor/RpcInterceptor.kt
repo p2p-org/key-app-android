@@ -49,10 +49,7 @@ class RpcInterceptor(
 
         val json = getRequestJson(request)
         val url = request.url
-        Timber.tag("____________").d(json.toString())
-
         val networkEnvironmentForRequest = getValidatedNetworkEnvironment(json)
-
         return request.newBuilder()
             .url(createRpcUrl(url, networkEnvironmentForRequest))
             .build()

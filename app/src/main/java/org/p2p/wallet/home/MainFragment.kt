@@ -1,14 +1,14 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
@@ -48,13 +48,13 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     private var lastSelectedItemId = R.id.homeItem
 
     companion object {
-        fun create(actions: Array<MainFragmentOnCreateAction> = emptyArray()): MainFragment =
+        fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainFragment =
             MainFragment()
                 .withArgs(ARG_MAIN_FRAGMENT_ACTIONS to actions)
     }
 
-    private val onCreateActions: Array<MainFragmentOnCreateAction> by args(
-        key = ARG_MAIN_FRAGMENT_ACTIONS, defaultValue = emptyArray()
+    private var onCreateActions: ArrayList<MainFragmentOnCreateAction> by args(
+        key = ARG_MAIN_FRAGMENT_ACTIONS, defaultValue = arrayListOf()
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -79,7 +79,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         }
         deeplinksManager.handleSavedDeeplinkIntent()
 
-        onCreateActions.forEach(::doOnCreateAction)
+        if (onCreateActions.isNotEmpty()) {
+            onCreateActions.forEach(::doOnCreateAction)
+            onCreateActions = arrayListOf()
+        }
     }
 
     private fun doOnCreateAction(action: MainFragmentOnCreateAction) {
