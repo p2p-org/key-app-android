@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.utils.getStringResourceByName
+import timber.log.Timber
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
@@ -50,13 +52,18 @@ class NetworkServicesUrlProvider(
         ).orEmpty()
         val verifier = sharedPreferences.getString(
             KEY_TORUS_BASE_VERIFIER,
-            context.getString(R.string.torusReleaseVerifier)
+            context.getString(R.string.torusVerifier)
         ).orEmpty()
 
         val subVerifier = sharedPreferences.getString(
             KEY_TORUS_BASE_SUB_VERIFIER,
-            context.getString(R.string.torusReleaseSubVerifier).takeUnless { BuildConfig.DEBUG }
+            context.getStringResourceByName("torusSubVerifier")
         ).orEmpty()
+
+        if (!BuildConfig.DEBUG && subVerifier.isBlank()) {
+            Timber.e(IllegalArgumentException("torusSubVerifier is missing for release builds!"))
+        }
+
         return TorusEnvironment(url, verifier, subVerifier)
     }
 
