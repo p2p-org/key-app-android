@@ -31,4 +31,15 @@
         app:cornerRadius="8dp"
         tools:src="@tools:sample/avatars" />
 
+    <ImageView
+        android:id="@+id/transactionStatus"
+        android:layout_width="@dimen/ui_kit_transaction_image_icon_size"
+        android:layout_height="@dimen/ui_kit_transaction_image_icon_size"
+        android:layout_gravity="bottom|end"
+        android:importantForAccessibility="no"
+        android:visibility="gone"
+        tools:src="@drawable/ic_state_pending"
+        tools:visibility="visible" />
+
+
 </merge>

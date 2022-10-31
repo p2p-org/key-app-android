@@ -13,6 +13,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
+import timber.log.Timber
 import java.io.File
 
 const val KEY_USERNAME = "KEY_USERNAME"
@@ -33,15 +34,25 @@ class UsernameInteractor(
         usernameRepository.createUsername(
             username = username,
             ownerPublicKey = tokenKeyProvider.publicKey.toBase58Instance(),
-            ownerPrivateKey = tokenKeyProvider.secretKey.toBase58Instance()
+            ownerPrivateKey = tokenKeyProvider.keyPair.toBase58Instance()
         )
         sharedPreferences.edit { putString(KEY_USERNAME, username) }
     }
 
-    suspend fun checkUsernameByAddress(owner: Base58String) {
-        val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
-        if (usernameDetails != null) {
-            sharedPreferences.edit { putString(KEY_USERNAME, usernameDetails.fullUsername) }
+    suspend fun tryRestoreUsername(owner: Base58String) {
+        try {
+            val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
+            sharedPreferences.edit {
+                if (usernameDetails != null) {
+                    putString(KEY_USERNAME, usernameDetails.fullUsername)
+                    Timber.i("Username restored for ${owner.base58Value}")
+                } else {
+                    // removing legacy usernames .p2p.sol
+                    remove(KEY_USERNAME)
+                }
+            }
+        } catch (error: Throwable) {
+            Timber.i(error, "Failed to restore username for ${owner.base58Value}")
         }
     }
 

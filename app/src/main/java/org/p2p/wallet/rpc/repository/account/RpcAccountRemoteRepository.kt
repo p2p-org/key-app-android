@@ -9,7 +9,6 @@ import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.ProgramAccount
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.TokenAccounts
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
@@ -105,7 +104,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
     override suspend fun getPools(account: PublicKey): List<Pool.PoolInfo> {
         val params = listOf(
             account.toString(),
-            ConfigObjects.ProgramAccountConfig(RpcSendTransactionConfig.Encoding.base64)
+            ConfigObjects.ProgramAccountConfig(Encoding.BASE64)
         )
         val rpcRequest = RpcRequest("getProgramAccounts", params)
         val response = api.getProgramAccounts(rpcRequest).result

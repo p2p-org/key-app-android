@@ -1,33 +1,33 @@
 package org.p2p.wallet.sdk.facade
 
 import com.google.gson.Gson
-import kotlinx.coroutines.withContext
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.sdk.SolendSdk
-import org.p2p.wallet.sdk.facade.mapper.SolendMethodResultMapper
-import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountResponse
-import org.p2p.wallet.sdk.facade.model.SolendCollateralAccountsListResponse
-import org.p2p.wallet.sdk.facade.model.SolendConfigRootResponse
-import org.p2p.wallet.sdk.facade.model.SolendDepositTransactionsResponse
-import org.p2p.wallet.sdk.facade.model.SolendEnvironment
-import org.p2p.wallet.sdk.facade.model.SolendFeePayerTokenData
-import org.p2p.wallet.sdk.facade.model.SolendMarketInformationResponse
-import org.p2p.wallet.sdk.facade.model.SolendPool
-import org.p2p.wallet.sdk.facade.model.SolendTokenDepositFeesResponse
-import org.p2p.wallet.sdk.facade.model.SolendUserDepositByTokenResponseResponse
-import org.p2p.wallet.sdk.facade.model.SolendUserDepositResponse
-import org.p2p.wallet.sdk.facade.model.SolendUserDepositsResponseResponse
-import org.p2p.wallet.sdk.facade.model.SolendWithdrawTransactionsResponse
+import org.p2p.wallet.sdk.facade.mapper.SdkMethodResultMapper
+import org.p2p.wallet.sdk.facade.model.solend.SolendCollateralAccountResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendCollateralAccountsListResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendConfigRootResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendDepositTransactionsResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendEnvironment
+import org.p2p.wallet.sdk.facade.model.solend.SolendFeePayerTokenData
+import org.p2p.wallet.sdk.facade.model.solend.SolendMarketInformationResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendPool
+import org.p2p.wallet.sdk.facade.model.solend.SolendTokenDepositFeesResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositByTokenResponseResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositsResponseResponse
+import org.p2p.wallet.sdk.facade.model.solend.SolendWithdrawTransactionsResponse
 import org.p2p.wallet.utils.Base58String
+import kotlinx.coroutines.withContext
 
 class SolendSdkFacade(
     private val solendSdk: SolendSdk,
-    private val solendEnvironment: SolendEnvironment,
     private val networkEnvironmentManager: NetworkEnvironmentManager,
-    private val methodResultMapper: SolendMethodResultMapper,
-    private val logger: SolendSdkLogger,
+    private val methodResultMapper: SdkMethodResultMapper,
+    private val logger: AppSdkLogger,
     private val gson: Gson,
     private val dispatchers: CoroutineDispatchers
 ) {
@@ -35,6 +35,9 @@ class SolendSdkFacade(
     private val currentNetworkEnvironment: NetworkEnvironment
         //        get() = networkEnvironmentManager.loadCurrentEnvironment()
         get() = NetworkEnvironment.MAINNET
+
+    private val solendEnvironment: SolendEnvironment
+        get() = SolendEnvironment.PRODUCTION
 
     suspend fun createDepositTransactions(
         relayProgramId: String,
@@ -46,7 +49,7 @@ class SolendSdkFacade(
         remainingFreeTransactionsCount: UInt,
         payFeeWithRelay: Boolean,
         feePayerToken: SolendFeePayerTokenData?,
-        realFeePayerAddress: Base58String
+        realFeePayerAddress: PublicKey
     ): SolendDepositTransactionsResponse = withContext(dispatchers.io) {
         logger.logRequest(
             "createDepositTransactions",
@@ -74,7 +77,7 @@ class SolendSdkFacade(
             free_transactions_count = remainingFreeTransactionsCount,
             need_to_use_relay = payFeeWithRelay,
             pay_fee_in_token = feePayerToken?.let { gson.toJson(it) }.orEmpty(),
-            fee_payer_address = realFeePayerAddress.base58Value
+            fee_payer_address = realFeePayerAddress.toBase58()
         )
         logger.logResponse("createDepositTransactions", response)
         methodResultMapper.fromSdk(response)
@@ -90,7 +93,7 @@ class SolendSdkFacade(
         remainingFreeTransactionsCount: UInt,
         payFeeWithRelay: Boolean,
         feePayerToken: SolendFeePayerTokenData?,
-        realFeePayerAddress: Base58String
+        realFeePayerAddress: PublicKey
     ): SolendWithdrawTransactionsResponse = withContext(dispatchers.io) {
         logger.logRequest(
             "createWithdrawTransactions",
@@ -118,7 +121,7 @@ class SolendSdkFacade(
             free_transactions_count = remainingFreeTransactionsCount,
             need_to_use_relay = payFeeWithRelay,
             pay_fee_in_token = feePayerToken?.let { gson.toJson(it) }.orEmpty(),
-            fee_payer_address = realFeePayerAddress.base58Value
+            fee_payer_address = realFeePayerAddress.toBase58()
         )
         logger.logResponse("createWithdrawTransactions", response)
         methodResultMapper.fromSdk(response)
@@ -149,18 +152,39 @@ class SolendSdkFacade(
 
     suspend fun getSolendDepositFees(
         ownerAddress: Base58String,
-        tokenAmountToDeposit: Long,
-        tokenAddressToDeposit: Base58String
+        feePayer: Base58String,
+        tokenAmount: Long,
+        tokenSymbol: String
     ): SolendTokenDepositFeesResponse = withContext(dispatchers.io) {
-        logger.logRequest("getSolendDepositFees", ownerAddress, tokenAmountToDeposit, tokenAddressToDeposit)
+        logger.logRequest("getSolendDepositFees", ownerAddress, tokenAmount, tokenSymbol)
 
         val response = solendSdk.getSolendDepositFees(
             rpc_url = currentNetworkEnvironment.endpoint,
             owner = ownerAddress.base58Value,
-            token_amount = tokenAmountToDeposit,
-            token_symbol = tokenAddressToDeposit.base58Value
+            fee_payer = feePayer.base58Value,
+            token_amount = tokenAmount,
+            token_symbol = tokenSymbol
         )
         logger.logResponse("getSolendDepositFees", response)
+        methodResultMapper.fromSdk(response)
+    }
+
+    suspend fun getSolendWithdrawFees(
+        ownerAddress: Base58String,
+        feePayer: Base58String,
+        tokenAmount: Long,
+        tokenSymbol: String
+    ): SolendTokenDepositFeesResponse = withContext(dispatchers.io) {
+        logger.logRequest("getSolendWithdrawFees", ownerAddress, tokenAmount, tokenSymbol)
+
+        val response = solendSdk.getSolendWithdrawFees(
+            rpc_url = currentNetworkEnvironment.endpoint,
+            owner = ownerAddress.base58Value,
+            fee_payer = feePayer.base58Value,
+            token_amount = tokenAmount,
+            token_symbol = tokenSymbol
+        )
+        logger.logResponse("getSolendWithdrawFees", response)
         methodResultMapper.fromSdk(response)
     }
 
@@ -189,7 +213,7 @@ class SolendSdkFacade(
         val response = solendSdk.getSolendUserDepositBySymbol(
             owner = userAddress.base58Value,
             symbol = tokenSymbol,
-            pool = solendPoolAddress.poolAddress.base58Value
+            pool = solendPoolAddress.poolName
         )
         logger.logResponse("getSolendUserDepositByTokenSymbol", response)
         methodResultMapper.fromSdk<SolendUserDepositByTokenResponseResponse>(response).userDepositBySymbol
@@ -203,7 +227,7 @@ class SolendSdkFacade(
 
         val response = solendSdk.getSolendUserDeposits(
             owner = userAddress.base58Value,
-            pool = solendPoolAddress.poolAddress.base58Value
+            pool = solendPoolAddress.poolName
         )
         logger.logResponse("getSolendUserDeposits", response)
         methodResultMapper.fromSdk<SolendUserDepositsResponseResponse>(response).deposits

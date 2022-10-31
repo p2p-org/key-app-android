@@ -52,8 +52,6 @@ class HistoryTransactionMapper(
         val sourceData = userLocalRepository.findTokenData(finalMintA) ?: return null
         val destinationData = userLocalRepository.findTokenData(finalMintB) ?: return null
 
-        if (sourceData.mintAddress == destinationData.mintAddress) return null
-
         val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
         val sourceRate = userLocalRepository.getPriceByToken(sourceData.symbol)
         return historyTransactionConverter.mapSwapTransactionToHistory(

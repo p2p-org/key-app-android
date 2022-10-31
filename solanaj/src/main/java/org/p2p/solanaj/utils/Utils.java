@@ -1,18 +1,14 @@
 package org.p2p.solanaj.utils;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Base64;
+import org.bitcoinj.core.Bech32;
+import org.p2p.solanaj.utils.crypto.Base58Utils;
+import org.p2p.solanaj.utils.crypto.Base64UrlUtils;
+import org.p2p.solanaj.utils.crypto.Hex;
 
-import org.p2p.solanaj.utils.ByteUtils;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
-
-import static org.bitcoinj.core.Utils.*;
-import org.bitcoinj.core.Bech32;
-import org.p2p.solanaj.utils.crypto.Base64UrlUtils;
-import org.p2p.solanaj.utils.crypto.Base64Utils;
-import org.p2p.solanaj.utils.crypto.Hex;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Utils {
     public static long getSessionDay() {
@@ -103,15 +99,21 @@ public class Utils {
         return bos.toByteArray();
     }
 
-    public static byte[] addressToBytes(String address) throws Exception {
-        Bech32.Bech32Data data = Bech32.decode(address);
-        byte type = data.data[0];
-        byte[] words = Arrays.copyOfRange(data.data, 1, data.data.length);
-        byte[] fromWords = fromWords(words);
-        ByteBuffer buffer = ByteBuffer.allocate(1 + fromWords.length);
-        buffer.put(type);
-        buffer.put(fromWords(words));
-        return buffer.array();
+    public static byte[] addressToBytes(String address) {
+        try {
+            // For bitcoin BECH32 address types
+            Bech32.Bech32Data data = Bech32.decode(address);
+            byte type = data.data[0];
+            byte[] words = Arrays.copyOfRange(data.data, 1, data.data.length);
+            byte[] fromWords = fromWords(words);
+            ByteBuffer buffer = ByteBuffer.allocate(1 + fromWords.length);
+            buffer.put(type);
+            buffer.put(fromWords(words));
+            return buffer.array();
+        } catch (Throwable e) {
+            // For legacy bitcoin P2PKH or P2SH address types
+            return Base58Utils.INSTANCE.decode(address);
+        }
     }
 
     private static byte[] convert(byte[] data, int inBits, int outBits, boolean pad) throws Exception {
@@ -135,8 +137,7 @@ public class Utils {
                 result.write((value << (outBits - bits)) & maxV);
             }
         } else {
-            if (bits >= inBits)
-                throw new Exception("Excess padding");
+            if (bits >= inBits) throw new Exception("Excess padding");
         }
 
         return result.toByteArray();

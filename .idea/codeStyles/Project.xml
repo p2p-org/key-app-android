@@ -3,8 +3,6 @@
     <option name="RIGHT_MARGIN" value="130" />
     <option name="ENABLE_SECOND_REFORMAT" value="true" />
     <option name="SOFT_MARGINS" value="120" />
-    <option name="ENABLE_SECOND_REFORMAT" value="true" />
-
     <AndroidXmlCodeStyleSettings>
       <option name="LAYOUT_SETTINGS">
         <value>

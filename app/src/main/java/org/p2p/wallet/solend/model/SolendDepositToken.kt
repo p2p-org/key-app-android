@@ -1,36 +1,42 @@
 package org.p2p.wallet.solend.model
 
 import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
+import kotlinx.parcelize.Parcelize
 
-sealed class SolendDepositToken(
-    open val tokenName: String,
-    open val tokenSymbol: String,
-    open val usdRate: BigDecimal,
-    open val iconUrl: String?,
-    open val supplyInterest: BigDecimal?,
-) : Parcelable {
-
-    var availableTokensForDeposit: BigDecimal? = null
+sealed interface SolendDepositToken : Parcelable {
+    val tokenName: String
+    val tokenSymbol: String
+    val usdRate: BigDecimal
+    val iconUrl: String?
+    val supplyInterest: BigDecimal?
+    val decimals: Int
+    val mintAddress: String
+    val availableTokensForDeposit: BigDecimal
 
     @Parcelize
-    data class Active(
+    data class Active constructor(
         override val tokenName: String,
         override val tokenSymbol: String,
         override val usdRate: BigDecimal,
         override val iconUrl: String?,
         override val supplyInterest: BigDecimal?,
+        override val decimals: Int,
+        override val mintAddress: String,
+        override val availableTokensForDeposit: BigDecimal,
         val depositAmount: BigDecimal,
         val usdAmount: BigDecimal,
-    ) : SolendDepositToken(tokenName, tokenSymbol, usdRate, iconUrl, supplyInterest)
+    ) : SolendDepositToken
 
     @Parcelize
-    data class Inactive(
+    data class Inactive constructor(
         override val tokenName: String,
         override val tokenSymbol: String,
         override val usdRate: BigDecimal,
         override val iconUrl: String?,
-        override val supplyInterest: BigDecimal?
-    ) : SolendDepositToken(tokenName, tokenSymbol, usdRate, iconUrl, supplyInterest)
+        override val supplyInterest: BigDecimal?,
+        override val decimals: Int,
+        override val mintAddress: String,
+        override val availableTokensForDeposit: BigDecimal,
+    ) : SolendDepositToken
 }

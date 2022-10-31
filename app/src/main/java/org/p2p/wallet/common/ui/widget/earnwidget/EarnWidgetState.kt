@@ -8,7 +8,7 @@ import java.math.BigDecimal
 sealed class EarnWidgetState(@ColorRes val backgroundColor: Int = R.color.bg_rain) {
     object Idle : EarnWidgetState(backgroundColor = R.color.bg_cloud)
     object LearnMore : EarnWidgetState(backgroundColor = R.color.bg_lime)
-    data class Depositing(@StringRes val buttonTextRes: Int) : EarnWidgetState()
+    data class TransactionInProgress(@StringRes val buttonTextRes: Int) : EarnWidgetState()
     object DepositFoundsFailed : EarnWidgetState()
     data class Balance(val amount: BigDecimal, val tokenIcons: List<String>) : EarnWidgetState()
     data class Error(

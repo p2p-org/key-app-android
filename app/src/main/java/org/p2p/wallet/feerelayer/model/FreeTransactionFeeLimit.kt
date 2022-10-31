@@ -11,6 +11,8 @@ class FreeTransactionFeeLimit(
 
     val remaining = maxUsage - currentUsage
 
+    fun hasFreeTransactions(): Boolean = remaining != 0
+
     fun isFreeTransactionFeeAvailable(transactionFee: BigInteger, forNextTransaction: Boolean = false): Boolean {
         var currentUsage = currentUsage
         if (forNextTransaction) {

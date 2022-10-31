@@ -47,7 +47,11 @@ class SendButton(
 
             val isEnoughBalance = !total.isLessThan(inputAmount)
             val isEnoughToCoverExpenses = sendFee == null || sendFee.isEnoughToCoverExpenses(total, inputAmount)
-            val isValidAddress = PublicKeyValidator.isValid(address) && isSameNetwork
+            val isValidAddress = if (currentNetworkType == NetworkType.SOLANA) {
+                PublicKeyValidator.isValid(address) && isSameNetwork
+            } else {
+                address.isNotEmpty()
+            }
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
 

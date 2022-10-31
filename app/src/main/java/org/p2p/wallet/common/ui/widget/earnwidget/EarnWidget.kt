@@ -9,12 +9,12 @@ import com.robinhood.ticker.TickerView
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.uikit.glide.GlideManager
+import org.p2p.uikit.utils.DecimalFormatter
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemDepositTokenBinding
 import org.p2p.wallet.databinding.WidgetEarnViewBinding
-import org.p2p.wallet.utils.DecimalFormatter
 import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.scaleLong
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -59,7 +59,7 @@ class EarnWidget @JvmOverloads constructor(
         when (state) {
             is EarnWidgetState.Balance -> state.showBalanceState()
             is EarnWidgetState.LearnMore -> state.showLearnMoreState()
-            is EarnWidgetState.Depositing -> state.showDepositingState()
+            is EarnWidgetState.TransactionInProgress -> state.showDepositingState()
             is EarnWidgetState.DepositFoundsFailed -> state.showDepositFoundsFailedState()
             is EarnWidgetState.Error -> state.showErrorState()
             else -> showIdleState()
@@ -81,7 +81,7 @@ class EarnWidget @JvmOverloads constructor(
         buttonEarn.setText(R.string.earn_widget_learn_more_button)
     }
 
-    private fun EarnWidgetState.Depositing.showDepositingState() = with(binding) {
+    private fun EarnWidgetState.TransactionInProgress.showDepositingState() = with(binding) {
         makeAlignStartContent()
         buttonEarn.setText(buttonTextRes)
     }
@@ -108,7 +108,7 @@ class EarnWidget @JvmOverloads constructor(
 
     private fun setWidgetViewsVisibility(state: EarnWidgetState) = with(binding) {
         val isBalanceState = state is EarnWidgetState.Balance
-        val isDepositingState = state is EarnWidgetState.Depositing
+        val isDepositingState = state is EarnWidgetState.TransactionInProgress
         val isIdleState = state is EarnWidgetState.Idle
 
         tickerViewAmount.isVisible = isBalanceState

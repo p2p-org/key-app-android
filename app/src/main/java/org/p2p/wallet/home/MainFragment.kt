@@ -1,13 +1,14 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
@@ -23,11 +24,17 @@ import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
+import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+
+private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
 class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
 
@@ -38,9 +45,17 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     private val deeplinksManager: AppDeeplinksManager by inject()
     private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
 
+    private var lastSelectedItemId = R.id.homeItem
+
     companion object {
-        fun create(): MainFragment = MainFragment()
+        fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainFragment =
+            MainFragment()
+                .withArgs(ARG_MAIN_FRAGMENT_ACTIONS to actions)
     }
+
+    private var onCreateActions: ArrayList<MainFragmentOnCreateAction> by args(
+        key = ARG_MAIN_FRAGMENT_ACTIONS, defaultValue = arrayListOf()
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,6 +78,27 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             createCachedTabFragments()
         }
         deeplinksManager.handleSavedDeeplinkIntent()
+
+        if (onCreateActions.isNotEmpty()) {
+            onCreateActions.forEach(::doOnCreateAction)
+            onCreateActions = arrayListOf()
+        }
+    }
+
+    private fun doOnCreateAction(action: MainFragmentOnCreateAction) {
+        when (action) {
+            is MainFragmentOnCreateAction.ShowSnackbar -> {
+                showUiKitSnackBar(messageResId = action.messageResId)
+            }
+            is MainFragmentOnCreateAction.PlayAnimation -> {
+                with(binding.animationView) {
+                    setAnimation(action.animationRes)
+                    isVisible = true
+                    doOnAnimationEnd { isVisible = false }
+                    playAnimation()
+                }
+            }
+        }
     }
 
     private fun onActivityBackPressed() {
@@ -94,6 +130,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         if (clickedTab == ScreenTab.FEEDBACK_SCREEN) {
             IntercomService.showMessenger()
             analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
+            with(binding.bottomNavigation) {
+                post { // not working reselection on last item without post
+                    setChecked(lastSelectedItemId)
+                }
+            }
             return
         }
 
@@ -139,10 +180,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             }
         }
         if (binding.bottomNavigation.getSelectedItemId() != itemId) {
-            binding.bottomNavigation.menu.findItem(itemId).isChecked = true
+            binding.bottomNavigation.setChecked(itemId)
         } else {
             checkAndDismissLastBottomSheet()
         }
+        lastSelectedItemId = itemId
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -170,6 +212,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             R.menu.menu_ui_kit_bottom_navigation
         }
         binding.bottomNavigation.inflateMenu(menuRes)
+        binding.bottomNavigation.menu.findItem(R.id.feedbackItem).isCheckable = false
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {

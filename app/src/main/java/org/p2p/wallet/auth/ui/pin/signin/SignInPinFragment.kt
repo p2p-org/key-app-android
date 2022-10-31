@@ -1,13 +1,12 @@
 package org.p2p.wallet.auth.ui.pin.signin
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.onboarding.OnboardingFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
@@ -83,8 +82,7 @@ class SignInPinFragment :
 
     override fun onLogout() {
         popAndReplaceFragment(
-            OnboardingRootFragment.create(),
-            popTo = OnboardingFragment::class,
+            target = OnboardingRootFragment.create(),
             addToBackStack = false,
             inclusive = true,
             enter = 0

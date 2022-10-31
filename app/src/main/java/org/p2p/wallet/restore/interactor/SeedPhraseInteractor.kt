@@ -87,16 +87,12 @@ class SeedPhraseInteractor(
         val account = authRepository.createAccount(path, mnemonicPhrase)
         val publicKey = account.publicKey.toBase58()
 
-        tokenProvider.secretKey = account.secretKey
+        tokenProvider.keyPair = account.keypair
         tokenProvider.publicKey = publicKey
 
         Timber.i("Account: $publicKey restored using $path")
 
-        try {
-            usernameInteractor.checkUsernameByAddress(publicKey.toBase58Instance())
-        } catch (error: Throwable) {
-            Timber.e(error)
-        }
+        usernameInteractor.tryRestoreUsername(publicKey.toBase58Instance())
         adminAnalytics.logPasswordCreated()
     }
 

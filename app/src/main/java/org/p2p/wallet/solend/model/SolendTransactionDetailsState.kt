@@ -5,8 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 sealed interface SolendTransactionDetailsState : Parcelable {
     @Parcelize
-    data class Deposit(val deposit: TransactionDetailsViewData) : SolendTransactionDetailsState
+    data class Deposit(val deposit: SolendTransactionDetails) : SolendTransactionDetailsState
 
     @Parcelize
-    data class Withdraw(val withdraw: TransactionDetailsViewData) : SolendTransactionDetailsState
+    data class Withdraw(val withdraw: SolendTransactionDetails) : SolendTransactionDetailsState
 }

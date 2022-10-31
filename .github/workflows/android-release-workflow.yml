@@ -1,7 +1,6 @@
 on:
   pull_request:
     branches:
-      - main
       - release/*
   push:
     branches:
@@ -13,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - uses: ./.github/actions/setup-sentry
         with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -70,6 +68,7 @@ jobs:
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
+
       - name: "Create Firebase App file"
         uses: ./.github/actions/setup-firebase
         with:
@@ -98,7 +97,6 @@ jobs:
 
       - name: "Setup signing.properties"
         run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2p-wallet.jks
-
 
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
@@ -139,6 +137,7 @@ jobs:
           bash slack_deploy_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
           bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
+
 
       - name: "Send finish deploy message to Slack"
         run: |

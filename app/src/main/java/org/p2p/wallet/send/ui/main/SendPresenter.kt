@@ -287,6 +287,8 @@ class SendPresenter(
             accountFeeTokenSymbol = state.sendFee?.feePayerSymbol
         )
 
+        sendAnalytics.logIsSendByUsername()
+
         when (state.networkType) {
             NetworkType.SOLANA -> sendInSolana(token, address)
             NetworkType.BITCOIN -> sendInBitcoin(token, address)
@@ -475,6 +477,9 @@ class SendPresenter(
 
     private fun checkAddress(address: String?) {
         if (address.isNullOrEmpty()) return
+
+        if (state.isRenBTCNetwork() && address.isNotEmpty()) return
+
         val token = token ?: return
 
         checkAddressJob?.cancel()
@@ -685,6 +690,8 @@ class SendPresenter(
         feePayerToken: Token.Active?,
         strategy: FeePayerSelectionStrategy
     ) {
+        if (state.networkType == NetworkType.BITCOIN) return
+
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
 
         feePayerJob?.cancel()

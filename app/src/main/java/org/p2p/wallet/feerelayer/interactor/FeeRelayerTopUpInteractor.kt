@@ -14,7 +14,7 @@ import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
-import org.p2p.wallet.feerelayer.model.TokenInfo
+import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TopUpPreparedParams
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
@@ -41,7 +41,7 @@ class FeeRelayerTopUpInteractor(
     suspend fun topUp(
         feeRelayerProgramId: PublicKey,
         needsCreateUserRelayAddress: Boolean,
-        sourceToken: TokenInfo,
+        sourceToken: TokenAccount,
         targetAmount: BigInteger,
         topUpPools: OrcaPoolsPair,
         expectedFee: BigInteger,
@@ -49,7 +49,7 @@ class FeeRelayerTopUpInteractor(
         val blockhash = rpcRepository.getRecentBlockhash()
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val relayAccount = feeRelayerAccountInteractor.getUserRelayAccount()
-        val owner = Account(tokenKeyProvider.secretKey)
+        val owner = Account(tokenKeyProvider.keyPair)
 
         // STEP 3: prepare for topUp
         val (swapData, topUpTransaction) = prepareForTopUp(
@@ -70,12 +70,12 @@ class FeeRelayerTopUpInteractor(
 
         // STEP 4: send transaction
         val signatures = topUpTransaction.transaction.allSignatures
-        if (signatures.size < 1) {
+        if (signatures.size < 1 || signatures[0].signature.isNullOrEmpty()) {
             throw IllegalStateException("Invalid signature")
         }
 
         // the second signature is the owner's signature
-        val ownerSignature = signatures[0].signature
+        val ownerSignature = signatures[0].signature!!
 
         val topUpSignatures = SwapTransactionSignatures(
             userAuthoritySignature = ownerSignature,
@@ -101,7 +101,7 @@ class FeeRelayerTopUpInteractor(
 
     suspend fun prepareForTopUp(
         topUpAmount: BigInteger,
-        payingFeeToken: TokenInfo,
+        payingFeeToken: TokenAccount,
         relayAccount: RelayAccount,
         freeTransactionFeeLimit: FreeTransactionFeeLimit?
     ): TopUpPreparedParams {
@@ -234,7 +234,7 @@ class FeeRelayerTopUpInteractor(
    * */
     private suspend fun prepareForTopUp(
         feeRelayerProgramId: PublicKey,
-        sourceToken: TokenInfo,
+        sourceToken: TokenAccount,
         userAuthorityAddress: PublicKey,
         relayAccountPublicKey: PublicKey,
         topUpPools: OrcaPoolsPair,
@@ -361,7 +361,7 @@ class FeeRelayerTopUpInteractor(
         )
 
         // resign transaction
-        val owner = Account(tokenKeyProvider.secretKey)
+        val owner = Account(tokenKeyProvider.keyPair)
         val signers = mutableListOf(owner)
 
         transaction.sign(signers)

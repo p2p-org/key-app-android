@@ -1,15 +1,9 @@
 package org.p2p.wallet.renbtc
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
 import org.p2p.solanaj.rpc.RpcSolanaInteractor
+import org.p2p.wallet.auth.analytics.RenBtcAnalytics
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.renbtc.model.RenBTCPayment
@@ -20,6 +14,13 @@ import org.p2p.wallet.renbtc.service.RenStatusExecutor
 import org.p2p.wallet.renbtc.service.RenTransactionExecutor
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val SESSION_POLLING_DELAY = 5000L
 
@@ -33,7 +34,8 @@ class RenTransactionManager(
     private val renBTCRemoteRepository: RenRemoteRepository,
     private val environmentManager: NetworkEnvironmentManager,
     private val renVMRepository: RenVMRepository,
-    private val solanaChain: RpcSolanaInteractor
+    private val solanaChain: RpcSolanaInteractor,
+    private val renBtcAnalytics: RenBtcAnalytics
 ) {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -166,7 +168,14 @@ class RenTransactionManager(
             Timber.tag(REN_TAG).d("No active executors, adding new transaction executor")
             /* executors list includes only active or new transactions */
             queuedTransactions.forEach { transaction ->
-                executors.add(RenStatusExecutor(lockAndMint, transaction, secretKey))
+                executors.add(
+                    RenStatusExecutor(
+                        lockAndMint = lockAndMint,
+                        transaction = transaction,
+                        secretKey = secretKey,
+                        renBtcAnalytics = renBtcAnalytics
+                    )
+                )
             }
 
             Timber.tag(REN_TAG).d("Starting execution, executors new count: ${executors.size}")

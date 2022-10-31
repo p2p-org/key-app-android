@@ -30,11 +30,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/view_action_trade"
+        app:layout_constraintEnd_toStartOf="@+id/view_action_swap"
         app:layout_constraintStart_toEndOf="@+id/view_action_receive" />
 
     <include
-        android:id="@+id/view_action_trade"
+        android:id="@+id/view_action_swap"
         layout="@layout/item_home_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

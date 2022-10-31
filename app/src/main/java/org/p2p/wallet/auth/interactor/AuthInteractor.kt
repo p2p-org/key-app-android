@@ -1,15 +1,15 @@
 package org.p2p.wallet.auth.interactor
 
+import androidx.biometric.BiometricManager
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.biometric.BiometricManager
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.BiometricType
 import org.p2p.wallet.auth.model.SignInResult
 import org.p2p.wallet.common.crypto.keystore.DecodeCipher
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.account.AccountStorageContract.Key
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -17,6 +17,9 @@ import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_BIOMETRIC_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_SALT
+import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * The secure storage now includes the hash which is encrypted in two ways
@@ -28,7 +31,9 @@ class AuthInteractor(
     private val accountStorage: AccountStorageContract,
     private val biometricManager: BiometricManager,
     private val pbkdf2Hash: Pbkdf2HashGenerator,
+    private val pushNotificationsInteractor: PushNotificationsInteractor,
     private val dispatchers: CoroutineDispatchers,
+    private val appScope: AppScope
 ) {
 
     // region signing in
@@ -139,5 +144,10 @@ class AuthInteractor(
 
     fun finishSignUp() {
         accountStorage.remove(Key.KEY_IN_SIGN_UP_PROCESS)
+
+        // Send device push token to NotificationService on creation and restoring the wallet
+        appScope.launch {
+            pushNotificationsInteractor.updateDeviceToken()
+        }
     }
 }

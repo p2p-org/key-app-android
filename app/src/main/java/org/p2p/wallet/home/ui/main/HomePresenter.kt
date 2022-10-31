@@ -1,9 +1,5 @@
 package org.p2p.wallet.home.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
@@ -24,16 +20,24 @@ import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants.BTC_SYMBOL
+import org.p2p.wallet.utils.Constants.ETH_SYMBOL
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.utils.Constants.USDC_SYMBOL
+import org.p2p.wallet.utils.Constants.USDT_SYMBOL
+import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
 import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, "BTC", "ETH", "USDT")
+val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 
 private val POLLING_DELAY_MS = TimeUnit.SECONDS.toMillis(10)
 private val TOKENS_VALID_FOR_BUY = setOf(SOL_SYMBOL, USDC_SYMBOL)
@@ -85,13 +89,12 @@ class HomePresenter(
         view.showEmptyState(isEmpty = true)
 
         userName = usernameInteractor.getUsername()
-        view.showUserAddress(userName?.value ?: tokenKeyProvider.publicKey.ellipsizeAddress())
+        view.showUserAddress(userName?.fullUsername ?: tokenKeyProvider.publicKey.ellipsizeAddress())
 
         updatesManager.start()
 
         state = state.copy(
-            username = userName,
-            visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
+            username = userName, visibilityState = VisibilityState.create(userInteractor.getHiddenTokensVisibility())
         )
 
         if (state.tokens.isEmpty()) {
@@ -107,7 +110,15 @@ class HomePresenter(
     }
 
     override fun onAddressClicked() {
-        view?.showAddressCopied(userName?.value ?: tokenKeyProvider.publicKey)
+        // example result: "test-android.key 4vwfPYdvv9vkX5mTC6BBh4cQcWFTQ7Q7WR42JyTfZwi7"
+        val userDataToCopy = buildString {
+            userName?.fullUsername?.let {
+                append(it)
+                appendWhitespace()
+            }
+            append(tokenKeyProvider.publicKey)
+        }
+        view?.showAddressCopied(userDataToCopy)
     }
 
     override fun onBuyClicked() {
@@ -240,9 +251,7 @@ class HomePresenter(
         /* Mapping elements according to visibility settings */
         val areZerosHidden = settingsInteractor.areZerosHidden()
         val mappedTokens = homeElementItemMapper.mapToItems(
-            tokens = state.tokens,
-            visibilityState = state.visibilityState,
-            isZerosHidden = areZerosHidden
+            tokens = state.tokens, visibilityState = state.visibilityState, isZerosHidden = areZerosHidden
         )
 
         view?.showTokens(mappedTokens, areZerosHidden)
@@ -260,8 +269,8 @@ class HomePresenter(
             view?.showRefreshing(isRefreshing = true)
             // We are waiting when tokenlist.json is being parsed and saved into the memory
             delay(1000L)
-            kotlin.runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }
-                .onSuccess {
+            kotlin
+                .runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }.onSuccess {
                     Timber.d("Successfully initial loaded tokens")
                 }
                 .onFailure {

@@ -6,53 +6,12 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
     id 'com.google.firebase.crashlytics'
-    id "io.sentry.android.gradle" version "3.1.1"
+    id "io.sentry.android.gradle" version "3.2.0"
 }
 
 apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
-
-def checkForSslPinning() {
-    def sslCertificate = rootProject.file("app/src/main/res/raw/cert.pem")
-    if (sslCertificate.exists() && sslCertificate.length() != 0) {
-        logger.quiet "(SSL): PEM for SSL pinning is found"
-    } else {
-        logger.quiet "(SSL): PEM for SSL pinning is NOT found"
-    }
-}
-
-def initApiKeys(defaultConfig) {
-    def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
-    def emptyString = "\"\""
-
-    defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrDefault('rpcPoolApiKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrDefault('moonpayKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrDefault('comparePublicKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrDefault('intercomApiKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrDefault('intercomAppId', emptyString)}")
-    defaultConfig.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrDefault('amplitudeKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "appsFlyerKey", "${apiKeysProperties.getOrDefault('appsFlyerKey', emptyString)}")
-}
-
-def initSentry(defaultConfig) {
-    def sentryProperties = new PropertiesFile(rootProject.file("sentry.properties"), logger)
-    defaultConfig.manifestPlaceholders = [SENTRY_DSN: sentryProperties.getOrThrow("auth.dsn")]
-}
-
-String getVersionBuild() {
-    def buildNumberFromCi = System.getenv("CIRCLE_BUILD_NUM")
-
-    if (buildNumberFromCi != null) {
-        return VERSION_BUILD as Integer + buildNumberFromCi.toInteger()
-    } else {
-        return VERSION_BUILD
-    }
-}
-
-String getBuildAppFileName() {
-    def taskNumberWithoutSlash = taskNumber().replace("/", "-")
-    "p2p_wallet_${getVersionBuild()}_${VERSION_NAME}_${taskNumberWithoutSlash}"
-}
+apply from: "$project.rootDir/scripts/properties.gradle"
 
 android {
     compileSdkVersion sdkCompileVersion
@@ -177,6 +136,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
@@ -292,11 +252,11 @@ dependencies {
     implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
 
     // Lottie
-    def lottieVersion = '3.5.0'
+    def lottieVersion = '4.0.0'
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Sentry
-    def sentryVersion = '6.1.3'
+    def sentryVersion = '6.6.0'
     implementation "io.sentry:sentry-android:$sentryVersion"
     implementation "io.sentry:sentry-android-fragment:$sentryVersion"
     implementation "io.sentry:sentry-android-core:$sentryVersion"

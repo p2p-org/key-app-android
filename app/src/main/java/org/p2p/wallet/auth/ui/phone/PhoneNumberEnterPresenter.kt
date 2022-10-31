@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.phone
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
@@ -14,6 +13,7 @@ import org.p2p.wallet.auth.repository.GatewayServiceErrorHandler
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
 import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.launch
 
 private const val MAX_PHONE_NUMBER_TRIES = 5
 private const val DEFAULT_BLOCK_TIME_IN_MINUTES = 10
@@ -23,7 +23,7 @@ class PhoneNumberEnterPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
-    private val gatewayServiceErrorHandler: GatewayServiceErrorHandler
+    private val gatewayServiceErrorHandler: GatewayServiceErrorHandler,
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
     private var selectedCountryCode: CountryCode? = null

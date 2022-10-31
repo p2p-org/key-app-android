@@ -14,7 +14,7 @@ interface NewCreatePinContract {
         fun vibrate(duration: Long)
         fun showLoading(isLoading: Boolean)
         fun navigateBack()
-        fun navigateToMain()
+        fun navigateToMain(withAnimation: Boolean)
         fun showBiometricDialog(biometricCipher: Cipher)
         fun navigateToRegisterUsername()
     }

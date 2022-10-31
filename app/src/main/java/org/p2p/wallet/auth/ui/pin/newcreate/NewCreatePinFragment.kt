@@ -6,13 +6,15 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.ui.reserveusername.OnboardingReserveUsernameFragment
+import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
+import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.PlayAnimation
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -120,17 +122,25 @@ class NewCreatePinFragment :
         requireContext().vibrate(duration)
     }
 
-    override fun navigateToMain() {
+    override fun navigateToMain(withAnimation: Boolean) {
         binding.pinView.onSuccessPin()
 
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        val actions = if (withAnimation) {
+            arrayListOf<MainFragmentOnCreateAction>(PlayAnimation(R.raw.raw_animation_applause))
+        } else {
+            arrayListOf()
+        }
+        popAndReplaceFragment(
+            MainFragment.create(actions),
+            inclusive = true
+        )
     }
 
     override fun navigateToRegisterUsername() {
         binding.pinView.onSuccessPin()
 
         popAndReplaceFragment(
-            OnboardingReserveUsernameFragment.create(ReserveUsernameOpenedFrom.ONBOARDING),
+            ReserveUsernameFragment.create(ReserveUsernameOpenedFrom.ONBOARDING),
             inclusive = true
         )
     }
