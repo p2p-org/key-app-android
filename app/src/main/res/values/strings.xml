@@ -479,6 +479,7 @@
     <string name="transaction_details_fee">Fee</string>
     <string name="transaction_details_fee_free">Free by Key App</string>
     <string name="transaction_details_number">Block number</string>
+    <string name="transaction_details_transaction_id_copied">✅ Transaction ID was copied</string>
     <string name="transaction_details_sender_address_copied">✅ Sender\'s address was copied</string>
     <string name="transaction_details_sender_username_copied">✅ Sender\'s username was copied</string>
     <string name="transaction_details_receiver_address_copied">✅ Receiver\'s address was copied</string>

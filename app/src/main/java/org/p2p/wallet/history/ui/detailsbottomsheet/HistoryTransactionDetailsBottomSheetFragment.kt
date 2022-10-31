@@ -110,11 +110,11 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
     override fun showSignature(signature: String) {
         with(binding) {
+            transactionIdTextView.text = signature
             transactionIdTextView.setOnClickListener {
                 requireContext().copyToClipBoard(signature)
-                showUiKitSnackBar(messageResId = R.string.common_copied)
+                showUiKitSnackBar(messageResId = R.string.transaction_details_transaction_id_copied)
             }
-            transactionIdTextView.text = signature
             doneButton.setOnClickListener {
                 dismiss()
             }
