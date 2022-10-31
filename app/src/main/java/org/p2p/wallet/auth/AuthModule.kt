@@ -9,7 +9,6 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.GatewayServiceModule
 import org.p2p.wallet.auth.gateway.parser.CountryCodeHelper
@@ -133,14 +132,8 @@ object AuthModule {
                 mapper = get(),
                 gson = get(),
                 authRepository = get(),
-                torusNetworkEnv = androidContext().getString(
-                    if (BuildConfig.DEBUG) R.string.torusDebugNetwork
-                    else R.string.torusReleaseNetwork
-                ),
-                torusLogLevel = androidContext().getString(
-                    if (BuildConfig.DEBUG) R.string.torusDebugLogLevel
-                    else R.string.torusReleaseLogLevel
-                )
+                torusNetworkEnv = androidContext().getString(R.string.torusNetwork),
+                torusLogLevel = androidContext().getString(R.string.torusLogLevel)
             )
         }
         singleOf(::SignUpFlowDataLocalRepository)

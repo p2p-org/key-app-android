@@ -41,6 +41,11 @@ class SeedPhraseAdapter(
         }
     }
 
+    override fun onViewRecycled(holder: SeedPhraseWordViewHolder) {
+        holder.onViewRecycled()
+        super.onViewRecycled(holder)
+    }
+
     fun replaceSecretKeys(seedPhrase: List<SeedPhraseWord>) {
         clear()
         addAllSecretKeys(seedPhrase)
@@ -52,7 +57,7 @@ class SeedPhraseAdapter(
         }
 
         data.add(seedPhraseWord)
-        notifyItemInserted(data.size)
+        notifyItemInserted(data.lastIndex)
     }
 
     fun showFocusOnLastItem() {
@@ -70,11 +75,11 @@ class SeedPhraseAdapter(
     }
 
     fun clear() {
-        val dataSize = data.size
+        val dataSize = data.lastIndex
         data.clear()
         notifyItemRangeRemoved(0, dataSize)
         data.add(SeedPhraseWord.EMPTY_WORD)
-        notifyItemInserted(data.size - 1)
+        notifyItemInserted(data.lastIndex)
 
         onSeedPhraseChanged(data)
     }
@@ -97,7 +102,7 @@ class SeedPhraseAdapter(
                 } else {
                     /* If there is no empty elements, then this is a new item */
                     data.add(item)
-                    notifyItemInserted(data.size - 1)
+                    notifyItemInserted(data.lastIndex)
                 }
             }
 
@@ -117,7 +122,7 @@ class SeedPhraseAdapter(
 
     private fun updateSecretKey(seedPhraseWord: SeedPhraseWord) {
         /* Updating current viewHolder, where editText is active */
-        val index = data.size - 1
+        val index = data.lastIndex
         data[index] = seedPhraseWord
         notifyItemChanged(index, seedPhraseWord)
 
