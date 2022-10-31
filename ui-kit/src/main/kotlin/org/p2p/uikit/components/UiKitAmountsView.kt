@@ -8,10 +8,10 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetAmountsViewBinding
+import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.showSoftKeyboard
 
@@ -19,6 +19,8 @@ enum class FocusField {
     TOKEN,
     CURRENCY
 }
+
+private const val MAX_CURRENCY_FRACTION_LENGTH = 2
 
 class UiKitAmountsView @JvmOverloads constructor(
     context: Context,
@@ -77,18 +79,20 @@ class UiKitAmountsView @JvmOverloads constructor(
     }
 
     fun setOnTokenAmountChangeListener(onTokenAmountChange: (String) -> Unit) {
-        tokenTextWatcher = binding.editTextTokenAmount.doAfterTextChanged {
+        tokenTextWatcher = AmountFractionTextWatcher.installOn(binding.editTextTokenAmount) {
             val amountWithoutSpaces = it.toString().replace(" ", "")
             onTokenAmountChange(amountWithoutSpaces)
         }
     }
 
     fun setOnCurrencyAmountChangeListener(onCurrencyAmountChange: (String) -> Unit) {
-        currencyTextWatcher =
-            binding.editTextCurrencyAmount.doAfterTextChanged {
-                val amountWithoutSpaces = it.toString().replace(" ", "")
-                onCurrencyAmountChange(amountWithoutSpaces)
-            }
+        currencyTextWatcher = AmountFractionTextWatcher.installOn(
+            binding.editTextCurrencyAmount,
+            maxSymbolsAllowed = MAX_CURRENCY_FRACTION_LENGTH
+        ) {
+            val amountWithoutSpaces = it.replace(" ", "")
+            onCurrencyAmountChange(amountWithoutSpaces)
+        }
     }
 
     fun setOnSelectTokenClickListener(onSelectTokenClick: () -> Unit) {

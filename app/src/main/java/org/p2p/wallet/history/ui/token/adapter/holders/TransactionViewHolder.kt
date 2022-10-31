@@ -103,11 +103,6 @@ class TransactionViewHolder(
     }
 
     private fun setStatus(transaction: HistoryTransaction) {
-        val status = if (transaction is HistoryTransaction.Transfer) {
-            transaction.status
-        } else {
-            null
-        }
-        binding.transactionTokenImageView.setStatus(status)
+        binding.transactionTokenImageView.setStatus(transaction.status)
     }
 }

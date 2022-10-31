@@ -18,7 +18,7 @@ import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 
-private const val DAY_IN_MILLISECONDS = (60 * 60 * 24) / 5
+private const val DAY_IN_MILLISECONDS = (60 * 60 * 24)
 private const val PAGE_SIZE = 20
 
 class HistoryInteractor(
@@ -38,20 +38,32 @@ class HistoryInteractor(
     private val historyStreamSources = mutableListOf<HistoryStreamSource>()
 
     private suspend fun initStreamSources() {
-        historyStreamSources.addAll(
-            userInteractor.getUserTokens().map {
+        /**
+         * Handle state when user tokens have not loaded tokens
+         * Reload user tokens, then try to fetch signatures of each user token
+         */
+        if (userInteractor.getUserTokens().isEmpty()) {
+            userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = false)
+        }
+
+        val userAccountStreamSources = userInteractor.getUserTokens()
+            .map {
                 val accountStreamSource = AccountStreamSource(it.publicKey, rpcSignatureRepository)
                 accountsStreamSources[it.publicKey] = accountStreamSource
                 accountStreamSource
             }
-        )
+
+        historyStreamSources.addAll(userAccountStreamSources)
+
         multipleStreamSource = MultipleStreamSource(historyStreamSources, serviceScope)
     }
 
     suspend fun loadTransactions(isRefresh: Boolean = false): List<HistoryTransaction> {
+
         if (historyStreamSources.isEmpty()) {
             initStreamSources()
         }
+
         if (isRefresh) {
             allSignatures.clear()
             tokenSignaturesMap.clear()
@@ -97,12 +109,14 @@ class HistoryInteractor(
         val transactionsSignatures = mutableListOf<HistoryStreamItem>()
         while (true) {
             val firstItem = multipleStreamSource.currentItem() ?: break
-            val lastSignatureBlockTime = firstItem.streamSource?.blockTime ?: break
+            val lastSignatureBlockTime = firstItem.streamSource?.blockTime ?: 0L
             val time = lastSignatureBlockTime - DAY_IN_MILLISECONDS
 
             while (true) {
                 val currentItem = multipleStreamSource.next(StreamSourceConfiguration(time))
-                if (!allSignatures.contains(currentItem?.streamSource?.signature)) {
+                val signature = currentItem?.streamSource?.signature
+
+                if (!allSignatures.contains(signature)) {
                     transactionsSignatures.add(currentItem ?: break)
                 }
                 if (transactionsSignatures.size >= PAGE_SIZE) {
@@ -124,11 +138,10 @@ class HistoryInteractor(
         while (true) {
             val firstItem = accountStreamSource.currentItem() ?: break
             val lastSignatureBlockTime = firstItem.streamSource?.blockTime ?: break
-
             val time = lastSignatureBlockTime - DAY_IN_MILLISECONDS
-
             while (true) {
                 val currentItem = accountStreamSource.next(StreamSourceConfiguration(time))
+
                 if (!allTransactionSignatures.contains(currentItem)) {
                     transactionsSignatures.add(currentItem ?: break)
                 }
@@ -147,7 +160,7 @@ class HistoryInteractor(
 
     private suspend fun loadTransactions(signatures: List<HistoryStreamItem>): List<HistoryTransaction> {
         val transactionDetails = transactionsRemoteRepository.getTransactions(tokenKeyProvider.publicKey, signatures)
-        return transactionDetails.mapToHistoryTransactions().distinctBy { it.signature }
+        return transactionDetails.mapToHistoryTransactions()
     }
 
     private suspend fun List<TransactionDetails>.mapToHistoryTransactions(): List<HistoryTransaction> {

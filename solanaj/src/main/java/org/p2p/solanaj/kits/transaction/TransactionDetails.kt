@@ -7,7 +7,7 @@ sealed class TransactionDetails(
     val signature: String,
     val blockTimeSeconds: Long,
     val slot: Int,
-    var error: List<Any>? = null,
+    var error: Any? = null,
     var status: ConfirmationStatus? = null,
     open var account: String? = null
 ) {
