@@ -10,7 +10,7 @@
     <style name="WalletBase.v21" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
-        <item name="colorPrimary">@color/icons_night</item>
+        <item name="colorPrimary">@color/night</item>
         <item name="colorPrimaryDark">@color/backgroundPrimary</item>
         <item name="colorSecondary">@color/backgroundDisabled</item>
         <item name="colorControlHighlight">@color/backgroundDisabled</item>
@@ -18,8 +18,8 @@
         <item name="android:windowBackground">@color/bg_snow</item>
 
 
-        <item name="colorAccent">@color/lime</item>
-        <item name="colorControlActivated">@color/lime</item>
+        <item name="colorAccent">@color/night</item>
+        <item name="colorControlActivated">@color/night</item>
         <item name="colorControlNormal">@color/textIconPrimary</item>
         <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>
 
