@@ -156,6 +156,7 @@ class HomeFragment :
                 }
             }
         }
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
