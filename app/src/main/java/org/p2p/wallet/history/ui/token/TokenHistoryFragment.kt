@@ -1,13 +1,12 @@
 package org.p2p.wallet.history.ui.token
 
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.appbar.AppBarLayout
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.glide.GlideManager
@@ -20,7 +19,7 @@ import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
-import org.p2p.wallet.common.ui.widget.OnOffsetChangedListener
+import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -41,7 +40,6 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import timber.log.Timber
-import kotlin.math.absoluteValue
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
@@ -89,16 +87,9 @@ class TokenHistoryFragment :
 
         refreshLayout.setOnRefreshListener { presenter.retryLoad() }
 
-        actionButtonsView.setupListeners()
+        viewActionButtons.setupListener()
 
         historyRecyclerView.setupHistoryList()
-
-        appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                val offset = (verticalOffset.toFloat() / appBarLayout.height).absoluteValue
-                (actionButtonsView as? OnOffsetChangedListener)?.onOffsetChanged(offset)
-            }
-        )
 
         retryButton.setOnClickListener {
             presenter.retryLoad()
@@ -122,25 +113,29 @@ class TokenHistoryFragment :
         }
     }
 
-    private fun ActionButtonsView.setupListeners() {
-        onBuyItemClickListener = {
-            replaceFragment(
-                if (newBuyFeatureToggle.value) {
-                    NewBuyFragment.create(tokenForHistory)
-                } else {
-                    BuySolanaFragment.create(tokenForHistory)
+    private fun ActionButtonsView.setupListener() {
+        listener = ActionButtonsViewClickListener { actionButton ->
+            when (actionButton) {
+                ActionButton.BUY_BUTTON -> {
+                    replaceFragment(
+                        if (newBuyFeatureToggle.value) {
+                            NewBuyFragment.create(tokenForHistory)
+                        } else {
+                            BuySolanaFragment.create(tokenForHistory)
+                        }
+                    )
                 }
-            )
-        }
-        onReceiveItemClickListener = {
-            receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)
-            replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
-        }
-        onSendClickListener = {
-            replaceFragment(SendFragment.create(tokenForHistory))
-        }
-        onSwapItemClickListener = {
-            replaceFragment(OrcaSwapFragment.create(tokenForHistory))
+                ActionButton.RECEIVE_BUTTON -> {
+                    receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)
+                    replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
+                }
+                ActionButton.SEND_BUTTON -> {
+                    replaceFragment(SendFragment.create(tokenForHistory))
+                }
+                ActionButton.SWAP_BUTTON -> {
+                    replaceFragment(OrcaSwapFragment.create(tokenForHistory))
+                }
+            }
         }
     }
 
@@ -173,8 +168,8 @@ class TokenHistoryFragment :
         binding.refreshLayout.isVisible = !isEmpty
     }
 
-    override fun showActions(items: List<ActionButton>) {
-        binding.actionButtonsView.setItems(items)
+    override fun hideBuyActionButton() {
+        binding.viewActionButtons.setActionButtonVisible(ActionButton.BUY_BUTTON, isVisible = false)
     }
 
     override fun showPagingState(newState: PagingState) {

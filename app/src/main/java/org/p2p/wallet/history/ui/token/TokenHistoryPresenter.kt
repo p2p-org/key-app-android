@@ -1,13 +1,9 @@
 package org.p2p.wallet.history.ui.token
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
-import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.home.model.Token
@@ -19,6 +15,9 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class TokenHistoryPresenter(
     private val token: Token.Active,
@@ -32,21 +31,12 @@ class TokenHistoryPresenter(
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     private val transactions = mutableListOf<HistoryTransaction>()
-    private val actions = mutableListOf(
-        ActionButton(R.string.home_receive, R.drawable.ic_receive_simple),
-        ActionButton(R.string.home_send, R.drawable.ic_send_medium),
-        ActionButton(R.string.main_swap, R.drawable.ic_swap_medium)
-    )
-
-    init {
-        if (token.isSOL || token.isUSDC) {
-            actions.add(0, ActionButton(R.string.home_buy, R.drawable.ic_plus))
-        }
-    }
 
     override fun attach(view: TokenHistoryContract.View) {
         super.attach(view)
-        view.showActions(actions)
+        if (!token.isSOL && !token.isUSDC) {
+            view.hideBuyActionButton()
+        }
     }
 
     private var pagingJob: Job? = null
@@ -99,7 +89,7 @@ class TokenHistoryPresenter(
             view?.showHistory(transactions)
             view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {
-            Timber.w(e, "Cancelled history next page load")
+            Timber.i(e, "Cancelled history next page load")
         } catch (e: EmptyDataException) {
             if (transactions.isEmpty()) {
                 view?.showHistory(emptyList())
@@ -108,7 +98,7 @@ class TokenHistoryPresenter(
             view?.showPagingState(PagingState.Idle)
         } catch (e: Throwable) {
             view?.showPagingState(PagingState.Error(e))
-            Timber.e(e, "Error getting transaction history")
+            Timber.e(e, "Error getting transaction history for token")
         }
     }
 
@@ -175,7 +165,7 @@ class TokenHistoryPresenter(
         launch {
             try {
                 tokenInteractor.closeTokenAccount(token.publicKey)
-                view?.showErrorSnackBar(R.string.details_account_closed_successfully)
+                view?.showUiKitSnackBar(messageResId = R.string.details_account_closed_successfully)
             } catch (e: Throwable) {
                 Timber.e(e, "Error closing account: ${token.publicKey}")
                 view?.showErrorMessage(e)
