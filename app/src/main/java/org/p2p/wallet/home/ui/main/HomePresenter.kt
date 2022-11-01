@@ -224,12 +224,18 @@ class HomePresenter(
     override fun toggleTokenVisibility(token: Token.Active) {
         launch {
             val visibility = when (token.visibility) {
-                TokenVisibility.SHOWN -> TokenVisibility.HIDDEN
-                TokenVisibility.HIDDEN -> TokenVisibility.SHOWN
-                TokenVisibility.DEFAULT -> if (settingsInteractor.areZerosHidden() && token.isZero) {
-                    TokenVisibility.SHOWN
-                } else {
+                TokenVisibility.SHOWN -> {
                     TokenVisibility.HIDDEN
+                }
+                TokenVisibility.HIDDEN -> {
+                    TokenVisibility.SHOWN
+                }
+                TokenVisibility.DEFAULT -> {
+                    if (settingsInteractor.areZerosHidden() && token.isZero) {
+                        TokenVisibility.SHOWN
+                    } else {
+                        TokenVisibility.HIDDEN
+                    }
                 }
             }
 

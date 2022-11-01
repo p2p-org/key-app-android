@@ -42,7 +42,6 @@ class TokenViewHolder(
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) = with(binding) {
         val token = item.token
 
-        root.setLockDrag(token.isSOL)
         layoutHide.clipToOutline = false
         layoutHide.clipToPadding = false
 
