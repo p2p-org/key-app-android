@@ -157,6 +157,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
 
         if (senderUsername != null) {
+            containerUsername.isVisible = true
             textViewUsernameValue.text = senderUsername
             textViewUsernameValue.setOnClickListener {
                 requireContext().copyToClipBoard(senderUsername)
