@@ -1,15 +1,15 @@
 package org.p2p.wallet.swap.ui.orca
 
+import androidx.activity.addCallback
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import androidx.activity.addCallback
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -52,8 +52,7 @@ private const val EXTRA_SETTINGS = "EXTRA_SETTINGS"
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
-class
-OrcaSwapFragment :
+class OrcaSwapFragment :
     BaseMvpFragment<OrcaSwapContract.View, OrcaSwapContract.Presenter>(R.layout.fragment_swap_orca),
     OrcaSwapContract.View {
 
