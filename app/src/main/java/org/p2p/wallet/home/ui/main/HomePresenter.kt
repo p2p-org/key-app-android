@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
@@ -156,6 +157,8 @@ class HomePresenter(
         userTokensFlowJob?.cancel()
         userTokensFlowJob = launch {
             userInteractor.getUserTokensFlow()
+                // remove SOL if it's zero
+                .map { userTokens -> userTokens.filterNot { it.isSOL && it.isZero } }
                 // emits two times when local tokens updated: with [] and actual list - strange
                 .collect { updatedTokens ->
                     Timber.d("local tokens change arrived")
@@ -167,22 +170,25 @@ class HomePresenter(
                     val isAccountEmpty = updatedTokens.all { it.isZero }
                     when {
                         isAccountEmpty -> {
-                            val tokensForBuy = userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
                             view?.showEmptyState(isEmpty = true)
+
+                            val tokensForBuy =
+                                userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
+                                    .sortedBy { tokenToBuy -> POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol) }
+                            val homeBannerItem = HomeBannerItem(
+                                id = R.id.home_banner_top_up,
+                                titleTextId = R.string.main_banner_title,
+                                subtitleTextId = R.string.main_banner_subtitle,
+                                buttonTextId = R.string.main_banner_button,
+                                drawableRes = R.drawable.ic_main_banner,
+                                backgroundColorRes = R.color.bannerBackgroundColor
+                            )
                             view?.showEmptyViewData(
                                 listOf(
-                                    HomeBannerItem(
-                                        id = R.id.home_banner_top_up,
-                                        titleTextId = R.string.main_banner_title,
-                                        subtitleTextId = R.string.main_banner_subtitle,
-                                        buttonTextId = R.string.main_banner_button,
-                                        drawableRes = R.drawable.ic_main_banner,
-                                        backgroundColorRes = R.color.bannerBackgroundColor
-                                    ),
-                                    resourcesProvider.getString(R.string.main_popular_tokens_header)
-                                ) + tokensForBuy.sortedBy { tokenToBuy ->
-                                    POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol)
-                                }
+                                    homeBannerItem,
+                                    resourcesProvider.getString(R.string.main_popular_tokens_header),
+                                    *tokensForBuy.toTypedArray()
+                                )
                             )
                         }
                         updatedTokens.isNotEmpty() -> {
@@ -218,12 +224,18 @@ class HomePresenter(
     override fun toggleTokenVisibility(token: Token.Active) {
         launch {
             val visibility = when (token.visibility) {
-                TokenVisibility.SHOWN -> TokenVisibility.HIDDEN
-                TokenVisibility.HIDDEN -> TokenVisibility.SHOWN
-                TokenVisibility.DEFAULT -> if (settingsInteractor.areZerosHidden() && token.isZero) {
-                    TokenVisibility.SHOWN
-                } else {
+                TokenVisibility.SHOWN -> {
                     TokenVisibility.HIDDEN
+                }
+                TokenVisibility.HIDDEN -> {
+                    TokenVisibility.SHOWN
+                }
+                TokenVisibility.DEFAULT -> {
+                    if (settingsInteractor.areZerosHidden() && token.isZero) {
+                        TokenVisibility.SHOWN
+                    } else {
+                        TokenVisibility.HIDDEN
+                    }
                 }
             }
 
@@ -269,8 +281,8 @@ class HomePresenter(
             view?.showRefreshing(isRefreshing = true)
             // We are waiting when tokenlist.json is being parsed and saved into the memory
             delay(1000L)
-            kotlin
-                .runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }.onSuccess {
+            kotlin.runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }
+                .onSuccess {
                     Timber.d("Successfully initial loaded tokens")
                 }
                 .onFailure {
