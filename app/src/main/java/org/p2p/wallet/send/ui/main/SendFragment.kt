@@ -60,6 +60,7 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getClipboardText
+import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
@@ -471,7 +472,7 @@ class SendFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.sendButton.setLoading(isLoading)
+        binding.sendButton.isLoadingState = isLoading
     }
 
     override fun showProgressDialog(transactionId: String, data: ShowProgress?) {
@@ -514,13 +515,13 @@ class SendFragment :
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
-        binding.sendButton.setStartIcon(iconRes)
+        iconRes?.let { binding.sendButton.icon = requireContext().getDrawableCompat(iconRes) }
 
         if (value.isEmpty()) {
-            binding.sendButton.setActionText(textRes)
+            binding.sendButton.setText(textRes)
         } else {
             val text = getString(textRes, *value)
-            binding.sendButton.setActionText(text)
+            binding.sendButton.text = text
         }
     }
 

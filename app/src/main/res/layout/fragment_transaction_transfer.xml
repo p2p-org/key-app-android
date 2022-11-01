@@ -245,7 +245,7 @@
                     android:drawablePadding="12dp"
                     android:text="@string/main_send_view_in_explorer"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="@color/textIconActive"
+                    android:textColor="@color/icons_night"
                     app:drawableEndCompat="@drawable/ic_external" />
 
             </FrameLayout>
@@ -370,7 +370,7 @@
                     android:paddingVertical="4dp"
                     android:text="@string/details_paid_by_key_app"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-                    android:textColor="@color/systemSuccessMain"
+                    android:textColor="@color/text_mint"
                     android:visibility="gone"
                     tools:visibility="visible" />
             </LinearLayout>

@@ -85,7 +85,7 @@
                 android:text="@string/swap_max_available"
                 android:textAllCaps="true"
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                android:textColor="@color/backgroundButtonPrimary"
+                android:textColor="@color/text_night"
                 app:layout_constraintBottom_toBottomOf="@id/availableTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/availableTextView" />
@@ -346,17 +346,19 @@
 
     </ScrollView>
 
-    <org.p2p.wallet.common.ui.widget.ProgressButton
+    <org.p2p.uikit.components.UiKitButton
         android:id="@+id/swapButton"
+        style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="@dimen/ui_kit_button_large_height"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-        app:buttonEnabled="false"
-        app:buttonText="@string/swap_choose_the_destination"
-        app:buttonTextColor="@color/textIconButtonPrimary"
-        tools:ignore="UnusedAttribute" />
+        android:layout_marginVertical="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:enabled="false"
+        android:text="@string/swap_choose_the_destination"
+        android:textColor="@color/lime"
+        app:iconGravity="textStart"
+        app:iconSize="24dp"
+        app:iconTint="@color/lime" />
 
 </LinearLayout>

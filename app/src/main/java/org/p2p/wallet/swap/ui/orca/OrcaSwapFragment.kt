@@ -38,6 +38,7 @@ import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.formatUsd
+import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -51,7 +52,8 @@ private const val EXTRA_SETTINGS = "EXTRA_SETTINGS"
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
-class OrcaSwapFragment :
+class
+OrcaSwapFragment :
     BaseMvpFragment<OrcaSwapContract.View, OrcaSwapContract.Presenter>(R.layout.fragment_swap_orca),
     OrcaSwapContract.View {
 
@@ -191,13 +193,13 @@ class OrcaSwapFragment :
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
-        binding.swapButton.setStartIcon(iconRes)
+        iconRes?.let { binding.swapButton.icon = requireContext().getDrawableCompat(iconRes) }
 
         if (value.isEmpty()) {
-            binding.swapButton.setActionText(textRes)
+            binding.swapButton.setText(textRes)
         } else {
             val text = getString(textRes, *value)
-            binding.swapButton.setActionText(text)
+            binding.swapButton.text = text
         }
     }
 
@@ -313,7 +315,7 @@ class OrcaSwapFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.swapButton.setLoading(isLoading)
+        binding.swapButton.isLoadingState = isLoading
     }
 
     override fun showProgressDialog(transactionId: String, data: ShowProgress?) {

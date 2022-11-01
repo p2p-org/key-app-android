@@ -18,7 +18,7 @@
         android:src="@drawable/ic_chevron_right"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/backgroundButtonPrimary"
+        app:tint="@color/icons_night"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminateOnly="true"
-        android:indeterminateTint="@color/textIconActive"
+        android:indeterminateTint="@color/icons_night"
         app:layout_constraintBottom_toBottomOf="@id/transactionImageView"
         app:layout_constraintTop_toTopOf="@id/transactionImageView" />
 
@@ -117,17 +117,20 @@
         app:layout_goneMarginTop="28dp"
         tools:text="k97y8u209j08fh98yu20uiei92jke...uiei" />
 
-    <org.p2p.wallet.common.ui.widget.ProgressButton
+    <org.p2p.uikit.components.UiKitButton
         android:id="@+id/doneButton"
+        style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/ui_kit_button_large_height"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonDrawableTint="@color/textIconButtonPrimary"
-        app:buttonText="@string/common_done"
-        app:buttonTextColor="@color/textIconButtonPrimary"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/common_done"
+        android:textColor="@color/lime"
+        app:iconGravity="textStart"
+        app:iconSize="24dp"
+        app:iconTint="@color/lime"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/transactionIdTextView" />
 

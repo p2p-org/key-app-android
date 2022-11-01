@@ -106,7 +106,7 @@ class TransactionDetailsBottomSheetFragment :
     override fun showStatus(status: TransactionStatus) {
         binding.statusTextView.setText(status.resValue)
         val color = when (status) {
-            TransactionStatus.COMPLETED -> R.color.color_green
+            TransactionStatus.COMPLETED -> R.color.text_mint
             TransactionStatus.PENDING -> R.color.systemWarningMain
             TransactionStatus.ERROR -> R.color.systemErrorMain
         }
@@ -160,7 +160,7 @@ class TransactionDetailsBottomSheetFragment :
         with(binding) {
             if (renBtcFee.isNullOrEmpty()) {
                 feesTextView.text = getString(R.string.transaction_details_fee_free)
-                feesTextView.setTextColor(getColor(R.color.textIconActive))
+                feesTextView.setTextColor(getColor(R.color.text_mint))
             } else {
                 feesTextView.setTextColor(getColor(R.color.textIconPrimary))
                 feesTextView.text = renBtcFee
