@@ -64,7 +64,7 @@ object EventNames {
     const val ONBOARD_CREATE_WALLET_CONFIRM_PIN = "Create_Confirm_Pin"
     const val ONBOARD_RESTORE_WALLET_BUTTON = "Restore_Wallet_Button"
     const val ONBOARD_SELECT_RESTORE_OPTION = "Select_Restore_Option"
-    const val ONBOARD_CREATION_PHONE_SCREEN = "Creation_phone_screen"
+    const val ONBOARD_CREATION_PHONE_SCREEN = "Creation_Phone_Screen"
     const val ONBOARD_PROPERTY_USER_RESTORE_METHOD = "User_Restore_Method"
     const val ONBOARD_PROPERTY_USER_DEVICE_SHARE = "User_Deviceshare"
 
