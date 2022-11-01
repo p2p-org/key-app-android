@@ -38,29 +38,6 @@
                     app:navigationIcon="@drawable/ic_back_night"
                     app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
                     app:titleTextColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/totalTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/bg_smoke"
-                    android:gravity="center"
-                    android:paddingTop="24dp"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
-                    android:textColor="@color/text_night"
-                    tools:text="21.9181 SOL" />
-
-                <TextView
-                    android:id="@+id/usdTotalTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/bg_smoke"
-                    android:gravity="center"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
-                    android:textColor="@color/text_night"
-                    tools:text="$12,380.00" />
-
-
             </LinearLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
@@ -72,6 +49,33 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
+        <TextView
+            android:id="@+id/totalTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_smoke"
+            android:gravity="center"
+            android:paddingTop="24dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
+            android:textColor="@color/text_night"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="21.9181 SOL" />
+
+        <TextView
+            android:id="@+id/usdTotalTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_smoke"
+            android:gravity="center"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+            android:textColor="@color/text_night"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/totalTextView"
+            tools:text="$12,380.00" />
+
         <org.p2p.wallet.common.ui.widget.ActionButtonsView
             android:id="@+id/view_action_buttons"
             android:layout_width="match_parent"
@@ -81,7 +85,7 @@
             android:paddingBottom="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/emptyStateLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/usdTotalTextView" />
 
         <include
             android:id="@+id/shimmerView"
@@ -123,7 +127,6 @@
 
         </LinearLayout>
 
-
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
@@ -143,7 +146,6 @@
                 android:paddingTop="24dp"
                 android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 tools:listitem="@layout/item_transaction" />
-
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -203,7 +205,6 @@
                 app:layout_constraintVertical_bias="0.7" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
