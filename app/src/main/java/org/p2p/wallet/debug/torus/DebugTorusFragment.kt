@@ -36,18 +36,8 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
                 verifierTextView.text = buildString {
                     append("verifier = $verifier")
                     append("\n")
-                    append("subVerifier = ${subVerifier ?: "Not applied"}")
+                    append("subVerifier = ${subVerifier.takeIf { !it.isNullOrBlank() } ?: "Not applied"}")
                 }
-            }
-
-            testUrlButton.setOnClickListener {
-                val testUrl = getString(R.string.torusTestUrl)
-                updateEnvironmentAndRestart(testUrl)
-            }
-
-            releaseUrlButton.setOnClickListener {
-                val releaseUrl = getString(R.string.torusBaseUrl)
-                updateEnvironmentAndRestart(releaseUrl)
             }
 
             confirmButton.setOnClickListener {
