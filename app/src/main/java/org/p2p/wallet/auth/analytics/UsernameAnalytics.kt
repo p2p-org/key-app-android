@@ -4,7 +4,7 @@ import org.p2p.wallet.common.analytics.Analytics
 
 private const val USERNAME_CREATION_BUTTON = "Username_Creation_Button"
 private const val USERNAME_SKIP_BUTTON = "Username_Skip_Button"
-private const val USERNAME_CREATION_SCREEN = "Username_Creation_screen"
+private const val USERNAME_CREATION_SCREEN = "Username_Creation_Screen"
 
 class UsernameAnalytics(private val tracker: Analytics) {
     fun logCreateUsernameClicked() {
