@@ -1,11 +1,11 @@
 package org.p2p.uikit.components
 
+import androidx.core.content.res.use
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.ViewGroup
-import androidx.core.content.res.use
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.google.android.material.button.MaterialButton
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.toPx
@@ -14,6 +14,13 @@ private const val LOADER_RADIUS_LARGE = 8f
 private const val LOADER_RADIUS_SMALL = 6F
 private const val LOADER_STROKE_WIDTH = 2f
 
+/**
+ * Properties
+ * style - the base style of the button (small / medium / large) (outline / filled / only text)
+ * android:textColor - text color
+ * android:backgroundTint - tint of the filled button
+ * app:strokeColor - tint of the borders for outline button
+ */
 class UiKitButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

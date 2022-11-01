@@ -19,7 +19,7 @@ import org.p2p.wallet.utils.withArgs
 
 private const val ARG_TRANSACTION_STATE = "ARG_TRANSACTION_STATE"
 
-class TransactionDetailsBottomSheet : BaseDoneBottomSheet() {
+class SolendTransactionDetailsBottomSheet : BaseDoneBottomSheet() {
 
     companion object {
         fun show(
@@ -28,12 +28,12 @@ class TransactionDetailsBottomSheet : BaseDoneBottomSheet() {
             state: SolendTransactionDetailsState,
             requestKey: String = ARG_REQUEST_KEY,
             resultKey: String = ARG_RESULT_KEY
-        ) = TransactionDetailsBottomSheet().withArgs(
+        ) = SolendTransactionDetailsBottomSheet().withArgs(
             ARG_TITLE to title,
             ARG_TRANSACTION_STATE to state,
             ARG_REQUEST_KEY to requestKey,
             ARG_RESULT_KEY to resultKey
-        ).show(fm, TransactionDetailsBottomSheet::javaClass.name)
+        ).show(fm, SolendTransactionDetailsBottomSheet::javaClass.name)
     }
 
     private val state: SolendTransactionDetailsState by args(ARG_TRANSACTION_STATE)

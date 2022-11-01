@@ -18,7 +18,7 @@ import org.p2p.wallet.databinding.FragmentSolendDepositBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendTransactionDetailsState
 import org.p2p.wallet.solend.ui.bottomsheet.SelectDepositTokenBottomSheet
-import org.p2p.wallet.solend.ui.bottomsheet.TransactionDetailsBottomSheet
+import org.p2p.wallet.solend.ui.bottomsheet.SolendTransactionDetailsBottomSheet
 import org.p2p.wallet.solend.ui.info.SolendInfoBottomSheet
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
@@ -235,7 +235,7 @@ class SolendDepositFragment :
             iconTint = getColorStateList(R.color.icons_night)
             backgroundTintList = getColorStateList(R.color.bg_lime)
             setOnClickListener {
-                TransactionDetailsBottomSheet.show(
+                SolendTransactionDetailsBottomSheet.show(
                     childFragmentManager,
                     getString(R.string.solend_transaction_details_title),
                     state
