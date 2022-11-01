@@ -78,7 +78,7 @@ class AppNotificationManager(
 
     private fun createDefaultNotificationBuilder(contentIntent: PendingIntent?): NotificationCompat.Builder =
         NotificationCompat.Builder(context, KEY_APP_NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_app_notification)
+            .setSmallIcon(R.drawable.ic_push_notification)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
