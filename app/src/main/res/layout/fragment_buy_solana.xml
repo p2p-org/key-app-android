@@ -201,13 +201,17 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <org.p2p.wallet.common.ui.widget.ProgressButton
+    <org.p2p.uikit.components.UiKitButton
         android:id="@+id/continueButton"
+        style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/ui_kit_button_large_height"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="16dp"
-        app:buttonEnabled="false"
-        app:buttonText="@string/buy_continue_on_moonpay" />
-
+        android:backgroundTint="@color/bg_night"
+        android:enabled="false"
+        android:text="@string/buy_continue_on_moonpay"
+        android:textColor="@color/lime"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/transactionIdTextView" />
 </LinearLayout>
