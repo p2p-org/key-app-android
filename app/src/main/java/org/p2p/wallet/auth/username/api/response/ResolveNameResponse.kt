@@ -6,7 +6,7 @@ import org.p2p.wallet.utils.Base58String
 
 data class ResolveNameResponse(
     @SerializedName("name")
-    val fullDomainUsername: String,
+    val usernameWithDomain: String,
     @SerializedName("parent")
     val parentDomainAddress: Base58String,
     @SerializedName("owner")

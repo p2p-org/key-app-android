@@ -69,35 +69,36 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             showDate(transaction.date.toDateTimeString())
             showStatus(transaction.status)
 
-            showSignature(transaction.signature)
+            showTransactionId(transaction.signature)
             showAddresses(transaction.sourceAddress, transaction.destinationAddress)
 
             val usdTotal = transaction.getReceivedUsdAmount()
             val total = transaction.getFormattedAmount()
             showAmount(total, usdTotal)
             showFee()
-            showBlockNumber(transaction.getBlockNumber())
+
+            transaction.getBlockNumber()?.also { showBlockNumber(it) }
+
             showSwapView(transaction.sourceIconUrl, transaction.destinationIconUrl)
         }
     }
 
     private suspend fun parseTransfer(transaction: HistoryTransaction.Transfer) {
         view?.apply {
+            showTransferView(transaction.getIcon())
+            showAmount(
+                amountToken = transaction.getFormattedTotal(),
+                amountUsd = transaction.getFormattedAmount()
+            )
             showDate(transaction.date.toDateTimeString())
-            showStatus(transaction.status)
-            showSignature(transaction.signature)
             showTransferAddress(
                 isSend = transaction.isSend,
                 senderAddress = transaction.senderAddress,
                 receiverAddress = transaction.destination
             )
-            showAmount(
-                amountToken = transaction.getFormattedTotal(),
-                amountUsd = transaction.getFormattedAmount()
-            )
             showFee()
-            showBlockNumber(transaction.getBlockNumber())
-            showTransferView(transaction.getIcon())
+            showStatus(transaction.status)
+            showTransactionId(transaction.signature)
         }
     }
 
@@ -107,12 +108,12 @@ class HistoryTransactionDetailsBottomSheetPresenter(
         if (isSend) {
             view?.showReceiverAddress(
                 receiverAddress = transferActorAddress,
-                receiverUsername = transferActorUsername?.fullUsername
+                receiverUsername = transferActorUsername?.username?.fullUsername
             )
         } else {
             view?.showSenderAddress(
                 senderAddress = transferActorAddress,
-                senderUsername = transferActorUsername?.fullUsername
+                senderUsername = transferActorUsername?.username?.fullUsername
             )
         }
     }
@@ -127,14 +128,14 @@ class HistoryTransactionDetailsBottomSheetPresenter(
         view?.apply {
             showDate(transaction.date.toDateTimeString())
 
-            showSignature(transaction.signature)
+            showTransactionId(transaction.signature)
             showAddresses(transaction.senderAddress, transaction.destination)
 
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
             showFee()
-            showBlockNumber(transaction.getBlockNumber())
+            transaction.getBlockNumber()?.also { showBlockNumber(it) }
             showTransferView(transaction.getIcon())
         }
     }

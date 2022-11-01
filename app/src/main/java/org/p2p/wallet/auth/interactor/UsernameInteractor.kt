@@ -45,7 +45,7 @@ class UsernameInteractor(
             val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
             sharedPreferences.edit {
                 if (usernameDetails != null) {
-                    putString(KEY_USERNAME, usernameDetails.fullUsername)
+                    putString(KEY_USERNAME, usernameDetails.username.value)
                     Timber.i("Username restored for ${owner.base58Value}")
                 } else {
                     // removing legacy usernames .p2p.sol

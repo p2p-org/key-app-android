@@ -13,3 +13,5 @@ fun StringBuilder.appendWhitespace() {
 fun String.ellipsizeAddress() = take(4) + "…" + takeLast(4)
 
 fun String.removeWhiteSpaces(): String = replace(" ", emptyString())
+
+fun Char.isDot(): Boolean = equals('.')

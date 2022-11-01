@@ -25,7 +25,6 @@ import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.p2p.wallet.utils.withTextOrGone
 
 private const val EXTRA_STATE = "EXTRA_STATE"
 
@@ -108,7 +107,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
         binding.statusTextView.setTextColor(getColor(color))
     }
 
-    override fun showSignature(signature: String) {
+    override fun showTransactionId(signature: String) {
         with(binding) {
             transactionIdTextView.text = signature
             transactionIdTextView.setOnClickListener {
@@ -218,9 +217,9 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
-    override fun showBlockNumber(blockNumber: String?) {
-        binding.blockNumberTextView.withTextOrGone(blockNumber)
-        binding.blockNumberTitleTextView.isVisible = !blockNumber.isNullOrEmpty()
+    override fun showBlockNumber(blockNumber: String) {
+        binding.containerBlockNumber.isVisible = true
+        binding.blockNumberTextView.text = blockNumber
     }
 
     override fun showLoading(isLoading: Boolean) {
