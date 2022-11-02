@@ -50,7 +50,7 @@ jobs:
         run: ./gradlew testDebug
 
   android-build-pre-release:
-    name: "Run build internal artifacts"
+    name: "Run build pre-release artifacts"
     needs:
       - android-lint
       - android-unit-tests
