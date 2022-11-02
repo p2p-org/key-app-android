@@ -4,7 +4,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.p2p.wallet.appsfly.AppsFlyerService
+import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.notification.FcmPushNotificationData

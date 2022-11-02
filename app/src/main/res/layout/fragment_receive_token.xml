@@ -12,7 +12,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/backgroundButtonPrimary"
+        android:background="@color/bg_night"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_close_white"
         app:title="@string/home_receive"

@@ -109,9 +109,9 @@
             android:backgroundTint="@color/backgroundApp"
             android:foreground="?selectableItemBackground"
             app:buttonDrawableStart="@drawable/ic_copy"
-            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonDrawableTint="@color/icons_night"
             app:buttonText="@string/auth_copy"
-            app:buttonTextColor="@color/backgroundButtonPrimary" />
+            app:buttonTextColor="@color/text_night" />
 
         <View
             android:layout_width="1dp"
@@ -128,9 +128,9 @@
             android:backgroundTint="@color/backgroundApp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
             app:buttonDrawableStart="@drawable/ic_share_blue"
-            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonDrawableTint="@color/icons_night"
             app:buttonText="@string/auth_share"
-            app:buttonTextColor="@color/backgroundButtonPrimary" />
+            app:buttonTextColor="@color/text_night" />
 
         <View
             android:layout_width="1dp"
@@ -147,9 +147,9 @@
             android:backgroundTint="@color/backgroundApp"
             android:foreground="?selectableItemBackground"
             app:buttonDrawableStart="@drawable/ic_gallery"
-            app:buttonDrawableTint="@color/backgroundButtonPrimary"
+            app:buttonDrawableTint="@color/icons_night"
             app:buttonText="@string/auth_save"
-            app:buttonTextColor="@color/backgroundButtonPrimary" />
+            app:buttonTextColor="@color/text_night" />
     </LinearLayout>
 
 </merge>

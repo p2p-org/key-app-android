@@ -10,12 +10,12 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/backgroundButtonPrimary"
+        android:background="@color/bg_night"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_close_white"
         app:title="@string/home_receive"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18"
-        app:titleTextColor="@color/textIconButtonPrimary" />
+        app:titleTextColor="@color/text_snow" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
@@ -135,9 +135,9 @@
                 android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
                 app:buttonBackground="@color/backgroundPrimary"
                 app:buttonDrawableEnd="@drawable/ic_external"
-                app:buttonDrawableTint="@color/backgroundButtonPrimary"
+                app:buttonDrawableTint="@color/icons_night"
                 app:buttonText="@string/receive_view_bitcoin_explorer"
-                app:buttonTextColor="@color/backgroundButtonPrimary"
+                app:buttonTextColor="@color/text_night"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/attentionView"
                 app:layout_constraintVertical_bias="1" />

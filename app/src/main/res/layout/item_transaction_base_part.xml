@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toStartOf="@id/totalTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Recieve" />
+        tools:text="Receive" />
 
     <TextView
         android:id="@+id/subtitleTextView"

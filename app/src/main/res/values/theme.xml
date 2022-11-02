@@ -2,9 +2,7 @@
 <resources>
 
     <style name="WalletTheme.Launcher" parent="WalletTheme">
-        <!-- todo: revert back before key app redesign is finished and published -->
-        <!-- todo: https://p2pvalidator.atlassian.net/browse/PWN-5100 -->
-        <!--        <item name="android:windowBackground">@drawable/bg_splash_screen</item>-->
+<!--        <item name="android:windowBackground">@drawable/bg_splash_screen</item>-->
     </style>
 
     <style name="WalletTheme" parent="WalletBase.v21" />
@@ -12,16 +10,16 @@
     <style name="WalletBase.v21" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
-        <item name="colorPrimary">@color/backgroundButtonPrimary</item>
+        <item name="colorPrimary">@color/night</item>
         <item name="colorPrimaryDark">@color/backgroundPrimary</item>
         <item name="colorSecondary">@color/backgroundDisabled</item>
         <item name="colorControlHighlight">@color/backgroundDisabled</item>
         <item name="windowSplashScreenBackground">@color/lime</item>
-       <item name="android:windowBackground">@color/bg_snow</item>
+        <item name="android:windowBackground">@color/bg_snow</item>
 
 
-        <item name="colorAccent">@color/textIconActive</item>
-        <item name="colorControlActivated">@color/backgroundButtonPrimary</item>
+        <item name="colorAccent">@color/night</item>
+        <item name="colorControlActivated">@color/night</item>
         <item name="colorControlNormal">@color/textIconPrimary</item>
         <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>
 
