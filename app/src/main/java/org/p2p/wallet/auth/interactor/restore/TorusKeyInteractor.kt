@@ -43,12 +43,12 @@ class TorusKeyInteractor(
         }
     }
 
-    private fun fillCreateFlowData(fetchedTorusKey: String, socialShareUserId: String){
+    private fun fillCreateFlowData(fetchedTorusKey: String, socialShareUserId: String) {
         createFlowDataLocalRepository.torusKey = fetchedTorusKey
         createFlowDataLocalRepository.signUpUserId = socialShareUserId
     }
 
-    private fun fillRestoreFlowData(fetchedTorusKey: String, socialShareUserId: String){
+    private fun fillRestoreFlowData(fetchedTorusKey: String, socialShareUserId: String) {
         restoreFlowDataLocalRepository.also { repository ->
             repository.torusKey = fetchedTorusKey
             repository.socialShareUserId = socialShareUserId
