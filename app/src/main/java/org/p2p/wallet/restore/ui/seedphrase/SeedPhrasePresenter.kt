@@ -34,7 +34,7 @@ class SeedPhrasePresenter(
         view?.showSeedPhraseValid(isValid)
 
         val isClearButtonVisible = newValue.isNotEmpty()
-        view?.showClearButton(isClearButtonVisible)
+        view?.setClearButtonVisible(isClearButtonVisible)
     }
 
     override fun attach(view: SeedPhraseContract.View) {
@@ -42,7 +42,7 @@ class SeedPhrasePresenter(
 
         // clear seedPhrase on each attach for security reasons
         currentSeedPhrase = emptyList()
-        view.addFirstKey(SeedPhraseWord.EMPTY_WORD)
+        view.addFirstSeedPhraseWord()
     }
 
     override fun setNewSeedPhrase(seedPhrase: List<SeedPhraseWord>) {
@@ -59,7 +59,7 @@ class SeedPhrasePresenter(
                         view?.navigateToDerievableAccounts(currentSeedPhrase)
                     } else {
                         // warning: updateSeedPhrase causes keyboard to appear, so add a check
-                        view?.updateSeedPhrase(currentSeedPhrase)
+                        view?.updateSeedPhraseView(currentSeedPhrase)
                         view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_words_failed)
                     }
                 }

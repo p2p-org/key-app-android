@@ -11,7 +11,6 @@ import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.uikit.utils.setTextColorRes
-import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -84,12 +83,12 @@ class SeedPhraseFragment :
         presenter.requestFocusOnLastWord()
     }
 
-    override fun updateSeedPhrase(seedPhrase: List<SeedPhraseWord>) {
-        binding.seedPhraseView.updateSecretKeys(seedPhrase)
+    override fun updateSeedPhraseView(seedPhrase: List<SeedPhraseWord>) {
+        binding.seedPhraseView.updateSeedPhrase(seedPhrase)
     }
 
     override fun navigateToDerievableAccounts(seedPhrase: List<SeedPhraseWord>) {
-        replaceFragment(DerivableAccountsFragment.create(seedPhrase.map { it.text }))
+        replaceFragment(DerivableAccountsFragment.create(secretKeys = seedPhrase.map { it.text }))
     }
 
     override fun showSeedPhraseValid(isSeedPhraseValid: Boolean) {
@@ -114,16 +113,16 @@ class SeedPhraseFragment :
         }
     }
 
-    override fun showClearButton(isVisible: Boolean) {
+    override fun setClearButtonVisible(isVisible: Boolean) {
         binding.seedPhraseView.showClearButton(isVisible)
     }
 
-    override fun addFirstKey(seedPhraseWord: SeedPhraseWord) {
-        binding.seedPhraseView.addSecretKey(SeedPhraseWord.EMPTY_WORD)
+    override fun addFirstSeedPhraseWord() {
+        binding.seedPhraseView.addSeedPhraseWord(SeedPhraseWord.EMPTY_WORD)
     }
 
     override fun showFocusOnLastWord() {
-        binding.seedPhraseView.showFocusOnLastKey()
+        binding.seedPhraseView.showFocusOnLastWord()
     }
 
     override fun showFile(file: File) {
@@ -143,7 +142,7 @@ class SeedPhraseFragment :
         } catch (e: ActivityNotFoundException) {
             Timber.i(file.toString())
             Timber.e(e, "Cannot open file")
-            toast(R.string.error_opening_file)
+            showUiKitSnackBar(messageResId = R.string.error_opening_file)
         }
     }
 }

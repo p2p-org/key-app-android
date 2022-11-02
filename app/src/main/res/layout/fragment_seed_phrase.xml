@@ -17,7 +17,7 @@
         app:menu="@menu/menu_onboarding_help"
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="@color/icons_night"
-        app:title="@string/seed_phrase_restore_wallet"
+        app:title="@string/seed_phrase_toolbar_title"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:titleTextColor="@color/text_night" />
 
@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="@string/seed_phrase_enter_title"
+        android:text="@string/seed_phrase_screen_title"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
         android:textColor="@color/text_mountain" />
 
