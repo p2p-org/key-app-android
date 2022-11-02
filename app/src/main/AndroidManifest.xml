@@ -93,7 +93,7 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_push_notification" />
+            android:resource="@drawable/ic_logo_key_app" />
 
         <service
             android:name=".push_notifications.AppFirebaseMessagingService"
