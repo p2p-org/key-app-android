@@ -88,7 +88,7 @@ class ResetSeedPhraseFragment :
             phraseTextView.setOnClickListener {
                 phraseTextView.isVisible = false
                 keysRecyclerView.isVisible = true
-                phraseAdapter.addSeedPhraseWordItem(SeedPhraseWord.EMPTY_WORD)
+                phraseAdapter.addWord(SeedPhraseWord.EMPTY_WORD)
             }
 
             messageTextView.text = buildSeedInfoText()

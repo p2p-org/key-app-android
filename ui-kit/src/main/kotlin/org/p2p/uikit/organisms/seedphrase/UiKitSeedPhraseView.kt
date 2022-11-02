@@ -30,7 +30,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<WidgetSeedPhraseViewBinding>()
 
-    private val phraseAdapter: SeedPhraseAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val seedPhraseAdapter: SeedPhraseAdapter by lazy(LazyThreadSafetyMode.NONE) {
         SeedPhraseAdapter(
             onSeedPhraseChanged = { keys ->
                 setPasteButtonBackgroundColor(
@@ -52,12 +52,12 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
             it.flexDirection = FlexDirection.ROW
             it.justifyContent = JustifyContent.FLEX_START
         }
-        binding.keysRecyclerView.attachAdapter(phraseAdapter)
+        binding.keysRecyclerView.attachAdapter(seedPhraseAdapter)
 
-        binding.textViewClear.setOnClickListener { phraseAdapter.clear() }
+        binding.textViewClear.setOnClickListener { seedPhraseAdapter.clear() }
         binding.textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
 
-        setOnClickListener { onShowKeyboardListener?.invoke(phraseAdapter.itemCount - 1) }
+        setOnClickListener { onShowKeyboardListener?.invoke(seedPhraseAdapter.itemCount - 1) }
     }
 
     private fun addSeedPhraseFromClipboard() {
@@ -65,7 +65,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         val keysFromClipboard = seedPhraseParser.parse(
             if (clipboardValue.split(" ").size == 1) "$clipboardValue " else clipboardValue
         )
-        if (keysFromClipboard.isNotEmpty()) phraseAdapter.addAllSecretKeys(keysFromClipboard)
+        if (keysFromClipboard.isNotEmpty()) seedPhraseAdapter.addAllWords(keysFromClipboard)
     }
 
     private fun setPasteButtonBackgroundColor(isLime: Boolean) {
@@ -74,15 +74,15 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     }
 
     fun updateSeedPhrase(secretKeys: List<SeedPhraseWord>) {
-        phraseAdapter.replaceSeedPhraseItems(secretKeys)
+        seedPhraseAdapter.replaceWords(secretKeys)
     }
 
     fun addSeedPhraseWord(seedPhraseWord: SeedPhraseWord) {
-        phraseAdapter.addSeedPhraseWordItem(seedPhraseWord)
+        seedPhraseAdapter.addWord(seedPhraseWord)
     }
 
     fun showFocusOnLastWord() {
-        phraseAdapter.showFocusOnLastItem()
+        seedPhraseAdapter.showFocusOnLastItem()
     }
 
     fun showSeedPhraseValid(isValid: Boolean) {
