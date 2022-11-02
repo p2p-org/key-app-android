@@ -10,7 +10,7 @@ data class Web3AuthErrorResponse(
 
     // changes during the mapping
     @Transient val errorType: ErrorType = ErrorType.UNDEFINED
-) : Error(errorMessage, Throwable(message = stack)) {
+) : Throwable(errorMessage, Throwable(message = stack)) {
     // https://github.com/p2p-org/web3-auth-sdk-new/blob/main/packages/sdk/src/errors/typeMap.ts
     enum class ErrorType(val code: Int) {
         UNDEFINED(code = -1),

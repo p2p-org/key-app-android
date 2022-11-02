@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.interactor.restore
 import com.google.gson.JsonObject
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
+import org.p2p.wallet.auth.model.RestoreError
 import org.p2p.wallet.auth.model.RestoreUserException
 import org.p2p.wallet.auth.model.RestoreUserResult
 import org.p2p.wallet.auth.model.RestoreUserResult.RestoreFailure
@@ -27,13 +28,16 @@ class UserRestoreInteractor(
     private val usernameInteractor: UsernameInteractor
 ) {
 
-    suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult = when (restoreFlow) {
-        is RestoreWallet.SocialPlusCustomShare -> tryRestoreUser(restoreFlow)
-        is RestoreWallet.DevicePlusCustomShare -> tryRestoreUser(restoreFlow)
-        is RestoreWallet.DevicePlusSocialShare -> tryRestoreUser(restoreFlow)
-        is RestoreWallet.DevicePlusCustomOrSocialPlusCustom -> tryRestoreUser(restoreFlow)
-        is RestoreWallet.DevicePlusSocialOrSocialPlusCustom -> tryRestoreUser(restoreFlow)
-        else -> error("Unknown restore flow")
+    suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult {
+        Timber.i("Started to restore user: ${restoreFlow::class.simpleName}")
+        return when (restoreFlow) {
+            is RestoreWallet.SocialPlusCustomShare -> tryRestoreUser(restoreFlow)
+            is RestoreWallet.DevicePlusCustomShare -> tryRestoreUser(restoreFlow)
+            is RestoreWallet.DevicePlusSocialShare -> tryRestoreUser(restoreFlow)
+            is RestoreWallet.DevicePlusCustomOrSocialPlusCustom -> tryRestoreUser(restoreFlow)
+            is RestoreWallet.DevicePlusSocialOrSocialPlusCustom -> tryRestoreUser(restoreFlow)
+            else -> error("Unknown restore flow")
+        }
     }
 
     private suspend fun tryRestoreUser(
@@ -49,6 +53,7 @@ class UserRestoreInteractor(
 
         val deviceShare = restoreFlowDataLocalRepository.deviceShare
         if (torusKey.isNullOrEmpty() && socialShareUserId.isNullOrEmpty()) {
+            Timber.i(RestoreError("Failed to restore with SocialPlusCustomShare"))
             RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound
         } else {
             val result: Web3AuthSignInResponse = web3AuthApi.triggerSignInNoDevice(

@@ -30,6 +30,7 @@ class NewOnboardingPresenter(
 
     override fun setIdToken(userId: String, idToken: String) {
         launch {
+            Timber.i("Google id token received: idTokenLen=${idToken.length}")
             view?.setButtonLoadingState(isScreenLoading = true)
             torusKeyRestoreInteractor.getTorusKey(googleSocialToken = idToken, socialShareUserId = userId)
             when (val result = userSignUpInteractor.trySignUpNewUser(userId)) {
@@ -37,7 +38,7 @@ class NewOnboardingPresenter(
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result, "Creating new user with device shared failed")
+                    Timber.e(result, result.cause.message)
                     view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {

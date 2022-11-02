@@ -1,9 +1,9 @@
 package org.p2p.wallet.auth.ui.restore.common
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.RestoreError
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
@@ -12,6 +12,7 @@ import org.p2p.wallet.auth.statemachine.RestoreState
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class CommonRestorePresenter(
     private val onboardingInteractor: OnboardingInteractor,
@@ -66,7 +67,7 @@ class CommonRestorePresenter(
                 view?.showUiKitSnackBar(message = restoreHandledState.message)
             }
             is RestoreFailureState.LogError -> {
-                Timber.i(restoreHandledState.message)
+                Timber.e(RestoreError(restoreHandledState.message))
             }
         }
     }
