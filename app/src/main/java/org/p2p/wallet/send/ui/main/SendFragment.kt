@@ -298,10 +298,16 @@ class SendFragment :
         }
     }
 
-    override fun showFullTarget(address: String, username: String) {
+    override fun showFullTarget(address: String, username: String, isKeyAppUsername: Boolean) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
-            targetImageView.setImageResource(R.drawable.ic_wallet_white)
+            if (isKeyAppUsername) {
+                targetImageView.setBackgroundResource(R.drawable.bg_rounded_lime_small)
+                targetImageView.setImageResource(R.drawable.ic_key_app_logo)
+            } else {
+                targetImageView.setBackgroundResource(R.drawable.bg_rounded_rain_small)
+                targetImageView.setImageResource(R.drawable.ic_wallet_night)
+            }
+
             targetTextView.text = username
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
@@ -330,8 +336,8 @@ class SendFragment :
 
     override fun showAddressOnlyTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
-            targetImageView.setImageResource(R.drawable.ic_wallet_white)
+            targetImageView.setBackgroundColor(getColor(R.color.bg_rain))
+            targetImageView.setImageResource(R.drawable.ic_wallet_night)
             targetTextView.text = address.cutEnd()
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
