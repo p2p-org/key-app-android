@@ -35,9 +35,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <include
-                    android:id="@+id/view_action_buttons"
-                    layout="@layout/layout_action_buttons"
+                <org.p2p.wallet.common.ui.widget.ActionButtonsView
+                    android:id="@+id/viewActionButtons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"

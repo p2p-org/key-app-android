@@ -1,9 +1,9 @@
 package org.p2p.wallet.history.ui.history
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.utils.attachAdapter
@@ -14,7 +14,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.history.ui.detailsbottomsheet.TransactionDetailsBottomSheetFragment
+import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -92,11 +92,14 @@ class HistoryFragment :
             is HistoryTransaction.Transfer,
             is HistoryTransaction.BurnOrMint -> {
                 val state = TransactionDetailsLaunchState.History(transaction)
-                TransactionDetailsBottomSheetFragment.show(
-                    parentFragmentManager, state
+                HistoryTransactionDetailsBottomSheetFragment.show(
+                    fragmentManager = parentFragmentManager,
+                    state = state
                 )
             }
-            else -> Timber.e("Unsupported transaction type: $transaction")
+            else -> {
+                Timber.e("Unsupported transaction type: $transaction")
+            }
         }
     }
 
