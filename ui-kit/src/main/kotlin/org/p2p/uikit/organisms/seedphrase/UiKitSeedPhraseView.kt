@@ -30,7 +30,7 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<WidgetSeedPhraseViewBinding>()
 
-    private val phraseAdapter: SeedPhraseAdapter by lazy {
+    private val phraseAdapter: SeedPhraseAdapter by lazy(LazyThreadSafetyMode.NONE) {
         SeedPhraseAdapter(
             onSeedPhraseChanged = { keys ->
                 setPasteButtonBackgroundColor(
@@ -73,15 +73,15 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         binding.textViewPaste.setBackgroundResource(backgroundRes)
     }
 
-    fun updateSecretKeys(secretKeys: List<SeedPhraseWord>) {
-        phraseAdapter.replaceSecretKeys(secretKeys)
+    fun updateSeedPhrase(secretKeys: List<SeedPhraseWord>) {
+        phraseAdapter.replaceSeedPhraseItems(secretKeys)
     }
 
-    fun addSecretKey(seedPhraseWord: SeedPhraseWord) {
-        phraseAdapter.addSecretKey(seedPhraseWord)
+    fun addSeedPhraseWord(seedPhraseWord: SeedPhraseWord) {
+        phraseAdapter.addSeedPhraseWordItem(seedPhraseWord)
     }
 
-    fun showFocusOnLastKey() {
+    fun showFocusOnLastWord() {
         phraseAdapter.showFocusOnLastItem()
     }
 

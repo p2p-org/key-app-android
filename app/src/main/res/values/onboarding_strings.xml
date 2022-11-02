@@ -130,8 +130,8 @@
     <string name="restore_shares_not_match_title">Shares aren\'t match</string>
     <string name="restore_shares_not_match_message">So sorry, baby\n\nIf you will write us, use error\ncode #10464</string>
     <!-- Seed phrase scree -->
-    <string name="seed_phrase_restore_wallet">Restore your wallet</string>
-    <string name="seed_phrase_enter_title">Enter your seed phrase</string>
+    <string name="seed_phrase_toolbar_title">Restore your wallet</string>
+    <string name="seed_phrase_screen_title">Enter your Solana wallet seed phrase</string>
     <string name="seed_phrase_button_disabled_text">Fill 12 or 24 words</string>
     <string name="seed_phrase_verify_checksum_failed">😔 The seed phrase doesn\'t match. Please try again</string>
     <string name="seed_phrase_verify_words_failed">😔 We found one or more typos. Please try again</string>
