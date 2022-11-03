@@ -7,6 +7,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.username.repository.UsernameRepository
+import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
@@ -47,17 +48,21 @@ class UsernameInteractor(
             val usernameDetails = usernameRepository.findUsernameDetailsByAddress(owner).firstOrNull()
             sharedPreferences.edit {
                 if (usernameDetails != null) {
-                    putString(KEY_USERNAME, usernameDetails.fullUsername)
+                    putString(KEY_USERNAME, usernameDetails.username.value)
                     Timber.i("Username restored for ${owner.base58Value}")
                 } else {
                     // removing legacy usernames .p2p.sol
                     remove(KEY_USERNAME)
                 }
             }
-            crashLogger.setCustomKey("username", usernameDetails?.fullUsername.orEmpty())
+            crashLogger.setCustomKey("username", usernameDetails?.username?.fullUsername.orEmpty())
         } catch (error: Throwable) {
             Timber.i(error, "Failed to restore username for ${owner.base58Value}")
         }
+    }
+
+    suspend fun findUsernameByAddress(address: Base58String): UsernameDetails? {
+        return usernameRepository.findUsernameDetailsByAddress(address).firstOrNull()
     }
 
     fun isUsernameExist(): Boolean = sharedPreferences.contains(KEY_USERNAME)

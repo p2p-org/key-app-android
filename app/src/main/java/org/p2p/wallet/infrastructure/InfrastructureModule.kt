@@ -11,7 +11,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
 import org.p2p.uikit.glide.GlideManager
-import org.p2p.wallet.appsfly.AppsFlyerService
+import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper

@@ -55,7 +55,7 @@ class RenBtcBuyBottomSheet : NonDraggableBottomSheetDialogFragment() {
             topTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
             amountTextView.text = getString(R.string.receive_amount_in_sol, priceInSol.toString())
             with(progressButton) {
-                setActionText(getString(R.string.receive_pay_and_countinue, priceInSol.toString()))
+                text = getString(R.string.receive_pay_and_countinue, priceInSol.toString())
                 setOnClickListener { onBuySelected() }
             }
             val attentionText = buildSpannedString {

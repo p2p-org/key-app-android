@@ -1,137 +1,76 @@
 package org.p2p.wallet.common.ui.widget
 
+import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import androidx.cardview.widget.CardView
-import androidx.core.view.updateLayoutParams
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.flexbox.FlexDirection.ROW
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent.SPACE_EVENLY
-import org.p2p.uikit.utils.requireContext
+import android.widget.FrameLayout
+import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemActionButtonBinding
-import org.p2p.wallet.databinding.WidgetTokenActionsBinding
-import org.p2p.wallet.utils.toDp
-import org.p2p.wallet.utils.toPx
+import org.p2p.wallet.databinding.LayoutActionButtonsBinding
 
-private const val DELTA_DP = 32
-private const val MARGIN_DP = 48
+fun interface ActionButtonsViewClickListener {
+    fun onActionButtonClicked(clickedButton: ActionButtonsView.ActionButton)
+}
 
 class ActionButtonsView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : CardView(context, attrs, defStyleAttr), OnOffsetChangedListener {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val maxHeightDp = context.resources.getDimension(R.dimen.action_button_views_height).toDp()
+    enum class ActionButton {
+        BUY_BUTTON, RECEIVE_BUTTON, SEND_BUTTON, SWAP_BUTTON
+    }
 
-    private val binding = WidgetTokenActionsBinding.inflate(
-        LayoutInflater.from(context), this
-    )
-    private val adapter = ButtonsAdapter(::onItemClicked)
-    var onBuyItemClickListener: (() -> Unit)? = null
-    var onReceiveItemClickListener: (() -> Unit)? = null
-    var onSendClickListener: (() -> Unit)? = null
-    var onSwapItemClickListener: (() -> Unit)? = null
+    private val binding: LayoutActionButtonsBinding = inflateViewBinding()
+
+    var listener: ActionButtonsViewClickListener? = null
 
     init {
-        radius = 16f.toPx()
-        elevation = 0f.toPx()
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = FlexboxLayoutManager(context).apply {
-            flexDirection = ROW
-            justifyContent = SPACE_EVENLY
-        }
-    }
-
-    override fun onOffsetChanged(offset: Float) {
-        val heightDp = maxHeightDp - (DELTA_DP * offset)
-        val heightPx = heightDp.toPx().toInt()
-        binding.root.updateLayoutParams { height = heightPx }
-        adapter.viewHolders.onEach { it.onOffsetChanged(offset) }
-    }
-
-    fun setItems(items: List<ActionButton>) {
-        adapter.setItems(items)
-    }
-
-    private fun onItemClicked(@StringRes actionResId: Int) {
-        when (actionResId) {
-            R.string.home_buy -> {
-                onBuyItemClickListener?.invoke()
-            }
-            R.string.home_receive -> {
-                onReceiveItemClickListener?.invoke()
-            }
-            R.string.home_send -> {
-                onSendClickListener?.invoke()
-            }
-            R.string.main_swap -> {
-                onSwapItemClickListener?.invoke()
-            }
-        }
-    }
-
-    private class ButtonsAdapter(private val block: (Int) -> Unit) :
-        RecyclerView.Adapter<ButtonsAdapter.ViewHolder>() {
-
-        val viewHolders = mutableListOf<OnOffsetChangedListener>()
-        private val data = mutableListOf<ActionButton>()
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-            ItemActionButtonBinding.inflate(LayoutInflater.from(parent.context), parent, false), block
-        ).apply {
-            (this as? OnOffsetChangedListener)?.let { viewHolders.add(it) }
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(data[position])
-        }
-
-        override fun getItemCount(): Int = data.size
-
-        fun setItems(items: List<ActionButton>) {
-            data.clear()
-            data.addAll(items)
-            notifyDataSetChanged()
-        }
-
-        inner class ViewHolder(
-            binding: ItemActionButtonBinding,
-            private val onItemClickListener: (Int) -> Unit
-        ) : RecyclerView.ViewHolder(binding.root), OnOffsetChangedListener {
-
-            init {
-                itemView.clipToOutline = true
-            }
-
-            val textView = binding.textView
-            val imageView = binding.imageView
-
-            override fun onOffsetChanged(offset: Float) = with(imageView) {
-                if (!isInLayout) {
-                    updateLayoutParams<LinearLayout.LayoutParams> { topMargin = -(MARGIN_DP.toPx() * offset).toInt() }
+        with(binding) {
+            viewActionBuy.apply {
+                textViewButtonTitle.setText(R.string.home_buy)
+                imageButtonButtonIcon.setImageResource(R.drawable.ic_plus)
+                imageButtonButtonIcon.setOnClickListener {
+                    listener?.onActionButtonClicked(ActionButton.BUY_BUTTON)
                 }
-                alpha = 1 - offset
             }
-
-            fun bind(item: ActionButton) {
-                textView.text = requireContext().getString(item.titleResId)
-                imageView.setImageResource(item.iconResId)
-                itemView.setOnClickListener { onItemClickListener.invoke(item.titleResId) }
+            viewActionReceive.apply {
+                textViewButtonTitle.setText(R.string.home_receive)
+                imageButtonButtonIcon.setImageResource(R.drawable.ic_receive_simple)
+                imageButtonButtonIcon.setOnClickListener {
+                    listener?.onActionButtonClicked(ActionButton.RECEIVE_BUTTON)
+                }
+            }
+            viewActionSend.apply {
+                textViewButtonTitle.setText(R.string.home_send)
+                imageButtonButtonIcon.setImageResource(R.drawable.ic_send_medium)
+                imageButtonButtonIcon.setOnClickListener {
+                    listener?.onActionButtonClicked(ActionButton.SEND_BUTTON)
+                }
+            }
+            viewActionSwap.apply {
+                textViewButtonTitle.setText(R.string.home_swap)
+                imageButtonButtonIcon.setImageResource(R.drawable.ic_swap_medium)
+                imageButtonButtonIcon.setOnClickListener {
+                    listener?.onActionButtonClicked(ActionButton.SWAP_BUTTON)
+                }
             }
         }
     }
 
-    data class ActionButton(@StringRes val titleResId: Int, @DrawableRes val iconResId: Int)
-}
+    var isVisible: Boolean
+        get() = binding.root.isVisible
+        set(value) {
+            binding.root.isVisible = value
+        }
 
-interface OnOffsetChangedListener {
-    fun onOffsetChanged(offset: Float)
+    fun setActionButtonVisible(button: ActionButton, isVisible: Boolean) {
+        when (button) {
+            ActionButton.BUY_BUTTON -> binding.viewActionBuy.viewContainer.isVisible = isVisible
+            ActionButton.RECEIVE_BUTTON -> binding.viewActionReceive.viewContainer.isVisible = isVisible
+            ActionButton.SEND_BUTTON -> binding.viewActionSend.viewContainer.isVisible = isVisible
+            ActionButton.SWAP_BUTTON -> binding.viewActionSwap.viewContainer.isVisible = isVisible
+        }
+    }
 }

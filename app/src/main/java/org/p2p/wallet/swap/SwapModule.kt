@@ -32,7 +32,7 @@ object SwapModule : InjectionModule {
 
     override fun create() = module {
         single {
-            val baseUrl = androidContext().getString(R.string.orca_api_base_url)
+            val baseUrl = androidContext().getString(R.string.orcaApiBaseUrl)
             getRetrofit(
                 baseUrl = baseUrl,
                 tag = "Orca",

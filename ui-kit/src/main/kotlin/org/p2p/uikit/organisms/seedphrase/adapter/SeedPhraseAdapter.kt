@@ -19,7 +19,7 @@ class SeedPhraseAdapter(
             parent = parent,
             onKeyRemovedListener = { removeSecretKey(it) },
             onUpdateKeyListener = { updateSecretKey(it) },
-            onInsertedListener = { addAllSecretKeys(it) },
+            onInsertedListener = { addAllWords(it) },
             onShowKeyboardListener = onShowKeyboardListener
         )
 
@@ -46,12 +46,12 @@ class SeedPhraseAdapter(
         super.onViewRecycled(holder)
     }
 
-    fun replaceSecretKeys(seedPhrase: List<SeedPhraseWord>) {
+    fun replaceWords(seedPhrase: List<SeedPhraseWord>) {
         clear()
-        addAllSecretKeys(seedPhrase)
+        addAllWords(seedPhrase)
     }
 
-    fun addSecretKey(seedPhraseWord: SeedPhraseWord) {
+    fun addWord(seedPhraseWord: SeedPhraseWord) {
         if (data.size >= SEED_PHRASE_SIZE_LONG) {
             return
         }
@@ -64,7 +64,7 @@ class SeedPhraseAdapter(
         val lastItem = data.lastOrNull()
 
         if (lastItem == null || lastItem.text.isNotEmpty()) {
-            addSecretKey(SeedPhraseWord.EMPTY_WORD)
+            addWord(SeedPhraseWord.EMPTY_WORD)
             return
         }
 
@@ -84,7 +84,7 @@ class SeedPhraseAdapter(
         onSeedPhraseChanged(data)
     }
 
-    fun addAllSecretKeys(seedPhrase: List<SeedPhraseWord>) {
+    fun addAllWords(seedPhrase: List<SeedPhraseWord>) {
         if (data.size >= SEED_PHRASE_SIZE_LONG) {
             return
         }
@@ -109,7 +109,7 @@ class SeedPhraseAdapter(
         onSeedPhraseChanged(data)
 
         /* Automatically adding new empty element, so user could continue entering the seed phrase */
-        addSecretKey(SeedPhraseWord.EMPTY_WORD)
+        addWord(SeedPhraseWord.EMPTY_WORD)
     }
 
     private fun removeSecretKey(index: Int) {
@@ -129,6 +129,6 @@ class SeedPhraseAdapter(
         onSeedPhraseChanged(data)
 
         /* Adding new item, to let user continue entering seed phrase */
-        addSecretKey(SeedPhraseWord.EMPTY_WORD)
+        addWord(SeedPhraseWord.EMPTY_WORD)
     }
 }

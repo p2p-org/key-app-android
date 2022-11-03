@@ -12,9 +12,7 @@ class HomeElementItemMapper {
         visibilityState: VisibilityState,
         isZerosHidden: Boolean
     ): List<HomeElementItem> {
-        val groups = tokens.groupBy { token ->
-            token.isDefinitelyHidden(isZerosHidden) && !token.isSOL
-        }
+        val groups: Map<Boolean, List<Token.Active>> = tokens.groupBy { it.isDefinitelyHidden(isZerosHidden) }
 
         val hiddenTokens = groups[true].orEmpty()
         val visibleTokens = groups[false].orEmpty()

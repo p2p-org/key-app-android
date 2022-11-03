@@ -8,12 +8,12 @@ import java.io.File
 interface SeedPhraseContract {
 
     interface View : MvpView {
-        fun updateSeedPhrase(seedPhrase: List<SeedPhraseWord>)
+        fun updateSeedPhraseView(seedPhrase: List<SeedPhraseWord>)
         fun navigateToDerievableAccounts(seedPhrase: List<SeedPhraseWord>)
         fun showFile(file: File)
         fun showSeedPhraseValid(isSeedPhraseValid: Boolean)
-        fun showClearButton(isVisible: Boolean)
-        fun addFirstKey(seedPhraseWord: SeedPhraseWord)
+        fun setClearButtonVisible(isVisible: Boolean)
+        fun addFirstSeedPhraseWord()
         fun showFocusOnLastWord()
     }
 

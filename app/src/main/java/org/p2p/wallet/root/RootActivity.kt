@@ -73,7 +73,7 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         deeplinksManager.mainFragmentManager = supportFragmentManager
         handleDeeplink()
 
-//        registerNetworkObserver()
+        registerNetworkObserver()
     }
 
     private fun logScreenOpenEvent() {

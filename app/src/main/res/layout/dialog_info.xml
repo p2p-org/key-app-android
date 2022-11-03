@@ -43,7 +43,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
-            android:textColor="@color/backgroundButtonPrimary"
+            android:textColor="@color/text_night"
             android:visibility="gone"
             tools:text="Go back"
             tools:visibility="visible" />
@@ -58,7 +58,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.Bold14"
-            android:textColor="@color/backgroundButtonPrimary"
+            android:textColor="@color/text_night"
             tools:text="Try again" />
 
     </LinearLayout>

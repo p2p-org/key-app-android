@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package org.p2p.wallet.common.crashlogging.impl
 
 import io.sentry.Breadcrumb
@@ -11,7 +12,6 @@ import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
  */
 private const val BREADCRUMB_CATEGORY = "SentryFacade"
 
-@Suppress("DEPRECATION")
 class SentryFacade : CrashLoggingFacade {
 
     override fun logInformation(information: String) {
@@ -44,6 +44,11 @@ class SentryFacade : CrashLoggingFacade {
     }
 
     override fun setCustomKey(key: String, value: Any) {
-        Sentry.setExtra(key, value.toString())
+        val validatedValue: String = if (value is String) {
+            value.takeIf(String::isNotBlank) ?: "-"
+        } else {
+            value.toString()
+        }
+        Sentry.setExtra(key, validatedValue)
     }
 }

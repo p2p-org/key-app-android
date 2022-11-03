@@ -8,21 +8,13 @@
     android:background="@color/backgroundPrimary"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:background="@color/backgroundPrimary"
-        app:liftOnScroll="true"
-        app:liftOnScrollTargetViewId="@id/scrollView">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/home_history"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Bold16" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="wrap_content"
+        app:title="@string/home_history"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        app:titleTextColor="@color/text_night" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
@@ -44,7 +36,8 @@
                 android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_transaction" />
+                tools:listitem="@layout/item_transaction"
+                tools:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/emptyStateLayout"
@@ -131,12 +124,15 @@
                     android:textColor="@color/textIconSecondary"
                     app:layout_constraintTop_toBottomOf="@id/textViewError" />
 
-                <org.p2p.wallet.common.ui.widget.ProgressButton
+                <org.p2p.uikit.components.UiKitButton
                     android:id="@+id/retryButton"
+                    style="@style/UiKit.Components.Button.Large"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/ui_kit_button_large_height"
                     android:layout_margin="16dp"
-                    app:buttonText="@string/common_try_again"
+                    android:backgroundTint="@color/bg_night"
+                    android:text="@string/common_try_again"
+                    android:textColor="@color/lime"
                     app:layout_constraintBottom_toBottomOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -148,7 +144,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize">
+        android:layout_marginTop="?actionBarSize"
+        tools:visibility="gone">
 
         <include
             android:id="@+id/shimmerView"

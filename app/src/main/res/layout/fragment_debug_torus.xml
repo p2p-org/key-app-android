@@ -34,22 +34,6 @@
             android:paddingHorizontal="24dp"
             tools:text="http://localhost" />
 
-        <Button
-            android:id="@+id/testUrlButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="16dp"
-            android:text="Use test torus url" />
-
-        <Button
-            android:id="@+id/releaseUrlButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="16dp"
-            android:text="Use release torus url" />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

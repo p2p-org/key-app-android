@@ -12,7 +12,7 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
-import org.p2p.wallet.appsfly.AppsFlyerService
+import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
