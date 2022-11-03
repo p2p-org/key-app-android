@@ -8,6 +8,7 @@ import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreHandledState
 import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.model.RestoreUserResult
+import org.p2p.wallet.auth.model.RestoreUserResult.RestoreFailure
 import org.p2p.wallet.auth.model.SecondaryFirstButton
 import org.p2p.wallet.auth.statemachine.RestoreState
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
@@ -15,6 +16,7 @@ import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 
+private const val TAG = "RestoreUserResultHandler"
 class RestoreUserResultHandler(
     private val resourcesProvider: ResourcesProvider,
     private val restoreStateMachine: RestoreStateMachine
@@ -22,25 +24,26 @@ class RestoreUserResultHandler(
 
     fun handleRestoreResult(result: RestoreUserResult): RestoreHandledState =
         when (result) {
-            is RestoreUserResult.RestoreFailure -> handleRestoreFailure(result)
+            is RestoreFailure -> handleRestoreFailure(result)
             is RestoreUserResult.RestoreSuccess -> RestoreSuccessState()
         }
 
-    private fun handleRestoreFailure(result: RestoreUserResult.RestoreFailure): RestoreHandledState =
-        when (result) {
-            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare -> {
+    private fun handleRestoreFailure(result: RestoreFailure): RestoreHandledState {
+        Timber.tag(TAG).i("Restore failed for ${result.javaClass.simpleName}")
+        return when (result) {
+            is RestoreFailure.SocialPlusCustomShare -> {
                 handleResult(result)
             }
-            is RestoreUserResult.RestoreFailure.DevicePlusSocialShare -> {
+            is RestoreFailure.DevicePlusSocialShare -> {
                 handleResult(result)
             }
-            is RestoreUserResult.RestoreFailure.DevicePlusCustomShare -> {
+            is RestoreFailure.DevicePlusCustomShare -> {
                 handleResult(result)
             }
-            is RestoreUserResult.RestoreFailure.DevicePlusSocialOrSocialPlusCustom -> {
+            is RestoreFailure.DevicePlusSocialOrSocialPlusCustom -> {
                 handleShareAreNotMatchResult()
             }
-            is RestoreUserResult.RestoreFailure.DevicePlusCustomOrSocialPlusCustom -> {
+            is RestoreFailure.DevicePlusCustomOrSocialPlusCustom -> {
                 handleShareAreNotMatchResult()
             }
             else -> {
@@ -48,6 +51,7 @@ class RestoreUserResultHandler(
                 error("Unknown restore error state for RestoreFailure: $result")
             }
         }
+    }
 
     private fun handleShareAreNotMatchResult(): RestoreHandledState {
         return RestoreFailureState.TitleSubtitleError(
@@ -67,9 +71,9 @@ class RestoreUserResultHandler(
         )
     }
 
-    private fun handleResult(result: RestoreUserResult.RestoreFailure.SocialPlusCustomShare): RestoreHandledState {
+    private fun handleResult(result: RestoreFailure.SocialPlusCustomShare): RestoreHandledState {
         return when (result) {
-            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound -> {
+            is RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound -> {
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.restore_how_to_continue),
                     subtitle = emptyString(),
@@ -80,7 +84,7 @@ class RestoreUserResultHandler(
                     imageViewResId = R.drawable.easy_to_start
                 )
             }
-            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare.SocialShareNotFound -> {
+            is RestoreFailure.SocialPlusCustomShare.SocialShareNotFound -> {
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.restore_no_wallet_title),
                     email = resourcesProvider.getString(R.string.onboarding_with_email, result.userEmailAddress),
@@ -93,7 +97,7 @@ class RestoreUserResultHandler(
                     )
                 )
             }
-            is RestoreUserResult.RestoreFailure.SocialPlusCustomShare.SocialShareNotMatch -> {
+            is RestoreFailure.SocialPlusCustomShare.SocialShareNotMatch -> {
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.restore_no_wallet_title),
                     email = resourcesProvider.getString(R.string.onboarding_with_email, result.userEmailAddress),
@@ -113,9 +117,9 @@ class RestoreUserResultHandler(
         }
     }
 
-    private fun handleResult(result: RestoreUserResult.RestoreFailure.DevicePlusSocialShare): RestoreHandledState {
+    private fun handleResult(result: RestoreFailure.DevicePlusSocialShare): RestoreHandledState {
         return when (result) {
-            is RestoreUserResult.RestoreFailure.DevicePlusSocialShare.SocialShareNotFound -> {
+            is RestoreFailure.DevicePlusSocialShare.SocialShareNotFound -> {
                 restoreStateMachine.updateState(RestoreState.DeviceSocialShareNotFoundState())
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.restore_no_wallet_title),
@@ -132,7 +136,7 @@ class RestoreUserResultHandler(
                     )
                 )
             }
-            is RestoreUserResult.RestoreFailure.DevicePlusSocialShare.DeviceAndSocialShareNotMatch -> {
+            is RestoreFailure.DevicePlusSocialShare.DeviceAndSocialShareNotMatch -> {
                 restoreStateMachine.updateState(RestoreState.DevicePlusSocialShareNotMatchState())
 
                 RestoreFailureState.TitleSubtitleError(
@@ -160,9 +164,9 @@ class RestoreUserResultHandler(
         }
     }
 
-    private fun handleResult(result: RestoreUserResult.RestoreFailure.DevicePlusCustomShare): RestoreHandledState =
+    private fun handleResult(result: RestoreFailure.DevicePlusCustomShare): RestoreHandledState =
         when (result) {
-            is RestoreUserResult.RestoreFailure.DevicePlusCustomShare.SharesDoesNotMatch -> {
+            is RestoreFailure.DevicePlusCustomShare.SharesDoesNotMatch -> {
                 restoreStateMachine.updateState(RestoreState.DevicePlusCustomShareNotMatchState())
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.auth_almost_done_title),
@@ -178,7 +182,7 @@ class RestoreUserResultHandler(
                     )
                 )
             }
-            is RestoreUserResult.RestoreFailure.DevicePlusCustomShare.UserNotFound -> {
+            is RestoreFailure.DevicePlusCustomShare.UserNotFound -> {
                 restoreStateMachine.updateState(RestoreState.DeviceCustomShareNotFound())
                 RestoreFailureState.TitleSubtitleError(
                     title = resourcesProvider.getString(R.string.error_wallet_not_found_title),

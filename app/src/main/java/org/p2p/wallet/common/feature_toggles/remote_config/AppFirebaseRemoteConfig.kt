@@ -14,7 +14,7 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
     private val remoteConfig: FirebaseRemoteConfig
         get() = FirebaseRemoteConfig.getInstance()
 
-    fun loadRemoteConfig(onConfigLoaded: () -> Unit) {
+    fun loadRemoteConfig(onConfigLoaded: (featureToggles: Map<String, String>) -> Unit) {
         // do not put it in release - we don't need to change fetch interval there
         if (BuildConfig.DEBUG) {
             remoteConfig.setConfigSettingsAsync(createRemoteConfigSettings())
@@ -29,13 +29,13 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
                 Timber.d("Remote config fetched and activated")
                 Timber.i("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
 
-                onConfigLoaded.invoke()
+                onConfigLoaded.invoke(allFeatureTogglesRaw())
             }
             .addOnFailureListener { error ->
                 isFetchFailed = true
                 Timber.e(IllegalStateException("Remote config is not fetched and activated", error))
 
-                onConfigLoaded.invoke()
+                onConfigLoaded.invoke(emptyMap())
             }
     }
 

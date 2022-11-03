@@ -7,6 +7,7 @@ import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.model.RestoreError
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.model.RestoreUserResult
@@ -141,16 +142,17 @@ class NewSmsInputPresenter(
     }
 
     private suspend fun handleRestoreResult(result: RestoreUserResult) {
-        when (val result = restoreUserResultHandler.handleRestoreResult(result)) {
+        when (val restoreResult = restoreUserResultHandler.handleRestoreResult(result)) {
             is RestoreFailureState.TitleSubtitleError -> {
-                view?.navigateToRestoreErrorScreen(result)
+                view?.navigateToRestoreErrorScreen(restoreResult)
             }
             is RestoreSuccessState -> {
                 restoreWalletInteractor.finishAuthFlow()
                 view?.navigateToPinCreate()
             }
             is RestoreFailureState.LogError -> {
-                Timber.i(result.message)
+                Timber.i("LogError for ${result::class.simpleName}")
+                Timber.e(RestoreError(restoreResult.message))
             }
         }
     }

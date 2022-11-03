@@ -27,7 +27,7 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     private var restoreUserKeyPair: TweetNaclFast.Signature.KeyPair? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("Account is generated and set: ${restoreUserKeyPair?.publicKey}")
+            Timber.tag(TAG).i("restoreUserKeyPair is generated and set: ${restoreUserKeyPair?.publicKey}")
         }
 
     var userPhoneNumber: PhoneNumber? = null
@@ -49,7 +49,7 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("thirdShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}")
+            Timber.tag(TAG).i("customShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}")
         }
 
     var encryptedMnemonicJson: JsonObject? = null
@@ -67,7 +67,7 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     var torusKey: String? = null
         set(value) {
             field = value
-            Timber.tag(TAG).i("socialShare is generated and set: ${torusKey?.length}")
+            Timber.tag(TAG).i("torusKey is generated and set: ${torusKey?.length}")
         }
 
     var socialShareUserId: String? = null

@@ -44,9 +44,9 @@ class CommonRestoreFragment :
     GoogleSignInHelper.GoogleSignInErrorHandler {
 
     companion object {
-        fun create(showBackButton: Boolean = true): CommonRestoreFragment = CommonRestoreFragment().withArgs(
-            ARG_SHOW_BACK_BUTTON to showBackButton
-        )
+        fun create(showBackButton: Boolean = true): CommonRestoreFragment =
+            CommonRestoreFragment()
+                .withArgs(ARG_SHOW_BACK_BUTTON to showBackButton)
 
         fun createWithoutBack(): CommonRestoreFragment = create(showBackButton = false)
     }

@@ -64,7 +64,10 @@ class NetworkServicesUrlProvider(
             Timber.e(IllegalArgumentException("torusSubVerifier is missing for release builds!"))
         }
 
-        return TorusEnvironment(url, verifier, subVerifier)
+        val torusEnvironment = TorusEnvironment(url, verifier, subVerifier)
+
+        Timber.i("Torus environment init: $torusEnvironment")
+        return torusEnvironment
     }
 
     fun saveTorusEnvironment(newUrl: String?, newVerifier: String?, newSubVerifier: String?) {
@@ -81,5 +84,6 @@ class NetworkServicesUrlProvider(
                 remove(KEY_TORUS_BASE_SUB_VERIFIER)
             }
         }
+        Timber.i("Torus environment changed and saved: $newUrl;$newVerifier;$newSubVerifier")
     }
 }

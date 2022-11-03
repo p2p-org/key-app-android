@@ -5,9 +5,6 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
@@ -16,6 +13,9 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
 import timber.log.Timber
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
@@ -223,7 +223,10 @@ class Web3AuthApiClient(
             Timber.tag(TAG).d(error)
             runCatching<Throwable> { mapper.fromNetworkError(error) }
                 .recover { it }
-                .onSuccess { continuation?.resumeWithException(it) }
+                .onSuccess {
+                    Timber.tag(TAG).e(it, "Web3Auth returned error")
+                    continuation?.resumeWithException(it)
+                }
         }
 
         @JavascriptInterface
