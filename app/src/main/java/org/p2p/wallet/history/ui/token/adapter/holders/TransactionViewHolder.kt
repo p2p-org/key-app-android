@@ -41,7 +41,7 @@ class TransactionViewHolder(
                 titleTextView.setText(transaction.getTitle())
                 subtitleTextView.text = transaction.signature.cutMiddle()
                 totalTextView.text = transaction.getTotal()
-                valueTextView.text = transaction.getValue()
+                valueTextView.withTextOrGone(transaction.getValue())
             }
         }
     }

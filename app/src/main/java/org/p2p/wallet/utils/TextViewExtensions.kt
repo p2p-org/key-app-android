@@ -5,7 +5,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 
 infix fun TextView.withTextOrGone(text: CharSequence?) {
-    if (text.isNullOrEmpty()) {
+    if (text.isNullOrEmpty() || text.contains("null")) {
         isVisible = false
         this.text = emptyString()
     } else {
