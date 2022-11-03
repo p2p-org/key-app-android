@@ -45,7 +45,7 @@ interface SendContract {
         fun showIndeterminateLoading(isLoading: Boolean)
         fun showIdleTarget()
         fun showWrongAddressTarget(address: String)
-        fun showFullTarget(address: String, username: String)
+        fun showFullTarget(address: String, username: String, isKeyAppUsername: Boolean)
         fun showEmptyBalanceTarget(address: String)
         fun showAddressOnlyTarget(address: String)
         fun showSearchScreen(usernames: List<SearchResult>)

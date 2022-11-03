@@ -6,7 +6,6 @@
     android:id="@+id/viewContainer"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:foreground="@drawable/ripple_button_large"
     android:gravity="center"
     android:orientation="vertical">
 

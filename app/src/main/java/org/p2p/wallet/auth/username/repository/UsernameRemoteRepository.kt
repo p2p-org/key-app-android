@@ -2,11 +2,14 @@ package org.p2p.wallet.auth.username.repository
 
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.username.api.RegisterUsernameServiceApi
 import org.p2p.wallet.auth.username.repository.mapper.RegisterUsernameServiceApiMapper
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
+import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.isDot
 import timber.log.Timber
 import kotlinx.coroutines.withContext
 
@@ -14,6 +17,7 @@ class UsernameRemoteRepository(
     private val usernameService: RegisterUsernameServiceApi,
     private val mapper: RegisterUsernameServiceApiMapper,
     private val rpcSolanaRepository: RpcSolanaRepository,
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val dispatchers: CoroutineDispatchers
 ) : UsernameRepository {
 
@@ -53,8 +57,16 @@ class UsernameRemoteRepository(
     ): List<UsernameDetails> = withContext(dispatchers.io) {
         val request = mapper.toResolveUsernameNetwork(username)
         val response = usernameService.resolveUsername(request)
-        mapper.fromNetwork(response)
-            .map { UsernameDetails(ownerAddress = it.domainOwnerAddress, fullUsername = it.fullDomainUsername) }
+        mapper.fromNetwork(response).map { nameResponse ->
+            UsernameDetails(
+                ownerAddress = nameResponse.domainOwnerAddress,
+                username = Username(
+                    value = nameResponse.usernameWithDomain.dropLastWhile { !it.isDot() },
+                    domainPrefix = usernameDomainFeatureToggle.value,
+                    fullUsername = nameResponse.usernameWithDomain
+                )
+            )
+        }
     }
 
     override suspend fun findUsernameDetailsByAddress(
@@ -62,7 +74,14 @@ class UsernameRemoteRepository(
     ): List<UsernameDetails> = withContext(dispatchers.io) {
         val request = mapper.toLookupUsernameNetwork(ownerAddress)
         val response = usernameService.lookupUsername(request)
-        mapper.fromNetwork(response)
-            .map { UsernameDetails(ownerAddress = ownerAddress, fullUsername = it.fullDomainUsername) }
+        mapper.fromNetwork(response).map {
+            UsernameDetails(
+                ownerAddress = ownerAddress,
+                username = Username(
+                    value = it.usernameWithoutDomain,
+                    domainPrefix = usernameDomainFeatureToggle.value
+                )
+            )
+        }
     }
 }

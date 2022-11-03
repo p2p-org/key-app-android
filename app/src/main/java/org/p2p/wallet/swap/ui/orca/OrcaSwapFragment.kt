@@ -1,15 +1,15 @@
 package org.p2p.wallet.swap.ui.orca
 
+import androidx.activity.addCallback
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import androidx.activity.addCallback
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -38,6 +38,7 @@ import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.formatUsd
+import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -191,13 +192,13 @@ class OrcaSwapFragment :
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
-        binding.swapButton.setStartIcon(iconRes)
+        iconRes?.let { binding.swapButton.icon = requireContext().getDrawableCompat(iconRes) }
 
         if (value.isEmpty()) {
-            binding.swapButton.setActionText(textRes)
+            binding.swapButton.setText(textRes)
         } else {
             val text = getString(textRes, *value)
-            binding.swapButton.setActionText(text)
+            binding.swapButton.text = text
         }
     }
 
@@ -313,7 +314,7 @@ class OrcaSwapFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.swapButton.setLoading(isLoading)
+        binding.swapButton.isLoadingState = isLoading
     }
 
     override fun showProgressDialog(transactionId: String, data: ShowProgress?) {

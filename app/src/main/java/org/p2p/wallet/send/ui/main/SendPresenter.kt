@@ -447,7 +447,8 @@ class SendPresenter(
     }
 
     private fun handleFullResult(result: SearchResult.Full) {
-        view?.showFullTarget(result.addressState.address, result.username)
+        val isKeyAppUsername = result.username.endsWith(usernameDomainFeatureToggle.value)
+        view?.showFullTarget(result.addressState.address, result.username, isKeyAppUsername)
         checkAddress(result.addressState.address)
     }
 

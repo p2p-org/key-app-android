@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
     android:background="@drawable/bg_rounded_small"
     android:backgroundTint="@color/backgroundPrimary">
 
@@ -18,7 +17,7 @@
         android:src="@drawable/ic_chevron_right"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/textIconActive"
+        app:tint="@color/icons_night"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -38,14 +37,14 @@
         android:id="@+id/titleDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="12dp"
         android:background="@color/strokePrimary"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView" />
+        app:layout_constraintTop_toBottomOf="@id/downImageView" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tokenRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        tools:itemCount="5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleDivider"
         tools:listitem="@layout/item_token" />

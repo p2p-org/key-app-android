@@ -1,4 +1,4 @@
-package org.p2p.wallet.appsfly
+package org.p2p.wallet.appsflyer
 
 import com.appsflyer.AppsFlyerConversionListener
 import timber.log.Timber

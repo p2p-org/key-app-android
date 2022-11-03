@@ -39,7 +39,7 @@ class ReceiveRenBtcFragment :
         fun create() = ReceiveRenBtcFragment()
     }
 
-    override val statusBarColor: Int = R.color.backgroundButtonPrimary
+    override val statusBarColor: Int = R.color.bg_night
     override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     override val presenter: ReceiveRenBtcContract.Presenter by inject()

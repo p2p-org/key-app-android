@@ -17,7 +17,7 @@
         android:src="@drawable/ic_chevron_right"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/textIconActive"
+        app:tint="@color/icons_night"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -148,16 +148,20 @@
         android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
         app:layout_constraintTop_toBottomOf="@id/destinationDivider" />
 
-    <org.p2p.wallet.common.ui.widget.ProgressButton
+    <org.p2p.uikit.components.UiKitButton
         android:id="@+id/confirmButton"
+        style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="12dp"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-        app:buttonText="@string/send_confirm_with_fingerprint"
-        app:buttonTextColor="@color/textIconButtonPrimary"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/send_confirm_with_fingerprint"
+        android:textColor="@color/lime"
+        app:iconGravity="textStart"
+        app:iconSize="24dp"
+        app:iconTint="@color/lime"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/warningTextView" />
 

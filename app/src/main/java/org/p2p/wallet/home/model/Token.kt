@@ -1,8 +1,6 @@
 package org.p2p.wallet.home.model
 
 import android.os.Parcelable
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
 import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.utils.Constants
@@ -18,6 +16,8 @@ import org.p2p.wallet.utils.toLamports
 import org.p2p.wallet.utils.toPowerValue
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 sealed class Token constructor(
     open val publicKey: String?,
@@ -72,7 +72,10 @@ sealed class Token constructor(
             get() = total.isZero()
 
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
-            visibility == TokenVisibility.HIDDEN || isZerosHidden && isZero && visibility == TokenVisibility.DEFAULT
+            visibility == TokenVisibility.HIDDEN ||
+                isZerosHidden &&
+                isZero &&
+                visibility == TokenVisibility.DEFAULT
 
         fun getFormattedUsdTotal(): String? = totalInUsd?.asUsd()
 
@@ -90,13 +93,12 @@ sealed class Token constructor(
                 total.formatToken()
             }
 
-        fun getVisibilityIcon(isZerosHidden: Boolean): Int {
-            return if (isDefinitelyHidden(isZerosHidden)) {
+        fun getVisibilityIcon(isZerosHidden: Boolean): Int =
+            if (isDefinitelyHidden(isZerosHidden)) {
                 R.drawable.ic_show
             } else {
                 R.drawable.ic_hide
             }
-        }
     }
 
     @Parcelize
@@ -173,7 +175,7 @@ sealed class Token constructor(
                 totalInUsd = exchangeRate?.let { total.multiply(it) },
                 total = total,
                 rate = exchangeRate,
-                visibility = TokenVisibility.SHOWN,
+                visibility = TokenVisibility.DEFAULT,
                 serumV3Usdc = tokenData.serumV3Usdc,
                 serumV3Usdt = tokenData.serumV3Usdt,
                 isWrapped = tokenData.isWrapped

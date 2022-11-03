@@ -6,7 +6,7 @@
     android:viewportHeight="24">
 
   <path
-      android:strokeColor="@color/backgroundButtonPrimary"
+      android:strokeColor="@color/icons_night"
       android:strokeWidth="2"
       android:strokeLineJoin="round"
       android:strokeLineCap="round"

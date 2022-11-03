@@ -60,6 +60,7 @@ import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getClipboardText
+import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
@@ -297,10 +298,16 @@ class SendFragment :
         }
     }
 
-    override fun showFullTarget(address: String, username: String) {
+    override fun showFullTarget(address: String, username: String, isKeyAppUsername: Boolean) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
-            targetImageView.setImageResource(R.drawable.ic_wallet_white)
+            if (isKeyAppUsername) {
+                targetImageView.setBackgroundResource(R.drawable.bg_rounded_lime_small)
+                targetImageView.setImageResource(R.drawable.ic_key_app_logo)
+            } else {
+                targetImageView.setBackgroundResource(R.drawable.bg_rounded_rain_small)
+                targetImageView.setImageResource(R.drawable.ic_wallet_night)
+            }
+
             targetTextView.text = username
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
@@ -329,8 +336,8 @@ class SendFragment :
 
     override fun showAddressOnlyTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_blue_rounded_medium)
-            targetImageView.setImageResource(R.drawable.ic_wallet_white)
+            targetImageView.setBackgroundColor(getColor(R.color.bg_rain))
+            targetImageView.setImageResource(R.drawable.ic_wallet_night)
             targetTextView.text = address.cutEnd()
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
@@ -471,7 +478,7 @@ class SendFragment :
     }
 
     override fun showLoading(isLoading: Boolean) {
-        binding.sendButton.setLoading(isLoading)
+        binding.sendButton.isLoadingState = isLoading
     }
 
     override fun showProgressDialog(transactionId: String, data: ShowProgress?) {
@@ -514,13 +521,13 @@ class SendFragment :
     }
 
     override fun showButtonText(textRes: Int, iconRes: Int?, vararg value: String) {
-        binding.sendButton.setStartIcon(iconRes)
+        iconRes?.let { binding.sendButton.icon = requireContext().getDrawableCompat(iconRes) }
 
         if (value.isEmpty()) {
-            binding.sendButton.setActionText(textRes)
+            binding.sendButton.setText(textRes)
         } else {
             val text = getString(textRes, *value)
-            binding.sendButton.setActionText(text)
+            binding.sendButton.text = text
         }
     }
 

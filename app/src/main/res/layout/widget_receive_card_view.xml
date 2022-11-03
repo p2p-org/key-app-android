@@ -58,7 +58,7 @@
                         android:layout_marginEnd="16dp"
                         android:text="@string/send_solana_network"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
-                        android:textColor="@color/backgroundButtonPrimary"
+                        android:textColor="@color/bg_night"
                         app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
                         app:layout_constraintEnd_toStartOf="@id/arrowImageView"
                         app:layout_constraintTop_toTopOf="@id/arrowImageView" />
@@ -75,7 +75,7 @@
                     android:paddingHorizontal="24dp"
                     android:text="@string/receive_tokens_info"
                     android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-                    android:textColor="@color/backgroundButtonPrimary"
+                    android:textColor="@color/text_night"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/arrowImageView" />
 

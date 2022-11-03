@@ -29,6 +29,16 @@ Where:
 `comparePublicKey` - API key cryptocompare.com
 `amplitudeKey` - API key for [Amplitude](https://developers.amplitude.com/docs/android) library
 
+3. Create `torus.properties` file at the root of the project. It should include the information about the verifiers and subverifiers
+`TORUS_VERIFIER_DEBUG` - The verifier for testing debug builds
+`TORUS_VERIFIER_FEATURE` - The verifier for testing feature builds, i.e. firebase feature builds
+`TORUS_VERIFIER_RELEASE` - The verifier for testing release builds, i.e. for playstore builds
+
+There are some subverifiers are used for release builds:
+`TORUS_SUB_VERIFIER_RELEASE_LOCAL`
+`TORUS_SUB_VERIFIER_RELEASE_PRODUCTION`
+`TORUS_SUB_VERIFIER_RELEASE_FIREBASE`
+
 ## Main stack
 
 ### Libraries

@@ -74,6 +74,16 @@ jobs:
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
 
+      - name: "Create torus.properties"
+        uses: ./.github/actions/setup-torus
+        with:
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-release: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+
       - name: "Create apikey.properties"
         uses: ./.github/actions/setup-apikey
         with:
@@ -83,6 +93,7 @@ jobs:
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
           amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
 
       - name: "Create cert.pem file"
         env:

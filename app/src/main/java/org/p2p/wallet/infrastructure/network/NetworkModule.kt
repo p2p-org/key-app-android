@@ -105,10 +105,7 @@ object NetworkModule : InjectionModule {
 
         single(named(FACADE_SERVICE_RETROFIT_QUALIFIER)) {
             getRetrofit(
-                baseUrl = androidContext().getString(
-                    if (BuildConfig.DEBUG) R.string.web3AuthServiceTestBaseUrl
-                    else R.string.web3AuthServiceReleaseBaseUrl
-                ),
+                baseUrl = androidContext().getString(R.string.web3AuthServiceBaseUrl),
                 tag = "FacadeService",
                 interceptor = GatewayServiceInterceptor()
             )
@@ -116,10 +113,7 @@ object NetworkModule : InjectionModule {
 
         single(named(REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER)) {
             getRetrofit(
-                baseUrl = androidContext().getString(
-                    if (BuildConfig.DEBUG) R.string.registerUsernameServiceTestBaseUrl
-                    else R.string.registerUsernameServiceReleaseBaseUrl
-                ),
+                baseUrl = androidContext().getString(R.string.registerUsernameServiceBaseUrl),
                 tag = "RegisterUsernameService",
                 interceptor = null
             )
