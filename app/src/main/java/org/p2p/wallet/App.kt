@@ -13,6 +13,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.appsfly.AppsFlyerService
+import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 import org.p2p.wallet.intercom.IntercomService
@@ -20,12 +21,14 @@ import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
+import org.p2p.wallet.utils.getStringResourceByName
 import timber.log.Timber
 
 class App : Application() {
     private val crashLogger: CrashLogger by inject()
     private val appCreatedAction: AppCreatedAction by inject()
     private val appsFlyerService: AppsFlyerService by inject()
+    private val usernameInteractor: UsernameInteractor by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -36,7 +39,7 @@ class App : Application() {
         setupCrashLoggingService()
 
         AppNotificationManager.createNotificationChannels(this)
-        IntercomService.setup(this, BuildConfig.intercomApiKey, BuildConfig.intercomAppId)
+        IntercomService.setup(app = this, apiKey = BuildConfig.intercomApiKey, appId = BuildConfig.intercomAppId)
         AndroidThreeTen.init(this)
 
         GlobalContext.get().get<ThemeInteractor>().applyCurrentNightMode()
@@ -94,6 +97,9 @@ class App : Application() {
             setCustomKey("task_number", BuildConfig.TASK_NUMBER)
             setCustomKey("amplitude_enabled", BuildConfig.AMPLITUDE_ENABLED)
             setCustomKey("crashlytics_enabled", BuildConfig.CRASHLYTICS_ENABLED)
+            setCustomKey("verifier", getString(R.string.torusVerifier))
+            setCustomKey("sub_verifier", getStringResourceByName("torusSubVerifier"))
+            setCustomKey("username", usernameInteractor.getUsername()?.fullUsername.orEmpty())
         }
     }
 }

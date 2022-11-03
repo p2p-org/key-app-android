@@ -7,6 +7,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.username.repository.UsernameRepository
+import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -25,7 +26,8 @@ class UsernameInteractor(
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
     private val registerUsernameEnabledFeatureToggle: RegisterUsernameEnabledFeatureToggle,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val crashLogger: CrashLogger
 ) {
 
     suspend fun isUsernameTaken(username: String): Boolean = usernameRepository.isUsernameTaken(username)
@@ -37,6 +39,7 @@ class UsernameInteractor(
             ownerPrivateKey = tokenKeyProvider.keyPair.toBase58Instance()
         )
         sharedPreferences.edit { putString(KEY_USERNAME, username) }
+        crashLogger.setCustomKey("username", username)
     }
 
     suspend fun tryRestoreUsername(owner: Base58String) {
@@ -51,6 +54,7 @@ class UsernameInteractor(
                     remove(KEY_USERNAME)
                 }
             }
+            crashLogger.setCustomKey("username", usernameDetails?.fullUsername.orEmpty())
         } catch (error: Throwable) {
             Timber.i(error, "Failed to restore username for ${owner.base58Value}")
         }

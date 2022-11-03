@@ -9,7 +9,6 @@ import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
  * Disable mechanism is located in build.gradle
  * see build.gradle sentry { ... } block
  */
-
 private const val BREADCRUMB_CATEGORY = "SentryFacade"
 
 @Suppress("DEPRECATION")
@@ -29,7 +28,7 @@ class SentryFacade : CrashLoggingFacade {
             Sentry.addBreadcrumb(
                 Breadcrumb("${error.javaClass.name}: $message").apply {
                     category = BREADCRUMB_CATEGORY
-                    level = SentryLevel.INFO
+                    level = SentryLevel.ERROR
                 }
             )
         }

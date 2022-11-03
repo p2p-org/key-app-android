@@ -2,6 +2,7 @@ package org.p2p.wallet
 
 import org.koin.core.component.KoinComponent
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
@@ -22,7 +23,8 @@ class AppCreatedAction(
     private val solendFeatureToggle: SolendEnabledFeatureToggle,
     private val usernameInteractor: UsernameInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val appScope: AppScope
+    private val crashLogger: CrashLogger,
+    private val appScope: AppScope,
 ) : KoinComponent {
 
     operator fun invoke() {
@@ -30,10 +32,11 @@ class AppCreatedAction(
             logFirebaseDevicePushToken()
         }
 
-        remoteConfig.loadRemoteConfig(onConfigLoaded = {
+        remoteConfig.loadRemoteConfig(onConfigLoaded = { toggles ->
             if (solendFeatureToggle.isFeatureEnabled) {
                 initSolend()
             }
+            toggles.forEach { (toggleKey, toggleValue) -> crashLogger.setCustomKey(toggleKey, toggleValue) }
         })
 
         tryRestoreUsername()

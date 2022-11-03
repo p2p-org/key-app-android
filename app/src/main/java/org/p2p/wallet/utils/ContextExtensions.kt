@@ -95,6 +95,6 @@ fun Context.getStringResourceByName(resourceName: String): String {
         getString(resId)
     } catch (e: Resources.NotFoundException) {
         Timber.e(e, "String resource $resourceName is not found")
-        return emptyString()
+        emptyString()
     }
 }

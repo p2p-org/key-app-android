@@ -15,7 +15,9 @@ abstract class AbstractData protected constructor(data: ByteArray, dataLength: I
     private var cursor = 0
 
     init {
-        require(data.size >= dataLength) { "Wrong data" }
+        require(data.size >= dataLength) {
+            "Wrong data size: data.size=${data.size}; dataLength=$dataLength"
+        }
         this.data = data
     }
 
