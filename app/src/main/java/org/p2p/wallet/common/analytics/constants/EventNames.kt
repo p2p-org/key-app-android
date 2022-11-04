@@ -67,6 +67,10 @@ object EventNames {
     const val ONBOARD_CREATION_PHONE_SCREEN = "Creation_Phone_Screen"
     const val ONBOARD_PROPERTY_USER_RESTORE_METHOD = "User_Restore_Method"
     const val ONBOARD_PROPERTY_USER_DEVICE_SHARE = "User_Deviceshare"
+    const val ONBOARD_TORUS_REQUEST = "Onboarding_Torus_Request"
+    const val ONBOARD_PHONE_CLICK_BUTTON = "Create_Phone_Click_Button"
+    const val ONBOARD_SMS_SCREEN = "Create_Sms_Screen"
+    const val ONBOARD_SMS_VALIDATION = "Create_Sms_Validation"
 
     const val BUY_SCREEN_OPENED = "Buy_Screen_Opened"
     const val BUY_TOKEN_CHOSEN = "Buy_Token_Chosen"

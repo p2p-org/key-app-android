@@ -14,6 +14,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_WALLE
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATION_PHONE_SCREEN
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_MANY_WALLETS_FOUND
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_NO_WALLET_FOUND
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PHONE_CLICK_BUTTON
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PROPERTY_USER_DEVICE_SHARE
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PROPERTY_USER_RESTORE_METHOD
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_APPROVED
@@ -23,17 +24,21 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_MANU
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_WALLET_BUTTON
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_WALLET_CONFIRM_PIN
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SELECT_RESTORE_OPTION
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SMS_SCREEN
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SMS_VALIDATION
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_CREATED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_RESTORING
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_SWIPED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_VIEWED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_START_BUTTON
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_TORUS_REQUEST
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_RESERVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SAVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SKIPPED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_CREATED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_RESTORED
 import org.p2p.wallet.utils.emptyString
+import kotlin.time.Duration
 
 class OnboardingAnalytics(private val tracker: Analytics) {
     fun logSplashViewed() {
@@ -207,6 +212,38 @@ class OnboardingAnalytics(private val tracker: Analytics) {
 
     fun logPhoneEnterScreenOpened() {
         tracker.logEvent(ONBOARD_CREATION_PHONE_SCREEN)
+    }
+
+    fun logTorusRequestResponseTime(
+        methodName: String,
+        responseDuration: Duration
+    ) {
+        tracker.logEvent(
+            event = ONBOARD_TORUS_REQUEST,
+            params = mapOf(
+                "Method_Name" to methodName,
+                "Minutes" to responseDuration.inWholeMinutes,
+                "Seconds" to responseDuration.inWholeSeconds,
+                "Milliseconds" to responseDuration.inWholeMilliseconds
+            )
+        )
+    }
+
+    fun logConfirmPhoneButtonClicked() {
+        tracker.logEvent(ONBOARD_PHONE_CLICK_BUTTON)
+    }
+
+    fun logSmsInputScreenOpened() {
+        tracker.logEvent(ONBOARD_SMS_SCREEN)
+    }
+
+    fun logSmsValidationResult(isSmsValid: Boolean) {
+        tracker.logEvent(
+            event = ONBOARD_SMS_VALIDATION,
+            params = mapOf(
+                "Result" to isSmsValid
+            )
+        )
     }
 
     fun setUserRestoreMethod(restoreMethod: UsernameRestoreMethod) {

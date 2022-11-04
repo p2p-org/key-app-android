@@ -61,6 +61,7 @@ class PhoneNumberEnterFragment :
         }
 
         buttonConfirmPhone.setOnClickListener {
+            onboardingAnalytics.logConfirmPhoneButtonClicked()
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }
     }
