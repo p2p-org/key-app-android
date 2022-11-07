@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.FileInteractor
 import org.p2p.wallet.auth.interactor.UserSignUpInteractor
@@ -8,6 +7,8 @@ import org.p2p.wallet.auth.interactor.restore.TorusKeyInteractor
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 
 class NewOnboardingPresenter(
     private val userSignUpInteractor: UserSignUpInteractor,
@@ -38,7 +39,11 @@ class NewOnboardingPresenter(
                     view?.onSuccessfulSignUp()
                 }
                 is UserSignUpInteractor.SignUpResult.SignUpFailed -> {
-                    Timber.e(result, result.cause.message)
+                    if (result.cause is CancellationException) {
+                        Timber.i(result)
+                    } else {
+                        Timber.e(result, result.cause.message)
+                    }
                     view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
                 }
                 UserSignUpInteractor.SignUpResult.UserAlreadyExists -> {
