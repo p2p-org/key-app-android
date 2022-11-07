@@ -14,7 +14,9 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
@@ -56,7 +58,10 @@ class NewOnboardingFragment :
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
 
     private val binding: FragmentNewOnboardingBinding by viewBinding()
+
     private val onboardingAnalytics: OnboardingAnalytics by inject()
+    private val createWalletAnalytics: CreateWalletAnalytics by inject()
+    private val restoreWalletAnalytics: RestoreWalletAnalytics by inject()
 
     private val args = listOf(
         SliderFragmentArgs(
@@ -105,13 +110,13 @@ class NewOnboardingFragment :
             viewPagerOnboardingSlider.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
             dotsIndicatorOnboardingSlider.attachTo(viewPagerOnboardingSlider)
             buttonCreateWalletOnboarding.setOnClickListener {
-                onboardingAnalytics.logCreateWalletClicked()
+                createWalletAnalytics.logCreateWalletClicked()
                 onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                 presenter.onSignUpButtonClicked()
             }
 
             buttonRestoreWalletOnboarding.setOnClickListener {
-                onboardingAnalytics.logAlreadyHaveWalletClicked()
+                restoreWalletAnalytics.logAlreadyHaveWalletClicked()
                 replaceFragment(CommonRestoreFragment.create())
             }
             textViewTermsAndPolicy.apply {

@@ -7,7 +7,8 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
@@ -41,7 +42,8 @@ class PhoneNumberEnterFragment :
 
     private val binding: FragmentPhoneNumberEnterBinding by viewBinding()
 
-    private val onboardingAnalytics: OnboardingAnalytics by inject()
+    private val createWalletAnalytics: CreateWalletAnalytics by inject()
+    private val restoreWalletAnalytics: RestoreWalletAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,7 +68,7 @@ class PhoneNumberEnterFragment :
     }
 
     override fun initCreateWalletViews() {
-        onboardingAnalytics.logPhoneEnterScreenOpened()
+        createWalletAnalytics.logCreatePhoneEnterScreenOpened()
 
         binding.toolbar.setNavigationOnClickListener(null)
         binding.toolbar.navigationIcon = null
@@ -78,7 +80,7 @@ class PhoneNumberEnterFragment :
     }
 
     override fun initRestoreWalletViews() {
-        onboardingAnalytics.logRestorePhoneEnterScreenOpened()
+        restoreWalletAnalytics.logRestorePhoneEnterScreenOpened()
 
         binding.toolbar.setNavigationIcon(R.drawable.ic_toolbar_back)
         binding.toolbar.setNavigationOnClickListener {

@@ -1,7 +1,8 @@
 package org.p2p.wallet.auth.ui.smsinput
 
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
@@ -24,7 +25,8 @@ class NewSmsInputPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
-    private val onboardingAnalytics: OnboardingAnalytics,
+    private val createWalletAnalytics: CreateWalletAnalytics,
+    private val restoreWalletAnalytics: RestoreWalletAnalytics,
     private val restoreUserResultHandler: RestoreUserResultHandler,
     private val gatewayServiceErrorHandler: GatewayServiceErrorHandler
 ) : BasePresenter<NewSmsInputContract.View>(), NewSmsInputContract.Presenter {
@@ -35,11 +37,11 @@ class NewSmsInputPresenter(
         view.renderSmsTimerState(SmsInputTimerState.ResendSmsReady)
         val userPhoneNumber = when (onboardingInteractor.currentFlow) {
             is OnboardingFlow.CreateWallet -> {
-                onboardingAnalytics.logCreateSmsInputScreenOpened()
+                createWalletAnalytics.logCreateSmsInputScreenOpened()
                 createWalletInteractor.getUserPhoneNumber()
             }
             is OnboardingFlow.RestoreWallet -> {
-                onboardingAnalytics.logRestoreSmsInputScreenOpened()
+                restoreWalletAnalytics.logRestoreSmsInputScreenOpened()
                 restoreWalletInteractor.getUserPhoneNumber()
             }
         }
@@ -117,11 +119,11 @@ class NewSmsInputPresenter(
         try {
             view?.renderButtonLoading(isLoading = true)
             createWalletInteractor.finishCreatingWallet(smsCode)
-            onboardingAnalytics.logSmsValidationResult(isSmsValid = true)
+            createWalletAnalytics.logSmsValidationResult(isSmsValid = true)
 
             view?.navigateToPinCreate()
         } catch (gatewayError: GatewayServiceError) {
-            onboardingAnalytics.logSmsValidationResult(isSmsValid = false)
+            createWalletAnalytics.logSmsValidationResult(isSmsValid = false)
             handleGatewayError(gatewayError)
         } catch (error: Throwable) {
             Timber.e(error, "Checking sms value failed")
@@ -135,12 +137,12 @@ class NewSmsInputPresenter(
         try {
             view?.renderButtonLoading(isLoading = true)
             restoreWalletInteractor.finishRestoreCustomShare(smsCode)
-            onboardingAnalytics.logSmsValidationResult(isSmsValid = true)
+            restoreWalletAnalytics.logRestoreSmsValidationResult(isSmsValid = true)
 
             val onboardFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet
             tryRestoreUser(onboardFlow)
         } catch (gatewayError: GatewayServiceError) {
-            onboardingAnalytics.logRestoreSmsValidationResult(isSmsValid = false)
+            restoreWalletAnalytics.logRestoreSmsValidationResult(isSmsValid = false)
             handleGatewayError(gatewayError)
         } catch (error: Throwable) {
             Timber.e(error, "Restoring user or custom share failed")

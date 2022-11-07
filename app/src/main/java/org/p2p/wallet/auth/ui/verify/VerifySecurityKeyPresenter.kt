@@ -13,6 +13,7 @@ private const val VERIFY_WORDS_COUNT = 4
 private const val GENERATE_WORD_COUNT = 2
 private const val KEY_SIZE = 24
 
+@Deprecated("old onboarding, delete someday")
 class VerifySecurityKeyPresenter(
     private val seedPhraseInteractor: SeedPhraseInteractor,
     private val onboardingAnalytics: OnboardingAnalytics,
