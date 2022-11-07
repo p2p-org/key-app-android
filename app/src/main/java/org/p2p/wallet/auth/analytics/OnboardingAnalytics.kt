@@ -271,8 +271,6 @@ class OnboardingAnalytics(private val tracker: Analytics) {
         )
     }
 
-
-
     fun setUserRestoreMethod(restoreMethod: UsernameRestoreMethod) {
         tracker.setUserProperty(
             key = ONBOARD_PROPERTY_USER_RESTORE_METHOD,
