@@ -61,7 +61,6 @@ class PhoneNumberEnterFragment :
         }
 
         buttonConfirmPhone.setOnClickListener {
-            onboardingAnalytics.logConfirmPhoneButtonClicked()
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }
     }
@@ -79,6 +78,8 @@ class PhoneNumberEnterFragment :
     }
 
     override fun initRestoreWalletViews() {
+        onboardingAnalytics.logRestorePhoneEnterScreenOpened()
+
         binding.toolbar.setNavigationIcon(R.drawable.ic_toolbar_back)
         binding.toolbar.setNavigationOnClickListener {
             popAndReplaceFragment(CommonRestoreFragment.create(), inclusive = true)
