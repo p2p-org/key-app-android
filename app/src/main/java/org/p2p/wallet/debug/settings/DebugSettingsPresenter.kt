@@ -89,6 +89,7 @@ class DebugSettingsPresenter(
             ),
             SettingsRow.Section(
                 titleResId = R.string.settings_stub_public_key,
+                subtitle = tokenKeyProvider.publicKey,
                 iconRes = R.drawable.ic_key
             ).takeIf { tokenKeyProvider.publicKey.isNotBlank() },
             SettingsRow.Section(
