@@ -91,6 +91,7 @@ class DebugPublicKeyFragment : BaseFragment(R.layout.fragment_debug_public_key) 
         return runCatching { secureStorageContract.getString(Key.KEY_PUBLIC_KEY) }
             .getOrNull()
             ?.takeIf { it.isNotBlank() }
+            ?.let { Base58Utils.decodeToString(it) }
             ?.toBase58Instance()
     }
 
@@ -98,6 +99,7 @@ class DebugPublicKeyFragment : BaseFragment(R.layout.fragment_debug_public_key) 
         return runCatching { secureStorageContract.getString(Key.KEY_STUB_PUBLIC_KEY) }
             .getOrNull()
             ?.takeIf { it.isNotBlank() }
+            ?.let { Base58Utils.decodeToString(it) }
             ?.toBase58Instance()
     }
 }
