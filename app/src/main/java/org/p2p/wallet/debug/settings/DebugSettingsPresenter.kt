@@ -3,7 +3,6 @@ package org.p2p.wallet.debug.settings
 import android.content.Context
 import android.os.Build
 import android.util.DisplayMetrics
-import kotlinx.coroutines.launch
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
@@ -12,16 +11,19 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class DebugSettingsPresenter(
     private val environmentManager: NetworkEnvironmentManager,
     private val homeLocalRepository: HomeLocalRepository,
     private val context: Context,
     private val resourcesProvider: ResourcesProvider,
+    private val tokenKeyProvider: TokenKeyProvider,
     networkServicesUrlProvider: NetworkServicesUrlProvider
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
@@ -52,7 +54,7 @@ class DebugSettingsPresenter(
     }
 
     private fun getMainSettings(): List<SettingsRow> {
-        return listOf(
+        return listOfNotNull(
             SettingsRow.Section(
                 titleResId = R.string.debug_settings_notifications_title,
                 iconRes = R.drawable.ic_settings_notification
@@ -85,6 +87,10 @@ class DebugSettingsPresenter(
                 titleResId = R.string.debug_settings_feature_toggles_title,
                 iconRes = R.drawable.ic_home_settings
             ),
+            SettingsRow.Section(
+                titleResId = R.string.settings_stub_public_key,
+                iconRes = R.drawable.ic_key
+            ).takeIf { tokenKeyProvider.publicKey.isNotBlank() },
             SettingsRow.Section(
                 titleResId = R.string.debug_settings_logs_title,
                 subtitle = resourcesProvider.getString(R.string.debug_settings_logs_subtitle),

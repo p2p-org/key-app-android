@@ -18,15 +18,7 @@ object DebugSettingsModule : InjectionModule {
     override fun create() = module {
         factory { SettingsInteractor(get(), get()) }
         factory { ThemeInteractor(get()) }
-        factory {
-            DebugSettingsPresenter(
-                environmentManager = get(),
-                homeLocalRepository = get(),
-                context = get(),
-                resourcesProvider = get(),
-                networkServicesUrlProvider = get()
-            )
-        } bind DebugSettingsContract.Presenter::class
+        factoryOf(::DebugSettingsPresenter) bind DebugSettingsContract.Presenter::class
         factoryOf(::FeatureTogglesPresenter) bind FeatureTogglesContract.Presenter::class
         factoryOf(::PushNotificationsPresenter) bind PushNotificationsContract.Presenter::class
     }
