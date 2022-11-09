@@ -1,5 +1,11 @@
 package org.p2p.wallet.send.ui.main
 
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import androidx.core.text.buildSpannedString
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -11,18 +17,13 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
-import androidx.core.text.buildSpannedString
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.hideKeyboard
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -285,7 +286,7 @@ class SendFragment :
 
     override fun showWrongAddressTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
+            targetImageView.setBackgroundResource(R.drawable.bg_error_rounded_12)
             targetImageView.setImageResource(R.drawable.ic_error)
             targetTextView.text = address
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
@@ -298,13 +299,13 @@ class SendFragment :
         }
     }
 
-    override fun showFullTarget(address: String, username: String, isKeyAppUsername: Boolean) {
+    override fun showUsernameTarget(address: String, username: String, isKeyAppUsername: Boolean) {
         with(binding) {
             if (isKeyAppUsername) {
-                targetImageView.setBackgroundResource(R.drawable.bg_rounded_lime_small)
+                targetImageView.setBackgroundResource(org.p2p.uikit.R.drawable.bg_rounded_solid_lime_12)
                 targetImageView.setImageResource(R.drawable.ic_key_app_logo)
             } else {
-                targetImageView.setBackgroundResource(R.drawable.bg_rounded_rain_small)
+                targetImageView.setBackgroundResource(R.drawable.bg_rounded_solid_rain_12)
                 targetImageView.setImageResource(R.drawable.ic_wallet_night)
             }
 
@@ -321,13 +322,13 @@ class SendFragment :
 
     override fun showEmptyBalanceTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundResource(R.drawable.bg_error_rounded)
+            targetImageView.setBackgroundResource(R.drawable.bg_error_rounded_12)
             targetImageView.setImageResource(R.drawable.ic_warning)
             targetTextView.text = address
-            targetTextView.setTextColor(getColor(R.color.textIconPrimary))
+            targetTextView.setTextColorRes(R.color.text_night)
 
-            messageTextView.withTextOrGone(getString(R.string.send_empty_balance))
-            messageTextView.setTextColor(requireContext().getColor(R.color.systemWarningMain))
+            messageTextView.setText(R.string.send_empty_balance)
+            messageTextView.setTextColorRes(R.color.text_sun)
             clearImageView.isVisible = true
             scanTextView.isVisible = false
             pasteTextView.isVisible = false

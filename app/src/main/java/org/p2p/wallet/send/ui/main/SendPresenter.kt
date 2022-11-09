@@ -154,7 +154,7 @@ class SendPresenter(
     }
 
     override fun setTargetResult(result: SearchResult?) {
-        if (result is SearchResult.Full && result.username.isNotBlank()) {
+        if (result is SearchResult.UsernameFound && result.username.isNotBlank()) {
             sendAnalytics.isSendTargetUsername = true
         }
 
@@ -170,10 +170,10 @@ class SendPresenter(
 
     private fun handleTargetResult(validatedResult: SearchResult?) {
         when (validatedResult) {
-            is SearchResult.Full -> handleFullResult(validatedResult)
+            is SearchResult.UsernameFound -> handleFullResult(validatedResult)
             is SearchResult.AddressOnly -> handleAddressOnlyResult(validatedResult)
             is SearchResult.EmptyBalance -> handleEmptyBalanceResult(validatedResult)
-            is SearchResult.Wrong -> handleWrongResult(validatedResult)
+            is SearchResult.InvalidAddress -> handleWrongResult(validatedResult)
             else -> handleIdleTarget()
         }
     }
@@ -191,7 +191,7 @@ class SendPresenter(
                 if (isValid) {
                     result
                 } else {
-                    SearchResult.Wrong(AddressState(address, state.networkType))
+                    SearchResult.InvalidAddress(AddressState(address, state.networkType))
                 }
             }
             NetworkType.SOLANA -> {
@@ -199,7 +199,7 @@ class SendPresenter(
                 if (isValid) {
                     result
                 } else {
-                    SearchResult.Wrong(AddressState(address))
+                    SearchResult.InvalidAddress(AddressState(address))
                 }
             }
         }
@@ -446,9 +446,9 @@ class SendPresenter(
         view?.showWrongAddressTarget(target.addressState.address)
     }
 
-    private fun handleFullResult(result: SearchResult.Full) {
+    private fun handleFullResult(result: SearchResult.UsernameFound) {
         val isKeyAppUsername = result.username.endsWith(usernameDomainFeatureToggle.value)
-        view?.showFullTarget(result.addressState.address, result.username, isKeyAppUsername)
+        view?.showUsernameTarget(result.addressState.address, result.username, isKeyAppUsername)
         checkAddress(result.addressState.address)
     }
 
@@ -462,7 +462,7 @@ class SendPresenter(
         checkAddress(result.addressState.address)
     }
 
-    private fun handleWrongResult(result: SearchResult.Wrong) {
+    private fun handleWrongResult(result: SearchResult.InvalidAddress) {
         view?.showWrongAddressTarget(result.addressState.address.cutEnd())
         view?.hideAccountFeeView()
     }

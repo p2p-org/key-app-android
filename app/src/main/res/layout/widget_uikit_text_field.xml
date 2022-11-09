@@ -32,7 +32,7 @@
         android:id="@+id/uikitEditText"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@drawable/bg_rounded_12dp"
+        android:background="@drawable/bg_rounded_transparent_12"
         android:backgroundTint="@color/bg_rain"
         android:inputType="text"
         android:paddingHorizontal="16dp"
