@@ -150,7 +150,6 @@ class OnboardingAnalytics(private val tracker: Analytics) {
                 "Method_Name" to methodName,
                 "Minutes" to responseDuration.inWholeMinutes,
                 "Seconds" to responseDuration.inWholeSeconds,
-                "Milliseconds" to responseDuration.inWholeMilliseconds
             )
         )
     }
