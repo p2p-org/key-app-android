@@ -3,6 +3,7 @@ package org.p2p.wallet.common.mvp
 import androidx.annotation.CallSuper
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,10 @@ abstract class BasePresenter<V : MvpView> : MvpPresenter<V>, CoroutineScope {
     }
 
     private fun handleCoroutineException(coroutineContext: CoroutineContext, throwable: Throwable) {
-        Timber.tag(this::class.java.simpleName).e(throwable, coroutineContext.toString())
+        if (throwable is CancellationException) {
+            Timber.i(throwable)
+        } else {
+            Timber.tag(this::class.java.simpleName).e(throwable, coroutineContext.toString())
+        }
     }
 }
