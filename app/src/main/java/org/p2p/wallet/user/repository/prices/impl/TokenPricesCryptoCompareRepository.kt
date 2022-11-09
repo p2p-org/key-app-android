@@ -2,6 +2,7 @@ package org.p2p.wallet.user.repository.prices.impl
 
 import com.google.gson.JsonObject
 import kotlinx.coroutines.withContext
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.api.CryptoCompareApi
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -25,7 +26,8 @@ class TokenPricesCryptoCompareRepository(
     ): TokenPrice = withContext(dispatchers.io) {
         val responseJson = cryptoCompareApi.getPrice(
             tokenFrom = tokenSymbol.symbol,
-            tokenTo = targetCurrency
+            tokenTo = targetCurrency,
+            apiKey = BuildConfig.comparePublicKey
         )
 
         val priceValue = responseJson.getAsJsonPrimitive(Constants.USD_READABLE_SYMBOL)
@@ -54,7 +56,8 @@ class TokenPricesCryptoCompareRepository(
                 // therefore we are splitting the token list
                 val responseJson = cryptoCompareApi.getMultiPrice(
                     tokensFrom = chunkedTokenSymbols.joinToString(","),
-                    tokenTo = targetCurrencySymbol
+                    tokenTo = targetCurrencySymbol,
+                    apiKey = BuildConfig.comparePublicKey
                 )
                 parseResponseForChunk(responseJson, chunkedTokenSymbols)
             }
