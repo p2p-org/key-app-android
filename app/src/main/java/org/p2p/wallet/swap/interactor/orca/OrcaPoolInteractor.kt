@@ -3,7 +3,6 @@ package org.p2p.wallet.swap.interactor.orca
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getOutputAmount
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
@@ -27,7 +26,7 @@ class OrcaPoolInteractor(
     suspend fun findPossibleDestinations(
         fromMint: String
     ): List<Token> {
-        val fromTokenName = getTokenFromMint(fromMint)?.first ?: throw IllegalStateException("Token not found")
+        val fromTokenName = getTokenFromMint(fromMint)?.first ?: error("Token not found")
         val routes = findRoutes(fromTokenName, null)
         val info = orcaInfoInteractor.getInfo()
 
@@ -61,16 +60,15 @@ class OrcaPoolInteractor(
         orcaRouteInteractor.loadBalances(currentRoutes, info?.pools)
 
         // retrieve all routes
-        val result = currentRoutes
-            .mapNotNull {
-                if (it.size > 2) return@mapNotNull null // FIXME: Support more than 2 paths later
-                orcaRouteInteractor.getPools(
-                    infoPools = info?.pools,
-                    route = it,
-                    fromTokenName = fromTokenName,
-                    toTokenName = toTokenName
-                ) as MutableList
-            }
+        val result = currentRoutes.mapNotNull {
+            if (it.size > 2) return@mapNotNull null // FIXME: Support more than 2 paths later
+            orcaRouteInteractor.getPools(
+                infoPools = info?.pools,
+                route = it,
+                fromTokenName = fromTokenName,
+                toTokenName = toTokenName
+            ).toMutableList()
+        }
         return result
     }
 
@@ -81,18 +79,28 @@ class OrcaPoolInteractor(
     ): OrcaPoolsPair? {
         if (poolsPairs.isEmpty()) return null
 
-        var bestPools = mutableListOf<OrcaPool>()
-        var bestEstimatedAmount: BigInteger = BigInteger.ZERO
+        val sortedPoolsPair = poolsPairs.sortedWith { pair1: OrcaPoolsPair, pair2: OrcaPoolsPair ->
+            val estimatedAmount1 = pair1.getOutputAmount(inputAmount) ?: BigInteger.ZERO
+            val estimatedAmount2 = pair2.getOutputAmount(inputAmount) ?: BigInteger.ZERO
 
-        for (pair in poolsPairs) {
-            val estimatedAmount = pair.getOutputAmount(inputAmount) ?: continue
-            if (estimatedAmount > bestEstimatedAmount) {
-                bestEstimatedAmount = estimatedAmount
-                bestPools = pair
+            when {
+                estimatedAmount1 > estimatedAmount2 -> 1
+                estimatedAmount2 > estimatedAmount1 -> -1
+                else -> 0
             }
         }
+            .filter { orcaPool ->
+                val outputAmount = orcaPool.getOutputAmount(inputAmount) ?: BigInteger.ZERO
+                orcaPool.isNotEmpty() && orcaPool.size <= 2 && outputAmount > BigInteger.ZERO
+            }
 
-        return bestPools
+        // TODO (from ios): - Think about better solution!
+        // For some case when swaping small amount (how small?) which involved BTC or ETH
+        // For example: USDC -> wstETH -> stSOL
+        // The transaction might be rejected because the input amount and output amount of intermediary token (wstETH) is too small
+        // To temporarily fix this issue, prefers direct route or transitive route without ETH, BTC
+        val directSwapPool = sortedPoolsPair.firstOrNull { it.size == 1 }
+        return directSwapPool ?: sortedPoolsPair.first()
     }
 
     // Find best pool to swap from estimated amount
@@ -102,18 +110,28 @@ class OrcaPoolInteractor(
     ): OrcaPoolsPair? {
         if (poolsPairs.isEmpty()) return null
 
-        var bestPools = mutableListOf<OrcaPool>()
-        var bestInputAmount: BigInteger = Int.MAX_VALUE.toBigInteger()
+        val sortedPoolsPair = poolsPairs.sortedWith { pair1: OrcaPoolsPair, pair2: OrcaPoolsPair ->
+            val inputAmount1 = pair1.getInputAmount(estimatedAmount) ?: BigInteger.ZERO
+            val inputAmount2 = pair2.getInputAmount(estimatedAmount) ?: BigInteger.ZERO
 
-        for (pair in poolsPairs) {
-            val inputAmount = pair.getInputAmount(estimatedAmount) ?: continue
-            if (inputAmount < bestInputAmount) {
-                bestInputAmount = inputAmount
-                bestPools = pair
+            when {
+                inputAmount1 < inputAmount2 -> 1
+                inputAmount1 > inputAmount2 -> -1
+                else -> 0
             }
         }
+            .filter { orcaPool ->
+                val outputAmount = orcaPool.getInputAmount(estimatedAmount) ?: BigInteger.ZERO
+                orcaPool.isNotEmpty() && orcaPool.size <= 2 && outputAmount > BigInteger.ZERO
+            }
 
-        return bestPools
+        // TODO (from ios): - Think about better solution!
+        // For some case when swaping small amount (how small?) which involved BTC or ETH
+        // For example: USDC -> wstETH -> stSOL
+        // The transaction might be rejected because the input amount and output amount of intermediary token (wstETH) is too small
+        // To temporarily fix this issue, prefers direct route or transitive route without ETH, BTC
+        val directSwapPool = sortedPoolsPair.firstOrNull { it.size == 1 }
+        return directSwapPool ?: sortedPoolsPair.first()
     }
 
     // Map mint to token info
@@ -129,38 +147,37 @@ class OrcaPoolInteractor(
         fromTokenName: String?,
         toTokenName: String?
     ): OrcaRoutes {
-        val info = orcaInfoInteractor.getInfo() ?: throw IllegalStateException("Swap info missing")
+        val swapInfo = orcaInfoInteractor.getInfo() ?: error("Swap info missing")
         // if fromToken isn't selected
         if (fromTokenName.isNullOrEmpty()) return mutableMapOf()
 
         // if toToken isn't selected
         if (toTokenName == null) {
             // get all routes that have token A
-            return info.routes.filter { it.key.split("/").contains(fromTokenName) } as MutableMap
+            return swapInfo.routes.filter { it.key.split("/").contains(fromTokenName) }.toMutableMap()
         }
 
         // get routes with fromToken and toToken
         val pair = listOf(fromTokenName, toTokenName)
+        // example: ["SOL/USDC", "USDC/SOL"]
         val validRoutesNames = listOf(
             pair.joinToString("/"),
             pair.reversed().joinToString("/")
         )
-        return info.routes.filter { validRoutesNames.contains(it.key) } as MutableMap
+        return swapInfo.routes.filter { validRoutesNames.contains(it.key) }.toMutableMap()
     }
 
     private suspend fun mapTokensForDestination(orcaTokens: List<OrcaToken>): List<Token> {
         val userTokens = userInteractor.getUserTokens()
         val publicKey = tokenKeyProvider.publicKey
-        val allTokens = orcaTokens
-            .mapNotNull { orcaToken ->
-                val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
-                return@mapNotNull when {
-                    userToken != null ->
-                        if (userToken.isSOL && userToken.publicKey != publicKey) null else userToken
-                    else ->
-                        userInteractor.findTokenData(orcaToken.mint)
-                }
+        val allTokens = orcaTokens.mapNotNull { orcaToken ->
+            val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
+            if (userToken != null) {
+                userToken.takeUnless { userToken.isSOL && userToken.publicKey != publicKey }
+            } else {
+                userInteractor.findTokenData(orcaToken.mint)
             }
+        }
             .sortedWith(TokenComparator())
 
         return allTokens
