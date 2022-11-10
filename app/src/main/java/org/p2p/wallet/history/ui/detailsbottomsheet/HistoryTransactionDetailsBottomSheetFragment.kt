@@ -217,11 +217,6 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
-    override fun showBlockNumber(blockNumber: String) {
-        binding.containerBlockNumber.isVisible = true
-        binding.blockNumberTextView.text = blockNumber
-    }
-
     override fun showLoading(isLoading: Boolean) {
         binding.scrollView.isGone = isLoading
         binding.progressView.isVisible = isLoading

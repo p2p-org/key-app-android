@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
-
-    <androidx.fragment.app.FragmentContainerView
-        android:name="org.p2p.wallet.splash.SplashFragment"
-        android:id="@+id/rootContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</FrameLayout>
+    android:fitsSystemWindows="true" />

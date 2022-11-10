@@ -80,6 +80,139 @@
                 tools:text="October 21, 2022 @ 14:56" />
 
             <LinearLayout
+                android:id="@+id/containerUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/textViewUsernameTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawablePadding="8dp"
+                    android:text="@string/transaction_details_username"
+                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+                    android:textColor="@color/text_night" />
+
+                <TextView
+                    android:id="@+id/textViewUsernameValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="6dp"
+                    android:ellipsize="middle"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+                    android:textColor="@color/text_mountain"
+                    app:drawableEndCompat="@drawable/ic_copy"
+                    tools:text="mad.key.sol" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerActor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/actorAddressTitleTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawablePadding="8dp"
+                    android:text="@string/transaction_details_actor_address_title"
+                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+                    android:textColor="@color/text_night" />
+
+                <TextView
+                    android:id="@+id/actorAddressValueTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:drawablePadding="6dp"
+                    android:ellipsize="middle"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+                    android:textColor="@color/text_mountain"
+                    app:drawableEndCompat="@drawable/ic_copy"
+                    tools:text="FfRBgsYFtBW7Vo5hRetqEbdxrwU8KNRn1ma6sBTBeJEr" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/feesTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:text="@string/transaction_details_fee"
+                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+                    android:textColor="@color/text_night" />
+
+                <TextView
+                    android:id="@+id/feesTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:drawablePadding="6dp"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+                    android:textColor="@color/textIconActive"
+                    tools:text="Free by Key App" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/statusTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:text="@string/transaction_details_status"
+                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+                    android:textColor="@color/text_night" />
+
+                <TextView
+                    android:id="@+id/statusTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:drawablePadding="6dp"
+                    android:ellipsize="end"
+                    android:gravity="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+                    android:textColor="@color/text_mountain"
+                    tools:text="Completed" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -178,174 +311,6 @@
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
                     android:textColor="@color/text_mountain"
                     tools:text="bc1q830ddmnzc2539vmudxz44amm2x84j5yjvc209nrlw5c7s805nusq7k4tyf" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/containerUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <TextView
-                    android:id="@+id/textViewUsernameTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_username"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/textViewUsernameValue"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="middle"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    app:drawableEndCompat="@drawable/ic_copy"
-                    tools:text="mad.key.sol" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/containerActor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/actorAddressTitleTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_actor_address_title"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/actorAddressValueTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="middle"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    app:drawableEndCompat="@drawable/ic_copy"
-                    tools:text="FfRBgsYFtBW7Vo5hRetqEbdxrwU8KNRn1ma6sBTBeJEr" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/statusTitleTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_status"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/statusTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="end"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    tools:text="Completed" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/feesTitleTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_fee"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/feesTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="end"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/textIconActive"
-                    tools:text="Free by Key App" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/containerBlockNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <TextView
-                    android:id="@+id/blockNumberTitleTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_number"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/blockNumberTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="end"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    tools:text="#5387498763" />
 
             </LinearLayout>
 
