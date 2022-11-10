@@ -198,6 +198,7 @@ class NewBuyPresenter(
             buyAnalytics.logBuyCurrencyChanged(selectedCurrency.code, currency.code)
         }
         selectedCurrency = currency
+
         if (isValidCurrencyForPay()) {
             recalculate()
         }
@@ -205,17 +206,16 @@ class NewBuyPresenter(
 
     private fun isValidCurrencyForPay(): Boolean {
         val selectedCurrencyCode = selectedCurrency.code
-        if (selectedPaymentMethod == null) {
-            return false
-        }
-        if (selectedPaymentMethod?.method == PaymentMethod.MethodType.BANK_TRANSFER) {
+        val currentPaymentMethod = selectedPaymentMethod ?: return false
+
+        if (currentPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
                 (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
             ) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
-                return false
+                return isValidCurrencyForPay()
             } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
                 view?.setContinueButtonEnabled(false)
                 view?.showMessage(resourcesProvider.getString(R.string.buy_gbp_error))

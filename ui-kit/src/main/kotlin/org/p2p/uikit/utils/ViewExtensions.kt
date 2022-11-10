@@ -8,7 +8,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -36,34 +35,19 @@ fun View.requireActivity(): AppCompatActivity {
 }
 
 fun View.focusAndShowKeyboard() {
-    /**
-     * This has to be called when the window already has focus.
-     */
-    fun View.showTheKeyboardNow() {
-        if (isFocused) {
-            post {
-                // We still post the call, just in case we are being notified of the windows focus
-                // but InputMethodManager didn't get properly setup yet.
-                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+    doOnAttach {
+        requestFocus()
+        setOnFocusChangeListener { view, focus ->
+            if (focus) {
+                post { showKeyboard() }
             }
         }
     }
-
-    requestFocus()
-
-    if (hasWindowFocus()) {
-        // No need to wait for the window to get focus.
-        showTheKeyboardNow()
-    } else {
-        val listener = ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
-            // This notification will arrive just before the InputMethodManager gets set up.
-            if (hasFocus) showTheKeyboardNow()
+    doOnDetach {
+        onFocusChangeListener = null
+        post {
+            hideKeyboard()
         }
-        // We need to wait until the window gets focus.
-        viewTreeObserver.addOnWindowFocusChangeListener(listener)
-
-        doOnDetach { viewTreeObserver.removeOnWindowFocusChangeListener(listener) }
     }
 }
 
@@ -74,20 +58,10 @@ fun View.createBitmap(): Bitmap {
     return bitmap
 }
 
-fun Activity.hideKeyboard() {
-    currentFocus?.hideKeyboard()
-}
-
 val View.keyboardIsVisible: Boolean
     get() = WindowInsetsCompat
         .toWindowInsetsCompat(rootWindowInsets)
         .isVisible(WindowInsetsCompat.Type.ime())
-
-fun View.hideKeyboard() {
-    post {
-        context.getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(windowToken, 0)
-    }
-}
 
 fun View?.findSuitableParent(): ViewGroup {
     var view = this
