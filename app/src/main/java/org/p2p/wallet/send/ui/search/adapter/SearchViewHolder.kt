@@ -53,7 +53,7 @@ class SearchViewHolder(
                 .into(walletImageView)
 
             topTextView.text = item.username
-            bottomTextView.withTextOrGone(item.addressState.address.cutEnd())
+            bottomTextView withTextOrGone item.addressState.address.cutEnd()
             bottomTextView.setTextColorRes(R.color.backgroundDisabled)
         }
     }

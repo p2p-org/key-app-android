@@ -22,12 +22,19 @@ class SearchAdapter(
 
         override fun getNewListSize(): Int = newList.size
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].addressState == newList[newItemPosition].addressState
         }
 
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] === newList[newItemPosition]
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+
+            return if (oldItem is SearchResult.UsernameFound && newItem is SearchResult.UsernameFound) {
+                oldItem.username == newItem.username
+            } else {
+                true
+            }
         }
     }
 
