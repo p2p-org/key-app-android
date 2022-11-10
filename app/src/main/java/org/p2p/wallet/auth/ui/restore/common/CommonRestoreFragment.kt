@@ -1,12 +1,12 @@
 package org.p2p.wallet.auth.ui.restore.common
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
@@ -102,6 +102,7 @@ class CommonRestoreFragment :
 
             buttonBottom.setOnClickListener {
                 onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.SEED)
+                presenter.useSeedPhrase()
                 replaceFragment(SeedPhraseFragment.create())
             }
             if (BuildConfig.DEBUG) {
