@@ -1,6 +1,7 @@
 package org.p2p.wallet.infrastructure.network.provider
 
 import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
 import org.p2p.wallet.utils.emptyString
@@ -19,6 +20,10 @@ class TokenKeyProvider(
 
     private val listeners = mutableListOf<TokenKeyProviderListener>()
 
+    var useStubKey: Boolean
+        set(value) = secureStorage.saveString(Key.KEY_USE_STUB_PUBLIC_KEY, value.toString())
+        get() = BuildConfig.DEBUG && secureStorage.getString(Key.KEY_USE_STUB_PUBLIC_KEY)?.toBoolean() ?: false
+
     var publicKey: String = emptyString()
         get() = getPublicKeyFromStorage()
         set(value) {
@@ -29,19 +34,21 @@ class TokenKeyProvider(
 
     private fun getPublicKeyFromStorage(): String = runBlocking {
         try {
-            val base58String = secureStorage.getString(Key.KEY_PUBLIC_KEY).orEmpty()
+            val keyName = if (useStubKey) Key.KEY_STUB_PUBLIC_KEY else Key.KEY_PUBLIC_KEY
+            val base58String = secureStorage.getString(keyName).orEmpty()
             Base58Utils.decodeToString(base58String)
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e)
             throw e
         }
     }
-        .also { Timber.tag(TAG).i("getting user public key: $it") }
+        .also { Timber.tag(TAG).i("getting user public key: $it; mocked=$useStubKey") }
 
     private fun savePublicKeyToStorage(value: String) {
         runBlocking {
             val result = Base58Utils.encodeFromString(value)
-            secureStorage.saveString(Key.KEY_PUBLIC_KEY, result)
+            val keyName = if (useStubKey) Key.KEY_STUB_PUBLIC_KEY else Key.KEY_PUBLIC_KEY
+            secureStorage.saveString(keyName, result)
 
             listeners.forEach { it.onPublicKeyChanged(value) }
         }

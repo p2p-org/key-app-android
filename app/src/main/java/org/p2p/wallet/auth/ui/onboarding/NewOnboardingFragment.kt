@@ -1,8 +1,5 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import android.os.Bundle
-import android.text.method.LinkMovementMethod
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,16 +7,16 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
@@ -38,6 +35,11 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class NewOnboardingFragment :
     BaseMvpFragment<NewOnboardingContract.View, NewOnboardingContract.Presenter>(R.layout.fragment_new_onboarding),
@@ -56,7 +58,10 @@ class NewOnboardingFragment :
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
 
     private val binding: FragmentNewOnboardingBinding by viewBinding()
+
     private val onboardingAnalytics: OnboardingAnalytics by inject()
+    private val createWalletAnalytics: CreateWalletAnalytics by inject()
+    private val restoreWalletAnalytics: RestoreWalletAnalytics by inject()
 
     private val args = listOf(
         SliderFragmentArgs(
@@ -105,13 +110,13 @@ class NewOnboardingFragment :
             viewPagerOnboardingSlider.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
             dotsIndicatorOnboardingSlider.attachTo(viewPagerOnboardingSlider)
             buttonCreateWalletOnboarding.setOnClickListener {
-                onboardingAnalytics.logCreateWalletClicked()
+                createWalletAnalytics.logCreateWalletClicked()
                 onboardingInteractor.currentFlow = OnboardingFlow.CreateWallet
                 presenter.onSignUpButtonClicked()
             }
 
             buttonRestoreWalletOnboarding.setOnClickListener {
-                onboardingAnalytics.logAlreadyHaveWalletClicked()
+                restoreWalletAnalytics.logAlreadyHaveWalletClicked()
                 replaceFragment(CommonRestoreFragment.create())
             }
             textViewTermsAndPolicy.apply {

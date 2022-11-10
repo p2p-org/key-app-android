@@ -8,6 +8,19 @@
     android:layout_height="match_parent"
     android:background="#000">
 
+    <me.dm7.barcodescanner.zxing.ZXingScannerView
+        android:id="@+id/barcodeView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:borderColor="@color/textIconPrimary"
+        app:borderLength="64dp"
+        app:borderWidth="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:squaredFinder="true" />
+
     <ImageView
         android:id="@+id/closeImageView"
         android:layout_width="wrap_content"
@@ -19,19 +32,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/textIconPrimary"
         tools:ignore="ContentDescription" />
-
-    <me.dm7.barcodescanner.zxing.ZXingScannerView
-        android:id="@+id/barcodeView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:borderColor="@color/textIconPrimary"
-        app:borderLength="64dp"
-        app:borderWidth="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:squaredFinder="true" />
 
     <TextView
         android:id="@+id/cameraPermissionDeniedPlaceholder"

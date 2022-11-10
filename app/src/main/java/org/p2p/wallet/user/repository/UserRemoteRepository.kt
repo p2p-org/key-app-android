@@ -51,9 +51,11 @@ class UserRemoteRepository(
             val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
 
             // Get token symbols from user accounts plus SOL
-            val tokenSymbols = accounts.mapNotNull {
-                userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
-            } + POPULAR_TOKENS
+            val tokenSymbols = (
+                accounts.mapNotNull {
+                    userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
+                } + POPULAR_TOKENS
+                ).distinct()
 
             // Load and save user tokens prices
             if (fetchPrices) {
