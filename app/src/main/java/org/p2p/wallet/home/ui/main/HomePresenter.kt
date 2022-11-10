@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
@@ -157,8 +156,6 @@ class HomePresenter(
         userTokensFlowJob?.cancel()
         userTokensFlowJob = launch {
             userInteractor.getUserTokensFlow()
-                // remove SOL if it's zero
-                .map { userTokens -> userTokens.filterNot { it.isSOL && it.isZero } }
                 // emits two times when local tokens updated: with [] and actual list - strange
                 .collect { updatedTokens ->
                     Timber.d("local tokens change arrived")
