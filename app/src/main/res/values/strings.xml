@@ -512,6 +512,7 @@
     <string name="settings_fee_relayer">Fee Relayer Environment</string>
     <string name="settings_torus">Torus Environment</string>
     <string name="settings_notification_service">Notification Service Environment</string>
+    <string name="settings_stub_public_key">Public key stubbing 🗡️</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
     <string name="settings_security_face_id">FaceID</string>
