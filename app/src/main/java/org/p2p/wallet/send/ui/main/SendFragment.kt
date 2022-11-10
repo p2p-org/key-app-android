@@ -314,6 +314,7 @@ class SendFragment :
 
             messageTextView.withTextOrGone(address.cutEnd())
             messageTextView.setTextColor(getColor(R.color.backgroundDisabled))
+
             clearImageView.isVisible = true
             scanTextView.isVisible = false
             pasteTextView.isVisible = false
@@ -327,8 +328,9 @@ class SendFragment :
             targetTextView.text = address
             targetTextView.setTextColorRes(R.color.text_night)
 
-            messageTextView.setText(R.string.send_empty_balance)
+            messageTextView.withTextOrGone(getString(R.string.send_empty_balance))
             messageTextView.setTextColorRes(R.color.text_sun)
+
             clearImageView.isVisible = true
             scanTextView.isVisible = false
             pasteTextView.isVisible = false
@@ -337,12 +339,13 @@ class SendFragment :
 
     override fun showAddressOnlyTarget(address: String) {
         with(binding) {
-            targetImageView.setBackgroundColor(getColor(R.color.bg_rain))
+            targetImageView.setBackgroundResource(R.drawable.bg_rounded_solid_rain_12)
             targetImageView.setImageResource(R.drawable.ic_wallet_night)
             targetTextView.text = address.cutEnd()
             targetTextView.setTextColor(getColor(R.color.textIconPrimary))
 
             messageTextView.isVisible = false
+
             clearImageView.isVisible = true
             scanTextView.isVisible = false
             pasteTextView.isVisible = false
