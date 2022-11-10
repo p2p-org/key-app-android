@@ -7,9 +7,11 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.AuthAnalytics
+import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RenBtcAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.UsernameAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
@@ -45,6 +47,8 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::HomeAnalytics)
         factoryOf(::UsernameAnalytics)
         factoryOf(::RenBtcAnalytics)
+        factoryOf(::CreateWalletAnalytics)
+        factoryOf(::RestoreWalletAnalytics)
 
         singleOf(::AnalyticsInMemoryRepository) bind AnalyticsLocalRepository::class
     }

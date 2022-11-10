@@ -75,6 +75,7 @@ import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
+import org.p2p.wallet.auth.web3authsdk.Web3AuthDurationTracker
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.splash.SplashContract
@@ -125,6 +126,7 @@ object AuthModule {
         singleOf(::GoogleSignInHelper)
         singleOf(::UserSignUpDetailsStorage)
         singleOf(::Web3AuthClientMapper)
+        factoryOf(::Web3AuthDurationTracker)
         single<Web3AuthApi> {
             Web3AuthApiClient(
                 context = androidContext(),
@@ -133,7 +135,8 @@ object AuthModule {
                 gson = get(),
                 authRepository = get(),
                 torusNetworkEnv = androidContext().getString(R.string.torusNetwork),
-                torusLogLevel = androidContext().getString(R.string.torusLogLevel)
+                torusLogLevel = androidContext().getString(R.string.torusLogLevel),
+                durationTracker = get()
             )
         }
         singleOf(::SignUpFlowDataLocalRepository)

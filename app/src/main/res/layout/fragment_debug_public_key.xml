@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="Debug public key" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        style="@style/UiKit.TextAppearance.SemiBold.Title3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="🤙 Enter public key to mock 🤙"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <EditText
+        android:id="@+id/editTextMockKey"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_alert_rounded"
+        android:imeOptions="actionDone"
+        android:inputType="text|textNoSuggestions|textMultiLine"
+        android:padding="8dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+        app:layout_constraintEnd_toStartOf="@+id/textViewPaste"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+        tools:text="JFLAKJFKLSAJFLKASJFLKSJAFKJSAASKLFJSALFJASLFKSAJFLSAJFLSAF" />
+
+    <TextView
+        android:id="@+id/textViewPaste"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_lime_rounded_small"
+        android:drawablePadding="8dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:textColor="@color/text_night"
+        app:drawableStartCompat="@drawable/ic_copy_small"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextMockKey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/editTextMockKey"
+        tools:background="@drawable/bg_lime_rounded_small"
+        tools:drawableStart="@drawable/ic_copy_small" />
+
+    <TextView
+        android:id="@+id/textViewActualTitle"
+        style="@style/UiKit.TextAppearance.Regular.Text3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Actual public key:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextMockKey" />
+
+    <TextView
+        android:id="@+id/textViewMockTitle"
+        style="@style/UiKit.TextAppearance.Regular.Text3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Stub public key:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewActualKeyValue" />
+
+    <TextView
+        android:id="@+id/textViewActualKeyValue"
+        style="@style/UiKit.TextAppearance.SemiBold.Text3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="32dp"
+        android:textIsSelectable="true"
+        android:text="sdlkfjdsjfkdslkfjaslkfjlksajflasjfklsajkldajsldjsaldjsakljdsalk"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewActualTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewActualTitle" />
+
+    <TextView
+        android:id="@+id/textViewMockKeyValue"
+        style="@style/UiKit.TextAppearance.SemiBold.Text3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:textIsSelectable="true"
+        android:text="sdlkfjdsjfkdslkfjaslkfjlksajflasjfklsajkldajsldjsaldjsakljdsalk"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textViewMockTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textViewActualKeyValue" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonUseActualPublicKey"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/selector_lime_to_mountain_tint"
+        android:text="Switch to actual public key"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@+id/buttonUseStubPublicKey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonUseStubPublicKey"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/selector_lime_to_mountain_tint"
+        android:text="Switch to stub public key"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

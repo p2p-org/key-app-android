@@ -94,7 +94,7 @@ fun Context.getStringResourceByName(resourceName: String): String {
     return try {
         getString(resId)
     } catch (e: Resources.NotFoundException) {
-        Timber.e(e, "String resource $resourceName is not found")
+        if (!BuildConfig.DEBUG) Timber.e(e, "String resource $resourceName is not found")
         emptyString()
     }
 }

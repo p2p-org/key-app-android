@@ -1,8 +1,8 @@
 package org.p2p.wallet.debug.settings
 
+import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
@@ -11,6 +11,7 @@ import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesFragment
 import org.p2p.wallet.debug.feerelayer.DebugFeeRelayerFragment
 import org.p2p.wallet.debug.logs.CustomLogDialog
+import org.p2p.wallet.debug.publickey.DebugPublicKeyFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
 import org.p2p.wallet.debug.torus.DebugTorusFragment
@@ -84,6 +85,9 @@ class DebugSettingsFragment :
             }
             R.string.debug_settings_feature_toggles_title -> {
                 replaceFragment(FeatureTogglesFragment.create())
+            }
+            R.string.settings_stub_public_key -> {
+                replaceFragment(DebugPublicKeyFragment.create())
             }
         }
     }

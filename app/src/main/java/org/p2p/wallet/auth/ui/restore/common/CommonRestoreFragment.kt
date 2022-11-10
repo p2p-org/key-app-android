@@ -13,7 +13,8 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.AnalyticsRestoreWay
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
@@ -68,7 +69,7 @@ class CommonRestoreFragment :
         ::handleSignResult
     )
 
-    private val onboardingAnalytics: OnboardingAnalytics by inject()
+    private val restoreWalletAnalytics: RestoreWalletAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,18 +92,18 @@ class CommonRestoreFragment :
                 false
             }
             buttonRestoreByGoogle.setOnClickListener {
-                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.GOOGLE)
+                restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.GOOGLE)
                 presenter.useGoogleAccount()
             }
 
             buttonPhone.setOnClickListener {
-                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.PHONE)
+                restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.PHONE)
                 presenter.useCustomShare()
             }
 
             buttonBottom.setOnClickListener {
-                onboardingAnalytics.logRestoreOptionClicked(OnboardingAnalytics.AnalyticsRestoreWay.SEED)
                 presenter.useSeedPhrase()
+                restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.SEED)
                 replaceFragment(SeedPhraseFragment.create())
             }
             if (BuildConfig.DEBUG) {
