@@ -10,7 +10,7 @@ import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-private const val REQUEST_TIME_OKAY_SEC = 15
+private const val EXPECTED_REQUEST_TIME_SEC = 15
 private const val TAG = "Web3AuthDuration"
 
 class Web3AuthDurationTracker(
@@ -59,7 +59,7 @@ class Web3AuthDurationTracker(
 
         analytics.logTorusRequestResponseTime(methodName, tookDuration)
 
-        if (tookDuration.inWholeSeconds > REQUEST_TIME_OKAY_SEC) {
+        if (tookDuration.inWholeSeconds > EXPECTED_REQUEST_TIME_SEC) {
             Timber.e(Web3AuthTakesTooLong(methodName, tookDuration))
         }
 

@@ -2,21 +2,21 @@ package org.p2p.wallet.auth.analytics
 
 import org.p2p.wallet.common.analytics.Analytics
 
-private const val ONBOARD_PROPERTY_USER_RESTORE_METHOD = "User_Restore_Method"
-private const val ONBOARD_RESTORE_WALLET_CONFIRM_PIN = "Restore_Confirm_Pin"
-private const val ONBOARD_RESTORE_WALLET_BUTTON = "Restore_Wallet_Button"
-private const val ONBOARD_SELECT_RESTORE_OPTION = "Select_Restore_Option"
-private const val ONBOARD_RESTORE_PHONE_SCREEN = "Restore_Phone_Screen"
-private const val ONBOARD_RESTORE_SMS_PHONE_CLICK_BUTTON = "Restore_Phone_Click_Button"
-private const val ONBOARD_RESTORE_SMS_SCREEN = "Restore_Sms_Screen"
-private const val ONBOARD_RESTORE_SMS_VALIDATION = "Restore_Sms_Validation"
+private const val ONBOARDING_PROPERTY_USER_RESTORE_METHOD = "User_Restore_Method"
+private const val ONBOARDING_RESTORE_WALLET_CONFIRM_PIN = "Restore_Confirm_Pin"
+private const val ONBOARDING_RESTORE_WALLET_BUTTON = "Restore_Wallet_Button"
+private const val ONBOARDING_SELECT_RESTORE_OPTION = "Select_Restore_Option"
+private const val ONBOARDING_RESTORE_PHONE_SCREEN = "Restore_Phone_Screen"
+private const val ONBOARDING_RESTORE_SMS_PHONE_CLICK_BUTTON = "Restore_Phone_Click_Button"
+private const val ONBOARDING_RESTORE_SMS_SCREEN = "Restore_Sms_Screen"
+private const val ONBOARDING_RESTORE_SMS_VALIDATION = "Restore_Sms_Validation"
 
 class RestoreWalletAnalytics(
     private val tracker: Analytics
 ) {
     fun logRestoreWalletPinConfirmed() {
         tracker.logEvent(
-            event = ONBOARD_RESTORE_WALLET_CONFIRM_PIN,
+            event = ONBOARDING_RESTORE_WALLET_CONFIRM_PIN,
             params = mapOf(
                 "Result" to true
             )
@@ -24,12 +24,12 @@ class RestoreWalletAnalytics(
     }
 
     fun logAlreadyHaveWalletClicked() {
-        tracker.logEvent(event = ONBOARD_RESTORE_WALLET_BUTTON)
+        tracker.logEvent(event = ONBOARDING_RESTORE_WALLET_BUTTON)
     }
 
     fun logRestoreOptionClicked(restoreWay: AnalyticsRestoreWay) {
         tracker.logEvent(
-            event = ONBOARD_SELECT_RESTORE_OPTION,
+            event = ONBOARDING_SELECT_RESTORE_OPTION,
             params = mapOf(
                 "Restore_Option" to restoreWay.value
             )
@@ -37,20 +37,20 @@ class RestoreWalletAnalytics(
     }
 
     fun logRestorePhoneEnterScreenOpened() {
-        tracker.logEvent(ONBOARD_RESTORE_PHONE_SCREEN)
+        tracker.logEvent(ONBOARDING_RESTORE_PHONE_SCREEN)
     }
 
     fun logRestoreConfirmPhoneButtonClicked() {
-        tracker.logEvent(ONBOARD_RESTORE_SMS_PHONE_CLICK_BUTTON)
+        tracker.logEvent(ONBOARDING_RESTORE_SMS_PHONE_CLICK_BUTTON)
     }
 
     fun logRestoreSmsInputScreenOpened() {
-        tracker.logEvent(ONBOARD_RESTORE_SMS_SCREEN)
+        tracker.logEvent(ONBOARDING_RESTORE_SMS_SCREEN)
     }
 
     fun logRestoreSmsValidationResult(isSmsValid: Boolean) {
         tracker.logEvent(
-            event = ONBOARD_RESTORE_SMS_VALIDATION,
+            event = ONBOARDING_RESTORE_SMS_VALIDATION,
             params = mapOf(
                 "Result" to isSmsValid
             )
@@ -59,7 +59,7 @@ class RestoreWalletAnalytics(
 
     fun setUserRestoreMethod(restoreMethod: UsernameRestoreMethod) {
         tracker.setUserProperty(
-            key = ONBOARD_PROPERTY_USER_RESTORE_METHOD,
+            key = ONBOARDING_PROPERTY_USER_RESTORE_METHOD,
             value = restoreMethod.analyticValue
         )
     }

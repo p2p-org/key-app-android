@@ -12,7 +12,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_MANUA
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_SEED_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_MANY_WALLETS_FOUND
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_NO_WALLET_FOUND
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PROPERTY_USER_DEVICE_SHARE
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARDING_PROPERTY_USER_DEVICE_SHARE
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_APPROVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_REJECTED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_GOOGLE_INVOKED
@@ -21,7 +21,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_CREAT
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_RESTORING
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_SWIPED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_VIEWED
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_TORUS_REQUEST
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARDING_TORUS_REQUEST
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_CREATED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_RESTORED
 import org.p2p.wallet.utils.emptyString
@@ -145,7 +145,7 @@ class OnboardingAnalytics(private val tracker: Analytics) {
         responseDuration: Duration
     ) {
         tracker.logEvent(
-            event = ONBOARD_TORUS_REQUEST,
+            event = ONBOARDING_TORUS_REQUEST,
             params = mapOf(
                 "Method_Name" to methodName,
                 "Minutes" to responseDuration.inWholeMinutes,
@@ -156,7 +156,7 @@ class OnboardingAnalytics(private val tracker: Analytics) {
 
     fun setUserHasDeviceShare(hasDeviceShare: Boolean) {
         tracker.setUserProperty(
-            key = ONBOARD_PROPERTY_USER_DEVICE_SHARE,
+            key = ONBOARDING_PROPERTY_USER_DEVICE_SHARE,
             value = hasDeviceShare
         )
     }
