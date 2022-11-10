@@ -10,30 +10,22 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BIO_APPROVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_BIO_REJECTED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_MANUAL_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_SEED_INVOKED
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATE_WALLET_CONFIRM_PIN
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_CREATION_PHONE_SCREEN
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_MANY_WALLETS_FOUND
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_NO_WALLET_FOUND
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PROPERTY_USER_DEVICE_SHARE
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PROPERTY_USER_RESTORE_METHOD
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARDING_PROPERTY_USER_DEVICE_SHARE
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_APPROVED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_PUSH_REJECTED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_GOOGLE_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_MANUAL_INVOKED
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_WALLET_BUTTON
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_RESTORE_WALLET_CONFIRM_PIN
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SELECT_RESTORE_OPTION
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_CREATED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_RESTORING
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_SWIPED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_SPLASH_VIEWED
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_START_BUTTON
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_RESERVED
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SAVED
-import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_USERNAME_SKIPPED
+import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARDING_TORUS_REQUEST
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_CREATED
 import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_RESTORED
 import org.p2p.wallet.utils.emptyString
+import kotlin.time.Duration
 
 class OnboardingAnalytics(private val tracker: Analytics) {
     fun logSplashViewed() {
@@ -148,84 +140,25 @@ class OnboardingAnalytics(private val tracker: Analytics) {
         tracker.logEvent(ONBOARD_PUSH_APPROVED)
     }
 
-    fun logUsernameSkipped(usernameField: UsernameField) {
+    fun logTorusRequestResponseTime(
+        methodName: String,
+        responseDuration: Duration
+    ) {
         tracker.logEvent(
-            ONBOARD_USERNAME_SKIPPED,
-            arrayOf(
-                Pair("Username_Field", usernameField.title)
-            )
-        )
-    }
-
-    fun logUsernameSaved(lastScreenName: String) {
-        tracker.logEvent(
-            ONBOARD_USERNAME_SAVED,
-            arrayOf(
-                Pair("Last_Screen", lastScreenName)
-            )
-        )
-    }
-
-    fun logUsernameReserved() {
-        tracker.logEvent(ONBOARD_USERNAME_RESERVED)
-    }
-
-    fun logCreateWalletClicked() {
-        tracker.logEvent(event = ONBOARD_START_BUTTON)
-    }
-
-    fun logCreateWalletPinConfirmed() {
-        tracker.logEvent(
-            event = ONBOARD_CREATE_WALLET_CONFIRM_PIN,
+            event = ONBOARDING_TORUS_REQUEST,
             params = mapOf(
-                "Result" to true
+                "Method_Name" to methodName,
+                "Minutes" to responseDuration.inWholeMinutes,
+                "Seconds" to responseDuration.inWholeSeconds,
             )
-        )
-    }
-
-    fun logRestoreWalletPinConfirmed() {
-        tracker.logEvent(
-            event = ONBOARD_RESTORE_WALLET_CONFIRM_PIN,
-            params = mapOf(
-                "Result" to true
-            )
-        )
-    }
-
-    fun logAlreadyHaveWalletClicked() {
-        tracker.logEvent(event = ONBOARD_RESTORE_WALLET_BUTTON)
-    }
-
-    fun logRestoreOptionClicked(restoreWay: AnalyticsRestoreWay) {
-        tracker.logEvent(
-            event = ONBOARD_SELECT_RESTORE_OPTION,
-            params = mapOf(
-                "Restore_Option" to restoreWay.value
-            )
-        )
-    }
-
-    fun logPhoneEnterScreenOpened() {
-        tracker.logEvent(ONBOARD_CREATION_PHONE_SCREEN)
-    }
-
-    fun setUserRestoreMethod(restoreMethod: UsernameRestoreMethod) {
-        tracker.setUserProperty(
-            key = ONBOARD_PROPERTY_USER_RESTORE_METHOD,
-            value = restoreMethod.analyticValue
         )
     }
 
     fun setUserHasDeviceShare(hasDeviceShare: Boolean) {
         tracker.setUserProperty(
-            key = ONBOARD_PROPERTY_USER_DEVICE_SHARE,
+            key = ONBOARDING_PROPERTY_USER_DEVICE_SHARE,
             value = hasDeviceShare
         )
-    }
-
-    enum class UsernameRestoreMethod(val analyticValue: String) {
-        WEB3AUTH("web3auth"),
-        SEED_PHRASE("seed_phrase")
     }
 
     enum class UsernameField(val title: String) {
@@ -237,9 +170,5 @@ class OnboardingAnalytics(private val tracker: Analytics) {
                 return if (username.isEmpty()) FILLED else NOT_FILLED
             }
         }
-    }
-
-    enum class AnalyticsRestoreWay(val value: String) {
-        PHONE("phone"), GOOGLE("google"), SEED("seed")
     }
 }

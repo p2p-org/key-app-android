@@ -19,7 +19,8 @@ object RestoreModule : InjectionModule {
             DerivableAccountsPresenter(
                 secretKeys = secretKeys,
                 seedPhraseInteractor = get(),
-                analytics = get()
+                analytics = get(),
+                restoreWalletAnalytics = get()
             )
         }
     }

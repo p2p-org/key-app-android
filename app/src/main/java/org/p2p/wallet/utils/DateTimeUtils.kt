@@ -23,6 +23,7 @@ object DateTimeUtils {
     private const val PATTERN_DAY_OF_WEEK_FULL = "EEEE"
     private const val PATTERN_DATE_AND_TIME = "dd.MM HH:mm"
     private const val PATTERN_DATEPICKER_DATE = "EE, dd MMM"
+    const val PATTERN_HH_MM_SS_SS = "HH:mm:ss:SSSS"
 
     private const val SECOND = 1000
     private const val MINUTE = 60 * SECOND
@@ -71,7 +72,9 @@ object DateTimeUtils {
         return getFormatter(PATTERN_DATEPICKER_DATE, context).format(datetime)
     }
 
-    fun getFormattedDate(timestamp: Long): String = getFormatter(PATTERN_DATE).format(Date(timestamp))
+    fun getFormattedDate(timestamp: Long, pattern: String = PATTERN_DATE): String {
+        return getFormatter(pattern).format(Date(timestamp))
+    }
 
     fun getFormattedDateAndTime(timestamp: Long): String = getFormatter(PATTERN_DATE_AND_TIME)
         .format(timestamp)
