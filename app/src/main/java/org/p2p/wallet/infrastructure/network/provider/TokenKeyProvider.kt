@@ -1,6 +1,7 @@
 package org.p2p.wallet.infrastructure.network.provider
 
 import org.p2p.solanaj.utils.crypto.Base58Utils
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
 import org.p2p.wallet.utils.emptyString
@@ -21,7 +22,7 @@ class TokenKeyProvider(
 
     var useStubKey: Boolean
         set(value) = secureStorage.saveString(Key.KEY_USE_STUB_PUBLIC_KEY, value.toString())
-        get() = secureStorage.getString(Key.KEY_USE_STUB_PUBLIC_KEY)?.toBoolean() ?: false
+        get() = BuildConfig.DEBUG && secureStorage.getString(Key.KEY_USE_STUB_PUBLIC_KEY)?.toBoolean() ?: false
 
     var publicKey: String = emptyString()
         get() = getPublicKeyFromStorage()
