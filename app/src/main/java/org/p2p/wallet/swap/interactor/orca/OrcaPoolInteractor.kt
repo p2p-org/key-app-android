@@ -100,7 +100,7 @@ class OrcaPoolInteractor(
         // The transaction might be rejected because the input amount and output amount of intermediary token (wstETH) is too small
         // To temporarily fix this issue, prefers direct route or transitive route without ETH, BTC
         val directSwapPool = sortedPoolsPair.firstOrNull { it.size == 1 }
-        return directSwapPool ?: sortedPoolsPair.first()
+        return directSwapPool ?: poolsPairs.first()
     }
 
     // Find best pool to swap from estimated amount
