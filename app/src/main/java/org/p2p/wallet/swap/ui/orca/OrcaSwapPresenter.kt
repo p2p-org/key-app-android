@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap.ui.orca
 
 import android.content.res.Resources
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -86,6 +87,10 @@ class OrcaSwapPresenter(
     private lateinit var sourceToken: Token.Active
 
     private var bestPoolPair: OrcaPoolsPair? = null
+        set(value) {
+            field = value
+            value?.also { showDebugBestSwapPairRoute(it) }
+        }
 
     private var solToken: Token.Active? = null
 
@@ -689,6 +694,15 @@ class OrcaSwapPresenter(
         Timber.e(error, "Error swapping tokens")
         view?.showErrorMessage(error)
         view?.showProgressDialog(transactionId, null)
+    }
+
+    private fun showDebugBestSwapPairRoute(bestPairRoute: OrcaPoolsPair) {
+        if (BuildConfig.DEBUG) {
+            val routeAsString = bestPairRoute.joinToString { "${it.tokenAName} -> ${it.tokenBName}" }
+            view?.showDebugSwapRoute(routeAsString.ifBlank { "No route found" })
+        } else {
+            view?.hideDebugSwapRoute()
+        }
     }
 
     private fun logSwapStarted() {
