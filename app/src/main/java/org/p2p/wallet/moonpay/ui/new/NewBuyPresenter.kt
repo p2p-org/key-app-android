@@ -217,9 +217,10 @@ class NewBuyPresenter(
                 }
                 return isValidCurrencyForPay()
             } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
-                view?.setContinueButtonEnabled(false)
-                view?.showMessage(resourcesProvider.getString(R.string.buy_gbp_error))
-                return false
+                paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
+                    onPaymentMethodSelected(it, byUser = false)
+                }
+                return isValidCurrencyForPay()
             }
         }
         return true

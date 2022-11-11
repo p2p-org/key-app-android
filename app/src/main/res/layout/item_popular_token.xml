@@ -39,14 +39,14 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/text_night"
-            app:layout_constraintBottom_toTopOf="@id/textViewTotalValue"
+            app:layout_constraintBottom_toTopOf="@id/textViewTotal"
             app:layout_constraintEnd_toStartOf="@id/textViewValue"
             app:layout_constraintStart_toEndOf="@id/imageViewToken"
             app:layout_constraintTop_toTopOf="@id/imageViewToken"
             tools:text="Solana" />
 
         <TextView
-            android:id="@+id/textViewTotalValue"
+            android:id="@+id/textViewTotal"
             style="@style/UiKit.TextAppearance.Regular.Label1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
             android:backgroundTint="@color/bg_rain"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
             android:textColor="@color/text_night"
-            app:layout_constraintBottom_toBottomOf="@id/textViewTotalValue"
+            app:layout_constraintBottom_toBottomOf="@id/textViewTotal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/textViewName"
             tools:text="Buy" />
