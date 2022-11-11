@@ -72,6 +72,7 @@ fun Context.shareScreenShot(image: File, providedText: String = "Save Screenshot
     try {
         startActivity(Intent.createChooser(intent, "Share with"))
     } catch (e: ActivityNotFoundException) {
+        Timber.e(e)
         toast("No App Available")
     }
 }
