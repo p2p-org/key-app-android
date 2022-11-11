@@ -49,7 +49,7 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebug
 
-  android-build-pre-release:
+  android-build-local-release:
     name: "Run build pre-release artifacts"
     needs:
       - android-lint
@@ -105,8 +105,8 @@ jobs:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
-      - name: "Setup signing.properties"
-        run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2p-wallet.jks
+      - name: "Setup signing.properties and .jks"
+        run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2pwallet.jks
 
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
@@ -116,6 +116,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
         run: ./gradlew assembleReleaseFirebase bundleReleaseFirebase
 
       - name: "Build Slack APK and AAB artifact"
@@ -123,6 +124,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
         run: ./gradlew assembleReleaseLocal bundleReleaseLocal
 
       - name: "Upload APK to Firebase App Distribution"
@@ -210,8 +212,8 @@ jobs:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
-      - name: "Setup signing.properties"
-        run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2p-wallet.jks
+      - name: "Setup signing.properties and .jks"
+        run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2pwallet.jks
 
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
@@ -221,6 +223,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
         run: ./gradlew assembleRelease bundleRelease
 
       - name: "Upload APK to Firebase App Distribution"
