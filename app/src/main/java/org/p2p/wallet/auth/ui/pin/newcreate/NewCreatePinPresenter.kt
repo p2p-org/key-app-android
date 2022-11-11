@@ -44,6 +44,13 @@ class NewCreatePinPresenter(
     private var pinMode = PinMode.CREATE
     private var navigateBackOnBackPressed = false
 
+    override fun attach(view: NewCreatePinContract.View) {
+        super.attach(view)
+        if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
+            view.showUiKitSnackBar(messageResId = R.string.auth_create_wallet_introduction)
+        }
+    }
+
     override fun setPinMode(pinMode: PinMode) {
         this.pinMode = pinMode
     }

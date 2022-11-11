@@ -23,5 +23,6 @@ interface CommonRestoreContract {
         fun useCustomShare()
         fun setGoogleIdToken(userId: String, idToken: String)
         fun switchFlowToRestore()
+        fun useSeedPhrase()
     }
 }

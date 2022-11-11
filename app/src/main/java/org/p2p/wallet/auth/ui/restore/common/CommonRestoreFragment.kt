@@ -102,6 +102,7 @@ class CommonRestoreFragment :
             }
 
             buttonBottom.setOnClickListener {
+                presenter.useSeedPhrase()
                 restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.SEED)
                 replaceFragment(SeedPhraseFragment.create())
             }

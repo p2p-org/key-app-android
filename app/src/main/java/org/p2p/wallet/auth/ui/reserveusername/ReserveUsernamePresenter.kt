@@ -18,6 +18,7 @@ class ReserveUsernamePresenter(
     private var currentUsernameEntered = emptyString()
 
     private var checkUsernameJob: Job? = null
+    private var reserveUsernameJob: Job? = null
 
     override fun attach(view: ReserveUsernameContract.View) {
         super.attach(view)
@@ -53,7 +54,8 @@ class ReserveUsernamePresenter(
     }
 
     override fun onCreateUsernameClicked() {
-        launch {
+        reserveUsernameJob?.cancel()
+        reserveUsernameJob = launch {
             try {
                 view?.showUsernameIsChecking()
                 usernameInteractor.registerUsername(currentUsernameEntered)
@@ -64,5 +66,11 @@ class ReserveUsernamePresenter(
                 view?.showCreateUsernameFailed()
             }
         }
+    }
+
+    override fun detach() {
+        checkUsernameJob?.cancel()
+        reserveUsernameJob?.cancel()
+        super.detach()
     }
 }

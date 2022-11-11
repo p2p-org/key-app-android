@@ -32,6 +32,10 @@ class CommonRestorePresenter(
         view?.navigateToPhoneEnter()
     }
 
+    override fun useSeedPhrase() {
+        onboardingInteractor.currentFlow = OnboardingFlow.RestoreWallet()
+    }
+
     override fun switchFlowToRestore() {
         val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
         restoreStateMachine.updateState(RestoreState.CommonRestoreScreenState(isDeviceShareSaved))
