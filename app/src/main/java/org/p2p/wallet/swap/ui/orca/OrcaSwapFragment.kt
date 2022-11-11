@@ -333,6 +333,15 @@ class OrcaSwapFragment :
         )
     }
 
+    override fun showDebugSwapRoute(routeAsString: String) {
+        binding.textViewDebugSwapRoute.isVisible = true
+        binding.textViewDebugSwapRoute.text = routeAsString
+    }
+
+    override fun hideDebugSwapRoute() {
+        binding.textViewDebugSwapRoute.isVisible = false
+    }
+
     private fun setupAmountFractionListener() {
         AmountFractionTextWatcher.installOn(binding.amountEditText) {
             presenter.setSourceAmount(it)
