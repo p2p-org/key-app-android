@@ -106,7 +106,9 @@ jobs:
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
 
       - name: "Setup signing.properties and .jks"
-        run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> ./app/p2pwallet.jks
+        run: |
+        echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> app/p2pwallet.jks
+        ls
 
       - name: "Setup gradle"
         uses: ./.github/actions/setup-gradle
