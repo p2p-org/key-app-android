@@ -1,10 +1,10 @@
 package org.p2p.wallet.send.ui.main
 
-import android.content.Context
-import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import android.content.Context
+import android.util.AttributeSet
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.uikit.glide.GlideManager
@@ -41,7 +41,7 @@ class AccountFeeView @JvmOverloads constructor(
         with(binding) {
             fillUsdFee(feeUsd)
 
-            accountImageView.setBackgroundResource(R.drawable.bg_error_rounded)
+            accountImageView.setBackgroundResource(R.drawable.bg_error_rounded_12)
             accountImageView.setImageResource(R.drawable.ic_error)
             accountFeeValueTextView.text = context.getString(R.string.send_not_enough_funds)
             accountFeeValueTextView.setTextColor(getColor(R.color.systemErrorMain))

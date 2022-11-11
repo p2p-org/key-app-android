@@ -18,7 +18,6 @@ import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSearchBinding
 import org.p2p.wallet.send.model.SearchResult
@@ -50,7 +49,10 @@ class SearchFragment :
     private lateinit var textWatcher: TextWatcher
 
     private val searchAdapter: SearchAdapter by unsafeLazy {
-        SearchAdapter(presenter::onSearchResultClick, get<UsernameDomainFeatureToggle>())
+        SearchAdapter(
+            onItemClicked = presenter::onSearchResultClick,
+            usernameDomainFeatureToggle = get()
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
