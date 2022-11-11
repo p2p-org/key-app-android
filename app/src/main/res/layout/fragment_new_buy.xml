@@ -125,7 +125,7 @@
                     app:layout_constraintTop_toBottomOf="@id/recyclerViewMethods" />
 
                 <TextView
-                    android:id="@+id/textViewTotal"
+                    android:id="@+id/textViewTotalValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
@@ -140,9 +140,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:layout_constraintBottom_toBottomOf="@id/textViewTotal"
+                    app:layout_constraintBottom_toBottomOf="@id/textViewTotalValue"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/textViewTotal"
+                    app:layout_constraintTop_toTopOf="@id/textViewTotalValue"
                     app:tint="@color/icons_mountain" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

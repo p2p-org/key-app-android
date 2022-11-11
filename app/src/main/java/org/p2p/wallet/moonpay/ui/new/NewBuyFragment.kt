@@ -33,7 +33,6 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
@@ -110,7 +109,7 @@ class NewBuyFragment :
         toolbarBuy.setNavigationIcon(R.drawable.ic_toolbar_back)
         toolbarBuy.setNavigationOnClickListener { popBackStack() }
 
-        textViewTotal.setOnClickListener {
+        textViewTotalValue.setOnClickListener {
             presenter.onTotalClicked()
         }
 
@@ -169,7 +168,6 @@ class NewBuyFragment :
     }
 
     override fun setCurrencyCode(selectedCurrencyCode: String) {
-        Timber.tag("_______selectedCurrencyCode").d("$selectedCurrencyCode, view = ${binding.amountsView}")
         binding.amountsView.currencyCode = selectedCurrencyCode
     }
 
@@ -194,7 +192,7 @@ class NewBuyFragment :
         } else {
             binding.amountsView.setTokenAmount(viewData.receiveAmountText)
         }
-        binding.textViewTotal.text = viewData.totalText
+        binding.textViewTotalValue.text = viewData.totalText
     }
 
     override fun showDetailsBottomSheet(buyDetailsState: BuyDetailsState) {
@@ -215,7 +213,7 @@ class NewBuyFragment :
             FocusField.CURRENCY -> binding.amountsView.setTokenAmount(null)
         }
 
-        binding.textViewTotal.text = totalText
+        binding.textViewTotalValue.text = totalText
     }
 
     override fun navigateToMoonpay(
