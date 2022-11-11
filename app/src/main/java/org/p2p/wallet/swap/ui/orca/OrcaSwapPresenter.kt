@@ -1,9 +1,7 @@
 package org.p2p.wallet.swap.ui.orca
 
 import android.content.res.Resources
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -55,7 +53,10 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.UUID
-import kotlin.properties.Delegates
+import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TAG_SWAP = "SWAP_STATE"
 
@@ -75,7 +76,7 @@ class OrcaSwapPresenter(
     private val transactionManager: TransactionManager
 ) : BasePresenter<OrcaSwapContract.View>(), OrcaSwapContract.Presenter {
 
-    private var destinationToken: Token? by Delegates.observable(null) { _, _, newValue ->
+    private var destinationToken: Token? by observable(null) { _, _, newValue ->
         newValue?.let { swapAnalytics.logSwapChangingTokenBNew(it.tokenSymbol) }
 
         view?.showDestinationToken(newValue)
@@ -86,6 +87,10 @@ class OrcaSwapPresenter(
     private lateinit var sourceToken: Token.Active
 
     private var bestPoolPair: OrcaPoolsPair? = null
+        set(value) {
+            field = value
+            value?.also { showDebugBestSwapPairRoute(it) }
+        }
 
     private var solToken: Token.Active? = null
 
@@ -689,6 +694,15 @@ class OrcaSwapPresenter(
         Timber.e(error, "Error swapping tokens")
         view?.showErrorMessage(error)
         view?.showProgressDialog(transactionId, null)
+    }
+
+    private fun showDebugBestSwapPairRoute(bestPairRoute: OrcaPoolsPair) {
+        if (BuildConfig.DEBUG) {
+            val routeAsString = bestPairRoute.joinToString { "${it.tokenAName} -> ${it.tokenBName}" }
+            view?.showDebugSwapRoute(routeAsString.ifBlank { "No route found" })
+        } else {
+            view?.hideDebugSwapRoute()
+        }
     }
 
     private fun logSwapStarted() {

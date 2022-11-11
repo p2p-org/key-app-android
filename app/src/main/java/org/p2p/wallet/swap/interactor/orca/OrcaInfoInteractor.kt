@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.interactor.orca
 
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import kotlinx.coroutines.withContext
 import org.p2p.wallet.swap.model.orca.OrcaPools
 import org.p2p.wallet.swap.model.orca.OrcaRoute
 import org.p2p.wallet.swap.model.orca.OrcaRoutes
@@ -9,6 +8,7 @@ import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import timber.log.Timber
+import kotlinx.coroutines.withContext
 
 class OrcaInfoInteractor(
     private val orcaRepository: OrcaSwapRepository,
@@ -20,30 +20,31 @@ class OrcaInfoInteractor(
     fun getInfo(): OrcaSwapInfo? = info
 
     // Prepare all needed infos for swapping
-    suspend fun load() = withContext(dispatchers.io) {
-        if (info != null) return@withContext
+    suspend fun load() {
+        withContext(dispatchers.io) {
+            if (info != null) return@withContext
 
-        val configs = orcaRepository.loadOrcaConfigs()
+            val configs = orcaRepository.loadOrcaConfigs()
 
-        val tokens = configs.tokens
-        val pools = configs.pools
-        val programIds = configs.programId
+            val tokens = configs.tokens
+            val pools = configs.pools
+            val programIds = configs.programId
 
-        val routes = findAllAvailableRoutes(tokens, pools)
+            val routes = findAllAvailableRoutes(tokens, pools)
 
-        val tokenNames = mutableMapOf<String, String>()
-        tokens.forEach { (key, value) -> tokenNames[value.mint] = key }
+            val tokenNames = mutableMapOf<String, String>()
+            tokens.forEach { (key, value) -> tokenNames[value.mint] = key }
 
-        Timber.d("Orca swap info loaded")
+            Timber.d("Orca swap info loaded: $tokenNames")
 
-        info =
-            OrcaSwapInfo(
+            info = OrcaSwapInfo(
                 routes = routes,
                 tokens = tokens,
                 pools = pools,
                 programIds = programIds,
                 tokenNames = tokenNames
             )
+        }
     }
 
     private fun findAllAvailableRoutes(tokens: OrcaTokens, pools: OrcaPools): OrcaRoutes {

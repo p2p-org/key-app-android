@@ -20,6 +20,7 @@ import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaSwapResult
 import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.isZero
+import timber.log.Timber
 import java.math.BigInteger
 
 class OrcaSwapInteractor(
@@ -96,6 +97,7 @@ class OrcaSwapInteractor(
                 swapByFeeRelayer()
             } catch (serverError: ServerException) {
                 if (serverError.errorCode == ErrorCode.INVALID_BLOCKHASH) {
+                    Timber.i(serverError)
                     // if something not ok with BLOCKHASH we can retry transaction with a new one
                     swapByFeeRelayer()
                 } else {
