@@ -125,7 +125,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/actorAddressTitleTextView"
+                    android:id="@+id/textViewActorAddressTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -135,7 +135,7 @@
                     android:textColor="@color/text_night" />
 
                 <TextView
-                    android:id="@+id/actorAddressValueTextView"
+                    android:id="@+id/textViewActorAddressValue"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -158,7 +158,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/feesTitleTextView"
+                    android:id="@+id/textViewFeesTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="8dp"
@@ -167,7 +167,7 @@
                     android:textColor="@color/text_night" />
 
                 <TextView
-                    android:id="@+id/feesTextView"
+                    android:id="@+id/textViewFees"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -189,7 +189,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/statusTitleTextView"
+                    android:id="@+id/textViewStatusTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="8dp"
@@ -198,7 +198,7 @@
                     android:textColor="@color/text_night" />
 
                 <TextView
-                    android:id="@+id/statusTextView"
+                    android:id="@+id/textViewStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -220,7 +220,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/transactionIdTitleTextView"
+                    android:id="@+id/textViewTransactionIdTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -230,7 +230,7 @@
                     android:textColor="@color/text_night" />
 
                 <TextView
-                    android:id="@+id/transactionIdTextView"
+                    android:id="@+id/textViewTransactionId"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -255,7 +255,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/sourceTitleTextView"
+                    android:id="@+id/textViewSourceTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -265,7 +265,7 @@
                     android:textColor="@color/text_night" />
 
                 <TextView
-                    android:id="@+id/sourceAddressTextView"
+                    android:id="@+id/textViewSourceAddress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -289,7 +289,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/destinationTitleTextView"
+                    android:id="@+id/textViewDestinationTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -299,7 +299,7 @@
                     android:textColor="@color/text_night" />
 
                 <TextView
-                    android:id="@+id/destinationAddressTextView"
+                    android:id="@+id/textViewDestinationAddress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -315,7 +315,7 @@
             </LinearLayout>
 
             <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/doneButton"
+                android:id="@+id/buttonDone"
                 style="@style/UiKit.Components.Button.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -328,7 +328,7 @@
                 app:layout_constraintTop_toBottomOf="@id/transactionIdTextView" />
 
             <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/detailsButton"
+                android:id="@+id/buttonDetails"
                 style="@style/UiKit.Components.Button.Large.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
