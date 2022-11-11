@@ -1,9 +1,10 @@
 package org.p2p.wallet.receive.network
 
-import android.os.Bundle
-import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -78,7 +79,7 @@ class ReceiveNetworkTypeFragment :
         }
         childFragmentManager.setFragmentResultListener(REQUEST_KEY, viewLifecycleOwner) { _, bundle ->
             if (bundle.containsKey(BUNDLE_KEY_IS_TOPUP_SELECTED)) {
-                onTopupResult(bundle)
+                onRenBtcTopUpResult(bundle)
             }
             if (bundle.containsKey(BUNDLE_KEY_IS_BUY_SELECTED)) {
                 onBuyResult(bundle)
@@ -116,7 +117,7 @@ class ReceiveNetworkTypeFragment :
     }
 
     override fun navigateToReceive(type: NetworkType) {
-        setFragmentResult(requestKey, Bundle().apply { putParcelable(resultKey, type) })
+        setFragmentResult(requestKey = requestKey, result = bundleOf(resultKey to type))
         popBackStack()
     }
 
@@ -154,9 +155,9 @@ class ReceiveNetworkTypeFragment :
         popBackStack()
     }
 
-    private fun onTopupResult(bundle: Bundle) {
-        val isTopupSelected = bundle.getBoolean(BUNDLE_KEY_IS_TOPUP_SELECTED)
-        presenter.onTopupSelected(isTopupSelected)
+    private fun onRenBtcTopUpResult(bundle: Bundle) {
+        val isTopUpSelected = bundle.getBoolean(BUNDLE_KEY_IS_TOPUP_SELECTED)
+        presenter.onTopupSelected(isTopUpSelected)
     }
 
     private fun onBuyResult(bundle: Bundle) {
