@@ -1,7 +1,7 @@
 package org.p2p.wallet.send.ui.search.adapter
 
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import android.annotation.SuppressLint
 import android.view.ViewGroup
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.send.model.SearchResult
@@ -13,12 +13,36 @@ class SearchAdapter(
 
     private val data = mutableListOf<SearchResult>()
 
-    /* TODO: Will add diff later */
-    @SuppressLint("NotifyDataSetChanged")
+    private class SearchAdapterDiffUtil(
+        private val oldList: List<SearchResult>,
+        private val newList: List<SearchResult>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = oldList.size
+
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].addressState == newList[newItemPosition].addressState
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+
+            return if (oldItem is SearchResult.UsernameFound && newItem is SearchResult.UsernameFound) {
+                oldItem.username == newItem.username
+            } else {
+                true
+            }
+        }
+    }
+
     fun setItems(results: List<SearchResult>) {
+        val diffResult = DiffUtil.calculateDiff(SearchAdapterDiffUtil(oldList = data, newList = results))
         data.clear()
         data.addAll(results)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun getItemCount(): Int = data.size

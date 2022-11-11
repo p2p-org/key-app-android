@@ -20,7 +20,7 @@
     <color name="systemSuccessBackground">#F5FBF5</color>
 
     <!--Warning colors-->
-    <color name="systemWarningMain">#FFA631</color>
+    <color name="systemWarningMain">@color/sun</color>
     <color name="systemWarningSecondary">#FF6600</color>
     <color name="systemWarningBackground">#FFFBF5</color>
 
