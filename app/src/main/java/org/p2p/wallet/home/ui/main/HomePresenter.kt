@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
@@ -157,8 +156,6 @@ class HomePresenter(
         userTokensFlowJob?.cancel()
         userTokensFlowJob = launch {
             userInteractor.getUserTokensFlow()
-                // remove SOL if it's zero
-                .map { userTokens -> userTokens.filterNot { it.isSOL && it.isZero } }
                 // emits two times when local tokens updated: with [] and actual list - strange
                 .collect { updatedTokens ->
                     Timber.d("local tokens change arrived")
@@ -204,9 +201,11 @@ class HomePresenter(
         launch {
             view?.showRefreshing(isRefreshing = true)
 
+            userTokensFlowJob?.cancel()
             runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }
                 .onSuccess { Timber.d("refreshing tokens is success") }
                 .onFailure { handleUserTokensUpdateFailure(it) }
+            subscribeToUserTokensFlow()
 
             view?.showRefreshing(isRefreshing = false)
         }
@@ -279,7 +278,6 @@ class HomePresenter(
         launch {
             Timber.d("initial token loading")
             view?.showRefreshing(isRefreshing = true)
-            // We are waiting when tokenlist.json is being parsed and saved into the memory
             delay(1000L)
             kotlin.runCatching { userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true) }
                 .onSuccess {
@@ -316,8 +314,10 @@ class HomePresenter(
     private suspend fun loadTokensOnPolling() {
         val isPollingEnabled = inAppFeatureFlags.isPollingEnabled.featureValue
         if (isPollingEnabled) {
+            userTokensFlowJob?.cancel()
             userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = false)
             Timber.d("Successfully auto-updated loaded tokens")
+            subscribeToUserTokensFlow()
         } else {
             Timber.d("Skipping tokens auto-update")
         }

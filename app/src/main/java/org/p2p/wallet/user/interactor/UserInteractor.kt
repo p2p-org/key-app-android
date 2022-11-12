@@ -13,6 +13,7 @@ import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
@@ -33,6 +34,11 @@ class UserInteractor(
 
     fun getUserTokensFlow(): Flow<List<Token.Active>> =
         mainLocalRepository.getTokensFlow()
+            // remove SOL if it's zero
+            .map { userTokens ->
+                userTokens.filterNot { it.isSOL && it.isZero }
+                    .sortedWith(TokenComparator())
+            }
 
     suspend fun getTokensForBuy(availableTokensSymbols: List<String>): List<Token> {
         val userTokens = getUserTokens()
