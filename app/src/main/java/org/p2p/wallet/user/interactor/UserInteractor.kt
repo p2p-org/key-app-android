@@ -80,11 +80,12 @@ class UserInteractor(
         }
     }
 
-    suspend fun loadUserTokensAndUpdateLocal(fetchPrices: Boolean) {
+    suspend fun loadUserTokensAndUpdateLocal(fetchPrices: Boolean): List<Token.Active> {
         val newTokens = userRepository.loadUserTokens(tokenKeyProvider.publicKey, fetchPrices)
         val cachedTokens = mainLocalRepository.getUserTokens()
 
         updateLocalTokens(cachedTokens, newTokens)
+        return getUserTokens()
     }
 
     private suspend fun updateLocalTokens(cachedTokens: List<Token.Active>, newTokens: List<Token.Active>) {

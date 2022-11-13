@@ -29,7 +29,6 @@ interface HomeContract {
         fun onBuyClicked()
         fun onBuyTokenClicked(token: Token)
         fun onInfoBuyTokenClicked(token: Token)
-        fun subscribeToUserTokensFlow()
         fun refreshTokens()
         fun toggleTokenVisibility(token: Token.Active)
         fun toggleTokenVisibilityState()
@@ -38,5 +37,6 @@ interface HomeContract {
         fun onAddressClicked()
 
         fun updateTokensIfNeeded()
+        fun load()
     }
 }
