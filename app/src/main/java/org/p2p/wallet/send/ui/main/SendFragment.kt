@@ -112,10 +112,6 @@ class SendFragment :
         sendAnalytics.logSendStartedScreen(analyticsInteractor.getPreviousScreenName())
         setupViews()
 
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_SEND, this
-        ) { _, result -> handleFragmentResult(result) }
-
         // childFragmentManager for BottomSheets
         childFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SEND, this

@@ -28,6 +28,7 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.asCurrency
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.isZero
@@ -57,8 +58,8 @@ class NewBuyPresenter(
 
     private var selectedCurrency: BuyCurrency.Currency = SelectCurrencyBottomSheet.DEFAULT_CURRENCY
     private var selectedToken: Token = tokenToBuy
-    private lateinit var selectedPaymentMethod: PaymentMethod
-    private lateinit var currentAlphaCode: String
+    private var selectedPaymentMethod: PaymentMethod? = null
+    private var currentAlphaCode: String = emptyString()
 
     private var amount: String = "0"
     private var isSwappedToToken: Boolean = false
@@ -149,7 +150,7 @@ class NewBuyPresenter(
     }
 
     private fun validatePaymentMethod() {
-        if (selectedPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
+        if (selectedPaymentMethod?.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (currentAlphaCode == BANK_TRANSFER_UK_CODE) {
                 selectCurrency(BuyCurrency.Currency.create(Constants.GBP_SYMBOL))
             } else {
@@ -197,6 +198,7 @@ class NewBuyPresenter(
             buyAnalytics.logBuyCurrencyChanged(selectedCurrency.code, currency.code)
         }
         selectedCurrency = currency
+
         if (isValidCurrencyForPay()) {
             recalculate()
         }
@@ -204,18 +206,21 @@ class NewBuyPresenter(
 
     private fun isValidCurrencyForPay(): Boolean {
         val selectedCurrencyCode = selectedCurrency.code
-        if (selectedPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
+        val currentPaymentMethod = selectedPaymentMethod ?: return false
+
+        if (currentPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
                 (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
             ) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
-                return false
+                return isValidCurrencyForPay()
             } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
-                view?.setContinueButtonEnabled(false)
-                view?.showMessage(resourcesProvider.getString(R.string.buy_gbp_error))
-                return false
+                paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
+                    onPaymentMethodSelected(it, byUser = false)
+                }
+                return isValidCurrencyForPay()
             }
         }
         return true
@@ -266,12 +271,14 @@ class NewBuyPresenter(
             view?.showLoading(isLoading = true)
 
             val baseCurrencyCode = selectedCurrency.code.lowercase()
+            val paymentMethod = selectedPaymentMethod?.paymentType ?: return@launch
+
             val result = moonpayBuyInteractor.getMoonpayBuyResult(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = selectedToken,
                 baseCurrencyCode = baseCurrencyCode,
-                paymentMethod = selectedPaymentMethod.paymentType
+                paymentMethod = paymentMethod
             )
             onBuyCurrencyLoadSuccess(result)
         } catch (error: Throwable) {
@@ -446,11 +453,11 @@ class NewBuyPresenter(
         }
     }
 
-    private fun getValidPaymentType(): String {
+    private fun getValidPaymentType(): String? {
         return if (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
             SEPA_BANK_TRANSFER
         } else {
-            selectedPaymentMethod.paymentType
+            selectedPaymentMethod?.paymentType
         }
     }
 

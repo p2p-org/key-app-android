@@ -88,7 +88,7 @@
         app:layout_constraintVertical_bias="1" />
 
     <org.p2p.wallet.common.ui.widget.ProgressButton
-        android:id="@+id/progressButton"
+        android:id="@+id/buttonShareSolanaAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
