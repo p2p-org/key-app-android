@@ -107,9 +107,9 @@ class BuyAnalytics(private val tracker: Analytics) {
         buySumCoin: String,
         buyCurrency: String,
         buyCoin: String,
-        methodPayment: PaymentMethod
+        methodPayment: PaymentMethod?
     ) {
-        val isBankTransfer = methodPayment.method == PaymentMethod.MethodType.BANK_TRANSFER
+        val isBankTransfer = methodPayment?.method == PaymentMethod.MethodType.BANK_TRANSFER
         tracker.logEvent(
             BUY_BUTTON_PRESSED,
             mutableMapOf(
@@ -117,11 +117,11 @@ class BuyAnalytics(private val tracker: Analytics) {
                 "Sum_Coin" to buySumCoin,
                 "Currency" to buyCurrency,
                 "Coin" to buyCoin,
-                "Payment_Method" to methodPayment.toType(),
+                "Payment_Method" to methodPayment?.toType().orEmpty(),
                 "Bank_Transfer" to isBankTransfer,
             ).apply {
                 if (isBankTransfer) {
-                    put("Type_Bank_Transfer", methodPayment.paymentType)
+                    put("Type_Bank_Transfer", methodPayment?.paymentType.orEmpty())
                 }
             }
         )

@@ -6,6 +6,7 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse.ErrorType
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
+import timber.log.Timber
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -16,15 +17,19 @@ class UserSignUpInteractor(
     sealed interface SignUpResult {
         object UserAlreadyExists : SignUpResult
         object SignUpSuccessful : SignUpResult
-        class SignUpFailed(override val cause: Throwable) : Error(), SignUpResult
+        class SignUpFailed(
+            override val cause: Throwable,
+        ) : Throwable(cause.message), SignUpResult
     }
 
     suspend fun trySignUpNewUser(socialShareUserId: String): SignUpResult {
         return try {
+            Timber.i("--> Start trySignUpNewUser")
             val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare()
             signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
             userSignUpDetailsStorage.save(signUpResponse, socialShareUserId)
 
+            Timber.i("<-- Finish trySignUpNewUser")
             SignUpResult.SignUpSuccessful
         } catch (web3AuthError: Web3AuthErrorResponse) {
             if (web3AuthError.errorType == ErrorType.CANNOT_RECONSTRUCT) {
@@ -54,10 +59,9 @@ class UserSignUpInteractor(
 
     private suspend fun generateDeviceAndThirdShare(): Web3AuthSignUpResponse {
         val torusKey = signUpFlowDataRepository.torusKey
-        if (torusKey.isNullOrEmpty()) {
-            error("Torus key is null")
-        } else {
-            return web3AuthApi.triggerSilentSignUp(torusKey)
+        require(!torusKey.isNullOrBlank()) {
+            "Torus key for not fetched for SignUp!"
         }
+        return web3AuthApi.triggerSilentSignUp(torusKey)
     }
 }

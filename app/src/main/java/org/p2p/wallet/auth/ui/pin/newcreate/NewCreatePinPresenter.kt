@@ -1,10 +1,11 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
 import android.content.SharedPreferences
-import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
+import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
@@ -19,13 +20,15 @@ import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import javax.crypto.Cipher
+import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
 
 class NewCreatePinPresenter(
     private val analytics: OnboardingAnalytics,
     private val adminAnalytics: AdminAnalytics,
-    private val onboardingAnalytics: OnboardingAnalytics,
+    private val createWalletAnalytics: CreateWalletAnalytics,
+    private val restoreWalletAnalytics: RestoreWalletAnalytics,
     private val authInteractor: AuthInteractor,
     private val onboardingInteractor: OnboardingInteractor,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
@@ -40,6 +43,13 @@ class NewCreatePinPresenter(
     private var createdPin = emptyString()
     private var pinMode = PinMode.CREATE
     private var navigateBackOnBackPressed = false
+
+    override fun attach(view: NewCreatePinContract.View) {
+        super.attach(view)
+        if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
+            view.showUiKitSnackBar(messageResId = R.string.auth_create_wallet_introduction)
+        }
+    }
 
     override fun setPinMode(pinMode: PinMode) {
         this.pinMode = pinMode
@@ -62,9 +72,9 @@ class NewCreatePinPresenter(
         view?.lockPinKeyboard()
         createPinCode(createdPin)
         if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
-            onboardingAnalytics.logCreateWalletPinConfirmed()
+            createWalletAnalytics.logCreateWalletPinConfirmed()
         } else {
-            onboardingAnalytics.logRestoreWalletPinConfirmed()
+            restoreWalletAnalytics.logRestoreWalletPinConfirmed()
         }
         if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
             closeCreatePinFlow()

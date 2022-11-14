@@ -1,15 +1,16 @@
 package org.p2p.wallet.auth.ui.generalerror
 
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
 import org.p2p.wallet.auth.model.GatewayHandledState
+import org.p2p.wallet.auth.model.RestoreError
 import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.auth.model.RestoreSuccessState
 import org.p2p.wallet.auth.repository.RestoreUserResultHandler
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.common.mvp.BasePresenter
 import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class OnboardingGeneralErrorPresenter(
     private val gatewayHandledState: GatewayHandledState,
@@ -70,10 +71,11 @@ class OnboardingGeneralErrorPresenter(
                 view?.restartWithState(restoreHandledState)
             }
             is RestoreFailureState.ToastError -> {
+                Timber.i(RestoreError(restoreHandledState.message))
                 view?.showUiKitSnackBar(message = restoreHandledState.message)
             }
             is RestoreFailureState.LogError -> {
-                Timber.i(restoreHandledState.message)
+                Timber.e(RestoreError(restoreHandledState.message))
             }
         }
     }

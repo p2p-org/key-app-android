@@ -104,13 +104,10 @@ class HistoryTransactionMapper(
         directPublicKey: String,
         publicKey: String
     ): HistoryTransaction? {
-        val symbol = findSymbol(transfer.mint ?: Constants.SOL_MINT)
-
-        val rate = userLocalRepository.getPriceByToken(symbol)
-
         val mint = if (transfer.isSimpleTransfer) Constants.WRAPPED_SOL_MINT else transfer.mint
-        val source = userLocalRepository.findTokenData(mint.orEmpty()) ?: return null
-
+        val symbol = findSymbol(mint)
+        val rate = userLocalRepository.getPriceByToken(symbol)
+        val source = mint?.let { userLocalRepository.findTokenData(it) } ?: return null
         return historyTransactionConverter.mapTransferTransactionToHistory(
             response = transfer,
             tokenData = source,
@@ -142,9 +139,9 @@ class HistoryTransactionMapper(
 
     private fun findSymbol(mint: String?): String {
         return if (!mint.isNullOrBlank()) {
-            userLocalRepository.findTokenData(mint)?.symbol.orEmpty()
+            userLocalRepository.findTokenData(mint)?.symbol ?: Constants.SOL_SYMBOL
         } else {
-            ""
+            Constants.SOL_SYMBOL
         }
     }
 }

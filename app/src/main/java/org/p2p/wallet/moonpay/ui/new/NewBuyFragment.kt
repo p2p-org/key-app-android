@@ -36,10 +36,8 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
-private const val KEY_REQUEST_TOKEN = "KEY_REQUEST_TOKEN"
+private const val KEY_REQUEST = "KEY_REQUEST_NEW_BUY"
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
-
-private const val KEY_REQUEST_CURRENCY = "KEY_REQUEST_CURRENCY"
 private const val KEY_RESULT_CURRENCY = "KEY_RESULT_CURRENCY"
 
 class NewBuyFragment :
@@ -74,22 +72,16 @@ class NewBuyFragment :
         }
 
         binding.initViews()
-
-        setFragmentResultListener(KEY_REQUEST_TOKEN)
-        setFragmentResultListener(KEY_REQUEST_CURRENCY)
-    }
-
-    private fun setFragmentResultListener(keyResult: String) {
         childFragmentManager.setFragmentResultListener(
-            keyResult,
+            KEY_REQUEST,
             viewLifecycleOwner,
             ::onFragmentResult
         )
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
-        when (requestKey) {
-            KEY_REQUEST_TOKEN -> {
+        when {
+            result.containsKey(KEY_RESULT_TOKEN) -> {
                 result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
                     with(binding) {
                         val symbol = it.tokenSymbol
@@ -101,7 +93,7 @@ class NewBuyFragment :
                 }
             }
 
-            KEY_REQUEST_CURRENCY -> {
+            result.containsKey(KEY_RESULT_CURRENCY) -> {
                 result.getParcelable<BuyCurrency.Currency>(KEY_RESULT_CURRENCY)?.let {
                     setCurrencyCode(it.code)
                     presenter.setCurrency(it)
@@ -117,7 +109,7 @@ class NewBuyFragment :
         toolbarBuy.setNavigationIcon(R.drawable.ic_toolbar_back)
         toolbarBuy.setNavigationOnClickListener { popBackStack() }
 
-        textViewTotal.setOnClickListener {
+        textViewTotalValue.setOnClickListener {
             presenter.onTotalClicked()
         }
 
@@ -159,7 +151,7 @@ class NewBuyFragment :
             title = getString(R.string.buy_select_token_title),
             tokens = tokensToBuy,
             preselectedToken = selectedToken,
-            requestKey = KEY_REQUEST_TOKEN,
+            requestKey = KEY_REQUEST,
             resultKey = KEY_RESULT_TOKEN
         )
     }
@@ -170,7 +162,7 @@ class NewBuyFragment :
             title = getString(R.string.buy_select_currency_title),
             preselectedCurrency = selectedCurrency,
             currencies = currencies,
-            requestKey = KEY_REQUEST_CURRENCY,
+            requestKey = KEY_REQUEST,
             resultKey = KEY_RESULT_CURRENCY
         )
     }
@@ -200,7 +192,7 @@ class NewBuyFragment :
         } else {
             binding.amountsView.setTokenAmount(viewData.receiveAmountText)
         }
-        binding.textViewTotal.text = viewData.totalText
+        binding.textViewTotalValue.text = viewData.totalText
     }
 
     override fun showDetailsBottomSheet(buyDetailsState: BuyDetailsState) {
@@ -221,7 +213,7 @@ class NewBuyFragment :
             FocusField.CURRENCY -> binding.amountsView.setTokenAmount(null)
         }
 
-        binding.textViewTotal.text = totalText
+        binding.textViewTotalValue.text = totalText
     }
 
     override fun navigateToMoonpay(

@@ -46,6 +46,8 @@ interface OrcaSwapContract {
 
         fun showBiometricConfirmationPrompt(data: SwapConfirmData)
         fun closeScreen()
+        fun showDebugSwapRoute(routeAsString: String)
+        fun hideDebugSwapRoute()
     }
 
     interface Presenter : MvpPresenter<View> {

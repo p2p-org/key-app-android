@@ -19,7 +19,7 @@ import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 
 private const val DAY_IN_MILLISECONDS = (60 * 60 * 24)
-private const val PAGE_SIZE = 20
+private const val PAGE_SIZE = 30
 
 class HistoryInteractor(
     private val rpcAccountRepository: RpcAccountRepository,

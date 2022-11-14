@@ -2,7 +2,8 @@ package org.p2p.wallet.restore.ui.derivable
 
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
-import org.p2p.wallet.auth.analytics.OnboardingAnalytics.UsernameRestoreMethod
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.UsernameRestoreMethod
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 class DerivableAccountsPresenter(
     private val secretKeys: List<String>,
     private val seedPhraseInteractor: SeedPhraseInteractor,
-    private val analytics: OnboardingAnalytics
+    private val analytics: OnboardingAnalytics,
+    private val restoreWalletAnalytics: RestoreWalletAnalytics
 ) : BasePresenter<DerivableAccountsContract.View>(),
     DerivableAccountsContract.Presenter {
 
@@ -58,7 +60,8 @@ class DerivableAccountsPresenter(
                 view?.showLoading(true)
                 seedPhraseInteractor.createAndSaveAccount(path, secretKeys)
                 analytics.logWalletRestored(ScreenNames.OnBoarding.IMPORT_MANUAL)
-                analytics.setUserRestoreMethod(UsernameRestoreMethod.SEED_PHRASE)
+                restoreWalletAnalytics.setUserRestoreMethod(UsernameRestoreMethod.SEED_PHRASE)
+
                 view?.navigateToCreatePin()
             } catch (e: Throwable) {
                 Timber.e(e, "Error while creating account and checking username")

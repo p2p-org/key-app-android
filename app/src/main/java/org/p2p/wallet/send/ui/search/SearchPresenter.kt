@@ -35,7 +35,7 @@ class SearchPresenter(
             R.string.send_account_found
         }
 
-        val value = (data.first() as SearchResult.Full).username
+        val value = (data.first() as SearchResult.UsernameFound).username
         view?.showMessage(message)
         view?.showSearchResult(data)
         view?.showSearchValue(value)

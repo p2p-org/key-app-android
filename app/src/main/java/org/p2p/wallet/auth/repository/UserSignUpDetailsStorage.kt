@@ -28,14 +28,14 @@ class UserSignUpDetailsStorage(
             accountStorage.saveString(Key.KEY_IN_SIGN_UP_PROCESS, "+")
         }
 
-        Timber.tag(TAG).i("New user sign up details saved!")
+        Timber.tag(TAG).i("New user sign up details saved! isCreate=$isCreate")
         return true
     }
 
     fun getLastSignUpUserDetails(): SignUpUserDetails? {
         return kotlin.runCatching { accountStorage.getObject(Key.KEY_LAST_DEVICE_SHARE_ID, SignUpUserDetails::class) }
             .onSuccess { Timber.tag(TAG).i("Last sign up user details(null=${it == null}) received!") }
-            .onFailure { Timber.tag(TAG).i(it) }
+            .onFailure { Timber.tag(TAG).e(it) }
             .getOrNull()
     }
 

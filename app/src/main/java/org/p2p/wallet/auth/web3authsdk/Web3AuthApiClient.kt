@@ -5,9 +5,6 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
@@ -16,6 +13,9 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
 import timber.log.Timber
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 private const val JS_COMMUNICATION_CHANNEL_NAME = "AndroidCommunicationChannel"
 private const val INDEX_HTML_URI = "file:///android_asset/index.html"
@@ -30,6 +30,7 @@ class Web3AuthApiClient(
     private val authRepository: AuthRepository,
     private val torusNetworkEnv: String,
     private val torusLogLevel: String,
+    private val durationTracker: Web3AuthDurationTracker
 ) : Web3AuthApi {
 
     private var continuation: CancellableContinuation<*>? = null
@@ -64,6 +65,7 @@ class Web3AuthApiClient(
                 ),
                 null
             )
+            durationTracker.startMethodCall("triggerSilentSignup")
         }
     }
 
@@ -86,6 +88,7 @@ class Web3AuthApiClient(
                 ),
                 null
             )
+            durationTracker.startMethodCall("triggerSignInNoDevice")
         }
     }
 
@@ -102,6 +105,7 @@ class Web3AuthApiClient(
                 ),
                 null
             )
+            durationTracker.startMethodCall("obtainTorusKey")
         }
     }
 
@@ -123,6 +127,7 @@ class Web3AuthApiClient(
                 ),
                 null
             )
+            durationTracker.startMethodCall("triggerSignInNoCustom")
         }
     }
 
@@ -147,6 +152,7 @@ class Web3AuthApiClient(
                 ),
                 null
             )
+            durationTracker.startMethodCall("triggerSignInNoTorus")
         }
     }
 
@@ -188,6 +194,8 @@ class Web3AuthApiClient(
     private inner class AndroidCommunicationChannel {
         @JavascriptInterface
         fun handleSignUpResponse(msg: String) {
+            durationTracker.finishLastMethodCall()
+
             Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignUpResponse>)
                 ?.resumeWith(mapper.fromNetworkSignUp(msg))
@@ -196,6 +204,8 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoCustomResponse(msg: String) {
+            durationTracker.finishLastMethodCall()
+
             Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
                 ?.resumeWith(mapper.fromNetworkSignIn(msg))
@@ -204,6 +214,8 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoDeviceResponse(msg: String) {
+            durationTracker.finishLastMethodCall()
+
             Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
                 ?.resumeWith(mapper.fromNetworkSignIn(msg))
@@ -212,6 +224,8 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleSignInNoTorusResponse(msg: String) {
+            durationTracker.finishLastMethodCall()
+
             Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignInResponse>)
                 ?.resumeWith(mapper.fromNetworkSignIn(msg))
@@ -220,14 +234,21 @@ class Web3AuthApiClient(
 
         @JavascriptInterface
         fun handleError(error: String) {
+            durationTracker.finishLastMethodCall(isMethodReturnedError = true)
+
             Timber.tag(TAG).d(error)
             runCatching<Throwable> { mapper.fromNetworkError(error) }
                 .recover { it }
-                .onSuccess { continuation?.resumeWithException(it) }
+                .onSuccess {
+                    Timber.tag(TAG).e(it, "Web3Auth returned error")
+                    continuation?.resumeWithException(it)
+                }
         }
 
         @JavascriptInterface
         fun handleTorusKey(msg: String) {
+            durationTracker.finishLastMethodCall()
+
             Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<String>)
                 ?.resumeWith(mapper.obtainTorusKey(msg))

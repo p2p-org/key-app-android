@@ -72,6 +72,7 @@ fun Context.shareScreenShot(image: File, providedText: String = "Save Screenshot
     try {
         startActivity(Intent.createChooser(intent, "Share with"))
     } catch (e: ActivityNotFoundException) {
+        Timber.e(e)
         toast("No App Available")
     }
 }
@@ -94,7 +95,7 @@ fun Context.getStringResourceByName(resourceName: String): String {
     return try {
         getString(resId)
     } catch (e: Resources.NotFoundException) {
-        Timber.e(e, "String resource $resourceName is not found")
-        return emptyString()
+        if (!BuildConfig.DEBUG) Timber.e(e, "String resource $resourceName is not found")
+        emptyString()
     }
 }

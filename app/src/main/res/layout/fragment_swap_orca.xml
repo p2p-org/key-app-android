@@ -39,6 +39,7 @@
                 app:layout_constraintGuide_percent="0.5" />
 
             <View
+                android:id="@+id/view"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginHorizontal="20dp"
@@ -326,7 +327,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="receiveBottomSpace" />
+                app:constraint_referenced_ids="receiveBottomSpace"
+                tools:layout_editor_absoluteY="305dp" />
 
             <org.p2p.wallet.swap.ui.orca.SwapDetailsView
                 android:id="@+id/swapDetails"
@@ -345,6 +347,18 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
+
+    <TextView
+        android:id="@+id/textViewDebugSwapRoute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:text="USDT -> SOL"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+        android:textColor="@color/text_sun"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/swapButton"

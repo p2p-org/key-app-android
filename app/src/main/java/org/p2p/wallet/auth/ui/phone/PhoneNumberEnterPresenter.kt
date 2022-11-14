@@ -1,6 +1,8 @@
 package org.p2p.wallet.auth.ui.phone
 
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
+import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
@@ -23,6 +25,8 @@ class PhoneNumberEnterPresenter(
     private val createWalletInteractor: CreateWalletInteractor,
     private val restoreWalletInteractor: RestoreWalletInteractor,
     private val onboardingInteractor: OnboardingInteractor,
+    private val createWalletAnalytics: CreateWalletAnalytics,
+    private val restoreWalletAnalytics: RestoreWalletAnalytics,
     private val gatewayServiceErrorHandler: GatewayServiceErrorHandler,
 ) : BasePresenter<PhoneNumberEnterContract.View>(), PhoneNumberEnterContract.Presenter {
 
@@ -91,8 +95,14 @@ class PhoneNumberEnterPresenter(
             val userPhoneNumber = PhoneNumber(selectedCountryCode?.phoneCode + phoneNumberString)
             onboardingInteractor.temporaryPhoneNumber = userPhoneNumber
             when (onboardingInteractor.currentFlow) {
-                is OnboardingFlow.CreateWallet -> startCreatingWallet(userPhoneNumber)
-                is OnboardingFlow.RestoreWallet -> startRestoringCustomShare(userPhoneNumber)
+                is OnboardingFlow.CreateWallet -> {
+                    createWalletAnalytics.logCreateConfirmPhoneButtonClicked()
+                    startCreatingWallet(userPhoneNumber)
+                }
+                is OnboardingFlow.RestoreWallet -> {
+                    restoreWalletAnalytics.logRestoreConfirmPhoneButtonClicked()
+                    startRestoringCustomShare(userPhoneNumber)
+                }
             }
             view?.setLoadingState(isLoading = false)
         }

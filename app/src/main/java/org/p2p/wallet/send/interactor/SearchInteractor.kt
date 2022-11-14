@@ -18,28 +18,21 @@ class SearchInteractor(
     suspend fun searchByName(username: String): List<SearchResult> {
         val usernames = usernameRepository.findUsernameDetailsByUsername(username)
         return usernames.map { usernameDetails ->
-            val balance = userInteractor.getBalance(usernameDetails.ownerAddress)
-            val hasEmptyBalance = balance == ZERO_BALANCE
-            if (hasEmptyBalance) {
-                SearchResult.EmptyBalance(
-                    addressState = AddressState(usernameDetails.ownerAddress.base58Value),
-                )
-            } else {
-                SearchResult.Full(
-                    addressState = AddressState(usernameDetails.ownerAddress.base58Value),
-                    username = usernameDetails.username.fullUsername
-                )
-            }
+            SearchResult.UsernameFound(
+                addressState = AddressState(address = usernameDetails.ownerAddress.base58Value),
+                username = usernameDetails.username.fullUsername
+            )
         }
     }
 
     suspend fun searchByAddress(address: Base58String): List<SearchResult> {
         val balance = userInteractor.getBalance(address)
         val hasEmptyBalance = balance == ZERO_BALANCE
+        val addressState = AddressState(address.base58Value)
         val result = if (hasEmptyBalance) {
-            SearchResult.EmptyBalance(AddressState(address.base58Value))
+            SearchResult.EmptyBalance(addressState)
         } else {
-            SearchResult.AddressOnly(AddressState(address.base58Value))
+            SearchResult.AddressOnly(addressState)
         }
         return listOf(result)
     }

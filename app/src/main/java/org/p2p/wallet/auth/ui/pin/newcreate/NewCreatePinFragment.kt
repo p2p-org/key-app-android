@@ -64,8 +64,6 @@ class NewCreatePinFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             presenter.onBackPressed()
         }
-
-        showUiKitSnackBar(messageResId = R.string.auth_create_wallet_introduction)
     }
 
     private fun UiKitToolbar.initToolbar() {

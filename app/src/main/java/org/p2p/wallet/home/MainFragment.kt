@@ -53,7 +53,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 .withArgs(ARG_MAIN_FRAGMENT_ACTIONS to actions)
     }
 
-    private var onCreateActions: ArrayList<MainFragmentOnCreateAction> by args(
+    private var onCreateActions: ArrayList<MainFragmentOnCreateAction>? by args(
         key = ARG_MAIN_FRAGMENT_ACTIONS, defaultValue = arrayListOf()
     )
 
@@ -79,8 +79,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         }
         deeplinksManager.handleSavedDeeplinkIntent()
 
-        if (onCreateActions.isNotEmpty()) {
-            onCreateActions.forEach(::doOnCreateAction)
+        if (onCreateActions?.isNotEmpty() == true) {
+            onCreateActions?.forEach(::doOnCreateAction)
             onCreateActions = arrayListOf()
         }
     }

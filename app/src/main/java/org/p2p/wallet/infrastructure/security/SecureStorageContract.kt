@@ -10,7 +10,9 @@ interface SecureStorageContract {
         KEY_PIN_CODE_BIOMETRIC_HASH("KEY_PIN_CODE_BIOMETRIC_HASH"),
         KEY_PUBLIC_KEY("KEY_PUBLIC_KEY"),
         KEY_SECRET_KEY("KEY_SECRET_KEY"),
-        KEY_PIN_CODE_SALT("KEY_PIN_CODE_SALT")
+        KEY_PIN_CODE_SALT("KEY_PIN_CODE_SALT"),
+        KEY_STUB_PUBLIC_KEY("KEY_STUB_PUBLIC_KEY"),
+        KEY_USE_STUB_PUBLIC_KEY("KEY_USE_STUB_PUBLIC_KEY")
     }
 
     fun saveString(key: Key, data: String)

@@ -7,11 +7,8 @@ class RestoreUserException(
 
 sealed interface RestoreUserResult {
 
-    open class RestoreFailure(override val cause: Throwable) :
-        Throwable(message = cause.message),
-        RestoreUserResult {
+    open class RestoreFailure(override val cause: Throwable) : Throwable(message = cause.message), RestoreUserResult {
         open class DevicePlusCustomShare(val exception: RestoreUserException) : RestoreFailure(exception) {
-
             object UserNotFound :
                 DevicePlusCustomShare(RestoreUserException("DevicePlusCustomShare: User not found"))
 
@@ -20,7 +17,6 @@ sealed interface RestoreUserResult {
         }
 
         open class DevicePlusSocialShare(val exception: RestoreUserException) : RestoreFailure(exception) {
-
             data class DeviceAndSocialShareNotMatch(val userEmailAddress: String) :
                 DevicePlusSocialShare(RestoreUserException("DevicePlusSocialShare: Device and social does not match"))
 
@@ -28,8 +24,7 @@ sealed interface RestoreUserResult {
                 DevicePlusSocialShare(RestoreUserException("DevicePlusSocialShare: Social share not found"))
         }
 
-        open class SocialPlusCustomShare(val exception: RestoreUserException) :
-            RestoreFailure(exception) {
+        open class SocialPlusCustomShare(val exception: RestoreUserException) : RestoreFailure(exception) {
             object TorusKeyNotFound :
                 SocialPlusCustomShare(RestoreUserException("SocialPlusCustomShare: Torus key has not been initialized"))
 
