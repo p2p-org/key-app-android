@@ -34,11 +34,7 @@ class UserInteractor(
 
     fun getUserTokensFlow(): Flow<List<Token.Active>> =
         mainLocalRepository.getTokensFlow()
-            // remove SOL if it's zero
-            .map { userTokens ->
-                userTokens.filterNot { it.isSOL && it.isZero }
-                    .sortedWith(TokenComparator())
-            }
+            .map { it.sortedWith(TokenComparator()) }
 
     suspend fun getTokensForBuy(availableTokensSymbols: List<String>): List<Token> {
         val userTokens = getUserTokens()
