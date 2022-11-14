@@ -102,6 +102,10 @@ class NewSettingsPresenter(
         receiveAnalytics.logSettingsUsernameViewed(isUsernameExists)
     }
 
+    override fun onRecoveryKitClicked() {
+        view?.openRecoveryKitScreen()
+    }
+
     override fun onNetworkEnvironmentChanged(newNetworkEnvironment: NetworkEnvironment) {
         launch {
             try {

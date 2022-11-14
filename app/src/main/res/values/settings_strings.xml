@@ -34,4 +34,15 @@
     <string name="settings_item_forgot_pin_message">If you forgot your PIN, you can log out and create a new one when you log in again.</string>
 
     <string name="settings_item_logout_confirm_title">Are you sure you want to log out?</string>
+
+    <!--Recovery Kit-->
+    <string name="recovery_title">Recovery wallet</string>
+    <string name="recovery_text">Your recovery kit</string>
+    <string name="recovery_sub_text">If you switch devices, you can easily restore your wallet. No private keys needed.</string>
+    <string name="recovery_multi_factor_header">Multi-factor authentication</string>
+    <string name="recovery_device_title">Device</string>
+    <string name="recovery_phone_title">Phone</string>
+    <string name="recovery_social_title">Google</string>
+    <string name="recovery_footer">Your private key is split into multiple factors. At least, you should have three factors, but you can create more. To log in to different devices, you need at least two factors.</string>
+
 </resources>
