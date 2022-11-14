@@ -43,6 +43,7 @@ object SettingsModule : InjectionModule {
                 browseAnalytics = get(),
                 settingsInteractor = get(),
                 homeLocalRepository = get(),
+                signUpDetailsStorage = get(),
                 settingsItemMapper = get(),
                 context = androidContext(),
                 authInteractor = get()
