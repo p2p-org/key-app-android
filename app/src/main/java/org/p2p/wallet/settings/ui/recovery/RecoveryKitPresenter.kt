@@ -11,14 +11,14 @@ class RecoveryKitPresenter(
 
     override fun attach(view: RecoveryKitContract.View) {
         super.attach(view)
-        signUpDetailsStorage.getLastSignUpUserDetails()?.apply {
+        signUpDetailsStorage.getLastSignUpUserDetails()?.let { userDetails ->
             with(view) {
-                view.showDeviceData(
+                showDeviceName(
                     Build.MANUFACTURER + " " + Build.MODEL
                 )
                 // TODO PWN-5216 show phone and device from request!
-                showPhoneData("+12321312")
-                showSocialData(userId)
+                showPhoneNumber("+12321312")
+                showSocialId(userDetails.userId)
             }
         }
     }

@@ -35,15 +35,15 @@ class RecoveryKitFragment :
         }
     }
 
-    override fun showDeviceData(device: String) {
-        binding.recoveryViewDevice.subtitle = device
+    override fun showDeviceName(deviceName: String) {
+        binding.recoveryViewDevice.subtitle = deviceName
     }
 
-    override fun showPhoneData(phone: String) {
-        binding.recoveryViewPhone.subtitle = phone
+    override fun showPhoneNumber(phoneNumber: String) {
+        binding.recoveryViewPhone.subtitle = phoneNumber
     }
 
-    override fun showSocialData(social: String) {
-        binding.recoveryViewSocial.subtitle = social
+    override fun showSocialId(socialId: String) {
+        binding.recoveryViewSocial.subtitle = socialId
     }
 }
