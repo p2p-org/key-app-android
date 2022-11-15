@@ -57,8 +57,8 @@ class UiKitAmountsView @JvmOverloads constructor(
 
         with(binding) {
             val originalTextSize = editTextTokenAmount.textSize
-            editTextTokenAmount.doOnTextChanged { text, _, _, _ ->
-                handleAmountTextChanged(editTextTokenAmount, textViewTokenAutoSizeHelper, text, originalTextSize)
+            AmountFractionTextWatcher.installOn(editTextTokenAmount, maxSymbolsAllowed = 2) { amount ->
+                handleAmountTextChanged(editTextTokenAmount, textViewTokenAutoSizeHelper, amount, originalTextSize)
             }
             editTextCurrencyAmount.doOnTextChanged { text, _, _, _ ->
                 handleAmountTextChanged(editTextCurrencyAmount, textViewCurrencyAutoSizeHelper, text, originalTextSize)
