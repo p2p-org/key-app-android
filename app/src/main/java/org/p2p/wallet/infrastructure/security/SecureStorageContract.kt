@@ -12,7 +12,8 @@ interface SecureStorageContract {
         KEY_SECRET_KEY("KEY_SECRET_KEY"),
         KEY_PIN_CODE_SALT("KEY_PIN_CODE_SALT"),
         KEY_STUB_PUBLIC_KEY("KEY_STUB_PUBLIC_KEY"),
-        KEY_USE_STUB_PUBLIC_KEY("KEY_USE_STUB_PUBLIC_KEY")
+        KEY_USE_STUB_PUBLIC_KEY("KEY_USE_STUB_PUBLIC_KEY"),
+        KEY_ONBOARDING_METADATA("KEY_ONBOARDING_METADATA")
     }
 
     fun saveString(key: Key, data: String)

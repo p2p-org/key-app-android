@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.gateway.repository.mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator
 import org.p2p.wallet.utils.toBase58Instance
 
 class ChaCha20Poly1305SymmetricKeyGeneratorTest {
