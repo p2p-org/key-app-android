@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
@@ -92,6 +93,7 @@ class WalletFoundFragment :
     }
 
     override fun setLoadingState(isScreenLoading: Boolean) {
+        setLoadingAnimationState(isScreenLoading = isScreenLoading)
         with(binding) {
             buttonUseAnotherAccount.apply {
                 isLoadingState = isScreenLoading
@@ -116,5 +118,15 @@ class WalletFoundFragment :
     override fun onConnectionError() {
         setLoadingState(isScreenLoading = false)
         showUiKitSnackBar(getString(R.string.onboarding_offline_error))
+    }
+
+    private fun setLoadingAnimationState(isScreenLoading: Boolean) {
+        if (isScreenLoading) {
+            setSystemBarsColors(statusBarColor, R.color.bg_lime)
+            AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = false)
+        } else {
+            setSystemBarsColors(statusBarColor, navBarColor)
+            AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
+        }
     }
 }
