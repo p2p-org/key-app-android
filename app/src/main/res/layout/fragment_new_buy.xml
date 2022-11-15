@@ -18,13 +18,14 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomView"
+        app:layout_constraintBottom_toTopOf="@id/buttonBuy"
         app:layout_constraintTop_toBottomOf="@id/toolbarBuy">
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="52dp"
+            android:layout_marginTop="16dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -38,14 +39,6 @@
                 android:paddingTop="12dp"
                 android:paddingBottom="20dp">
 
-                <ImageView
-                    android:id="@+id/imageViewPlant"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/ic_coins_buy"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/textViewBuying"
@@ -57,7 +50,7 @@
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
                     android:textColor="@color/text_night"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/imageViewPlant" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <org.p2p.uikit.components.UiKitAmountsView
                     android:id="@+id/amountsView"
@@ -152,28 +145,20 @@
     </androidx.core.widget.NestedScrollView>
 
 
-    <FrameLayout
-        android:id="@+id/bottomView"
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonBuy"
+        style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_night_top_rounded"
-        android:padding="20dp"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/button_night"
+        android:textColor="@color/button_snow_text"
+        app:icon="@drawable/ic_wallet_home"
+        app:iconGravity="textEnd"
+        app:iconTint="@color/icons_snow"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        tools:text="Buy SOL" />
 
-        <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonBuy"
-            style="@style/UiKit.Components.Button.Large"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/ui_kit_button_large_height"
-            android:backgroundTint="@color/button_snow_tint"
-            android:textColor="@color/button_snow_text"
-            app:icon="@drawable/ic_wallet_home"
-            app:iconGravity="textEnd"
-            app:iconTint="@color/icons_night"
-            tools:text="Buy SOL" />
-
-    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

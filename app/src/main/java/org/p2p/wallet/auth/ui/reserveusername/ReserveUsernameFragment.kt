@@ -43,12 +43,12 @@ class ReserveUsernameFragment :
     override val statusBarColor: Int
         get() = when (openedFromSource) {
             ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime
-            ReserveUsernameOpenedFrom.SETTINGS -> R.color.backgroundPrimary
+            ReserveUsernameOpenedFrom.SETTINGS -> R.color.bg_rain
         }
     override val navBarColor: Int
         get() = when (openedFromSource) {
-            ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_night
-            ReserveUsernameOpenedFrom.SETTINGS -> R.color.bg_night
+            ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime
+            ReserveUsernameOpenedFrom.SETTINGS -> R.color.backgroundPrimary
         }
     private val backgroundColorRes: Int
         get() = when (openedFromSource) {
@@ -59,6 +59,11 @@ class ReserveUsernameFragment :
         get() = when (openedFromSource) {
             ReserveUsernameOpenedFrom.ONBOARDING -> false
             ReserveUsernameOpenedFrom.SETTINGS -> true
+        }
+    private val buttonTextColor: Int
+        get() = when (openedFromSource) {
+            ReserveUsernameOpenedFrom.ONBOARDING -> R.color.text_lime
+            ReserveUsernameOpenedFrom.SETTINGS -> R.color.text_rain
         }
 
     override val presenter: ReserveUsernameContract.Presenter by inject()
@@ -93,6 +98,12 @@ class ReserveUsernameFragment :
         }
 
         binding.root.backgroundTintList = requireContext().getColorStateListCompat(backgroundColorRes)
+        binding.buttonSubmitUsername.setTextColor(buttonTextColor)
+        if (openedFromSource == ReserveUsernameOpenedFrom.SETTINGS) {
+            with(binding.buttonSubmitUsername) {
+                strokeWidth = 1
+            }
+        }
     }
 
     private fun initQaSkipInstrument() {
@@ -167,8 +178,8 @@ class ReserveUsernameFragment :
 
     private fun renderEnabledButton() {
         binding.buttonSubmitUsername.isEnabled = true
-        binding.buttonSubmitUsername.backgroundTintList = requireContext().getColorStateListCompat(R.color.bg_snow)
-        binding.buttonSubmitUsername.setTextColorRes(R.color.text_night)
+        binding.buttonSubmitUsername.backgroundTintList = requireContext().getColorStateListCompat(R.color.bg_night)
+        binding.buttonSubmitUsername.setTextColorRes(buttonTextColor)
     }
 
     override fun close(isUsernameCreated: Boolean) {
