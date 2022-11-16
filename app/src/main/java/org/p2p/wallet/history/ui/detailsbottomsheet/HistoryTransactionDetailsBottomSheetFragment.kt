@@ -96,7 +96,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showStatus(status: TransactionStatus) {
-        binding.statusTextView.setText(status.resValue)
+        binding.textViewStatus.setText(status.resValue)
         val color = when (status) {
             TransactionStatus.COMPLETED -> R.color.color_green
             TransactionStatus.PENDING -> R.color.systemWarningMain
@@ -104,20 +104,20 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
 
         binding.transactionImageView.setStatus(status)
-        binding.statusTextView.setTextColor(getColor(color))
+        binding.textViewStatus.setTextColor(getColor(color))
     }
 
     override fun showTransactionId(signature: String) {
         with(binding) {
-            transactionIdTextView.text = signature
-            transactionIdTextView.setOnClickListener {
+            textViewTransactionId.text = signature
+            textViewTransactionId.setOnClickListener {
                 requireContext().copyToClipBoard(signature)
                 showUiKitSnackBar(messageResId = R.string.transaction_details_transaction_id_copied)
             }
-            doneButton.setOnClickListener {
+            buttonDone.setOnClickListener {
                 dismiss()
             }
-            detailsButton.setOnClickListener {
+            buttonDetails.setOnClickListener {
                 val url = getString(R.string.solanaExplorer, signature)
                 showUrlInCustomTabs(url)
             }
@@ -126,17 +126,17 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
     override fun showAddresses(source: String, destination: String) = with(binding) {
         containerActor.isVisible = false
-        sourceAddressTextView.setOnClickListener {
+        textViewSourceAddress.setOnClickListener {
             requireContext().copyToClipBoard(source)
             showUiKitSnackBar(messageResId = R.string.transaction_details_sender_address_copied)
         }
-        sourceAddressTextView.text = source
+        textViewSourceAddress.text = source
 
-        destinationAddressTextView.setOnClickListener {
+        textViewDestinationAddress.setOnClickListener {
             requireContext().copyToClipBoard(destination)
             showUiKitSnackBar(messageResId = R.string.transaction_details_receiver_address_copied)
         }
-        destinationAddressTextView.text = destination
+        textViewDestinationAddress.text = destination
     }
 
     override fun showSenderAddress(senderAddress: Base58String, senderUsername: String?) = with(binding) {
@@ -145,8 +145,8 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
         containerActor.isVisible = true
 
-        actorAddressValueTextView.text = senderAddress.base58Value
-        actorAddressValueTextView.setOnClickListener {
+        textViewActorAddressValue.text = senderAddress.base58Value
+        textViewActorAddressValue.setOnClickListener {
             requireContext().copyToClipBoard(senderAddress.base58Value)
             showUiKitSnackBar(
                 messageResId = R.string.transaction_details_sender_address_copied,
@@ -175,8 +175,8 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
         containerActor.isVisible = true
 
-        actorAddressValueTextView.text = receiverAddress.base58Value
-        actorAddressValueTextView.setOnClickListener {
+        textViewActorAddressValue.text = receiverAddress.base58Value
+        textViewActorAddressValue.setOnClickListener {
             requireContext().copyToClipBoard(receiverAddress.base58Value)
             showUiKitSnackBar(
                 messageResId = R.string.transaction_details_receiver_address_copied,
@@ -209,17 +209,12 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
     override fun showFee(renBtcFee: String?) = with(binding) {
         if (renBtcFee.isNullOrEmpty()) {
-            feesTextView.setTextColorRes(R.color.textIconActive)
-            feesTextView.text = getString(R.string.transaction_details_fee_free)
+            textViewFees.setTextColorRes(R.color.textIconActive)
+            textViewFees.text = getString(R.string.transaction_details_fee_free)
         } else {
-            feesTextView.setTextColorRes(R.color.textIconPrimary)
-            feesTextView.text = renBtcFee
+            textViewFees.setTextColorRes(R.color.textIconPrimary)
+            textViewFees.text = renBtcFee
         }
-    }
-
-    override fun showBlockNumber(blockNumber: String) {
-        binding.containerBlockNumber.isVisible = true
-        binding.blockNumberTextView.text = blockNumber
     }
 
     override fun showLoading(isLoading: Boolean) {
