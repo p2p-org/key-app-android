@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.gateway.repository.mapper
+package org.p2p.wallet.utils.chacha
 
 import org.bitcoinj.crypto.MnemonicCode
 import org.p2p.solanaj.crypto.Bip44CustomDerivation

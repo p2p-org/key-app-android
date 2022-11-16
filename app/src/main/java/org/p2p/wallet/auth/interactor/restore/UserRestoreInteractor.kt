@@ -1,6 +1,8 @@
 package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
+import org.p2p.solanaj.core.Account
+import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreError
@@ -10,7 +12,6 @@ import org.p2p.wallet.auth.model.RestoreUserResult.RestoreFailure
 import org.p2p.wallet.auth.model.RestoreUserResult.RestoreSuccess
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -24,9 +25,13 @@ class UserRestoreInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val restoreStateMachine: RestoreStateMachine,
+    private val gatewayServiceRepository: GatewayServiceRepository,
     private val usernameInteractor: UsernameInteractor
 ) {
+
+    private class GetOnboardingMetadataFailed(
+        cause: Throwable
+    ) : Throwable(message = "Get onboarding metadata failed to load", cause)
 
     suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult {
         Timber.i("Started to restore user: ${restoreFlow::class.simpleName}")
@@ -75,6 +80,13 @@ class UserRestoreInteractor(
             )
 
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+
+            tryLoadAndSaveOnboardingMetadata(
+                userAccount = restoreFlowDataLocalRepository.userActualAccount,
+                mnemonicPhraseWords = result.mnemonicPhraseWords,
+                ethereumPublicKey = result.ethereumPublicKey
+            )
+
             RestoreSuccess.SocialPlusCustomShare
         }
     } catch (error: Web3AuthErrorResponse) {
@@ -124,6 +136,13 @@ class UserRestoreInteractor(
                 encryptedMnemonic = encryptedMnemonic
             )
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+
+            tryLoadAndSaveOnboardingMetadata(
+                userAccount = restoreFlowDataLocalRepository.userActualAccount,
+                mnemonicPhraseWords = result.mnemonicPhraseWords,
+                ethereumPublicKey = result.ethereumPublicKey
+            )
+
             RestoreSuccess.DevicePlusCustomShare
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
@@ -164,6 +183,13 @@ class UserRestoreInteractor(
             isCreate = false
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+
+        tryLoadAndSaveOnboardingMetadata(
+            userAccount = restoreFlowDataLocalRepository.userActualAccount,
+            mnemonicPhraseWords = result.mnemonicPhraseWords,
+            ethereumPublicKey = result.ethereumPublicKey
+        )
+
         RestoreSuccess.DevicePlusSocialShare
     } catch (web3AuthError: Web3AuthErrorResponse) {
         val socialShareId = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
@@ -193,7 +219,7 @@ class UserRestoreInteractor(
         // First case try to restore with DEVICE + SOCIAL
         result = tryRestoreUser(RestoreWallet.DevicePlusSocialShare)
 
-        if (result is RestoreUserResult.RestoreFailure) {
+        if (result is RestoreFailure) {
             // if restore was failed
             // Try last try with SOCIAL + CUSTOM
             result = tryRestoreUser(RestoreWallet.SocialPlusCustomShare)
@@ -216,7 +242,7 @@ class UserRestoreInteractor(
         var result: RestoreUserResult
         result = tryRestoreUser(RestoreWallet.DevicePlusCustomShare)
 
-        if (result is RestoreUserResult.RestoreFailure) {
+        if (result is RestoreFailure) {
             // if restore was failed
             // try last try with SOCIAL + CUSTOM
             result = tryRestoreUser(RestoreWallet.SocialPlusCustomShare)
@@ -230,6 +256,25 @@ class UserRestoreInteractor(
             )
         } else {
             result
+        }
+    }
+
+    private suspend fun tryLoadAndSaveOnboardingMetadata(
+        userAccount: Account?,
+        mnemonicPhraseWords: List<String>,
+        ethereumPublicKey: String
+    ) {
+        try {
+            requireNotNull(userAccount) { "loadAndSaveOnboarding: User account can't be null" }
+            require(mnemonicPhraseWords.isNotEmpty()) { "loadAndSaveOnboarding: seed phrase can't be null or empty" }
+            gatewayServiceRepository.loadAndSaveOnboardingMetadata(
+                solanaPublicKey = userAccount.publicKey.toBase58Instance(),
+                solanaPrivateKey = userAccount.keypair.toBase58Instance(),
+                userSeedPhrase = mnemonicPhraseWords,
+                etheriumAddress = ethereumPublicKey
+            )
+        } catch (error: Throwable) {
+            Timber.e(GetOnboardingMetadataFailed(error))
         }
     }
 
