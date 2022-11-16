@@ -24,7 +24,7 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="28dp"
-        android:background="@drawable/bg_lime_rounded"
+        android:background="@drawable/bg_lime_rounded_28"
         app:layout_constraintBottom_toTopOf="@id/textViewHeader"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
