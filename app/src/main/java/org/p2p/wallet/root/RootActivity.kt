@@ -23,7 +23,9 @@ import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
+import org.p2p.wallet.splash.SplashFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 import kotlinx.coroutines.flow.collectLatest
 
@@ -60,6 +62,8 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         super.onCreate(savedInstanceState)
         binding = ActivityRootBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+
+        replaceFragment(SplashFragment.create())
 
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
 
