@@ -2,7 +2,6 @@ package org.p2p.wallet.auth.ui.animationscreen
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -114,9 +113,4 @@ class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progr
         creationProgressJob?.cancel()
         super.onDestroyView()
     }
-
-    data class TimerState(
-        @StringRes val titleRes: Int,
-        val withProgress: Boolean = true
-    )
 }
