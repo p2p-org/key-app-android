@@ -17,13 +17,13 @@ class SettingsItemMapper(
     fun createItems(
         username: Username?,
         isUsernameItemVisible: Boolean,
-        isSharesExists: Boolean,
+        areSharesExist: Boolean,
         isBiometricLoginEnabled: Boolean,
         isZeroBalanceTokenHidden: Boolean,
         isBiometricLoginAvailable: Boolean
     ): List<SettingsItem> = buildList {
         this += profileBlock(username, isUsernameItemVisible)
-        this += securityBlock(isSharesExists, isBiometricLoginEnabled, isBiometricLoginAvailable)
+        this += securityBlock(areSharesExist, isBiometricLoginEnabled, isBiometricLoginAvailable)
         this += appearanceBlock(isZeroBalanceTokenHidden)
         this += appInfoBlock()
     }
@@ -54,7 +54,7 @@ class SettingsItemMapper(
     }
 
     private fun securityBlock(
-        isSharesExist: Boolean,
+        areSharesExist: Boolean,
         isBiometricLoginEnabled: Boolean,
         isBiometricLoginAvailable: Boolean,
     ): List<SettingsItem> = listOfNotNull(
@@ -63,7 +63,7 @@ class SettingsItemMapper(
             nameRes = R.string.settings_item_title_recovery_kit,
             iconRes = R.drawable.ic_settings_shield,
             hasSeparator = true
-        ).takeIf { isSharesExist },
+        ).takeIf { areSharesExist },
         ComplexSettingsItem(
             nameRes = R.string.settings_item_title_pin,
             iconRes = R.drawable.ic_settings_pin,

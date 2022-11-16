@@ -3,6 +3,7 @@ package org.p2p.wallet.settings.ui.recovery
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import timber.log.Timber
 
 class RecoveryKitPresenter(
     private val secureStorage: SecureStorageContract
@@ -20,6 +21,6 @@ class RecoveryKitPresenter(
                 showPhoneNumber(metadata.customSharePhoneNumberE164)
                 showSocialId(metadata.socialShareOwnerEmail)
             }
-        }
+        } ?: Timber.e("Unable to get metadata!")
     }
 }

@@ -50,7 +50,7 @@ class NewSettingsPresenter(
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
                 isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
-                isSharesExists = secureStorage.contains(SecureStorageContract.Key.KEY_ONBOARDING_METADATA),
+                areSharesExist = secureStorage.contains(SecureStorageContract.Key.KEY_ONBOARDING_METADATA),
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()
