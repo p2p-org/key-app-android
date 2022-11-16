@@ -1,24 +1,24 @@
 package org.p2p.wallet.settings.ui.recovery
 
-import android.os.Build
-import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.security.SecureStorageContract
 
 class RecoveryKitPresenter(
-    private val signUpDetailsStorage: UserSignUpDetailsStorage,
+    private val secureStorage: SecureStorageContract
 ) : BasePresenter<RecoveryKitContract.View>(),
     RecoveryKitContract.Presenter {
 
     override fun attach(view: RecoveryKitContract.View) {
         super.attach(view)
-        signUpDetailsStorage.getLastSignUpUserDetails()?.let { userDetails ->
+        secureStorage.getObject(
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
+            GatewayOnboardingMetadata::class
+        )?.let { metadata ->
             with(view) {
-                showDeviceName(
-                    Build.MANUFACTURER + " " + Build.MODEL
-                )
-                // TODO PWN-5216 show phone and device from request!
-                showPhoneNumber("+12321312")
-                showSocialId(userDetails.userId)
+                showDeviceName(metadata.deviceShareDeviceName)
+                showPhoneNumber(metadata.customSharePhoneNumberE164)
+                showSocialId(metadata.socialShareOwnerEmail)
             }
         }
     }

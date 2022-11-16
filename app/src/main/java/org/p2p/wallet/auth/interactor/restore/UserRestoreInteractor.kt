@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.interactor.restore
 import com.google.gson.JsonObject
 import org.p2p.solanaj.core.Account
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
+import org.p2p.wallet.auth.interactor.GetOnboardingMetadataFailed
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreError
@@ -28,10 +29,6 @@ class UserRestoreInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
     private val usernameInteractor: UsernameInteractor
 ) {
-
-    private class GetOnboardingMetadataFailed(
-        cause: Throwable
-    ) : Throwable(message = "Get onboarding metadata failed to load", cause)
 
     suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult {
         Timber.i("Started to restore user: ${restoreFlow::class.simpleName}")
