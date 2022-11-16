@@ -45,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     android:text="@string/buy_buying_title"
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
                     android:textColor="@color/text_night"

@@ -48,7 +48,7 @@ class ReserveUsernameFragment :
     override val navBarColor: Int
         get() = when (openedFromSource) {
             ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime
-            ReserveUsernameOpenedFrom.SETTINGS -> R.color.backgroundPrimary
+            ReserveUsernameOpenedFrom.SETTINGS -> R.color.bg_rain
         }
     private val backgroundColorRes: Int
         get() = when (openedFromSource) {
@@ -100,9 +100,7 @@ class ReserveUsernameFragment :
         binding.root.backgroundTintList = requireContext().getColorStateListCompat(backgroundColorRes)
         binding.buttonSubmitUsername.setTextColor(buttonTextColor)
         if (openedFromSource == ReserveUsernameOpenedFrom.SETTINGS) {
-            with(binding.buttonSubmitUsername) {
-                strokeWidth = 1
-            }
+            binding.buttonSubmitUsername.strokeWidth = 1
         }
     }
 

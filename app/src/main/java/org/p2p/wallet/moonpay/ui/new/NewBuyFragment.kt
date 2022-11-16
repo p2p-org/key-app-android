@@ -51,7 +51,7 @@ class NewBuyFragment :
     }
 
     override val presenter: NewBuyContract.Presenter by inject { parametersOf(token) }
-    override val navBarColor: Int = R.color.night
+    override val navBarColor: Int = R.color.bg_rain
 
     private val token: Token by args(EXTRA_TOKEN)
     private val binding: FragmentNewBuyBinding by viewBinding()
