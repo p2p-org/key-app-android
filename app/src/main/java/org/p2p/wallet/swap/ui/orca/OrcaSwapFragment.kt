@@ -342,4 +342,9 @@ class OrcaSwapFragment :
             presenter.setSourceAmount(it)
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+    }
 }
