@@ -119,7 +119,6 @@ class CommonRestoreFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
         }
-        replaceFragment(SeedPhraseFragment.create())
     }
 
     override fun startGoogleFlow() {
