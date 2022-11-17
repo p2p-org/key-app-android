@@ -36,7 +36,7 @@
     <string name="settings_item_logout_confirm_title">Are you sure you want to log out?</string>
 
     <!--Recovery Kit-->
-    <string name="recovery_title">Recovery wallet</string>
+    <string name="recovery_title">Recovery kit</string>
     <string name="recovery_text">Your recovery kit</string>
     <string name="recovery_sub_text">If you switch devices, you can easily restore your wallet. No private keys needed.</string>
     <string name="recovery_multi_factor_header">Multi-factor authentication</string>
