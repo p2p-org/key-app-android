@@ -156,6 +156,7 @@
         android:textColor="@color/button_snow_text"
         app:icon="@drawable/ic_wallet_home"
         app:iconGravity="textEnd"
+        app:strokeColor="@color/bg_snow"
         app:iconTint="@color/icons_snow"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:text="Buy SOL" />
