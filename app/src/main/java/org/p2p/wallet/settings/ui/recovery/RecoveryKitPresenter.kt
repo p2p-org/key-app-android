@@ -1,12 +1,14 @@
 package org.p2p.wallet.settings.ui.recovery
 
+import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
-import timber.log.Timber
 
 class RecoveryKitPresenter(
-    private val secureStorage: SecureStorageContract
+    private val secureStorage: SecureStorageContract,
+    private val resourcesProvider: ResourcesProvider
 ) : BasePresenter<RecoveryKitContract.View>(),
     RecoveryKitContract.Presenter {
 
@@ -21,6 +23,15 @@ class RecoveryKitPresenter(
                 showPhoneNumber(metadata.customSharePhoneNumberE164)
                 showSocialId(metadata.socialShareOwnerEmail)
             }
-        } ?: Timber.e("Unable to get metadata!")
+        } ?: setUnavailableState()
+    }
+
+    private fun setUnavailableState() {
+        val notAvailableString = resourcesProvider.getString(R.string.recovery_not_available)
+        view?.apply {
+            showDeviceName(notAvailableString)
+            showPhoneNumber(notAvailableString)
+            showSocialId(notAvailableString)
+        }
     }
 }
