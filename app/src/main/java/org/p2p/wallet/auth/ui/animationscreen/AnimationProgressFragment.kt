@@ -24,10 +24,12 @@ private const val ARG_TITLE_RES = "ARG_TITLE_RES"
 class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progress) {
 
     companion object {
+        // TODO make this AnimationProgressFragment smarter and get rid from isAnimating flag
         private val fragmentTag = AnimationProgressFragment::class.java.name
         private var isAnimating = false
 
-        fun create(loadingTitleRes: Int) = AnimationProgressFragment().withArgs(ARG_TITLE_RES to loadingTitleRes)
+        private fun create(loadingTitleRes: Int) =
+            AnimationProgressFragment().withArgs(ARG_TITLE_RES to loadingTitleRes)
 
         fun show(fragmentManager: FragmentManager, isCreation: Boolean) {
             if (!isAnimating) {
