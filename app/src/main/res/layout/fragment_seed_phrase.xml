@@ -5,8 +5,8 @@
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
@@ -22,25 +22,42 @@
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:titleTextColor="@color/text_night" />
 
-    <TextView
-        android:id="@+id/textViewSeedPhraseTitle"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/seed_phrase_screen_title"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
-        android:textColor="@color/text_mountain"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/buttonContinue"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-    <org.p2p.uikit.organisms.seedphrase.UiKitSeedPhraseView
-        android:id="@+id/seedPhraseView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseTitle"
-        android:minHeight="@dimen/ui_kit_seed_phrase_container_min_height" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/textViewSeedPhraseTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/seed_phrase_screen_title"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+                android:textColor="@color/text_mountain"
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+            <org.p2p.uikit.organisms.seedphrase.UiKitSeedPhraseView
+                android:id="@+id/seedPhraseView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="12dp"
+                android:minHeight="@dimen/ui_kit_seed_phrase_container_min_height"
+                app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseTitle"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+        </LinearLayout>
+    </ScrollView>
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonContinue"
@@ -57,6 +74,5 @@
         app:icon="@drawable/ic_arrow_forward"
         app:iconGravity="textEnd"
         app:iconTint="@color/icons_lime"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
