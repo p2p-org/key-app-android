@@ -121,7 +121,7 @@ class GatewayServiceCreateWalletMapper(
         val encryptedMetadata: GatewayOnboardingMetadataCiphered = onboardingMetadataCipher.encryptMetadata(
             mnemonicPhrase = userSeedPhrase,
             onboardingMetadata = GatewayOnboardingMetadata(
-                deviceShareDeviceName = Build.MANUFACTURER + Build.PRODUCT,
+                deviceShareDeviceName = Build.MANUFACTURER + ' ' + Build.MODEL,
                 customSharePhoneNumberE164 = phoneNumber.e164Formatted(),
                 socialShareOwnerEmail = socialShareOwnerId
             )

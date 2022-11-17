@@ -1,21 +1,17 @@
 package org.p2p.wallet.auth.interactor
 
-import org.p2p.solanaj.core.Account
-import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse.ErrorType
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
 class UserSignUpInteractor(
     private val web3AuthApi: Web3AuthApi,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
-    private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
-    private val gatewayServiceRepository: GatewayServiceRepository
+    private val signUpFlowDataRepository: SignUpFlowDataLocalRepository
 ) {
 
     sealed interface SignUpResult {
@@ -33,12 +29,6 @@ class UserSignUpInteractor(
             signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
             userSignUpDetailsStorage.save(signUpResponse, socialShareUserId)
 
-            tryLoadAndSaveOnboardingMetadata(
-                userAccount = signUpFlowDataRepository.userAccount,
-                mnemonicPhraseWords = signUpResponse.mnemonicPhraseWords,
-                ethereumPublicKey = signUpResponse.ethereumPublicKey
-            )
-
             Timber.i("<-- Finish trySignUpNewUser")
             SignUpResult.SignUpSuccessful
         } catch (web3AuthError: Web3AuthErrorResponse) {
@@ -52,7 +42,7 @@ class UserSignUpInteractor(
         }
     }
 
-    suspend fun continueSignUpUser(): SignUpResult {
+    fun continueSignUpUser(): SignUpResult {
         return try {
             val lastUserDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()
                 ?: throw NullPointerException("Last sign up user details (aka device share) not found")
@@ -60,12 +50,6 @@ class UserSignUpInteractor(
             signUpFlowDataRepository.signUpUserId = lastUserDetails.userId
             signUpFlowDataRepository.generateUserAccount(
                 userMnemonicPhrase = lastUserDetails.signUpDetails.mnemonicPhraseWords
-            )
-
-            tryLoadAndSaveOnboardingMetadata(
-                userAccount = signUpFlowDataRepository.userAccount,
-                mnemonicPhraseWords = lastUserDetails.signUpDetails.mnemonicPhraseWords,
-                ethereumPublicKey = lastUserDetails.signUpDetails.ethereumPublicKey
             )
 
             SignUpResult.SignUpSuccessful
@@ -80,24 +64,5 @@ class UserSignUpInteractor(
             "Torus key for not fetched for SignUp!"
         }
         return web3AuthApi.triggerSilentSignUp(torusKey)
-    }
-
-    private suspend fun tryLoadAndSaveOnboardingMetadata(
-        userAccount: Account?,
-        mnemonicPhraseWords: List<String>,
-        ethereumPublicKey: String
-    ) {
-        try {
-            requireNotNull(userAccount) { "loadAndSaveOnboarding: User account can't be null" }
-            require(mnemonicPhraseWords.isNotEmpty()) { "loadAndSaveOnboarding: seed phrase can't be null or empty" }
-            gatewayServiceRepository.loadAndSaveOnboardingMetadata(
-                solanaPublicKey = userAccount.publicKey.toBase58Instance(),
-                solanaPrivateKey = userAccount.keypair.toBase58Instance(),
-                userSeedPhrase = mnemonicPhraseWords,
-                etheriumAddress = ethereumPublicKey
-            )
-        } catch (error: Throwable) {
-            Timber.e(GetOnboardingMetadataFailed(error))
-        }
     }
 }
