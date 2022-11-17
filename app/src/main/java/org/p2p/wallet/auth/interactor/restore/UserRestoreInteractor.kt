@@ -1,9 +1,7 @@
 package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
-import org.p2p.solanaj.core.Account
-import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
-import org.p2p.wallet.auth.interactor.GetOnboardingMetadataFailed
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreError
@@ -26,8 +24,8 @@ class UserRestoreInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val gatewayServiceRepository: GatewayServiceRepository,
-    private val usernameInteractor: UsernameInteractor
+    private val usernameInteractor: UsernameInteractor,
+    private val metadataInteractor: MetadataInteractor
 ) {
 
     suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult {
@@ -78,7 +76,7 @@ class UserRestoreInteractor(
 
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-            tryLoadAndSaveOnboardingMetadata(
+            metadataInteractor.tryLoadAndSaveOnboardingMetadata(
                 userAccount = restoreFlowDataLocalRepository.userActualAccount,
                 mnemonicPhraseWords = result.mnemonicPhraseWords,
                 ethereumPublicKey = result.ethereumPublicKey
@@ -134,7 +132,7 @@ class UserRestoreInteractor(
             )
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-            tryLoadAndSaveOnboardingMetadata(
+            metadataInteractor.tryLoadAndSaveOnboardingMetadata(
                 userAccount = restoreFlowDataLocalRepository.userActualAccount,
                 mnemonicPhraseWords = result.mnemonicPhraseWords,
                 ethereumPublicKey = result.ethereumPublicKey
@@ -181,7 +179,7 @@ class UserRestoreInteractor(
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-        tryLoadAndSaveOnboardingMetadata(
+        metadataInteractor.tryLoadAndSaveOnboardingMetadata(
             userAccount = restoreFlowDataLocalRepository.userActualAccount,
             mnemonicPhraseWords = result.mnemonicPhraseWords,
             ethereumPublicKey = result.ethereumPublicKey
@@ -253,25 +251,6 @@ class UserRestoreInteractor(
             )
         } else {
             result
-        }
-    }
-
-    private suspend fun tryLoadAndSaveOnboardingMetadata(
-        userAccount: Account?,
-        mnemonicPhraseWords: List<String>,
-        ethereumPublicKey: String
-    ) {
-        try {
-            requireNotNull(userAccount) { "loadAndSaveOnboarding: User account can't be null" }
-            require(mnemonicPhraseWords.isNotEmpty()) { "loadAndSaveOnboarding: seed phrase can't be null or empty" }
-            gatewayServiceRepository.loadAndSaveOnboardingMetadata(
-                solanaPublicKey = userAccount.publicKey.toBase58Instance(),
-                solanaPrivateKey = userAccount.keypair.toBase58Instance(),
-                userSeedPhrase = mnemonicPhraseWords,
-                etheriumAddress = ethereumPublicKey
-            )
-        } catch (error: Throwable) {
-            Timber.e(GetOnboardingMetadataFailed(error))
         }
     }
 
