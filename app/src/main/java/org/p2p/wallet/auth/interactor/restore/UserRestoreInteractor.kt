@@ -1,7 +1,6 @@
 package org.p2p.wallet.auth.interactor.restore
 
 import com.google.gson.JsonObject
-import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreError
@@ -15,6 +14,7 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
@@ -24,8 +24,8 @@ class UserRestoreInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val usernameInteractor: UsernameInteractor,
-    private val metadataInteractor: MetadataInteractor
+    private val seedPhraseProvider: SeedPhraseProvider,
+    private val usernameInteractor: UsernameInteractor
 ) {
 
     suspend fun tryRestoreUser(restoreFlow: RestoreWallet): RestoreUserResult {
@@ -76,11 +76,7 @@ class UserRestoreInteractor(
 
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-            metadataInteractor.tryLoadAndSaveOnboardingMetadata(
-                userAccount = restoreFlowDataLocalRepository.userActualAccount,
-                mnemonicPhraseWords = result.mnemonicPhraseWords,
-                ethereumPublicKey = result.ethereumPublicKey
-            )
+            seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
 
             RestoreSuccess.SocialPlusCustomShare
         }
@@ -132,11 +128,7 @@ class UserRestoreInteractor(
             )
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-            metadataInteractor.tryLoadAndSaveOnboardingMetadata(
-                userAccount = restoreFlowDataLocalRepository.userActualAccount,
-                mnemonicPhraseWords = result.mnemonicPhraseWords,
-                ethereumPublicKey = result.ethereumPublicKey
-            )
+            seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
 
             RestoreSuccess.DevicePlusCustomShare
         }
@@ -179,11 +171,7 @@ class UserRestoreInteractor(
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-        metadataInteractor.tryLoadAndSaveOnboardingMetadata(
-            userAccount = restoreFlowDataLocalRepository.userActualAccount,
-            mnemonicPhraseWords = result.mnemonicPhraseWords,
-            ethereumPublicKey = result.ethereumPublicKey
-        )
+        seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
 
         RestoreSuccess.DevicePlusSocialShare
     } catch (web3AuthError: Web3AuthErrorResponse) {

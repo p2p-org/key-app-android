@@ -15,15 +15,6 @@ class MetadataInteractor(
     private val seedPhraseProvider: SeedPhraseProvider,
 ) {
 
-    suspend fun tryLoadAndSaveOnboardingMetadata(
-        userAccount: Account?,
-        mnemonicPhraseWords: List<String>,
-        ethereumPublicKey: String
-    ) {
-        seedPhraseProvider.seedPhrase = mnemonicPhraseWords
-        return tryLoadAndSaveMetadataWithAccount(userAccount, mnemonicPhraseWords, ethereumPublicKey)
-    }
-
     suspend fun tryLoadAndSaveMetadata() {
         val userAccount = Account(tokenKeyProvider.keyPair)
         val mnemonicPhraseWords = seedPhraseProvider.seedPhrase

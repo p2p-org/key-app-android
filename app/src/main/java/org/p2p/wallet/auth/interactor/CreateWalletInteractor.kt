@@ -5,15 +5,16 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class CreateWalletInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
     private val signUpFlowDataRepository: SignUpFlowDataLocalRepository,
     private val userSignUpDetailsStorage: UserSignUpDetailsStorage,
-    private val metadataInteractor: MetadataInteractor,
     private val smsInputTimer: SmsInputTimer,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val seedPhraseProvider: SeedPhraseProvider
 ) {
     class CreateWalletFailure(override val message: String) : Throwable(message)
 
@@ -92,11 +93,7 @@ class CreateWalletInteractor(
             socialShareOwnerId = socialShareOwnerId
         )
 
-        metadataInteractor.tryLoadAndSaveOnboardingMetadata(
-            userAccount = signUpFlowDataRepository.userAccount,
-            mnemonicPhraseWords = userSeedPhrase,
-            ethereumPublicKey = etheriumPublicKey
-        )
+        seedPhraseProvider.seedPhrase = userSeedPhrase
 
         finishAuthFlow()
     }
