@@ -184,10 +184,10 @@ class NewOnboardingFragment :
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
         if (isScreenLoading) {
             setSystemBarsColors(statusBarColor, R.color.bg_lime)
-            AnimationProgressFragment.show(parentFragmentManager, isCreation = true)
+            AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = true)
         } else {
             setSystemBarsColors(statusBarColor, navBarColor)
-            AnimationProgressFragment.dismiss(parentFragmentManager)
+            AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }
     }
 }
