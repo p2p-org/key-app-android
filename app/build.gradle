@@ -96,7 +96,6 @@ android {
                 artifactType = "APK"
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
-                serviceCredentialsFile = "app/google-services.json"
             }
 
             firebaseCrashlytics {
