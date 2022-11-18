@@ -18,9 +18,6 @@ class RecoveryKitFragment :
         fun create(): RecoveryKitFragment = RecoveryKitFragment()
     }
 
-    override val navBarColor: Int
-        get() = R.color.night
-
     private val binding: FragmentRecoveryKitBinding by viewBinding()
 
     override val presenter: RecoveryKitContract.Presenter by inject()

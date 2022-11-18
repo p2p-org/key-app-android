@@ -42,10 +42,9 @@
             <ImageView
                 android:id="@+id/imageViewBanner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="144dp"
                 android:layout_marginTop="29dp"
                 android:importantForAccessibility="no"
-                android:minHeight="144dp"
                 android:src="@drawable/ic_lock_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
