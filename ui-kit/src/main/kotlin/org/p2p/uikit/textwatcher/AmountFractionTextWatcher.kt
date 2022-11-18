@@ -72,7 +72,7 @@ class AmountFractionTextWatcher(
             try {
                 setSelection(cursorPosition)
             } catch (e: IndexOutOfBoundsException) {
-                val selectionIndex = valueText.length - 1
+                val selectionIndex = if (valueText.isNotEmpty()) valueText.length - 1 else 0
                 setSelection(selectionIndex)
             }
 
