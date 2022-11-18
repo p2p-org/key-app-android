@@ -17,6 +17,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.settings.ui.newreset.main.NewResetPinIntroFragment
+import org.p2p.wallet.settings.ui.recovery.RecoveryKitFragment
 import org.p2p.wallet.settings.ui.settings.adapter.NewSettingsAdapter
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.replaceFragment
@@ -88,6 +89,9 @@ class NewSettingsFragment :
 
     private fun handleNavigationForComplexItem(settings: SettingsItem.ComplexSettingsItem) {
         when (settings.nameRes) {
+            R.string.settings_item_title_recovery_kit -> {
+                presenter.onRecoveryKitClicked()
+            }
             R.string.settings_item_title_username -> {
                 presenter.onUsernameSettingClicked()
             }
@@ -145,5 +149,9 @@ class NewSettingsFragment :
 
     override fun openUsernameScreen() {
         replaceFragment(UsernameFragment.create())
+    }
+
+    override fun openRecoveryKitScreen() {
+        replaceFragment(RecoveryKitFragment.create())
     }
 }

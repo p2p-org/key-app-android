@@ -9,11 +9,12 @@ import org.koin.dsl.module
 import org.p2p.wallet.auth.gateway.api.GatewayServiceApi
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRemoteRepository
 import org.p2p.wallet.auth.gateway.repository.GatewayServiceRepository
-import org.p2p.wallet.auth.gateway.repository.mapper.ChaCha20Poly1305Decryptor
-import org.p2p.wallet.auth.gateway.repository.mapper.ChaCha20Poly1305Encryptor
-import org.p2p.wallet.auth.gateway.repository.mapper.ChaCha20Poly1305SymmetricKeyGenerator
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305Decryptor
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305Encryptor
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceCreateWalletMapper
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceErrorMapper
+import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceGetOnboardingMetadataMapper
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceOnboardingMetadataCipher
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceRestoreWalletMapper
 import org.p2p.wallet.auth.gateway.repository.mapper.GatewayServiceSignatureFieldGenerator
@@ -31,6 +32,7 @@ object GatewayServiceModule : InjectionModule {
         factoryOf(::GatewayServiceErrorMapper)
         singleOf(::GatewayServiceCreateWalletMapper)
         singleOf(::GatewayServiceRestoreWalletMapper)
+        singleOf(::GatewayServiceGetOnboardingMetadataMapper)
         singleOf(::GatewayServiceSignatureFieldGenerator)
         factory { ChaCha20Poly1305Encryptor(chaCha20Poly1305 = ChaCha20Poly1305()) }
         factory { ChaCha20Poly1305Decryptor(chaCha20Poly1305 = ChaCha20Poly1305()) }

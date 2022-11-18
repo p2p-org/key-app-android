@@ -83,7 +83,8 @@ object HomeModule : InjectionModule {
                 resourcesProvider = get(),
                 newBuyFeatureToggle = get(),
                 networkObserver = get(),
-                tokensPolling = get()
+                tokensPolling = get(),
+                metadataInteractor = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

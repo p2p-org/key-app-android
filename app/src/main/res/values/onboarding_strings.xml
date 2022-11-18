@@ -9,8 +9,8 @@
     <string name="onboarding_privacy_policy">Privacy Policy</string>
 
     <!--Onboarding Loading-->
-    <string name="onboarding_loading_title">Creating wallet…</string>
-    <string name="onboarding_loading_title_1">Creating wallet</string>
+    <string name="onboarding_loading_creating_title">Creating wallet</string>
+    <string name="onboarding_loading_recovery_title">Wallet recovery</string>
     <string name="onboarding_loading_title_2">Securing key</string>
     <string name="onboarding_loading_title_3">Almost Done!</string>
     <string name="onboarding_loading_message">Please wait, it won\'t take long</string>
