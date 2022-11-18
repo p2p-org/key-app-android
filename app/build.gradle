@@ -56,7 +56,7 @@ android {
 
         release {
             def signingProperties = getSigningProperties()
-            storeFile rootProject.file(signingProperties['keystorePath'])
+            storeFile rootProject.file('p2pwallet.jks')
             storePassword signingProperties['keystorePassword']
             keyAlias signingProperties['keyAlias']
             keyPassword signingProperties['keyPassword']
