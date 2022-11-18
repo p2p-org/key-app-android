@@ -1,7 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -39,10 +38,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 
