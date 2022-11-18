@@ -56,7 +56,7 @@ android {
 
         release {
             def signingProperties = getSigningProperties()
-            storeFile file(signingProperties['keystorePath'])
+            storeFile rootProject.file(signingProperties['keystorePath'])
             storePassword signingProperties['keystorePassword']
             keyAlias signingProperties['keyAlias']
             keyPassword signingProperties['keyPassword']
@@ -96,6 +96,7 @@ android {
                 artifactType = "APK"
                 releaseNotes = featureChangelog()
                 groups = "wallet.feature.test"
+                serviceCredentialsFile = "app/google-services.json"
             }
 
             firebaseCrashlytics {
@@ -117,6 +118,7 @@ android {
                 artifactType = "AAB"
                 releaseNotes = releaseChangelog(VERSION_NAME)
                 groups = "wallet.release.test"
+                serviceCredentialsFile = "app/google-services.json"
             }
 
             matchingFallbacks = ["release"]
