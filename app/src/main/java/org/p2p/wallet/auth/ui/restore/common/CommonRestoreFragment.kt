@@ -1,12 +1,12 @@
 package org.p2p.wallet.auth.ui.restore.common
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.utils.getColor
@@ -17,6 +17,7 @@ import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.AnalyticsRestoreWay
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
 import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
@@ -162,6 +163,7 @@ class CommonRestoreFragment :
     }
 
     override fun setLoadingState(isScreenLoading: Boolean) {
+        setLoadingAnimationState(isScreenLoading = isScreenLoading)
         with(binding) {
             buttonRestoreByGoogle.apply {
                 isLoadingState = isScreenLoading
@@ -212,5 +214,15 @@ class CommonRestoreFragment :
 
     override fun navigateToPhoneEnter() {
         replaceFragment(PhoneNumberEnterFragment.create())
+    }
+
+    private fun setLoadingAnimationState(isScreenLoading: Boolean) {
+        if (isScreenLoading) {
+            setSystemBarsColors(statusBarColor, R.color.bg_lime)
+            AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = false)
+        } else {
+            setSystemBarsColors(statusBarColor, navBarColor)
+            AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
+        }
     }
 }
