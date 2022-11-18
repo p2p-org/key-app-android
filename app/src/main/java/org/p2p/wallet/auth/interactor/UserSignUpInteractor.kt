@@ -51,6 +51,7 @@ class UserSignUpInteractor(
             signUpFlowDataRepository.generateUserAccount(
                 userMnemonicPhrase = lastUserDetails.signUpDetails.mnemonicPhraseWords
             )
+
             SignUpResult.SignUpSuccessful
         } catch (error: Throwable) {
             SignUpResult.SignUpFailed(error)

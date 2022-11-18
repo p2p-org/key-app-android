@@ -13,5 +13,8 @@ enum class GatewayServiceJsonRpcMethod {
     RESTORE_WALLET,
 
     @SerializedName("confirm_restore_wallet")
-    CONFIRM_RESTORE_WALLET
+    CONFIRM_RESTORE_WALLET,
+
+    @SerializedName("get_metadata")
+    GET_ONBOARDING_METADATA,
 }

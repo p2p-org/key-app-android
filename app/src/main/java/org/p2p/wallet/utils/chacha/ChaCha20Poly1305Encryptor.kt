@@ -1,37 +1,37 @@
-package org.p2p.wallet.auth.gateway.repository.mapper
+package org.p2p.wallet.utils.chacha
 
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
 import org.bouncycastle.crypto.params.KeyParameter
 import org.bouncycastle.crypto.params.ParametersWithIV
 import org.p2p.wallet.utils.processBytesKt
 
-class ChaCha20Poly1305Decryptor(
+class ChaCha20Poly1305Encryptor(
     private val chaCha20Poly1305: ChaCha20Poly1305
 ) {
-    fun decryptData(
+    fun encryptData(
         privateKey: ByteArray,
         nonce: ByteArray,
-        dataToDecrypt: ByteArray
+        dataToEncrypt: ByteArray
     ): ByteArray {
         chaCha20Poly1305.init(
-            false,
+            true,
             ParametersWithIV(
                 KeyParameter(privateKey.copyOf()),
                 nonce.copyOf()
             )
         )
 
-        val decryptionResultSize = chaCha20Poly1305.getOutputSize(dataToDecrypt.size)
-        val decryptionResult = ByteArray(decryptionResultSize)
+        val resultSize = chaCha20Poly1305.getOutputSize(dataToEncrypt.size)
+        val encryptionResult = ByteArray(resultSize)
 
         val finalOff = chaCha20Poly1305.processBytesKt(
-            inBytes = dataToDecrypt,
-            len = dataToDecrypt.size,
-            outBytes = decryptionResult,
+            inBytes = dataToEncrypt,
+            len = dataToEncrypt.size,
+            outBytes = encryptionResult,
         )
-        chaCha20Poly1305.doFinal(decryptionResult, finalOff)
-        chaCha20Poly1305.reset()
+        chaCha20Poly1305.doFinal(encryptionResult, finalOff)
 
-        return decryptionResult
+        chaCha20Poly1305.reset()
+        return encryptionResult
     }
 }

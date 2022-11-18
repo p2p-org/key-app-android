@@ -1,6 +1,13 @@
 package org.p2p.wallet.home.ui.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.InAppFeatureFlags
@@ -32,10 +39,6 @@ import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 
@@ -54,19 +57,21 @@ class HomePresenter(
     private val homeElementItemMapper: HomeElementItemMapper,
     private val resourcesProvider: ResourcesProvider,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
-    private val networkObserver: SolanaNetworkObserver
+    private val networkObserver: SolanaNetworkObserver,
+    private val metadataInteractor: MetadataInteractor
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var fallbackUsdcTokenForBuy: Token? = null
     private var userName: Username? = null
 
     init {
-        launch {
-            fallbackUsdcTokenForBuy = userInteractor.getTokensForBuy(listOf(USDC_SYMBOL)).firstOrNull()
-        }
         // TODO maybe we can find better place to start this service
         launch {
-            networkObserver.start()
+            awaitAll(
+                async { fallbackUsdcTokenForBuy = userInteractor.getTokensForBuy(listOf(USDC_SYMBOL)).firstOrNull() },
+                async { networkObserver.start() },
+                async { metadataInteractor.tryLoadAndSaveMetadata() }
+            )
         }
     }
 

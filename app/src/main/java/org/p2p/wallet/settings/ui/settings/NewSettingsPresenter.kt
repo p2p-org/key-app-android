@@ -1,6 +1,8 @@
 package org.p2p.wallet.settings.ui.settings
 
 import android.content.Context
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
@@ -13,13 +15,12 @@ import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.model.SettingsItemMapper
 import timber.log.Timber
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private const val NETWORK_CHANGE_DELAY = 250L
 
@@ -33,6 +34,7 @@ class NewSettingsPresenter(
     private val browseAnalytics: BrowseAnalytics,
     private val settingsInteractor: SettingsInteractor,
     private val homeLocalRepository: HomeLocalRepository,
+    private val secureStorage: SecureStorageContract,
     private val settingsItemMapper: SettingsItemMapper,
     private val authInteractor: AuthInteractor,
     private val context: Context
@@ -48,6 +50,7 @@ class NewSettingsPresenter(
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
                 isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
+                areSharesExist = secureStorage.contains(SecureStorageContract.Key.KEY_ONBOARDING_METADATA),
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()
@@ -97,6 +100,10 @@ class NewSettingsPresenter(
         val isUsernameExists = usernameInteractor.isUsernameExist()
         if (isUsernameExists) view?.openUsernameScreen() else view?.openReserveUsernameScreen()
         receiveAnalytics.logSettingsUsernameViewed(isUsernameExists)
+    }
+
+    override fun onRecoveryKitClicked() {
+        view?.openRecoveryKitScreen()
     }
 
     override fun onNetworkEnvironmentChanged(newNetworkEnvironment: NetworkEnvironment) {

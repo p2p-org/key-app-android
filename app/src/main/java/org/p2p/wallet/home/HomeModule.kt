@@ -81,7 +81,8 @@ object HomeModule : InjectionModule {
                 homeElementItemMapper = HomeElementItemMapper(),
                 resourcesProvider = get(),
                 newBuyFeatureToggle = get(),
-                networkObserver = get()
+                networkObserver = get(),
+                metadataInteractor = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->
