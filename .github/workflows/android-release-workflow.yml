@@ -7,7 +7,9 @@ on:
       - main
       - release/*
 jobs:
-  uses: p2p-org/p2p-wallet-android/.github/workflows/android-init.yml@release/test-ci
+  call-workflow-passing-data:
+    uses: p2p-org/p2p-wallet-android/.github/workflows/android-init.yml@release/test-ci
+    secrets: inherit
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
