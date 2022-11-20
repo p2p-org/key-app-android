@@ -113,9 +113,10 @@ android {
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
             resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_FIREBASE']
 
+            def currentBuildType = it
             firebaseAppDistribution {
                 artifactType = "AAB"
-                releaseNotes = releaseChangelog(VERSION_NAME)
+                releaseNotes = releaseChangelog(VERSION_NAME, currentBuildType.name)
                 groups = "wallet.release.test"
             }
 
@@ -142,6 +143,13 @@ android {
             def torusProperties = getTorusProperties()
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
             resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_STORE']
+
+            def currentBuildType = it
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = releaseChangelog(VERSION_NAME, currentBuildType.name)
+                groups = "wallet.release.test"
+            }
         }
     }
 
