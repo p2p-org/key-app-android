@@ -78,7 +78,7 @@ runs:
         torus-verifier-debug: ${{ inputs.torus-verifier-debug }}
         torus-verifier-feature: ${{ inputs.torus-verifier-feature }}
         torus-verifier-release: ${{ inputs.torus-verifier-release }}
-        torus-subverifier-release: ${{ inputs.torus-subverifier-release }}
+        torus-subverifier-store: ${{ inputs.torus-subverifier-store }}
         torus-subverifier-firebase: ${{ inputs.torus-subverifier-firebase }}
         torus-subverifier-local: ${{ inputs.torus-subverifier-local }}
 

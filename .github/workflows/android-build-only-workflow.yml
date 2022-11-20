@@ -34,7 +34,7 @@ jobs:
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
           torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-          torus-subverifier-release: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
           torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
           torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
 
