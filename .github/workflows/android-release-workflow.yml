@@ -104,6 +104,7 @@ jobs:
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
       - name: "Build Firebase APK and AAB artifact"
@@ -177,14 +178,16 @@ jobs:
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
-      - name: "Create Firebase App file"
-        uses: ./.github/actions/setup-firebase
+      - name: "Init project"
+        uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-
-      - name: "Create apikey.properties"
-        uses: ./.github/actions/setup-apikey
-        with:
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
@@ -192,25 +195,10 @@ jobs:
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
           amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-
-      - name: "Create cert.pem file"
-        env:
-          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
-        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
-
-      - name: "Create sentry.properties file"
-        uses: ./.github/actions/setup-sentry
-        with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-
-      - name: "Create keystore .jks"
-        uses: ./.github/actions/setup-signing-config
-        with:
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-
-      - name: "Setup gradle"
-        uses: ./.github/actions/setup-gradle
 
       - name: "Build APK and AAB artifact"
         env:

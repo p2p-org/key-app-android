@@ -61,6 +61,9 @@ inputs:
   auth-dsn:
     description: "Project Sentry DSN"
     required: true
+  ssl-certificate:
+    description: "SSL certificate"
+    required: true
   keystore-secret:
     description: "Release JKS keystore"
     required: true
@@ -93,10 +96,11 @@ runs:
         amplitude-secret: ${{ inputs.amplitude-secret }}
         apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
 
-    #    - name: "Create cert.pem file"
-    #      env:
-    #        SSL_CERTIFICATE: ${{ inputs.SSL_CERTIFICATE }}
-    #      run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+    - name: "Create cert.pem file"
+      env:
+        SSL_CERTIFICATE: ${{ inputs.ssl-certificate }}
+      shell: bash
+      run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
     - name: "Create sentry.properties file"
       uses: ./.github/actions/setup-sentry
