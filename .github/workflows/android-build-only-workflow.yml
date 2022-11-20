@@ -8,7 +8,7 @@ on:
       - release/*
 jobs:
   android-build-artifacts:
-    name: "Run build feature artifacts"
+    name: "Run build feature artifacts for release branch"
 
     runs-on: ubuntu-latest
     environment: develop
@@ -45,7 +45,7 @@ jobs:
           ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
-      - name: "Upload APK to Firebase App Distribution"
+      - name: "Build and upload APK to Firebase"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
