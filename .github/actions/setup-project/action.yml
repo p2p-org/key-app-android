@@ -1,18 +1,9 @@
 name: "Setup all needed files and properties for project"
 description: "-"
 inputs:
-  channel-id:
+  firebase-secret:
+    description: "Firebase secret"
     required: true
-    description: "Slack channel id"
-  bot-token:
-    required: true
-    description: "Slack bot token"
-  build-type:
-    required: true
-    description: "debug, feature, releaseLocal, releaseFirebase, release"
-  artifact-type:
-    required: true
-    description: "apk,bundle"
   torus-verifier-debug:
     description: "Torus verifier - DEBUG"
     required: true
@@ -30,6 +21,27 @@ inputs:
     required: true
   torus-subverifier-local:
     description: "Torus sub-verifier - LOCAL/SLACK"
+    required: true
+  rpc-pool-secret:
+    description: "Rpc pool api key"
+    required: true
+  moonpay-secret:
+    description: "Moonpay api key"
+    required: true
+  compare-secret:
+    description: "Compare token api key"
+    required: true
+  intercom-id-secret:
+    description: "Intercom app id"
+    required: true
+  intercom-key-secret:
+    description: "Intercom app key"
+    required: true
+  amplitude-secret:
+    description: "Amplitude api key"
+    required: true
+  apps-flyer-secret:
+    description: "AppsFlyer key"
     required: true
   default-project:
     description: "Project name for Sentry"
@@ -81,10 +93,10 @@ runs:
         amplitude-secret: ${{ inputs.amplitude-secret }}
         apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
 
-#    - name: "Create cert.pem file"
-#      env:
-#        SSL_CERTIFICATE: ${{ inputs.SSL_CERTIFICATE }}
-#      run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+    #    - name: "Create cert.pem file"
+    #      env:
+    #        SSL_CERTIFICATE: ${{ inputs.SSL_CERTIFICATE }}
+    #      run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
 
     - name: "Create sentry.properties file"
       uses: ./.github/actions/setup-sentry
@@ -93,7 +105,7 @@ runs:
         auth-dsn: ${{ inputs.auth-dsn }}
 
     - name: "Create keystore .jks"
-      uses: ./.github/actions/setup-signing-config
+      uses: ./.github/actions/setup-keystore-jks
       with:
         keystore-secret: ${{ inputs.keystore-secret }}
 
