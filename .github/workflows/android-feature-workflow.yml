@@ -13,10 +13,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: ./.github/actions/setup-sentry
+      - name: "Init project"
+        uses: ./.github/actions/setup-project
         with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
+          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
 
@@ -26,26 +43,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create and fill sentry.properties
-        uses: ./.github/actions/setup-sentry
+      - name: "Init project"
+        uses: ./.github/actions/setup-project
         with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
+          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN  }}
-
-      - uses: ./.github/actions/setup-gradle
-
-      - uses: actions/setup-java@v1
-        with: { java-version: 11 }
-
-      - name: Setup google-json from secrets
-        env:
-          FIREBASE_SECRET: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-        run: echo $FIREBASE_SECRET > app/google-services.json
-
-      - name: Create and fill cert.pem certificate for SSL pinning
-        env:
-          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
-        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
       - name: Run unit tests
         run: ./gradlew testDebug
@@ -69,24 +87,16 @@ jobs:
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
-      - name: "Create Firebase App file"
-        uses: ./.github/actions/setup-firebase
+      - name: "Init project"
+        uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-
-      - name: "Create torus.properties"
-        uses: ./.github/actions/setup-torus
-        with:
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
           torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
           torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
           torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
           torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-
-      - name: "Create apikey.properties"
-        uses: ./.github/actions/setup-apikey
-        with:
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
@@ -94,31 +104,21 @@ jobs:
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
           amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-
-      - name: "Create cert.pem file"
-        env:
-          SSL_CERTIFICATE: ${{ secrets.SSL_CERTIFICATE }}
-        run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
-
-      - name: "Create sentry.property file"
-        uses: ./.github/actions/setup-sentry
-        with:
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
-      - name: "Setup gradle"
-        uses: ./.github/actions/setup-gradle
-
-      - name: "Build APK artifact"
+      - name: "Build feature APK"
         run: ./gradlew assembleFeature
 
-      - name: "Upload APK to Firebase App Distribution"
+      - name: "Upload APK to Firebase"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew assembleFeature appDistributionUploadFeature
 
-      - name: "Upload APK to Slack Channel"
+      - name: "Upload feature APK to Slack"
         uses: ./.github/actions/setup-slack
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
