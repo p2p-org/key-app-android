@@ -11,7 +11,7 @@ jobs:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: ./.github/actions/setup-sentry
         with:
@@ -24,7 +24,7 @@ jobs:
     name: "Run unit tests"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Create and fill sentry.properties
         uses: ./.github/actions/setup-sentry
@@ -60,7 +60,7 @@ jobs:
     environment: develop
     steps:
       - name: "Checkout to the current commit hash"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: "Send start deploy message to slack"
         run: |

@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: "Create Firebase google_services.json"
         uses: ./.github/actions/setup-firebase
         with:

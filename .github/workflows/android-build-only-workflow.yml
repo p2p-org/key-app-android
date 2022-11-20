@@ -14,7 +14,7 @@ jobs:
     environment: develop
     steps:
       - name: "Checkout to the current commit hash"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: "Send start deploy message to slack"
         run: |
