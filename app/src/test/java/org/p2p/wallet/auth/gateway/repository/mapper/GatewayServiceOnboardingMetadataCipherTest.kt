@@ -5,6 +5,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
 import org.junit.Test
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305Decryptor
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305Encryptor
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator
 
 class GatewayServiceOnboardingMetadataCipherTest {
 

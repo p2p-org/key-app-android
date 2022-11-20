@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.FocusField
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -51,7 +52,7 @@ class NewBuyFragment :
     }
 
     override val presenter: NewBuyContract.Presenter by inject { parametersOf(token) }
-    override val navBarColor: Int = R.color.night
+    override val navBarColor: Int = R.color.bg_snow
 
     private val token: Token by args(EXTRA_TOKEN)
     private val binding: FragmentNewBuyBinding by viewBinding()
@@ -205,6 +206,16 @@ class NewBuyFragment :
 
     override fun setContinueButtonEnabled(isEnabled: Boolean) {
         binding.buttonBuy.isEnabled = isEnabled
+        with(binding.buttonBuy) {
+            if (isEnabled) {
+                setTextColor(getColor(R.color.text_snow))
+                setBackgroundColor(getColor(R.color.bg_night))
+            } else {
+                setTextColor(getColor(R.color.text_mountain))
+                setBackgroundColor(getColor(R.color.bg_rain))
+                strokeWidth = 1
+            }
+        }
     }
 
     override fun clearOppositeFieldAndTotal(totalText: String) {

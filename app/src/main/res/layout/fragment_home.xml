@@ -15,6 +15,7 @@
         app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="0dp"
@@ -22,6 +23,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <LinearLayout
+                android:id="@+id/containerHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_toolbar_height"

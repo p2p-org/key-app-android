@@ -10,11 +10,11 @@ import org.p2p.wallet.auth.model.RestoreUserResult.RestoreFailure
 import org.p2p.wallet.auth.model.RestoreUserResult.RestoreSuccess
 import org.p2p.wallet.auth.repository.RestoreFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
@@ -24,7 +24,7 @@ class UserRestoreInteractor(
     private val restoreFlowDataLocalRepository: RestoreFlowDataLocalRepository,
     private val signUpDetailsStorage: UserSignUpDetailsStorage,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val restoreStateMachine: RestoreStateMachine,
+    private val seedPhraseProvider: SeedPhraseProvider,
     private val usernameInteractor: UsernameInteractor
 ) {
 
@@ -75,6 +75,9 @@ class UserRestoreInteractor(
             )
 
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+
+            seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
+
             RestoreSuccess.SocialPlusCustomShare
         }
     } catch (error: Web3AuthErrorResponse) {
@@ -124,6 +127,9 @@ class UserRestoreInteractor(
                 encryptedMnemonic = encryptedMnemonic
             )
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+
+            seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
+
             RestoreSuccess.DevicePlusCustomShare
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
@@ -164,6 +170,9 @@ class UserRestoreInteractor(
             isCreate = false
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
+
+        seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
+
         RestoreSuccess.DevicePlusSocialShare
     } catch (web3AuthError: Web3AuthErrorResponse) {
         val socialShareId = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()
@@ -193,7 +202,7 @@ class UserRestoreInteractor(
         // First case try to restore with DEVICE + SOCIAL
         result = tryRestoreUser(RestoreWallet.DevicePlusSocialShare)
 
-        if (result is RestoreUserResult.RestoreFailure) {
+        if (result is RestoreFailure) {
             // if restore was failed
             // Try last try with SOCIAL + CUSTOM
             result = tryRestoreUser(RestoreWallet.SocialPlusCustomShare)
@@ -216,7 +225,7 @@ class UserRestoreInteractor(
         var result: RestoreUserResult
         result = tryRestoreUser(RestoreWallet.DevicePlusCustomShare)
 
-        if (result is RestoreUserResult.RestoreFailure) {
+        if (result is RestoreFailure) {
             // if restore was failed
             // try last try with SOCIAL + CUSTOM
             result = tryRestoreUser(RestoreWallet.SocialPlusCustomShare)

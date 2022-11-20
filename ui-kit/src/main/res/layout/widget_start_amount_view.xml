@@ -23,7 +23,7 @@
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
         android:textColor="@color/text_night"
         app:layout_constraintStart_toEndOf="@id/imageView"
         app:layout_constraintTop_toTopOf="parent"

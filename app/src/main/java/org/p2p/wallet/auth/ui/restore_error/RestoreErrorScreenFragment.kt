@@ -12,6 +12,7 @@ import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ButtonAction
 import org.p2p.wallet.auth.model.RestoreFailureState
+import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
@@ -121,6 +122,7 @@ class RestoreErrorScreenFragment :
     }
 
     override fun setLoadingState(isLoading: Boolean) {
+        setLoadingAnimationState(isScreenLoading = isLoading)
         binding.buttonRestoreByGoogle.isLoadingState = isLoading
     }
 
@@ -159,6 +161,16 @@ class RestoreErrorScreenFragment :
                     presenter.onStartScreenClicked()
                 }
             }
+        }
+    }
+
+    private fun setLoadingAnimationState(isScreenLoading: Boolean) {
+        if (isScreenLoading) {
+            setSystemBarsColors(statusBarColor, R.color.bg_lime)
+            AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = false)
+        } else {
+            setSystemBarsColors(statusBarColor, navBarColor)
+            AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }
     }
 }

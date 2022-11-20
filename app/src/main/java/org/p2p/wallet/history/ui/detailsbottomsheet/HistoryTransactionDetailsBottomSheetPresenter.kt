@@ -77,8 +77,6 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             showAmount(total, usdTotal)
             showFee()
 
-            transaction.getBlockNumber()?.also { showBlockNumber(it) }
-
             showSwapView(transaction.sourceIconUrl, transaction.destinationIconUrl)
         }
     }
@@ -135,7 +133,6 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
             showFee()
-            transaction.getBlockNumber()?.also { showBlockNumber(it) }
             showTransferView(transaction.getIcon())
         }
     }

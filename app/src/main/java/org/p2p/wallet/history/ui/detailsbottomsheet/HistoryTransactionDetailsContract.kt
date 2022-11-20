@@ -17,7 +17,6 @@ interface HistoryTransactionDetailsContract {
         fun showTransactionId(signature: String)
         fun showAmount(amountToken: String, amountUsd: String?)
         fun showFee(renBtcFee: String? = null)
-        fun showBlockNumber(blockNumber: String)
         fun showLoading(isLoading: Boolean)
         fun showError(@StringRes messageId: Int)
         fun showSenderAddress(senderAddress: Base58String, senderUsername: String?)

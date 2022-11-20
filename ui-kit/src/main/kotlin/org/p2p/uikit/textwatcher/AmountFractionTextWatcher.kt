@@ -68,9 +68,13 @@ class AmountFractionTextWatcher(
     override fun afterTextChanged(edit: Editable) {
         field.get()?.apply {
             removeTextChangedListener(this@AmountFractionTextWatcher)
-
             setText(valueText)
-            setSelection(cursorPosition)
+            try {
+                setSelection(cursorPosition)
+            } catch (e: IndexOutOfBoundsException) {
+                val selectionIndex = if (valueText.isNotEmpty()) valueText.length - 1 else 0
+                setSelection(selectionIndex)
+            }
 
             addTextChangedListener(this@AmountFractionTextWatcher)
         }

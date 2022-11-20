@@ -42,4 +42,11 @@ interface GatewayServiceRepository {
         phoneNumber: PhoneNumber,
         otpConfirmationCode: String
     ): ConfirmRestoreWalletResponse
+
+    suspend fun loadAndSaveOnboardingMetadata(
+        solanaPublicKey: Base58String,
+        solanaPrivateKey: Base58String,
+        userSeedPhrase: List<String>,
+        etheriumAddress: String
+    )
 }

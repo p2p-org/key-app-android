@@ -92,7 +92,6 @@ class HomeFragment :
             ::onFragmentResult
         )
 
-        presenter.subscribeToUserTokensFlow()
         val centerActionSetter = parentFragment as? CenterActionButtonClickSetter
 
         centerActionSetter?.setOnCenterActionButtonListener {
@@ -114,6 +113,8 @@ class HomeFragment :
             viewLifecycleOwner,
             ::onFragmentResult
         )
+
+        presenter.load()
     }
 
     override fun showAddressCopied(addressAndUsername: String) {
@@ -147,6 +148,7 @@ class HomeFragment :
 
         // hidden. temporary. PWN-4381
         viewBuyTokenBanner.root.isVisible = false
+        viewActionButtons.isVisible = false
 
         if (BuildConfig.DEBUG) {
             with(layoutToolbar) {
@@ -157,7 +159,6 @@ class HomeFragment :
                 }
             }
         }
-        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {

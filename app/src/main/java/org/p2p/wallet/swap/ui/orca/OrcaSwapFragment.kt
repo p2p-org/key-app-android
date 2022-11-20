@@ -160,11 +160,6 @@ class OrcaSwapFragment :
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
-    }
-
     override fun showSourceToken(token: Token.Active) {
         with(binding) {
             Glide.with(sourceImageView).load(token.iconUrl).into(sourceImageView)
@@ -346,5 +341,10 @@ class OrcaSwapFragment :
         AmountFractionTextWatcher.installOn(binding.amountEditText) {
             presenter.setSourceAmount(it)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
     }
 }
