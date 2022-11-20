@@ -7,9 +7,6 @@ on:
       - main
       - release/*
 jobs:
-  call-workflow-passing-data:
-    uses: p2p-org/p2p-wallet-android/.github/workflows/android-init.yml@release/test-ci
-    secrets: inherit
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
@@ -63,12 +60,35 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+      - uses: actions/checkout@v2
+
       - name: "Send start deploy message to slack"
         run: |
           git fetch
           cd bash_scripts
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
+
+      - name: "Init project"
+        uses: ./.github/actions/setup-project
+        with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-release: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
+          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
+          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
       - name: "Build Firebase APK and AAB artifact"
         env:

@@ -1,0 +1,101 @@
+name: "Setup all needed files and properties for project"
+description: "-"
+inputs:
+  channel-id:
+    required: true
+    description: "Slack channel id"
+  bot-token:
+    required: true
+    description: "Slack bot token"
+  build-type:
+    required: true
+    description: "debug, feature, releaseLocal, releaseFirebase, release"
+  artifact-type:
+    required: true
+    description: "apk,bundle"
+  torus-verifier-debug:
+    description: "Torus verifier - DEBUG"
+    required: true
+  torus-verifier-feature:
+    description: "Torus verifier - FEATURE"
+    required: true
+  torus-verifier-release:
+    description: "Torus release verifier - STORE/FIREBASE/SLACK"
+    required: true
+  torus-subverifier-store:
+    description: "Torus sub-verifier - STORE"
+    required: true
+  torus-subverifier-firebase:
+    description: "Torus sub-verifier - FIREBASE"
+    required: true
+  torus-subverifier-local:
+    description: "Torus sub-verifier - LOCAL/SLACK"
+    required: true
+  default-project:
+    description: "Project name for Sentry"
+    required: false
+    default: "android"
+  default-organization:
+    description: "Project organization for Sentry"
+    required: false
+    default: "p2p-wallet"
+  default-url:
+    description: "Project Sentry full URL"
+    required: false
+    default: "https://sentry.io/"
+  auth-token:
+    description: "Project Sentry Auth Token"
+    required: true
+  auth-dsn:
+    description: "Project Sentry DSN"
+    required: true
+  keystore-secret:
+    description: "Release JKS keystore"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: "Create Firebase google_services.json"
+      uses: ./.github/actions/setup-firebase
+      with:
+        firebase-secret: ${{ inputs.firebase-secret }}
+
+    - name: "Create torus.properties"
+      uses: ./.github/actions/setup-torus
+      with:
+        torus-verifier-debug: ${{ inpunts.torus-verifier-debug }}
+        torus-verifier-feature: ${{ inputs.torus-verifier-feature }}
+        torus-verifier-release: ${{ inputs.torus-verifier-release }}
+        torus-subverifier-release: ${{ inputs.torus-subverifier-release }}
+        torus-subverifier-firebase: ${{ inputs.torus-subverifier-firebase }}
+        torus-subverifier-local: ${{ inputs.torus-subverifier-local }}
+
+    - name: "Create apikey.properties"
+      uses: ./.github/actions/setup-apikey
+      with:
+        rpc-pool-secret: ${{ inputs.rpc-pool-secret }}
+        moonpay-secret: ${{ inputs.moonpay-secret }}
+        compare-secret: ${{ inputs.compare-secret }}
+        intercom-id-secret: ${{ inputs.intercom-id-secret }}
+        intercom-key-secret: ${{ inputs.intercom-key-secret }}
+        amplitude-secret: ${{ inputs.amplitude-secret }}
+        apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
+
+#    - name: "Create cert.pem file"
+#      env:
+#        SSL_CERTIFICATE: ${{ inputs.SSL_CERTIFICATE }}
+#      run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
+
+    - name: "Create sentry.properties file"
+      uses: ./.github/actions/setup-sentry
+      with:
+        auth-token: ${{ inputs.auth-token }}
+        auth-dsn: ${{ inputs.auth-dsn }}
+
+    - name: "Create keystore .jks"
+      uses: ./.github/actions/setup-signing-config
+      with:
+        keystore-secret: ${{ inputs.keystore-secret }}
+
+    - name: "Setup gradle"
+      uses: ./.github/actions/setup-gradle
