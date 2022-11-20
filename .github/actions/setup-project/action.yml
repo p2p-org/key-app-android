@@ -63,7 +63,7 @@ runs:
     - name: "Create torus.properties"
       uses: ./.github/actions/setup-torus
       with:
-        torus-verifier-debug: ${{ inpunts.torus-verifier-debug }}
+        torus-verifier-debug: ${{ inputs.torus-verifier-debug }}
         torus-verifier-feature: ${{ inputs.torus-verifier-feature }}
         torus-verifier-release: ${{ inputs.torus-verifier-release }}
         torus-subverifier-release: ${{ inputs.torus-subverifier-release }}
