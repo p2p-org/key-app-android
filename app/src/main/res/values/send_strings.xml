@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Search-->
+    <string name="search_title">Choose a recipient</string>
+    <string name="search_subtitle">Solana &amp; Bitcoin network</string>
+
+</resources>

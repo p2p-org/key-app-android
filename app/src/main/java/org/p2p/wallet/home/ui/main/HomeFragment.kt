@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
@@ -33,10 +33,11 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.send.ui.main.SendFragment
+import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
@@ -180,7 +181,7 @@ class HomeFragment :
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
                 ActionButtonsView.ActionButton.SEND_BUTTON -> {
-                    replaceFragment(SendFragment.create())
+                    addFragment(NewSearchFragment.create())
                 }
                 ActionButtonsView.ActionButton.SWAP_BUTTON -> {
                     replaceFragment(OrcaSwapFragment.create())
@@ -221,7 +222,7 @@ class HomeFragment :
                 replaceFragment(OrcaSwapFragment.create())
             }
             HomeAction.SEND -> {
-                replaceFragment(SendFragment.create())
+                addFragment(NewSearchFragment.create())
             }
         }
     }
