@@ -35,10 +35,13 @@ ext.featureChangelog = {
             releaseBranchChangelog
 }
 
-ext.releaseChangelog = { releaseName ->
-    return "Release build v${releaseName}\n" +
-            "Release notes:\n" +
-            branchChangelog()
+ext.releaseChangelog = { releaseName, buildType ->
+    new StringBuilder()
+            .append("Release build v${releaseName}\n")
+            .append("Type=$buildType\n")
+            .append("Release notes:\n")
+            .append("${branchChangelog()}")
+            .toString()
 }
 
 ext.taskNumber = {
