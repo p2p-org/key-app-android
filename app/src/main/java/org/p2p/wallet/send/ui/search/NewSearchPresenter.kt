@@ -28,17 +28,21 @@ class NewSearchPresenter(
 
     override fun loadInitialData() {
         val data = usernames
-        if (data.isNullOrEmpty()) return
-        val message = if (data.size > 1) {
-            R.string.send_multiple_accounts
+        if (data.isNullOrEmpty()) {
+            // TODO PWN-6077 check latest recipients and show if exists
+            view?.showEmptyState(isEmpty = true)
         } else {
-            R.string.send_account_found
-        }
+            val message = if (data.size > 1) {
+                R.string.send_multiple_accounts
+            } else {
+                R.string.send_account_found
+            }
 
-        val value = (data.first() as SearchResult.UsernameFound).username
-        view?.showMessage(message)
-        view?.showSearchResult(data)
-        view?.showSearchValue(value)
+            val value = (data.first() as SearchResult.UsernameFound).username
+            view?.showMessage(message)
+            view?.showSearchResult(data)
+            view?.showSearchValue(value)
+        }
     }
 
     override fun search(newQuery: String) {
@@ -70,6 +74,10 @@ class NewSearchPresenter(
         } else {
             view?.submitSearchResult(result)
         }
+    }
+
+    override fun onScanClicked() {
+        view?.showScanner()
     }
 
     private suspend fun validateAndSearch(target: SearchTarget) {

@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.text.TextWatcher
 import android.view.View
 import androidx.activity.addCallback
-import androidx.core.os.bundleOf
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -20,10 +18,12 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
+import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.ui.main.KEY_REQUEST_SEND
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
+import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -34,7 +34,6 @@ class NewSearchFragment :
     NewSearchContract.View {
 
     companion object {
-        const val EXTRA_SEARCH_RESULT = "EXTRA_SEARCH_RESULT"
         private const val EXTRA_USERNAMES = "EXTRA_USERNAMES"
 
         fun create(usernames: List<SearchResult>? = null): NewSearchFragment =
@@ -65,10 +64,15 @@ class NewSearchFragment :
 
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            clearImageView.setOnClickListener { searchEditText.text.clear() }
+
             textWatcher = searchEditText.doAfterTextChanged {
                 onSearchQueryChanged(it?.toString().orEmpty())
             }
+
+            buttonScan.setOnClickListener { presenter.onScanClicked() }
+            imageViewScan.setOnClickListener { presenter.onScanClicked() }
+
+            buttonPaste.setOnClickListener { pasteText() }
 
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             recyclerView.attachAdapter(searchAdapter)
@@ -82,11 +86,28 @@ class NewSearchFragment :
     private fun onSearchQueryChanged(newQuery: String) {
         presenter.search(newQuery)
 
-        binding.clearImageView.isVisible = newQuery.isNotEmpty()
+        val isEmptyQuery = newQuery.isEmpty()
+
+        with(binding) {
+            val icon = if (isEmptyQuery) {
+                imageViewFieldButton.setOnClickListener { pasteText() }
+                R.drawable.ic_search_paste
+            } else {
+                imageViewFieldButton.setOnClickListener { searchEditText.text.clear() }
+                R.drawable.ic_close
+            }
+
+            binding.imageViewFieldButton.setImageResource(icon)
+        }
     }
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
+    }
+
+    override fun showEmptyState(isEmpty: Boolean) {
+        binding.groupEmptyView.isVisible = isEmpty
+        binding.recyclerView.isVisible = !isEmpty
     }
 
     override fun showSearchValue(value: String) {
@@ -99,6 +120,7 @@ class NewSearchFragment :
 
     override fun showSearchResult(result: List<SearchResult>) {
         searchAdapter.setItems(result)
+        showEmptyState(isEmpty = result.isEmpty())
     }
 
     override fun showMessage(textRes: Int?) {
@@ -111,12 +133,21 @@ class NewSearchFragment :
     }
 
     override fun submitSearchResult(searchResult: SearchResult) {
-        setFragmentResult(
-            KEY_REQUEST_SEND,
-            bundleOf(
-                EXTRA_SEARCH_RESULT to searchResult
-            )
-        )
-        parentFragmentManager.popBackStack()
+        // TODO go to send
+    }
+
+    override fun showScanner() {
+        val target = ScanQrFragment.create { onSearchQueryChanged(it) }
+        addFragment(target)
+    }
+
+    private fun pasteText() = with(binding) {
+        val nameOrAddress = requireContext().getClipboardText(trimmed = true)
+        nameOrAddress?.let {
+            searchEditText.apply {
+                setText(it)
+                setSelection(text.length)
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,7 +8,6 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundPrimary"
     android:orientation="vertical">
-
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
@@ -25,8 +24,9 @@
     <LinearLayout
         android:id="@+id/searchView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="?attr/actionBarSize"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <EditText
             android:id="@+id/searchEditText"
@@ -35,7 +35,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:digits="@string/common_username_search_allowed_symbols"
-            android:hint="@string/send_type_paste"
+            android:hint="@string/search_edittext_hint"
             android:importantForAutofill="no"
             android:inputType="text"
             android:paddingHorizontal="16dp"
@@ -44,17 +44,25 @@
             tools:text="chingiz.p2p.sol" />
 
         <ImageView
-            android:id="@+id/clearImageView"
+            android:id="@+id/imageViewFieldButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="?selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_close"
-            app:tint="@color/textIconPrimary"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
+            app:srcCompat="@drawable/ic_search_paste"
+            app:tint="@color/icons_night"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/imageViewScan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/search_scan_qr"
+            android:padding="16dp"
+            android:src="@drawable/ic_search_qr"
+            app:tint="@color/icons_night" />
 
     </LinearLayout>
 
@@ -65,24 +73,111 @@
         android:layout_height="wrap_content"
         android:indeterminateOnly="true"
         android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/searchView"
         tools:visibility="visible" />
 
     <TextView
         android:id="@+id/messageTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
-        android:layout_marginStart="16dp"
         android:text="@string/send_multiple_accounts"
         android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
         android:textColor="@color/textIconSecondary"
         android:visibility="gone"
-        tools:visibility="visible" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressBar"
+        tools:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/item_search" />
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/messageTextView"
+        tools:listitem="@layout/item_search"
+        tools:visibility="gone" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/textViewEmptyTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/search_empty_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@id/textViewEmptySubtitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressBar"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/textViewEmptySubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/search_empty_subtitle"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@id/buttonScan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewEmptyTitle" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonScan"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/search_scan_qr"
+        android:textColor="@color/text_lime"
+        app:cornerRadius="28dp"
+        app:icon="@drawable/ic_search_qr"
+        app:iconGravity="textStart"
+        app:iconSize="18dp"
+        app:iconTint="@color/icons_lime"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonPaste"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonPaste"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/search_paste"
+        android:textColor="@color/text_lime"
+        app:cornerRadius="28dp"
+        app:icon="@drawable/ic_search_paste"
+        app:iconGravity="textStart"
+        app:iconSize="18dp"
+        app:iconTint="@color/icons_lime"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonScan" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupEmptyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="buttonPaste,buttonScan,textViewEmptyTitle,textViewEmptySubtitle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

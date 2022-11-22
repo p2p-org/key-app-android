@@ -5,4 +5,10 @@
     <string name="search_title">Choose a recipient</string>
     <string name="search_subtitle">Solana &amp; Bitcoin network</string>
 
+    <string name="search_empty_title">Make your first transaction</string>
+    <string name="search_empty_subtitle">To continue, paste or scan the address (Solana or Bitcoin) or type a username</string>
+    <string name="search_edittext_hint">username or address</string>
+    <string name="search_scan_qr">Scan QR</string>
+    <string name="search_paste">Paste</string>
+
 </resources>
