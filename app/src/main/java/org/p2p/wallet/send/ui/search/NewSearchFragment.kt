@@ -72,6 +72,10 @@ class NewSearchFragment :
             buttonScan.setOnClickListener { presenter.onScanClicked() }
             imageViewScan.setOnClickListener { presenter.onScanClicked() }
 
+            imageViewFieldButton.apply {
+                isVisible = !requireContext().getClipboardText().isNullOrBlank()
+                setOnClickListener { pasteText() }
+            }
             buttonPaste.setOnClickListener { pasteText() }
 
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -90,9 +94,11 @@ class NewSearchFragment :
 
         with(binding) {
             val icon = if (isEmptyQuery) {
+                imageViewFieldButton.isVisible = !requireContext().getClipboardText().isNullOrBlank()
                 imageViewFieldButton.setOnClickListener { pasteText() }
                 R.drawable.ic_search_paste
             } else {
+                imageViewFieldButton.isVisible = true
                 imageViewFieldButton.setOnClickListener { searchEditText.text.clear() }
                 R.drawable.ic_close
             }
