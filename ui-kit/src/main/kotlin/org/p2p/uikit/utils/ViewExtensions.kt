@@ -36,18 +36,12 @@ fun View.requireActivity(): AppCompatActivity {
 
 fun View.focusAndShowKeyboard() {
     doOnAttach {
-        requestFocus()
         setOnFocusChangeListener { view, focus ->
             if (focus) {
-                post { showKeyboard() }
+                showKeyboard()
             }
         }
-    }
-    doOnDetach {
-        onFocusChangeListener = null
-        post {
-            hideKeyboard()
-        }
+        requestFocus()
     }
 }
 
