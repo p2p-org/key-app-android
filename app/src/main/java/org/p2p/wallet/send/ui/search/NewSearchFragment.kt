@@ -116,6 +116,10 @@ class NewSearchFragment :
         binding.recyclerView.isVisible = !isEmpty
     }
 
+    override fun showDegradationState(isDegraded: Boolean) {
+        binding.groupDegradationView.isVisible = isDegraded
+    }
+
     override fun showSearchValue(value: String) {
         with(binding.searchEditText) {
             removeTextChangedListener(textWatcher)

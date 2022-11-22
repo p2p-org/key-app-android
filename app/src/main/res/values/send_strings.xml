@@ -10,5 +10,8 @@
     <string name="search_edittext_hint">username or address</string>
     <string name="search_scan_qr">Scan QR</string>
     <string name="search_paste">Paste</string>
+    <string name="search_degradation_error_subtitle">Solana Name Service doesn\'t respond.\n\nWe suggest you try again later because we will not be able to verify the address if you continue.</string>
+    <string name="search_degradation_continue_button">Continue anyway</string>
+    <string name="search_degradation_info">It is possible that the address is incorrect if you continue</string>
 
 </resources>

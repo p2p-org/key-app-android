@@ -13,6 +13,7 @@ interface NewSearchContract {
         fun showMessage(@StringRes textRes: Int?)
         fun showLoading(isLoading: Boolean)
         fun showEmptyState(isEmpty: Boolean)
+        fun showDegradationState(isDegraded: Boolean)
         fun submitSearchResult(searchResult: SearchResult)
         fun showScanner()
     }
