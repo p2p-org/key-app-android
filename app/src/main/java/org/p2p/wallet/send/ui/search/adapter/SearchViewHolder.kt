@@ -1,16 +1,18 @@
 package org.p2p.wallet.send.ui.search.adapter
 
+import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.databinding.ItemSearchBinding
+import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.toDp
 import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
@@ -22,6 +24,8 @@ class SearchViewHolder(
     private val binding: ItemSearchBinding = parent.inflateViewBinding(attachToRoot = false),
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
 ) : RecyclerView.ViewHolder(binding.root) {
+
+    val iconPadding = 12.toDp()
 
     fun onBind(item: SearchResult) {
         when (item) {
@@ -60,6 +64,13 @@ class SearchViewHolder(
 
     private fun renderAddressOnly(item: SearchResult.AddressOnly) {
         with(binding) {
+            if (item.addressState.networkType == NetworkType.BITCOIN) {
+                walletImageView.setImageResource(R.drawable.ic_btc)
+                walletImageView.setPadding(0, 0, 0, 0)
+            } else {
+                walletImageView.setImageResource(R.drawable.ic_search_wallet)
+                walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+            }
             topTextView.text = item.addressState.address.cutEnd()
             bottomTextView.isVisible = false
         }
