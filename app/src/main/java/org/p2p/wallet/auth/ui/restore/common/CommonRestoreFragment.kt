@@ -22,8 +22,6 @@ import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorFragment
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
-import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
-import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
