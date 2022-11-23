@@ -1,15 +1,11 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import androidx.activity.addCallback
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
-import androidx.transition.TransitionManager
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
+import androidx.activity.addCallback
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.BuildConfig
@@ -19,6 +15,7 @@ import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow
+import org.p2p.wallet.auth.ui.animationscreen.AnimationProgressFragment
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
@@ -34,12 +31,6 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.io.File
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 class NewOnboardingFragment :
     BaseMvpFragment<NewOnboardingContract.View, NewOnboardingContract.Presenter>(R.layout.fragment_new_onboarding),
@@ -99,8 +90,6 @@ class NewOnboardingFragment :
         ActivityResultContracts.StartIntentSenderForResult(),
         ::handleSignResult
     )
-
-    private var creationProgressJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -193,49 +182,12 @@ class NewOnboardingFragment :
     }
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
-        with(binding) {
-            TransitionManager.beginDelayedTransition(root)
-            loadingAnimationView.isVisible = isScreenLoading
-            animationView.apply {
-                if (isScreenLoading) {
-                    setSystemBarsColors(statusBarColor, R.color.bg_lime)
-                    startCreationProgressJob()
-                    playAnimation()
-                } else {
-                    setSystemBarsColors(statusBarColor, navBarColor)
-                    creationProgressJob?.cancel()
-                    cancelAnimation()
-                }
-            }
+        if (isScreenLoading) {
+            setSystemBarsColors(statusBarColor, R.color.bg_lime)
+            AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = true)
+        } else {
+            setSystemBarsColors(statusBarColor, navBarColor)
+            AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }
     }
-
-    private fun startCreationProgressJob() {
-        creationProgressJob = listOf(
-            TimerState(R.string.onboarding_loading_title, withProgress = false),
-            TimerState(R.string.onboarding_loading_title_1),
-            TimerState(R.string.onboarding_loading_title_2),
-            TimerState(R.string.onboarding_loading_title_3),
-        ).asSequence()
-            .asFlow()
-            .onEach {
-                with(binding) {
-                    textViewCreationTitle.setText(it.titleRes)
-                    textViewCreationMessage.isVisible = !it.withProgress
-                    progressBarCreation.isVisible = it.withProgress
-                }
-                delay(2.seconds.inWholeMilliseconds)
-            }
-            .launchIn(viewLifecycleOwner.lifecycleScope)
-    }
-
-    override fun onDestroyView() {
-        creationProgressJob?.cancel()
-        super.onDestroyView()
-    }
-
-    data class TimerState(
-        @StringRes val titleRes: Int,
-        val withProgress: Boolean = true
-    )
 }

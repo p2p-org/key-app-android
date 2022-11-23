@@ -4,6 +4,9 @@ import com.google.gson.Gson
 import org.p2p.solanaj.utils.crypto.toBase64Instance
 import org.p2p.wallet.auth.gateway.api.request.GatewayOnboardingMetadataCiphered
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305Decryptor
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305Encryptor
+import org.p2p.wallet.utils.chacha.ChaCha20Poly1305SymmetricKeyGenerator
 import org.p2p.wallet.utils.fromJsonReified
 import org.p2p.wallet.utils.toByteArray
 import org.p2p.wallet.utils.toJsonObject

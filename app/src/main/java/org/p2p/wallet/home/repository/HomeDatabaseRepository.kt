@@ -2,7 +2,6 @@ package org.p2p.wallet.home.repository
 
 import org.p2p.wallet.home.db.TokenDao
 import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,10 +26,7 @@ class HomeDatabaseRepository(
 
     override fun getTokensFlow(): Flow<List<Token.Active>> =
         tokenDao.getTokensFlow()
-            .map { entities ->
-                entities.map { TokenConverter.fromDatabase(it) }
-                    .sortedWith(TokenComparator())
-            }
+            .map { it.map(TokenConverter::fromDatabase) }
 
     override suspend fun getUserTokens(): List<Token.Active> =
         tokenDao.getTokens().map { TokenConverter.fromDatabase(it) }

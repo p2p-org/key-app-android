@@ -5,6 +5,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
@@ -29,11 +30,12 @@ import org.p2p.wallet.infrastructure.network.interceptor.GatewayServiceIntercept
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
-import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
+import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 import retrofit2.Retrofit
@@ -49,7 +51,8 @@ object NetworkModule : InjectionModule {
     override fun create() = module {
         single { NetworkServicesUrlProvider(get(), get()) }
         single { NetworkEnvironmentManager(get(), get(), get()) }
-        single { TokenKeyProvider(get()) }
+        singleOf(::TokenKeyProvider)
+        singleOf(::SeedPhraseProvider)
         single { CertificateManager(get(), get()) }
 
         single {
