@@ -9,13 +9,13 @@ runs:
   using: composite
   steps:
     - name: Setup gradle dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle') }}
 
     - name: Setup Gradle Wrapper Cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
