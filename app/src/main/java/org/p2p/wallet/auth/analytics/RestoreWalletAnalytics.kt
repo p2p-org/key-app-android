@@ -62,6 +62,10 @@ class RestoreWalletAnalytics(
             key = ONBOARDING_PROPERTY_USER_RESTORE_METHOD,
             value = restoreMethod.analyticValue
         )
+        tracker.logEvent(
+            event = ONBOARDING_PROPERTY_USER_RESTORE_METHOD,
+            params = arrayOf("Restore_Method" to restoreMethod.analyticValue)
+        )
     }
 
     enum class UsernameRestoreMethod(val analyticValue: String) {

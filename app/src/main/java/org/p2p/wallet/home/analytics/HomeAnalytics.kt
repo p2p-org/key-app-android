@@ -8,9 +8,25 @@ class HomeAnalytics(private val tracker: Analytics) {
 
     fun logUserHasPositiveBalanceProperty(hasPositiveBalance: Boolean) {
         tracker.setUserPropertyOnce(HOME_USER_HAS_POSITIVE_BALANCE, hasPositiveBalance)
+        logUserHasPositiveBalanceEvent(hasPositiveBalance)
     }
 
     fun logUserAggregateBalanceProperty(usdBalance: Int) {
         tracker.setUserPropertyOnce(HOME_USER_AGGREGATE_BALANCE, usdBalance.toString())
+        logUserAggregateBalanceEvent(usdBalance)
+    }
+
+    private fun logUserAggregateBalanceEvent(usdBalance: Int) {
+        tracker.logEvent(
+            HOME_USER_AGGREGATE_BALANCE,
+            arrayOf("Usd_Balance" to usdBalance)
+        )
+    }
+
+    private fun logUserHasPositiveBalanceEvent(hasPositiveBalance: Boolean) {
+        tracker.logEvent(
+            HOME_USER_HAS_POSITIVE_BALANCE,
+            arrayOf("Has_Positive_Balance" to hasPositiveBalance)
+        )
     }
 }
