@@ -65,6 +65,7 @@ class PhoneNumberEnterFragment :
         buttonConfirmPhone.setOnClickListener {
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }
+        editTextPhoneNumber.focusAndShowKeyboard()
     }
 
     override fun initCreateWalletViews() {
@@ -120,8 +121,7 @@ class PhoneNumberEnterFragment :
     override fun navigateToAccountBlocked(cooldownTtl: Long) {
         replaceFragment(
             OnboardingGeneralErrorTimerFragment.create(
-                error = GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
-                timerLeftTime = cooldownTtl
+                error = GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER, timerLeftTime = cooldownTtl
             )
         )
     }
@@ -157,10 +157,10 @@ class PhoneNumberEnterFragment :
 
     private fun setOnResultListener() {
         requireActivity().supportFragmentManager.setFragmentResultListener(
-            REQUEST_KEY,
-            viewLifecycleOwner
+            REQUEST_KEY, viewLifecycleOwner
         ) { _, bundle ->
-            bundle.getParcelable<CountryCode>(RESULT_KEY)?.let { presenter.onCountryCodeChanged(it) }
+            val countryCode = bundle.getParcelable<CountryCode>(RESULT_KEY)
+            presenter.onCountryCodeChanged(countryCode)
         }
     }
 
