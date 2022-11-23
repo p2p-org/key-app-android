@@ -45,6 +45,10 @@ class NewSearchPresenter(
         }
     }
 
+    override fun onContinueClicked(query: String) {
+        onSearchResultClick(SearchResult.AddressOnly(addressState = AddressState(query)))
+    }
+
     override fun search(newQuery: String) {
         val target = SearchTarget(
             value = newQuery,
@@ -61,7 +65,7 @@ class NewSearchPresenter(
                 Timber.w("Cancelled search target validation: ${target.value}")
             } catch (e: Throwable) {
                 Timber.e(e, "Error searching target")
-                view?.showErrorMessage(e)
+                view?.showErrorState()
             } finally {
                 view?.showLoading(false)
             }
@@ -97,13 +101,7 @@ class NewSearchPresenter(
             return
         }
 
-        val message = if (usernames.size > 1) {
-            R.string.send_multiple_accounts
-        } else {
-            R.string.send_account_found
-        }
-
-        view?.showMessage(message)
+        view?.showMessage(R.string.search_found_header)
         view?.showSearchResult(usernames)
     }
 
@@ -134,7 +132,8 @@ class NewSearchPresenter(
     }
 
     private fun showNotFound() {
-        view?.showMessage(R.string.send_no_address)
+        view?.showMessage(null)
         view?.showSearchResult(emptyList())
+        view?.showNotFound()
     }
 }

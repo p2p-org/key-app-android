@@ -1,18 +1,16 @@
 package org.p2p.wallet.send.ui.search
 
 import android.os.Bundle
-import android.text.TextWatcher
 import android.view.View
 import androidx.activity.addCallback
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -45,7 +43,9 @@ class NewSearchFragment :
     override val presenter: NewSearchContract.Presenter by inject { parametersOf(usernames) }
     private val binding: FragmentNewSearchBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
-    private lateinit var textWatcher: TextWatcher
+
+    override val statusBarColor: Int = R.color.bg_smoke
+    override val navBarColor: Int = R.color.bg_smoke
 
     private val searchAdapter: SearchAdapter by unsafeLazy {
         SearchAdapter(
@@ -63,25 +63,45 @@ class NewSearchFragment :
         }
 
         with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
 
-            textWatcher = searchEditText.doAfterTextChanged {
-                onSearchQueryChanged(it?.toString().orEmpty())
+            toolbar.apply {
+                setSearchMenu(
+                    object : SearchView.OnQueryTextListener {
+                        override fun onQueryTextSubmit(query: String?): Boolean = false
+
+                        override fun onQueryTextChange(newText: String?): Boolean {
+                            onSearchQueryChanged(newText.orEmpty())
+                            return true
+                        }
+                    },
+                    menuRes = R.menu.menu_search_with_scan,
+                    searchHintRes = R.string.search_edittext_hint
+                )
+                searchView?.setOnFocusChangeListener { v, hasFocus ->
+                    if (!hasFocus) toggleSearchView()
+                }
+                setNavigationOnClickListener { popBackStack() }
+                setOnMenuItemClickListener {
+                    if (it.itemId == R.id.itemScan) {
+                        presenter.onScanClicked()
+                        true
+                    } else {
+                        false
+                    }
+                }
             }
 
             buttonScan.setOnClickListener { presenter.onScanClicked() }
-            imageViewScan.setOnClickListener { presenter.onScanClicked() }
-
-            imageViewFieldButton.apply {
-                isVisible = !requireContext().getClipboardText().isNullOrBlank()
-                setOnClickListener { pasteText() }
+            buttonContinue.setOnClickListener {
+                presenter.onContinueClicked(
+                    toolbar.searchView?.query?.toString().orEmpty()
+                )
             }
+
             buttonPaste.setOnClickListener { pasteText() }
 
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             recyclerView.attachAdapter(searchAdapter)
-
-            searchEditText.focusAndShowKeyboard()
         }
 
         presenter.loadInitialData()
@@ -89,43 +109,35 @@ class NewSearchFragment :
 
     private fun onSearchQueryChanged(newQuery: String) {
         presenter.search(newQuery)
-
-        val isEmptyQuery = newQuery.isEmpty()
-
-        with(binding) {
-            val icon = if (isEmptyQuery) {
-                imageViewFieldButton.isVisible = !requireContext().getClipboardText().isNullOrBlank()
-                imageViewFieldButton.setOnClickListener { pasteText() }
-                R.drawable.ic_search_paste
-            } else {
-                imageViewFieldButton.isVisible = true
-                imageViewFieldButton.setOnClickListener { searchEditText.text.clear() }
-                R.drawable.ic_close
-            }
-
-            binding.imageViewFieldButton.setImageResource(icon)
-        }
     }
 
     override fun showLoading(isLoading: Boolean) {
         binding.progressBar.isInvisible = !isLoading
     }
 
-    override fun showEmptyState(isEmpty: Boolean) {
-        binding.groupEmptyView.isVisible = isEmpty
-        binding.recyclerView.isVisible = !isEmpty
+    override fun showNotFound() = with(binding) {
+        textViewNotFoundTitle.isVisible = true
+        groupErrorView.isVisible = false
+        groupEmptyView.isVisible = false
+        recyclerView.isVisible = false
     }
 
-    override fun showDegradationState(isDegraded: Boolean) {
-        binding.groupDegradationView.isVisible = isDegraded
+    override fun showEmptyState(isEmpty: Boolean) = with(binding) {
+        textViewNotFoundTitle.isVisible = false
+        groupErrorView.isVisible = false
+        groupEmptyView.isVisible = isEmpty
+        recyclerView.isVisible = !isEmpty
+    }
+
+    override fun showErrorState() = with(binding) {
+        groupErrorView.isVisible = true
+        groupEmptyView.isVisible = false
+        recyclerView.isVisible = false
+        textViewNotFoundTitle.isVisible = false
     }
 
     override fun showSearchValue(value: String) {
-        with(binding.searchEditText) {
-            removeTextChangedListener(textWatcher)
-            setText(value)
-            addTextChangedListener(textWatcher)
-        }
+        binding.toolbar.searchView?.setQuery(value, true)
     }
 
     override fun showSearchResult(result: List<SearchResult>) {
@@ -133,12 +145,12 @@ class NewSearchFragment :
         showEmptyState(isEmpty = result.isEmpty())
     }
 
-    override fun showMessage(textRes: Int?) {
-        if (textRes == null) {
-            binding.messageTextView.isVisible = false
+    override fun showMessage(textRes: Int?) = with(binding.messageTextView) {
+        isVisible = if (textRes == null) {
+            false
         } else {
-            binding.messageTextView.setText(textRes)
-            binding.messageTextView.isVisible = true
+            setText(textRes)
+            true
         }
     }
 
@@ -154,10 +166,7 @@ class NewSearchFragment :
     private fun pasteText() = with(binding) {
         val nameOrAddress = requireContext().getClipboardText(trimmed = true)
         nameOrAddress?.let {
-            searchEditText.apply {
-                setText(it)
-                setSelection(text.length)
-            }
+            toolbar.searchView?.setQuery(it, true)
         }
     }
 }

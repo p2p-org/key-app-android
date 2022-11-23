@@ -12,8 +12,9 @@ interface NewSearchContract {
         fun showSearchResult(result: List<SearchResult>)
         fun showMessage(@StringRes textRes: Int?)
         fun showLoading(isLoading: Boolean)
+        fun showNotFound()
         fun showEmptyState(isEmpty: Boolean)
-        fun showDegradationState(isDegraded: Boolean)
+        fun showErrorState()
         fun submitSearchResult(searchResult: SearchResult)
         fun showScanner()
     }
@@ -21,6 +22,7 @@ interface NewSearchContract {
     interface Presenter : MvpPresenter<View> {
         fun search(newQuery: String)
         fun loadInitialData()
+        fun onContinueClicked(query: String)
         fun onSearchResultClick(result: SearchResult)
         fun onScanClicked()
     }
