@@ -112,16 +112,28 @@ class SendFragment :
         sendAnalytics.logSendStartedScreen(analyticsInteractor.getPreviousScreenName())
         setupViews()
 
+        // supportFragmentManager for full screen fragments
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND,
+            viewLifecycleOwner
+        ) { _, result -> handleSupportFragmentResult(result) }
+
         // childFragmentManager for BottomSheets
         childFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_SEND, this
-        ) { _, result -> handleFragmentResult(result) }
+            KEY_REQUEST_SEND,
+            viewLifecycleOwner
+        ) { _, result ->
+            if (result.containsKey(EXTRA_RESULT_KEY_DISMISS)) {
+                clearScreenData()
+                popBackStack()
+            }
+        }
 
         presenter.loadInitialData()
         checkClipboard()
     }
 
-    private fun handleFragmentResult(result: Bundle) {
+    private fun handleSupportFragmentResult(result: Bundle) {
         when {
             result.containsKey(EXTRA_TOKEN) -> {
                 val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
@@ -138,10 +150,6 @@ class SendFragment :
             result.containsKey(EXTRA_NETWORK) -> {
                 val ordinal = result.getInt(EXTRA_NETWORK, 0)
                 presenter.setNetworkDestination(NetworkType.values()[ordinal])
-            }
-            result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
-                clearScreenData()
-                activity?.onBackPressed()
             }
         }
     }
