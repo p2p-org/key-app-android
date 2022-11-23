@@ -37,7 +37,6 @@ import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
@@ -181,7 +180,7 @@ class HomeFragment :
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
                 ActionButtonsView.ActionButton.SEND_BUTTON -> {
-                    addFragment(NewSearchFragment.create())
+                    replaceFragment(NewSearchFragment.create())
                 }
                 ActionButtonsView.ActionButton.SWAP_BUTTON -> {
                     replaceFragment(OrcaSwapFragment.create())
