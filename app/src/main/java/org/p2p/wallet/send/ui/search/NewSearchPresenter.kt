@@ -65,7 +65,7 @@ class NewSearchPresenter(
                 Timber.w("Cancelled search target validation: ${target.value}")
             } catch (e: Throwable) {
                 Timber.e(e, "Error searching target")
-                view?.showErrorState()
+                validateOnlyAddress(target)
             } finally {
                 view?.showLoading(false)
             }
@@ -91,6 +91,14 @@ class NewSearchPresenter(
             SearchTarget.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
             SearchTarget.Validation.EMPTY -> showEmptyState()
             SearchTarget.Validation.INVALID -> showNotFound()
+        }
+    }
+
+    private suspend fun validateOnlyAddress(target: SearchTarget) {
+        when (target.validation) {
+            SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
+            else -> view?.showErrorState(isButtonEnabled = false)
         }
     }
 

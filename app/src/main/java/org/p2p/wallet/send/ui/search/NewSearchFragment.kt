@@ -18,11 +18,13 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -129,8 +131,9 @@ class NewSearchFragment :
         recyclerView.isVisible = !isEmpty
     }
 
-    override fun showErrorState() = with(binding) {
+    override fun showErrorState(isButtonEnabled: Boolean) = with(binding) {
         groupErrorView.isVisible = true
+        buttonContinue.isEnabled = isButtonEnabled
         groupEmptyView.isVisible = false
         recyclerView.isVisible = false
         textViewNotFoundTitle.isVisible = false
@@ -155,7 +158,9 @@ class NewSearchFragment :
     }
 
     override fun submitSearchResult(searchResult: SearchResult) {
-        // TODO go to send
+        replaceFragment(
+            SendFragment.create(address = searchResult.addressState.address)
+        )
     }
 
     override fun showScanner() {

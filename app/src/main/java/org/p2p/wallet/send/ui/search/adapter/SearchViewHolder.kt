@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
@@ -12,7 +11,7 @@ import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.cutEnd
-import org.p2p.wallet.utils.toDp
+import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
@@ -24,7 +23,7 @@ class SearchViewHolder(
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    val iconPadding = 12.toDp()
+    val iconPadding = 12.toPx()
 
     fun onBind(item: SearchResult) {
         when (item) {
@@ -50,10 +49,7 @@ class SearchViewHolder(
                 walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
             }
 
-            Glide.with(root)
-                .load(imageResource)
-                .circleCrop()
-                .into(walletImageView)
+            walletImageView.setImageResource(imageResource)
 
             topTextView.text = item.username
             bottomTextView withTextOrGone item.addressState.address.cutEnd()

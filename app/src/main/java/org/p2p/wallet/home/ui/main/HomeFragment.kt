@@ -222,7 +222,7 @@ class HomeFragment :
                 replaceFragment(OrcaSwapFragment.create())
             }
             HomeAction.SEND -> {
-                addFragment(NewSearchFragment.create())
+                replaceFragment(NewSearchFragment.create())
             }
         }
     }
