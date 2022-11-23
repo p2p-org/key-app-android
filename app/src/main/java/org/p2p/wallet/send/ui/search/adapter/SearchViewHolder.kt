@@ -13,7 +13,6 @@ import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.toDp
-import org.p2p.wallet.utils.viewbinding.getDrawable
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
@@ -44,11 +43,11 @@ class SearchViewHolder(
         val imageResource: Int
         with(binding) {
             if (item.username.endsWith(usernameDomainFeatureToggle.value)) {
-                walletImageView.background = null
                 imageResource = R.drawable.ic_key_app_circle
+                walletImageView.setPadding(0, 0, 0, 0)
             } else {
-                walletImageView.background = getDrawable(R.drawable.bg_app_rounded)
-                imageResource = R.drawable.ic_wallet_gray
+                imageResource = R.drawable.ic_search_wallet
+                walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
             }
 
             Glide.with(root)
