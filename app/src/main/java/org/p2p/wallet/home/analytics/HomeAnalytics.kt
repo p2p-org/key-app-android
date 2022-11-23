@@ -7,10 +7,10 @@ import org.p2p.wallet.common.analytics.constants.EventNames.HOME_USER_HAS_POSITI
 class HomeAnalytics(private val tracker: Analytics) {
 
     fun logUserHasPositiveBalanceProperty(hasPositiveBalance: Boolean) {
-        tracker.setUserProperty(HOME_USER_HAS_POSITIVE_BALANCE, hasPositiveBalance)
+        tracker.setUserPropertyOnce(HOME_USER_HAS_POSITIVE_BALANCE, hasPositiveBalance)
     }
 
     fun logUserAggregateBalanceProperty(usdBalance: Int) {
-        tracker.setUserProperty(HOME_USER_AGGREGATE_BALANCE, usdBalance.toString())
+        tracker.setUserPropertyOnce(HOME_USER_AGGREGATE_BALANCE, usdBalance.toString())
     }
 }
