@@ -43,8 +43,8 @@
         app:layout_constraintEnd_toStartOf="@+id/endAmountView"
         app:layout_constraintStart_toEndOf="@id/tokenImageView"
         app:layout_constraintTop_toTopOf="parent"
-        tools:subtitle="subtitle"
-        tools:title="title" />
+        tools:subtitle="4.12871625 SOL"
+        tools:title="Solana" />
 
     <org.p2p.uikit.atoms.UiKitEndAmountView
         android:id="@+id/endAmountView"
