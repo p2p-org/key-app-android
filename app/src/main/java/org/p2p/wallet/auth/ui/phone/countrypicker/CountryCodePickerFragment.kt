@@ -7,6 +7,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.CountryCodeItem
@@ -53,21 +54,17 @@ class CountryCodePickerFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener {
-                popBackStack(hideKeyboard = false)
+                setFragmentResult(requestKey, bundleOf())
+                close()
             }
 
             recyclerViewCountryCodes.adapter = adapter
-
             initSearch()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (binding.searchView.isBackPressEnabled()) {
-                popBackStack(hideKeyboard = false)
-            } else {
-                binding.searchView.closeSearch()
-            }
+            setFragmentResult(requestKey, bundleOf())
+            close()
         }
-
         presenter.load(selectedCountry)
     }
 
@@ -81,8 +78,7 @@ class CountryCodePickerFragment :
                 presenter.search(emptyString())
             }
         })
-
-        post { openSearch() }
+        searchView.openSearch()
     }
 
     override fun showCountries(items: List<CountryCodeItem>) {
@@ -93,6 +89,10 @@ class CountryCodePickerFragment :
 
     private fun onCountryCodeClicked(code: CountryCode) {
         setFragmentResult(requestKey, bundleOf(resultKey to code))
+        close()
+    }
+
+    private fun close() {
         popBackStack(hideKeyboard = false)
     }
 }

@@ -10,8 +10,8 @@ import android.widget.RelativeLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
-import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.hideKeyboard
+import org.p2p.uikit.utils.showKeyboard
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
@@ -50,7 +50,8 @@ class AnimatedSearchView @JvmOverloads constructor(
         animator?.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animator: Animator) {}
             override fun onAnimationEnd(animator: Animator) {
-                editTextSearch.focusAndShowKeyboard()
+                editTextSearch.requestFocus()
+                editTextSearch.showKeyboard()
             }
 
             override fun onAnimationCancel(animator: Animator) {}

@@ -91,7 +91,7 @@ class ReceiveTokenFragment :
             receiveCardView.setTokenSymbol(token.tokenSymbol)
             receiveCardView.showQrLoading(false)
             receiveCardView.setFaqVisibility(false)
-            receiveCardView.setSelectNetworkVisibility(isVisible = token.isRenBTC)
+            receiveCardView.setSelectNetworkVisibility(isVisible = false)
         }
         setFragmentResultListener(REQUEST_KEY) { _, bundle ->
             val type = bundle.get(BUNDLE_KEY_NETWORK_TYPE) as NetworkType
