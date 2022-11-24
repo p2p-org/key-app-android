@@ -20,7 +20,6 @@ import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
@@ -90,15 +89,6 @@ class NewSearchFragment :
                 }
             }
 
-            buttonScan.setOnClickListener { presenter.onScanClicked() }
-            buttonContinue.setOnClickListener {
-                presenter.onContinueClicked(
-                    toolbar.searchView?.query?.toString().orEmpty()
-                )
-            }
-
-            buttonPaste.setOnClickListener { pasteText() }
-
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             recyclerView.attachAdapter(searchAdapter)
         }
@@ -128,9 +118,8 @@ class NewSearchFragment :
         recyclerView.isVisible = !isEmpty
     }
 
-    override fun showErrorState(isButtonEnabled: Boolean) = with(binding) {
+    override fun showErrorState() = with(binding) {
         groupErrorView.isVisible = true
-        buttonContinue.isEnabled = isButtonEnabled
         groupEmptyView.isVisible = false
         recyclerView.isVisible = false
         textViewNotFoundTitle.isVisible = false
@@ -158,12 +147,5 @@ class NewSearchFragment :
     override fun showScanner() {
         val target = ScanQrFragment.create { onSearchQueryChanged(it) }
         addFragment(target)
-    }
-
-    private fun pasteText() = with(binding) {
-        val nameOrAddress = requireContext().getClipboardText(trimmed = true)
-        nameOrAddress?.let {
-            toolbar.searchView?.setQuery(it, true)
-        }
     }
 }

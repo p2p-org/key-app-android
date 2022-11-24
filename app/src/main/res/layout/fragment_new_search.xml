@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
-        android:text="@string/search_username_found"
+        android:text="@string/search_found"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
         android:visibility="gone"
@@ -91,57 +91,17 @@
         android:text="@string/search_empty_subtitle"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
         android:textColor="@color/text_night"
-        app:layout_constraintBottom_toTopOf="@id/containerBottomButtons"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewEmptyTitle" />
-
-    <LinearLayout
-        android:id="@+id/containerBottomButtons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_night_top_rounded"
-        android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="20dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonScan"
-            style="@style/UiKit.Components.Button.Large"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/ui_kit_button_large_height"
-            android:layout_marginBottom="12dp"
-            android:backgroundTint="@color/snow"
-            android:text="@string/search_scan_qr"
-            android:textColor="@color/night"
-            app:icon="@drawable/ic_search_qr"
-            app:iconGravity="textStart"
-            app:iconSize="24dp"
-            app:iconTint="@null" />
-
-        <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonPaste"
-            style="@style/UiKit.Components.Button.Large"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/ui_kit_button_large_height"
-            android:layout_marginBottom="20dp"
-            android:backgroundTint="@color/snow"
-            android:text="@string/search_paste"
-            android:textColor="@color/night"
-            app:icon="@drawable/ic_search_paste"
-            app:iconGravity="textStart"
-            app:iconSize="24dp"
-            app:iconTint="@null" />
-
-    </LinearLayout>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupEmptyView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="containerBottomButtons,textViewEmptyTitle,textViewEmptySubtitle" />
+        android:visibility="visible"
+        app:constraint_referenced_ids="textViewEmptyTitle,textViewEmptySubtitle" />
 
     <TextView
         android:id="@+id/textViewErrorInfo"
@@ -158,20 +118,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonContinue"
-        style="@style/UiKit.Components.Button.Large"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/selector_night_to_rain_tint"
-        android:text="@string/search_error_continue_button"
-        android:textColor="@color/selector_lime_to_mountain_text"
-        app:cornerRadius="28dp"
-        app:layout_constraintBottom_toTopOf="@id/textViewErrorInfo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <TextView
         android:id="@+id/textViewErrorTitle"
         android:layout_width="match_parent"
@@ -184,7 +130,7 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
         android:textColor="@color/text_night"
         app:drawableTopCompat="@drawable/ic_warning_solid"
-        app:layout_constraintBottom_toTopOf="@id/buttonContinue"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progressBar" />
@@ -194,7 +140,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="textViewErrorTitle,buttonContinue,textViewErrorInfo" />
+        app:constraint_referenced_ids="textViewErrorTitle,textViewErrorInfo" />
 
     <TextView
         android:id="@+id/textViewNotFoundTitle"
@@ -209,7 +155,7 @@
         android:textColor="@color/text_night"
         android:visibility="gone"
         app:drawableTopCompat="@drawable/ic_not_found"
-        app:layout_constraintBottom_toTopOf="@id/buttonContinue"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progressBar" />

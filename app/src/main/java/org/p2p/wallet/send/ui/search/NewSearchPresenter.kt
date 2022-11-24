@@ -10,7 +10,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
 import org.p2p.wallet.utils.toBase58Instance
@@ -32,14 +31,8 @@ class NewSearchPresenter(
             // TODO PWN-6077 check latest recipients and show if exists
             view?.showEmptyState(isEmpty = true)
         } else {
-            val message = if (data.size > 1) {
-                R.string.send_multiple_accounts
-            } else {
-                R.string.send_account_found
-            }
-
             val value = (data.first() as SearchResult.UsernameFound).username
-            view?.showMessage(message)
+            view?.showMessage(R.string.search_found)
             view?.showSearchResult(data)
             view?.showSearchValue(value)
         }
@@ -96,7 +89,7 @@ class NewSearchPresenter(
     private suspend fun validateOnlyAddress(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
-            else -> view?.showErrorState(isButtonEnabled = false)
+            else -> view?.showErrorState()
         }
     }
 
@@ -107,7 +100,7 @@ class NewSearchPresenter(
             return
         }
 
-        view?.showMessage(R.string.search_username_found)
+        view?.showMessage(R.string.search_found)
         view?.showSearchResult(usernames)
     }
 
@@ -121,15 +114,8 @@ class NewSearchPresenter(
         }
 
         val result = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance())
-        view?.showMessage(R.string.send_account_found)
+        view?.showMessage(R.string.search_found)
         view?.showSearchResult(result)
-    }
-
-    private fun showBtcAddress(address: String) {
-        val searchResult = SearchResult.AddressOnly(AddressState(address, NetworkType.BITCOIN))
-        val resultList = listOf(searchResult)
-        view?.showMessage(null)
-        view?.showSearchResult(resultList)
     }
 
     private fun showEmptyState() {

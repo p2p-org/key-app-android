@@ -14,7 +14,7 @@ interface NewSearchContract {
         fun showLoading(isLoading: Boolean)
         fun showNotFound()
         fun showEmptyState(isEmpty: Boolean)
-        fun showErrorState(isButtonEnabled: Boolean)
+        fun showErrorState()
         fun submitSearchResult(searchResult: SearchResult)
         fun showScanner()
     }
