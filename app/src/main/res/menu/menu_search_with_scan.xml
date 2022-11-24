@@ -9,4 +9,12 @@
         app:actionLayout="@layout/item_toolbar_search"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/itemScan"
+        android:icon="@drawable/ic_search_qr"
+        android:iconTint="@color/bg_night"
+        android:title="@string/qr_scan_hint"
+        app:iconTint="@color/bg_night"
+        app:showAsAction="always" />
+
 </menu>

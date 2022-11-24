@@ -28,6 +28,8 @@ import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.main.SendContract
 import org.p2p.wallet.send.ui.main.SendPresenter
+import org.p2p.wallet.send.ui.search.NewSearchContract
+import org.p2p.wallet.send.ui.search.NewSearchPresenter
 import org.p2p.wallet.send.ui.search.SearchContract
 import org.p2p.wallet.send.ui.search.SearchPresenter
 
@@ -122,6 +124,9 @@ object HomeModule : InjectionModule {
         }
         factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
             SearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
+        }
+        factory<NewSearchContract.Presenter> { (usernames: List<SearchResult>) ->
+            NewSearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
         }
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(
