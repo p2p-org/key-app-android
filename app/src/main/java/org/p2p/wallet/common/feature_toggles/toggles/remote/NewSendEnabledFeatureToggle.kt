@@ -6,6 +6,6 @@ class NewSendEnabledFeatureToggle(
     valuesProvider: RemoteConfigValuesProvider
 ) : BooleanFeatureToggle(valuesProvider) {
     override val featureKey: String = "keyapp_new_send_enabled"
-    override val featureDescription: String = "Enable New Send feature"
+    override val featureDescription: String = "Enable New Send flow"
     override val defaultValue: Boolean = false
 }
