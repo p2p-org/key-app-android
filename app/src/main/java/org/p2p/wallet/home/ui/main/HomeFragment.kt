@@ -11,6 +11,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
@@ -33,6 +34,7 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
@@ -62,6 +64,8 @@ class HomeFragment :
     }
 
     override val presenter: HomeContract.Presenter by inject()
+
+    private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 
     private lateinit var binding: FragmentHomeBinding
 
@@ -180,7 +184,11 @@ class HomeFragment :
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
                 ActionButtonsView.ActionButton.SEND_BUTTON -> {
-                    replaceFragment(NewSearchFragment.create())
+                    if (newSendEnabledFeatureToggle.isFeatureEnabled) {
+                        replaceFragment(NewSearchFragment.create())
+                    } else {
+                        replaceFragment(SendFragment.create())
+                    }
                 }
                 ActionButtonsView.ActionButton.SWAP_BUTTON -> {
                     replaceFragment(OrcaSwapFragment.create())
@@ -221,7 +229,11 @@ class HomeFragment :
                 replaceFragment(OrcaSwapFragment.create())
             }
             HomeAction.SEND -> {
-                replaceFragment(NewSearchFragment.create())
+                if (newSendEnabledFeatureToggle.isFeatureEnabled) {
+                    replaceFragment(NewSearchFragment.create())
+                } else {
+                    replaceFragment(SendFragment.create())
+                }
             }
         }
     }
