@@ -106,20 +106,20 @@ class NewSearchFragment :
 
     override fun showNotFound() = with(binding) {
         textViewNotFoundTitle.isVisible = true
-        groupErrorView.isVisible = false
+        textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = false
         recyclerView.isVisible = false
     }
 
     override fun showEmptyState(isEmpty: Boolean) = with(binding) {
         textViewNotFoundTitle.isVisible = false
-        groupErrorView.isVisible = false
+        textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = isEmpty
         recyclerView.isVisible = !isEmpty
     }
 
     override fun showErrorState() = with(binding) {
-        groupErrorView.isVisible = true
+        textViewErrorTitle.isVisible = true
         groupEmptyView.isVisible = false
         recyclerView.isVisible = false
         textViewNotFoundTitle.isVisible = false
