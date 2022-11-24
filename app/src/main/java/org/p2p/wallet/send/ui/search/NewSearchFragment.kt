@@ -12,8 +12,6 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.constants.ScreenNames
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
 import org.p2p.wallet.qr.ui.ScanQrFragment
@@ -28,6 +26,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextResOrGone
 
 class NewSearchFragment :
     BaseMvpFragment<NewSearchContract.View, NewSearchContract.Presenter>(R.layout.fragment_new_search),
@@ -36,15 +35,14 @@ class NewSearchFragment :
     companion object {
         private const val EXTRA_USERNAMES = "EXTRA_USERNAMES"
 
-        fun create(usernames: List<SearchResult>? = null): NewSearchFragment =
+        fun create(preselectedRecipients: List<SearchResult>? = null): NewSearchFragment =
             NewSearchFragment()
-                .withArgs(EXTRA_USERNAMES to usernames)
+                .withArgs(EXTRA_USERNAMES to preselectedRecipients)
     }
 
     private val usernames: List<SearchResult>? by args(EXTRA_USERNAMES)
     override val presenter: NewSearchContract.Presenter by inject { parametersOf(usernames) }
     private val binding: FragmentNewSearchBinding by viewBinding()
-    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     override val statusBarColor: Int = R.color.bg_smoke
     override val navBarColor: Int = R.color.bg_smoke
@@ -58,7 +56,6 @@ class NewSearchFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.RECIPIENT_ADDRESS)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
@@ -148,13 +145,8 @@ class NewSearchFragment :
         showEmptyState(isEmpty = result.isEmpty())
     }
 
-    override fun showMessage(textRes: Int?) = with(binding.messageTextView) {
-        isVisible = if (textRes == null) {
-            false
-        } else {
-            setText(textRes)
-            true
-        }
+    override fun showMessage(textRes: Int?) {
+        binding.messageTextView.withTextResOrGone(textRes)
     }
 
     override fun submitSearchResult(searchResult: SearchResult) {

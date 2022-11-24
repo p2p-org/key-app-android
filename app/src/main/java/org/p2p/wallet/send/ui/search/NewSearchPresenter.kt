@@ -62,9 +62,9 @@ class NewSearchPresenter(
                 view?.showLoading(isLoading = true)
                 validateAndSearch(target)
             } catch (e: CancellationException) {
-                Timber.w("Cancelled search target validation: ${target.value}")
+                Timber.i("Cancelled search target validation: ${target.value}")
             } catch (e: Throwable) {
-                Timber.e(e, "Error searching target")
+                Timber.e(e, "Error searching target: $newQuery")
                 validateOnlyAddress(target)
             } finally {
                 view?.showLoading(false)
@@ -88,16 +88,14 @@ class NewSearchPresenter(
         when (target.validation) {
             SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
             SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
-            SearchTarget.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
             SearchTarget.Validation.EMPTY -> showEmptyState()
-            SearchTarget.Validation.INVALID -> showNotFound()
+            else -> showNotFound()
         }
     }
 
     private suspend fun validateOnlyAddress(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
-            SearchTarget.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
             else -> view?.showErrorState(isButtonEnabled = false)
         }
     }
@@ -109,7 +107,7 @@ class NewSearchPresenter(
             return
         }
 
-        view?.showMessage(R.string.search_found_header)
+        view?.showMessage(R.string.search_username_found)
         view?.showSearchResult(usernames)
     }
 
