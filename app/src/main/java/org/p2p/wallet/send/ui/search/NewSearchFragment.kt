@@ -18,7 +18,6 @@ import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -146,6 +145,6 @@ class NewSearchFragment :
 
     override fun showScanner() {
         val target = ScanQrFragment.create { onSearchQueryChanged(it) }
-        addFragment(target)
+        replaceFragment(target)
     }
 }

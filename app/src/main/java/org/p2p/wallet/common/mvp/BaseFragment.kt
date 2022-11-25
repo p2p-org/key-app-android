@@ -1,17 +1,17 @@
 package org.p2p.wallet.common.mvp
 
-import androidx.annotation.AnimRes
-import androidx.annotation.ColorRes
-import androidx.annotation.LayoutRes
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.annotation.AnimRes
+import androidx.annotation.ColorRes
+import androidx.annotation.LayoutRes
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
@@ -54,6 +54,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     protected open val statusBarColor: Int = R.color.backgroundPrimary
     protected open val navBarColor: Int = R.color.backgroundPrimary
     protected open val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
+    protected open val systemIconsStyle: SystemIconsStyle = SystemIconsStyle.BLACK
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
@@ -110,6 +111,11 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             statusBarColor = resourcesProvider.getColor(colorResId)
             navigationBarColor = resourcesProvider.getColor(navBarColor)
+            if (systemIconsStyle == SystemIconsStyle.WHITE) {
+                decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+            } else {
+                decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
@@ -176,5 +182,9 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
                 style = snackbarStyle
             )
         }
+    }
+
+    enum class SystemIconsStyle {
+        BLACK, WHITE
     }
 }

@@ -35,6 +35,10 @@ class ScanQrFragment :
             ScanQrFragment().apply { this.successCallback = successCallback }
     }
 
+    override val statusBarColor: Int = R.color.bg_night
+    override val navBarColor: Int = R.color.bg_night
+    override val systemIconsStyle: SystemIconsStyle = SystemIconsStyle.WHITE
+
     private var successCallback: ((String) -> Unit)? = null
     private val binding: FragmentScanQrBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
@@ -147,16 +151,16 @@ class ScanQrFragment :
 
     private inline fun showCameraNotAvailablePlaceholder(crossinline onRetryListener: () -> Unit) {
         with(binding) {
-            cameraPermissionDeniedPlaceholder.isVisible = true
-            cameraPermissionRequestButton.isVisible = true
-            cameraPermissionRequestButton.setOnClickListener { onRetryListener() }
+            layoutCameraPermission.isVisible = true
+            buttonCameraPermissionRequest.isVisible = true
+            buttonCameraPermissionRequest.setOnClickListener { onRetryListener() }
         }
     }
 
     private fun hideCameraNotAvailablePlaceholder() {
         with(binding) {
-            cameraPermissionDeniedPlaceholder.isVisible = false
-            cameraPermissionRequestButton.isVisible = false
+            layoutCameraPermission.isVisible = false
+            buttonCameraPermissionRequest.isVisible = false
         }
     }
 
