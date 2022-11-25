@@ -59,9 +59,6 @@ class ReceiveSolanaFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            receiveCardView.setOnNetworkClickListener {
-                presenter.onNetworkClicked()
-            }
             receiveCardView.setOnFaqClickListener {
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.LIST)
                 replaceFragment(TokenListFragment.create())
@@ -81,6 +78,7 @@ class ReceiveSolanaFragment :
             }
             receiveCardView.setTokenSymbol(token?.tokenSymbol ?: Constants.SOL_SYMBOL)
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
+            receiveCardView.setChevronInvisible(isInvisible = true)
         }
 
         setFragmentResultListener(REQUEST_KEY) { _, bundle ->

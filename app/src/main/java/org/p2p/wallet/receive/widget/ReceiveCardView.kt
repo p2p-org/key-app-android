@@ -1,13 +1,14 @@
 package org.p2p.wallet.receive.widget
 
+import androidx.annotation.DrawableRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.Bitmap
 import android.text.Spannable
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.annotation.DrawableRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import org.p2p.wallet.databinding.WidgetReceiveCardViewBinding
 
 class ReceiveCardView @JvmOverloads constructor(
@@ -91,4 +92,8 @@ class ReceiveCardView @JvmOverloads constructor(
     }
 
     fun getQrCodeLastAction(): QrView.QrCodeAction? = binding.qrView.qrCodeLastAction
+
+    fun setChevronInvisible(isInvisible: Boolean) {
+        binding.arrowImageView.isInvisible = isInvisible
+    }
 }
