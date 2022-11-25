@@ -64,7 +64,9 @@ object HomeModule : InjectionModule {
             SearchInteractor(
                 usernameRepository = get(),
                 userInteractor = get(),
-                tokenKeyProvider = get()
+                tokenKeyProvider = get(),
+                transactionAddressInteractor = get(),
+                resourcesProvider = get()
             )
         }
     }

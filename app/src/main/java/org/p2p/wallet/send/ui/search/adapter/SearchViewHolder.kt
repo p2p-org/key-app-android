@@ -31,7 +31,7 @@ class SearchViewHolder(
             is SearchResult.AddressOnly -> renderAddressOnly(item)
             is SearchResult.EmptyBalance -> renderEmptyBalance(item)
             // do nothing, no wrong type should be in search view
-            is SearchResult.InvalidAddress -> Timber.w("Received SearchResult.Wrong in unexpected place")
+            else -> Timber.w("Received SearchResult.Wrong in unexpected place")
         }
 
         itemView.setOnClickListener { onItemClicked(item) }
