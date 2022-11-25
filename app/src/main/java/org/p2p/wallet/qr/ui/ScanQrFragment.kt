@@ -67,7 +67,17 @@ class ScanQrFragment :
 
         with(binding) {
             barcodeView.setFormats(listOf(BarcodeFormat.QR_CODE))
-            closeImageView.setOnClickListener { onBackPressed() }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
+            imageViewFlash.setOnClickListener {
+                barcodeView.toggleFlash()
+                imageViewFlash.setImageResource(
+                    if (barcodeView.flash) {
+                        R.drawable.ic_flash_off
+                    } else {
+                        R.drawable.ic_flash_on
+                    }
+                )
+            }
         }
     }
 
@@ -131,6 +141,7 @@ class ScanQrFragment :
             } else {
                 barcodeView.resumeCameraPreview(barcodeCallback)
             }
+            imageViewFlash.isVisible = true
         }
     }
 
