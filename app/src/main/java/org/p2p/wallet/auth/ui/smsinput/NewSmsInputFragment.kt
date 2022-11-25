@@ -1,5 +1,7 @@
 package org.p2p.wallet.auth.ui.smsinput
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.UiKitFourDigitsLargeInput
@@ -33,17 +35,15 @@ class NewSmsInputFragment :
     }
 
     override val presenter: Presenter by inject()
-
     private val binding: FragmentNewSmsInputBinding by viewBinding()
 
-    override fun initView(userPhoneNumber: PhoneNumber) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            checkNumberTitleText.text =
-                getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber.formattedValue)
             uiKitToolbar.setNavigationOnClickListener { popBackStack() }
             uiKitToolbar.setOnMenuItemClickListener {
                 if (it.itemId == R.id.helpItem) {
-                    view?.hideKeyboard()
+                    view.hideKeyboard()
                     IntercomService.showMessenger()
                     return@setOnMenuItemClickListener true
                 }
@@ -70,6 +70,11 @@ class NewSmsInputFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
+    }
+
+    override fun initView(userPhoneNumber: PhoneNumber) {
+        binding.checkNumberTitleText.text =
+            getString(R.string.onboarding_sms_input_phone_number_title, userPhoneNumber.formattedValue)
     }
 
     override fun renderSmsFormatValid() {
@@ -133,10 +138,5 @@ class NewSmsInputFragment :
 
     override fun navigateToRestoreErrorScreen(handledState: RestoreFailureState.TitleSubtitleError) {
         popAndReplaceFragment(RestoreErrorScreenFragment.create(handledState))
-    }
-
-    override fun onDestroyView() {
-        binding.smsInputComponent.hideKeyboard()
-        super.onDestroyView()
     }
 }

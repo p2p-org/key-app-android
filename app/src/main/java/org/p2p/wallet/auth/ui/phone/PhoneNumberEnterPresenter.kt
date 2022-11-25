@@ -80,8 +80,8 @@ class PhoneNumberEnterPresenter(
         }
     }
 
-    override fun onCountryCodeChanged(newCountry: CountryCode) {
-        selectedCountryCode = newCountry
+    override fun onCountryCodeChanged(newCountry: CountryCode?) {
+        selectedCountryCode = newCountry ?: selectedCountryCode
         view?.update(selectedCountryCode)
     }
 

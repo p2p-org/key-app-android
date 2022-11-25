@@ -28,6 +28,7 @@
     <color name="rose_20">#33EB4A7A</color>
     <color name="mint">#35C5AB</color>
     <color name="sun">#F1AC45</color>
+    <color name="light_sun">#FFF0CD</color>
 
     <color name="button_snow">@color/snow</color>
     <color name="button_cloud">@color/cloud</color>
@@ -44,6 +45,7 @@
     <color name="text_rose">@color/rose</color>
     <color name="text_mint">@color/mint</color>
     <color name="text_sun">@color/sun</color>
+    <color name="text_light_sun">@color/light_sun</color>
     <color name="text_rain">@color/rain</color>
 
     <color name="icons_snow">@color/snow</color>
@@ -56,6 +58,7 @@
     <color name="icons_rose">@color/rose</color>
     <color name="icons_mint">@color/mint</color>
     <color name="icons_sun">@color/sun</color>
+    <color name="icons_light_sun">@color/light_sun</color>
 
     <color name="bg_snow">@color/snow</color>
     <color name="bg_cloud">@color/cloud</color>
@@ -68,6 +71,7 @@
     <color name="bg_rose">@color/rose</color>
     <color name="bg_mint">@color/mint</color>
     <color name="bg_sun">@color/sun</color>
+    <color name="bg_light_sun">@color/light_sun</color>
 
     <color name="elements_snow">@color/snow</color>
     <color name="elements_cloud">@color/cloud</color>
@@ -80,4 +84,6 @@
     <color name="elements_rose">@color/rose</color>
     <color name="elements_mint">@color/mint</color>
     <color name="elements_sun">@color/sun</color>
+    <color name="elements_light_sun">@color/sun</color>
+
 </resources>

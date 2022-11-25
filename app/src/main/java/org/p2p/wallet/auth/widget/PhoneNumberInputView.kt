@@ -159,7 +159,6 @@ open class PhoneNumberInputView @JvmOverloads constructor(
             setSelection(length())
             focusAndShowKeyboard()
         }
-
         showError(null)
     }
 
@@ -175,5 +174,9 @@ open class PhoneNumberInputView @JvmOverloads constructor(
 
     private fun String.getFullPhoneNumber(): String {
         return PLUS_SIGN + binding.editTextCountryCode.text.toString().trim() + this.replace(" ", "")
+    }
+
+    fun focusAndShowKeyboard() {
+        binding.editTextPhoneNumber.focusAndShowKeyboard()
     }
 }

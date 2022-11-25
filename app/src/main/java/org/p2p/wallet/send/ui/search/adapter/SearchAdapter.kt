@@ -1,15 +1,16 @@
 package org.p2p.wallet.send.ui.search.adapter
 
+import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import android.view.ViewGroup
+import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.send.model.SearchResult
 
 class SearchAdapter(
     private val onItemClicked: (SearchResult) -> Unit,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
-) : RecyclerView.Adapter<SearchViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val data = mutableListOf<SearchResult>()
 
@@ -45,17 +46,31 @@ class SearchAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    override fun getItemCount(): Int = data.size
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
-        return SearchViewHolder(
-            parent = parent,
-            onItemClicked = onItemClicked,
-            usernameDomainFeatureToggle = usernameDomainFeatureToggle
-        )
+    override fun getItemViewType(position: Int): Int = when (data[position]) {
+        is SearchResult.EmptyBalance -> R.layout.item_search_empty_balance
+        else -> R.layout.item_search
     }
 
-    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        holder.onBind(data[position])
+    override fun getItemCount(): Int = data.size
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            R.layout.item_search_empty_balance -> SearchEmptyBalanceViewHolder(
+                parent = parent,
+                onItemClicked = onItemClicked
+            )
+            else -> SearchViewHolder(
+                parent = parent,
+                onItemClicked = onItemClicked,
+                usernameDomainFeatureToggle = usernameDomainFeatureToggle
+            )
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is SearchViewHolder -> holder.onBind(data[position])
+            is SearchEmptyBalanceViewHolder -> holder.onBind(data[position] as SearchResult.EmptyBalance)
+        }
     }
 }

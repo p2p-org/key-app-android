@@ -1,6 +1,7 @@
 package org.p2p.wallet.utils
 
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 
@@ -11,6 +12,16 @@ infix fun TextView.withTextOrGone(text: CharSequence?) {
     } else {
         isVisible = true
         this.text = text
+    }
+}
+
+infix fun TextView.withTextResOrGone(@StringRes text: Int?) {
+    if (text == null) {
+        isVisible = false
+        this.text = emptyString()
+    } else {
+        isVisible = true
+        this.setText(text)
     }
 }
 
