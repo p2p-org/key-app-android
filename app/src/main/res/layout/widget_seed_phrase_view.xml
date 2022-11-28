@@ -46,6 +46,28 @@
         tools:drawableStart="@drawable/ic_copy_small" />
 
     <TextView
+        android:id="@+id/textViewBlur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_lime_rounded_small"
+        android:backgroundTint="@color/bg_rain"
+        android:drawablePadding="8dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/common_hide"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
+        android:textColor="@color/text_night"
+        app:drawableEndCompat="@drawable/ic_selector_show_hide"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@drawable/bg_lime_rounded_small"
+        tools:drawableStart="@drawable/ic_copy_small" />
+
+
+    <TextView
         android:id="@+id/textViewClear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,5 +96,18 @@
         tools:itemCount="1"
         tools:listitem="@layout/item_secret_key"
         tools:visibility="visible" />
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="1dp"
+        android:background="@drawable/ic_blur_effect"
+        android:layout_marginTop="46dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </merge>

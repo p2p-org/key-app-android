@@ -27,6 +27,7 @@ class SeedPhraseUnlockFragment :
     }
 
     private val binding: FragmentSeedPhraseUnlockBinding by viewBinding()
+    override val navBarColor: Int = R.color.bg_night
 
     override val presenter: SeedPhraseUnlockContract.Presenter by inject()
 

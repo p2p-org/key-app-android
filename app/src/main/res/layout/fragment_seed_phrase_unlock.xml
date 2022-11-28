@@ -99,17 +99,6 @@
         app:layout_constraintTop_toBottomOf="@id/textViewInstructionsSecond"
         app:layout_constraintVertical_bias="0" />
 
-    <org.p2p.uikit.organisms.seedphrase.UiKitSeedPhraseView
-        android:id="@+id/seedPhraseView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="6dp"
-        android:minHeight="@dimen/ui_kit_seed_phrase_container_min_height"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/containerBottomView"
-        app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseText" />
-
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupInstructions"
         android:layout_width="wrap_content"

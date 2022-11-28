@@ -1,21 +1,25 @@
-package org.p2p.uikit.organisms.seedphrase
+package org.p2p.wallet.seed
 
 import android.content.ClipboardManager
 import android.content.Context
 import android.util.AttributeSet
+import android.view.ViewOutlineProvider
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.getSystemService
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import org.p2p.uikit.R
-import org.p2p.uikit.databinding.WidgetSeedPhraseViewBinding
+import eightbitlab.com.blurview.RenderScriptBlur
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseParser
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.dip
 import org.p2p.uikit.utils.inflateViewBinding
+import org.p2p.wallet.R
+import org.p2p.wallet.databinding.WidgetSeedPhraseViewBinding
 
 private const val MIN_WIDGET_HEIGHT_DP = 250
 
@@ -45,19 +49,23 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     private val seedPhraseParser = SeedPhraseParser()
 
     init {
-        setBackgroundResource(R.drawable.bg_smoke_rounded)
         minHeight = dip(MIN_WIDGET_HEIGHT_DP)
+        with(binding) {
+            keysRecyclerView.layoutManager = FlexboxLayoutManager(context).also {
+                it.flexDirection = FlexDirection.ROW
+                it.justifyContent = JustifyContent.FLEX_START
+            }
+            keysRecyclerView.attachAdapter(seedPhraseAdapter)
 
-        binding.keysRecyclerView.layoutManager = FlexboxLayoutManager(context).also {
-            it.flexDirection = FlexDirection.ROW
-            it.justifyContent = JustifyContent.FLEX_START
+            textViewClear.setOnClickListener { seedPhraseAdapter.clear() }
+            textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
+            textViewBlur.setOnClickListener { toggleBlurState() }
+            blurView.clipToOutline = true
+            blurView.outlineProvider = ViewOutlineProvider.BACKGROUND
+            blurView.setupWith(binding.keysRecyclerView, RenderScriptBlur(binding.root.context)).setBlurRadius(2f)
+
+            setOnClickListener { onShowKeyboardListener?.invoke(seedPhraseAdapter.itemCount - 1) }
         }
-        binding.keysRecyclerView.attachAdapter(seedPhraseAdapter)
-
-        binding.textViewClear.setOnClickListener { seedPhraseAdapter.clear() }
-        binding.textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
-
-        setOnClickListener { onShowKeyboardListener?.invoke(seedPhraseAdapter.itemCount - 1) }
     }
 
     private fun addSeedPhraseFromClipboard() {
@@ -91,7 +99,15 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     }
 
     fun showClearButton(isVisible: Boolean) {
-        binding.textViewClear.isVisible = isVisible
+        binding.textViewClear.isInvisible = !isVisible
+    }
+
+    fun showPasteButton(isVisible: Boolean) {
+        binding.textViewPaste.isInvisible = !isVisible
+    }
+
+    fun showBlurButton(isVisible: Boolean) {
+        binding.textViewBlur.isVisible
     }
 
     // Getting clipboard here since it's impossible to move `ContextExtensions` to ui-kit at the moment
@@ -100,5 +116,18 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         val clipboard = context.getSystemService<ClipboardManager>()
         val text = clipboard?.primaryClip?.getItemAt(0)?.text?.toString()
         return text?.trim().orEmpty()
+    }
+
+    private fun toggleBlurState() = with(binding) {
+        val isSelected = textViewBlur.isSelected
+        if (isSelected) {
+            blurView.isVisible = true
+            textViewBlur.setText(R.string.common_hide)
+            textViewBlur.isSelected = false
+        } else {
+            blurView.isVisible = false
+            textViewBlur.setText(R.string.common_show)
+            textViewBlur.isSelected = true
+        }
     }
 }

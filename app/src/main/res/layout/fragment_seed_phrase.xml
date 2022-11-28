@@ -43,7 +43,7 @@
                 android:textColor="@color/text_mountain"
                 app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-            <org.p2p.uikit.organisms.seedphrase.UiKitSeedPhraseView
+            <org.p2p.wallet.seed.UiKitSeedPhraseView
                 android:id="@+id/seedPhraseView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

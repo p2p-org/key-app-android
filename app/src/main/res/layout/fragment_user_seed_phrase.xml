@@ -38,7 +38,7 @@
     <ImageView
         android:id="@+id/imageViewBanner"
         android:layout_width="match_parent"
-        android:layout_height="144dp"
+        android:layout_height="120dp"
         android:layout_marginTop="28dp"
         android:src="@drawable/ic_seed_show"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
@@ -64,7 +64,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewScreenTitle">
 
-        <org.p2p.uikit.organisms.seedphrase.UiKitSeedPhraseView
+        <org.p2p.wallet.seed.UiKitSeedPhraseView
             android:id="@+id/seedPhraseView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,7 +83,6 @@
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_rounded_30_rain_stroke"
-        android:backgroundTint="@color/bg_snow"
         android:gravity="center"
         android:paddingVertical="8dp"
         android:text="@string/recovery_kit_seed_phrase_details_title"
