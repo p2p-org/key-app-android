@@ -26,6 +26,9 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextResOrGone
 
+private const val REQUEST_QR_KEY = "REQUEST_QR_KEY"
+private const val RESULT_QR_KEY = "RESULT_QR_KEY"
+
 class NewSearchFragment :
     BaseMvpFragment<NewSearchContract.View, NewSearchContract.Presenter>(R.layout.fragment_new_search),
     NewSearchContract.View {
@@ -58,6 +61,8 @@ class NewSearchFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
+
+        setOnResultListener()
 
         with(binding) {
 
@@ -144,7 +149,16 @@ class NewSearchFragment :
     }
 
     override fun showScanner() {
-        val target = ScanQrFragment.create { onSearchQueryChanged(it) }
-        replaceFragment(target)
+        replaceFragment(ScanQrFragment.create(REQUEST_QR_KEY, RESULT_QR_KEY))
+    }
+
+    private fun setOnResultListener() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            REQUEST_QR_KEY, viewLifecycleOwner
+        ) { _, bundle ->
+            bundle.getString(RESULT_QR_KEY)?.let { address ->
+                showSearchValue(address)
+            }
+        }
     }
 }

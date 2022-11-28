@@ -4,13 +4,16 @@ import android.Manifest
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.android.ext.android.inject
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -23,23 +26,36 @@ import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.utils.NoOp
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+
+private const val EXTRA_KEY = "EXTRA_KEY"
+private const val EXTRA_RESULT = "EXTRA_RESULT"
 
 class ScanQrFragment :
     BaseMvpFragment<ScanQrContract.View, NoOpPresenter<ScanQrContract.View>>(R.layout.fragment_scan_qr),
     PermissionsDialog.Callback {
 
     companion object {
-        fun create(successCallback: (String) -> Unit): ScanQrFragment =
-            ScanQrFragment().apply { this.successCallback = successCallback }
+        fun create(
+            requestKey: String,
+            resultKey: String
+        ): ScanQrFragment =
+            ScanQrFragment().withArgs(
+                EXTRA_KEY to requestKey,
+                EXTRA_RESULT to resultKey
+            )
     }
 
     override val statusBarColor: Int = R.color.bg_night
     override val navBarColor: Int = R.color.bg_night
     override val systemIconsStyle: SystemIconsStyle = SystemIconsStyle.WHITE
 
-    private var successCallback: ((String) -> Unit)? = null
+    private val requestKey: String by args(EXTRA_KEY)
+    private val resultKey: String by args(EXTRA_RESULT)
+
     private val binding: FragmentScanQrBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private var isPermissionsRequested = false
@@ -56,10 +72,26 @@ class ScanQrFragment :
 
     private val barcodeCallback: ZXingScannerView.ResultHandler =
         ZXingScannerView.ResultHandler { rawResult ->
-            rawResult?.text?.let {
-                successCallback?.invoke(it)
-                popBackStack()
-            }
+            val continueAction: () -> Unit = { startCameraPreview() }
+            rawResult?.text?.let { address ->
+                try {
+                    PublicKey(address)
+                    setFragmentResult(requestKey, bundleOf(resultKey to address))
+                    popBackStack()
+                } catch (e: Throwable) {
+                    showUiKitSnackBar(
+                        messageResId = R.string.qr_no_address,
+                        actionButtonResId = android.R.string.ok,
+                        onDismissed = continueAction,
+                        actionBlock = { continueAction.invoke() }
+                    )
+                }
+            } ?: showUiKitSnackBar(
+                messageResId = R.string.qr_common_error,
+                actionButtonResId = android.R.string.ok,
+                onDismissed = continueAction,
+                actionBlock = { continueAction.invoke() }
+            )
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

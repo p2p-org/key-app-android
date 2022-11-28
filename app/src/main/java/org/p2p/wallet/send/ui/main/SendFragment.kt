@@ -1,11 +1,5 @@
 package org.p2p.wallet.send.ui.main
 
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
-import androidx.core.text.buildSpannedString
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -17,6 +11,12 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import androidx.core.text.buildSpannedString
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.glide.GlideManager
 import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
@@ -64,6 +64,7 @@ import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -73,6 +74,10 @@ import java.math.BigDecimal
 private const val EXTRA_ADDRESS = "EXTRA_ADDRESS"
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_FEE_PAYER = "EXTRA_FEE_PAYER"
+
+private const val REQUEST_QR_KEY = "REQUEST_QR_KEY"
+private const val RESULT_QR_KEY = "RESULT_QR_KEY"
+
 const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class SendFragment :
@@ -111,6 +116,8 @@ class SendFragment :
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.MAIN)
         sendAnalytics.logSendStartedScreen(analyticsInteractor.getPreviousScreenName())
         setupViews()
+
+        setOnResultListener()
 
         // supportFragmentManager for full screen fragments
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -246,8 +253,7 @@ class SendFragment :
     }
 
     override fun showScanner() {
-        val target = ScanQrFragment.create { presenter.validateTargetAddress(it) }
-        addFragment(target)
+        replaceFragment(ScanQrFragment.create(REQUEST_QR_KEY, RESULT_QR_KEY))
     }
 
     override fun showFeeLimitsDialog(maxTransactionsAvailable: Int, remaining: Int) {
@@ -568,6 +574,16 @@ class SendFragment :
             binding.warningTextView.setText(messageRes)
         } else {
             binding.warningView.isVisible = false
+        }
+    }
+
+    private fun setOnResultListener() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            REQUEST_QR_KEY, viewLifecycleOwner
+        ) { _, bundle ->
+            bundle.getString(RESULT_QR_KEY)?.let { address ->
+                presenter.validateTargetAddress(address)
+            }
         }
     }
 

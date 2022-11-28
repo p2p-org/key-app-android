@@ -31,6 +31,7 @@ fun View.showSnackbarShort(
     snackbarText: CharSequence,
     actionButtonText: CharSequence,
     actionButtonListener: SnackbarActionButtonClickListener,
+    onDismissed: () -> Unit = {},
     style: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
 ) {
     internalMakeSnackbar(
@@ -40,7 +41,7 @@ fun View.showSnackbarShort(
         buttonAction = actionButtonListener,
         duration = Snackbar.LENGTH_SHORT,
         style = style
-    )
+    ).addOnDismissedCallback(onDismissed)
         .show()
 }
 

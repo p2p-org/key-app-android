@@ -173,6 +173,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
                 snackbarText = snackbarText,
                 actionButtonText = getString(actionButtonResId),
                 actionButtonListener = actionBlock,
+                onDismissed = onDismissed,
                 style = snackbarStyle
             )
         } else {
