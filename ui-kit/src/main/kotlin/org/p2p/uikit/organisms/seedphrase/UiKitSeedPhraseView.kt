@@ -17,7 +17,7 @@ import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.dip
 import org.p2p.uikit.utils.inflateViewBinding
 
-private const val MIN_WIDGET_HEIGHT_DP = 312
+private const val MIN_WIDGET_HEIGHT_DP = 250
 
 class UiKitSeedPhraseView @JvmOverloads constructor(
     context: Context,

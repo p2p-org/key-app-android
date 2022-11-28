@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_snow">
+
+    <View
+        android:id="@+id/viewSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.45" />
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/bg_snow"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_toolbar_back"
+        app:navigationIconTint="@color/night"
+        app:title="@string/seed_phrase_title"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
+
+    <View
+        android:id="@+id/viewTopBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_lime_bottom_rounded"
+        app:layout_constraintBottom_toTopOf="@id/viewSeparator"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <ImageView
+        android:id="@+id/imageViewBanner"
+        android:layout_width="match_parent"
+        android:layout_height="144dp"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/ic_seed_show"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/textViewSeedPhraseText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/seed_phrase_text"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+        app:layout_constraintTop_toBottomOf="@id/imageViewBanner" />
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewScreenTitle">
+
+        <org.p2p.uikit.organisms.seedphrase.UiKitSeedPhraseView
+            android:id="@+id/seedPhraseView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/bg_rounded_stroke_rain_16"
+            android:minHeight="@dimen/ui_kit_seed_phrase_container_min_height" />
+
+    </androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:id="@+id/textViewScreenTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_rounded_30_rain_stroke"
+        android:backgroundTint="@color/bg_snow"
+        android:gravity="center"
+        android:paddingVertical="8dp"
+        android:text="@string/recovery_kit_seed_phrase_details_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
+        android:textColor="@color/text_night"
+        app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseText" />
+
+
+    <FrameLayout
+        android:id="@+id/containerBottomView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_night_top_rounded"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/sliderChangePin"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:backgroundTint="@color/bg_lime"
+            android:text="@string/seed_phrase_copy_key_button"
+            android:textColor="@color/text_night"
+            app:icon="@drawable/ic_copy"
+            app:iconGravity="textEnd"
+            app:iconTint="@color/icons_night"
+            app:sliderIcon="@drawable/ic_key_action"
+            app:sliderText="@string/seed_phrase_show_key_button" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

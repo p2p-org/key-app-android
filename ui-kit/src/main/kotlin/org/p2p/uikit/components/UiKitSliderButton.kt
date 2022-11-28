@@ -38,6 +38,9 @@ class UiKitSliderButton @JvmOverloads constructor(
 
             val text = typedArray.getText(R.styleable.UiKitSliderButton_sliderText)
             binding.textViewAction.text = text
+
+            val textColor = typedArray.getColor(R.styleable.UiKitSliderButton_android_textColor, -1)
+            binding.textViewAction.setTextColor(textColor).takeIf { textColor != -1 }
         }
 
         setBackgroundResource(R.drawable.bg_night_rounded_big)

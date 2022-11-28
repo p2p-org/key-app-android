@@ -1,0 +1,28 @@
+package org.p2p.wallet.auth.ui.pin.validate
+
+import org.p2p.wallet.common.mvp.MvpPresenter
+import org.p2p.wallet.common.mvp.MvpView
+import javax.crypto.Cipher
+
+interface ValidatePinContract {
+    interface View : MvpView {
+        fun onSignInSuccess()
+        fun onLogout()
+        fun setBiometricVisibility(isVisible: Boolean)
+        fun showBiometricDialog(cipher: Cipher)
+        fun showWrongPinError(attemptsLeft: Int)
+        fun showWarnPinError(attemptsLeft: Int)
+        fun showWalletLocked(seconds: Long)
+        fun showWalletUnlocked()
+        fun vibrate(duration: Long)
+        fun clearPin()
+    }
+
+    interface Presenter : MvpPresenter<View> {
+        fun signIn(pinCode: String)
+        fun signInByBiometric(cipher: Cipher)
+        fun onBiometricSignInRequested()
+        fun checkIfBiometricAvailable()
+        fun logout()
+    }
+}

@@ -1,36 +1,53 @@
-package org.p2p.wallet.auth.ui.pin.signin
+package org.p2p.wallet.auth.ui.pin.validate
 
 import androidx.activity.addCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
-import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.BiometricPromptWrapper
+import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
 import javax.crypto.Cipher
 
-class SignInPinFragment :
-    BaseMvpFragment<SignInPinContract.View, SignInPinContract.Presenter>(R.layout.fragment_sign_in_pin),
-    SignInPinContract.View {
+private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
+
+class ValidatePinFragment :
+    BaseMvpFragment<ValidatePinContract.View, ValidatePinContract.Presenter>(R.layout.fragment_sign_in_pin),
+    ValidatePinContract.View {
 
     companion object {
-        fun create(): SignInPinFragment = SignInPinFragment()
+        fun create(
+            requestKey: String,
+            resultKey: String
+        ): ValidatePinFragment = ValidatePinFragment().withArgs(
+            EXTRA_REQUEST_KEY to requestKey,
+            EXTRA_RESULT_KEY to resultKey
+        )
     }
 
     override val statusBarColor: Int = R.color.bg_lime
     override val navBarColor: Int = R.color.bg_lime
 
-    override val presenter: SignInPinContract.Presenter by inject()
+    override val presenter: ValidatePinContract.Presenter by inject()
     private val binding: FragmentSignInPinBinding by viewBinding()
+
+    private val requestKey: String by args(EXTRA_REQUEST_KEY)
+    private val resultKey: String by args(EXTRA_RESULT_KEY)
+
     private val biometricWrapper by lazy {
         BiometricPromptWrapper(
             this,
@@ -48,7 +65,7 @@ class SignInPinFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            requireActivity().finish()
+            onDismiss()
         }
         with(binding) {
             with(toolbar) {
@@ -77,7 +94,8 @@ class SignInPinFragment :
 
     override fun onSignInSuccess() {
         binding.pinView.onSuccessPin()
-        popAndReplaceFragment(MainFragment.create(), inclusive = true)
+        setFragmentResult(requestKey, bundleOf(resultKey to true))
+        popBackStack()
     }
 
     override fun onLogout() {
@@ -140,5 +158,10 @@ class SignInPinFragment :
 
     override fun clearPin() {
         binding.pinView.clearPin()
+    }
+
+    private fun onDismiss() {
+        setFragmentResult(resultKey, bundleOf(resultKey to false))
+        popBackStack()
     }
 }

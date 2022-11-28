@@ -11,6 +11,9 @@ class SeedPhraseProvider(
     private val secureStorage: SecureStorageContract
 ) {
 
+    val isAvailable: Boolean
+        get() = seedPhrase.isNotEmpty()
+
     var seedPhrase: List<String> = emptyList()
         get() = getSeedPhraseFromStorage()
         set(value) {
@@ -20,8 +23,10 @@ class SeedPhraseProvider(
         }
 
     private fun getSeedPhraseFromStorage(): List<String> = runBlocking {
-        try {
-            secureStorage.getObjectList(Key.KEY_SEED_PHRASE)
+        return@runBlocking try {
+            val result: List<String> = secureStorage.getObjectList(Key.KEY_SEED_PHRASE)
+            Timber.tag("_______GET").d(result.toString())
+            result
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e)
             throw e
@@ -30,6 +35,7 @@ class SeedPhraseProvider(
 
     private fun saveSeedPhraseToStorage(value: List<String>) {
         runBlocking {
+            Timber.tag("_______SAVE").d(value.toString())
             secureStorage.saveObjectList(Key.KEY_SEED_PHRASE, value)
         }
     }

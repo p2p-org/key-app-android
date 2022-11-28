@@ -18,8 +18,8 @@
 
     <color name="snow">#FFFFFF</color>
     <color name="cloud">#FAFCFF</color>
-    <color name="smoke">#F8F9FE</color>
-    <color name="rain">#EBEEF5</color>
+    <color name="smoke">#F2F5FA</color>
+    <color name="rain">#E7EBF5</color>
     <color name="mountain">#6F7D8D</color>
     <color name="lime">#DDFA2B</color>
     <color name="sky">#003CFF</color>

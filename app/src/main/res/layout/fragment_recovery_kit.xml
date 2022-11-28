@@ -5,8 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_cloud"
-    android:orientation="vertical">
+    android:background="@color/bg_smoke"
+    android:orientation="vertical"
+    android:paddingBottom="28dp">
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
@@ -99,8 +100,10 @@
                 android:id="@+id/recoveryViewDevice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/bg_snow"
+                android:padding="16dp"
+                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
                 app:icon="@drawable/ic_recovery_device"
                 app:layout_constraintTop_toBottomOf="@id/textViewHeader"
                 app:title="@string/recovery_device_title"
@@ -111,7 +114,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="12dp"
                 android:background="@color/bg_rain"
                 app:layout_constraintTop_toBottomOf="@id/recoveryViewDevice" />
 
@@ -119,9 +121,11 @@
                 android:id="@+id/recoveryViewPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
+                android:background="@color/bg_snow"
+                android:padding="16dp"
+                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
                 app:icon="@drawable/ic_recovery_phone"
+                android:layout_marginTop="1dp"
                 app:layout_constraintTop_toBottomOf="@id/recoveryViewDevice"
                 app:title="@string/recovery_phone_title"
                 tools:subtitle="+44 7481 814302" />
@@ -131,7 +135,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="12dp"
                 android:background="@color/bg_rain"
                 app:layout_constraintTop_toBottomOf="@id/recoveryViewPhone" />
 
@@ -139,9 +142,11 @@
                 android:id="@+id/recoveryViewSocial"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
+                android:background="@color/bg_snow"
+                android:padding="16dp"
+                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
                 app:icon="@drawable/ic_recovery_social"
+                android:layout_marginTop="1dp"
                 app:layout_constraintTop_toBottomOf="@id/recoveryViewPhone"
                 app:title="@string/recovery_social_title"
                 tools:subtitle="test@gmail.com" />
@@ -151,7 +156,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="16dp"
                 android:drawablePadding="16dp"
                 android:text="@string/recovery_footer"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
@@ -162,8 +167,10 @@
                 android:id="@+id/recoveryViewSeed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
+                android:background="@color/bg_snow"
+                android:padding="16dp"
+                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
                 app:icon="@drawable/ic_recovery_seed"
                 app:layout_constraintTop_toBottomOf="@id/textViewFooter"
                 app:title="@string/recovery_seed_title" />
@@ -185,7 +192,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="12dp"
                 android:background="@color/bg_rain"
                 app:layout_constraintTop_toBottomOf="@id/recoveryViewSeed" />
 

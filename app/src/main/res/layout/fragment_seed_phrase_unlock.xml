@@ -21,7 +21,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="50dp"
         android:background="@drawable/bg_lime_bottom_rounded"
         app:layout_constraintBottom_toTopOf="@id/textViewInstructionsFirst"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
@@ -46,16 +46,31 @@
         app:layout_constraintTop_toBottomOf="@id/imageViewBanner" />
 
     <TextView
+        android:id="@+id/textViewScreenTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_rounded_30_rain_stroke"
+        android:backgroundTint="@color/bg_snow"
+        android:gravity="center"
+        android:paddingVertical="8dp"
+        android:text="@string/recovery_kit_seed_phrase_details_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        android:textColor="@color/text_night"
+        app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseText" />
+
+    <TextView
         android:id="@+id/textViewInstructionsFirst"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="36dp"
         android:drawablePadding="16dp"
         android:text="@string/seed_phrase_hint_1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
         app:drawableStartCompat="@drawable/ic_dot"
-        app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseText" />
+        app:layout_constraintTop_toBottomOf="@id/textViewScreenTitle" />
 
     <TextView
         android:id="@+id/textViewInstructionsSecond"
@@ -78,7 +93,7 @@
         android:layout_marginTop="12dp"
         android:drawablePadding="16dp"
         android:text="@string/seed_phrase_hint_3"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
         app:drawableStartCompat="@drawable/ic_dot"
         app:layout_constraintBottom_toTopOf="@id/containerBottomView"
         app:layout_constraintTop_toBottomOf="@id/textViewInstructionsSecond"
@@ -115,6 +130,8 @@
             android:id="@+id/sliderChangePin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/bg_snow"
+            android:textColor="@color/text_night"
             app:sliderIcon="@drawable/ic_key_action"
             app:sliderText="@string/seed_phrase_show_key_button" />
 

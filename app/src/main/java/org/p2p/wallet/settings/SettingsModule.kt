@@ -16,8 +16,8 @@ import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinContract
 import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinPresenter
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitContract
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitPresenter
-import org.p2p.wallet.settings.ui.recovery.seed.SeedPhraseContract
-import org.p2p.wallet.settings.ui.recovery.seed.SeedPhrasePresenter
+import org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase.SeedPhraseUnlockContract
+import org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase.SeedPhraseUnlockPresenter
 import org.p2p.wallet.settings.ui.reset.ResetPinContract
 import org.p2p.wallet.settings.ui.reset.ResetPinPresenter
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseContract
@@ -47,7 +47,7 @@ object SettingsModule : InjectionModule {
                 browseAnalytics = get(),
                 settingsInteractor = get(),
                 homeLocalRepository = get(),
-                secureStorage = get(),
+                seedPhraseProvider = get(),
                 settingsItemMapper = get(),
                 context = androidContext(),
                 authInteractor = get()
@@ -56,7 +56,7 @@ object SettingsModule : InjectionModule {
 
         factoryOf(::SecurityPresenter) bind SecurityContract.Presenter::class
         factoryOf(::RecoveryKitPresenter) bind RecoveryKitContract.Presenter::class
-        factoryOf(::SeedPhrasePresenter) bind SeedPhraseContract.Presenter::class
+        factoryOf(::SeedPhraseUnlockPresenter) bind SeedPhraseUnlockContract.Presenter::class
         factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class
         factoryOf(::AppearancePresenter) bind AppearanceContract.Presenter::class
 
