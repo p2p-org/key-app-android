@@ -92,8 +92,6 @@ class SelectTokenFragment :
     }
 
     private fun inflateSearchMenu(toolbar: Toolbar) {
-        toolbar.inflateMenu(R.menu.menu_search)
-
         val search = toolbar.menu.findItem(R.id.menu_search)
         val searchView = search.actionView as SearchView
 
