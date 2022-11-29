@@ -25,7 +25,6 @@ class SeedPhraseProvider(
     private fun getSeedPhraseFromStorage(): List<String> = runBlocking {
         return@runBlocking try {
             val result: List<String> = secureStorage.getObjectList(Key.KEY_SEED_PHRASE)
-            Timber.tag("_______GET").d(result.toString())
             result
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e)
@@ -35,7 +34,6 @@ class SeedPhraseProvider(
 
     private fun saveSeedPhraseToStorage(value: List<String>) {
         runBlocking {
-            Timber.tag("_______SAVE").d(value.toString())
             secureStorage.saveObjectList(Key.KEY_SEED_PHRASE, value)
         }
     }

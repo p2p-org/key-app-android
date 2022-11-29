@@ -16,12 +16,11 @@ import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseParser
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.dip
+import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.getDrawable
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSeedPhraseViewBinding
-
-private const val MIN_WIDGET_HEIGHT_DP = 250
 
 class UiKitSeedPhraseView @JvmOverloads constructor(
     context: Context,
@@ -49,7 +48,6 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     private val seedPhraseParser = SeedPhraseParser()
 
     init {
-        minHeight = dip(MIN_WIDGET_HEIGHT_DP)
         with(binding) {
             keysRecyclerView.layoutManager = FlexboxLayoutManager(context).also {
                 it.flexDirection = FlexDirection.ROW
@@ -59,10 +57,6 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
             textViewClear.setOnClickListener { seedPhraseAdapter.clear() }
             textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
-            textViewBlur.setOnClickListener { toggleBlurState() }
-            blurView.clipToOutline = true
-            blurView.outlineProvider = ViewOutlineProvider.BACKGROUND
-            blurView.setupWith(binding.keysRecyclerView, RenderScriptBlur(binding.root.context)).setBlurRadius(2f)
 
             setOnClickListener { onShowKeyboardListener?.invoke(seedPhraseAdapter.itemCount - 1) }
         }
@@ -108,6 +102,32 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
 
     fun showBlurButton(isVisible: Boolean) {
         binding.textViewBlur.isVisible
+    }
+
+    fun setupBlur() = with(binding) {
+        with(blurView) {
+            clipToOutline = true
+            outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+            setupWith(
+                binding.keysRecyclerView,
+                RenderScriptBlur(binding.root.context)
+            )
+                .setBlurEnabled(true)
+                .setOverlayColor(getColor(R.color.smoke_transparent))
+                .setBlurAutoUpdate(true)
+                .setFrameClearDrawable(getDrawable(R.drawable.ic_blur_effect))
+                .setBlurRadius(1.5f)
+        }
+        blurView.clipToOutline = true
+        blurView.outlineProvider = ViewOutlineProvider.BACKGROUND
+        blurView.setupWith(binding.keysRecyclerView, RenderScriptBlur(binding.root.context)).setBlurRadius(20f)
+    }
+
+    fun setOnBlurStateChangedListener(block: (Boolean) -> Unit) {
+        binding.textViewBlur.setOnClickListener {
+            toggleBlurState()
+            block.invoke(it.isSelected)
+        }
     }
 
     // Getting clipboard here since it's impossible to move `ContextExtensions` to ui-kit at the moment

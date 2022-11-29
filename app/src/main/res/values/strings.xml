@@ -609,5 +609,6 @@
     <string name="search_for_a_token">Search for a token</string>
     <string name="recovery_kit_seed_phrase_details_title">Make sure you understand the aspects</string>
     <string name="recovery_kit_details_seed_phrase">Details seed phrase</string>
+    <string name="recovery_kit_seed_phrase_must_never_share">Your seed phrase must never be shared</string>
 
 </resources>
