@@ -17,4 +17,11 @@
     <string name="search_found">Here\'s what we found</string>
     <string name="search_caution_empty">Caution: this address has no funds</string>
 
+    <string name="send_pick_token_title">Pick a token</string>
+    <string name="send_pick_token_search_hint">Token name</string>
+    <string name="send_pick_token_chosen">Chosen token</string>
+    <string name="send_pick_token_other">Other tokens</string>
+    <string name="send_pick_token_search_result_text">Here\'s what we found</string>
+    <string name="send_pick_token_search_not_found">Token not found. Try another one</string>
+
 </resources>

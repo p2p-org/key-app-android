@@ -51,8 +51,8 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     protected val resourcesProvider: ResourcesProvider by inject()
 
-    protected open val statusBarColor: Int = R.color.backgroundPrimary
-    protected open val navBarColor: Int = R.color.backgroundPrimary
+    protected open val statusBarColor: Int = R.color.bg_snow
+    protected open val navBarColor: Int = R.color.bg_snow
     protected open val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {

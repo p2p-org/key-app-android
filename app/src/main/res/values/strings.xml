@@ -186,7 +186,7 @@
     <string name="main_wallet_address">Wallet address</string>
     <string name="main_send_in_usd">%s USD</string>
     <string name="main_send_around_in_usd">$ %s</string>
-    <string name="main_select_token">Pick a token</string>
+    <string name="main_select_token">Select token</string>
     <string name="main_choose_token">Choose a token for buying</string>
     <string name="main_select">Select</string>
     <string name="main_fee">Fee:</string>
