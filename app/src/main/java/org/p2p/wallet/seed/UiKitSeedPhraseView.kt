@@ -3,7 +3,6 @@ package org.p2p.wallet.seed
 import android.content.ClipboardManager
 import android.content.Context
 import android.util.AttributeSet
-import android.view.ViewOutlineProvider
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.getSystemService
 import androidx.core.view.isInvisible
@@ -11,13 +10,10 @@ import androidx.core.view.isVisible
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import eightbitlab.com.blurview.RenderScriptBlur
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseParser
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.getColor
-import org.p2p.uikit.utils.getDrawable
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSeedPhraseViewBinding
@@ -104,25 +100,6 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         binding.textViewBlur.isVisible
     }
 
-    fun setupBlur() = with(binding) {
-        with(blurView) {
-            clipToOutline = true
-            outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
-            setupWith(
-                binding.keysRecyclerView,
-                RenderScriptBlur(binding.root.context)
-            )
-                .setBlurEnabled(true)
-                .setOverlayColor(getColor(R.color.smoke_transparent))
-                .setBlurAutoUpdate(true)
-                .setFrameClearDrawable(getDrawable(R.drawable.ic_blur_effect))
-                .setBlurRadius(1.5f)
-        }
-        blurView.clipToOutline = true
-        blurView.outlineProvider = ViewOutlineProvider.BACKGROUND
-        blurView.setupWith(binding.keysRecyclerView, RenderScriptBlur(binding.root.context)).setBlurRadius(20f)
-    }
-
     fun setOnBlurStateChangedListener(block: (Boolean) -> Unit) {
         binding.textViewBlur.setOnClickListener {
             toggleBlurState()
@@ -141,11 +118,9 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     private fun toggleBlurState() = with(binding) {
         val isSelected = textViewBlur.isSelected
         if (isSelected) {
-            blurView.isVisible = true
             textViewBlur.setText(R.string.common_hide)
             textViewBlur.isSelected = false
         } else {
-            blurView.isVisible = false
             textViewBlur.setText(R.string.common_show)
             textViewBlur.isSelected = true
         }

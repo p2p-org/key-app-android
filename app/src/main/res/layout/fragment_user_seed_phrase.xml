@@ -78,7 +78,7 @@
 
     <TextView
         android:id="@+id/textViewScreenTitle"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="20dp"
@@ -88,6 +88,9 @@
         android:text="@string/recovery_kit_seed_phrase_must_never_share"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
         android:textColor="@color/text_night"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="16dp"
         app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseText" />
 
 
