@@ -320,7 +320,6 @@ dependencies {
 
     implementation 'com.github.RedMadRobot:input-mask-android:6.1.0'
     implementation 'io.michaelrocks:libphonenumber-android:8.12.52'
-    implementation 'com.github.Dimezis:BlurView:version-2.0.3'
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.8.2") {
         because 'This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.'
