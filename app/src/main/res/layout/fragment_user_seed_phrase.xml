@@ -13,7 +13,7 @@
         android:layout_height="0.1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.45" />
+        app:layout_constraintVertical_bias="0.40" />
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
@@ -48,7 +48,7 @@
         android:id="@+id/textViewSeedPhraseText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:gravity="center"
         android:text="@string/seed_phrase_text"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
@@ -81,7 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/bg_rounded_30_rain_stroke"
         android:gravity="center"
         android:paddingVertical="8dp"
