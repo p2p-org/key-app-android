@@ -8,4 +8,4 @@
     android:paddingVertical="12dp"
     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
     android:textColor="@color/text_mountain"
-    tools:text="Chose token" />
+    tools:text="Chosen token" />

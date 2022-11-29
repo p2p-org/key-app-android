@@ -15,6 +15,6 @@ interface NewSelectTokenContract {
 
     interface Presenter : MvpPresenter<View> {
         fun load(tokens: List<Token.Active>, selectedToken: Token.Active?)
-        fun search(lowerCasedSearchText: String)
+        fun search(tokenNameQuery: String)
     }
 }

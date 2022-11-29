@@ -18,7 +18,7 @@
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tokenRecyclerView"
+        android:id="@+id/recyclerViewTokens"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:overScrollMode="never"
@@ -27,7 +27,7 @@
         tools:listitem="@layout/item_pick_token_new" />
 
     <TextView
-        android:id="@+id/emptyTextView"
+        android:id="@+id/textViewEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"

@@ -62,11 +62,13 @@ class NewSelectTokenFragment :
     override val statusBarColor: Int = R.color.bg_smoke
 
     private val tokenAdapter: NewSelectTokenAdapter by unsafeLazy {
-        NewSelectTokenAdapter {
-            setFragmentResult(requestKey, bundleOf(resultKey to it))
-            parentFragmentManager.popBackStack()
-            buyAnalytics.logBuyTokenChosen(it.tokenSymbol, analyticsInteractor.getPreviousScreenName())
-        }
+        NewSelectTokenAdapter(
+            onItemClicked = {
+                setFragmentResult(requestKey, bundleOf(resultKey to it))
+                parentFragmentManager.popBackStack()
+                buyAnalytics.logBuyTokenChosen(it.tokenSymbol, analyticsInteractor.getPreviousScreenName())
+            }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,8 +76,8 @@ class NewSelectTokenFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             inflateSearchMenu(toolbar)
-            tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            tokenRecyclerView.attachAdapter(tokenAdapter)
+            recyclerViewTokens.layoutManager = LinearLayoutManager(requireContext())
+            recyclerViewTokens.attachAdapter(tokenAdapter)
 
             presenter.load(tokens, selectedToken)
         }
@@ -90,7 +92,7 @@ class NewSelectTokenFragment :
     }
 
     override fun showEmptyState(isVisible: Boolean) {
-        binding.emptyTextView.isVisible = isVisible
+        binding.textViewEmpty.isVisible = isVisible
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean = false

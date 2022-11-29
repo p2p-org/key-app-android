@@ -5,14 +5,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import org.p2p.wallet.databinding.ItemPickTokenCategoryBinding
 import org.p2p.wallet.home.model.SelectTokenItem
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class CategoryTitleViewHolder(
-    private val binding: ItemPickTokenCategoryBinding
+    parent: ViewGroup,
+    private val binding: ItemPickTokenCategoryBinding = parent.inflateViewBinding(attachToRoot = false)
 ) : RecyclerView.ViewHolder(binding.root) {
-
-    constructor(parent: ViewGroup) : this(
-        binding = ItemPickTokenCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-    )
 
     fun onBind(item: SelectTokenItem.CategoryTitle) {
         binding.root.setText(item.titleRes)

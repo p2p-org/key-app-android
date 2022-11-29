@@ -24,9 +24,9 @@ class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), Ne
         view?.showEmptyState(isVisible = mappedTokens.isEmpty())
     }
 
-    override fun search(lowerCasedSearchText: String) {
+    override fun search(tokenNameQuery: String) {
         // restoring the list text is too short
-        if (lowerCasedSearchText.length < QUERY_MIN_LENGTH) {
+        if (tokenNameQuery.length < QUERY_MIN_LENGTH) {
             view?.showEmptyState(isVisible = false)
             view?.showTokens(mappedTokens)
             view?.showEmptyState(isVisible = mappedTokens.isEmpty())
@@ -41,7 +41,7 @@ class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), Ne
                 val tokenName = item.token.tokenName.lowercase()
                 val tokenSymbol = item.token.tokenSymbol.lowercase()
 
-                tokenName.contains(lowerCasedSearchText) || tokenSymbol.contains(lowerCasedSearchText)
+                tokenName.contains(tokenNameQuery) || tokenSymbol.contains(tokenNameQuery)
             }
             .toMutableList()
 
@@ -83,7 +83,7 @@ class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), Ne
                     else -> NOT_ROUNDED
                 }
 
-                return@mapIndexed SelectableToken(token, roundedState)
+                SelectableToken(token, roundedState)
             }
         }
     }
