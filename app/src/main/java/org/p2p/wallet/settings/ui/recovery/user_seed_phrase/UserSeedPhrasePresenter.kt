@@ -10,14 +10,14 @@ class UserSeedPhrasePresenter(
 ) : BasePresenter<UserSeedPhraseContract.View>(),
     UserSeedPhraseContract.Presenter {
 
-    private val userSeedPhraseWord = mutableListOf<SeedPhraseWord>()
+    private val userSeedPhrase = mutableListOf<SeedPhraseWord>()
 
     override fun attach(view: UserSeedPhraseContract.View) {
         super.attach(view)
         launch {
             try {
-                userSeedPhraseWord.clear()
-                userSeedPhraseWord.addAll(
+                userSeedPhrase.clear()
+                userSeedPhrase.addAll(
                     seedPhraseProvider.seedPhrase.map {
                         SeedPhraseWord(
                             text = it,
@@ -26,19 +26,23 @@ class UserSeedPhrasePresenter(
                         )
                     }
                 )
-                view.showSeedPhase(userSeedPhraseWord)
+                view.showSeedPhase(userSeedPhrase)
             } catch (e: Throwable) {
-                view.showErrorMessage(e)
+                view.showUiKitSnackBar(e.message)
             }
         }
     }
 
     override fun onCopyClicked() {
-        view?.copyToClipboard(seedPhraseProvider.seedPhrase.joinToString(" "))
+        try {
+            view?.copyToClipboard(seedPhraseProvider.seedPhrase.joinToString(" "))
+        } catch (e: Throwable) {
+            view?.showUiKitSnackBar(e.message)
+        }
     }
 
     override fun onBlurStateChanged(isBlurred: Boolean) {
-        userSeedPhraseWord.forEach { it.isBlurred = isBlurred }
-        view?.showSeedPhase(userSeedPhraseWord)
+        userSeedPhrase.forEach { it.isBlurred = isBlurred }
+        view?.showSeedPhase(userSeedPhrase)
     }
 }

@@ -16,7 +16,6 @@ import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinContract
 import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinPresenter
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitContract
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitPresenter
-import org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase.SeedPhraseUnlockContract
 import org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase.SeedPhraseUnlockPresenter
 import org.p2p.wallet.settings.ui.reset.ResetPinContract
 import org.p2p.wallet.settings.ui.reset.ResetPinPresenter

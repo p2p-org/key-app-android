@@ -53,16 +53,16 @@ class ValidatePinPresenter(
                     val cipher = authInteractor.getPinDecodeCipher()
                     view?.apply {
                         showBiometricDialog(cipher.value)
-                        setBiometricVisibility(true)
+                        setBiometricVisibility(isVisible = true)
                     }
                 } else {
                     authInteractor.disableBiometricSignIn()
-                    view?.setBiometricVisibility(false)
+                    view?.setBiometricVisibility(isVisible = false)
                 }
             } catch (e: Throwable) {
                 Timber.e(e, "Failed to initialize biometric sign in")
                 authInteractor.disableBiometricSignIn()
-                view?.setBiometricVisibility(false)
+                view?.setBiometricVisibility(isVisible = false)
             }
         }
     }

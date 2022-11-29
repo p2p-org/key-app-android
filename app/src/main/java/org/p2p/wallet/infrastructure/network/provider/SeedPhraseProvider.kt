@@ -22,15 +22,14 @@ class SeedPhraseProvider(
             Timber.tag(TAG).i("updating user public key: $value")
         }
 
-    private fun getSeedPhraseFromStorage(): List<String> = runBlocking {
-        return@runBlocking try {
+    private fun getSeedPhraseFromStorage(): List<String> =
+        try {
             val result: List<String> = secureStorage.getObjectList(Key.KEY_SEED_PHRASE)
             result
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e)
             throw e
         }
-    }
 
     private fun saveSeedPhraseToStorage(value: List<String>) {
         runBlocking {

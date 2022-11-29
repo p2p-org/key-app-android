@@ -22,7 +22,7 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import javax.crypto.Cipher
 
-private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
+private const val EXTRA_REQUEST_KEY = "EXTRA_IS_SIGN_SUCCESS_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
 class ValidatePinFragment :
@@ -68,14 +68,12 @@ class ValidatePinFragment :
             onDismiss()
         }
         with(binding) {
-            with(toolbar) {
-                setOnMenuItemClickListener {
-                    if (it.itemId == R.id.helpItem) {
-                        IntercomService.showMessenger()
-                        true
-                    } else {
-                        false
-                    }
+            toolbar.setOnMenuItemClickListener {
+                if (it.itemId == R.id.helpItem) {
+                    IntercomService.showMessenger()
+                    true
+                } else {
+                    false
                 }
             }
             pinView.onBiometricClicked = { presenter.onBiometricSignInRequested() }

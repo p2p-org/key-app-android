@@ -24,9 +24,9 @@ class SettingsItemMapper(
     ): List<SettingsItem> = buildList {
         this += profileBlock(username, isUsernameItemVisible)
         this += securityBlock(
-            isRecoveryKitAvailable,
-            isBiometricLoginEnabled,
-            isBiometricLoginAvailable
+            isRecoveryKitAvailable = isRecoveryKitAvailable,
+            isBiometricLoginEnabled = isBiometricLoginEnabled,
+            isBiometricLoginAvailable = isBiometricLoginAvailable
         )
         this += appearanceBlock(isZeroBalanceTokenHidden)
         this += appInfoBlock()
