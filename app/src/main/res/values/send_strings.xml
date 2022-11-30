@@ -15,7 +15,11 @@
     <string name="search_error_info">It is possible that the address is incorrect if you continue</string>
     <string name="search_not_found">Address not found. Try another one</string>
     <string name="search_found">Here\'s what we found</string>
-    <string name="search_caution_empty">Caution: this address has no funds</string>
+    <string name="search_caution_error">Caution: this address has no funds</string>
+    <string name="search_no_other_tokens_description">%s token account</string>
+    <string name="search_no_other_tokens_error">You cannot send SOL to this address because it belongs to another token (%s)</string>
+    <string name="search_yourself_error">You cannot send tokens to yourself</string>
+    <string name="search_yourself_description">Your address</string>
 
     <!--QrCode-->
     <string name="qr_no_address">❌ There\'s no address in this QR code. Try another one</string>
