@@ -57,7 +57,7 @@
         android:gravity="center"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
-        android:text="@string/common_hide"
+        android:text="@string/common_show"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
         android:textColor="@color/text_night"
         app:drawableEndCompat="@drawable/ic_selector_show_hide"

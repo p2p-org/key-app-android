@@ -13,7 +13,7 @@
         android:layout_height="0.1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.40" />
+        app:layout_constraintVertical_bias="0.45" />
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
@@ -30,7 +30,6 @@
         android:id="@+id/viewTopBackground"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
         android:background="@drawable/bg_lime_bottom_rounded"
         app:layout_constraintBottom_toTopOf="@id/viewSeparator"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />

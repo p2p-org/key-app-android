@@ -118,10 +118,10 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     private fun toggleBlurState() = with(binding) {
         val isSelected = textViewBlur.isSelected
         if (isSelected) {
-            textViewBlur.setText(R.string.common_hide)
+            textViewBlur.setText(R.string.common_show)
             textViewBlur.isSelected = false
         } else {
-            textViewBlur.setText(R.string.common_show)
+            textViewBlur.setText(R.string.common_hide)
             textViewBlur.isSelected = true
         }
     }

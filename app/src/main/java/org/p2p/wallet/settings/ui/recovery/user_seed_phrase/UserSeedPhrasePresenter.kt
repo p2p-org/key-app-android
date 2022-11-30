@@ -25,7 +25,7 @@ class UserSeedPhrasePresenter(
                         SeedPhraseWord(
                             text = it,
                             isValid = true,
-                            isBlurred = false
+                            isBlurred = true
                         )
                     }
                 )

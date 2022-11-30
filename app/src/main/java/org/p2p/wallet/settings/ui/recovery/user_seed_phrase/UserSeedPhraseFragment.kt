@@ -37,9 +37,9 @@ class UserSeedPhraseFragment :
                 showBlurButton(isVisible = true)
                 setOnBlurStateChangedListener {
                     presenter.onBlurStateChanged(isBlurred = it)
-                    binding.imageViewBanner.isSelected = it
+                    imageViewBanner.isSelected = it
                 }
-                binding.buttonCopy.setOnClickListener {
+                buttonCopy.setOnClickListener {
                     presenter.onCopyClicked()
                 }
             }
