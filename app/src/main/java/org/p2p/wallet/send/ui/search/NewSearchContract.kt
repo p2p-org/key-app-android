@@ -15,6 +15,8 @@ interface NewSearchContract {
         fun showNotFound()
         fun showEmptyState(isEmpty: Boolean)
         fun showErrorState()
+        fun setListBackgroundVisibility(isVisible: Boolean)
+        fun setContinueButtonVisibility(isVisible: Boolean)
         fun submitSearchResult(searchResult: SearchResult)
         fun showScanner()
     }
@@ -22,8 +24,8 @@ interface NewSearchContract {
     interface Presenter : MvpPresenter<View> {
         fun search(newQuery: String)
         fun loadInitialData()
-        fun onContinueClicked(query: String)
         fun onSearchResultClick(result: SearchResult)
         fun onScanClicked()
+        fun onContinueClicked()
     }
 }

@@ -61,7 +61,6 @@ class NewSearchFragment :
         }
 
         with(binding) {
-
             toolbar.apply {
                 setSearchMenu(
                     object : SearchView.OnQueryTextListener {
@@ -75,7 +74,7 @@ class NewSearchFragment :
                     menuRes = R.menu.menu_search_with_scan,
                     searchHintRes = R.string.search_edittext_hint
                 )
-                searchView?.setOnFocusChangeListener { v, hasFocus ->
+                searchView?.setOnFocusChangeListener { _, hasFocus ->
                     if (!hasFocus) toggleSearchView()
                 }
                 setNavigationOnClickListener { popBackStack() }
@@ -89,8 +88,13 @@ class NewSearchFragment :
                 }
             }
 
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            recyclerView.attachAdapter(searchAdapter)
+            buttonContinue.setOnClickListener { presenter.onContinueClicked() }
+
+            recyclerViewSearchResults.apply {
+                itemAnimator = null
+                layoutManager = LinearLayoutManager(requireContext())
+                attachAdapter(searchAdapter)
+            }
         }
 
         presenter.loadInitialData()
@@ -108,21 +112,35 @@ class NewSearchFragment :
         textViewNotFoundTitle.isVisible = true
         textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = false
-        recyclerView.isVisible = false
+        recyclerViewSearchResults.isVisible = false
     }
 
     override fun showEmptyState(isEmpty: Boolean) = with(binding) {
         textViewNotFoundTitle.isVisible = false
         textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = isEmpty
-        recyclerView.isVisible = !isEmpty
+        recyclerViewSearchResults.isVisible = !isEmpty
     }
 
     override fun showErrorState() = with(binding) {
         textViewErrorTitle.isVisible = true
         groupEmptyView.isVisible = false
-        recyclerView.isVisible = false
+        recyclerViewSearchResults.isVisible = false
         textViewNotFoundTitle.isVisible = false
+    }
+
+    override fun setListBackgroundVisibility(isVisible: Boolean) {
+        binding.recyclerViewSearchResults.apply {
+            if (isVisible) {
+                setBackgroundResource(R.drawable.bg_snow_rounded_16)
+            } else {
+                background = null
+            }
+        }
+    }
+
+    override fun setContinueButtonVisibility(isVisible: Boolean) {
+        binding.buttonContinue.isVisible = isVisible
     }
 
     override fun showSearchValue(value: String) {
