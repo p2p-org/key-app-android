@@ -8,6 +8,7 @@ import org.p2p.wallet.restore.interactor.SeedPhraseInteractor.SeedPhraseVerifyRe
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProviderType
 
 private const val SEED_PHRASE_SIZE_SHORT = 12
 private const val SEED_PHRASE_SIZE_LONG = 24
@@ -58,7 +59,10 @@ class SeedPhrasePresenter(
                 is SeedPhraseVerifyResult.VerifiedSeedPhrase -> {
                     currentSeedPhrase = result.seedPhraseWord
                     if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
-                        seedPhraseProvider.seedPhrase = currentSeedPhrase.map { it.text }
+                        seedPhraseProvider.updateUserSeedPhrase(
+                            words = currentSeedPhrase.map { it.text },
+                            provider = SeedPhraseProviderType.MANUAL
+                        )
                         view?.navigateToDerievableAccounts(currentSeedPhrase)
                     } else {
                         // warning: updateSeedPhrase causes keyboard to appear, so add a check

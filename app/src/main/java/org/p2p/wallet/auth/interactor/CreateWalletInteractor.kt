@@ -6,6 +6,7 @@ import org.p2p.wallet.auth.repository.SignUpFlowDataLocalRepository
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.ui.smsinput.SmsInputTimer
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProviderType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class CreateWalletInteractor(
@@ -93,7 +94,10 @@ class CreateWalletInteractor(
             socialShareOwnerId = socialShareOwnerId
         )
 
-        seedPhraseProvider.seedPhrase = userSeedPhrase
+        seedPhraseProvider.updateUserSeedPhrase(
+            words = userSeedPhrase,
+            provider = SeedPhraseProviderType.WEB_AUTH
+        )
 
         finishAuthFlow()
     }

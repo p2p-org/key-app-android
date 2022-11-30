@@ -4,21 +4,24 @@ import kotlinx.coroutines.launch
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProviderType
 
 class UserSeedPhrasePresenter(
     private val seedPhraseProvider: SeedPhraseProvider
 ) : BasePresenter<UserSeedPhraseContract.View>(),
     UserSeedPhraseContract.Presenter {
 
-    private val userSeedPhrase = mutableListOf<SeedPhraseWord>()
+    private val seedPhrase = mutableListOf<SeedPhraseWord>()
+    private var seedPhraseProviderType: SeedPhraseProviderType? = null
 
     override fun attach(view: UserSeedPhraseContract.View) {
         super.attach(view)
         launch {
             try {
-                userSeedPhrase.clear()
-                userSeedPhrase.addAll(
-                    seedPhraseProvider.seedPhrase.map {
+                seedPhrase.clear()
+                seedPhraseProviderType = seedPhraseProvider.getUserSeedPhrase().provider
+                seedPhrase.addAll(
+                    seedPhraseProvider.getUserSeedPhrase().seedPhrase.map {
                         SeedPhraseWord(
                             text = it,
                             isValid = true,
@@ -26,7 +29,7 @@ class UserSeedPhrasePresenter(
                         )
                     }
                 )
-                view.showSeedPhase(userSeedPhrase)
+                view.showSeedPhase(seedPhrase)
             } catch (e: Throwable) {
                 view.showUiKitSnackBar(e.message)
             }
@@ -35,14 +38,14 @@ class UserSeedPhrasePresenter(
 
     override fun onCopyClicked() {
         try {
-            view?.copyToClipboard(seedPhraseProvider.seedPhrase.joinToString(" "))
+            view?.copyToClipboard(seedPhrase.joinToString(separator = " "))
         } catch (e: Throwable) {
             view?.showUiKitSnackBar(e.message)
         }
     }
 
     override fun onBlurStateChanged(isBlurred: Boolean) {
-        userSeedPhrase.forEach { it.isBlurred = isBlurred }
-        view?.showSeedPhase(userSeedPhrase)
+        seedPhrase.forEach { it.isBlurred = isBlurred }
+        view?.showSeedPhase(seedPhrase)
     }
 }

@@ -16,7 +16,6 @@ import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinContract
 import org.p2p.wallet.settings.ui.newreset.pin.NewResetPinPresenter
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitContract
 import org.p2p.wallet.settings.ui.recovery.RecoveryKitPresenter
-import org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase.SeedPhraseUnlockPresenter
 import org.p2p.wallet.settings.ui.reset.ResetPinContract
 import org.p2p.wallet.settings.ui.reset.ResetPinPresenter
 import org.p2p.wallet.settings.ui.reset.seedphrase.ResetSeedPhraseContract
@@ -55,7 +54,6 @@ object SettingsModule : InjectionModule {
 
         factoryOf(::SecurityPresenter) bind SecurityContract.Presenter::class
         factoryOf(::RecoveryKitPresenter) bind RecoveryKitContract.Presenter::class
-        factoryOf(::SeedPhraseUnlockPresenter) bind SeedPhraseUnlockContract.Presenter::class
         factoryOf(::ResetPinPresenter) bind ResetPinContract.Presenter::class
         factoryOf(::AppearancePresenter) bind AppearanceContract.Presenter::class
 

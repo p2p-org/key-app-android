@@ -2,7 +2,9 @@ package org.p2p.wallet.settings.ui.recovery
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRecoveryKitBinding
@@ -10,6 +12,7 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase.SeedPhraseUnlockFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class RecoveryKitFragment :
@@ -32,7 +35,7 @@ class RecoveryKitFragment :
                 IntercomService.showMessenger()
             }
             recoveryViewSeed.setOnClickListener {
-                replaceFragment(SeedPhraseUnlockFragment.create())
+                presenter.onSeedPhraseClicked()
             }
         }
     }
@@ -47,5 +50,26 @@ class RecoveryKitFragment :
 
     override fun showSocialId(socialId: String) {
         binding.recoveryViewSocial.subtitle = socialId
+    }
+
+    override fun setWebAuthInfoVisibility(isVisible: Boolean) {
+        binding.layoutWebAuthInfo.isVisible = isVisible
+        binding.recoveryViewSeed.setBackgroundColor(getColor(R.color.bg_snow))
+    }
+
+    override fun showLogoutInfoDialog() {
+        // TODO Change text, await for Nina
+        showInfoDialog(
+            titleRes = R.string.settings_logout_title,
+            messageRes = R.string.settings_logout_message,
+            primaryButtonRes = R.string.common_logout,
+            primaryCallback = { presenter.logout() },
+            secondaryButtonRes = R.string.common_stay,
+            primaryButtonTextColor = R.color.systemErrorMain
+        )
+    }
+
+    override fun showSeedPhraseLockFragment() {
+        replaceFragment(SeedPhraseUnlockFragment.create())
     }
 }

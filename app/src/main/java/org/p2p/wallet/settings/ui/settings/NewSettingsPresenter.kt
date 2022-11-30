@@ -50,7 +50,6 @@ class NewSettingsPresenter(
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
                 isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
-                isRecoveryKitAvailable = seedPhraseProvider.isAvailable,
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()

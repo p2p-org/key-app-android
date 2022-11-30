@@ -12,6 +12,7 @@
     <string name="common_great">Great!</string>
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
+    <string name="common_copied_with_emoji">👯‍ Copied to the clipboard</string>
     <string name="common_usd">USD</string>
     <string name="common_continue">Continue</string>
     <string name="common_username_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-</string>

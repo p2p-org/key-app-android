@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
-import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUserSeedPhraseBinding
@@ -53,6 +52,6 @@ class UserSeedPhraseFragment :
 
     override fun copyToClipboard(seedPhase: String) {
         requireContext().copyToClipBoard(seedPhase)
-        toast(R.string.common_copied)
+        showUiKitSnackBar(messageResId = R.string.common_copied_with_emoji)
     }
 }
