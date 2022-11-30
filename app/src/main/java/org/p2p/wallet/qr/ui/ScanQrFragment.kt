@@ -30,6 +30,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import timber.log.Timber
 
 private const val EXTRA_KEY = "EXTRA_KEY"
 private const val EXTRA_RESULT = "EXTRA_RESULT"
@@ -74,24 +75,8 @@ class ScanQrFragment :
         ZXingScannerView.ResultHandler { rawResult ->
             val continueAction: () -> Unit = { startCameraPreview() }
             rawResult?.text?.let { address ->
-                try {
-                    PublicKey(address)
-                    setFragmentResult(requestKey, bundleOf(resultKey to address))
-                    popBackStack()
-                } catch (e: Throwable) {
-                    showUiKitSnackBar(
-                        messageResId = R.string.qr_no_address,
-                        actionButtonResId = android.R.string.ok,
-                        onDismissed = continueAction,
-                        actionBlock = { continueAction.invoke() }
-                    )
-                }
-            } ?: showUiKitSnackBar(
-                messageResId = R.string.qr_common_error,
-                actionButtonResId = android.R.string.ok,
-                onDismissed = continueAction,
-                actionBlock = { continueAction.invoke() }
-            )
+                validateAddress(address, continueAction)
+            } ?: showInvalidDataError(continueAction)
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -183,7 +168,7 @@ class ScanQrFragment :
 
     private inline fun showCameraNotAvailablePlaceholder(crossinline onRetryListener: () -> Unit) {
         with(binding) {
-            layoutCameraPermission.isVisible = true
+            containerCameraPermission.isVisible = true
             buttonCameraPermissionRequest.isVisible = true
             buttonCameraPermissionRequest.setOnClickListener { onRetryListener() }
         }
@@ -191,9 +176,34 @@ class ScanQrFragment :
 
     private fun hideCameraNotAvailablePlaceholder() {
         with(binding) {
-            layoutCameraPermission.isVisible = false
+            containerCameraPermission.isVisible = false
             buttonCameraPermissionRequest.isVisible = false
         }
+    }
+
+    private fun validateAddress(address: String, continueAction: () -> Unit) {
+        try {
+            PublicKey(address)
+            setFragmentResult(requestKey, bundleOf(resultKey to address))
+            popBackStack()
+        } catch (e: Throwable) {
+            Timber.e("No address in this scanned data: $address")
+            showUiKitSnackBar(
+                messageResId = R.string.qr_no_address,
+                actionButtonResId = android.R.string.ok,
+                onDismissed = continueAction,
+                actionBlock = { continueAction.invoke() }
+            )
+        }
+    }
+
+    private fun showInvalidDataError(continueAction: () -> Unit) {
+        showUiKitSnackBar(
+            messageResId = R.string.qr_common_error,
+            actionButtonResId = android.R.string.ok,
+            onDismissed = continueAction,
+            actionBlock = { continueAction.invoke() }
+        )
     }
 
     private fun onBackPressed() {

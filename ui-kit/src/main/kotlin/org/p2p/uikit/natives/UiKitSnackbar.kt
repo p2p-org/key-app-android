@@ -41,7 +41,8 @@ fun View.showSnackbarShort(
         buttonAction = actionButtonListener,
         duration = Snackbar.LENGTH_SHORT,
         style = style
-    ).addOnDismissedCallback(onDismissed)
+    )
+        .addOnDismissedCallback(onDismissed)
         .show()
 }
 
