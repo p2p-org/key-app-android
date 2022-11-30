@@ -90,7 +90,7 @@ class NewSearchFragment :
 
             buttonContinue.setOnClickListener { presenter.onContinueClicked() }
 
-            recyclerView.apply {
+            recyclerViewSearchResults.apply {
                 itemAnimator = null
                 layoutManager = LinearLayoutManager(requireContext())
                 attachAdapter(searchAdapter)
@@ -112,25 +112,25 @@ class NewSearchFragment :
         textViewNotFoundTitle.isVisible = true
         textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = false
-        recyclerView.isVisible = false
+        recyclerViewSearchResults.isVisible = false
     }
 
     override fun showEmptyState(isEmpty: Boolean) = with(binding) {
         textViewNotFoundTitle.isVisible = false
         textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = isEmpty
-        recyclerView.isVisible = !isEmpty
+        recyclerViewSearchResults.isVisible = !isEmpty
     }
 
     override fun showErrorState() = with(binding) {
         textViewErrorTitle.isVisible = true
         groupEmptyView.isVisible = false
-        recyclerView.isVisible = false
+        recyclerViewSearchResults.isVisible = false
         textViewNotFoundTitle.isVisible = false
     }
 
     override fun setListBackgroundVisibility(isVisible: Boolean) {
-        binding.recyclerView.apply {
+        binding.recyclerViewSearchResults.apply {
             if (isVisible) {
                 setBackgroundResource(R.drawable.bg_snow_rounded_16)
             } else {
