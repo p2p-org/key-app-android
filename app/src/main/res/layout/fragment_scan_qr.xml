@@ -12,7 +12,7 @@
         android:id="@+id/barcodeView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:borderColor="@color/textIconPrimary"
+        app:borderColor="@color/text_snow"
         app:borderLength="64dp"
         app:borderWidth="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,49 +21,71 @@
         app:layout_constraintTop_toTopOf="parent"
         app:squaredFinder="true" />
 
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/icons_snow"
+        app:title="@string/qr_scan_hint"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_snow" />
+
     <ImageView
-        android:id="@+id/closeImageView"
+        android:id="@+id/imageViewFlash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackgroundBorderless"
         android:padding="16dp"
-        android:src="@drawable/ic_close"
-        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/ic_flash_on"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/textIconPrimary"
         tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/cameraPermissionDeniedPlaceholder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center_horizontal"
-        android:text="@string/qr_failed_to_acquire_camera_permission"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
-        android:textColor="@color/textIconPrimary"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/cameraPermissionRequestButton"
+    <LinearLayout
+        android:id="@+id/containerCameraPermission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="?attr/selectableItemBackground"
-        android:gravity="center"
-        android:padding="8dp"
-        android:text="@string/qr_give_camera_permission"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-        android:textColor="@color/strokeSecondary"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/bg_snow_rounded_16"
+        android:orientation="vertical"
+        android:padding="16dp"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cameraPermissionDeniedPlaceholder" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:importantForAccessibility="no"
+            app:srcCompat="@drawable/scan_qr_image" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_horizontal"
+            android:text="@string/qr_failed_to_acquire_camera_permission"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+            android:textColor="@color/text_night" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonCameraPermissionRequest"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/bg_night"
+            android:text="@string/qr_give_camera_permission"
+            android:textColor="@color/text_lime" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
