@@ -7,6 +7,7 @@ import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.DrawableRes
@@ -14,16 +15,19 @@ import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import androidx.core.view.isVisible
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import org.p2p.uikit.R
-import org.p2p.uikit.databinding.WidgetSliderButtonBinding
+import org.p2p.uikit.databinding.WidgetSliderSolidButtonBinding
 import org.p2p.uikit.utils.dip
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
 
 private const val MARGIN_HORIZONTAL_DP = 4
+private const val COMPLETED_VIEW_WIDTH_DP = 56
 private const val ANIMATION_SLIDE_BACK_DURATION = 200L
 
-class UiKitSliderButton @JvmOverloads constructor(
+class UiKitSliderSolidButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -31,16 +35,21 @@ class UiKitSliderButton @JvmOverloads constructor(
 
     var onSlideCompleteListener: (() -> Unit)? = null
 
-    private val binding = inflateViewBinding<WidgetSliderButtonBinding>()
+    private val binding = inflateViewBinding<WidgetSliderSolidButtonBinding>()
 
     private val horizontalMargin = dip(MARGIN_HORIZONTAL_DP).toFloat()
+    private val completedWidth = dip(COMPLETED_VIEW_WIDTH_DP)
+
+    private val depositButtonsAnimation = ChangeBounds().apply {
+        duration = ANIMATION_SLIDE_BACK_DURATION
+    }
 
     init {
-        context.obtainStyledAttributes(attrs, R.styleable.UiKitSliderButton).use { typedArray ->
-            val icon = typedArray.getResourceId(R.styleable.UiKitSliderButton_sliderIcon, -1)
+        context.obtainStyledAttributes(attrs, R.styleable.UiKitSliderSolidButton).use { typedArray ->
+            val icon = typedArray.getResourceId(R.styleable.UiKitSliderSolidButton_sliderIcon, -1)
             if (icon != -1) binding.imageViewAction.setImageResource(icon)
 
-            val text = typedArray.getText(R.styleable.UiKitSliderButton_sliderText)
+            val text = typedArray.getText(R.styleable.UiKitSliderSolidButton_sliderText)
             binding.textViewAction.text = text
         }
 
@@ -133,7 +142,7 @@ class UiKitSliderButton @JvmOverloads constructor(
             }
         } else {
             // user slided till the end
-            onSlideCompleteListener?.invoke()
+            showCompleteAnimation(view, initialPosition)
         }
         return true
     }
@@ -169,5 +178,26 @@ class UiKitSliderButton @JvmOverloads constructor(
 
     private fun setGradientVisible(isVisible: Boolean) {
         binding.viewGradient.isVisible = isVisible
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun showCompleteAnimation(view: View, initialPosition: Float) = with(binding) {
+        shimmerView.stopShimmer()
+        shimmerView.setOnTouchListener { _, _ -> true }
+        setGradientVisible(isVisible = false)
+        textViewAction.isVisible = false
+        imageViewAction.setImageResource(R.drawable.ic_check)
+        TransitionManager.beginDelayedTransition(
+            root.parent as ViewGroup,
+            depositButtonsAnimation
+        )
+        val params = root.layoutParams
+        params.width = completedWidth
+        root.layoutParams = params
+        view.x = initialPosition
+        imageViewAction.postDelayed(
+            { onSlideCompleteListener?.invoke() },
+            ANIMATION_SLIDE_BACK_DURATION
+        )
     }
 }
