@@ -497,9 +497,9 @@
     <string name="transaction_history_closed">Closed</string>
 
     <!-- qr -->
-    <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
+    <string name="qr_failed_to_acquire_camera_permission">Key App cannot scan QR codes without access to your camera. Grant permission to continue</string>
     <string name="qr_scan_hint">Scan QR</string>
-    <string name="qr_give_camera_permission">Grant camera permission</string>
+    <string name="qr_give_camera_permission">Grant permission to scan QR</string>
     <string name="qr_try_again">Invalid QR, please try again</string>
     <string name="qr_invalid">Invalid QR</string>
 

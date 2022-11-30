@@ -21,4 +21,8 @@
     <string name="search_yourself_error">You cannot send tokens to yourself</string>
     <string name="search_yourself_description">Your address</string>
 
+    <!--QrCode-->
+    <string name="qr_no_address">❌ There\'s no address in this QR code. Try another one</string>
+    <string name="qr_common_error">❌ This QR code is not recognized. Try again</string>
+
 </resources>

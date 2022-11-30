@@ -18,7 +18,6 @@ import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -26,6 +25,9 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextResOrGone
+
+private const val REQUEST_QR_KEY = "REQUEST_QR_KEY"
+private const val RESULT_QR_KEY = "RESULT_QR_KEY"
 
 class NewSearchFragment :
     BaseMvpFragment<NewSearchContract.View, NewSearchContract.Presenter>(R.layout.fragment_new_search),
@@ -59,6 +61,8 @@ class NewSearchFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
         }
+
+        setOnResultListener()
 
         with(binding) {
             toolbar.apply {
@@ -163,7 +167,16 @@ class NewSearchFragment :
     }
 
     override fun showScanner() {
-        val target = ScanQrFragment.create { onSearchQueryChanged(it) }
-        addFragment(target)
+        replaceFragment(ScanQrFragment.create(REQUEST_QR_KEY, RESULT_QR_KEY))
+    }
+
+    private fun setOnResultListener() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            REQUEST_QR_KEY, viewLifecycleOwner
+        ) { _, bundle ->
+            bundle.getString(RESULT_QR_KEY)?.let { address ->
+                showSearchValue(address)
+            }
+        }
     }
 }
