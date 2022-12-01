@@ -38,7 +38,7 @@ class UserSeedPhrasePresenter(
 
     override fun onCopyClicked() {
         try {
-            view?.copyToClipboard(seedPhrase.joinToString(separator = " "))
+            view?.copyToClipboard(seedPhrase.map { it.text }.joinToString(separator = " "))
         } catch (e: Throwable) {
             view?.showUiKitSnackBar(e.message)
         }

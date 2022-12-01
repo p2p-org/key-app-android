@@ -58,10 +58,9 @@ class RecoveryKitFragment :
     }
 
     override fun showLogoutInfoDialog() {
-        // TODO Change text, await for Nina
         showInfoDialog(
-            titleRes = R.string.settings_logout_title,
-            messageRes = R.string.settings_logout_message,
+            titleRes = R.string.recovery_kit_logout_title,
+            messageRes = R.string.recovery_kit_logout_message,
             primaryButtonRes = R.string.common_logout,
             primaryCallback = { presenter.logout() },
             secondaryButtonRes = R.string.common_stay,

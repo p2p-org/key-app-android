@@ -35,9 +35,9 @@ class UserSeedPhraseFragment :
                 showPasteButton(isVisible = false)
                 showClearButton(isVisible = false)
                 showBlurButton(isVisible = true)
-                setOnBlurStateChangedListener {
-                    presenter.onBlurStateChanged(isBlurred = it)
-                    imageViewBanner.isSelected = it
+                setOnBlurStateChangedListener { isSelected ->
+                    presenter.onBlurStateChanged(isBlurred = !isSelected)
+                    imageViewBanner.isSelected = isSelected
                 }
                 buttonCopy.setOnClickListener {
                     presenter.onCopyClicked()
