@@ -60,18 +60,16 @@ class RecoveryKitPresenter(
     }
 
     private fun fetchMetadata(seedPhraseProviderType: SeedPhraseProviderType) {
-        if (seedPhraseProviderType == SeedPhraseProviderType.WEB_AUTH) {
-            secureStorage.getObject(
-                SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
-                GatewayOnboardingMetadata::class
-            )?.let { metadata ->
-                view?.showDeviceName(metadata.deviceShareDeviceName)
-                view?.showPhoneNumber(metadata.customSharePhoneNumberE164)
-                view?.showSocialId(metadata.socialShareOwnerEmail)
-            } ?: setUnavailableState()
+        secureStorage.getObject(
+            SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
+            GatewayOnboardingMetadata::class
+        )?.let { metadata ->
+            view?.showDeviceName(metadata.deviceShareDeviceName)
+            view?.showPhoneNumber(metadata.customSharePhoneNumberE164)
+            view?.showSocialId(metadata.socialShareOwnerEmail)
+        } ?: setUnavailableState()
 
-            view?.setWebAuthInfoVisibility(isVisible = true)
-        }
+        view?.setWebAuthInfoVisibility(isVisible = true)
     }
 
     override fun logout() {
