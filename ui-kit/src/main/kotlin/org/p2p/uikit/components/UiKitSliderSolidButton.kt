@@ -28,6 +28,9 @@ private const val MARGIN_HORIZONTAL_DP = 4
 private const val COMPLETED_VIEW_WIDTH_DP = 56
 private const val ANIMATION_SLIDE_BACK_DURATION = 200L
 
+private const val START_TEXT_ALPHA = 0f
+private const val END_TEXT_ALPHA = 1f
+
 class UiKitSliderSolidButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -52,6 +55,7 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
 
             val text = typedArray.getText(R.styleable.UiKitSliderSolidButton_sliderText)
             binding.textViewAction.text = text
+            binding.textViewActionTop.text = text
         }
 
         setBackgroundResource(R.drawable.bg_night_rounded_big)
@@ -79,6 +83,7 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
     ) {
         with(binding) {
             textViewAction.setText(actionTextRes)
+            textViewActionTop.setText(actionTextRes)
             imageViewAction.setImageResource(actionIconRes)
             setLightStyle(isLight)
         }
@@ -137,12 +142,13 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
                     updateGradient(initialPosition, animationPosition.toInt() + view.width / 2)
                     if (animationPosition == initialPosition) {
                         setGradientVisible(isVisible = false)
+                        updateTextsAlpha(START_TEXT_ALPHA)
                     }
                 }
                 start()
             }
         } else {
-            // user slided till the end
+            updateTextsAlpha(END_TEXT_ALPHA)
             showCompleteAnimation(view, initialPosition)
         }
         return true
@@ -175,6 +181,18 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
             viewGradient.layoutParams = oldParams
             viewGradient.x = startPosition
         }
+        updateTextsAlpha(startPosition, newPositionX)
+    }
+
+    private fun updateTextsAlpha(startPosition: Float, currentPosition: Int) = with(binding) {
+        val progress = (startPosition / 100 * currentPosition)
+        val nextAlpha = progress / 100
+        updateTextsAlpha(nextAlpha)
+    }
+
+    private fun updateTextsAlpha(nextAlpha: Float) = with(binding) {
+        textViewAction.alpha = 1f - nextAlpha
+        textViewActionTop.alpha = nextAlpha
     }
 
     private fun setGradientVisible(isVisible: Boolean) {
@@ -187,6 +205,7 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
         shimmerView.setOnTouchListener { _, _ -> true }
         setGradientVisible(isVisible = false)
         textViewAction.isVisible = false
+        textViewActionTop.isVisible = false
         imageViewAction.setImageDrawable(null)
         TransitionManager.beginDelayedTransition(
             root.parent as ViewGroup,
