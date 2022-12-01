@@ -612,7 +612,7 @@
     <string name="recovery_kit_details_seed_phrase">Details seed phrase</string>
     <string name="recovery_kit_seed_phrase_must_never_share">Your seed phrase must never be shared</string>
     <string name="recovery_kit_logout_title"> Do you want to see your seed phrase?</string>
-    <string name="recovery_kit_logout_message">You have to log out and log in again with social account or phone number.</string>
+    <string name="recovery_kit_logout_message">You have to log out and log in again.</string>
 
 
 </resources>
