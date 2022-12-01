@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PorterDuff
+import android.graphics.drawable.Animatable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -186,7 +187,7 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
         shimmerView.setOnTouchListener { _, _ -> true }
         setGradientVisible(isVisible = false)
         textViewAction.isVisible = false
-        imageViewAction.setImageResource(R.drawable.ic_check)
+        imageViewAction.setImageDrawable(null)
         TransitionManager.beginDelayedTransition(
             root.parent as ViewGroup,
             depositButtonsAnimation
@@ -195,6 +196,15 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
         params.width = completedWidth
         root.layoutParams = params
         view.x = initialPosition
+        imageViewAction.postDelayed(
+            { animateTick() },
+            ANIMATION_SLIDE_BACK_DURATION
+        )
+    }
+
+    private fun animateTick() = with(binding) {
+        imageViewAction.setImageResource(R.drawable.ic_check_animated)
+        (imageViewAction.drawable as? Animatable)?.start()
         imageViewAction.postDelayed(
             { onSlideCompleteListener?.invoke() },
             ANIMATION_SLIDE_BACK_DURATION
