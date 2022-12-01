@@ -143,6 +143,7 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
                     if (animationPosition == initialPosition) {
                         setGradientVisible(isVisible = false)
                         updateTextsAlpha(START_TEXT_ALPHA)
+                        binding.shimmerView.showShimmer(true)
                     }
                 }
                 start()
@@ -171,6 +172,7 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
 
     private fun onActionDown(): Boolean {
         setGradientVisible(isVisible = true)
+        binding.shimmerView.hideShimmer()
         return true
     }
 
