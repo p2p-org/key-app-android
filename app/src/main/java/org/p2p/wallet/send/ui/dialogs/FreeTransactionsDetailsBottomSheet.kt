@@ -15,9 +15,11 @@ class FreeTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
     companion object {
         fun show(
             fm: FragmentManager,
-        ) = FreeTransactionsDetailsBottomSheet().show(
-            fm, FreeTransactionsDetailsBottomSheet::javaClass.name
-        )
+        ) {
+            FreeTransactionsDetailsBottomSheet().show(
+                fm, FreeTransactionsDetailsBottomSheet::javaClass.name
+            )
+        }
     }
 
     private lateinit var binding: DialogSendFreeTransactionsInfoBinding
