@@ -47,45 +47,83 @@
 
     <TextView
         android:id="@+id/textViewScreenTitle"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_rounded_30_rain_stroke"
         android:backgroundTint="@color/bg_snow"
         android:gravity="center"
+        android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         android:text="@string/recovery_kit_seed_phrase_details_title"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
         android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseText" />
+
+    <ImageView
+        android:id="@+id/imageViewDotFirst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_dot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewInstructionsFirst" />
 
     <TextView
         android:id="@+id/textViewInstructionsFirst"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="24dp"
         android:drawablePadding="16dp"
         android:text="@string/seed_phrase_hint_1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewDotFirst"
         app:layout_constraintTop_toBottomOf="@id/textViewScreenTitle" />
+
+    <ImageView
+        android:id="@+id/imageViewDotSecond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_dot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewInstructionsSecond" />
 
     <TextView
         android:id="@+id/textViewInstructionsSecond"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
         android:drawablePadding="16dp"
         android:text="@string/seed_phrase_hint_2"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewDotSecond"
         app:layout_constraintTop_toBottomOf="@id/textViewInstructionsFirst"
         app:layout_constraintVertical_bias="0" />
 
+
+    <ImageView
+        android:id="@+id/imageViewDotThird"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_dot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewInstructionsThird" />
+
     <TextView
         android:id="@+id/textViewInstructionsThird"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
@@ -93,6 +131,8 @@
         android:text="@string/seed_phrase_hint_3"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
         app:layout_constraintBottom_toTopOf="@id/containerBottomView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewDotThird"
         app:layout_constraintTop_toBottomOf="@id/textViewInstructionsSecond"
         app:layout_constraintVertical_bias="0" />
 

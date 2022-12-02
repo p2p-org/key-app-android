@@ -71,8 +71,8 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         binding.textViewPaste.setBackgroundResource(backgroundRes)
     }
 
-    fun updateSeedPhrase(secretKeys: List<SeedPhraseWord>) {
-        seedPhraseAdapter.replaceWords(secretKeys)
+    fun updateSeedPhrase(secretKeys: List<SeedPhraseWord>, isEditable: Boolean = true) {
+        seedPhraseAdapter.replaceWords(secretKeys, isEditable)
     }
 
     fun addSeedPhraseWord(seedPhraseWord: SeedPhraseWord) {

@@ -46,8 +46,8 @@ class UserSeedPhraseFragment :
         }
     }
 
-    override fun showSeedPhase(seedPhaseList: List<SeedPhraseWord>) {
-        binding.seedPhraseView.updateSeedPhrase(seedPhaseList)
+    override fun showSeedPhase(seedPhaseList: List<SeedPhraseWord>, isEditable: Boolean) {
+        binding.seedPhraseView.updateSeedPhrase(seedPhaseList, isEditable)
     }
 
     override fun copyToClipboard(seedPhase: String) {

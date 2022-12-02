@@ -6,7 +6,7 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface UserSeedPhraseContract {
     interface View : MvpView {
-        fun showSeedPhase(seedPhaseList: List<SeedPhraseWord>)
+        fun showSeedPhase(seedPhaseList: List<SeedPhraseWord>, isEditable: Boolean)
         fun copyToClipboard(seedPhase: String)
     }
 

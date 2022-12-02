@@ -29,7 +29,7 @@ class UserSeedPhrasePresenter(
                         )
                     }
                 )
-                view.showSeedPhase(seedPhrase)
+                view.showSeedPhase(seedPhrase, isEditable = false)
             } catch (e: Throwable) {
                 view.showUiKitSnackBar(e.message)
             }
@@ -46,6 +46,6 @@ class UserSeedPhrasePresenter(
 
     override fun onBlurStateChanged(isBlurred: Boolean) {
         seedPhrase.forEach { it.isBlurred = isBlurred }
-        view?.showSeedPhase(seedPhrase)
+        view?.showSeedPhase(seedPhaseList = seedPhrase, isEditable = false)
     }
 }
