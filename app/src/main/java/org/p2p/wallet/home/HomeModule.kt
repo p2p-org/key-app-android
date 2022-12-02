@@ -124,10 +124,10 @@ object HomeModule : InjectionModule {
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
 
-        sendModule()
+        includes(createSendModule())
     }
 
-    private fun Module.sendModule() {
+    private fun createSendModule(): Module = module {
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }
