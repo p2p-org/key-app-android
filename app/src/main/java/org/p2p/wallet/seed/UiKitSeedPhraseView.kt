@@ -5,7 +5,6 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.getSystemService
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -89,15 +88,15 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     }
 
     fun showClearButton(isVisible: Boolean) {
-        binding.textViewClear.isInvisible = !isVisible
+        binding.textViewClear.isVisible = isVisible
     }
 
     fun showPasteButton(isVisible: Boolean) {
-        binding.textViewPaste.isInvisible = !isVisible
+        binding.textViewPaste.isVisible = isVisible
     }
 
     fun showBlurButton(isVisible: Boolean) {
-        binding.textViewBlur.isVisible
+        binding.textViewBlur.isVisible = isVisible
     }
 
     fun setOnBlurStateChangedListener(block: (Boolean) -> Unit) {
