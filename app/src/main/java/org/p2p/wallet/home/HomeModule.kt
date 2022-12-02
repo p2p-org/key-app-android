@@ -16,6 +16,8 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
+import org.p2p.wallet.newsend.NewSendContract
+import org.p2p.wallet.newsend.NewSendPresenter
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
@@ -108,6 +110,30 @@ object HomeModule : InjectionModule {
                 renBtcAnalytics = get()
             )
         }
+
+        factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
+            ReceiveTokenPresenter(
+                defaultToken = token,
+                qrCodeInteractor = get(),
+                usernameInteractor = get(),
+                tokenKeyProvider = get(),
+                receiveAnalytics = get()
+            )
+        }
+
+        factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
+        factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
+
+        sendModule()
+    }
+
+    private fun Module.sendModule() {
+        factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
+            SelectTokenPresenter(tokens)
+        }
+        factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
+            SearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
+        }
         factory<SendContract.Presenter> {
             SendPresenter(
                 sendInteractor = get(),
@@ -126,27 +152,15 @@ object HomeModule : InjectionModule {
                 dispatchers = get()
             )
         }
-        factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            SearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
-        }
+
         factory<NewSearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            NewSearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
-        }
-        factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
-            ReceiveTokenPresenter(
-                defaultToken = token,
-                qrCodeInteractor = get(),
-                usernameInteractor = get(),
-                tokenKeyProvider = get(),
-                receiveAnalytics = get()
+            NewSearchPresenter(
+                usernames = usernames,
+                searchInteractor = get(),
+                usernameDomainFeatureToggle = get()
             )
         }
-        factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
-            SelectTokenPresenter(tokens)
-        }
-
-        factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
-        factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
         factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class
+        factoryOf(::NewSendPresenter) bind NewSendContract.Presenter::class
     }
 }

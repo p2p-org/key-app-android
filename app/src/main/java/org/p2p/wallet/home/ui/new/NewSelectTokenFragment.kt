@@ -30,6 +30,7 @@ private const val ARG_SELECTED_TOKEN = "ARG_SELECTED_TOKEN"
 private const val ARG_REQUEST_KEY = "ARG_REQUEST_KEY"
 private const val ARG_RESULT_KEY = "ARG_RESULT_KEY"
 
+// todo: maybe move to org.p2p.wallet.send
 class NewSelectTokenFragment :
     BaseMvpFragment<NewSelectTokenContract.View, NewSelectTokenContract.Presenter>(R.layout.fragment_select_token_new),
     NewSelectTokenContract.View,
