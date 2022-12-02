@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/ui_kit_average_horizontal_margin"
+    android:background="@color/bg_snow"
+    android:foreground="?selectableItemBackground"
+    android:paddingHorizontal="16dp">
+
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewToken"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginVertical="16dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
+
+    <ImageView
+        android:id="@+id/imageViewWrapped"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-4dp"
+        android:src="@drawable/ic_wrapped"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
+        app:layout_constraintEnd_toEndOf="@id/imageViewToken"
+        tools:ignore="ContentDescription"
+        tools:visibility="visible" />
+
+    <org.p2p.uikit.atoms.UiKitStartAmountView
+        android:id="@+id/startAmountView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/endAmountView"
+        app:layout_constraintStart_toEndOf="@id/imageViewToken"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:subtitle="4.12871625 SOL"
+        tools:title="Solana" />
+
+    <org.p2p.uikit.atoms.UiKitEndAmountView
+        android:id="@+id/endAmountView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:usdAmount="100$" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

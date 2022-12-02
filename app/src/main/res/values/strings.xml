@@ -188,7 +188,7 @@
     <string name="main_wallet_address">Wallet address</string>
     <string name="main_send_in_usd">%s USD</string>
     <string name="main_send_around_in_usd">$ %s</string>
-    <string name="main_select_token">Pick a token</string>
+    <string name="main_select_token">Select token</string>
     <string name="main_choose_token">Choose a token for buying</string>
     <string name="main_select">Select</string>
     <string name="main_fee">Fee:</string>
@@ -499,9 +499,9 @@
     <string name="transaction_history_closed">Closed</string>
 
     <!-- qr -->
-    <string name="qr_failed_to_acquire_camera_permission">Grant permission to scan QR</string>
+    <string name="qr_failed_to_acquire_camera_permission">Key App cannot scan QR codes without access to your camera. Grant permission to continue</string>
     <string name="qr_scan_hint">Scan QR</string>
-    <string name="qr_give_camera_permission">Grant camera permission</string>
+    <string name="qr_give_camera_permission">Grant permission to scan QR</string>
     <string name="qr_try_again">Invalid QR, please try again</string>
     <string name="qr_invalid">Invalid QR</string>
 

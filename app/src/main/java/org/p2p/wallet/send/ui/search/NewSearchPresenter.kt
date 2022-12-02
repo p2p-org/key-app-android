@@ -9,9 +9,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.send.interactor.SearchInteractor
-import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
+import org.p2p.wallet.utils.findInstance
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
@@ -24,6 +24,7 @@ class NewSearchPresenter(
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
     private var searchJob: Job? = null
+    private var lastResult: List<SearchResult> = emptyList()
 
     override fun loadInitialData() {
         val data = usernames
@@ -32,14 +33,9 @@ class NewSearchPresenter(
             view?.showEmptyState(isEmpty = true)
         } else {
             val value = (data.first() as SearchResult.UsernameFound).username
-            view?.showMessage(R.string.search_found)
-            view?.showSearchResult(data)
             view?.showSearchValue(value)
+            setResult(data)
         }
-    }
-
-    override fun onContinueClicked(query: String) {
-        onSearchResultClick(SearchResult.AddressOnly(addressState = AddressState(query)))
     }
 
     override fun search(newQuery: String) {
@@ -66,15 +62,17 @@ class NewSearchPresenter(
     }
 
     override fun onSearchResultClick(result: SearchResult) {
-        if (searchInteractor.isOwnPublicKey(result.addressState.address)) {
-            view?.showMessage(R.string.main_send_to_yourself_error)
-        } else {
-            view?.submitSearchResult(result)
-        }
+        view?.submitSearchResult(result)
     }
 
     override fun onScanClicked() {
         view?.showScanner()
+    }
+
+    override fun onContinueClicked() {
+        lastResult.findInstance<SearchResult.EmptyBalance>()?.let {
+            view?.submitSearchResult(it)
+        }
     }
 
     private suspend fun validateAndSearch(target: SearchTarget) {
@@ -100,8 +98,7 @@ class NewSearchPresenter(
             return
         }
 
-        view?.showMessage(R.string.search_found)
-        view?.showSearchResult(usernames)
+        setResult(usernames)
     }
 
     private suspend fun searchBySolAddress(address: String) {
@@ -114,8 +111,17 @@ class NewSearchPresenter(
         }
 
         val result = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance())
-        view?.showMessage(R.string.search_found)
-        view?.showSearchResult(result)
+        setResult(result)
+    }
+
+    private fun setResult(result: List<SearchResult>) {
+        lastResult = result
+        view?.apply {
+            showMessage(R.string.search_found)
+            showSearchResult(result)
+            setContinueButtonVisibility(result.findInstance<SearchResult.EmptyBalance>() != null)
+            setListBackgroundVisibility(result.findInstance<SearchResult.InvalidResult>() == null)
+        }
     }
 
     private fun showEmptyState() {

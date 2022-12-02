@@ -18,7 +18,6 @@ import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -26,6 +25,9 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextResOrGone
+
+private const val REQUEST_QR_KEY = "REQUEST_QR_KEY"
+private const val RESULT_QR_KEY = "RESULT_QR_KEY"
 
 class NewSearchFragment :
     BaseMvpFragment<NewSearchContract.View, NewSearchContract.Presenter>(R.layout.fragment_new_search),
@@ -60,8 +62,9 @@ class NewSearchFragment :
             popBackStack()
         }
 
-        with(binding) {
+        setOnResultListener()
 
+        with(binding) {
             toolbar.apply {
                 setSearchMenu(
                     object : SearchView.OnQueryTextListener {
@@ -75,7 +78,7 @@ class NewSearchFragment :
                     menuRes = R.menu.menu_search_with_scan,
                     searchHintRes = R.string.search_edittext_hint
                 )
-                searchView?.setOnFocusChangeListener { v, hasFocus ->
+                searchView?.setOnFocusChangeListener { _, hasFocus ->
                     if (!hasFocus) toggleSearchView()
                 }
                 setNavigationOnClickListener { popBackStack() }
@@ -89,8 +92,13 @@ class NewSearchFragment :
                 }
             }
 
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            recyclerView.attachAdapter(searchAdapter)
+            buttonContinue.setOnClickListener { presenter.onContinueClicked() }
+
+            recyclerViewSearchResults.apply {
+                itemAnimator = null
+                layoutManager = LinearLayoutManager(requireContext())
+                attachAdapter(searchAdapter)
+            }
         }
 
         presenter.loadInitialData()
@@ -108,21 +116,35 @@ class NewSearchFragment :
         textViewNotFoundTitle.isVisible = true
         textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = false
-        recyclerView.isVisible = false
+        recyclerViewSearchResults.isVisible = false
     }
 
     override fun showEmptyState(isEmpty: Boolean) = with(binding) {
         textViewNotFoundTitle.isVisible = false
         textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = isEmpty
-        recyclerView.isVisible = !isEmpty
+        recyclerViewSearchResults.isVisible = !isEmpty
     }
 
     override fun showErrorState() = with(binding) {
         textViewErrorTitle.isVisible = true
         groupEmptyView.isVisible = false
-        recyclerView.isVisible = false
+        recyclerViewSearchResults.isVisible = false
         textViewNotFoundTitle.isVisible = false
+    }
+
+    override fun setListBackgroundVisibility(isVisible: Boolean) {
+        binding.recyclerViewSearchResults.apply {
+            if (isVisible) {
+                setBackgroundResource(R.drawable.bg_snow_rounded_16)
+            } else {
+                background = null
+            }
+        }
+    }
+
+    override fun setContinueButtonVisibility(isVisible: Boolean) {
+        binding.buttonContinue.isVisible = isVisible
     }
 
     override fun showSearchValue(value: String) {
@@ -145,7 +167,16 @@ class NewSearchFragment :
     }
 
     override fun showScanner() {
-        val target = ScanQrFragment.create { onSearchQueryChanged(it) }
-        addFragment(target)
+        replaceFragment(ScanQrFragment.create(REQUEST_QR_KEY, RESULT_QR_KEY))
+    }
+
+    private fun setOnResultListener() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            REQUEST_QR_KEY, viewLifecycleOwner
+        ) { _, bundle ->
+            bundle.getString(RESULT_QR_KEY)?.let { address ->
+                showSearchValue(address)
+            }
+        }
     }
 }
