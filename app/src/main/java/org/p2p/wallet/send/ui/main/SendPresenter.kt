@@ -340,7 +340,8 @@ class SendPresenter(
                 lastScreenName = analyticsInteractor.getPreviousScreenName(),
                 tokenListLocation = BrowseAnalytics.TokenListLocation.SEND
             )
-            view?.navigateToTokenSelection(result)
+
+            view?.navigateToTokenSelection(result, token)
         }
     }
 

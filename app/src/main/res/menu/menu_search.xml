@@ -5,6 +5,7 @@
     <item
         android:id="@+id/menu_search"
         android:title="@string/search_menu"
-        app:actionLayout = "@layout/item_search_bar"
-        app:showAsAction="always" />
+        android:icon="@drawable/ic_search"
+        app:actionLayout ="@layout/item_search_bar"
+        app:showAsAction="always|collapseActionView" />
 </menu>
