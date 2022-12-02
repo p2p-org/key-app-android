@@ -8,7 +8,7 @@
     android:paddingBottom="32dp">
 
     <include
-        android:id="@+id/itemAddress"
+        android:id="@+id/layoutAddress"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/itemGets"
+        android:id="@+id/layoutGets"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,17 +26,17 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/itemAddress" />
+        app:layout_constraintTop_toBottomOf="@id/layoutAddress" />
 
     <include
-        android:id="@+id/itemTransactionFee"
+        android:id="@+id/layoutTransactionFee"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/itemGets" />
+        app:layout_constraintTop_toBottomOf="@id/layoutGets" />
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/imageViewIconAccountFee"
@@ -49,7 +49,7 @@
         android:padding="12dp"
         app:cornerRadius="24dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/itemTransactionFee"
+        app:layout_constraintTop_toBottomOf="@id/layoutTransactionFee"
         app:tint="@color/icons_mountain"
         tools:src="@drawable/ic_lightling" />
 

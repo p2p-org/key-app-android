@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import org.p2p.uikit.utils.getColor
-import org.p2p.uikit.utils.getColorStateList
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogSendFreeTransactionsInfoBinding
@@ -30,14 +29,14 @@ class FreeTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding.itemFreeTransactions) {
+        with(binding.layoutFreeTransactions) {
             imageViewIcon.setImageResource(R.drawable.ic_lightling)
-            textViewTitle.text = getString(R.string.free_transactions_title)
+            textViewTitle.setText(R.string.free_transactions_title)
             textViewSubtitle.text = getString(R.string.free_transactions_subtitle)
         }
         baseDialogBinding.buttonDone.apply {
             text = getString(R.string.free_transactions_button)
-            backgroundTintList = getColorStateList(R.color.bg_night)
+            setBackgroundColor(getColor(R.color.bg_night))
             setTextColor(getColor(R.color.text_snow))
             setOnClickListener { dismissAllowingStateLoss() }
         }

@@ -13,7 +13,7 @@
         android:src="@drawable/ic_welcome" />
 
     <include
-        android:id="@+id/itemFreeTransactions"
+        android:id="@+id/layoutFreeTransactions"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

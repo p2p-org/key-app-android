@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogSendTransactionsDetailsBinding
@@ -36,6 +37,10 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
 
     private val state: SendTotal by args(ARG_SEND_STATE)
 
+    private val colorNight = getColor(R.color.text_night)
+    private val colorMountain = getColor(R.color.text_mountain)
+    private val colorMint = getColor(R.color.text_mint)
+
     override fun onCreateInnerView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogSendTransactionsDetailsBinding.inflate(inflater, container, false)
         return binding.root
@@ -56,14 +61,15 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
 
     private fun DialogSendTransactionsDetailsBinding.setRecipientAddress() {
         val address = state.recipientAddress
-        val addressIsEmpty = address.isNullOrEmpty()
-        with(itemAddress) {
-            root.isVisible = !addressIsEmpty
+        val isRecipientAddressEmpty = address.isNullOrEmpty()
+        with(layoutAddress) {
+            root.isVisible = !isRecipientAddressEmpty
             imageViewIcon.setImageResource(R.drawable.ic_wallet_home)
             textViewTitle.text = getString(R.string.send_transactions_details_address)
             textViewSubtitle.text = address
-            itemAddress.root.setOnLongClickListener {
+            root.setOnLongClickListener {
                 requireContext().copyToClipBoard(address.orEmpty())
+                toast(R.string.common_copied)
                 true
             }
         }
@@ -71,22 +77,19 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
 
     private fun DialogSendTransactionsDetailsBinding.setRecipientGets() {
         val color = getColor(R.color.text_mountain)
-        with(itemGets) {
+        with(layoutGets) {
             imageViewIcon.setImageResource(R.drawable.ic_receive)
             textViewTitle.text = getString(R.string.send_transactions_details_gets)
             textViewSubtitle.text = SpanUtils.highlightText(
-                state.fullReceive,
-                state.approxReceive,
-                color
+                commonText = state.fullReceive,
+                highlightedText = state.approxReceive,
+                color = color
             )
         }
     }
 
     private fun DialogSendTransactionsDetailsBinding.setTransactionFee() {
-        val colorNight = getColor(R.color.text_mountain)
-        val colorMountain = getColor(R.color.text_night)
-        val colorMint = getColor(R.color.text_mint)
-        with(itemTransactionFee) {
+        with(layoutTransactionFee) {
             imageViewIcon.setImageResource(R.drawable.ic_lightling)
             textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
             textViewSubtitle.apply {
@@ -94,9 +97,9 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
                     is SendFee.SolanaFee -> {
                         setTextColor(colorNight)
                         text = SpanUtils.highlightText(
-                            fee.accountCreationFullFee,
-                            fee.approxAccountCreationFeeUsd.orEmpty(),
-                            colorMountain
+                            commonText = fee.accountCreationFullFee,
+                            highlightedText = fee.approxAccountCreationFeeUsd.orEmpty(),
+                            color = colorMountain
                         )
                     }
                     else -> {
@@ -110,10 +113,6 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
     }
 
     private fun DialogSendTransactionsDetailsBinding.setAccountCreation() {
-        val colorNight = getColor(R.color.text_mountain)
-        val colorMountain = getColor(R.color.text_night)
-        val colorMint = getColor(R.color.text_mint)
-
         groupAccountFee.isVisible = state.showAccountCreation
         imageViewAccountFeeInfo.setImageResource(R.drawable.ic_user)
         textViewTitleAccountFee.text = getString(R.string.send_transactions_details_account_fee)
@@ -124,9 +123,9 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
                 is SendFee.SolanaFee -> {
                     setTextColor(colorNight)
                     text = SpanUtils.highlightText(
-                        fee.accountCreationFullFee,
-                        fee.approxAccountCreationFeeUsd.orEmpty(),
-                        colorMountain
+                        commonText = fee.accountCreationFullFee,
+                        highlightedText = fee.approxAccountCreationFeeUsd.orEmpty(),
+                        color = colorMountain
                     )
                 }
                 else -> {
@@ -143,13 +142,12 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
     }
 
     private fun DialogSendTransactionsDetailsBinding.setTotal() {
-        val color = getColor(R.color.text_mountain)
         imageViewIconTotal.setImageResource(R.drawable.ic_receipt)
         textViewTitleTotal.text = getString(R.string.send_transactions_details_total)
         textViewSubtitleFirstTotal.text = SpanUtils.highlightText(
-            state.fullTotal,
-            state.approxTotalUsd.orEmpty(),
-            color
+            commonText = state.fullTotal,
+            highlightedText = state.approxTotalUsd.orEmpty(),
+            color = colorMountain
         )
         textViewSubtitleSecondTotal.isVisible = false
         // TODO PWN-6092 make info screens to open!
