@@ -12,6 +12,8 @@ import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
+import org.p2p.wallet.home.ui.new.NewSelectTokenContract
+import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.receive.list.TokenListContract
@@ -145,5 +147,6 @@ object HomeModule : InjectionModule {
 
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
+        factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class
     }
 }
