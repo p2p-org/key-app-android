@@ -25,6 +25,13 @@
     <string name="qr_no_address">❌ There\'s no address in this QR code. Try another one</string>
     <string name="qr_common_error">❌ This QR code is not recognized. Try again</string>
 
+    <string name="send_pick_token_title">Pick a token</string>
+    <string name="send_pick_token_search_hint">Token name</string>
+    <string name="send_pick_token_chosen">Chosen token</string>
+    <string name="send_pick_token_other">Other tokens</string>
+    <string name="send_pick_token_search_result_text">Here\'s what we found</string>
+    <string name="send_pick_token_search_not_found">Token not found. Try another one</string>
+
     <!--Free Transactions Dialog-->
     <string name="free_transactions_title">Enjoy free transactions!</string>
     <string name="free_transactions_subtitle">On the Solana network, the first 100 transactions in a day are paid by Key App</string>
