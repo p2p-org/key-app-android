@@ -54,6 +54,8 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinContract
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinPresenter
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinContract
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinPresenter
+import org.p2p.wallet.auth.ui.pin.signin.ValidatePinPresenter
+import org.p2p.wallet.auth.ui.pin.validate.ValidatePinContract
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameContract
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernamePresenter
 import org.p2p.wallet.auth.ui.reserveusername.UsernameValidator
@@ -79,6 +81,8 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
 import org.p2p.wallet.auth.web3authsdk.Web3AuthDurationTracker
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
+import org.p2p.wallet.settings.ui.recovery.user_seed_phrase.UserSeedPhraseContract
+import org.p2p.wallet.settings.ui.recovery.user_seed_phrase.UserSeedPhrasePresenter
 import org.p2p.wallet.splash.SplashContract
 import org.p2p.wallet.splash.SplashPresenter
 
@@ -92,7 +96,9 @@ object AuthModule {
         factoryOf(::FileRepository)
         factoryOf(::SecurityKeyPresenter) bind SecurityKeyContract.Presenter::class
         factoryOf(::SignInPinPresenter) bind SignInPinContract.Presenter::class
+        factoryOf(::ValidatePinPresenter) bind ValidatePinContract.Presenter::class
         factoryOf(::SplashPresenter) bind SplashContract.Presenter::class
+        factory { UserSeedPhrasePresenter(get()) } bind UserSeedPhraseContract.Presenter::class
         factoryOf(::VerifySecurityKeyPresenter) bind VerifySecurityKeyContract.Presenter::class
         factory {
             AuthLogoutInteractor(

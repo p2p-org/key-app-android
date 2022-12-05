@@ -7,6 +7,8 @@ import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor.SeedPhraseVerifyResult
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 
 private const val SEED_PHRASE_SIZE_SHORT = 12
 private const val SEED_PHRASE_SIZE_LONG = 24
@@ -21,6 +23,7 @@ private const val PRIVACY_POLICY_FILE_NAME = "p2p_privacy_policy"
 
 class SeedPhrasePresenter(
     private val seedPhraseInteractor: SeedPhraseInteractor,
+    private val seedPhraseProvider: SeedPhraseProvider
 ) : BasePresenter<SeedPhraseContract.View>(), SeedPhraseContract.Presenter {
 
     private var currentSeedPhrase: List<SeedPhraseWord> by observable(emptyList()) { _, _, newValue ->
@@ -56,6 +59,10 @@ class SeedPhrasePresenter(
                 is SeedPhraseVerifyResult.VerifiedSeedPhrase -> {
                     currentSeedPhrase = result.seedPhraseWord
                     if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
+                        seedPhraseProvider.setUserSeedPhrase(
+                            words = currentSeedPhrase.map { it.text },
+                            provider = SeedPhraseSource.MANUAL
+                        )
                         view?.navigateToDerievableAccounts(currentSeedPhrase)
                     } else {
                         // warning: updateSeedPhrase causes keyboard to appear, so add a check

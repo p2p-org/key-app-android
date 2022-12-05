@@ -12,6 +12,7 @@
     <string name="common_great">Great!</string>
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
+    <string name="common_copied_with_emoji">👯‍ Copied to the clipboard</string>
     <string name="common_usd">USD</string>
     <string name="common_continue">Continue</string>
     <string name="common_username_allowed_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-</string>
@@ -33,6 +34,7 @@
     <string name="common_transaction_details">Transaction details</string>
     <string name="common_error">Error</string>
     <string name="common_hide">Hide</string>
+    <string name="common_show">Show</string>
     <string name="common_skip">Skip</string>
     <string name="not_available">N/A</string>
 
@@ -606,5 +608,11 @@
     <string name="receive_token_list_not_found">If there is a token named \"%s\", we don\'t recommend sending it to your Solana address since it will most likely be lost forever.</string>
     <string name="search_menu">Search</string>
     <string name="search_for_a_token">Search for a token</string>
+    <string name="recovery_kit_seed_phrase_details_title">Make sure you understand the aspects</string>
+    <string name="recovery_kit_details_seed_phrase">Details seed phrase</string>
+    <string name="recovery_kit_seed_phrase_must_never_share">Your seed phrase must never be shared</string>
+    <string name="recovery_kit_logout_title"> Do you want to see your seed phrase?</string>
+    <string name="recovery_kit_logout_message">You have to log out and log in again.</string>
+
 
 </resources>
