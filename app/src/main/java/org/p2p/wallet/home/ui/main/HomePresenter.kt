@@ -206,6 +206,7 @@ class HomePresenter(
                     *tokensForBuy.toTypedArray()
                 )
             )
+            logBalance(BigDecimal.ZERO)
         }
     }
 
@@ -278,7 +279,7 @@ class HomePresenter(
     private fun logBalance(balance: BigDecimal) {
         val hasPositiveBalance = balance.isMoreThan(BigDecimal.ZERO)
         analytics.logUserHasPositiveBalanceProperty(hasPositiveBalance)
-        analytics.logUserAggregateBalanceProperty(balance.toInt())
+        analytics.logUserAggregateBalanceProperty(balance)
     }
 
     private fun initialLoadTokens() {

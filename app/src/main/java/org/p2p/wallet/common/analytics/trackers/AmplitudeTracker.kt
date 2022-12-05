@@ -36,7 +36,7 @@ class AmplitudeTracker(
     }
 
     override fun setUserPropertyOnce(key: String, value: String) {
-        amplitude.identify(Identify().setOnce(key, value))
+        amplitude.identify(Identify().set(key, value))
     }
 
     override fun logEvent(eventName: String, params: Map<String, Any>) {
