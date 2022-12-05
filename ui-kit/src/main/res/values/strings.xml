@@ -3,6 +3,8 @@
     <string name="common_wallet">Wallet</string>
     <string name="common_history">History</string>
     <string name="common_send">Send</string>
+    <string name="common_buy">Buy</string>
+    <string name="common_receive">Receive</string>
     <string name="common_earn">Earn</string>
     <string name="common_feedback">Feedback</string>
     <string name="common_settings">Settings</string>
