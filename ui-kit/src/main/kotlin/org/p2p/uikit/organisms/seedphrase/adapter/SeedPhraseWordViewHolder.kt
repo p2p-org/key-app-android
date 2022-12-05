@@ -1,5 +1,6 @@
 package org.p2p.uikit.organisms.seedphrase.adapter
 
+import android.graphics.BlurMaskFilter
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,8 @@ class SeedPhraseWordViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private var textWatcher: SeedPhraseWatcher? = null
-
+    private val radius: Float = binding.textViewWord.textSize / 3
+    private val filter = BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL)
     fun onBind(item: SeedPhraseWord) = with(binding) {
         SeedPhraseWatcher.uninstallFrom(binding.editTextWord)
         textWatcher?.isLastKey = adapterPosition == SEED_PHRASE_SIZE_LONG
@@ -44,6 +46,7 @@ class SeedPhraseWordViewHolder(
 
         if (seedPhraseWord.isValid) {
             renderValidWord(text, wordIndex)
+            renderBlur(seedPhraseWord.isBlurred)
         } else {
             renderInvalidWord(text)
         }
@@ -92,6 +95,11 @@ class SeedPhraseWordViewHolder(
             highlightedText = wordIndex.toString(),
             color = binding.getColor(R.color.text_mountain)
         )
+    }
+
+    private fun renderBlur(isBlurred: Boolean) {
+        val filter = if (isBlurred) filter else null
+        binding.textViewWord.paint.maskFilter = filter
     }
 
     private fun renderInvalidWord(text: String) {

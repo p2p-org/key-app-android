@@ -8,7 +8,13 @@ interface RecoveryKitContract {
         fun showDeviceName(deviceName: String)
         fun showPhoneNumber(phoneNumber: String)
         fun showSocialId(socialId: String)
+        fun setWebAuthInfoVisibility(isVisible: Boolean)
+        fun showLogoutInfoDialog()
+        fun showSeedPhraseLockFragment()
     }
 
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun onSeedPhraseClicked()
+        fun logout()
+    }
 }

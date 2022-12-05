@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/bg_snow"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_toolbar_back"
+        app:navigationIconTint="@color/night"
+        app:title="@string/seed_phrase_title"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/bg_lime_bottom_rounded"
+        app:layout_constraintBottom_toTopOf="@id/textViewInstructionsFirst"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <ImageView
+        android:id="@+id/imageViewBanner"
+        android:layout_width="match_parent"
+        android:layout_height="144dp"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/ic_seed_show"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/textViewSeedPhraseText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/seed_phrase_text"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+        app:layout_constraintTop_toBottomOf="@id/imageViewBanner" />
+
+    <TextView
+        android:id="@+id/textViewScreenTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_rounded_30_rain_stroke"
+        android:backgroundTint="@color/bg_snow"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/recovery_kit_seed_phrase_details_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSeedPhraseText" />
+
+    <ImageView
+        android:id="@+id/imageViewDotFirst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_dot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewInstructionsFirst" />
+
+    <TextView
+        android:id="@+id/textViewInstructionsFirst"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="24dp"
+        android:drawablePadding="16dp"
+        android:text="@string/seed_phrase_hint_1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewDotFirst"
+        app:layout_constraintTop_toBottomOf="@id/textViewScreenTitle" />
+
+    <ImageView
+        android:id="@+id/imageViewDotSecond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_dot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewInstructionsSecond" />
+
+    <TextView
+        android:id="@+id/textViewInstructionsSecond"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:drawablePadding="16dp"
+        android:text="@string/seed_phrase_hint_2"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewDotSecond"
+        app:layout_constraintTop_toBottomOf="@id/textViewInstructionsFirst"
+        app:layout_constraintVertical_bias="0" />
+
+
+    <ImageView
+        android:id="@+id/imageViewDotThird"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_dot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewInstructionsThird" />
+
+    <TextView
+        android:id="@+id/textViewInstructionsThird"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:drawablePadding="16dp"
+        android:text="@string/seed_phrase_hint_3"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
+        app:layout_constraintBottom_toTopOf="@id/containerBottomView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewDotThird"
+        app:layout_constraintTop_toBottomOf="@id/textViewInstructionsSecond"
+        app:layout_constraintVertical_bias="0" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupInstructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="textViewInstructionsFirst,textViewInstructionsSecond,textViewInstructionsThird" />
+
+    <FrameLayout
+        android:id="@+id/containerBottomView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_night_top_rounded"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <org.p2p.uikit.components.UiKitSliderButton
+            android:id="@+id/sliderChangePin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/bg_snow"
+            android:textColor="@color/text_night"
+            app:sliderIcon="@drawable/ic_key_action"
+            app:sliderText="@string/seed_phrase_show_key_button" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

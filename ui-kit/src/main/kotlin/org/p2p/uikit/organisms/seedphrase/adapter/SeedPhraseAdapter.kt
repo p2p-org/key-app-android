@@ -46,9 +46,9 @@ class SeedPhraseAdapter(
         super.onViewRecycled(holder)
     }
 
-    fun replaceWords(seedPhrase: List<SeedPhraseWord>) {
+    fun replaceWords(seedPhrase: List<SeedPhraseWord>, isEditable: Boolean) {
         clear()
-        addAllWords(seedPhrase)
+        addAllWords(seedPhrase, isEditable)
     }
 
     fun addWord(seedPhraseWord: SeedPhraseWord) {
@@ -84,7 +84,7 @@ class SeedPhraseAdapter(
         onSeedPhraseChanged(data)
     }
 
-    fun addAllWords(seedPhrase: List<SeedPhraseWord>) {
+    fun addAllWords(seedPhrase: List<SeedPhraseWord>, isEditable: Boolean = true) {
         if (data.size >= SEED_PHRASE_SIZE_LONG) {
             return
         }
@@ -109,7 +109,9 @@ class SeedPhraseAdapter(
         onSeedPhraseChanged(data)
 
         /* Automatically adding new empty element, so user could continue entering the seed phrase */
-        addWord(SeedPhraseWord.EMPTY_WORD)
+        if (isEditable) {
+            addWord(SeedPhraseWord.EMPTY_WORD)
+        }
     }
 
     private fun removeSecretKey(index: Int) {
