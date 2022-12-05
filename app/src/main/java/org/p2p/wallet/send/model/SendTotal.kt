@@ -1,18 +1,22 @@
 package org.p2p.wallet.send.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.utils.asApproximateUsd
 import org.p2p.wallet.utils.formatToken
 import org.p2p.wallet.utils.orZero
 import java.math.BigDecimal
 
+@Parcelize
 class SendTotal constructor(
     val total: BigDecimal,
     val totalUsd: BigDecimal?,
     val receive: String,
     val receiveUsd: BigDecimal?,
     val fee: SendFee?,
-    val sourceSymbol: String
-) {
+    val sourceSymbol: String,
+    var recipientAddress: String? = null
+) : Parcelable {
 
     fun getTotalFee(): String =
         when (fee) {
