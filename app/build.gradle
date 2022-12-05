@@ -265,9 +265,6 @@ dependencies {
     implementation "io.insert-koin:koin-android:$koinVersion"
     implementation "io.insert-koin:koin-androidx-workmanager:$koinVersion"
 
-    // GeeTest
-    implementation 'com.geetest.sensebot:sensebot:4.3.4.6'
-
     // Lottie
     def lottieVersion = '4.0.0'
     implementation "com.airbnb.android:lottie:$lottieVersion"
