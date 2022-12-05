@@ -3,6 +3,7 @@ package org.p2p.wallet.send.interactor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.model.AddressState
@@ -16,6 +17,7 @@ class SearchInteractor(
     private val usernameRepository: UsernameRepository,
     private val userInteractor: UserInteractor,
     private val transactionAddressInteractor: TransactionAddressInteractor,
+    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val resourcesProvider: ResourcesProvider
 ) {
@@ -48,6 +50,9 @@ class SearchInteractor(
         val tokenData = transactionAddressInteractor.getTokenDataIfDirect(address)
         val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
         val hasNoTokensToSend = tokenData != null && userToken == null
+        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
+        val userTokens = userInteractor.getUserTokens()
+        val hasNotEnoughFounds = !userTokens.any { it.totalInLamports > relayInfo.minimumTokenAccountRent }
         val isOwnAddress = isOwnPublicKey(address.base58Value)
         val addressState = AddressState(address.base58Value)
         val hasEmptyBalance = balance == ZERO_BALANCE
@@ -73,6 +78,14 @@ class SearchInteractor(
                         R.string.search_no_other_tokens_description,
                         tokenData?.symbol.orEmpty()
                     ),
+                )
+                hasNotEnoughFounds -> SearchResult.InvalidResult(
+                    addressState = addressState,
+                    errorMessage = resourcesProvider.getString(
+                        R.string.search_no_founds_error,
+                        tokenData?.symbol.orEmpty()
+                    ),
+                    canReceiveAndBuy = true
                 )
                 hasEmptyBalance -> SearchResult.EmptyBalance(addressState)
                 else -> SearchResult.AddressOnly(addressState)

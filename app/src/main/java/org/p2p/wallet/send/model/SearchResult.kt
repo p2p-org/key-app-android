@@ -23,6 +23,7 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         override val addressState: AddressState,
         val errorMessage: String,
         val tokenData: TokenData? = null,
-        val description: String? = null
+        val description: String? = null,
+        val canReceiveAndBuy: Boolean = false
     ) : SearchResult(addressState)
 }

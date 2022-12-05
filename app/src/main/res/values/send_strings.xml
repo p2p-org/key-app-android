@@ -18,8 +18,11 @@
     <string name="search_caution_error">Caution: this address has no funds</string>
     <string name="search_no_other_tokens_description">%s token account</string>
     <string name="search_no_other_tokens_error">You cannot send SOL to this address because it belongs to another token (%s)</string>
+    <string name="search_no_founds_error">Account creation for this address is not possible due to insufficient funds</string>
     <string name="search_yourself_error">You cannot send tokens to yourself</string>
     <string name="search_yourself_description">Your address</string>
+    <string name="search_receive">Receive</string>
+    <string name="search_buy">Buy</string>
 
     <!--QrCode-->
     <string name="qr_no_address">❌ There\'s no address in this QR code. Try another one</string>

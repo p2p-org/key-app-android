@@ -62,15 +62,7 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
             )
         }
-        factory {
-            SearchInteractor(
-                usernameRepository = get(),
-                userInteractor = get(),
-                tokenKeyProvider = get(),
-                transactionAddressInteractor = get(),
-                resourcesProvider = get()
-            )
-        }
+        factoryOf(::SearchInteractor)
     }
 
     private fun Module.initPresentationLayer() {
@@ -130,7 +122,12 @@ object HomeModule : InjectionModule {
             SearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
         }
         factory<NewSearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            NewSearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
+            NewSearchPresenter(
+                usernames = usernames,
+                searchInteractor = get(),
+                usernameDomainFeatureToggle = get(),
+                userInteractor = get()
+            )
         }
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(
