@@ -9,7 +9,7 @@ import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
-import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProviderType
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 
 class RecoveryKitPresenter(
@@ -22,7 +22,7 @@ class RecoveryKitPresenter(
 ) : BasePresenter<RecoveryKitContract.View>(),
     RecoveryKitContract.Presenter {
 
-    private var seedPhraseProviderType: SeedPhraseProviderType? = null
+    private var seedPhraseProviderType: SeedPhraseSource? = null
     private val seedPhrase = mutableListOf<SeedPhraseWord>()
 
     override fun onSeedPhraseClicked() {
@@ -47,7 +47,9 @@ class RecoveryKitPresenter(
                 )
             }
         )
-        fetchMetadata(seedPhraseProviderType)
+        if (seedPhraseProviderType != SeedPhraseSource.MANUAL) {
+            fetchMetadata()
+        }
     }
 
     private fun setUnavailableState() {
@@ -59,10 +61,7 @@ class RecoveryKitPresenter(
         }
     }
 
-    private fun fetchMetadata(seedPhraseProviderType: SeedPhraseProviderType?) {
-        if (seedPhraseProviderType == SeedPhraseProviderType.MANUAL) {
-            return
-        }
+    private fun fetchMetadata() {
         secureStorage.getObject(
             SecureStorageContract.Key.KEY_ONBOARDING_METADATA,
             GatewayOnboardingMetadata::class

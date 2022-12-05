@@ -15,7 +15,7 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
-import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProviderType
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
@@ -76,9 +76,9 @@ class UserRestoreInteractor(
             )
 
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-            seedPhraseProvider.updateUserSeedPhrase(
+            seedPhraseProvider.setUserSeedPhrase(
                 words = result.mnemonicPhraseWords,
-                provider = SeedPhraseProviderType.WEB_AUTH
+                provider = SeedPhraseSource.WEB_AUTH
             )
 
             RestoreSuccess.SocialPlusCustomShare
@@ -131,9 +131,9 @@ class UserRestoreInteractor(
             )
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-            seedPhraseProvider.updateUserSeedPhrase(
+            seedPhraseProvider.setUserSeedPhrase(
                 words = result.mnemonicPhraseWords,
-                provider = SeedPhraseProviderType.WEB_AUTH
+                provider = SeedPhraseSource.WEB_AUTH
             )
             RestoreSuccess.DevicePlusCustomShare
         }
@@ -176,9 +176,9 @@ class UserRestoreInteractor(
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-        seedPhraseProvider.updateUserSeedPhrase(
+        seedPhraseProvider.setUserSeedPhrase(
             words = result.mnemonicPhraseWords,
-            provider = SeedPhraseProviderType.WEB_AUTH
+            provider = SeedPhraseSource.WEB_AUTH
         )
         RestoreSuccess.DevicePlusSocialShare
     } catch (web3AuthError: Web3AuthErrorResponse) {

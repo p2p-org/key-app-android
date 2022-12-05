@@ -4,7 +4,8 @@ import kotlinx.coroutines.launch
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
-import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProviderType
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
+import timber.log.Timber
 
 class UserSeedPhrasePresenter(
     private val seedPhraseProvider: SeedPhraseProvider
@@ -12,7 +13,7 @@ class UserSeedPhrasePresenter(
     UserSeedPhraseContract.Presenter {
 
     private val seedPhrase = mutableListOf<SeedPhraseWord>()
-    private var seedPhraseProviderType: SeedPhraseProviderType? = null
+    private var seedPhraseProviderType: SeedPhraseSource = SeedPhraseSource.NOT_PROVIDED
 
     override fun attach(view: UserSeedPhraseContract.View) {
         super.attach(view)
@@ -31,6 +32,7 @@ class UserSeedPhrasePresenter(
                 )
                 view.showSeedPhase(seedPhrase, isEditable = false)
             } catch (e: Throwable) {
+                Timber.e("Error on loading seed phrase $e")
                 view.showUiKitSnackBar(e.message)
             }
         }

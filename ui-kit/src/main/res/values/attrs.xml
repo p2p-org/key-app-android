@@ -60,7 +60,6 @@
         <attr name="sliderText" />
     </declare-styleable>
 
-
     <declare-styleable name="UiKitSectionHeader">
         <attr name="withIcon" format="boolean" />
         <attr name="sectionText" format="string" />
