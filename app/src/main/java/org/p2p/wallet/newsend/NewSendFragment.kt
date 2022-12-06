@@ -11,14 +11,14 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
+private const val ARG_RECIPIENT_ADDRESS = "ARG_RECIPIENT_ADDRESS"
+private const val ARG_RECIPIENT_USERNAME = "ARG_RECIPIENT_USERNAME"
+
 class NewSendFragment :
     BaseMvpFragment<NewSendContract.View, NewSendContract.Presenter>(R.layout.fragment_send_new),
     NewSendContract.View {
 
     companion object {
-        private const val ARG_RECIPIENT_ADDRESS = "ARG_RECIPIENT_ADDRESS"
-        private const val ARG_RECIPIENT_USERNAME = "ARG_RECIPIENT_USERNAME"
-
         fun create(recipientAddress: Base58String, recipientUsername: String?) =
             NewSendFragment()
                 .withArgs(
