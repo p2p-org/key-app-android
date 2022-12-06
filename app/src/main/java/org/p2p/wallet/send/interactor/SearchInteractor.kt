@@ -4,6 +4,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
+import org.p2p.wallet.feerelayer.model.RelayInfo
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.model.AddressState
@@ -52,7 +54,7 @@ class SearchInteractor(
         val hasNoTokensToSend = tokenData != null && userToken == null
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val userTokens = userInteractor.getUserTokens()
-        val hasNotEnoughFounds = !userTokens.any { it.totalInLamports > relayInfo.minimumTokenAccountRent }
+        val hasNotEnoughFunds = !userTokens.any { it.hasFundsForSend(relayInfo) }
         val isOwnAddress = isOwnPublicKey(address.base58Value)
         val addressState = AddressState(address.base58Value)
         val hasEmptyBalance = balance == ZERO_BALANCE
@@ -79,7 +81,7 @@ class SearchInteractor(
                         tokenData?.symbol.orEmpty()
                     ),
                 )
-                hasNotEnoughFounds -> SearchResult.InvalidResult(
+                hasNotEnoughFunds -> SearchResult.InvalidResult(
                     addressState = addressState,
                     errorMessage = resourcesProvider.getString(
                         R.string.search_no_founds_error,
@@ -94,4 +96,10 @@ class SearchInteractor(
     }
 
     fun isOwnPublicKey(publicKey: String) = publicKey == tokenKeyProvider.publicKey
+
+    private fun Token.Active.hasFundsForSend(relayInfo: RelayInfo): Boolean {
+        // TODO modify logic according to business needs
+        return totalInLamports > relayInfo.minimumTokenAccountRent +
+            (relayInfo.minimumRelayAccountRent * 2.toBigInteger())
+    }
 }
