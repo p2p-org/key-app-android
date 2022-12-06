@@ -12,10 +12,6 @@ import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
-import org.p2p.wallet.home.ui.new.NewSelectTokenContract
-import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
-import org.p2p.wallet.home.ui.select.SelectTokenContract
-import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
@@ -27,13 +23,6 @@ import org.p2p.wallet.receive.token.ReceiveTokenPresenter
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.ui.main.SendContract
-import org.p2p.wallet.send.ui.main.SendPresenter
-import org.p2p.wallet.send.ui.search.NewSearchContract
-import org.p2p.wallet.send.ui.search.NewSearchPresenter
-import org.p2p.wallet.send.ui.search.SearchContract
-import org.p2p.wallet.send.ui.search.SearchPresenter
 
 object HomeModule : InjectionModule {
 
@@ -108,30 +97,7 @@ object HomeModule : InjectionModule {
                 renBtcAnalytics = get()
             )
         }
-        factory<SendContract.Presenter> {
-            SendPresenter(
-                sendInteractor = get(),
-                addressInteractor = get(),
-                userInteractor = get(),
-                searchInteractor = get(),
-                burnBtcInteractor = get(),
-                settingsInteractor = get(),
-                tokenKeyProvider = get(),
-                browseAnalytics = get(),
-                analyticsInteractor = get(),
-                sendAnalytics = get(),
-                transactionManager = get(),
-                resourcesProvider = get(),
-                usernameDomainFeatureToggle = get(),
-                dispatchers = get()
-            )
-        }
-        factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            SearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
-        }
-        factory<NewSearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            NewSearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
-        }
+
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(
                 defaultToken = token,
@@ -141,12 +107,8 @@ object HomeModule : InjectionModule {
                 receiveAnalytics = get()
             )
         }
-        factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
-            SelectTokenPresenter(tokens)
-        }
 
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
-        factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class
     }
 }
