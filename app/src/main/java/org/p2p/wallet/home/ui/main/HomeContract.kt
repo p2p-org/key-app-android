@@ -23,10 +23,13 @@ interface HomeContract {
         fun showBuyInfoScreen(token: Token)
         fun showNewBuyScreen(token: Token)
         fun showOldBuyScreen(token: Token)
+        fun showSendNoToken(fallbackToken: Token)
+        fun showSend(isNewSendAvailable: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun onBuyClicked()
+        fun onSendClicked()
         fun onBuyTokenClicked(token: Token)
         fun onInfoBuyTokenClicked(token: Token)
         fun refreshTokens()

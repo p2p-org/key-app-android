@@ -19,5 +19,6 @@
 
     <!-- UiKitAmountsView -->
     <string name="amounts_view_hint">0.0</string>
+    <string name="send_buy_or_receive_crypto">Buy or receive crypto to continue</string>
 
 </resources>
