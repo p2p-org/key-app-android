@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    tools:background="@color/icons_rain"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <TextView
+        android:id="@+id/textViewSendLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="You will send"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="You will send" />
+
+    <TextView
+        android:id="@+id/textViewFreeTransactions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="none"
+        android:gravity="center|end"
+        android:maxLines="1"
+        android:text="Enjoy free transactions"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_sky"
+        app:drawableEndCompat="@drawable/ic_info_outline"
+        app:drawableTint="@color/icons_sky"
+        app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerToken"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:background="@drawable/bg_rounded_solid_snow_12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewFreeTransactions">
+
+        <ImageView
+            android:id="@+id/imageViewTokenIcon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/textViewTokenName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+            app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
+            app:layout_constraintTop_toTopOf="@+id/imageViewTokenIcon"
+            tools:text="Solana" />
+
+        <TextView
+            android:id="@+id/textViewSwitchTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
+            app:drawableStartCompat="@drawable/ic_main_wallet"
+            app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTokenName"
+            tools:text="4.22222222222" />
+
+        <TextView
+            android:id="@+id/textViewTokenAmountInUsd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+            app:layout_constraintBottom_toBottomOf="@+id/imageViewSelectToken"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewSelectToken"
+            app:layout_constraintTop_toTopOf="@+id/imageViewSelectToken"
+            tools:text="$89.99" />
+
+        <ImageView
+            android:id="@+id/imageViewSelectToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_arrow_drop_down" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerAmount"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_rounded_solid_snow_12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerToken">
+
+        <TextView
+            android:id="@+id/textViewAmountType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewSwitchTo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="USD" />
+
+        <TextView
+            android:id="@+id/textViewTokenWalletAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Tap to switch to [tokenname]"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
+            app:drawableStartCompat="@drawable/ic_main_wallet"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewSwitchTo"
+            app:layout_constraintTop_toBottomOf="@+id/textViewAmountType" />
+
+        <ImageView
+            android:id="@+id/imageViewSwitchTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_navigation_arrow_upward" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</merge>
