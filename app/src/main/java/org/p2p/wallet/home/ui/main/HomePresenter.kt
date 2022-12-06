@@ -137,9 +137,9 @@ class HomePresenter(
     override fun onSendClicked() {
         fallbackUsdcTokenForBuy?.let { token ->
             if (state.tokens.isEmpty()) {
-                view?.showSendNoToken(token)
+                view?.showSendNoTokens(token)
             } else {
-                view?.showSend(newSendEnabledFeatureToggle.isFeatureEnabled)
+                view?.navigateToSend(newSendEnabledFeatureToggle.isFeatureEnabled)
             }
         }
     }
