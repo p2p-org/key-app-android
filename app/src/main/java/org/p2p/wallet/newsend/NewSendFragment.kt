@@ -37,5 +37,6 @@ class NewSendFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.title = recipientUsername ?: recipientAddress
+        binding.sliderSend.setActionText("Enter Amount")
     }
 }
