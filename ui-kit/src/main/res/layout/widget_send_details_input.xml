@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="16dp"
     tools:background="@color/icons_rain"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
@@ -16,7 +16,6 @@
         android:layout_marginStart="8dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="You will send"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
@@ -32,21 +31,22 @@
         android:ellipsize="none"
         android:gravity="center|end"
         android:maxLines="1"
-        android:text="Enjoy free transactions"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_sky"
-        app:drawableEndCompat="@drawable/ic_info_outline"
+        app:drawableEndCompat="@drawable/ic_info_solid"
         app:drawableTint="@color/icons_sky"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Fees: 0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerToken"
         android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:background="@drawable/bg_rounded_solid_snow_12"
+        android:foreground="@drawable/ripple_button_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewFreeTransactions">
@@ -55,7 +55,8 @@
             android:id="@+id/imageViewTokenIcon"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginVertical="12dp"
+            android:layout_marginStart="20dp"
             app:cornerRadius="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -68,20 +69,23 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+            app:layout_constraintBottom_toTopOf="@id/textViewTokenTotal"
             app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
             app:layout_constraintTop_toTopOf="@+id/imageViewTokenIcon"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:text="Solana" />
 
         <TextView
-            android:id="@+id/textViewSwitchTo"
+            android:id="@+id/textViewTokenTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:gravity="center"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             android:textColor="@color/text_mountain"
             app:drawableStartCompat="@drawable/ic_main_wallet"
+            app:layout_constraintBottom_toBottomOf="@+id/imageViewTokenIcon"
             app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
             app:layout_constraintTop_toBottomOf="@+id/textViewTokenName"
             tools:text="4.22222222222" />
@@ -90,7 +94,7 @@
             android:id="@+id/textViewTokenAmountInUsd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="12dp"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewSelectToken"
             app:layout_constraintEnd_toStartOf="@+id/imageViewSelectToken"
@@ -101,18 +105,20 @@
             android:id="@+id/imageViewSelectToken"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="12dp"
+            android:rotation="90"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_arrow_drop_down" />
+            app:srcCompat="@drawable/ic_chevron_right"
+            app:tint="@color/icons_night" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerAmount"
         android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_rounded_solid_snow_12"
         app:layout_constraintEnd_toEndOf="parent"
@@ -120,37 +126,99 @@
         app:layout_constraintTop_toBottomOf="@+id/containerToken">
 
         <TextView
-            android:id="@+id/textViewAmountType"
+            android:id="@+id/textViewMainAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="12dp"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
             app:layout_constraintEnd_toStartOf="@+id/imageViewSwitchTo"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="USD" />
 
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/editTextAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/transparent"
+            android:digits="0123456789."
+            android:gravity="center_vertical|start"
+            android:hint="@string/amounts_view_zero_hint"
+            android:imeOptions="actionDone"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:minWidth="30dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+            android:textColor="@color/text_night"
+            android:textColorHint="@color/text_silver"
+            app:layout_constraintBottom_toBottomOf="@id/textViewMainAmount"
+            app:layout_constraintEnd_toStartOf="@id/textViewMainAmount"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textViewMainAmount"
+            tools:ignore="TouchTargetSizeCheck" />
+
         <TextView
-            android:id="@+id/textViewTokenWalletAmount"
+            android:id="@+id/textViewMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_rounded_solid_smoke_14"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="@string/amounts_max"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toBottomOf="@id/editTextAmount"
+            app:layout_constraintStart_toEndOf="@id/editTextAmount"
+            app:layout_constraintTop_toTopOf="@id/editTextAmount" />
+
+        <TextView
+            android:id="@+id/textViewTokenSwitchLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center"
-            android:text="Tap to switch to [tokenname]"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             android:textColor="@color/text_mountain"
-            app:drawableStartCompat="@drawable/ic_main_wallet"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageViewSwitchTo"
-            app:layout_constraintTop_toBottomOf="@+id/textViewAmountType" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewMainAmount"
+            tools:text="Tap to switch to [tokenName]" />
+
+        <TextView
+            android:id="@+id/textViewSecondAmount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="20dp"
+            android:autoSizeMinTextSize="8sp"
+            android:autoSizeTextType="uniform"
+            android:gravity="center_vertical|start"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/textViewTokenSwitchLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextAmount"
+            tools:text="12.30 USD" />
 
         <ImageView
             android:id="@+id/imageViewSwitchTo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_navigation_arrow_upward" />
+            app:srcCompat="@drawable/ic_arrows" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </merge>

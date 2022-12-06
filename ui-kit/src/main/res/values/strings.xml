@@ -19,5 +19,7 @@
 
     <!-- UiKitAmountsView -->
     <string name="amounts_view_hint">0.0</string>
+    <string name="amounts_view_zero_hint">0</string>
+    <string name="amounts_max">MAX</string>
 
 </resources>
