@@ -89,35 +89,7 @@ object HomeModule : InjectionModule {
                 renBtcAnalytics = get()
             )
         }
-        factory<SendContract.Presenter> {
-            SendPresenter(
-                sendInteractor = get(),
-                addressInteractor = get(),
-                userInteractor = get(),
-                searchInteractor = get(),
-                burnBtcInteractor = get(),
-                settingsInteractor = get(),
-                tokenKeyProvider = get(),
-                browseAnalytics = get(),
-                analyticsInteractor = get(),
-                sendAnalytics = get(),
-                transactionManager = get(),
-                resourcesProvider = get(),
-                usernameDomainFeatureToggle = get(),
-                dispatchers = get()
-            )
-        }
-        factory<SearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            SearchPresenter(usernames = usernames, searchInteractor = get(), usernameDomainFeatureToggle = get())
-        }
-        factory<NewSearchContract.Presenter> { (usernames: List<SearchResult>) ->
-            NewSearchPresenter(
-                usernames = usernames,
-                searchInteractor = get(),
-                usernameDomainFeatureToggle = get(),
-                userInteractor = get()
-            )
-        }
+
         factory<ReceiveTokenContract.Presenter> { (token: Token.Active) ->
             ReceiveTokenPresenter(
                 defaultToken = token,

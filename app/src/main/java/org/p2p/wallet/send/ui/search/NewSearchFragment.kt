@@ -1,12 +1,12 @@
 package org.p2p.wallet.send.ui.search
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -17,6 +17,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.newsend.NewSendFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.model.SearchResult
