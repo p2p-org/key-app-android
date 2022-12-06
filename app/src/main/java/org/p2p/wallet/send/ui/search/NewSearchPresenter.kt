@@ -89,7 +89,7 @@ class NewSearchPresenter(
     override fun onBuyClicked() {
         usdcTokenForBuy?.let {
             view?.showBuyScreen(it)
-        } ?: Timber.w("Unable to find USDC TokenForBuy!")
+        } ?: Timber.i("Unable to find USDC TokenForBuy!")
     }
 
     private suspend fun validateAndSearch(target: SearchTarget) {
