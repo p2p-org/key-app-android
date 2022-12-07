@@ -15,18 +15,19 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val EXTRA_DEFAULT_TOKEN = "EXTRA_DEFAULT_TOKEN"
+private const val ARG_DEFAULT_TOKEN = "ARG" +
+    "_DEFAULT_TOKEN"
 
-class NoTokensSendFragment : BaseFragment(R.layout.fragment_send_no_token) {
+class SendNoTokensFragment : BaseFragment(R.layout.fragment_send_no_token) {
 
     companion object {
-        fun create(token: Token): Fragment = NoTokensSendFragment().withArgs(
-            EXTRA_DEFAULT_TOKEN to token
+        fun create(token: Token): Fragment = SendNoTokensFragment().withArgs(
+            ARG_DEFAULT_TOKEN to token
         )
     }
 
     private val binding: FragmentSendNoTokenBinding by viewBinding()
-    private val defaultTokenToBuy: Token by args(EXTRA_DEFAULT_TOKEN)
+    private val defaultTokenToBuy: Token by args(ARG_DEFAULT_TOKEN)
     override val navBarColor: Int = R.color.bg_night
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

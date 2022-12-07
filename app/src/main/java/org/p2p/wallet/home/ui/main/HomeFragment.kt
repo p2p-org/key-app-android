@@ -33,7 +33,7 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.send.ui.NoTokensSendFragment
+import org.p2p.wallet.send.ui.SendNoTokensFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
@@ -233,7 +233,7 @@ class HomeFragment :
     }
 
     override fun showSendNoTokens(fallbackToken: Token) {
-        replaceFragment(NoTokensSendFragment.create(fallbackToken))
+        replaceFragment(SendNoTokensFragment.create(fallbackToken))
     }
 
     override fun navigateToSend(isNewSendAvailable: Boolean) {
