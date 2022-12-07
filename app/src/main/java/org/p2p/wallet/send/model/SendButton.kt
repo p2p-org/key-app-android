@@ -6,10 +6,10 @@ import androidx.annotation.StringRes
 import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.utils.isLessThan
-import org.p2p.wallet.utils.isNotZero
-import org.p2p.wallet.utils.toLamports
+import org.p2p.core.token.Token
+import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.toLamports
 import java.math.BigDecimal
 import java.math.BigInteger
 

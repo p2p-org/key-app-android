@@ -2,7 +2,7 @@ package org.p2p.wallet.swap.model.orca
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.swap.model.Slippage
 
 @Parcelize

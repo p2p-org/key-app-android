@@ -19,7 +19,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -33,8 +33,8 @@ import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.model.TokenData
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.token.TokenData
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
 import java.math.BigInteger

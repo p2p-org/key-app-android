@@ -16,7 +16,7 @@
 // import org.p2p.wallet.swap.serum.utils.SerumSwapData.SRMUSDCMarket
 // import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDC
 // import org.p2p.wallet.swap.serum.utils.SerumSwapData.USDT
-// import org.p2p.wallet.utils.scaleMedium
+// import org.p2p.core.utils.scaleMedium
 // import org.robolectric.RobolectricTestRunner
 // import java.math.BigDecimal
 // import java.math.BigInteger

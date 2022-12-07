@@ -4,9 +4,9 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.TokenSwapProgram
 import org.p2p.wallet.swap.model.AccountBalance
 import org.p2p.wallet.utils.divideSafe
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.isZeroOrLess
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.isZeroOrLess
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigDecimal

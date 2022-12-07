@@ -17,7 +17,7 @@ import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.Constants
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.toByteArray
 import org.p2p.wallet.utils.toJsonObject
 import java.text.SimpleDateFormat

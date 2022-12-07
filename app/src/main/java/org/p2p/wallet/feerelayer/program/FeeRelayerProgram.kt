@@ -8,7 +8,7 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.ByteUtils
 import org.p2p.wallet.feerelayer.model.SwapData
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.io.ByteArrayOutputStream
 import java.io.IOException

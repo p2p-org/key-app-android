@@ -3,13 +3,13 @@ package org.p2p.wallet.swap.model
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.R
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.SwapFee
-import org.p2p.wallet.utils.isLessThan
-import org.p2p.wallet.utils.isNotZero
-import org.p2p.wallet.utils.toBigDecimalOrZero
-import org.p2p.wallet.utils.toLamports
+import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.core.utils.toLamports
 
 class SwapButton(
     private val bestPoolPair: OrcaPoolsPair?,

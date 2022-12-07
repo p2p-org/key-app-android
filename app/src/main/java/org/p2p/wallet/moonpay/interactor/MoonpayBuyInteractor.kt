@@ -2,7 +2,7 @@ package org.p2p.wallet.moonpay.interactor
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
@@ -11,8 +11,8 @@ import org.p2p.wallet.moonpay.model.MoonpayBuyQuote
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.NewMoonpayRepository
-import org.p2p.wallet.utils.isLessThan
-import org.p2p.wallet.utils.isMoreThan
+import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isMoreThan
 import java.math.BigDecimal
 
 private const val CURRENCY_AMOUNT_FOR_PRICE_REQUEST = "1"

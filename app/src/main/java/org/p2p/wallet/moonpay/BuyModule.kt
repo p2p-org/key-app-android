@@ -9,7 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.moonpay.api.MoonpayApi
 import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor

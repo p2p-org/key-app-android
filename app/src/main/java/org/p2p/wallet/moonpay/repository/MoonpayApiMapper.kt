@@ -3,8 +3,8 @@ package org.p2p.wallet.moonpay.repository
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.moonpay.api.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.model.BuyCurrency
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
-import org.p2p.wallet.utils.Constants.USDC_SYMBOL
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.utils.emptyString
 
 class MoonpayApiMapper {

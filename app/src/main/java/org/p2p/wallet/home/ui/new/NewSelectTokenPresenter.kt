@@ -9,7 +9,7 @@ import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.NOT_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.TOP_ROUNDED
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 
 private const val QUERY_MIN_LENGTH = 2
 

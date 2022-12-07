@@ -16,7 +16,7 @@ import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.scaleMedium
+import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 

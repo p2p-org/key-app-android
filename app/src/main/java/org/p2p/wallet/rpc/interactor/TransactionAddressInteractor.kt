@@ -8,7 +8,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.model.AddressValidation
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.core.token.TokenData
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Base58String

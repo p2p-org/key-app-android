@@ -21,7 +21,7 @@ import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
@@ -38,9 +38,9 @@ import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.utils.Constants
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.wallet.utils.formatUsd
+import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor

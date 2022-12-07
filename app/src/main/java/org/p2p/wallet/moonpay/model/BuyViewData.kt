@@ -2,9 +2,9 @@ package org.p2p.wallet.moonpay.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.Constants.USD_SYMBOL
-import org.p2p.wallet.utils.asCurrency
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.USD_SYMBOL
+import org.p2p.core.utils.asCurrency
 import org.p2p.wallet.utils.emptyString
 import java.math.BigDecimal
 

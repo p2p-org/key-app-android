@@ -14,7 +14,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.list.TokenListFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
@@ -22,7 +22,7 @@ import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.utils.Constants
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack

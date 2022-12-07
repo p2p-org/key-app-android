@@ -2,7 +2,7 @@ package org.p2p.wallet.user.interactor
 
 import androidx.core.content.edit
 import android.content.SharedPreferences
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository

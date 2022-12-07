@@ -1,5 +1,6 @@
 package org.p2p.wallet.utils
 
+import org.p2p.core.utils.isZero
 import java.math.BigDecimal
 import java.math.BigInteger
 

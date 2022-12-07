@@ -2,9 +2,9 @@ package org.p2p.wallet.send.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.utils.asApproximateUsd
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.utils.asApproximateUsd
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.orZero
 import java.math.BigDecimal
 
 @Parcelize

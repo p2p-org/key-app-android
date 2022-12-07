@@ -16,8 +16,8 @@ import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.wallet.utils.toLamports
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.toLamports
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigDecimal
 import java.math.BigInteger

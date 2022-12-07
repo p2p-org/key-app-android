@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.common.date.isSameAs
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.ui.recycler.PagingState

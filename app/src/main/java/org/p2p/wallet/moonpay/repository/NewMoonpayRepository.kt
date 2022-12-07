@@ -1,6 +1,6 @@
 package org.p2p.wallet.moonpay.repository
 
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.moonpay.api.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.api.MoonpayIpAddressResponse
 import java.math.BigDecimal

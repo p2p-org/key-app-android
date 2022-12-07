@@ -1,7 +1,7 @@
 package org.p2p.wallet.solend.model
 
 import android.os.Parcelable
-import org.p2p.uikit.utils.emptyString
+import org.p2p.wallet.utils.emptyString
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

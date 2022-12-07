@@ -10,7 +10,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
@@ -45,8 +45,9 @@ class TokenViewHolder(
         layoutHide.clipToOutline = false
         layoutHide.clipToPadding = false
 
-        if (!token.iconUrl.isNullOrEmpty()) {
-            loadImage(tokenImageView, token.iconUrl)
+        val iconUrl = token.iconUrl
+        if (!iconUrl.isNullOrEmpty()) {
+            loadImage(tokenImageView, iconUrl)
         }
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenName

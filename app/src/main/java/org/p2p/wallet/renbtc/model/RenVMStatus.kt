@@ -2,7 +2,7 @@ package org.p2p.wallet.renbtc.model
 
 import android.content.Context
 import org.p2p.wallet.R
-import org.p2p.wallet.utils.scaleMedium
+import org.p2p.core.utils.scaleMedium
 import java.math.BigDecimal
 
 sealed class RenVMStatus(

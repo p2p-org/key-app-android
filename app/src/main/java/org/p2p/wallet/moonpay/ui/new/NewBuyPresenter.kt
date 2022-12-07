@@ -11,7 +11,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.BANK_TRANSFER_UK_CODE
@@ -25,15 +25,15 @@ import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.Constants.USD_SYMBOL
-import org.p2p.wallet.utils.asCurrency
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.USD_SYMBOL
+import org.p2p.core.utils.asCurrency
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.formatUsd
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.scaleShort
-import org.p2p.wallet.utils.toBigDecimalOrZero
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.toBigDecimalOrZero
 import timber.log.Timber
 import java.math.BigDecimal
 

@@ -89,6 +89,16 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
         }
     }
 
+    fun setActionText(@StringRes actionTextRes: Int) = with(binding) {
+        textViewAction.setText(actionTextRes)
+        textViewActionTop.setText(actionTextRes)
+    }
+
+    fun setActionText(actionText: String) = with(binding) {
+        textViewAction.text = actionText
+        textViewActionTop.text = actionText
+    }
+
     fun setLightStyle(isLight: Boolean) {
         val nightColor = getColor(R.color.night)
         val limeColor = getColor(R.color.lime)

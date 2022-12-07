@@ -1,11 +1,11 @@
 package org.p2p.wallet.solend.model
 
 import org.p2p.wallet.feerelayer.model.TokenAccount
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.isNotZero
-import org.p2p.wallet.utils.isZeroOrLess
-import org.p2p.wallet.utils.scaleLong
-import org.p2p.wallet.utils.scaleShort
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.isZeroOrLess
+import org.p2p.core.utils.scaleLong
+import org.p2p.core.utils.scaleShort
 import java.math.BigDecimal
 import java.math.BigInteger
 

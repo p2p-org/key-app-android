@@ -6,7 +6,7 @@ import org.p2p.wallet.auth.gateway.api.request.GatewayServiceRequest
 import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RestoreWalletRequest
 import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.Constants
+import org.p2p.core.utils.Constants
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.R
-import org.p2p.wallet.utils.isNotZero
-import org.p2p.wallet.utils.scaleMedium
+import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.scaleMedium
 import java.math.BigDecimal
 
 /* Five minutes */
