@@ -51,15 +51,7 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
             )
         }
-        factory {
-            SearchInteractor(
-                usernameRepository = get(),
-                userInteractor = get(),
-                tokenKeyProvider = get(),
-                transactionAddressInteractor = get(),
-                resourcesProvider = get()
-            )
-        }
+        factoryOf(::SearchInteractor)
     }
 
     private fun Module.initPresentationLayer() {

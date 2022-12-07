@@ -3,6 +3,7 @@ package org.p2p.wallet.send.ui.search
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.send.model.SearchResult
 
 interface NewSearchContract {
@@ -17,8 +18,10 @@ interface NewSearchContract {
         fun showErrorState()
         fun setListBackgroundVisibility(isVisible: Boolean)
         fun setContinueButtonVisibility(isVisible: Boolean)
+        fun setBuyReceiveButtonsVisibility(isVisible: Boolean)
         fun submitSearchResult(searchResult: SearchResult)
         fun showScanner()
+        fun showBuyScreen(token: Token)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -27,5 +30,6 @@ interface NewSearchContract {
         fun onSearchResultClick(result: SearchResult)
         fun onScanClicked()
         fun onContinueClicked()
+        fun onBuyClicked()
     }
 }

@@ -8,9 +8,12 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.findInstance
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
@@ -20,11 +23,19 @@ private const val DELAY_IN_MS = 250L
 class NewSearchPresenter(
     private val usernames: List<SearchResult>?,
     private val searchInteractor: SearchInteractor,
-    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle
+    private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
+    private val userInteractor: UserInteractor,
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
     private var searchJob: Job? = null
     private var lastResult: List<SearchResult> = emptyList()
+    private var usdcTokenForBuy: Token? = null
+
+    init {
+        launch {
+            usdcTokenForBuy = userInteractor.getTokensForBuy(listOf(Constants.USDC_SYMBOL)).firstOrNull()
+        }
+    }
 
     override fun loadInitialData() {
         val data = usernames
@@ -75,6 +86,12 @@ class NewSearchPresenter(
         }
     }
 
+    override fun onBuyClicked() {
+        usdcTokenForBuy?.let {
+            view?.showBuyScreen(it)
+        } ?: Timber.i("Unable to find USDC TokenForBuy!")
+    }
+
     private suspend fun validateAndSearch(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
@@ -120,7 +137,9 @@ class NewSearchPresenter(
             showMessage(R.string.search_found)
             showSearchResult(result)
             setContinueButtonVisibility(result.findInstance<SearchResult.EmptyBalance>() != null)
-            setListBackgroundVisibility(result.findInstance<SearchResult.InvalidResult>() == null)
+            val invalidResult = result.findInstance<SearchResult.InvalidResult>()
+            setBuyReceiveButtonsVisibility(invalidResult?.canReceiveAndBuy == true)
+            setListBackgroundVisibility(invalidResult == null)
         }
     }
 
