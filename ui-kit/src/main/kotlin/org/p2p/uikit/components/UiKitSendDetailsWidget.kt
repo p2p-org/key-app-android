@@ -16,8 +16,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     private val binding: WidgetSendDetailsInputBinding = inflateViewBinding()
 
     var amountListener: ((input: String) -> Unit)? = null
-    val switchListener: (() -> Unit)? = null
-    val tokenClickListener: (() -> Unit)? = null
+    var switchListener: (() -> Unit)? = null
+    var tokenClickListener: (() -> Unit)? = null
 
     val imageViewTokenIcon
         get() = binding.imageViewTokenIcon
