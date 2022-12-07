@@ -7,6 +7,8 @@ class FeeRelayerInfoRequest(
     val operationType: String,
     @SerializedName("device_type")
     val deviceType: String,
+    @SerializedName("environment")
+    val environment: String,
     @SerializedName("currency")
     val currency: String,
     @SerializedName("build")
