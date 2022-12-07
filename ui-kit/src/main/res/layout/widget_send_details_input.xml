@@ -16,12 +16,12 @@
         android:layout_marginStart="8dp"
         android:ellipsize="end"
         android:maxLines="1"
+        android:text="@string/send_label"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="You will send" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewFreeTransactions"
@@ -176,7 +176,7 @@
             app:layout_constraintTop_toTopOf="@id/editTextAmount" />
 
         <TextView
-            android:id="@+id/textViewTokenSwitchLabel"
+            android:id="@+id/textViewAmountTypeSwitchLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -204,7 +204,7 @@
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             android:textColor="@color/text_mountain"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/textViewTokenSwitchLabel"
+            app:layout_constraintEnd_toStartOf="@id/textViewAmountTypeSwitchLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextAmount"
             tools:text="12.30 USD" />

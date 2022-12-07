@@ -22,4 +22,6 @@
     <string name="amounts_view_zero_hint">0</string>
     <string name="amounts_max">MAX</string>
 
+    <string name="send_label">You will send</string>
+
 </resources>

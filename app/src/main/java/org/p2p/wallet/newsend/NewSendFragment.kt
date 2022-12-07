@@ -43,7 +43,6 @@ class NewSendFragment :
         binding.toolbar.title = recipientUsername ?: recipientAddress
         // TODO PWN-6090 make logic of setting token!
         binding.widgetSendDetails.apply {
-            setSendLabel(getString(R.string.send_label))
             setSwitchLabel(
                 getString(R.string.send_switch_to_token, Constants.SOL_SYMBOL)
             )

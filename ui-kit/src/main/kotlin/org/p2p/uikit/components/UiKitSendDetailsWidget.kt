@@ -55,10 +55,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     }
 
     fun setSwitchLabel(text: String) {
-        binding.textViewTokenSwitchLabel.text = text
+        binding.textViewAmountTypeSwitchLabel.text = text
     }
 
-    fun setSendLabel(text: String) {
-        binding.textViewSendLabel.text = text
-    }
 }
