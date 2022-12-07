@@ -10,7 +10,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
@@ -122,7 +122,7 @@ object InfrastructureModule : InjectionModule {
             )
         } bind AccountStorageContract::class
 
-        single { GlideManager(get()) }
+        single { org.p2p.core.glide.GlideManager(get()) }
 
         single {
             val updateHandlers = get<List<UpdateHandler>>(named<UpdateHandler>())

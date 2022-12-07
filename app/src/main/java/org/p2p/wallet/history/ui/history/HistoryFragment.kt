@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -31,7 +31,7 @@ class HistoryFragment :
     override val presenter: HistoryContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
 
-    private val glideManager: GlideManager by inject()
+    private val glideManager: org.p2p.core.glide.GlideManager by inject()
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             glideManager = glideManager,

@@ -7,7 +7,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.res.use
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionSwapImageBinding
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 
@@ -36,7 +36,7 @@ class TransactionSwapImageView @JvmOverloads constructor(
     }
 
     fun setSourceAndDestinationImages(
-        glideManager: GlideManager,
+        glideManager: org.p2p.core.glide.GlideManager,
         sourceIconUrl: String,
         destinationIconUrl: String
     ) {

@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.parcelize.Parcelize
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.glide.SvgSoftwareLayerSetter
 
 sealed class DrawableContainer : Parcelable {
 
@@ -37,7 +37,7 @@ sealed class DrawableContainer : Parcelable {
         override fun applyTo(imageView: ImageView) {
             val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(imageView.context)
                 .`as`(PictureDrawable::class.java)
-                .listener(SvgSoftwareLayerSetter())
+                .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
 
             if (iconUrl.contains(".svg")) {
                 requestBuilder

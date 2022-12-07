@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSolendEarnBinding
@@ -29,7 +29,7 @@ class SolendEarnViewHolder(
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
-        .listener(SvgSoftwareLayerSetter())
+        .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
 
     @SuppressLint("SetTextI18n")
     fun onBind(item: SolendDepositToken) = with(binding) {

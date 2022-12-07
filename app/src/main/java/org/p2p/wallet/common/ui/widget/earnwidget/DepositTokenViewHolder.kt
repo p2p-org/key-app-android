@@ -1,11 +1,11 @@
 package org.p2p.wallet.common.ui.widget.earnwidget
 
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.databinding.ItemDepositTokenBinding
 
 class DepositTokenViewHolder(
     private val binding: ItemDepositTokenBinding,
-    private val glideManager: GlideManager
+    private val glideManager: org.p2p.core.glide.GlideManager
 ) {
 
     companion object {

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
@@ -41,7 +41,7 @@ class SendConfirmBottomSheet(
 
     private val data: SendConfirmData by args(EXTRA_DATA)
 
-    private val glideManager: GlideManager by inject()
+    private val glideManager: org.p2p.core.glide.GlideManager by inject()
 
     private val authInteractor: AuthInteractor by inject()
 

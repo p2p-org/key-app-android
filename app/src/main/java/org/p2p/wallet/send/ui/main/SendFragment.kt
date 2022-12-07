@@ -18,11 +18,11 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.glide.GlideManager
-import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.glide.GlideManager
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
-import org.p2p.uikit.utils.hideKeyboard
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -101,7 +101,7 @@ class SendFragment :
     override val navBarColor: Int = R.color.bg_snow
 
     override val presenter: SendContract.Presenter by inject()
-    private val glideManager: GlideManager by inject()
+    private val glideManager: org.p2p.core.glide.GlideManager by inject()
     private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 
     private val binding: FragmentSendBinding by viewBinding()
@@ -168,7 +168,7 @@ class SendFragment :
     }
 
     override fun onDestroyView() {
-        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
         super.onDestroyView()
     }
 
@@ -248,7 +248,7 @@ class SendFragment :
     }
 
     private fun installAmountWatcher() {
-        AmountFractionTextWatcher.installOn(binding.amountEditText) {
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.installOn(binding.amountEditText) {
             presenter.setNewSourceAmount(it)
         }
     }
@@ -492,7 +492,7 @@ class SendFragment :
         with(binding.amountEditText) {
             val textValue = value.toPlainString()
             if (forced) {
-                AmountFractionTextWatcher.uninstallFrom(this)
+                org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(this)
                 setText(textValue)
                 setSelection(textValue.length)
                 installAmountWatcher()

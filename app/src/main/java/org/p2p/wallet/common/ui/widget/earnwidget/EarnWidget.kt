@@ -8,8 +8,8 @@ import com.robinhood.ticker.TickerUtils
 import com.robinhood.ticker.TickerView
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.p2p.uikit.glide.GlideManager
-import org.p2p.uikit.utils.DecimalFormatter
+import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.DecimalFormatter
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
@@ -35,7 +35,7 @@ class EarnWidget @JvmOverloads constructor(
 
     private val binding: WidgetEarnViewBinding = inflateViewBinding()
 
-    private val glideManager: GlideManager by inject()
+    private val glideManager: org.p2p.core.glide.GlideManager by inject()
 
     var currentState: EarnWidgetState = EarnWidgetState.Idle
 

@@ -1,4 +1,4 @@
-package org.p2p.uikit.glide
+package org.p2p.core.glide
 
 import android.content.Context
 import android.graphics.drawable.PictureDrawable

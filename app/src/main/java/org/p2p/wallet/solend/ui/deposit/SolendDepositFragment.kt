@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.toPx
@@ -59,7 +59,7 @@ class SolendDepositFragment :
         parametersOf(deposit)
     }
 
-    private val glideManager: GlideManager by inject()
+    private val glideManager: org.p2p.core.glide.GlideManager by inject()
 
     private val binding: FragmentSolendDepositBinding by viewBinding()
 

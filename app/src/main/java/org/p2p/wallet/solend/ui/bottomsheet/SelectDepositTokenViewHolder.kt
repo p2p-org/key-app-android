@@ -7,7 +7,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSelectionViewHolder
 import org.p2p.wallet.databinding.ItemSolendDepositTokenBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
@@ -28,7 +28,7 @@ class SelectDepositTokenViewHolder(
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
-        .listener(SvgSoftwareLayerSetter())
+        .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
 
     override fun onBind(item: SolendDepositToken, selectedItem: SolendDepositToken?) {
         super.onBind(item, selectedItem)

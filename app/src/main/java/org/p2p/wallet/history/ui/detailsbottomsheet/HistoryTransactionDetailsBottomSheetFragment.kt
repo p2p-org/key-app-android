@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
@@ -51,7 +51,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
     private val binding: DialogHistoryTransactionDetailsBinding by viewBinding()
 
-    private val glideManager: GlideManager by inject()
+    private val glideManager: org.p2p.core.glide.GlideManager by inject()
 
     override val presenter: HistoryTransactionDetailsContract.Presenter by inject { parametersOf(state) }
 

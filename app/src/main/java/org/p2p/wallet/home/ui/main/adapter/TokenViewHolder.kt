@@ -10,7 +10,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
@@ -25,7 +25,7 @@ class TokenViewHolder(
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
-        .listener(SvgSoftwareLayerSetter())
+        .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
 
     companion object {
         private const val IMAGE_SIZE = 56

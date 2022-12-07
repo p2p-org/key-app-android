@@ -13,7 +13,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -240,7 +240,7 @@ class OrcaSwapFragment :
     }
 
     override fun showNewSourceAmount(amount: String) {
-        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
         binding.amountEditText.setText(amount)
         binding.amountEditText.setSelection(amount.length)
         setupAmountFractionListener()
@@ -338,13 +338,13 @@ class OrcaSwapFragment :
     }
 
     private fun setupAmountFractionListener() {
-        AmountFractionTextWatcher.installOn(binding.amountEditText) {
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.installOn(binding.amountEditText) {
             presenter.setSourceAmount(it)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
     }
 }

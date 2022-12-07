@@ -4,6 +4,7 @@ import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import org.p2p.core.utils.emptyString
 
 infix fun TextView.withTextOrGone(text: CharSequence?) {
     if (text.isNullOrEmpty()) {

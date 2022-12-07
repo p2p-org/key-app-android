@@ -2,7 +2,7 @@ package org.p2p.wallet.history.ui.token.adapter.holders
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTransactionSwapBinding
 import org.p2p.wallet.history.model.HistoryItem
@@ -16,7 +16,7 @@ import timber.log.Timber
 
 class TransactionSwapViewHolder(
     parent: ViewGroup,
-    private val glideManager: GlideManager,
+    private val glideManager: org.p2p.core.glide.GlideManager,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
     private val binding: ItemTransactionSwapBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
