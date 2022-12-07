@@ -186,7 +186,7 @@ android {
     }
 }
 dependencies {
-    implementation project(':solanaj')
+    implementation project(':solana')
     implementation project(':ui-kit')
     implementation project(':core')
     implementation files('libs/borshj-0.0.0.jar')
