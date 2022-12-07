@@ -3,10 +3,10 @@ package org.p2p.wallet.send.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendNoTokenBinding
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.utils.args
@@ -15,8 +15,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val ARG_DEFAULT_TOKEN = "ARG" +
-    "_DEFAULT_TOKEN"
+private const val ARG_DEFAULT_TOKEN = "ARG_DEFAULT_TOKEN"
 
 class SendNoTokensFragment : BaseFragment(R.layout.fragment_send_no_token) {
 
