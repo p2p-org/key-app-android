@@ -36,7 +36,7 @@ class SelectTokenViewHolder(
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
-        .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
+        .listener(SvgSoftwareLayerSetter())
 
     private val tokenImageView = binding.tokenImageView
     private val wrappedImageView = binding.wrappedImageView

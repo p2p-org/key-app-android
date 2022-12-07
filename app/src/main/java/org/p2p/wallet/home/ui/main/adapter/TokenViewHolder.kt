@@ -25,7 +25,7 @@ class TokenViewHolder(
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
-        .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
+        .listener(SvgSoftwareLayerSetter())
 
     companion object {
         private const val IMAGE_SIZE = 56

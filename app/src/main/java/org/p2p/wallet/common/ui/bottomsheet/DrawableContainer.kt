@@ -37,7 +37,7 @@ sealed class DrawableContainer : Parcelable {
         override fun applyTo(imageView: ImageView) {
             val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(imageView.context)
                 .`as`(PictureDrawable::class.java)
-                .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
+                .listener(SvgSoftwareLayerSetter())
 
             if (iconUrl.contains(".svg")) {
                 requestBuilder

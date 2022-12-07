@@ -29,7 +29,7 @@ class SolendEarnViewHolder(
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
-        .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
+        .listener(SvgSoftwareLayerSetter())
 
     @SuppressLint("SetTextI18n")
     fun onBind(item: SolendDepositToken) = with(binding) {

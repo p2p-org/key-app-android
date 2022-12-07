@@ -28,7 +28,7 @@ class SelectDepositTokenViewHolder(
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
-        .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
+        .listener(SvgSoftwareLayerSetter())
 
     override fun onBind(item: SolendDepositToken, selectedItem: SolendDepositToken?) {
         super.onBind(item, selectedItem)

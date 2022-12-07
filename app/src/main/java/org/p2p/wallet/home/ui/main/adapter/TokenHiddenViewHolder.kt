@@ -34,7 +34,7 @@ class TokenHiddenViewHolder(
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
-        .listener(org.p2p.core.glide.SvgSoftwareLayerSetter())
+        .listener(SvgSoftwareLayerSetter())
 
     fun onBind(item: HomeElementItem.Hidden, isZerosHidden: Boolean) = with(binding) {
         val token = item.token
