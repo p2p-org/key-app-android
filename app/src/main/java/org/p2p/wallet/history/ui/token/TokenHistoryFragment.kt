@@ -59,7 +59,7 @@ class TokenHistoryFragment :
 
     private val tokenForHistory: Token.Active by args(EXTRA_TOKEN)
 
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
 
     private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 

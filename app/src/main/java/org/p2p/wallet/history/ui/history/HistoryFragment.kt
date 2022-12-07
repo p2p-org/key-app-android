@@ -31,7 +31,7 @@ class HistoryFragment :
     override val presenter: HistoryContract.Presenter by inject()
     private val binding: FragmentHistoryBinding by viewBinding()
 
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             glideManager = glideManager,

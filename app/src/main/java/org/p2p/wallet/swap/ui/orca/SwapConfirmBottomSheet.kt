@@ -38,7 +38,7 @@ class SwapConfirmBottomSheet(
 
     private val binding: DialogSwapConfirmBinding by viewBinding()
     private val data: SwapConfirmData by args(EXTRA_DATA)
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
     private val authInteractor: AuthInteractor by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 

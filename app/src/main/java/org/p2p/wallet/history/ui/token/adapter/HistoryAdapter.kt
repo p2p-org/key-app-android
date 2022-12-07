@@ -27,7 +27,7 @@ private const val ERROR_VIEW_TYPE = 5
 private const val TRANSACTION_SWAP_VIEW_TYPE = 6
 
 class HistoryAdapter(
-    private val glideManager: org.p2p.core.glide.GlideManager,
+    private val glideManager: GlideManager,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
     private val onRetryClicked: () -> Unit
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {

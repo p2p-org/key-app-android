@@ -122,7 +122,7 @@ object InfrastructureModule : InjectionModule {
             )
         } bind AccountStorageContract::class
 
-        single { org.p2p.core.glide.GlideManager(get()) }
+        single { GlideManager(get()) }
 
         single {
             val updateHandlers = get<List<UpdateHandler>>(named<UpdateHandler>())

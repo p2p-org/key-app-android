@@ -57,7 +57,7 @@ class SolendWithdrawFragment :
         parametersOf(deposit)
     }
 
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
 
     private val binding: FragmentSolendWithdrawBinding by viewBinding()
 

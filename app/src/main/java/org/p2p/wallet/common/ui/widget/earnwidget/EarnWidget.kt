@@ -35,7 +35,7 @@ class EarnWidget @JvmOverloads constructor(
 
     private val binding: WidgetEarnViewBinding = inflateViewBinding()
 
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
 
     var currentState: EarnWidgetState = EarnWidgetState.Idle
 

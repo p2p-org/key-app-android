@@ -101,7 +101,7 @@ class SendFragment :
     override val navBarColor: Int = R.color.bg_snow
 
     override val presenter: SendContract.Presenter by inject()
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
     private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 
     private val binding: FragmentSendBinding by viewBinding()

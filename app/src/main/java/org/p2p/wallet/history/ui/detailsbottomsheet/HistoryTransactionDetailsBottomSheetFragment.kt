@@ -51,7 +51,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
     private val binding: DialogHistoryTransactionDetailsBinding by viewBinding()
 
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
 
     override val presenter: HistoryTransactionDetailsContract.Presenter by inject { parametersOf(state) }
 

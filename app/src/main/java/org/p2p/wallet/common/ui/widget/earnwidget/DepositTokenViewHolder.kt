@@ -5,7 +5,7 @@ import org.p2p.wallet.databinding.ItemDepositTokenBinding
 
 class DepositTokenViewHolder(
     private val binding: ItemDepositTokenBinding,
-    private val glideManager: org.p2p.core.glide.GlideManager
+    private val glideManager: GlideManager
 ) {
 
     companion object {

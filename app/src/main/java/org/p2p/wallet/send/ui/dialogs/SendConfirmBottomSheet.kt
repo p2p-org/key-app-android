@@ -41,7 +41,7 @@ class SendConfirmBottomSheet(
 
     private val data: SendConfirmData by args(EXTRA_DATA)
 
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
 
     private val authInteractor: AuthInteractor by inject()
 

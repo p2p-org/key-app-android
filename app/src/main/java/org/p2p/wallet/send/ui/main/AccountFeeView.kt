@@ -24,7 +24,7 @@ class AccountFeeView @JvmOverloads constructor(
 
     private val binding: WidgetAccountFeeViewBinding = inflateViewBinding()
 
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
 
     fun showFee(fee: SendFee) {
         with(binding) {

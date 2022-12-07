@@ -48,7 +48,7 @@ class SolendTopUpBottomSheetFragment :
 
     private val binding: DialogSolendTopUpBinding by viewBinding()
 
-    private val glideManager: org.p2p.core.glide.GlideManager by inject()
+    private val glideManager: GlideManager by inject()
 
     override val presenter: SolendTopUpBottomSheetContract.Presenter by inject {
         parametersOf(deposit)
