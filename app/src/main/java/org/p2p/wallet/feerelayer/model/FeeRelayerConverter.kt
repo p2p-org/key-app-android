@@ -31,6 +31,7 @@ object FeeRelayerConverter {
             operationType = statistics.operationType.stringValue,
             currency = statistics.currency,
             deviceType = statistics.deviceType,
+            environment = statistics.environment.stringValue,
             build = statistics.build,
         )
 
