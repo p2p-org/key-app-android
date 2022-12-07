@@ -46,4 +46,8 @@
     <string name="send_transactions_details_account_fee">Account creation fee</string>
     <string name="send_transactions_details_total">Total</string>
 
+    <!--Send-->
+    <string name="send_switch_to_token">Tap to switch to %s</string>
+    <string name="send_enter_amount">Enter Amount</string>
+
 </resources>
