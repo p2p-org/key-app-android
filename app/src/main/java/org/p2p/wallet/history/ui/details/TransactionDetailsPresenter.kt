@@ -12,7 +12,7 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
+import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.utils.cutMiddle
 import timber.log.Timber
 

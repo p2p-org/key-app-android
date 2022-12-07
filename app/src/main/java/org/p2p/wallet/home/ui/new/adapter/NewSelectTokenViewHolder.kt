@@ -21,7 +21,7 @@ import org.p2p.wallet.home.model.SelectableTokenRoundedState.NOT_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.TOP_ROUNDED
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 
 private const val CORNER_RADIUS_DP = 12
 private const val IMAGE_SIZE = 48
@@ -49,7 +49,8 @@ class NewSelectTokenViewHolder(
         val token = item.token
 
         with(binding) {
-            if (!token.iconUrl.isNullOrEmpty()) loadImage(imageViewToken, token.iconUrl)
+            val iconUrl = token.iconUrl
+            if (!iconUrl.isNullOrEmpty()) loadImage(imageViewToken, iconUrl)
 
             imageViewWrapped.isVisible = token.isWrapped
             startAmountView.title = token.tokenName

@@ -38,8 +38,9 @@ class TokenHiddenViewHolder(
 
     fun onBind(item: HomeElementItem.Hidden, isZerosHidden: Boolean) = with(binding) {
         val token = item.token
-        if (!token.iconUrl.isNullOrEmpty()) {
-            loadImage(tokenImageView, token.iconUrl)
+        val iconUrl = token.iconUrl
+        if (!iconUrl.isNullOrEmpty()) {
+            loadImage(tokenImageView, iconUrl)
         }
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenName

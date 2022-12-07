@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.model
+package org.p2p.core.token
 
 enum class TokenVisibility(val stringValue: String) {
     SHOWN("SHOWN"),

@@ -20,12 +20,12 @@ import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendTransactionDetailsState
 import org.p2p.wallet.solend.ui.bottomsheet.SelectDepositTokenBottomSheet
 import org.p2p.wallet.solend.ui.bottomsheet.SolendTransactionDetailsBottomSheet
-import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.scaleShort
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal

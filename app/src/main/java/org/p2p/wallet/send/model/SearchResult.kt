@@ -2,7 +2,7 @@ package org.p2p.wallet.send.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.core.token.TokenData
 
 sealed class SearchResult(open val addressState: AddressState) : Parcelable {
 

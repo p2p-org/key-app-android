@@ -8,8 +8,8 @@ import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
-import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.scaleMedium
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.scaleMedium
 
 private const val COMPARE_API_CHUNK_SIZE = 30
 private const val COMPARE_API_BODY_KEY = "Response"

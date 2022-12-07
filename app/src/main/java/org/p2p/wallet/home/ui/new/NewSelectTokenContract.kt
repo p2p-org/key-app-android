@@ -3,7 +3,7 @@ package org.p2p.wallet.home.ui.new
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.home.model.SelectTokenItem
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 
 interface NewSelectTokenContract {
 

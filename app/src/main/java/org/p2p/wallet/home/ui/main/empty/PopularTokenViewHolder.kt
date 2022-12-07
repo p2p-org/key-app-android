@@ -11,9 +11,9 @@ import com.bumptech.glide.request.RequestOptions
 import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemPopularTokenBinding
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.formatUsd
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone

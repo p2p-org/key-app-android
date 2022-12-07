@@ -5,7 +5,7 @@ import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.model.RelayInfo
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.model.AddressState

@@ -2,7 +2,7 @@ package org.p2p.wallet.home.ui.select
 
 import android.view.ViewGroup
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSingleSelectionAdapter
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 
 class NewSelectTokenAdapter(
     preselectedItem: Token? = null,

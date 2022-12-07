@@ -1,7 +1,7 @@
 package org.p2p.wallet.home.ui.select
 
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 
 private const val QUERY_MIN_LENGTH = 2
 

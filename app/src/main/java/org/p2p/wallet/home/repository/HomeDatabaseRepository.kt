@@ -1,7 +1,7 @@
 package org.p2p.wallet.home.repository
 
 import org.p2p.wallet.home.db.TokenDao
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenConverter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

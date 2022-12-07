@@ -12,7 +12,7 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetAccountFeeViewBinding
 import org.p2p.wallet.send.model.SendFee
-import org.p2p.wallet.utils.asApproximateUsd
+import org.p2p.core.utils.asApproximateUsd
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
 

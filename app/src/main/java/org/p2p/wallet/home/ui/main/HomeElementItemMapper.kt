@@ -2,7 +2,7 @@ package org.p2p.wallet.home.ui.main
 
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.VisibilityState
 
 class HomeElementItemMapper {

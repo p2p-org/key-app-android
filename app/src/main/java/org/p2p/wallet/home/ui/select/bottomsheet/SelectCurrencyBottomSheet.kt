@@ -11,7 +11,7 @@ import org.p2p.wallet.common.ui.bottomsheet.BaseRecyclerDoneBottomSheet
 import org.p2p.wallet.common.ui.recycler.adapter.DividerItemDecorator
 import org.p2p.wallet.home.ui.select.SelectCurrencyAdapter
 import org.p2p.wallet.moonpay.model.BuyCurrency
-import org.p2p.wallet.utils.Constants
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.withArgs

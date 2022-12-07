@@ -1,17 +1,17 @@
 package org.p2p.wallet.swap.model.orca
 
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.swap.model.FeeRelayerSwapFee
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
-import org.p2p.wallet.utils.asApproximateUsd
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.isLessThan
-import org.p2p.wallet.utils.isMoreThan
-import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.toUsd
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.asApproximateUsd
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.toUsd
 import java.math.BigDecimal
 import java.math.BigInteger
 

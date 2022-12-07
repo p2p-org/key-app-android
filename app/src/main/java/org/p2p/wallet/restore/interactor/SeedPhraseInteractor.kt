@@ -16,11 +16,11 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
-import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.wallet.utils.fromLamports
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
-import org.p2p.wallet.utils.scaleLong
+import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal

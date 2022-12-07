@@ -15,8 +15,8 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemDepositTokenBinding
 import org.p2p.wallet.databinding.WidgetEarnViewBinding
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.scaleLong
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
 

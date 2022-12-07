@@ -2,7 +2,7 @@ package org.p2p.wallet.feerelayer.model
 
 import org.p2p.solanaj.core.OperationType
 import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.utils.Constants
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.feerelayer.model.FeeRelayerEnvironment.DEVELOP
 import org.p2p.wallet.feerelayer.model.FeeRelayerEnvironment.RELEASE
 

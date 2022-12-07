@@ -1,4 +1,4 @@
-package org.p2p.wallet.utils
+package org.p2p.core.utils
 
 object Constants {
 

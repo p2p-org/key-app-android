@@ -5,8 +5,8 @@ import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.utils.crypto.Base58Utils
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
-import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.orZero
 import java.math.BigInteger
 
 class FeeRelayerSwapParsingContext : TransactionParsingContext {

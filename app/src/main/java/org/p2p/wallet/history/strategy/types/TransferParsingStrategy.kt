@@ -11,8 +11,8 @@ import org.p2p.wallet.history.strategy.TransactionParsingStrategy
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.Constants.ZERO_AMOUNT
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.utils.Constants.ZERO_AMOUNT
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.utils.toBase58Instance
 
 class TransferParsingStrategy(

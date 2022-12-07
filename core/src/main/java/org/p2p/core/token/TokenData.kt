@@ -1,4 +1,4 @@
-package org.p2p.wallet.user.model
+package org.p2p.core.token
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

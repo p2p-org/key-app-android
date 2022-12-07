@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.interactor.orca
 
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
