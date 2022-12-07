@@ -248,7 +248,7 @@ class SendFragment :
     }
 
     private fun installAmountWatcher() {
-        org.p2p.core.textwatcher.AmountFractionTextWatcher.installOn(binding.amountEditText) {
+        AmountFractionTextWatcher.installOn(binding.amountEditText) {
             presenter.setNewSourceAmount(it)
         }
     }
