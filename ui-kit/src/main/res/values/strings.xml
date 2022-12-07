@@ -3,6 +3,8 @@
     <string name="common_wallet">Wallet</string>
     <string name="common_history">History</string>
     <string name="common_send">Send</string>
+    <string name="common_buy">Buy</string>
+    <string name="common_receive">Receive</string>
     <string name="common_earn">Earn</string>
     <string name="common_feedback">Feedback</string>
     <string name="common_settings">Settings</string>
@@ -19,5 +21,9 @@
 
     <!-- UiKitAmountsView -->
     <string name="amounts_view_hint">0.0</string>
+    <string name="amounts_view_zero_hint">0</string>
+    <string name="amounts_max">MAX</string>
+
+    <string name="send_label">You will send</string>
 
 </resources>

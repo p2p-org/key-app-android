@@ -1,12 +1,12 @@
 package org.p2p.wallet.send.ui.search
 
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -15,8 +15,11 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
+import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.NewSendFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
@@ -99,6 +102,13 @@ class NewSearchFragment :
 
             buttonContinue.setOnClickListener { presenter.onContinueClicked() }
 
+            buttonBuy.setOnClickListener {
+                presenter.onBuyClicked()
+            }
+            buttonReceive.setOnClickListener {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
+
             recyclerViewSearchResults.apply {
                 itemAnimator = null
                 layoutManager = LinearLayoutManager(requireContext())
@@ -152,6 +162,10 @@ class NewSearchFragment :
         binding.buttonContinue.isVisible = isVisible
     }
 
+    override fun setBuyReceiveButtonsVisibility(isVisible: Boolean) {
+        binding.groupReceiveBuyButtons.isVisible = isVisible
+    }
+
     override fun showSearchValue(value: String) {
         binding.toolbar.searchView?.setQuery(value, true)
     }
@@ -180,6 +194,10 @@ class NewSearchFragment :
 
     override fun showScanner() {
         replaceFragment(ScanQrFragment.create(REQUEST_QR_KEY, RESULT_QR_KEY))
+    }
+
+    override fun showBuyScreen(token: Token) {
+        replaceFragment(NewBuyFragment.create(token = token))
     }
 
     private fun setOnResultListener() {
