@@ -8,14 +8,19 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.Constants
+import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val ARG_RECIPIENT_ADDRESS = "ARG_RECIPIENT_ADDRESS"
 private const val ARG_RECIPIENT_USERNAME = "ARG_RECIPIENT_USERNAME"
+
+private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
+private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class NewSendFragment :
     BaseMvpFragment<NewSendContract.View, NewSendContract.Presenter>(R.layout.fragment_send_new),
@@ -46,18 +51,52 @@ class NewSendFragment :
             setSwitchLabel(
                 getString(R.string.send_switch_to_token, Constants.SOL_SYMBOL)
             )
+            tokenClickListener = {
+                presenter.onTokenClicked()
+            }
         }
         // TODO PWN-6090 make button
         binding.sliderSend.setActionText(R.string.send_enter_amount)
+
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND,
+            viewLifecycleOwner
+        ) { _, result -> handleSupportFragmentResult(result) }
     }
 
-    // TODO PWN-6090 connect this method to token selection
-    fun showSourceToken(token: Token.Active) {
+    private fun handleSupportFragmentResult(result: Bundle) {
+        when {
+            // will be more!
+            result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
+                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)
+                token?.let {
+                    presenter.setTokenToSend(it)
+                }
+            }
+        }
+    }
+
+    override fun showTokenToSend(token: Token.Active) {
         with(binding.widgetSendDetails) {
             glideManager.load(imageViewTokenIcon, token.iconUrl)
             textViewTokenName.text = token.tokenSymbol
             textViewTokenTotal.text = token.getFormattedTotal(includeSymbol = true)
             textViewTokenAmountInUsd.text = token.getFormattedUsdTotal()
         }
+    }
+
+    override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
+        addFragment(
+            target = NewSelectTokenFragment.create(
+                tokens = tokens,
+                selectedToken = selectedToken,
+                requestKey = KEY_REQUEST_SEND,
+                resultKey = KEY_RESULT_TOKEN_TO_SEND
+            ),
+            enter = R.anim.slide_up,
+            exit = 0,
+            popExit = R.anim.slide_down,
+            popEnter = 0
+        )
     }
 }
