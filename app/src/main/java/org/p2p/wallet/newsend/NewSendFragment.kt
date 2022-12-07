@@ -19,7 +19,7 @@ import org.p2p.wallet.utils.withArgs
 private const val ARG_RECIPIENT_ADDRESS = "ARG_RECIPIENT_ADDRESS"
 private const val ARG_RECIPIENT_USERNAME = "ARG_RECIPIENT_USERNAME"
 
-private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
 class NewSendFragment :
@@ -67,14 +67,16 @@ class NewSendFragment :
     private fun handleSupportFragmentResult(result: Bundle) {
         when {
             // will be more!
-            result.containsKey(EXTRA_TOKEN) -> {
-                val token = result.getParcelable<Token.Active>(EXTRA_TOKEN)
-                if (token != null) presenter.setSourceToken(token)
+            result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
+                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)
+                token?.let {
+                    presenter.setTokenToSend(it)
+                }
             }
         }
     }
 
-    override fun showSourceToken(token: Token.Active) {
+    override fun showTokenToSend(token: Token.Active) {
         with(binding.widgetSendDetails) {
             glideManager.load(imageViewTokenIcon, token.iconUrl)
             textViewTokenName.text = token.tokenSymbol
@@ -85,7 +87,12 @@ class NewSendFragment :
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
         addFragment(
-            target = NewSelectTokenFragment.create(tokens, selectedToken, KEY_REQUEST_SEND, EXTRA_TOKEN),
+            target = NewSelectTokenFragment.create(
+                tokens = tokens,
+                selectedToken = selectedToken,
+                requestKey = KEY_REQUEST_SEND,
+                resultKey = KEY_RESULT_TOKEN_TO_SEND
+            ),
             enter = R.anim.slide_up,
             exit = 0,
             popExit = R.anim.slide_down,

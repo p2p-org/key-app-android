@@ -6,12 +6,12 @@ import org.p2p.wallet.home.model.Token
 
 interface NewSendContract {
     interface View : MvpView {
-        fun showSourceToken(token: Token.Active)
+        fun showTokenToSend(token: Token.Active)
         fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setSourceToken(newToken: Token.Active)
+        fun setTokenToSend(newToken: Token.Active)
         fun onTokenClicked()
     }
 }

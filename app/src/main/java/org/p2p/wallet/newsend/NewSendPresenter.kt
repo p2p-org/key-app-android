@@ -15,7 +15,7 @@ class NewSendPresenter(
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private var token: Token.Active? by Delegates.observable(null) { _, _, newValue ->
-        if (newValue != null) view?.showSourceToken(newValue)
+        if (newValue != null) view?.showTokenToSend(newValue)
     }
 
     init {
@@ -24,9 +24,11 @@ class NewSendPresenter(
         }
     }
 
-    override fun onTokenClicked() = loadTokensForSelection()
+    override fun onTokenClicked() {
+        loadTokensForSelection()
+    }
 
-    override fun setSourceToken(newToken: Token.Active) {
+    override fun setTokenToSend(newToken: Token.Active) {
         token = newToken
     }
 
