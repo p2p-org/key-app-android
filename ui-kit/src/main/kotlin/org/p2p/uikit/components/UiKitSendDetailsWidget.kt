@@ -1,10 +1,10 @@
 package org.p2p.uikit.components
 
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.content.Context
 import android.util.AttributeSet
-import androidx.constraintlayout.widget.ConstraintLayout
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
-import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.utils.inflateViewBinding
 
 class UiKitSendDetailsWidget @JvmOverloads constructor(
