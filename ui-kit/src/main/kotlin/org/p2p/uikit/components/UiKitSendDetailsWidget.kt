@@ -57,5 +57,4 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     fun setSwitchLabel(text: String) {
         binding.textViewAmountTypeSwitchLabel.text = text
     }
-
 }
