@@ -5,7 +5,7 @@ import org.p2p.wallet.moonpay.api.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.api.MoonpayIpAddressResponse
 import java.math.BigDecimal
 
-interface NewMoonpayRepository {
+interface NewMoonpayBuyRepository {
 
     suspend fun getBuyCurrencyData(
         baseCurrencyAmount: String?,

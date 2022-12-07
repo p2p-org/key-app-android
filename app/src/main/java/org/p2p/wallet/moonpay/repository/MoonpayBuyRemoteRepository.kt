@@ -9,11 +9,11 @@ import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.utils.Constants.SOL_SYMBOL
 import java.math.BigDecimal
 
-class MoonpayRemoteRepository(
+class MoonpayBuyRemoteRepository(
     private val api: MoonpayApi,
     private val moonpayApiKey: String,
     private val mapper: MoonpayApiMapper
-) : MoonpayRepository {
+) : MoonpayBuyRepository {
 
     override suspend fun getBuyCurrencyData(
         baseCurrencyAmount: String?,

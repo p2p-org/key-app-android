@@ -1,9 +1,5 @@
 package org.p2p.wallet.moonpay.ui.new
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
@@ -15,8 +11,8 @@ import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.BANK_TRANSFER_UK_CODE
-import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor
-import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor.Companion.DEFAULT_MIN_BUY_CURRENCY_AMOUNT
+import org.p2p.wallet.moonpay.interactor.BuyInteractor
+import org.p2p.wallet.moonpay.interactor.BuyInteractor.Companion.DEFAULT_MIN_BUY_CURRENCY_AMOUNT
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
@@ -36,6 +32,10 @@ import org.p2p.wallet.utils.scaleShort
 import org.p2p.wallet.utils.toBigDecimalOrZero
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 500L
 
@@ -47,7 +47,7 @@ class NewBuyPresenter(
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
     private val resourcesProvider: ResourcesProvider,
-    private val moonpayBuyInteractor: MoonpayBuyInteractor,
+    private val buyInteractor: BuyInteractor,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
@@ -118,7 +118,7 @@ class NewBuyPresenter(
     private fun loadMoonpayBuyQuotes() {
         launch {
             val currencyCodes = currenciesToSelect.map { it.code }
-            moonpayBuyInteractor.loadQuotes(currencyCodes, tokensToBuy)
+            buyInteractor.loadQuotes(currencyCodes, tokensToBuy)
         }
     }
 
@@ -160,7 +160,7 @@ class NewBuyPresenter(
     }
 
     override fun onSelectTokenClicked() {
-        moonpayBuyInteractor.getQuotesByCurrency(selectedCurrency.code).forEach { quote ->
+        buyInteractor.getQuotesByCurrency(selectedCurrency.code).forEach { quote ->
             tokensToBuy.find { it.tokenSymbol == quote.token.tokenSymbol }?.let {
                 it.rate = quote.price
                 it.currency = quote.currency
@@ -273,7 +273,7 @@ class NewBuyPresenter(
             val baseCurrencyCode = selectedCurrency.code.lowercase()
             val paymentMethod = selectedPaymentMethod?.paymentType ?: return@launch
 
-            val result = moonpayBuyInteractor.getMoonpayBuyResult(
+            val result = buyInteractor.getMoonpayBuyResult(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = selectedToken,

@@ -19,6 +19,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
@@ -60,5 +61,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::UsernameDomainFeatureToggle)
         factoryOf(::RegisterUsernameEnabledFeatureToggle)
         factoryOf(::RegisterUsernameSkipEnabledFeatureToggle)
+        factoryOf(::SellEnabledFeatureToggle)
     }
 }

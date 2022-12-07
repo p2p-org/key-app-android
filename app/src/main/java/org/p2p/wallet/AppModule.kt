@@ -24,6 +24,7 @@ import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.moonpay.BuyModule
+import org.p2p.wallet.moonpay.MoonpayModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.renbtc.RenBtcModule
@@ -69,6 +70,7 @@ object AppModule {
                 AnalyticsModule.create(),
                 FeatureTogglesModule.create(),
                 AppSdkModule.create(),
+                MoonpayModule.create(),
 
                 // feature screens
                 AuthModule.create(),

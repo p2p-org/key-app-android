@@ -7,11 +7,11 @@ import org.p2p.wallet.moonpay.api.MoonpayIpAddressResponse
 import org.p2p.wallet.utils.Constants
 import java.math.BigDecimal
 
-class NewMoonpayRemoteRepository(
+class NewMoonpayBuyRemoteRepository(
     private val api: MoonpayApi,
     private val moonpayApiKey: String,
     private val mapper: MoonpayApiMapper
-) : NewMoonpayRepository {
+) : NewMoonpayBuyRepository {
 
     override suspend fun getBuyCurrencyData(
         baseCurrencyAmount: String?,

@@ -1,9 +1,5 @@
 package org.p2p.wallet.moonpay.ui
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -13,7 +9,7 @@ import org.p2p.wallet.moonpay.interactor.CREDIT_DEBIT_CARD
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
-import org.p2p.wallet.moonpay.repository.MoonpayRepository
+import org.p2p.wallet.moonpay.repository.MoonpayBuyRepository
 import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.Constants.USD_SYMBOL
 import org.p2p.wallet.utils.asUsd
@@ -26,12 +22,16 @@ import org.p2p.wallet.utils.toBigDecimalOrZero
 import org.p2p.wallet.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
     private val tokenToBuy: Token,
-    private val moonpayRepository: MoonpayRepository,
+    private val moonpayBuyRepository: MoonpayBuyRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
     private val buyAnalytics: BuyAnalytics,
@@ -52,7 +52,7 @@ class BuySolanaPresenter(
         launch {
             try {
                 view?.showLoading(isLoading = true)
-                val price = moonpayRepository.getCurrencyAskPrice(tokenToBuy).scaleShort()
+                val price = moonpayBuyRepository.getCurrencyAskPrice(tokenToBuy).scaleShort()
                 view?.showTokenPrice("$USD_SYMBOL$price")
                 if (isSwappedToToken) {
                     updateViewWithData()
@@ -142,7 +142,7 @@ class BuySolanaPresenter(
             view?.showLoading(isLoading = true)
 
             val baseCurrencyCode = USD_READABLE_SYMBOL.lowercase()
-            val result = moonpayRepository.getBuyCurrencyData(
+            val result = moonpayBuyRepository.getBuyCurrencyData(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = tokenToBuy,
