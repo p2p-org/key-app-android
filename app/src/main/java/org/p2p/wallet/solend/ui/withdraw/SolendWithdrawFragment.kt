@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getColorStateList

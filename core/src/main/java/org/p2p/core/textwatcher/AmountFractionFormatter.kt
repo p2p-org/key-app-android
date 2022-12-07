@@ -1,7 +1,7 @@
-package org.p2p.uikit.textwatcher
+package org.p2p.core.textwatcher
 
-import org.p2p.uikit.utils.DecimalFormatter
-import org.p2p.uikit.utils.emptyString
+import org.p2p.core.utils.DecimalFormatter
+import org.p2p.core.utils.emptyString
 
 private const val SYMBOL_ZERO = "0"
 private const val SYMBOL_DOT = "."

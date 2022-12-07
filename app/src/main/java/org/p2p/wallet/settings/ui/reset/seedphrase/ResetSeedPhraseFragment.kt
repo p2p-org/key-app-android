@@ -17,7 +17,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.hideKeyboard
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor

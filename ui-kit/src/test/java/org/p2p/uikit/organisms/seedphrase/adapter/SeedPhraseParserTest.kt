@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
-import org.p2p.uikit.utils.emptyString
+import org.p2p.core.utils.emptyString
 
 class SeedPhraseParserTest {
     private var seedPhraseParser = SeedPhraseParser()

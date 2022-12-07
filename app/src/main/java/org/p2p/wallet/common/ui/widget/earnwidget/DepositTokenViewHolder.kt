@@ -1,6 +1,6 @@
 package org.p2p.wallet.common.ui.widget.earnwidget
 
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.databinding.ItemDepositTokenBinding
 
 class DepositTokenViewHolder(

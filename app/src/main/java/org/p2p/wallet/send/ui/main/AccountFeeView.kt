@@ -7,7 +7,7 @@ import android.content.Context
 import android.util.AttributeSet
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetAccountFeeViewBinding

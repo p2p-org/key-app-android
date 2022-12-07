@@ -1,11 +1,11 @@
-package org.p2p.uikit.textwatcher
+package org.p2p.core.textwatcher
 
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import org.p2p.uikit.R
-import org.p2p.uikit.utils.emptyString
-import org.p2p.uikit.utils.orZero
+import org.p2p.core.R
+import org.p2p.core.utils.emptyString
+import org.p2p.core.utils.orZero
 import java.lang.ref.WeakReference
 import kotlin.properties.Delegates
 

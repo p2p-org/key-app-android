@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetAmountsViewBinding
-import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.showSoftKeyboard
 
