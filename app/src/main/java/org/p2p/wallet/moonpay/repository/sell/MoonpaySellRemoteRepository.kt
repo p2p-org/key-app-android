@@ -67,7 +67,9 @@ class MoonpaySellRemoteRepository(
             return false
         }
 
-        return true
+        return ipFlags.isSellAllowed &&
+            sellFeatureToggle.isFeatureEnabled &&
+            isUserBalancePositive
     }
 
     private fun calculateTokenBalance(userTokens: List<Token.Active>): BigDecimal =
