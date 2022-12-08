@@ -14,6 +14,7 @@ import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val ARG_RECIPIENT_ADDRESS = "ARG_RECIPIENT_ADDRESS"
 private const val ARG_RECIPIENT_USERNAME = "ARG_RECIPIENT_USERNAME"
@@ -46,12 +47,10 @@ class NewSendFragment :
         binding.toolbar.title = recipientUsername ?: recipientAddress
         // TODO PWN-6090 make logic of setting token!
         binding.widgetSendDetails.apply {
-            setSwitchLabel(
-                getString(R.string.send_switch_to_token, Constants.SOL_SYMBOL)
-            )
-            tokenClickListener = {
-                presenter.onTokenClicked()
-            }
+            setSwitchLabel(getString(R.string.send_switch_to_token, Constants.SOL_SYMBOL))
+            tokenClickListener = presenter::onTokenClicked
+            amountListener = presenter::setAmount
+            focusAndShowKeyboard()
         }
         // TODO PWN-6090 make button
         binding.sliderSend.setActionText(R.string.send_enter_amount)
@@ -74,8 +73,28 @@ class NewSendFragment :
         }
     }
 
+    override fun showInputValue(value: BigDecimal, forced: Boolean) {
+        // TODO PWN-6090
+    }
+
     override fun showTokenToSend(token: Token.Active) {
         binding.widgetSendDetails.setToken(token)
+    }
+
+    override fun setMaxButtonVisibility(isVisible: Boolean) {
+        // TODO PWN-6090
+    }
+
+    override fun showAroundValue(value: BigDecimal, symbol: String) {
+        // TODO PWN-6090
+    }
+
+    override fun showFeeViewLoading(isLoading: Boolean) {
+        // TODO PWN-6090
+    }
+
+    override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?) {
+        // TODO PWN-6090
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {

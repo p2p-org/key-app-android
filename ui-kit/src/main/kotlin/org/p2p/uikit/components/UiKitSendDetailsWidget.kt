@@ -9,6 +9,7 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
 import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
 
 class UiKitSendDetailsWidget @JvmOverloads constructor(
@@ -59,5 +60,9 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun setSwitchLabel(text: String) {
         binding.textViewAmountTypeSwitchLabel.text = text
+    }
+
+    fun focusAndShowKeyboard() {
+        binding.editTextAmount.focusAndShowKeyboard()
     }
 }
