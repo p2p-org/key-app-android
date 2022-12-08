@@ -28,6 +28,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     var switchListener: (() -> Unit)? = null
     var tokenClickListener: (() -> Unit)? = null
     var maxButtonClickListener: (() -> Unit)? = null
+    var feeButtonClickListener: (() -> Unit)? = null
 
     init {
         with(binding) {
@@ -36,6 +37,9 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
             }
             imageViewSwitchTo.setOnClickListener {
                 switchListener?.invoke()
+            }
+            textViewFreeTransactions.setOnClickListener {
+                feeButtonClickListener?.invoke()
             }
             textViewMax.setOnClickListener {
                 maxButtonClickListener?.invoke()
@@ -68,6 +72,10 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun setMainAmountLabel(text: String) {
         binding.textViewMainAmount.text = text
+    }
+
+    fun setFeeLabel(text: String) {
+        binding.textViewFreeTransactions.text = text
     }
 
     fun setAroundValue(aroundValue: String) {
