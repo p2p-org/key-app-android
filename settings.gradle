@@ -1,2 +1,2 @@
-include ':solanaj', ':app', ':ui-kit', ':core'
+include ':solana', ':app', ':ui-kit', ':core'
 rootProject.name = "Key App"
