@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
@@ -12,6 +11,7 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
@@ -44,12 +44,15 @@ class NewSendFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.title = recipientUsername ?: recipientAddress
-        // TODO PWN-6090 make logic of setting token!
+        binding.toolbar.apply {
+            title = recipientUsername ?: recipientAddress
+            setNavigationOnClickListener { popBackStack() }
+        }
         binding.widgetSendDetails.apply {
-            setSwitchLabel(getString(R.string.send_switch_to_token, Constants.SOL_SYMBOL))
             tokenClickListener = presenter::onTokenClicked
             amountListener = presenter::setAmount
+            maxButtonClickListener = presenter::setMaxAmountValue
+            switchListener = presenter::switchCurrencyMode
             focusAndShowKeyboard()
         }
         // TODO PWN-6090 make button
@@ -74,7 +77,7 @@ class NewSendFragment :
     }
 
     override fun showInputValue(value: BigDecimal, forced: Boolean) {
-        // TODO PWN-6090
+        binding.widgetSendDetails.setInput(value, forced)
     }
 
     override fun showTokenToSend(token: Token.Active) {
@@ -82,19 +85,27 @@ class NewSendFragment :
     }
 
     override fun setMaxButtonVisibility(isVisible: Boolean) {
-        // TODO PWN-6090
+        binding.widgetSendDetails.setMaxButtonVisibility(isVisible)
     }
 
-    override fun showAroundValue(value: BigDecimal, symbol: String) {
-        // TODO PWN-6090
+    override fun showAroundValue(value: String) {
+        binding.widgetSendDetails.setAroundValue(value)
     }
 
     override fun showFeeViewLoading(isLoading: Boolean) {
-        // TODO PWN-6090
+        // TODO PWN-6090 Progress on fee View
     }
 
     override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?) {
-        // TODO PWN-6090
+        // TODO PWN-6090 Bottom button
+    }
+
+    override fun setSwitchLabel(symbol: String) {
+        binding.widgetSendDetails.setSwitchLabel(getString(R.string.send_switch_to_token, symbol))
+    }
+
+    override fun setMainAmountLabel(symbol: String) {
+        binding.widgetSendDetails.setMainAmountLabel(symbol)
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
