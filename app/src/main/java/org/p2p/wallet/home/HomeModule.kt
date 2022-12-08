@@ -65,6 +65,7 @@ object HomeModule : InjectionModule {
     private fun Module.initPresentationLayer() {
         factoryOf(::UserTokensPolling)
         /* Cached data exists, therefore creating singleton */
+        // todo: do something with this dependenices!
         factory<HomeContract.Presenter> {
             HomePresenter(
                 analytics = get(),
@@ -79,7 +80,8 @@ object HomeModule : InjectionModule {
                 newBuyFeatureToggle = get(),
                 networkObserver = get(),
                 tokensPolling = get(),
-                metadataInteractor = get()
+                metadataInteractor = get(),
+                moonpaySellRepository = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

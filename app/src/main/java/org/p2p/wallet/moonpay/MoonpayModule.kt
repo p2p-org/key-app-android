@@ -20,29 +20,34 @@ import retrofit2.Retrofit
 object MoonpayModule : InjectionModule {
     override fun create() = module {
         factoryOf(::MoonpayApiMapper)
+
+        factory<MoonpayApi> {
+            val retrofit = get<Retrofit>(named(HomeModule.MOONPAY_QUALIFIER))
+            retrofit.create(MoonpayApi::class.java)
+        }
+
         factory<MoonpayBuyRepository> {
-            val api = get<Retrofit>(named(HomeModule.MOONPAY_QUALIFIER)).create(MoonpayApi::class.java)
             val apiKey = BuildConfig.moonpayKey
             MoonpayBuyRemoteRepository(
-                api = api,
+                api = get(),
                 moonpayApiKey = apiKey,
                 mapper = get()
             )
         }
         factory<NewMoonpayBuyRepository> {
-            val api = get<Retrofit>(named(HomeModule.MOONPAY_QUALIFIER)).create(MoonpayApi::class.java)
             val apiKey = BuildConfig.moonpayKey
-            NewMoonpayBuyRemoteRepository(api, apiKey, get())
+            NewMoonpayBuyRemoteRepository(get(), apiKey, get())
         }
 
         single<MoonpaySellRepository> {
-            val api = get<Retrofit>(named(HomeModule.MOONPAY_QUALIFIER)).create(MoonpayApi::class.java)
             val apiKey = BuildConfig.moonpayKey
             MoonpaySellRemoteRepository(
-                moonpayApi = api,
+                moonpayApi = get(),
                 sellFeatureToggle = get(),
                 moonpayApiKey = apiKey,
-                dispatchers = get()
+                dispatchers = get(),
+                homeLocalRepository = get(),
+                appScope = get()
             )
         }
 

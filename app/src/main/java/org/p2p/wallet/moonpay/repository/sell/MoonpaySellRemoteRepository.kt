@@ -1,5 +1,6 @@
 package org.p2p.wallet.moonpay.repository.sell
 
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -10,18 +11,42 @@ import org.p2p.wallet.utils.isMoreThan
 import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val TAG = "MoonpaySellRemoteRepository"
 
 class MoonpaySellRemoteRepository(
     private val moonpayApi: MoonpayApi,
     private val sellFeatureToggle: SellEnabledFeatureToggle,
     private val moonpayApiKey: String,
     private val homeLocalRepository: HomeLocalRepository,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    appScope: AppScope
 ) : MoonpaySellRepository {
+
+    private class MoonpayRepositoryInternalError(override val cause: Throwable) : Throwable(cause.message)
 
     // todo: maybe extract caching flags to a separate repository to reuse
     private var cachedMoonpayIpFlags: MoonpayIpAddressResponse? = null
+    private var isUserBalancePositive: Boolean = false
+        set(value) {
+            field = value
+            Timber.tag(TAG).i("isUserBalancePositive updated to: $field")
+        }
+
+    init {
+        appScope.launch {
+            homeLocalRepository.getTokensFlow()
+                .mapNotNull(::calculateTokenBalance)
+                .catch { Timber.tag(TAG).e(MoonpayRepositoryInternalError(it)) }
+                .collect { balance ->
+                    isUserBalancePositive = balance.isMoreThan(BigDecimal.ZERO)
+                }
+        }
+    }
 
     override suspend fun loadMoonpayFlags() {
         withContext(dispatchers.io) {
@@ -29,30 +54,26 @@ class MoonpaySellRemoteRepository(
                 cachedMoonpayIpFlags = moonpayApi.getIpAddress(moonpayApiKey)
                 Timber.i("Moonpay IP flags were fetched successfully")
             } catch (e: Throwable) {
-                Timber.e(e)
+                Timber.e(MoonpayRepositoryInternalError(e))
             }
         }
     }
 
-    override suspend fun isSellAllowedForUser(): Boolean {
+    override fun isSellAllowedForUser(): Boolean {
         if (!sellFeatureToggle.isFeatureEnabled) {
             return false
         }
         val ipFlags = cachedMoonpayIpFlags
         if (ipFlags == null) {
-            Timber.e(IllegalStateException("Moonpay IP flags were not fetched"))
+            Timber.e(MoonpayRepositoryInternalError(IllegalStateException("Moonpay IP flags were not fetched")))
             return false
         }
 
-        return ipFlags.isSellAllowed &&
-            sellFeatureToggle.isFeatureEnabled &&
-            isUserBalancePositive()
+        return true
     }
 
-    private suspend fun isUserBalancePositive(): Boolean =
-        homeLocalRepository.getUserTokens()
-            .mapNotNull(Token.Active::totalInUsd)
+    private fun calculateTokenBalance(userTokens: List<Token.Active>): BigDecimal =
+        userTokens.mapNotNull(Token.Active::totalInUsd)
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
-            .isMoreThan(BigDecimal.ZERO)
 }

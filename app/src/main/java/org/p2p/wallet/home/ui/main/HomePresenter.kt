@@ -16,6 +16,7 @@ import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
@@ -57,7 +58,8 @@ class HomePresenter(
     private val tokensPolling: UserTokensPolling,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
-    private val metadataInteractor: MetadataInteractor
+    private val metadataInteractor: MetadataInteractor,
+    private val moonpaySellRepository: MoonpaySellRepository
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var fallbackUsdcTokenForBuy: Token? = null
@@ -101,6 +103,8 @@ class HomePresenter(
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
+
+        view?.setSellActionButtonIsVisible(isVisible = moonpaySellRepository.isSellAllowedForUser())
     }
 
     private fun showUserAddressAndUsername() {

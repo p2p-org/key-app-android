@@ -2,11 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
     android:background="@drawable/bg_rounded_small"
-    android:backgroundTint="@color/backgroundPrimary">
+    android:backgroundTint="@color/bg_rain">
 
     <View
         android:id="@+id/viewPointer"
@@ -33,33 +34,47 @@
         app:layout_constraintTop_toBottomOf="@id/viewPointer" />
 
     <include
+        android:id="@+id/viewActionSell"
+        layout="@layout/view_action_item_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+        tools:visibility="visible" />
+
+    <include
         android:id="@+id/viewActionBuy"
-        layout="@layout/view_action_item"
+        layout="@layout/view_action_item_card"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="18dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/viewActionReceive"
         app:layout_constraintEnd_toStartOf="@+id/viewActionReceive"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/viewActionSell" />
 
     <include
         android:id="@+id/viewActionReceive"
-        layout="@layout/view_action_item"
+        layout="@layout/view_action_item_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/viewActionBuy"
-        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/viewActionSell" />
 
     <include
         android:id="@+id/viewActionSwap"
-        layout="@layout/view_action_item"
+        layout="@layout/view_action_item_card"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="18dp"
@@ -72,7 +87,7 @@
 
     <include
         android:id="@+id/viewActionSend"
-        layout="@layout/view_action_item"
+        layout="@layout/view_action_item_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
