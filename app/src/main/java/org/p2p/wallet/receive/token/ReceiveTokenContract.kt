@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import java.io.File
 
 interface ReceiveTokenContract {

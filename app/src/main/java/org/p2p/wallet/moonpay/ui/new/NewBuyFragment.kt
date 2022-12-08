@@ -15,7 +15,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewBuyBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -25,7 +25,7 @@ import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.bottomsheet.BuyDetailsBottomSheet
-import org.p2p.wallet.utils.Constants
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popBackStack

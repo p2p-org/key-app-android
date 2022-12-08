@@ -15,7 +15,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveListBinding
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.core.token.TokenData
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 

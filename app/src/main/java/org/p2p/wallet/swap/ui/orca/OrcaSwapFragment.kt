@@ -13,7 +13,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -21,7 +21,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.model.Slippage
@@ -37,7 +37,7 @@ import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.formatUsd
+import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
@@ -240,7 +240,7 @@ class OrcaSwapFragment :
     }
 
     override fun showNewSourceAmount(amount: String) {
-        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
         binding.amountEditText.setText(amount)
         binding.amountEditText.setSelection(amount.length)
         setupAmountFractionListener()
@@ -345,6 +345,6 @@ class OrcaSwapFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
-        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
     }
 }

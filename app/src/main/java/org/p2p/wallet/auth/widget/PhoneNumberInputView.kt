@@ -13,7 +13,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.ui.phone.maskwatcher.PhoneNumberTextWatcher
 import org.p2p.wallet.databinding.WidgetPhoneInputViewBinding
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 

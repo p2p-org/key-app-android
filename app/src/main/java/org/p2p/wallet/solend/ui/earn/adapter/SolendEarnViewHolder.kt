@@ -9,13 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSolendEarnBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.scaleShort
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 

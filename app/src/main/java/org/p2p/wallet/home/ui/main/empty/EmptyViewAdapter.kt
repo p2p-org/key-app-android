@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.HomeBannerItem
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.main.adapter.HeaderViewHolder
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 

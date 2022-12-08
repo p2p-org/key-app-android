@@ -3,10 +3,10 @@ package org.p2p.wallet.moonpay
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
+import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.moonpay.interactor.BuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.ui.BuySolanaContract

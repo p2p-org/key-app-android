@@ -2,7 +2,7 @@ package org.p2p.wallet.solend.ui.earn.bottomsheet
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.user.interactor.UserInteractor
 

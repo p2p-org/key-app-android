@@ -1,7 +1,7 @@
 package org.p2p.wallet.feerelayer.model
 
 import org.p2p.solanaj.core.PublicKey
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.utils.orZero
 import java.math.BigInteger
 
 class RelayAccount(

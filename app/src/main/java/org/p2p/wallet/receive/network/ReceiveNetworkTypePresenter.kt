@@ -5,7 +5,7 @@ import org.p2p.wallet.auth.analytics.RenBtcAnalytics
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -15,13 +15,13 @@ import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.Constants.MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.isMoreThan
-import org.p2p.wallet.utils.scaleLong
-import org.p2p.wallet.utils.toLamports
-import org.p2p.wallet.utils.toUsd
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.scaleLong
+import org.p2p.core.utils.toLamports
+import org.p2p.core.utils.toUsd
 import timber.log.Timber
 import kotlinx.coroutines.launch
 

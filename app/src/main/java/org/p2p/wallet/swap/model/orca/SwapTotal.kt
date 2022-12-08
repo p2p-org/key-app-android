@@ -1,8 +1,8 @@
 package org.p2p.wallet.swap.model.orca
 
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.formatUsd
+import org.p2p.core.token.Token
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatUsd
 import java.math.BigDecimal
 
 class SwapTotal(

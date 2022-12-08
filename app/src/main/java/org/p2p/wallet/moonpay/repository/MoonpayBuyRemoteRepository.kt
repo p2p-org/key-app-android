@@ -1,12 +1,12 @@
 package org.p2p.wallet.moonpay.repository
 
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.moonpay.api.MoonpayApi
 import org.p2p.wallet.moonpay.api.MoonpayIpAddressResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.Constants.SOL_SYMBOL
 import java.math.BigDecimal
 
 class MoonpayBuyRemoteRepository(

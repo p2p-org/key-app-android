@@ -1,14 +1,14 @@
 package org.p2p.wallet.moonpay.repository.sell
 
+import org.p2p.core.token.Token
+import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.api.MoonpayApi
 import org.p2p.wallet.moonpay.api.MoonpayIpAddressResponse
-import org.p2p.wallet.utils.isMoreThan
-import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.catch
@@ -39,10 +39,8 @@ class MoonpaySellRemoteRepository(
 
     init {
         appScope.launch {
-            homeLocalRepository.getTokensFlow()
-                .mapNotNull(::calculateTokenBalance)
-                .catch { Timber.tag(TAG).e(MoonpayRepositoryInternalError(it)) }
-                .collect { balance ->
+            homeLocalRepository.getTokensFlow().mapNotNull(::calculateTokenBalance)
+                .catch { Timber.tag(TAG).e(MoonpayRepositoryInternalError(it)) }.collect { balance ->
                     isUserBalancePositive = balance.isMoreThan(BigDecimal.ZERO)
                 }
         }

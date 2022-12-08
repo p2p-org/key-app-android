@@ -4,7 +4,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
@@ -50,7 +50,8 @@ object SendModule : InjectionModule {
             NewSearchPresenter(
                 usernames = usernames,
                 searchInteractor = get(),
-                usernameDomainFeatureToggle = get()
+                usernameDomainFeatureToggle = get(),
+                userInteractor = get()
             )
         }
         factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class

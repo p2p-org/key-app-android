@@ -5,7 +5,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
@@ -51,15 +51,7 @@ object HomeModule : InjectionModule {
                 tokenKeyProvider = get(),
             )
         }
-        factory {
-            SearchInteractor(
-                usernameRepository = get(),
-                userInteractor = get(),
-                tokenKeyProvider = get(),
-                transactionAddressInteractor = get(),
-                resourcesProvider = get()
-            )
-        }
+        factoryOf(::SearchInteractor)
     }
 
     private fun Module.initPresentationLayer() {

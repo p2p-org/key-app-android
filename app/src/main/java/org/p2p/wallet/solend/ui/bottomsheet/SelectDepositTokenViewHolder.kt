@@ -7,12 +7,12 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSelectionViewHolder
 import org.p2p.wallet.databinding.ItemSolendDepositTokenBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.scaleShort
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
 

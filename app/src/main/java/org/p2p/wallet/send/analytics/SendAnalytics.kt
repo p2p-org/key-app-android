@@ -27,7 +27,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.SEND_START_SCREEN
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_USER_CONFIRMED
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VERIFICATION_INVOKED
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VIEWED
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SendFee
 import java.math.BigDecimal

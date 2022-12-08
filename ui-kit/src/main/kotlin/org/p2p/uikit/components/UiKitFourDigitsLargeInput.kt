@@ -9,7 +9,7 @@ import androidx.core.view.isVisible
 import com.redmadrobot.inputmask.MaskedTextChangedListener
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.ComponentLargeInputFourDigitsBinding
-import org.p2p.uikit.utils.emptyString
+import org.p2p.core.utils.emptyString
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
 

@@ -18,7 +18,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.model.MAX_ALLOWED_SLIPPAGE
 import org.p2p.wallet.swap.model.Slippage
