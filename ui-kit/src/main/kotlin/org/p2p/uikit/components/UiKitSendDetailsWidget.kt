@@ -3,13 +3,16 @@ package org.p2p.uikit.components
 import android.content.Context
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
 import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
+import java.math.BigDecimal
 
 class UiKitSendDetailsWidget @JvmOverloads constructor(
     context: Context,
@@ -24,6 +27,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     var amountListener: ((input: String) -> Unit)? = null
     var switchListener: (() -> Unit)? = null
     var tokenClickListener: (() -> Unit)? = null
+    var maxButtonClickListener: (() -> Unit)? = null
+    var feeButtonClickListener: (() -> Unit)? = null
 
     init {
         with(binding) {
@@ -33,14 +38,18 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
             imageViewSwitchTo.setOnClickListener {
                 switchListener?.invoke()
             }
+            textViewFreeTransactions.setOnClickListener {
+                feeButtonClickListener?.invoke()
+            }
+            textViewMax.setOnClickListener {
+                maxButtonClickListener?.invoke()
+            }
         }
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        AmountFractionTextWatcher.installOn(binding.editTextAmount) {
-            amountListener?.invoke(it)
-        }
+        installAmountWatcher()
     }
 
     override fun onDetachedFromWindow() {
@@ -59,5 +68,46 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun setSwitchLabel(text: String) {
         binding.textViewAmountTypeSwitchLabel.text = text
+    }
+
+    fun setMainAmountLabel(text: String) {
+        binding.textViewMainAmount.text = text
+    }
+
+    fun setFeeLabel(text: String) {
+        binding.textViewFreeTransactions.text = text
+    }
+
+    fun setAroundValue(aroundValue: String) {
+        binding.textViewSecondAmount.text = aroundValue
+    }
+
+    fun setMaxButtonVisibility(isVisible: Boolean) {
+        binding.textViewMax.isVisible = isVisible
+    }
+
+    fun setInput(value: BigDecimal, forced: Boolean) {
+        with(binding.editTextAmount) {
+            val textValue = value.toPlainString()
+            if (forced) {
+                AmountFractionTextWatcher.uninstallFrom(this)
+                setText(textValue)
+                setSelection(textValue.length)
+                installAmountWatcher()
+            } else {
+                setText(textValue)
+                setSelection(textValue.length)
+            }
+        }
+    }
+
+    private fun installAmountWatcher() {
+        AmountFractionTextWatcher.installOn(binding.editTextAmount) {
+            amountListener?.invoke(it)
+        }
+    }
+
+    fun focusAndShowKeyboard() {
+        binding.editTextAmount.focusAndShowKeyboard()
     }
 }
