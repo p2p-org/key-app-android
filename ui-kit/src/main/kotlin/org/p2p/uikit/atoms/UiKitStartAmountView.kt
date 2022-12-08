@@ -49,12 +49,14 @@ class UiKitStartAmountView @JvmOverloads constructor(
             val defaultSubtitleColor = context.getColor(R.color.text_mountain)
             val subtitleColorIndex = R.styleable.UiKitStartAmountView_subtitleColor
             val subtitleTextColor = typedArray.getColor(subtitleColorIndex, defaultSubtitleColor)
-
             icon = typedArray.getResourceId(R.styleable.UiKitStartAmountView_icon, 0)
             binding.subtitleTextView.setTextColor(subtitleTextColor)
             title = typedArray.getString(R.styleable.UiKitStartAmountView_title)
             subtitle = typedArray.getString(R.styleable.UiKitStartAmountView_subtitle)
             subSubtitle = typedArray.getString(R.styleable.UiKitStartAmountView_subSubtitle)
+
+            val textStyle = typedArray.getResourceId(R.styleable.UiKitStartAmountView_android_textAppearance, -1)
+            binding.titleTextView.setTextAppearance(textStyle).takeIf { textStyle != -1 }
         }
     }
 }

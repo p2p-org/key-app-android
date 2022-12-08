@@ -90,7 +90,9 @@ class UiKitFourDigitsLargeInput @JvmOverloads constructor(
         this.listener = listener
     }
 
-    fun focusAndShowKeyboard() = binding.fourDigitsInput.focusAndShowKeyboard()
+    fun focusAndShowKeyboard() {
+        binding.fourDigitsInput.focusAndShowKeyboard()
+    }
 
     fun setErrorState(errorMessage: String) {
         binding.contentCardLayout.setBackgroundResource(R.drawable.background_input_stroke_oval_error)

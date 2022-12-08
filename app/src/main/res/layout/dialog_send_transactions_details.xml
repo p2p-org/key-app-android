@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="32dp">
+
+    <include
+        android:id="@+id/layoutAddress"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/layoutGets"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutAddress" />
+
+    <include
+        android:id="@+id/layoutTransactionFee"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutGets" />
+
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewIconAccountFee"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_rain_circle"
+        android:padding="12dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutTransactionFee"
+        app:tint="@color/icons_mountain"
+        tools:src="@drawable/ic_lightling" />
+
+    <TextView
+        android:id="@+id/textViewTitleAccountFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        android:textColor="@color/text_night"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconAccountFee"
+        app:layout_constraintTop_toTopOf="@id/imageViewIconAccountFee"
+        tools:text="Enjoy free transactions!" />
+
+    <TextView
+        android:id="@+id/textViewSubtitleAccountFee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewIconAccountFee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconAccountFee"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitleAccountFee"
+        tools:text="On the Solana network, the first 100 transactions in a day are paid by Key App" />
+
+    <ImageView
+        android:id="@+id/imageViewAccountFeeInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/details_info"
+        android:padding="6dp"
+        android:src="@drawable/ic_info_solid"
+        app:layout_constraintBottom_toBottomOf="@id/textViewTitleAccountFee"
+        app:layout_constraintStart_toEndOf="@id/textViewTitleAccountFee"
+        app:layout_constraintTop_toTopOf="@id/textViewTitleAccountFee"
+        app:tint="@color/icons_night" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupAccountFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="imageViewIconAccountFee,imageViewAccountFeeInfo,textViewTitleAccountFee, textViewSubtitleAccountFee" />
+
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewIconTotal"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_rain_circle"
+        android:padding="12dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewIconAccountFee"
+        app:tint="@color/icons_mountain"
+        tools:src="@drawable/ic_lightling" />
+
+    <TextView
+        android:id="@+id/textViewTitleTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        android:textColor="@color/text_night"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconTotal"
+        app:layout_constraintTop_toTopOf="@id/imageViewIconTotal"
+        tools:text="Total" />
+
+    <TextView
+        android:id="@+id/textViewSubtitleFirstTotal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewIconTotal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconTotal"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitleTotal"
+        tools:text="0.622681417 SOL ($10.01)" />
+
+    <TextView
+        android:id="@+id/textViewSubtitleSecondTotal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconTotal"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitleFirstTotal"
+        tools:text="0.007123 USDC (Less than $0.01)" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="imageViewIconTotal, textViewTitleTotal, textViewSubtitleFirstTotal, textViewSubtitleSecondTotal" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

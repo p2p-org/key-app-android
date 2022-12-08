@@ -53,7 +53,7 @@ class SignInPinFragment :
         with(binding) {
             with(toolbar) {
                 setOnMenuItemClickListener {
-                    if (it.itemId == org.p2p.wallet.R.id.helpItem) {
+                    if (it.itemId == R.id.helpItem) {
                         IntercomService.showMessenger()
                         true
                     } else {

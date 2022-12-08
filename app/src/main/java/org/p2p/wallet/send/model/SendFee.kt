@@ -1,8 +1,10 @@
 package org.p2p.wallet.send.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
+import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
 import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
 import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
@@ -17,7 +19,7 @@ import org.p2p.wallet.utils.toUsd
 import java.math.BigDecimal
 import java.math.BigInteger
 
-sealed interface SendFee {
+sealed interface SendFee : Parcelable {
 
     val feePayerToken: Token.Active
     val feePayerSymbol: String
@@ -28,6 +30,7 @@ sealed interface SendFee {
 
     fun isEnoughToCoverExpenses(sourceTokenTotal: BigInteger, inputAmount: BigInteger): Boolean
 
+    @Parcelize
     class RenBtcFee(
         override val feePayerToken: Token.Active,
         private val feeLamports: BigInteger
@@ -67,6 +70,7 @@ sealed interface SendFee {
     /*
     * feeLamports is only in SOL
     * */
+    @Parcelize
     class SolanaFee(
         override val sourceTokenSymbol: String,
         override val feePayerToken: Token.Active,

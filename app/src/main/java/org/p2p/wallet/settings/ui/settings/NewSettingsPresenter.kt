@@ -15,7 +15,7 @@ import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.service.RenVMService
 import org.p2p.wallet.settings.interactor.SettingsInteractor
@@ -34,9 +34,9 @@ class NewSettingsPresenter(
     private val browseAnalytics: BrowseAnalytics,
     private val settingsInteractor: SettingsInteractor,
     private val homeLocalRepository: HomeLocalRepository,
-    private val secureStorage: SecureStorageContract,
     private val settingsItemMapper: SettingsItemMapper,
     private val authInteractor: AuthInteractor,
+    private val seedPhraseProvider: SeedPhraseProvider,
     private val context: Context
 ) : BasePresenter<NewSettingsContract.View>(), NewSettingsContract.Presenter {
 
@@ -50,7 +50,6 @@ class NewSettingsPresenter(
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
                 isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
-                areSharesExist = secureStorage.contains(SecureStorageContract.Key.KEY_ONBOARDING_METADATA),
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden()

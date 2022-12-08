@@ -18,22 +18,35 @@
 
     <color name="snow">#FFFFFF</color>
     <color name="cloud">#FAFCFF</color>
-    <color name="smoke">#F8F9FE</color>
-    <color name="rain">#EBEEF5</color>
+    <color name="smoke">#F2F5FA</color>
+    <color name="smoke_transparent">#002B2B2B</color>
+    <color name="rain">#E7EBF5</color>
     <color name="mountain">#6F7D8D</color>
     <color name="lime">#DDFA2B</color>
     <color name="sky">#003CFF</color>
-    <color name="rose">#EB4A7A</color>
+    <color name="rose">#FF518F</color>
     <color name="rose_10">#1AEB4A7A</color>
     <color name="rose_20">#33EB4A7A</color>
-    <color name="mint">#35C5AB</color>
-    <color name="sun">#F1AC45</color>
+    <color name="mint">#00B48F</color>
+    <color name="sun">#FFB404</color>
+    <color name="electric">#644AFF</color>
+    <color name="grass">#04D004</color>
+    <color name="sea">#1DAEFF</color>
+    <color name="silver">#9799AF</color>
+    <color name="light_sun">#FFF0CD</color>
+    <color name="light_lime">#F1FDAA</color>
+    <color name="light_rose">#FFDCE9</color>
+    <color name="light_silver">#E0E0E7</color>
+    <color name="light_sea">#BBE7FF</color>
+    <color name="light_grass">#CDF6CD</color>
+    <color name="light_electric">#E0DBFF</color>
 
     <color name="button_snow">@color/snow</color>
     <color name="button_cloud">@color/cloud</color>
     <color name="button_rain">@color/rain</color>
     <color name="button_night">@color/night</color>
     <color name="button_lime">@color/lime</color>
+    <color name="button_smoke">@color/smoke</color>
 
     <color name="text_snow">@color/snow</color>
     <color name="text_cloud">@color/cloud</color>
@@ -44,7 +57,13 @@
     <color name="text_rose">@color/rose</color>
     <color name="text_mint">@color/mint</color>
     <color name="text_sun">@color/sun</color>
+    <color name="text_light_sun">@color/light_sun</color>
     <color name="text_rain">@color/rain</color>
+    <color name="text_electric">@color/electric</color>
+    <color name="text_grass">@color/grass</color>
+    <color name="text_sea">@color/sea</color>
+    <color name="text_silver">@color/silver</color>
+    <color name="text_night_30">@color/night_30</color>
 
     <color name="icons_snow">@color/snow</color>
     <color name="icons_cloud">@color/cloud</color>
@@ -56,6 +75,11 @@
     <color name="icons_rose">@color/rose</color>
     <color name="icons_mint">@color/mint</color>
     <color name="icons_sun">@color/sun</color>
+    <color name="icons_light_sun">@color/light_sun</color>
+    <color name="icons_electric">@color/electric</color>
+    <color name="icons_grass">@color/grass</color>
+    <color name="icons_sea">@color/sea</color>
+    <color name="icons_silver">@color/silver</color>
 
     <color name="bg_snow">@color/snow</color>
     <color name="bg_cloud">@color/cloud</color>
@@ -68,6 +92,13 @@
     <color name="bg_rose">@color/rose</color>
     <color name="bg_mint">@color/mint</color>
     <color name="bg_sun">@color/sun</color>
+    <color name="bg_light_sun">@color/light_sun</color>
+    <color name="bg_electric">@color/electric</color>
+    <color name="bg_grass">@color/grass</color>
+    <color name="bg_sea">@color/sea</color>
+    <color name="bg_silver">@color/silver</color>
+    <color name="bg_night_30">@color/night_30</color>
+
 
     <color name="elements_snow">@color/snow</color>
     <color name="elements_cloud">@color/cloud</color>
@@ -80,4 +111,11 @@
     <color name="elements_rose">@color/rose</color>
     <color name="elements_mint">@color/mint</color>
     <color name="elements_sun">@color/sun</color>
+    <color name="elements_light_sun">@color/sun</color>
+    <color name="elements_electric">@color/electric</color>
+    <color name="elements_grass">@color/grass</color>
+    <color name="elements_sea">@color/sea</color>
+    <color name="elements_silver">@color/silver</color>
+    <color name="elements_night_30">@color/night_30</color>
+
 </resources>

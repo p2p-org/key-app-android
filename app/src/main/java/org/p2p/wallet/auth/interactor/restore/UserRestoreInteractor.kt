@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
+import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
@@ -75,8 +76,10 @@ class UserRestoreInteractor(
             )
 
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
-
-            seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
+            seedPhraseProvider.setUserSeedPhrase(
+                words = result.mnemonicPhraseWords,
+                provider = SeedPhraseSource.WEB_AUTH
+            )
 
             RestoreSuccess.SocialPlusCustomShare
         }
@@ -128,8 +131,10 @@ class UserRestoreInteractor(
             )
             restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-            seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
-
+            seedPhraseProvider.setUserSeedPhrase(
+                words = result.mnemonicPhraseWords,
+                provider = SeedPhraseSource.WEB_AUTH
+            )
             RestoreSuccess.DevicePlusCustomShare
         }
     } catch (web3AuthError: Web3AuthErrorResponse) {
@@ -171,8 +176,10 @@ class UserRestoreInteractor(
         )
         restoreFlowDataLocalRepository.generateActualAccount(result.mnemonicPhraseWords)
 
-        seedPhraseProvider.seedPhrase = result.mnemonicPhraseWords
-
+        seedPhraseProvider.setUserSeedPhrase(
+            words = result.mnemonicPhraseWords,
+            provider = SeedPhraseSource.WEB_AUTH
+        )
         RestoreSuccess.DevicePlusSocialShare
     } catch (web3AuthError: Web3AuthErrorResponse) {
         val socialShareId = restoreFlowDataLocalRepository.socialShareUserId.orEmpty()

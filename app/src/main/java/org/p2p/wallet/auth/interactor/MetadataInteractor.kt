@@ -17,10 +17,10 @@ class MetadataInteractor(
 
     suspend fun tryLoadAndSaveMetadata() {
         val userAccount = Account(tokenKeyProvider.keyPair)
-        val mnemonicPhraseWords = seedPhraseProvider.seedPhrase
+        val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
         val ethereumPublicKey =
             signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey.orEmpty()
-        return tryLoadAndSaveMetadataWithAccount(userAccount, mnemonicPhraseWords, ethereumPublicKey)
+        return tryLoadAndSaveMetadataWithAccount(userAccount, userSeedPhrase.seedPhrase, ethereumPublicKey)
     }
 
     private suspend fun tryLoadAndSaveMetadataWithAccount(

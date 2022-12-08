@@ -1,5 +1,6 @@
 package org.p2p.uikit.components
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PorterDuff
@@ -7,6 +8,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.view.animation.DecelerateInterpolator
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +33,8 @@ class UiKitSliderButton @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<WidgetSliderButtonBinding>()
 
+    private val horizontalMargin = dip(MARGIN_HORIZONTAL_DP).toFloat()
+
     init {
         context.obtainStyledAttributes(attrs, R.styleable.UiKitSliderButton).use { typedArray ->
             val icon = typedArray.getResourceId(R.styleable.UiKitSliderButton_sliderIcon, -1)
@@ -38,6 +42,9 @@ class UiKitSliderButton @JvmOverloads constructor(
 
             val text = typedArray.getText(R.styleable.UiKitSliderButton_sliderText)
             binding.textViewAction.text = text
+
+            val textColor = typedArray.getColor(R.styleable.UiKitSliderButton_android_textColor, -1)
+            binding.textViewAction.setTextColor(textColor).takeIf { textColor != -1 }
         }
 
         setBackgroundResource(R.drawable.bg_night_rounded_big)
@@ -48,6 +55,9 @@ class UiKitSliderButton @JvmOverloads constructor(
         binding.shimmerView.startShimmer()
 
         initializeTouchListener()
+        post {
+            updateGradient(horizontalMargin, horizontalMargin.toInt())
+        }
     }
 
     override fun onDetachedFromWindow() {
@@ -89,7 +99,7 @@ class UiKitSliderButton @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initializeTouchListener() {
-        val initialPosition = dip(MARGIN_HORIZONTAL_DP).toFloat()
+        val initialPosition = horizontalMargin
 
         with(binding) {
             shimmerView.setOnTouchListener { view, event ->
@@ -111,13 +121,19 @@ class UiKitSliderButton @JvmOverloads constructor(
 
         // if user didn't slide fully animating back
         if (currentPosition < lastPosition) {
-            view.animate()
-                .x(initialPosition)
-                .setDuration(ANIMATION_SLIDE_BACK_DURATION)
-                .start()
-
-            updateGradient(initialPosition, initialPosition.toInt())
-            setGradientVisible(isVisible = false)
+            ValueAnimator.ofFloat(view.x, initialPosition).apply {
+                duration = ANIMATION_SLIDE_BACK_DURATION
+                interpolator = DecelerateInterpolator()
+                addUpdateListener {
+                    val animationPosition = it.animatedValue.toString().toFloat()
+                    view.x = animationPosition
+                    updateGradient(initialPosition, animationPosition.toInt() + view.width / 2)
+                    if (animationPosition == initialPosition) {
+                        setGradientVisible(isVisible = false)
+                    }
+                }
+                start()
+            }
         } else {
             // user slided till the end
             onSlideCompleteListener?.invoke()
@@ -134,7 +150,7 @@ class UiKitSliderButton @JvmOverloads constructor(
         val imagePosition = (event.rawX - view.width).coerceIn(initialPosition, lastPosition)
         view.x = imagePosition
 
-        val gradientPosition = event.rawX.coerceIn(initialPosition, measuredWidth - initialPosition)
+        val gradientPosition = event.rawX.coerceIn(initialPosition, measuredWidth - horizontalMargin - initialPosition)
         updateGradient(initialPosition, gradientPosition.toInt())
         setGradientVisible(isVisible = true)
         return true

@@ -7,8 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginTop="12dp"
-    android:background="@drawable/bg_smoke_rounded"
-    android:minHeight="312dp"
+    android:minHeight="250dp"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <TextView
@@ -16,15 +15,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="8dp"
         android:maxLines="1"
         android:paddingVertical="8dp"
         android:text="@string/seed_phrase_view_invalid"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/mountain"
-        app:layout_constraintBottom_toBottomOf="@id/textViewPaste"
         app:layout_constraintEnd_toStartOf="@id/textViewPaste"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textViewPaste" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewPaste"
@@ -47,6 +46,28 @@
         tools:drawableStart="@drawable/ic_copy_small" />
 
     <TextView
+        android:id="@+id/textViewBlur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_lime_rounded_small"
+        android:backgroundTint="@color/bg_rain"
+        android:drawablePadding="8dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="@string/common_show"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
+        android:textColor="@color/text_night"
+        android:visibility="gone"
+        app:drawableEndCompat="@drawable/ic_selector_show_hide"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@drawable/bg_lime_rounded_small"
+        tools:drawableStart="@drawable/ic_copy_small" />
+
+    <TextView
         android:id="@+id/textViewClear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,7 +80,6 @@
         android:text="@string/common_clear"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
         android:textColor="@color/night"
-        android:visibility="gone"
         app:drawableEndCompat="@drawable/ic_close_small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/textViewPaste"
@@ -70,9 +90,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="never"
-        app:layout_constraintTop_toBottomOf="@id/textViewPaste"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/textViewValidationTitle"
         tools:itemCount="1"
-        android:padding="16dp"
         tools:listitem="@layout/item_secret_key"
         tools:visibility="visible" />
 

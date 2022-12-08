@@ -1,4 +1,4 @@
-package org.p2p.uikit.organisms.seedphrase
+package org.p2p.wallet.seed
 
 import android.content.ClipboardManager
 import android.content.Context
@@ -9,15 +9,13 @@ import androidx.core.view.isVisible
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import org.p2p.uikit.R
-import org.p2p.uikit.databinding.WidgetSeedPhraseViewBinding
+import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseParser
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.dip
 import org.p2p.uikit.utils.inflateViewBinding
-
-private const val MIN_WIDGET_HEIGHT_DP = 312
+import org.p2p.wallet.R
+import org.p2p.wallet.databinding.WidgetSeedPhraseViewBinding
 
 class UiKitSeedPhraseView @JvmOverloads constructor(
     context: Context,
@@ -45,19 +43,18 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
     private val seedPhraseParser = SeedPhraseParser()
 
     init {
-        setBackgroundResource(R.drawable.bg_smoke_rounded)
-        minHeight = dip(MIN_WIDGET_HEIGHT_DP)
+        with(binding) {
+            keysRecyclerView.layoutManager = FlexboxLayoutManager(context).also {
+                it.flexDirection = FlexDirection.ROW
+                it.justifyContent = JustifyContent.FLEX_START
+            }
+            keysRecyclerView.attachAdapter(seedPhraseAdapter)
 
-        binding.keysRecyclerView.layoutManager = FlexboxLayoutManager(context).also {
-            it.flexDirection = FlexDirection.ROW
-            it.justifyContent = JustifyContent.FLEX_START
+            textViewClear.setOnClickListener { seedPhraseAdapter.clear() }
+            textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
+
+            setOnClickListener { onShowKeyboardListener?.invoke(seedPhraseAdapter.itemCount - 1) }
         }
-        binding.keysRecyclerView.attachAdapter(seedPhraseAdapter)
-
-        binding.textViewClear.setOnClickListener { seedPhraseAdapter.clear() }
-        binding.textViewPaste.setOnClickListener { addSeedPhraseFromClipboard() }
-
-        setOnClickListener { onShowKeyboardListener?.invoke(seedPhraseAdapter.itemCount - 1) }
     }
 
     private fun addSeedPhraseFromClipboard() {
@@ -73,8 +70,8 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         binding.textViewPaste.setBackgroundResource(backgroundRes)
     }
 
-    fun updateSeedPhrase(secretKeys: List<SeedPhraseWord>) {
-        seedPhraseAdapter.replaceWords(secretKeys)
+    fun updateSeedPhrase(secretKeys: List<SeedPhraseWord>, isEditable: Boolean = true) {
+        seedPhraseAdapter.replaceWords(secretKeys, isEditable)
     }
 
     fun addSeedPhraseWord(seedPhraseWord: SeedPhraseWord) {
@@ -94,11 +91,37 @@ class UiKitSeedPhraseView @JvmOverloads constructor(
         binding.textViewClear.isVisible = isVisible
     }
 
+    fun showPasteButton(isVisible: Boolean) {
+        binding.textViewPaste.isVisible = isVisible
+    }
+
+    fun showBlurButton(isVisible: Boolean) {
+        binding.textViewBlur.isVisible = isVisible
+    }
+
+    fun setOnBlurStateChangedListener(block: (Boolean) -> Unit) {
+        binding.textViewBlur.setOnClickListener {
+            toggleBlurState()
+            block.invoke(it.isSelected)
+        }
+    }
+
     // Getting clipboard here since it's impossible to move `ContextExtensions` to ui-kit at the moment
     // TODO: Use Extensions for getting data from clipboard
     private fun getClipboardText(): String {
         val clipboard = context.getSystemService<ClipboardManager>()
         val text = clipboard?.primaryClip?.getItemAt(0)?.text?.toString()
         return text?.trim().orEmpty()
+    }
+
+    private fun toggleBlurState() = with(binding) {
+        val isSelected = textViewBlur.isSelected
+        if (isSelected) {
+            textViewBlur.setText(R.string.common_show)
+            textViewBlur.isSelected = false
+        } else {
+            textViewBlur.setText(R.string.common_hide)
+            textViewBlur.isSelected = true
+        }
     }
 }

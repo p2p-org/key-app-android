@@ -9,6 +9,7 @@
         <attr name="subtitleColor" format="color" />
         <attr name="subtitle" format="string" />
         <attr name="subSubtitle" format="string" />
+        <attr name="android:textAppearance"/>
     </declare-styleable>
 
     <declare-styleable name="UiKitEndAmountView">
@@ -45,9 +46,18 @@
         <attr name="iconTint" />
     </declare-styleable>
 
+    <attr name="sliderIcon" format="reference" />
+    <attr name="sliderText" format="string" />
+
     <declare-styleable name="UiKitSliderButton">
-        <attr name="sliderIcon" format="reference" />
-        <attr name="sliderText" format="string" />
+        <attr name="android:textColor"/>
+        <attr name="sliderIcon" />
+        <attr name="sliderText" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitSliderSolidButton">
+        <attr name="sliderIcon" />
+        <attr name="sliderText" />
     </declare-styleable>
 
     <declare-styleable name="UiKitSectionHeader">

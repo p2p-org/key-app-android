@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@id/menu_search_view"
+        android:id="@id/menuItemSearch"
         android:title="@string/common_search"
         app:actionLayout="@layout/item_toolbar_search"
         app:showAsAction="always" />

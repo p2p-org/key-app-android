@@ -8,8 +8,10 @@ import org.p2p.wallet.R
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.model.AddressValidation
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
+import org.p2p.wallet.user.model.TokenData
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 
@@ -97,6 +99,14 @@ class TransactionAddressInteractor(
         }
 
         throw IllegalStateException("Wallet address is not valid")
+    }
+
+    suspend fun getTokenDataIfDirect(address: Base58String, useCache: Boolean = true): TokenData? {
+        val accountInfo = userAccountRepository.getAccountInfo(address.base58Value, useCache)
+
+        // detect if it is a direct token address
+        val info = TokenTransaction.decodeAccountInfo(accountInfo) ?: return null
+        return userLocalRepository.findTokenData(info.mint.toBase58())
     }
 
     suspend fun isSolAddress(address: String): Boolean {

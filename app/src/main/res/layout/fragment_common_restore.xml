@@ -35,6 +35,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintVertical_chainStyle="packed" />
 
+
     <TextView
         android:id="@+id/textViewTitle"
         style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"

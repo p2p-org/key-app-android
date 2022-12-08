@@ -149,7 +149,6 @@ class GatewayServiceRemoteRepository(
             userSeedPhrase = userSeedPhrase,
             metadataCipheredFromService = metadataFromService
         )
-
         secureStorageContract.saveObject(SecureStorageContract.Key.KEY_ONBOARDING_METADATA, decryptedMetadata)
     }
 }

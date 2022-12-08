@@ -24,7 +24,7 @@ interface PhoneNumberEnterContract {
     interface Presenter : MvpPresenter<View> {
         fun onCountryCodeChanged(newCountryCode: String)
         fun onPhoneChanged(phoneNumber: String)
-        fun onCountryCodeChanged(newCountry: CountryCode)
+        fun onCountryCodeChanged(newCountry: CountryCode?)
         fun onCountryCodeInputClicked()
         fun submitUserPhoneNumber(phoneNumber: String)
     }

@@ -1,16 +1,17 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
@@ -34,6 +35,7 @@ import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.ui.main.SendFragment
+import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.Constants
@@ -62,6 +64,8 @@ class HomeFragment :
     }
 
     override val presenter: HomeContract.Presenter by inject()
+
+    private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 
     private lateinit var binding: FragmentHomeBinding
 
@@ -180,7 +184,11 @@ class HomeFragment :
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
                 ActionButtonsView.ActionButton.SEND_BUTTON -> {
-                    replaceFragment(SendFragment.create())
+                    if (newSendEnabledFeatureToggle.isFeatureEnabled) {
+                        replaceFragment(NewSearchFragment.create())
+                    } else {
+                        replaceFragment(SendFragment.create())
+                    }
                 }
                 ActionButtonsView.ActionButton.SWAP_BUTTON -> {
                     replaceFragment(OrcaSwapFragment.create())
@@ -221,7 +229,11 @@ class HomeFragment :
                 replaceFragment(OrcaSwapFragment.create())
             }
             HomeAction.SEND -> {
-                replaceFragment(SendFragment.create())
+                if (newSendEnabledFeatureToggle.isFeatureEnabled) {
+                    replaceFragment(NewSearchFragment.create())
+                } else {
+                    replaceFragment(SendFragment.create())
+                }
             }
         }
     }

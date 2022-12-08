@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Search-->
+    <string name="search_title">Choose a recipient</string>
+    <string name="search_subtitle">Solana &amp; Bitcoin network</string>
+
+    <string name="search_empty_title">Make your first transaction</string>
+    <string name="search_empty_subtitle">To continue, paste or scan the address or type a username</string>
+    <string name="search_edittext_hint">username or address</string>
+    <string name="search_scan_qr">Scan QR</string>
+    <string name="search_paste">Paste address</string>
+    <string name="search_error_subtitle">Solana Name Service doesn\'t respond.\n\nWe suggest you try again later because we will not be able to verify the address if you continue.</string>
+    <string name="search_error_continue_button">Continue anyway</string>
+    <string name="search_error_info">It is possible that the address is incorrect if you continue</string>
+    <string name="search_not_found">Address not found. Try another one</string>
+    <string name="search_found">Here\'s what we found</string>
+    <string name="search_caution_error">Caution: this address has no funds</string>
+    <string name="search_no_other_tokens_description">%s token account</string>
+    <string name="search_no_other_tokens_error">You cannot send SOL to this address because it belongs to another token (%s)</string>
+    <string name="search_yourself_error">You cannot send tokens to yourself</string>
+    <string name="search_yourself_description">Your address</string>
+
+    <!--QrCode-->
+    <string name="qr_no_address">❌ There\'s no address in this QR code. Try another one</string>
+    <string name="qr_common_error">❌ This QR code is not recognized. Try again</string>
+
+    <string name="send_pick_token_title">Pick a token</string>
+    <string name="send_pick_token_search_hint">Token name</string>
+    <string name="send_pick_token_chosen">Chosen token</string>
+    <string name="send_pick_token_other">Other tokens</string>
+    <string name="send_pick_token_search_result_text">Here\'s what we found</string>
+    <string name="send_pick_token_search_not_found">Token not found. Try another one</string>
+
+    <!--Free Transactions Dialog-->
+    <string name="free_transactions_title">Enjoy free transactions!</string>
+    <string name="free_transactions_subtitle">On the Solana network, the first 100 transactions in a day are paid by Key App</string>
+    <string name="free_transactions_button">Awesome 👍</string>
+
+    <!--TransactionDetails-->
+    <string name="send_transactions_details_title">Transaction details</string>
+    <string name="send_transactions_details_address">Recipient\'s address</string>
+    <string name="send_transactions_details_gets">Recipient gets</string>
+    <string name="send_transactions_details_transaction_fee">Transaction fee</string>
+    <string name="send_transactions_details_account_fee">Account creation fee</string>
+    <string name="send_transactions_details_total">Total</string>
+
+</resources>
