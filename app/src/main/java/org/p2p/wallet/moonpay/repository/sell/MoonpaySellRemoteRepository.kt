@@ -3,6 +3,7 @@ package org.p2p.wallet.moonpay.repository.sell
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
+import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -23,6 +24,7 @@ class MoonpaySellRemoteRepository(
     private val sellFeatureToggle: SellEnabledFeatureToggle,
     private val moonpayApiKey: String,
     private val homeLocalRepository: HomeLocalRepository,
+    private val crashLogger: CrashLogger,
     private val dispatchers: CoroutineDispatchers,
     appScope: AppScope
 ) : MoonpaySellRepository {
@@ -67,9 +69,14 @@ class MoonpaySellRemoteRepository(
             return false
         }
 
-        return ipFlags.isSellAllowed &&
+        val isSellAllowed = ipFlags.isSellAllowed &&
             sellFeatureToggle.isFeatureEnabled &&
             isUserBalancePositive
+
+        crashLogger.setCustomKey("is_moonpay_sell_enabled", isSellAllowed)
+        crashLogger.setCustomKey("country_from_moonpay", ipFlags.currentCountryAbbreviation)
+
+        return isSellAllowed
     }
 
     private fun calculateTokenBalance(userTokens: List<Token.Active>): BigDecimal =

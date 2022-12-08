@@ -47,7 +47,8 @@ object MoonpayModule : InjectionModule {
                 moonpayApiKey = apiKey,
                 dispatchers = get(),
                 homeLocalRepository = get(),
-                appScope = get()
+                appScope = get(),
+                crashLogger = get()
             )
         }
 
