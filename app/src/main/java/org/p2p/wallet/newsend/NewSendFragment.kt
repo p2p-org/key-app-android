@@ -3,14 +3,13 @@ package org.p2p.wallet.newsend
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.core.glide.GlideManager
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.utils.Base58String
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -41,7 +40,6 @@ class NewSendFragment :
     private val binding: FragmentSendNewBinding by viewBinding()
 
     override val presenter: NewSendContract.Presenter by inject()
-    private val glideManager: GlideManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,12 +75,7 @@ class NewSendFragment :
     }
 
     override fun showTokenToSend(token: Token.Active) {
-        with(binding.widgetSendDetails) {
-            glideManager.load(imageViewTokenIcon, token.iconUrl)
-            textViewTokenName.text = token.tokenSymbol
-            textViewTokenTotal.text = token.getFormattedTotal(includeSymbol = true)
-            textViewTokenAmountInUsd.text = token.getFormattedUsdTotal()
-        }
+        binding.widgetSendDetails.setToken(token)
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
