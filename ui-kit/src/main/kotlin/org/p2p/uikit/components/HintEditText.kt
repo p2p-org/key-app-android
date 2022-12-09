@@ -1,4 +1,4 @@
-package org.p2p.wallet.auth.widget
+package org.p2p.uikit.components
 
 import android.content.Context
 import android.util.AttributeSet

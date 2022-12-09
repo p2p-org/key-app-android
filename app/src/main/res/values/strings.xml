@@ -36,6 +36,7 @@
     <string name="common_hide">Hide</string>
     <string name="common_show">Show</string>
     <string name="common_skip">Skip</string>
+    <string name="common_cash_out">Cash out</string>
     <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
@@ -613,6 +614,12 @@
     <string name="recovery_kit_seed_phrase_must_never_share">Your seed phrase must never be shared</string>
     <string name="recovery_kit_logout_title"> Do you want to see your seed phrase?</string>
     <string name="recovery_kit_logout_message">You have to log out and log in again.</string>
+    <string name="sell_lock_title">You have unfinished cash out transaction</string>
+    <string name="sell_lock_message">To finish selling your SOL you need to send it to adress in description.After 7 days transaction will be declined automaticlly</string>
+    <string name="sell_lock_button_action">Send SOL in Key App</string>
+    <string name="sell_lock_button_cancel">Don’t show again</string>
+    <string name="sell_payload_title">Cash out token</string>
+    <string name="common_sell_all">Sell all</string>
 
 
 </resources>

@@ -99,7 +99,7 @@
             app:layout_constraintTop_toTopOf="@id/editTextPhoneNumber" />
 
 
-        <org.p2p.wallet.auth.widget.HintEditText
+        <org.p2p.uikit.components.HintEditText
             android:id="@+id/editTextPhoneNumber"
             android:layout_width="0dp"
             android:layout_height="56dp"
