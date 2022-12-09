@@ -32,6 +32,7 @@ import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.sdk.di.AppSdkModule
+import org.p2p.wallet.sell.SellModule
 import org.p2p.wallet.send.SendModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.solend.SolendModule
@@ -90,7 +91,8 @@ object AppModule {
                 SendModule.create(),
                 HistoryStrategyModule.create(),
                 TransactionManagerModule.create(),
-                SolendModule.create()
+                SolendModule.create(),
+                SellModule.create()
             )
         )
     }
