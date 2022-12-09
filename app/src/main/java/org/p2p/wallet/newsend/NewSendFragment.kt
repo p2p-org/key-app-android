@@ -2,22 +2,23 @@ package org.p2p.wallet.newsend
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
-import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
-private const val ARG_RECIPIENT_ADDRESS = "ARG_RECIPIENT_ADDRESS"
-private const val ARG_RECIPIENT_USERNAME = "ARG_RECIPIENT_USERNAME"
+private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
@@ -27,16 +28,12 @@ class NewSendFragment :
     NewSendContract.View {
 
     companion object {
-        fun create(recipientAddress: Base58String, recipientUsername: String?) =
+        fun create(recipient: SearchResult) =
             NewSendFragment()
-                .withArgs(
-                    ARG_RECIPIENT_ADDRESS to recipientAddress.base58Value,
-                    ARG_RECIPIENT_USERNAME to recipientUsername
-                )
+                .withArgs(ARG_RECIPIENT to recipient)
     }
 
-    private val recipientAddress: String by args(ARG_RECIPIENT_ADDRESS)
-    private val recipientUsername: String? by args(ARG_RECIPIENT_USERNAME)
+    private val recipient: SearchResult by args(ARG_RECIPIENT)
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
@@ -45,7 +42,8 @@ class NewSendFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.apply {
-            title = recipientUsername ?: recipientAddress
+            title = (recipient as? SearchResult.UsernameFound)?.username
+                ?: recipient.addressState.address.cutMiddle(7)
             setNavigationOnClickListener { popBackStack() }
         }
         binding.widgetSendDetails.apply {
@@ -53,11 +51,9 @@ class NewSendFragment :
             amountListener = presenter::setAmount
             maxButtonClickListener = presenter::setMaxAmountValue
             switchListener = presenter::switchCurrencyMode
+            setFeeLabel(getString(R.string.send_fees))
             focusAndShowKeyboard()
         }
-        // TODO PWN-6090 make button
-        binding.sliderSend.setActionText(R.string.send_enter_amount)
-
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SEND,
             viewLifecycleOwner
@@ -88,12 +84,29 @@ class NewSendFragment :
         binding.widgetSendDetails.setMaxButtonVisibility(isVisible)
     }
 
+    override fun setBottomButtonText(text: String) {
+        binding.buttonBottom.text = text
+    }
+
+    override fun setBottomButtonVisibility(isVisible: Boolean) {
+        binding.buttonBottom.isVisible = isVisible
+        binding.sliderSend.isVisible = !isVisible
+    }
+
+    override fun setSliderText(text: String) {
+        binding.sliderSend.setActionText(text)
+    }
+
     override fun showAroundValue(value: String) {
         binding.widgetSendDetails.setAroundValue(value)
     }
 
     override fun showFeeViewLoading(isLoading: Boolean) {
-        // TODO PWN-6090 Progress on fee View
+        binding.widgetSendDetails.setFeeProgress(isLoading)
+    }
+
+    override fun setFeeLabel(text: String) {
+        binding.widgetSendDetails.setFeeLabel(text)
     }
 
     override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?) {

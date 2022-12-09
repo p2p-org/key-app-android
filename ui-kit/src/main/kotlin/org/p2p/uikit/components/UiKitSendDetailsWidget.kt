@@ -9,6 +9,7 @@ import org.koin.core.component.inject
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
+import org.p2p.core.utils.orZero
 import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
@@ -78,6 +79,11 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.textViewFreeTransactions.text = text
     }
 
+    fun setFeeProgress(isVisible: Boolean) {
+        binding.progressbarFreeTransactionsProgress.isVisible = isVisible
+        binding.imageViewFreeTransactionsInfo.isVisible = !isVisible
+    }
+
     fun setAroundValue(aroundValue: String) {
         binding.textViewSecondAmount.text = aroundValue
     }
@@ -96,7 +102,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
                 installAmountWatcher()
             } else {
                 setText(textValue)
-                setSelection(textValue.length)
+                setSelection(text?.length.orZero())
             }
         }
     }

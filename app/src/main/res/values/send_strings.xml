@@ -50,4 +50,14 @@
     <string name="send_switch_to_token">Tap to switch to %s</string>
     <string name="send_enter_amount">Enter Amount</string>
 
+    <string name="send_slider_text_format">Send %s %s</string>
+    <string name="send_max_warning_text_format">Max: %s %s</string>
+    <string name="send_min_warning_text_format">Min: %s %s</string>
+
+    <string name="send_fees">Fees:</string>
+    <string name="send_fees_format">Fees: %s %s</string>
+    <string name="send_fees_free">Enjoy free transactions</string>
+
+    <string name="send_cant_calculate_fees_error">Cannot calculate fees. Try again</string>
+
 </resources>

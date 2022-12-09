@@ -12,8 +12,12 @@ interface NewSendContract {
         fun showInputValue(value: BigDecimal, forced: Boolean)
         fun showTokenToSend(token: Token.Active)
         fun setMaxButtonVisibility(isVisible: Boolean)
+        fun setBottomButtonText(text: String)
+        fun setBottomButtonVisibility(isVisible: Boolean)
+        fun setSliderText(text: String)
         fun showAroundValue(value: String)
         fun showFeeViewLoading(isLoading: Boolean)
+        fun setFeeLabel(text: String)
         fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?)
         fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
     }
