@@ -8,17 +8,15 @@ import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMoonpayViewBinding
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.moonpay.model.MoonpayUrlBuilder
+import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import timber.log.Timber
@@ -40,6 +38,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
     private val binding: FragmentMoonpayViewBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val tokenKeyProvider: TokenKeyProvider by inject()
+    private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder by inject()
 
     private val amount: String by args(ARG_AMOUNT)
     private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
@@ -57,15 +56,13 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
 
             lifecycleScope.launchWhenResumed {
                 delay(DELAY_IN_MS)
-                val url = MoonpayUrlBuilder.build(
-                    moonpayWalletDomain = context.getString(R.string.moonpayServerSideProxyBaseUrl),
-                    moonpayApiKey = BuildConfig.moonpayKey,
+                val url = moonpayWidgetUrlBuilder.buildBuyWidgetUrl(
                     amount = amount,
                     walletAddress = tokenKeyProvider.publicKey,
                     tokenSymbol = tokenSymbol,
                     currencyCode = Constants.USD_READABLE_SYMBOL.lowercase()
                 )
-                Timber.tag("Moonpay").d("Loading moonpay with url: $url")
+                Timber.tag("Moonpay").i("Loading moonpay with url: $url")
                 webView.loadUrl(url)
             }
         }

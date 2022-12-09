@@ -4,7 +4,10 @@ import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
+import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import kotlinx.coroutines.launch
 
@@ -14,6 +17,7 @@ class SellInteractor(
     private val sellRepository: MoonpaySellRepository,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val homeLocalRepository: HomeLocalRepository,
+    private val tokenKeyProvider: TokenKeyProvider,
     private val appScope: AppScope
 ) {
 
@@ -39,5 +43,9 @@ class SellInteractor(
         return sellEnabledFeatureToggle.isFeatureEnabled &&
             sellRepository.isSellAllowedForUser() &&
             isUserBalancePositive
+    }
+
+    suspend fun loadUserSellTransactions(): List<MoonpaySellTransaction> {
+        return sellRepository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
     }
 }

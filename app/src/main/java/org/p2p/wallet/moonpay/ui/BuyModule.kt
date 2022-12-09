@@ -45,7 +45,8 @@ object BuyModule : InjectionModule {
                 minBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_min_error_format),
                 maxBuyErrorFormat = get<ResourcesProvider>().getString(R.string.buy_max_error_format),
                 buyAnalytics = get(),
-                analyticsInteractor = get()
+                analyticsInteractor = get(),
+                networkServicesUrlProvider = get()
             )
         }
         factory<NewBuyContract.Presenter> { (token: Token) ->

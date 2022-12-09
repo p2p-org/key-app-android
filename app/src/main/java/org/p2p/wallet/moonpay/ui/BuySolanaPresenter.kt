@@ -14,6 +14,7 @@ import org.p2p.core.utils.toUsd
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.CREDIT_DEBIT_CARD
 import org.p2p.wallet.moonpay.model.BuyCurrency
@@ -34,8 +35,9 @@ class BuySolanaPresenter(
     private val moonpayBuyRepository: MoonpayBuyRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
+    private val networkServicesUrlProvider: NetworkServicesUrlProvider,
     private val buyAnalytics: BuyAnalytics,
-    private val analyticsInteractor: ScreensAnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
     private var calculationJob: Job? = null
@@ -76,7 +78,6 @@ class BuySolanaPresenter(
     override fun onContinueClicked() {
         currentBuyViewData?.let {
             view?.navigateToMoonpay(amount = it.total.toString())
-            // TODO resolve [buyProvider]
             buyAnalytics.logBuyContinuing(
                 buyCurrency = it.tokenSymbol,
                 buySum = it.price,

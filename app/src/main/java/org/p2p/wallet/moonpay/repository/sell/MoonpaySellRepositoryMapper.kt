@@ -32,6 +32,10 @@ class MoonpaySellRepositoryMapper {
 
     fun fromNetworkError(error: Throwable): MoonpaySellError {
         // add more errors if needed
-        return MoonpaySellError.UnauthorizedRequest(error)
+        return if (error is IllegalStateException) {
+            MoonpaySellError.UnknownError(error)
+        } else {
+            MoonpaySellError.UnauthorizedRequest(error)
+        }
     }
 }

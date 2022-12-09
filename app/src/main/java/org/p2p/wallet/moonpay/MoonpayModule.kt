@@ -8,7 +8,7 @@ import org.koin.dsl.module
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
-import org.p2p.wallet.moonpay.model.MoonpayUrlBuilder
+import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.repository.buy.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.buy.MoonpayBuyRemoteRepository
 import org.p2p.wallet.moonpay.repository.buy.MoonpayBuyRepository
@@ -39,6 +39,6 @@ object MoonpayModule : InjectionModule {
         factoryOf(::MoonpaySellRepositoryMapper)
         singleOf(::MoonpaySellRemoteRepository) bind MoonpaySellRepository::class
 
-        factory { MoonpayUrlBuilder }
+        factoryOf(::MoonpayWidgetUrlBuilder)
     }
 }

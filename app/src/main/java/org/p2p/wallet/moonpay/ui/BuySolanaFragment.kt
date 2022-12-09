@@ -10,7 +10,6 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -19,7 +18,7 @@ import org.p2p.wallet.common.ui.textwatcher.PrefixSuffixTextWatcher
 import org.p2p.wallet.databinding.FragmentBuySolanaBinding
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.moonpay.model.BuyViewData
-import org.p2p.wallet.moonpay.model.MoonpayUrlBuilder
+import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showUrlInCustomTabs
@@ -45,6 +44,7 @@ class BuySolanaFragment :
     private val binding: FragmentBuySolanaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val tokenKeyProvider: TokenKeyProvider by inject()
+    private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder by inject()
 
     private var backPressedCallback: OnBackPressedCallback? = null
 
@@ -117,9 +117,7 @@ class BuySolanaFragment :
         val solSymbol = Constants.SOL_SYMBOL.lowercase()
         val selectedTokenSymbol = token.tokenSymbol.lowercase()
         val tokenSymbol = if (token.isSOL) solSymbol else "${selectedTokenSymbol}_$solSymbol"
-        val url = MoonpayUrlBuilder.build(
-            moonpayWalletDomain = requireContext().getString(R.string.moonpayServerSideProxyBaseUrl),
-            moonpayApiKey = BuildConfig.moonpayKey,
+        val url = moonpayWidgetUrlBuilder.buildBuyWidgetUrl(
             amount = amount,
             walletAddress = tokenKeyProvider.publicKey,
             tokenSymbol = tokenSymbol,
