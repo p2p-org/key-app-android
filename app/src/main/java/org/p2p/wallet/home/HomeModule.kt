@@ -4,14 +4,16 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.core.token.Token
+import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
+import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
+import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsPresenter
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
@@ -104,5 +106,7 @@ object HomeModule : InjectionModule {
 
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
+
+        factoryOf(::HomeActionsPresenter) bind HomeActionsContract.Presenter::class
     }
 }

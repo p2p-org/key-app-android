@@ -1,9 +1,10 @@
 package org.p2p.wallet.moonpay
 
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.moonpay.api.MoonpayApi
@@ -20,38 +21,13 @@ import retrofit2.Retrofit
 object MoonpayModule : InjectionModule {
     override fun create() = module {
         factoryOf(::MoonpayApiMapper)
-
         factory<MoonpayApi> {
             val retrofit = get<Retrofit>(named(HomeModule.MOONPAY_QUALIFIER))
             retrofit.create(MoonpayApi::class.java)
         }
-
-        factory<MoonpayBuyRepository> {
-            val apiKey = BuildConfig.moonpayKey
-            MoonpayBuyRemoteRepository(
-                api = get(),
-                moonpayApiKey = apiKey,
-                mapper = get()
-            )
-        }
-        factory<NewMoonpayBuyRepository> {
-            val apiKey = BuildConfig.moonpayKey
-            NewMoonpayBuyRemoteRepository(get(), apiKey, get())
-        }
-
-        single<MoonpaySellRepository> {
-            val apiKey = BuildConfig.moonpayKey
-            MoonpaySellRemoteRepository(
-                moonpayApi = get(),
-                sellFeatureToggle = get(),
-                moonpayApiKey = apiKey,
-                dispatchers = get(),
-                homeLocalRepository = get(),
-                appScope = get(),
-                crashLogger = get()
-            )
-        }
-
+        factoryOf(::MoonpayBuyRemoteRepository) bind MoonpayBuyRepository::class
+        factoryOf(::NewMoonpayBuyRemoteRepository) bind NewMoonpayBuyRepository::class
+        singleOf(::MoonpaySellRemoteRepository) bind MoonpaySellRepository::class
         factory { MoonpayUrlBuilder }
     }
 }

@@ -36,7 +36,7 @@ class MoonpayErrorInterceptor(private val gson: Gson) : Interceptor {
             errorMessage = serverError.message
         )
     } catch (e: Throwable) {
-        Timber.i(e)
+        Timber.i(e, "Error while making a request to moonpay: ${response.request.url}")
         IOException("Error reading response error body", e)
     }
 }

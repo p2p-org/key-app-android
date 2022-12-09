@@ -3,6 +3,7 @@ package org.p2p.wallet.moonpay.repository.sell
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -22,7 +23,6 @@ private const val TAG = "MoonpaySellRemoteRepository"
 class MoonpaySellRemoteRepository(
     private val moonpayApi: MoonpayApi,
     private val sellFeatureToggle: SellEnabledFeatureToggle,
-    private val moonpayApiKey: String,
     private val homeLocalRepository: HomeLocalRepository,
     private val crashLogger: CrashLogger,
     private val dispatchers: CoroutineDispatchers,
@@ -51,7 +51,7 @@ class MoonpaySellRemoteRepository(
     override suspend fun loadMoonpayFlags() {
         withContext(dispatchers.io) {
             try {
-                cachedMoonpayIpFlags = moonpayApi.getIpAddress(moonpayApiKey)
+                cachedMoonpayIpFlags = moonpayApi.getIpAddress(BuildConfig.moonpayKey)
                 Timber.i("Moonpay IP flags were fetched successfully")
             } catch (e: Throwable) {
                 Timber.e(MoonpayRepositoryInternalError(e))
