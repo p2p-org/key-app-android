@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
+import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
@@ -22,6 +23,8 @@ private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
+
+private const val TITLE_CUT_COUNT = 7
 
 class NewSendFragment :
     BaseMvpFragment<NewSendContract.View, NewSendContract.Presenter>(R.layout.fragment_send_new),
@@ -41,11 +44,7 @@ class NewSendFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.apply {
-            title = (recipient as? SearchResult.UsernameFound)?.username
-                ?: recipient.addressState.address.cutMiddle(7)
-            setNavigationOnClickListener { popBackStack() }
-        }
+        binding.toolbar.setupToolbar()
         binding.widgetSendDetails.apply {
             tokenClickListener = presenter::onTokenClicked
             amountListener = presenter::setAmount
@@ -80,7 +79,7 @@ class NewSendFragment :
         binding.widgetSendDetails.setToken(token)
     }
 
-    override fun setMaxButtonVisibility(isVisible: Boolean) {
+    override fun setMaxButtonIsVisible(isVisible: Boolean) {
         binding.widgetSendDetails.setMaxButtonVisibility(isVisible)
     }
 
@@ -88,7 +87,7 @@ class NewSendFragment :
         binding.buttonBottom.text = text
     }
 
-    override fun setBottomButtonVisibility(isVisible: Boolean) {
+    override fun setBottomButtonIsVisible(isVisible: Boolean) {
         binding.buttonBottom.isVisible = isVisible
         binding.sliderSend.isVisible = !isVisible
     }
@@ -102,7 +101,7 @@ class NewSendFragment :
     }
 
     override fun showFeeViewLoading(isLoading: Boolean) {
-        binding.widgetSendDetails.setFeeProgress(isLoading)
+        binding.widgetSendDetails.setFeeProgressIsVisible(isLoading)
     }
 
     override fun setFeeLabel(text: String) {
@@ -134,5 +133,11 @@ class NewSendFragment :
             popExit = R.anim.slide_down,
             popEnter = 0
         )
+    }
+
+    private fun UiKitToolbar.setupToolbar() {
+        title = (recipient as? SearchResult.UsernameFound)?.username
+            ?: recipient.addressState.address.cutMiddle(TITLE_CUT_COUNT)
+        setNavigationOnClickListener { popBackStack() }
     }
 }

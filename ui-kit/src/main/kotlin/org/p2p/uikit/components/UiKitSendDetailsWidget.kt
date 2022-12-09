@@ -79,8 +79,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.textViewFreeTransactions.text = text
     }
 
-    fun setFeeProgress(isVisible: Boolean) {
-        binding.progressbarFreeTransactionsProgress.isVisible = isVisible
+    fun setFeeProgressIsVisible(isVisible: Boolean) {
+        binding.progressBarFreeTransactions.isVisible = isVisible
         binding.imageViewFreeTransactionsInfo.isVisible = !isVisible
     }
 

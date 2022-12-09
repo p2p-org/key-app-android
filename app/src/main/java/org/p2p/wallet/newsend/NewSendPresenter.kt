@@ -116,7 +116,7 @@ class NewSendPresenter(
             is CurrencyMode.Token -> token.total.scaleLong()
         } ?: return
         // TODO PWN-6092 check on max sum - min sum for creation account - 0.00089088 SOL
-        view?.setMaxButtonVisibility(isVisible = inputAmount == emptyString())
+        view?.setMaxButtonIsVisible(isVisible = inputAmount == emptyString())
     }
 
     private fun validateAmounts(token: Token.Active) {
@@ -174,7 +174,7 @@ class NewSendPresenter(
                 )
             }
         }
-        view?.setBottomButtonVisibility(isVisible = hasIssue)
+        view?.setBottomButtonIsVisible(isVisible = hasIssue)
         view?.setBottomButtonText(issueText)
         view?.setSliderText(validText)
     }

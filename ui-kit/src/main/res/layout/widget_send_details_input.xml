@@ -39,7 +39,7 @@
         tools:text="Fees: 0" />
 
     <ProgressBar
-        android:id="@+id/progressbarFreeTransactionsProgress"
+        android:id="@+id/progressBarFreeTransactions"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="12dp"
         android:layout_height="12dp"
