@@ -19,7 +19,7 @@ import org.p2p.wallet.moonpay.interactor.CREDIT_DEBIT_CARD
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
-import org.p2p.wallet.moonpay.repository.MoonpayBuyRepository
+import org.p2p.wallet.moonpay.repository.buy.MoonpayBuyRepository
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException

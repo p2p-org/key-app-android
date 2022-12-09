@@ -6,11 +6,11 @@ import org.p2p.core.utils.isMoreThan
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.moonpay.api.MoonpayBuyCurrencyResponse
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyQuote
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
-import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
-import org.p2p.wallet.moonpay.repository.NewMoonpayBuyRepository
+import org.p2p.wallet.moonpay.repository.buy.MoonpayApiMapper
+import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
 import java.math.BigDecimal
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -1,4 +1,4 @@
-package org.p2p.wallet.moonpay.api
+package org.p2p.wallet.moonpay.model
 
 import android.net.Uri
 
@@ -20,9 +20,8 @@ object MoonpayUrlBuilder {
         currencyCode: String,
         paymentMethod: String? = null
     ): String {
-        val builder = Uri.Builder()
-            .scheme("https")
-            .authority(moonpayWalletDomain)
+        val builder = Uri.parse(moonpayWalletDomain)
+            .buildUpon()
             .appendQueryParameter(QUERY_API_KEY, moonpayApiKey)
             .appendQueryParameter(QUERY_CURRENCY_CODE, tokenSymbol)
             .appendQueryParameter(QUERY_BASE_CURRENCY_AMOUNT, amount)
@@ -31,8 +30,6 @@ object MoonpayUrlBuilder {
             .appendQueryParameter(QUERY_WALLET_ADDRESS, walletAddress)
             .apply { if (paymentMethod != null) appendQueryParameter(QUERY_PAYMENT_METHOD, paymentMethod) }
 
-        return builder
-            .build()
-            .toString()
+        return builder.build().toString()
     }
 }

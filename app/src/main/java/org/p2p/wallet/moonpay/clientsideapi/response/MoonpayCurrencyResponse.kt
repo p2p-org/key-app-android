@@ -1,4 +1,4 @@
-package org.p2p.wallet.moonpay.api
+package org.p2p.wallet.moonpay.clientsideapi.response
 
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal

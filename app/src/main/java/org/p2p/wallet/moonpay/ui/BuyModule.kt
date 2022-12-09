@@ -1,4 +1,4 @@
-package org.p2p.wallet.moonpay
+package org.p2p.wallet.moonpay.ui
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -9,8 +9,6 @@ import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.moonpay.interactor.BuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
-import org.p2p.wallet.moonpay.ui.BuySolanaContract
-import org.p2p.wallet.moonpay.ui.BuySolanaPresenter
 import org.p2p.wallet.moonpay.ui.new.NewBuyContract
 import org.p2p.wallet.moonpay.ui.new.NewBuyPresenter
 import org.p2p.wallet.receive.solana.ReceiveSolanaContract

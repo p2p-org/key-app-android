@@ -23,7 +23,7 @@ import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
-import org.p2p.wallet.moonpay.BuyModule
+import org.p2p.wallet.moonpay.ui.BuyModule
 import org.p2p.wallet.moonpay.MoonpayModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule

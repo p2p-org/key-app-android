@@ -1,13 +1,13 @@
 package org.p2p.wallet.moonpay.ui
 
+import androidx.lifecycle.lifecycleScope
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.Constants
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -15,14 +15,14 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMoonpayViewBinding
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.moonpay.api.MoonpayUrlBuilder
-import org.p2p.core.utils.Constants
+import org.p2p.wallet.moonpay.model.MoonpayUrlBuilder
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import timber.log.Timber
+import kotlinx.coroutines.delay
 
 private const val DELAY_IN_MS = 150L
 
@@ -58,7 +58,7 @@ class MoonpayViewFragment : BaseFragment(R.layout.fragment_moonpay_view) {
             lifecycleScope.launchWhenResumed {
                 delay(DELAY_IN_MS)
                 val url = MoonpayUrlBuilder.build(
-                    moonpayWalletDomain = context.getString(R.string.moonpayWalletDomain),
+                    moonpayWalletDomain = context.getString(R.string.moonpayServerSideProxyBaseUrl),
                     moonpayApiKey = BuildConfig.moonpayKey,
                     amount = amount,
                     walletAddress = tokenKeyProvider.publicKey,

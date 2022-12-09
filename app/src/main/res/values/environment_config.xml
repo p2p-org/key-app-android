@@ -17,9 +17,9 @@
     <string name="torusNetwork">testnet</string>
     <string name="torusLogLevel">debug</string>
 
-    <string name="moonpayWalletDomain">moonpay.wallet.p2p.org</string>
+    <string name="moonpayServerSideProxyBaseUrl">https://moonpay.wallet.p2p.org</string>
     <string name="moonpayBaseDomain">buy-staging.moonpay.com</string>
-    <string name="moonpayBaseUrl">https://api.moonpay.com/</string>
+    <string name="moonpayClientSideBaseUrl">https://api.moonpay.com/</string>
 
     <string name="blockstreamUrl">https://blockstream.info/</string>
 
