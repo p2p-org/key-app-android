@@ -3,21 +3,22 @@ package org.p2p.wallet.send.model
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import kotlinx.parcelize.IgnoredOnParcel
+import org.p2p.solanaj.utils.PublicKeyValidator
+import org.p2p.wallet.R
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.toLamports
-import org.p2p.solanaj.utils.PublicKeyValidator
-import org.p2p.wallet.R
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
 
 class SendButton(
     private val sourceToken: Token.Active,
     private val searchResult: SearchResult?,
-    private val sendFee: SendSolanaFee?,
+    private val sendFee: SendFee?,
     private val tokenAmount: BigDecimal,
+    private val currentNetworkType: NetworkType,
     private var minRentExemption: BigInteger
 ) {
 
@@ -42,10 +43,15 @@ class SendButton(
             val total = sourceToken.total.toLamports(sourceToken.decimals)
             val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
             val address = searchResult?.addressState?.address.orEmpty()
+            val isSameNetwork = searchResult?.addressState?.networkType == currentNetworkType
 
             val isEnoughBalance = !total.isLessThan(inputAmount)
             val isEnoughToCoverExpenses = sendFee == null || sendFee.isEnoughToCoverExpenses(total, inputAmount)
-            val isValidAddress = PublicKeyValidator.isValid(address)
+            val isValidAddress = if (currentNetworkType == NetworkType.SOLANA) {
+                PublicKeyValidator.isValid(address) && isSameNetwork
+            } else {
+                address.isNotEmpty()
+            }
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
 

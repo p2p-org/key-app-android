@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
-import org.p2p.core.common.TextContainer
+import org.p2p.wallet.common.ui.bottomsheet.TextContainer
 import org.p2p.wallet.common.ui.dialogs.InfoDialog
 
 fun Fragment.showInfoDialog(

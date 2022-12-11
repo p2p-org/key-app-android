@@ -24,17 +24,12 @@ import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
-import org.p2p.wallet.transaction.model.ShowProgress
-import org.p2p.wallet.transaction.ui.NewProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 import kotlinx.coroutines.flow.collectLatest
 
-class RootActivity :
-    BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
-    RootContract.View,
-    RootListener {
+class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
 
     companion object {
         const val ACTION_RESTART = "android.intent.action.RESTART"
@@ -111,10 +106,6 @@ class RootActivity :
         } else {
             popBackStack()
         }
-    }
-
-    override fun showTransactionProgress(internalTransactionId: String, data: ShowProgress) {
-        NewProgressBottomSheet.show(supportFragmentManager, internalTransactionId, data)
     }
 
     private fun checkForGoogleServices() {

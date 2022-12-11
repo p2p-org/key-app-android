@@ -1,4 +1,4 @@
-package org.p2p.core.common
+package org.p2p.wallet.common.ui.bottomsheet
 
 import android.content.Context
 import android.os.Parcelable

@@ -1,21 +1,21 @@
 package org.p2p.wallet.send.ui.main
 
-import androidx.annotation.StringRes
-import androidx.core.text.bold
-import androidx.core.text.buildSpannedString
-import androidx.core.text.color
-import androidx.core.view.isVisible
 import android.content.Context
 import android.text.SpannedString
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.annotation.StringRes
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
+import androidx.core.text.color
+import androidx.core.view.isVisible
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSendDetailsBinding
-import org.p2p.wallet.send.model.SendFeeTotal
-import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.send.model.SendFee
+import org.p2p.wallet.send.model.SendTotal
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -40,7 +40,7 @@ class SendDetailsView @JvmOverloads constructor(
         }
     }
 
-    fun showTotal(data: SendFeeTotal?) {
+    fun showTotal(data: SendTotal?) {
         with(binding) {
             val buildTotalText = buildTotalText(data)
             totalTextView.text = buildTotalText
@@ -72,7 +72,7 @@ class SendDetailsView @JvmOverloads constructor(
             )
 
             when (data.fee) {
-                is SendSolanaFee.SolanaFee -> {
+                is SendFee.SolanaFee -> {
                     accountCreationFeeView.isVisible = isExpanded
                     val feeText = SpanUtils.highlightText(
                         data.fee.accountCreationFullFee,
@@ -81,6 +81,18 @@ class SendDetailsView @JvmOverloads constructor(
                     )
                     accountCreationTokenTextView.text = feeText
                     totalFeeTextView.text = feeText
+                }
+                is SendFee.RenBtcFee -> {
+                    accountCreationFeeView.isVisible = false
+                    paidByTextView.isVisible = false
+
+                    val feeText = SpanUtils.highlightText(
+                        data.fee.fullFee,
+                        data.fee.approxFeeUsd.orEmpty(),
+                        color
+                    )
+                    totalFeeTextView.text = feeText
+                    freeTextView.text = feeText
                 }
                 else -> {
                     totalFeeTextView.isVisible = false
@@ -105,9 +117,8 @@ class SendDetailsView @JvmOverloads constructor(
         binding.transactionFeeView.setOnClickListener { callback() }
     }
 
-    private fun buildTotalText(total: SendFeeTotal?): SpannedString {
-        val totalAmount = total?.getTotalFee { context.getString(it) }
-            ?: context.getString(R.string.swap_total_zero_sol)
+    private fun buildTotalText(total: SendTotal?): SpannedString {
+        val totalAmount = total?.getTotalFee() ?: context.getString(R.string.swap_total_zero_sol)
         val totalText = context.getString(R.string.swap_total)
         return buildSpannedString {
             color(getColor(R.color.textIconSecondary)) { append(totalText) }
@@ -116,7 +127,7 @@ class SendDetailsView @JvmOverloads constructor(
         }
     }
 
-    private fun showExpanded(isExpanded: Boolean, data: SendFeeTotal?) {
+    private fun showExpanded(isExpanded: Boolean, data: SendTotal?) {
         with(binding) {
             transactionFeeView.isVisible = isExpanded
             feeDividerView.isVisible = isExpanded
