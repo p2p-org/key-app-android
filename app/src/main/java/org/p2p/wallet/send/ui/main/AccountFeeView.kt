@@ -31,7 +31,7 @@ class AccountFeeView @JvmOverloads constructor(
             fillUsdFee(fee.feeUsd)
 
             accountImageView.background = null
-            accountFeeValueTextView.text = fee.formattedFee
+            accountFeeValueTextView.text = fee.accountCreationFormattedFee
             accountFeeValueTextView.setTextColor(getColor(R.color.textIconPrimary))
             glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
         }

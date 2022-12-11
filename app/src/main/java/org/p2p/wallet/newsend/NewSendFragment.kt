@@ -19,15 +19,16 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.ui.dialogs.FreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.dialogs.SendTransactionsDetailsBottomSheet
+import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
-import java.math.BigDecimal
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 
@@ -68,11 +69,14 @@ class NewSendFragment :
         binding.toolbar.setupToolbar()
         binding.widgetSendDetails.apply {
             tokenClickListener = presenter::onTokenClicked
-            amountListener = presenter::setAmount
+            amountListener = presenter::updateInputAmount
             maxButtonClickListener = presenter::setMaxAmountValue
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
             focusAndShowKeyboard()
+        }
+        binding.sliderSend.onSlideCompleteListener = {
+            presenter.send()
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SEND,
@@ -98,8 +102,8 @@ class NewSendFragment :
         FreeTransactionsDetailsBottomSheet.show(childFragmentManager)
     }
 
-    override fun updateInputValue(value: BigDecimal, forced: Boolean) {
-        binding.widgetSendDetails.setInput(value, forced)
+    override fun updateInputValue(textValue: String, forced: Boolean) {
+        binding.widgetSendDetails.setInput(textValue, forced)
     }
 
     override fun showToken(token: Token.Active) {
@@ -131,12 +135,8 @@ class NewSendFragment :
         binding.widgetSendDetails.showFeeLoading(isLoading)
     }
 
-    override fun setFeeLabel(text: String) {
+    override fun setFeeLabel(text: String?) {
         binding.widgetSendDetails.setFeeLabel(text)
-    }
-
-    override fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?) {
-        // TODO PWN-6090 Bottom button
     }
 
     override fun setSwitchLabel(symbol: String) {
@@ -168,7 +168,7 @@ class NewSendFragment :
 
     override fun showProgressDialog(internalTransactionId: String, data: ShowProgress) {
         listener?.showTransactionProgress(internalTransactionId, data)
-        popBackStack()
+        popBackStackTo(target = NewSearchFragment::class, inclusive = true)
     }
 
     private fun UiKitToolbar.setupToolbar() {

@@ -1,37 +1,37 @@
 package org.p2p.wallet.newsend.model
 
 import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SendSolanaFee
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 
 class NewSendButton(
     private val sourceToken: Token.Active,
-    private val searchResult: SearchResult?,
-    private val sendFee: SendSolanaFee?,
+    private val searchResult: SearchResult,
+    private val feeRelayerState: FeeRelayerState,
     private val tokenAmount: BigDecimal,
-    private var minRentExemption: BigInteger
+    private val minRentExemption: BigInteger,
+    private val resources: ResourcesProvider
 ) {
 
     sealed interface State {
         class Disabled(
-            @StringRes val textResId: Int,
+            val textContainer: TextContainer,
             @ColorRes val totalAmountTextColor: Int
         ) : State
 
         class Enabled(
             @StringRes val textResId: Int,
-            @DrawableRes val iconRes: Int?,
-            vararg val value: String,
+            val value: String,
             @ColorRes val totalAmountTextColor: Int
         ) : State
     }
@@ -43,33 +43,50 @@ class NewSendButton(
             val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
 
             val isEnoughBalance = !total.isLessThan(inputAmount)
+            val isFeeCalculationValid = feeRelayerState.isValidState()
+
+            val sendFee = (feeRelayerState as? FeeRelayerState.UpdateFee)?.solanaFee
             val isEnoughToCoverExpenses = sendFee == null || sendFee.isEnoughToCoverExpenses(total, inputAmount)
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
 
-            val availableColor = when {
+            val inputTextColor = when {
                 !isEnoughBalance -> R.color.text_rose
+                !isEnoughToCoverExpenses -> R.color.text_rose
                 else -> R.color.text_night
             }
 
             return when {
-                !isAmountNotZero ->
-                    State.Disabled(R.string.main_enter_the_amount, availableColor)
-                !isEnoughBalance ->
-                    State.Disabled(R.string.swap_funds_not_enough, availableColor)
-                !isEnoughToCoverExpenses ->
-                    State.Disabled(R.string.send_insufficient_funds, availableColor)
-                !isAmountValidForRecipient ->
+                !isAmountNotZero -> {
+                    val textContainer = TextContainer.Res(R.string.main_enter_the_amount)
+                    State.Disabled(textContainer, inputTextColor)
+                }
+                !isFeeCalculationValid -> {
+                    val textContainer = TextContainer.Res(R.string.send_cant_calculate_fees_error)
+                    State.Disabled(textContainer, inputTextColor)
+                }
+                !isEnoughBalance -> {
+                    val tokenSymbol = sourceToken.tokenSymbol
+                    val maxAmount = sourceToken.total.toPlainString()
+                    val text = resources.getString(R.string.send_max_warning_text_format, maxAmount, tokenSymbol)
+                    val textContainer = TextContainer.Raw(text)
+                    State.Disabled(textContainer, inputTextColor)
+                }
+                !isEnoughToCoverExpenses -> {
+                    val textContainer = TextContainer.Res(R.string.send_insufficient_funds)
+                    State.Disabled(textContainer, inputTextColor)
+                }
+                !isAmountValidForRecipient -> {
                     State.Disabled(
-                        textResId = R.string.send_min_required_amount_warning,
-                        totalAmountTextColor = availableColor
+                        textContainer = TextContainer.Res(R.string.send_min_required_amount_warning),
+                        totalAmountTextColor = inputTextColor
                     )
+                }
                 else ->
                     State.Enabled(
                         textResId = R.string.send_format,
-                        iconRes = R.drawable.ic_send_simple,
-                        value = arrayOf("${tokenAmount.toPlainString()} ${sourceToken.tokenSymbol}"),
-                        totalAmountTextColor = availableColor
+                        value = "${tokenAmount.toPlainString()} ${sourceToken.tokenSymbol}",
+                        totalAmountTextColor = inputTextColor
                     )
             }
         }

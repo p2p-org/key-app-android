@@ -15,30 +15,30 @@ class SendFeeTotal constructor(
     val totalUsd: BigDecimal?,
     val receive: String,
     val receiveUsd: BigDecimal?,
-    val fee: SendSolanaFee?,
+    val sendFee: SendSolanaFee?,
     val feeLimit: FreeTransactionFeeLimit,
     val sourceSymbol: String,
     val recipientAddress: String
 ) : Parcelable {
 
     fun getTotalFee(resourceDelegate: (res: Int) -> String): String =
-        when (fee) {
-            is SendSolanaFee.SolanaFee ->
-                if (sourceSymbol == fee.feePayerSymbol) totalSum
-                else "$totalFormatted + ${fee.feeDecimals} ${fee.feePayerSymbol}"
+        when (sendFee) {
+            is SendSolanaFee ->
+                if (sourceSymbol == sendFee.feePayerSymbol) totalSum
+                else "$totalFormatted + ${sendFee.accountCreationFormattedFee}"
             else ->
                 resourceDelegate(R.string.send_fees_free)
         }
 
     val showAdditionalFee: Boolean
-        get() = fee != null && sourceSymbol != fee.feePayerSymbol
+        get() = sendFee != null && sourceSymbol != sendFee.feePayerSymbol
 
     val showAccountCreation: Boolean
         // SendFee.SolanaFee is not null only if account creation is needed
-        get() = fee != null && fee is SendSolanaFee.SolanaFee
+        get() = sendFee != null
 
     val fullTotal: String
-        get() = if (sourceSymbol == fee?.feePayerSymbol) {
+        get() = if (sourceSymbol == sendFee?.feePayerSymbol) {
             if (approxTotalUsd != null) "$totalSum $approxTotalUsd" else totalSum
         } else {
             if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
@@ -56,5 +56,5 @@ class SendFeeTotal constructor(
         get() = "${total.formatToken()} $sourceSymbol"
 
     private val totalSum: String
-        get() = "${(total + fee?.feeDecimals.orZero()).formatToken()} $sourceSymbol"
+        get() = "${(total + sendFee?.accountCreationFeeDecimals.orZero()).formatToken()} $sourceSymbol"
 }

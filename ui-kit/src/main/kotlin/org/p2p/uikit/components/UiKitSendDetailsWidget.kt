@@ -15,7 +15,7 @@ import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
-import java.math.BigDecimal
+import org.p2p.uikit.utils.withTextOrGone
 
 class UiKitSendDetailsWidget @JvmOverloads constructor(
     context: Context,
@@ -77,9 +77,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.textViewMainAmount.text = text
     }
 
-    fun setFeeLabel(text: String) {
-        binding.textViewFee.text = text
-        binding.textViewFee.isEnabled = true
+    fun setFeeLabel(text: String?) {
+        binding.textViewFee withTextOrGone text
     }
 
     fun showFeeLoading(isLoading: Boolean) {
@@ -96,9 +95,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.textViewMax.isVisible = isVisible
     }
 
-    fun setInput(value: BigDecimal, forced: Boolean) {
+    fun setInput(textValue: String, forced: Boolean) {
         with(binding.editTextAmount) {
-            val textValue = value.toPlainString()
             if (forced) {
                 AmountFractionTextWatcher.uninstallFrom(this)
                 setText(textValue)
@@ -136,5 +134,5 @@ interface UiKitSendDetailsWidgetContract {
     fun setMaxButtonVisible(isVisible: Boolean)
 
     fun showFeeViewLoading(isLoading: Boolean)
-    fun setFeeLabel(text: String)
+    fun setFeeLabel(text: String?)
 }

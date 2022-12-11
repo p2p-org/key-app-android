@@ -7,16 +7,14 @@ import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.core.common.TextContainer
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.transaction.model.ShowProgress
-import java.math.BigDecimal
 
 interface NewSendContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {
-        fun updateInputValue(value: BigDecimal, forced: Boolean)
+        fun updateInputValue(textValue: String, forced: Boolean)
 
         fun showFreeTransactionsInfo()
         fun showTransactionDetails(sendFeeTotal: SendFeeTotal)
         fun showProgressDialog(internalTransactionId: String, data: ShowProgress)
-        fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?)
 
         fun setBottomButtonText(text: TextContainer?)
         fun setSliderText(text: String?)
@@ -26,12 +24,14 @@ interface NewSendContract {
 
     interface Presenter : MvpPresenter<View> {
         fun updateToken(newToken: Token.Active)
+        fun updateInputAmount(amount: String)
+        fun updateFeePayerToken(feePayerToken: Token.Active)
+
         fun switchCurrencyMode()
         fun setMaxAmountValue()
-        fun setAmount(amount: String)
         fun onTokenClicked()
-
         fun onFeeInfoClicked()
+
         fun send()
     }
 }
