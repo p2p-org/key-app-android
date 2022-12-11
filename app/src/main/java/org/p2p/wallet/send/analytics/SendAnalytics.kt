@@ -29,7 +29,7 @@ import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VERIFICATION_IN
 import org.p2p.wallet.common.analytics.constants.EventNames.SEND_VIEWED
 import org.p2p.core.token.Token
 import org.p2p.wallet.send.model.NetworkType
-import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.send.model.SendFee
 import java.math.BigDecimal
 
 class SendAnalytics(private val tracker: Analytics) {
@@ -155,6 +155,7 @@ class SendAnalytics(private val tracker: Analytics) {
     }
 
     fun logSendReviewing(
+        sendNetwork: NetworkType,
         sendCurrency: String,
         sendSum: BigDecimal,
         sendMax: Boolean,
@@ -165,6 +166,7 @@ class SendAnalytics(private val tracker: Analytics) {
         tracker.logEvent(
             SEND_REVIEWING,
             mapOf(
+                "Send_Network" to sendNetwork.toAnalyticsValue().title,
                 "Send_Currency" to sendCurrency,
                 "Send_Sum" to sendSum,
                 "Send_MAX" to sendMax,
@@ -223,14 +225,16 @@ class SendAnalytics(private val tracker: Analytics) {
     }
 
     fun logUserConfirmedSend(
+        networkType: NetworkType,
         sendAmount: BigDecimal,
         sendToken: Token.Active,
-        fee: SendSolanaFee?,
+        fee: SendFee?,
         usdAmount: BigDecimal,
     ) {
         tracker.logEvent(
             event = SEND_USER_CONFIRMED,
             params = mapOf(
+                "Send_Network" to networkType.toAnalyticsValue().title,
                 "Send_Currency" to sendToken.tokenSymbol,
                 "Send_Sum" to sendAmount.toString(),
                 "Send_MAX" to (sendAmount == sendToken.total),
@@ -242,14 +246,16 @@ class SendAnalytics(private val tracker: Analytics) {
     }
 
     fun logSendStarted(
+        networkType: NetworkType,
         sendAmount: BigDecimal,
         sendToken: Token.Active,
-        fee: SendSolanaFee?,
+        fee: SendFee?,
         usdAmount: BigDecimal,
     ) {
         tracker.logEvent(
             event = SEND_STARTED,
             params = mapOf(
+                "Send_Network" to networkType.toAnalyticsValue().title,
                 "Send_Currency" to sendToken.tokenSymbol,
                 "Send_Sum" to sendAmount.toString(),
                 "Send_MAX" to (sendAmount == sendToken.total),
@@ -261,14 +267,16 @@ class SendAnalytics(private val tracker: Analytics) {
     }
 
     fun logSendCompleted(
+        networkType: NetworkType,
         sendAmount: BigDecimal,
         sendToken: Token.Active,
-        fee: SendSolanaFee?,
+        fee: SendFee?,
         usdAmount: BigDecimal,
     ) {
         tracker.logEvent(
             event = SEND_COMPLETED,
             params = mapOf(
+                "Send_Network" to networkType.toAnalyticsValue().title,
                 "Send_Currency" to sendToken.tokenSymbol,
                 "Send_Sum" to sendAmount.toString(),
                 "Send_MAX" to (sendAmount == sendToken.total),
@@ -288,6 +296,7 @@ class SendAnalytics(private val tracker: Analytics) {
     }
 
     fun logConfirmButtonPressed(
+        network: NetworkType,
         sendCurrency: String,
         sendSum: String,
         sendSumInUsd: String,
@@ -297,6 +306,7 @@ class SendAnalytics(private val tracker: Analytics) {
         tracker.logEvent(
             event = SEND_CONFIRM_BUTTON_PRESSED,
             params = mapOf(
+                "Send_Network" to network.toAnalyticsValue().title,
                 "Send_Currency" to sendCurrency,
                 "Send_Sum" to sendSum,
                 "Send_MAX" to isSendMaxButtonClickedOnce,

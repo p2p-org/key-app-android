@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import org.p2p.core.common.TextContainer
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogErrorBottomSheetBinding
 import org.p2p.wallet.utils.args

@@ -1,16 +1,13 @@
 package org.p2p.wallet.feerelayer.model
 
-import android.os.Parcelable
 import java.math.BigInteger
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 class FreeTransactionFeeLimit(
     val maxUsage: Int,
     val currentUsage: Int,
     val maxAmount: BigInteger,
     val amountUsed: BigInteger
-) : Parcelable {
+) {
 
     val remaining = maxUsage - currentUsage
 

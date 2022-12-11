@@ -1,32 +1,22 @@
 package org.p2p.wallet.newsend
 
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
-import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
-import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
-import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SendFeeTotal
-import org.p2p.wallet.send.ui.dialogs.FreeTransactionsDetailsBottomSheet
-import org.p2p.wallet.send.ui.dialogs.SendTransactionsDetailsBottomSheet
-import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.p2p.wallet.utils.withTextOrGone
 import java.math.BigDecimal
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
@@ -50,18 +40,7 @@ class NewSendFragment :
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
-    override val presenter: NewSendContract.Presenter by inject {
-        parametersOf(recipient)
-    }
-    override val navBarColor: Int = R.color.smoke
-    override val statusBarColor: Int = R.color.smoke
-
-    private var listener: RootListener? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = context as? RootListener
-    }
+    override val presenter: NewSendContract.Presenter by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,7 +50,7 @@ class NewSendFragment :
             amountListener = presenter::setAmount
             maxButtonClickListener = presenter::setMaxAmountValue
             switchListener = presenter::switchCurrencyMode
-            feeButtonClickListener = presenter::onFeeInfoClicked
+            setFeeLabel(getString(R.string.send_fees))
             focusAndShowKeyboard()
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -85,42 +64,36 @@ class NewSendFragment :
             // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
                 val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)
-                token?.let { presenter.updateToken(it) }
+                token?.let {
+                    presenter.setTokenToSend(it)
+                }
             }
         }
     }
 
-    override fun showTransactionDetails(sendFeeTotal: SendFeeTotal) {
-        SendTransactionsDetailsBottomSheet.show(childFragmentManager, sendFeeTotal)
-    }
-
-    override fun showFreeTransactionsInfo() {
-        FreeTransactionsDetailsBottomSheet.show(childFragmentManager)
-    }
-
-    override fun updateInputValue(value: BigDecimal, forced: Boolean) {
+    override fun showInputValue(value: BigDecimal, forced: Boolean) {
         binding.widgetSendDetails.setInput(value, forced)
     }
 
-    override fun showToken(token: Token.Active) {
+    override fun showTokenToSend(token: Token.Active) {
         binding.widgetSendDetails.setToken(token)
     }
 
-    override fun setMaxButtonVisible(isVisible: Boolean) {
-        binding.widgetSendDetails.setMaxButtonVisible(isVisible)
+    override fun setMaxButtonIsVisible(isVisible: Boolean) {
+        binding.widgetSendDetails.setMaxButtonVisibility(isVisible)
     }
 
-    override fun setBottomButtonText(text: TextContainer?) {
-        binding.buttonBottom withTextOrGone text?.getString(requireContext())
+    override fun setBottomButtonText(text: String) {
+        binding.buttonBottom.text = text
     }
 
-    override fun setSliderText(text: String?) {
-        if (text.isNullOrEmpty()) {
-            binding.sliderSend.isVisible = !text.isNullOrEmpty()
-        } else {
-            binding.sliderSend.isVisible = true
-            binding.sliderSend.setActionText(text)
-        }
+    override fun setBottomButtonIsVisible(isVisible: Boolean) {
+        binding.buttonBottom.isVisible = isVisible
+        binding.sliderSend.isVisible = !isVisible
+    }
+
+    override fun setSliderText(text: String) {
+        binding.sliderSend.setActionText(text)
     }
 
     override fun showAroundValue(value: String) {
@@ -128,7 +101,7 @@ class NewSendFragment :
     }
 
     override fun showFeeViewLoading(isLoading: Boolean) {
-        binding.widgetSendDetails.showFeeLoading(isLoading)
+        binding.widgetSendDetails.setFeeProgressIsVisible(isLoading)
     }
 
     override fun setFeeLabel(text: String) {
@@ -147,10 +120,6 @@ class NewSendFragment :
         binding.widgetSendDetails.setMainAmountLabel(symbol)
     }
 
-    override fun setInputColor(@ColorRes colorRes: Int) {
-        binding.widgetSendDetails.setInputTextColor(colorRes)
-    }
-
     override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(
@@ -164,11 +133,6 @@ class NewSendFragment :
             popExit = R.anim.slide_down,
             popEnter = 0
         )
-    }
-
-    override fun showProgressDialog(internalTransactionId: String, data: ShowProgress) {
-        listener?.showTransactionProgress(internalTransactionId, data)
-        popBackStack()
     }
 
     private fun UiKitToolbar.setupToolbar() {

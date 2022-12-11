@@ -1,10 +1,9 @@
 package org.p2p.uikit.components
 
-import androidx.annotation.ColorRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.glide.GlideManager
@@ -13,7 +12,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
-import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
 import java.math.BigDecimal
 
@@ -41,7 +39,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
             imageViewSwitchTo.setOnClickListener {
                 switchListener?.invoke()
             }
-            textViewFee.setOnClickListener {
+            textViewFreeTransactions.setOnClickListener {
                 feeButtonClickListener?.invoke()
             }
             textViewMax.setOnClickListener {
@@ -63,7 +61,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     fun setToken(token: Token.Active) {
         with(binding) {
             glideManager.load(imageViewTokenIcon, token.iconUrl)
-            textViewTokenName.text = token.tokenName
+            textViewTokenName.text = token.tokenSymbol
             textViewTokenTotal.text = token.getFormattedTotal(includeSymbol = true)
             textViewTokenAmountInUsd.text = token.getFormattedUsdTotal()
         }
@@ -78,21 +76,19 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     }
 
     fun setFeeLabel(text: String) {
-        binding.textViewFee.text = text
-        binding.textViewFee.isEnabled = true
+        binding.textViewFreeTransactions.text = text
     }
 
-    fun showFeeLoading(isLoading: Boolean) {
-        binding.progressBarFees.isVisible = isLoading
-        binding.textViewFee.isEnabled = !isLoading
-        binding.imageViewFeesInfo.isVisible = !isLoading
+    fun setFeeProgressIsVisible(isVisible: Boolean) {
+        binding.progressBarFreeTransactions.isVisible = isVisible
+        binding.imageViewFreeTransactionsInfo.isVisible = !isVisible
     }
 
     fun setAroundValue(aroundValue: String) {
         binding.textViewSecondAmount.text = aroundValue
     }
 
-    fun setMaxButtonVisible(isVisible: Boolean) {
+    fun setMaxButtonVisibility(isVisible: Boolean) {
         binding.textViewMax.isVisible = isVisible
     }
 
@@ -111,30 +107,13 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
     }
 
-    fun setInputTextColor(@ColorRes colorRes: Int) {
-        binding.editTextAmount.setTextColor(getColor(colorRes))
-    }
-
-    fun focusAndShowKeyboard() {
-        binding.editTextAmount.focusAndShowKeyboard()
-    }
-
     private fun installAmountWatcher() {
         AmountFractionTextWatcher.installOn(binding.editTextAmount) {
             amountListener?.invoke(it)
         }
     }
-}
 
-interface UiKitSendDetailsWidgetContract {
-    fun showToken(token: Token.Active)
-    fun showAroundValue(value: String)
-    fun setSwitchLabel(symbol: String)
-
-    fun setInputColor(@ColorRes colorRes: Int)
-    fun setMainAmountLabel(symbol: String)
-    fun setMaxButtonVisible(isVisible: Boolean)
-
-    fun showFeeViewLoading(isLoading: Boolean)
-    fun setFeeLabel(text: String)
+    fun focusAndShowKeyboard() {
+        binding.editTextAmount.focusAndShowKeyboard()
+    }
 }

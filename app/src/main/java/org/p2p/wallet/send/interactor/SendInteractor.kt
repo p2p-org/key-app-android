@@ -51,8 +51,8 @@ class SendInteractor(
     /*
     * Initialize fee payer token
     * */
-    suspend fun initialize(token: Token.Active) {
-        feePayerToken = token
+    suspend fun initialize(sol: Token.Active) {
+        feePayerToken = sol
         feeRelayerInteractor.load()
         orcaInfoInteractor.load()
     }

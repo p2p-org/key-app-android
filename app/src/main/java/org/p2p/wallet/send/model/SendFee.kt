@@ -1,7 +1,13 @@
 package org.p2p.wallet.send.model
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.core.token.Token
+import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
+import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
+import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -10,16 +16,10 @@ import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
-import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
-import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
-import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.parcelize.Parcelize
 
-sealed interface SendSolanaFee : Parcelable {
+sealed interface SendFee : Parcelable {
 
     val feePayerToken: Token.Active
     val feePayerSymbol: String
@@ -29,6 +29,43 @@ sealed interface SendSolanaFee : Parcelable {
     val feeDecimals: BigDecimal
 
     fun isEnoughToCoverExpenses(sourceTokenTotal: BigInteger, inputAmount: BigInteger): Boolean
+
+    @Parcelize
+    class RenBtcFee(
+        override val feePayerToken: Token.Active,
+        private val feeLamports: BigInteger
+    ) : SendFee {
+
+        override val sourceTokenSymbol: String
+            get() = feePayerToken.tokenSymbol
+
+        override val formattedFee: String
+            get() = "${fee.formatToken()} ${feePayerToken.tokenSymbol}"
+
+        override val feeDecimals: BigDecimal
+            get() = fee
+
+        override val feeUsd: BigDecimal?
+            get() = fee.toUsd(feePayerToken)
+
+        override val feePayerSymbol: String
+            get() = feePayerToken.tokenSymbol
+
+        override fun isEnoughToCoverExpenses(
+            sourceTokenTotal: BigInteger,
+            inputAmount: BigInteger
+        ): Boolean =
+            sourceTokenTotal > inputAmount + feeLamports
+
+        val fullFee: String
+            get() = "$fee ${feePayerToken.tokenSymbol} ${approxFeeUsd.orEmpty()}"
+
+        val approxFeeUsd: String?
+            get() = fee.toUsd(feePayerToken)?.let { "(~$$it)" }
+
+        val fee: BigDecimal
+            get() = feeLamports.fromLamports(feePayerToken.decimals).scaleMedium()
+    }
 
     /*
     * feeLamports is only in SOL
@@ -40,7 +77,7 @@ sealed interface SendSolanaFee : Parcelable {
         private val solToken: Token.Active?,
         private val feeInSol: BigInteger,
         private val feeInPayingToken: BigInteger
-    ) : SendSolanaFee {
+    ) : SendFee {
 
         override val feeDecimals: BigDecimal
             get() = currentDecimals.scaleMedium()

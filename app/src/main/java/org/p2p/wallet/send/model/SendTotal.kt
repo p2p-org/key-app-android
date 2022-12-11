@@ -5,29 +5,28 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.orZero
-import org.p2p.wallet.R
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import java.math.BigDecimal
 
 @Parcelize
-class SendFeeTotal constructor(
+class SendTotal constructor(
     val total: BigDecimal,
     val totalUsd: BigDecimal?,
     val receive: String,
     val receiveUsd: BigDecimal?,
-    val fee: SendSolanaFee?,
-    val feeLimit: FreeTransactionFeeLimit,
+    val fee: SendFee?,
     val sourceSymbol: String,
-    val recipientAddress: String
+    var recipientAddress: String? = null
 ) : Parcelable {
 
-    fun getTotalFee(resourceDelegate: (res: Int) -> String): String =
+    fun getTotalFee(): String =
         when (fee) {
-            is SendSolanaFee.SolanaFee ->
+            is SendFee.SolanaFee ->
                 if (sourceSymbol == fee.feePayerSymbol) totalSum
                 else "$totalFormatted + ${fee.feeDecimals} ${fee.feePayerSymbol}"
+            is SendFee.RenBtcFee ->
+                "$totalFormatted + ${fee.feeDecimals} ${fee.feePayerSymbol}"
             else ->
-                resourceDelegate(R.string.send_fees_free)
+                totalFormatted
         }
 
     val showAdditionalFee: Boolean
@@ -35,7 +34,7 @@ class SendFeeTotal constructor(
 
     val showAccountCreation: Boolean
         // SendFee.SolanaFee is not null only if account creation is needed
-        get() = fee != null && fee is SendSolanaFee.SolanaFee
+        get() = fee != null && fee is SendFee.SolanaFee
 
     val fullTotal: String
         get() = if (sourceSymbol == fee?.feePayerSymbol) {

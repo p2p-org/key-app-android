@@ -24,12 +24,11 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewFee"
+        android:id="@+id/textViewFreeTransactions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:ellipsize="none"
-        android:enabled="false"
         android:gravity="center_vertical|end"
         android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
@@ -40,7 +39,7 @@
         tools:text="Fees: 0" />
 
     <ProgressBar
-        android:id="@+id/progressBarFees"
+        android:id="@+id/progressBarFreeTransactions"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="12dp"
         android:layout_height="12dp"
@@ -48,20 +47,20 @@
         android:layout_marginTop="2dp"
         android:indeterminateTint="@color/elements_sky"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/textViewFee"
+        app:layout_constraintBottom_toBottomOf="@id/textViewFreeTransactions"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textViewFee" />
+        app:layout_constraintTop_toTopOf="@id/textViewFreeTransactions" />
 
     <ImageView
-        android:id="@+id/imageViewFeesInfo"
+        android:id="@+id/imageViewFreeTransactionsInfo"
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_marginTop="2dp"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_info_solid"
-        app:layout_constraintBottom_toBottomOf="@id/textViewFee"
+        app:layout_constraintBottom_toBottomOf="@id/textViewFreeTransactions"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textViewFee"
+        app:layout_constraintTop_toTopOf="@id/textViewFreeTransactions"
         app:tint="@color/icons_sky" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -73,15 +72,15 @@
         android:foreground="@drawable/ripple_button_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewFee">
+        app:layout_constraintTop_toBottomOf="@+id/textViewFreeTransactions">
 
         <org.p2p.uikit.atoms.UiKitRoundedImageView
             android:id="@+id/imageViewTokenIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_marginVertical="12dp"
             android:layout_marginStart="20dp"
-            app:cornerRadius="24dp"
+            app:cornerRadius="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -105,11 +104,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="6dp"
-            android:drawablePadding="8dp"
             android:gravity="center"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             android:textColor="@color/text_mountain"
-            app:drawableStartCompat="@drawable/ic_wallet_small"
+            app:drawableStartCompat="@drawable/ic_main_wallet"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewTokenIcon"
             app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
             app:layout_constraintTop_toBottomOf="@+id/textViewTokenName"
