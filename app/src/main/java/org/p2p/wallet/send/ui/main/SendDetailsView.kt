@@ -15,7 +15,6 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetSendDetailsBinding
 import org.p2p.wallet.send.model.SendFeeTotal
-import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.withTextOrGone
 
@@ -71,23 +70,20 @@ class SendDetailsView @JvmOverloads constructor(
                 color
             )
 
-            when (data.fee) {
-                is SendSolanaFee.SolanaFee -> {
-                    accountCreationFeeView.isVisible = isExpanded
-                    val feeText = SpanUtils.highlightText(
-                        data.fee.accountCreationFullFee,
-                        data.fee.approxAccountCreationFeeUsd.orEmpty(),
-                        color
-                    )
-                    accountCreationTokenTextView.text = feeText
-                    totalFeeTextView.text = feeText
-                }
-                else -> {
-                    totalFeeTextView.isVisible = false
-                    paidByTextView.isVisible = true
-                    freeTextView.setText(R.string.send_free_transaction)
-                    accountCreationFeeView.isVisible = false
-                }
+            if (data.sendFee != null) {
+                accountCreationFeeView.isVisible = isExpanded
+                val feeText = SpanUtils.highlightText(
+                    data.sendFee.accountCreationFullFee,
+                    data.sendFee.approxAccountCreationFeeUsd.orEmpty(),
+                    color
+                )
+                accountCreationTokenTextView.text = feeText
+                totalFeeTextView.text = feeText
+            } else {
+                totalFeeTextView.isVisible = false
+                paidByTextView.isVisible = true
+                freeTextView.setText(R.string.send_free_transaction)
+                accountCreationFeeView.isVisible = false
             }
 
             headerView.setOnClickListener {

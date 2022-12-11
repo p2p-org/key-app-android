@@ -21,6 +21,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
+import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
@@ -576,14 +577,14 @@ class SendPresenter(
             totalUsd = state.usdAmount,
             receive = "${state.tokenAmount.formatToken()} ${sourceToken.tokenSymbol}",
             receiveUsd = state.tokenAmount.toUsd(sourceToken),
-            fee = sendFeeRelayerFee,
+            sendFee = sendFeeRelayerFee,
             sourceSymbol = sourceToken.tokenSymbol,
             // FIXME: these two fields are not used in the old send. remove when new send is released
             feeLimit = FreeTransactionFeeLimit(0, 0, BigInteger.ZERO, BigInteger.ZERO),
             recipientAddress = emptyString()
         )
 
-        updateButton(sourceToken, data.fee)
+        updateButton(sourceToken, data.sendFee)
 
         view?.showTotal(data)
     }
@@ -603,12 +604,12 @@ class SendPresenter(
         launch(dispatchers.ui) {
             try {
                 view?.showAccountFeeViewLoading(isLoading = true)
-                val (feeInSol, feeInPayingToken) = calculateFeeRelayerFee(
+                val fee = calculateFeeRelayerFee(
                     sourceToken = sourceToken,
                     feePayerToken = feePayer,
                     result = state.searchResult
                 ) ?: return@launch
-                showFeeDetails(sourceToken, feeInSol, feeInPayingToken, feePayer, strategy)
+                showFeeDetails(sourceToken, fee, feePayer, strategy)
             } catch (e: Throwable) {
                 Timber.e(e, "Error during FeeRelayer fee calculation")
             } finally {
@@ -624,7 +625,7 @@ class SendPresenter(
         sourceToken: Token.Active,
         feePayerToken: Token.Active,
         result: SearchResult?
-    ): Pair<BigInteger, BigInteger>? {
+    ): FeeRelayerFee? {
         val recipient = result?.addressState?.address ?: return null
 
         val fees = try {
@@ -658,14 +659,14 @@ class SendPresenter(
          * Checking if fee or feeInPayingToken are null
          * feeInPayingToken can be null only for renBTC network
          * */
-        if (fees?.feeInPayingToken == null || sourceToken.isSOL) {
+        if (fees?.totalInSpl == null || sourceToken.isSOL) {
             state.sendFeeRelayerFee = null
             calculateTotal(sendFeeRelayerFee = null)
             view?.hideAccountFeeView()
             return null
         }
 
-        return fees.feeInSol to fees.feeInPayingToken
+        return fees
     }
 
     private fun handleError() {
@@ -678,12 +679,11 @@ class SendPresenter(
 
     internal suspend fun showFeeDetails(
         sourceToken: Token.Active,
-        feeInSol: BigInteger,
-        feeInPayingToken: BigInteger,
+        feeRelayerFee: FeeRelayerFee,
         feePayerToken: Token.Active,
         strategy: FeePayerSelectionStrategy
     ) {
-        val fee = buildSolanaFee(feePayerToken, sourceToken, feeInSol, feeInPayingToken)
+        val fee = buildSolanaFee(feePayerToken, sourceToken, feeRelayerFee)
 
         if (strategy == NO_ACTION) {
             showFees(sourceToken, fee)
@@ -698,12 +698,12 @@ class SendPresenter(
          * Optimized recalculation and UI update
          * */
         val newFeePayer = sendInteractor.getFeePayerToken()
-        val (feeInSol, feeInPayingToken) = calculateFeeRelayerFee(
+        val feeRelayerFee = calculateFeeRelayerFee(
             sourceToken = sourceToken,
             feePayerToken = newFeePayer,
             result = state.searchResult
         ) ?: return
-        val fee = buildSolanaFee(newFeePayer, sourceToken, feeInSol, feeInPayingToken)
+        val fee = buildSolanaFee(newFeePayer, sourceToken, feeRelayerFee)
         showFees(sourceToken, fee)
         calculateTotal(fee)
     }
@@ -728,20 +728,18 @@ class SendPresenter(
     internal fun buildSolanaFee(
         newFeePayer: Token.Active,
         source: Token.Active,
-        feeInSol: BigInteger,
-        feeInPayingToken: BigInteger,
-    ): SendSolanaFee.SolanaFee {
+        feeRelayerFee: FeeRelayerFee
+    ): SendSolanaFee {
 
-        return SendSolanaFee.SolanaFee(
+        return SendSolanaFee(
             feePayerToken = newFeePayer,
             sourceTokenSymbol = source.tokenSymbol,
-            feeInSol = feeInSol,
-            feeInPayingToken = feeInPayingToken,
+            feeRelayerFee = feeRelayerFee,
             solToken = state.solToken
         ).also { state.sendFeeRelayerFee = it }
     }
 
-    private fun showFees(source: Token.Active, fee: SendSolanaFee.SolanaFee) {
+    private fun showFees(source: Token.Active, fee: SendSolanaFee) {
         val inputAmount = state.tokenAmount.toLamports(source.decimals)
         val isEnoughToCoverExpenses = fee.isEnoughToCoverExpenses(
             sourceTokenTotal = source.totalInLamports,
@@ -757,7 +755,7 @@ class SendPresenter(
 
     private suspend fun validateAndSelectFeePayer(
         sourceToken: Token.Active,
-        fee: SendSolanaFee.SolanaFee,
+        fee: SendSolanaFee,
         strategy: FeePayerSelectionStrategy
     ) {
 

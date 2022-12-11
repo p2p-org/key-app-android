@@ -18,7 +18,7 @@ private const val ROUNDING_VALUE = 6
 
 class CalculationMode {
 
-    var onOutputCalculated: ((aroundValue: String) -> Unit)? = null
+    var onCalculationCompleted: ((aroundValue: String) -> Unit)? = null
     var onLabelsUpdated: ((switchSymbol: String, mainSymbol: String) -> Unit)? = null
 
     private var currencyMode: CurrencyMode = CurrencyMode.Usd
@@ -32,11 +32,8 @@ class CalculationMode {
 
     fun updateToken(newToken: Token.Active) {
         this.token = newToken
-        updateLabels()
-    }
+        this.currencyMode = CurrencyMode.Token(newToken.tokenSymbol)
 
-    fun updateCurrency(mode: CurrencyMode) {
-        currencyMode = mode
         updateLabels()
     }
 
@@ -98,7 +95,7 @@ class CalculationMode {
             usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
         }
 
-        onOutputCalculated?.invoke("${tokenAround.formatToken()} ${token.tokenSymbol}")
+        onCalculationCompleted?.invoke("${tokenAround.formatToken()} ${token.tokenSymbol}")
     }
 
     private fun calculateByToken(inputAmount: String) {
@@ -106,6 +103,6 @@ class CalculationMode {
         usdAmount = tokenAmount.multiply(token.usdRateOrZero)
 
         val usdAround = tokenAmount.times(token.usdRateOrZero)
-        onOutputCalculated?.invoke("${usdAround.formatUsd()} $USD_READABLE_SYMBOL")
+        onCalculationCompleted?.invoke("${usdAround.formatUsd()} $USD_READABLE_SYMBOL")
     }
 }
