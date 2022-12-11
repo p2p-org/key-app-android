@@ -57,6 +57,7 @@
     <string name="send_fees">Fees:</string>
     <string name="send_fees_format">Fees: %s %s</string>
     <string name="send_fees_free">Enjoy free transactions</string>
+    <string name="send_calculating_fees">Calculating the fees</string>
 
     <string name="send_cant_calculate_fees_error">Cannot calculate fees. Try again</string>
 

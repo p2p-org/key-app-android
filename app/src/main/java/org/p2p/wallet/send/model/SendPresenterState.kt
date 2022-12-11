@@ -9,16 +9,13 @@ class SendPresenterState(
     var inputAmount: String = "0",
     var solToken: Token.Active? = null,
     var mode: CurrencyMode = CurrencyMode.Token(SOL_SYMBOL),
-    var sendFee: SendFee? = null,
-    var networkType: NetworkType = NetworkType.SOLANA,
+    var sendFeeRelayerFee: SendSolanaFee? = null,
     var searchResult: SearchResult? = null,
     var initialToken: Token.Active? = null,
     var tokenAmount: BigDecimal = BigDecimal.ZERO,
     var usdAmount: BigDecimal = BigDecimal.ZERO,
     var minRentExemption: BigInteger = BigInteger.ZERO
 ) {
-
-    fun isRenBTCNetwork(): Boolean = networkType == NetworkType.BITCOIN
 
     fun updateInitialToken(initialToken: Token.Active) {
         this.initialToken = initialToken

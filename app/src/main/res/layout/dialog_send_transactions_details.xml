@@ -7,23 +7,43 @@
     android:layout_height="wrap_content"
     android:paddingBottom="32dp">
 
+    <View
+        android:id="@+id/viewHandle"
+        android:layout_width="30dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@color/bg_rain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        android:text="@string/common_transaction_details"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:layout_constraintTop_toBottomOf="@id/viewHandle" />
+
     <include
         android:id="@+id/layoutAddress"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
 
     <include
-        android:id="@+id/layoutGets"
+        android:id="@+id/layoutReceiveAmount"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutAddress" />
@@ -36,7 +56,7 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutGets" />
+        app:layout_constraintTop_toBottomOf="@id/layoutReceiveAmount" />
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/imageViewIconAccountFee"

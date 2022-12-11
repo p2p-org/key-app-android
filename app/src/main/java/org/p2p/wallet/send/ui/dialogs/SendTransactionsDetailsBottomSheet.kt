@@ -1,19 +1,19 @@
 package org.p2p.wallet.send.ui.dialogs
 
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentManager
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogSendTransactionsDetailsBinding
-import org.p2p.wallet.send.model.SendFee
-import org.p2p.wallet.send.model.SendTotal
+import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.withArgs
@@ -25,17 +25,15 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
     companion object {
         fun show(
             fm: FragmentManager,
-            title: String,
-            state: SendTotal,
-        ) = SendTransactionsDetailsBottomSheet().withArgs(
-            ARG_TITLE to title,
-            ARG_SEND_STATE to state,
-        ).show(fm, SendTransactionsDetailsBottomSheet::javaClass.name)
+            state: SendFeeTotal,
+        ) = SendTransactionsDetailsBottomSheet()
+            .withArgs(ARG_SEND_STATE to state)
+            .show(fm, SendTransactionsDetailsBottomSheet::javaClass.name)
     }
 
     private lateinit var binding: DialogSendTransactionsDetailsBinding
 
-    private val state: SendTotal by args(ARG_SEND_STATE)
+    private val state: SendFeeTotal by args(ARG_SEND_STATE)
 
     private val colorNight = getColor(R.color.text_night)
     private val colorMountain = getColor(R.color.text_mountain)
@@ -50,7 +48,7 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             setRecipientAddress()
-            setRecipientGets()
+            setRecipientReceiveAmount()
             setTransactionFee()
             setAccountCreation()
             setTotal()
@@ -61,23 +59,21 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
 
     private fun DialogSendTransactionsDetailsBinding.setRecipientAddress() {
         val address = state.recipientAddress
-        val isRecipientAddressEmpty = address.isNullOrEmpty()
         with(layoutAddress) {
-            root.isVisible = !isRecipientAddressEmpty
             imageViewIcon.setImageResource(R.drawable.ic_wallet_home)
             textViewTitle.text = getString(R.string.send_transactions_details_address)
             textViewSubtitle.text = address
             root.setOnLongClickListener {
-                requireContext().copyToClipBoard(address.orEmpty())
+                requireContext().copyToClipBoard(address)
                 toast(R.string.common_copied)
                 true
             }
         }
     }
 
-    private fun DialogSendTransactionsDetailsBinding.setRecipientGets() {
+    private fun DialogSendTransactionsDetailsBinding.setRecipientReceiveAmount() {
         val color = getColor(R.color.text_mountain)
-        with(layoutGets) {
+        with(layoutReceiveAmount) {
             imageViewIcon.setImageResource(R.drawable.ic_receive)
             textViewTitle.text = getString(R.string.send_transactions_details_gets)
             textViewSubtitle.text = SpanUtils.highlightText(
@@ -94,7 +90,7 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
             textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
             textViewSubtitle.apply {
                 when (val fee = state.fee) {
-                    is SendFee.SolanaFee -> {
+                    is SendSolanaFee.SolanaFee -> {
                         setTextColor(colorNight)
                         text = SpanUtils.highlightText(
                             commonText = fee.accountCreationFullFee,
@@ -120,7 +116,7 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
 
         textViewSubtitleAccountFee.apply {
             when (val fee = state.fee) {
-                is SendFee.SolanaFee -> {
+                is SendSolanaFee.SolanaFee -> {
                     setTextColor(colorNight)
                     text = SpanUtils.highlightText(
                         commonText = fee.accountCreationFullFee,

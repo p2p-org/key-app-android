@@ -11,7 +11,7 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetAccountFeeViewBinding
-import org.p2p.wallet.send.model.SendFee
+import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
@@ -26,7 +26,7 @@ class AccountFeeView @JvmOverloads constructor(
 
     private val glideManager: GlideManager by inject()
 
-    fun showFee(fee: SendFee) {
+    fun showFee(fee: SendSolanaFee) {
         with(binding) {
             fillUsdFee(fee.feeUsd)
 
