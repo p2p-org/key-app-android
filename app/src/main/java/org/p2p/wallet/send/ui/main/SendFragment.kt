@@ -3,17 +3,12 @@ package org.p2p.wallet.send.ui.main
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.graphics.Typeface.BOLD
 import android.os.Bundle
-import android.text.Spannable
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import androidx.core.text.buildSpannedString
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
@@ -34,7 +29,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
-import org.p2p.wallet.common.ui.bottomsheet.TextContainer
+import org.p2p.core.common.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -46,10 +41,9 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
-import org.p2p.wallet.send.model.SendFee
-import org.p2p.wallet.send.model.SendTotal
+import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
-import org.p2p.wallet.send.ui.network.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_SEARCH_RESULT
@@ -160,10 +154,6 @@ class SendFragment :
                 val searchResult = result.getParcelable<SearchResult>(EXTRA_SEARCH_RESULT)
                 if (searchResult != null) presenter.setTargetResult(searchResult)
             }
-            result.containsKey(EXTRA_NETWORK) -> {
-                val ordinal = result.getInt(EXTRA_NETWORK, 0)
-                presenter.setNetworkDestination(NetworkType.values()[ordinal])
-            }
         }
     }
 
@@ -203,8 +193,6 @@ class SendFragment :
             val originalTextSize = amountEditText.textSize
             // Use invisible auto size textView to handle editText text size
             amountEditText.doOnTextChanged { text, _, _, _ -> handleAmountTextChanged(text, originalTextSize) }
-
-            networkView.setOnClickListener { presenter.loadCurrentNetwork() }
 
             sourceImageView.setOnClickListener { presenter.loadTokensForSelection() }
             sourceTextView.setOnClickListener { presenter.loadTokensForSelection() }
@@ -374,7 +362,7 @@ class SendFragment :
         }
     }
 
-    override fun showAccountFeeView(fee: SendFee) {
+    override fun showAccountFeeView(fee: SendSolanaFee) {
         with(binding) {
             val tokenSymbol = fee.sourceTokenSymbol
             accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
@@ -427,51 +415,6 @@ class SendFragment :
         popAndReplaceFragment(TransactionDetailsFragment.create(state))
     }
 
-    override fun showNetworkDestination(type: NetworkType) {
-        when (type) {
-            NetworkType.SOLANA -> {
-                binding.networkImageView.setImageResource(R.drawable.ic_sol)
-                binding.networkNameTextView.setText(R.string.send_solana_network_title)
-
-                val transactionFee = getString(R.string.send_transaction_fee)
-                val zeroUsd = getString(R.string.send_zero_usd)
-                val commonText = "$transactionFee: $zeroUsd"
-
-                val startIndex = commonText.indexOf(zeroUsd)
-                val color = requireContext().getColor(R.color.systemSuccess)
-                val highlightText = buildSpannedString {
-                    append(commonText)
-
-                    setSpan(
-                        ForegroundColorSpan(color),
-                        startIndex,
-                        startIndex + zeroUsd.length,
-                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-                    )
-
-                    setSpan(
-                        StyleSpan(BOLD),
-                        startIndex,
-                        startIndex + zeroUsd.length,
-                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-                    )
-                }
-
-                binding.networkFeeTextView.withTextOrGone(highlightText)
-            }
-            NetworkType.BITCOIN -> {
-                binding.networkImageView.setImageResource(R.drawable.ic_btc_rounded)
-                binding.networkNameTextView.setText(R.string.send_bitcoin_network_title)
-                // TODO: add renBTC fee
-                binding.networkFeeTextView.withTextOrGone(text = null)
-            }
-        }
-    }
-
-    override fun showNetworkSelectionView(isVisible: Boolean) {
-        binding.networkView.isVisible = isVisible
-    }
-
     override fun showSourceToken(token: Token.Active) {
         with(binding) {
             glideManager.load(sourceImageView, token.iconUrl)
@@ -480,7 +423,7 @@ class SendFragment :
         }
     }
 
-    override fun showTotal(data: SendTotal?) {
+    override fun showTotal(data: SendFeeTotal?) {
         binding.sendDetailsView.showTotal(data)
     }
 
@@ -492,7 +435,7 @@ class SendFragment :
         with(binding.amountEditText) {
             val textValue = value.toPlainString()
             if (forced) {
-                org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(this)
+                AmountFractionTextWatcher.uninstallFrom(this)
                 setText(textValue)
                 setSelection(textValue.length)
                 installAmountWatcher()

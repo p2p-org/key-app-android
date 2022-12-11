@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.model
+package org.p2p.wallet.newsend.model
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -7,13 +7,14 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.toLamports
-import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
+import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SendSolanaFee
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 
-class SendButton(
+class NewSendButton(
     private val sourceToken: Token.Active,
     private val searchResult: SearchResult?,
     private val sendFee: SendSolanaFee?,
@@ -21,19 +22,18 @@ class SendButton(
     private var minRentExemption: BigInteger
 ) {
 
-    sealed class State {
+    sealed interface State {
         class Disabled(
             @StringRes val textResId: Int,
-            @ColorRes val totalAmountTextColor: Int,
-            @StringRes val warningTextResId: Int? = null
-        ) : State()
+            @ColorRes val totalAmountTextColor: Int
+        ) : State
 
         class Enabled(
             @StringRes val textResId: Int,
             @DrawableRes val iconRes: Int?,
             vararg val value: String,
             @ColorRes val totalAmountTextColor: Int
-        ) : State()
+        ) : State
     }
 
     @IgnoredOnParcel
@@ -41,24 +41,18 @@ class SendButton(
         get() {
             val total = sourceToken.total.toLamports(sourceToken.decimals)
             val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
-            val address = searchResult?.addressState?.address.orEmpty()
 
             val isEnoughBalance = !total.isLessThan(inputAmount)
             val isEnoughToCoverExpenses = sendFee == null || sendFee.isEnoughToCoverExpenses(total, inputAmount)
-            val isValidAddress = PublicKeyValidator.isValid(address)
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
 
-            val isMaxAmount = inputAmount == total
             val availableColor = when {
-                !isEnoughBalance -> R.color.systemErrorMain
-                isMaxAmount -> R.color.systemSuccessMain
-                else -> R.color.textIconSecondary
+                !isEnoughBalance -> R.color.text_rose
+                else -> R.color.text_night
             }
 
             return when {
-                !isValidAddress ->
-                    State.Disabled(R.string.send_enter_address, availableColor)
                 !isAmountNotZero ->
                     State.Disabled(R.string.main_enter_the_amount, availableColor)
                 !isEnoughBalance ->
@@ -67,9 +61,8 @@ class SendButton(
                     State.Disabled(R.string.send_insufficient_funds, availableColor)
                 !isAmountValidForRecipient ->
                     State.Disabled(
-                        textResId = R.string.main_enter_incorrect_amount,
-                        totalAmountTextColor = availableColor,
-                        warningTextResId = R.string.send_min_required_amount_warning
+                        textResId = R.string.send_min_required_amount_warning,
+                        totalAmountTextColor = availableColor
                     )
                 else ->
                     State.Enabled(

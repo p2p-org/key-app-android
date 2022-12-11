@@ -29,7 +29,6 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -111,12 +110,11 @@ class SendPresenterTest {
         // then
         coVerifyOrder {
             view.showFullScreenLoading(isLoading = true)
-            view.showNetworkDestination(NetworkType.SOLANA)
             userInteractor.getUserSolToken()
             sendInteractor.initialize(token)
             view.showSourceToken(token) // observable delegate
             sendInteractor.getMinRelayRentExemption()
-            testObject.calculateTotal(sendFee = null)
+            testObject.calculateTotal(sendFeeRelayerFee = null)
             view.showFullScreenLoading(isLoading = false)
         }
     }
@@ -132,12 +130,8 @@ class SendPresenterTest {
 
         // then
         verify { view.showDetailsError(null) }
-        verify(exactly = 0) { view.showNetworkSelectionView(isVisible = true) } // this is called for renBTC only
-        verify { view.showNetworkDestination(NetworkType.SOLANA) }
-        verify { view.showNetworkSelectionView(isVisible = false) }
 
         coVerifyOrder {
-            testObject.calculateRenBtcFeeIfNeeded()
             testObject.calculateByMode(token)
             testObject.updateMaxButtonVisibility(token)
             sendAnalytics.logSendChangingToken(token.tokenSymbol)
