@@ -1,11 +1,13 @@
 package org.p2p.wallet.send.ui.main
 
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
@@ -145,11 +147,11 @@ class SendPresenterTest {
         // given
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
-        val feeInSol = BigInteger.valueOf(5000L)
-        val feeInPayingToken = BigInteger.valueOf(10000L)
+        val fee: FeeRelayerFee = mockk()
         every { dispatchers.ui } returns testDispatcher
         every { sendInteractor.getFeePayerToken() } returns splToken
-        coEvery { testObject.calculateFeeRelayerFee(splToken, feePayerToken, any()) } returns (feeInSol to feeInPayingToken)
+        coEvery { testObject.calculateFeeRelayerFee(splToken, feePayerToken, any()) } returns fee
+        coEvery { testObject.showFeeDetails(splToken, fee, feePayerToken, NO_ACTION) } just Runs
 
         // when
         testObject.findValidFeePayer(splToken, feePayerToken, NO_ACTION)
@@ -157,7 +159,7 @@ class SendPresenterTest {
         // then
         verify { view.showAccountFeeViewLoading(isLoading = true) }
         coVerify { testObject.calculateFeeRelayerFee(splToken, feePayerToken, any()) }
-        coVerify { testObject.showFeeDetails(splToken, feeInSol, feeInPayingToken, feePayerToken, NO_ACTION) }
+        coVerify { testObject.showFeeDetails(splToken, fee, feePayerToken, NO_ACTION) }
         verify { view.showAccountFeeViewLoading(isLoading = false) }
     }
 
@@ -170,6 +172,8 @@ class SendPresenterTest {
         val result = SearchResult.AddressOnly(AddressState("Some address"))
         val fee: FeeRelayerFee = mockk()
         every { dispatchers.ui } returns testDispatcher
+        every { fee.totalInSol } returns BigInteger.TEN
+        every { fee.totalInSpl } returns BigInteger.TEN
         coEvery {
             sendInteractor.calculateFeesForFeeRelayer(
                 feePayerToken = feePayerToken,
@@ -177,8 +181,6 @@ class SendPresenterTest {
                 recipient = result.addressState.address
             )
         } returns fee
-        every { fee.feeInPayingToken } returns BigInteger.valueOf(25000L)
-        every { fee.feeInSol } returns BigInteger.valueOf(15000L)
 
         // when
         testObject.calculateFeeRelayerFee(splToken, feePayerToken, result)
