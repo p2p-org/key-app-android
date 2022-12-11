@@ -27,18 +27,41 @@
         android:id="@+id/textViewFreeTransactions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="20dp"
         android:ellipsize="none"
-        android:gravity="center|end"
+        android:gravity="center_vertical|end"
         android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_sky"
-        app:drawableEndCompat="@drawable/ic_info_solid"
-        app:drawableTint="@color/icons_sky"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Fees: 0" />
+
+    <ProgressBar
+        android:id="@+id/progressBarFreeTransactions"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="2dp"
+        android:indeterminateTint="@color/elements_sky"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/textViewFreeTransactions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewFreeTransactions" />
+
+    <ImageView
+        android:id="@+id/imageViewFreeTransactionsInfo"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginTop="2dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_info_solid"
+        app:layout_constraintBottom_toBottomOf="@id/textViewFreeTransactions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewFreeTransactions"
+        app:tint="@color/icons_sky" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerToken"

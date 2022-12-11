@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
-import org.p2p.core.token.Token
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.NewSendFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
@@ -26,7 +26,6 @@ import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -181,10 +180,7 @@ class NewSearchFragment :
 
     override fun submitSearchResult(searchResult: SearchResult) {
         val sendFragmentToOpen = if (newSendFeatureToggle.isFeatureEnabled) {
-            NewSendFragment.create(
-                recipientAddress = searchResult.addressState.address.toBase58Instance(),
-                recipientUsername = if (searchResult is SearchResult.UsernameFound) searchResult.username else null,
-            )
+            NewSendFragment.create(recipient = searchResult)
         } else {
             SendFragment.create(address = searchResult.addressState.address)
         }
