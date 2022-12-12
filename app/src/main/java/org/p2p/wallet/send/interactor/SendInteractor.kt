@@ -189,10 +189,11 @@ class SendInteractor(
         transactionFeeInSOL: BigInteger,
         accountCreationFeeInSOL: BigInteger
     ): FeeAmount {
-        if (feePayerToken.isSOL) return FeeAmount(
-            transaction = transactionFeeInSOL,
-            accountBalances = accountCreationFeeInSOL
-        )
+        if (feePayerToken.isSOL)
+            return FeeAmount(
+                transaction = transactionFeeInSOL,
+                accountBalances = accountCreationFeeInSOL
+            )
 
         return feeRelayerInteractor.calculateFeeInPayingToken(
             feeInSOL = FeeAmount(transaction = transactionFeeInSOL, accountBalances = accountCreationFeeInSOL),

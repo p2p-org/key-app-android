@@ -1,5 +1,7 @@
 package org.p2p.wallet.newsend
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.emptyString
@@ -40,8 +42,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -107,7 +107,8 @@ class NewSendPresenter(
                 return@launch
             }
 
-            val initialToken = userTokens.first()
+            val initialToken = userTokens.find { it.isUSDC && !it.isZero }
+                ?: userTokens.minBy { it.totalInLamports }
             token = initialToken
             val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
             if (solToken == null) {

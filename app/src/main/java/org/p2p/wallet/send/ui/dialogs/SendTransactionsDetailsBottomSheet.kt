@@ -1,11 +1,11 @@
 package org.p2p.wallet.send.ui.dialogs
 
-import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toast
@@ -15,6 +15,7 @@ import org.p2p.wallet.databinding.DialogSendTransactionsDetailsBinding
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.withArgs
 
 private const val ARG_SEND_STATE = "ARG_SEND_STATE"
@@ -34,9 +35,9 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
 
     private val state: SendFeeTotal by args(ARG_SEND_STATE)
 
-    private val colorNight by lazy { getColor(R.color.text_night) }
-    private val colorMountain by lazy { getColor(R.color.text_mountain) }
-    private val colorMint by lazy { getColor(R.color.text_mint) }
+    private val colorNight by unsafeLazy { getColor(R.color.text_night) }
+    private val colorMountain by unsafeLazy { getColor(R.color.text_mountain) }
+    private val colorMint by unsafeLazy { getColor(R.color.text_mint) }
 
     override fun onCreateInnerView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogSendTransactionsDetailsBinding.inflate(inflater, container, false)

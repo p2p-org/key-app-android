@@ -1,5 +1,8 @@
 package org.p2p.wallet.send.ui.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.formatToken
@@ -67,9 +70,6 @@ import java.math.RoundingMode
 import java.util.Locale
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class SendPresenter(
     private val sendInteractor: SendInteractor,
@@ -647,7 +647,7 @@ class SendPresenter(
                 return null
             }
         } catch (e: CancellationException) {
-            Timber.w("Fee calculation is cancelled")
+            Timber.i("Fee calculation is cancelled")
             return null
         } catch (e: Throwable) {
             Timber.e(e, "Error calculating fees")

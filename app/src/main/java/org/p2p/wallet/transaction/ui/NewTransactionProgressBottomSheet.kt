@@ -1,13 +1,13 @@
 package org.p2p.wallet.transaction.ui
 
-import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.lifecycleScope
-import androidx.transition.TransitionManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
+import androidx.transition.TransitionManager
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -30,7 +30,7 @@ private const val EXTRA_DATA = "EXTRA_DATA"
 private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
 
 // TODO: change to NON-settling bottomSheet
-class NewProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
+class NewTransactionProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
 
     companion object {
         fun show(
@@ -38,17 +38,17 @@ class NewProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
             transactionId: String,
             data: ShowProgress
         ) {
-            NewProgressBottomSheet()
+            NewTransactionProgressBottomSheet()
                 .withArgs(
                     EXTRA_DATA to data,
                     EXTRA_TRANSACTION_ID to transactionId
                 )
-                .show(fragmentManager, NewProgressBottomSheet::javaClass.name)
+                .show(fragmentManager, NewTransactionProgressBottomSheet::javaClass.name)
         }
 
         fun hide(fragmentManager: FragmentManager) {
-            val dialog = fragmentManager.findFragmentByTag(NewProgressBottomSheet::javaClass.name)
-            (dialog as? NewProgressBottomSheet)?.dismissAllowingStateLoss()
+            val dialog = fragmentManager.findFragmentByTag(NewTransactionProgressBottomSheet::javaClass.name)
+            (dialog as? NewTransactionProgressBottomSheet)?.dismissAllowingStateLoss()
         }
     }
 
