@@ -1,32 +1,37 @@
 package org.p2p.wallet.newsend
 
 import org.p2p.core.token.Token
+import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import java.math.BigDecimal
+import org.p2p.core.common.TextContainer
+import org.p2p.wallet.send.model.SendFeeTotal
+import org.p2p.wallet.transaction.model.ShowProgress
 
 interface NewSendContract {
-    interface View : MvpView {
-        fun setSwitchLabel(symbol: String)
-        fun setMainAmountLabel(symbol: String)
-        fun showInputValue(value: BigDecimal, forced: Boolean)
-        fun showTokenToSend(token: Token.Active)
-        fun setMaxButtonIsVisible(isVisible: Boolean)
-        fun setBottomButtonText(text: String)
-        fun setBottomButtonIsVisible(isVisible: Boolean)
-        fun setSliderText(text: String)
-        fun showAroundValue(value: String)
-        fun showFeeViewLoading(isLoading: Boolean)
-        fun setFeeLabel(text: String)
-        fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?)
+    interface View : MvpView, UiKitSendDetailsWidgetContract {
+        fun updateInputValue(textValue: String, forced: Boolean)
+
+        fun showFreeTransactionsInfo()
+        fun showTransactionDetails(sendFeeTotal: SendFeeTotal)
+        fun showProgressDialog(internalTransactionId: String, data: ShowProgress)
+
+        fun setBottomButtonText(text: TextContainer?)
+        fun setSliderText(text: String?)
+
         fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setTokenToSend(newToken: Token.Active)
+        fun updateToken(newToken: Token.Active)
+        fun updateInputAmount(amount: String)
+        fun updateFeePayerToken(feePayerToken: Token.Active)
+
         fun switchCurrencyMode()
         fun setMaxAmountValue()
-        fun setAmount(amount: String)
         fun onTokenClicked()
+        fun onFeeInfoClicked()
+
+        fun send()
     }
 }

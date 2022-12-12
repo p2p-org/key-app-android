@@ -2,250 +2,359 @@ package org.p2p.wallet.newsend
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.formatUsd
-import org.p2p.core.utils.isZero
-import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleLong
-import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.toUsd
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.send.model.CurrencyMode
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.TransferType
+import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.FeeRelayerState
+import org.p2p.wallet.newsend.model.NewSendButton
+import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SendFeeTotal
+import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.getErrorMessage
+import org.p2p.wallet.utils.toPublicKey
+import org.threeten.bp.ZonedDateTime
+import timber.log.Timber
 import java.math.BigDecimal
-import java.math.RoundingMode
+import java.math.BigInteger
+import java.util.UUID
 import kotlin.properties.Delegates
 
-private const val ROUNDING_VALUE = 6
-
 class NewSendPresenter(
+    private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
-    private val browseAnalytics: BrowseAnalytics,
-    private val analyticsInteractor: ScreensAnalyticsInteractor,
-    private val resourcesProvider: ResourcesProvider,
-    private val dispatchers: CoroutineDispatchers
+    private val sendInteractor: SendInteractor,
+    private val resources: ResourcesProvider,
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val transactionManager: TransactionManager,
+    private val appScope: AppScope
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
-    private var token: Token.Active? by Delegates.observable(null) { _, _, newValue ->
-        if (newValue != null) view?.showTokenToSend(newValue)
-    }
-    private var searchResult: SearchResult? = null
-
-    private var inputAmount: String = Constants.ZERO_AMOUNT
-    private var currencyMode: CurrencyMode = CurrencyMode.Usd
-    private var tokenAmount: BigDecimal = BigDecimal.ZERO
-    private var usdAmount: BigDecimal = BigDecimal.ZERO
-
-    private var calculationJob: Job? = null
-
-    init {
-        launch(dispatchers.ui) {
-            token = userInteractor.getUserTokens().first()
-            updateValues()
+    private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
+        if (newToken != null) {
+            view?.showToken(newToken)
+            calculationMode.updateToken(newToken)
         }
     }
+
+    private var inputAmount: String by Delegates.observable(emptyString()) { _, _, newInput ->
+        calculationMode.updateInputAmount(newInput)
+    }
+
+    private val calculationMode = CalculationMode()
+    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
+
+    private var feePayerJob: Job? = null
 
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
-        updateValues()
+        initialize(view)
     }
 
-    private fun updateValues() {
-        val token = token ?: return
-        val switchSymbol: String
-        val mainSymbol: String
-        when (currencyMode) {
-            is CurrencyMode.Token -> {
-                switchSymbol = Constants.USD_READABLE_SYMBOL
-                mainSymbol = token.tokenSymbol
-            }
-            is CurrencyMode.Usd -> {
-                switchSymbol = token.tokenSymbol
-                mainSymbol = Constants.USD_READABLE_SYMBOL
+    private fun initialize(view: NewSendContract.View) {
+        calculationMode.onCalculationCompleted = { view.showAroundValue(it) }
+        calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
+            view.setSwitchLabel(switchSymbol)
+            view.setMainAmountLabel(mainSymbol)
+        }
+
+        feeRelayerManager.onStateUpdated = { newState ->
+            when (newState) {
+                is FeeRelayerState.UpdateFee -> {
+                    handleUpdateFee(newState, view)
+                }
+                is FeeRelayerState.ReduceAmount -> {
+                    inputAmount = newState.newInputAmount.fromLamports(requireToken().decimals).toPlainString()
+                    view.updateInputValue(inputAmount, forced = true)
+                }
+                is FeeRelayerState.Failure -> {
+                    view.setFeeLabel(text = null)
+                    updateButton(requireToken(), newState)
+                }
+                is FeeRelayerState.Idle -> Unit
             }
         }
-        updateMaxButtonVisibility(token)
-        validateAmounts(token)
-        calculateByMode(token)
-        view?.setSwitchLabel(switchSymbol)
-        view?.setMainAmountLabel(mainSymbol)
+
+        launch {
+            // We should find SOL anyway because SOL is needed for Selection Mechanism
+            val userTokens = userInteractor.getUserTokens()
+            if (userTokens.isEmpty()) {
+                // we cannot proceed if user tokens are not loaded
+                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+                return@launch
+            }
+
+            val initialToken = userTokens.find { it.isUSDC && !it.isZero }
+                ?: userTokens.minBy { it.totalInLamports }
+            token = initialToken
+            val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
+            if (solToken == null) {
+                // we cannot proceed without SOL.
+                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+                return@launch
+            }
+
+            initializeFeeRelayer(view, initialToken, solToken)
+        }
+    }
+
+    private fun handleUpdateFee(
+        feeRelayerState: FeeRelayerState.UpdateFee,
+        view: NewSendContract.View
+    ) {
+        val sourceToken = requireToken()
+        val currentAmount = calculationMode.getCurrentAmount()
+        val sendFee = feeRelayerState.solanaFee
+        val total = buildTotalFee(currentAmount, sourceToken, sendFee, feeRelayerState.feeLimitInfo)
+
+        val text = total.getTotalFee { resources.getString(it) }
+        view.setFeeLabel(text)
+
+        updateButton(sourceToken, feeRelayerState)
+    }
+
+    private fun buildTotalFee(
+        currentAmount: BigDecimal,
+        sourceToken: Token.Active,
+        sendFee: SendSolanaFee?,
+        feeLimitInfo: FreeTransactionFeeLimit
+    ) = SendFeeTotal(
+        total = currentAmount,
+        totalUsd = calculationMode.getCurrentAmountUsd(),
+        receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
+        receiveUsd = currentAmount.toUsd(sourceToken),
+        sourceSymbol = sourceToken.tokenSymbol,
+        sendFee = sendFee,
+        recipientAddress = recipientAddress.addressState.address,
+        feeLimit = feeLimitInfo
+    )
+
+    private suspend fun initializeFeeRelayer(
+        view: NewSendContract.View,
+        initialToken: Token.Active,
+        solToken: Token.Active
+    ) {
+        view.setFeeLabel(resources.getString(R.string.send_fees))
+        view.showFeeViewLoading(isLoading = true)
+        view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
+
+        feeRelayerManager.initialize(initialToken, solToken, recipientAddress)
+        executeSmartSelection(
+            token = requireToken(),
+            feePayerToken = requireToken(),
+            strategy = SELECT_FEE_PAYER
+        )
+
+        view.showFeeViewLoading(isLoading = false)
+        updateButton(initialToken, feeRelayerManager.getState())
     }
 
     override fun onTokenClicked() {
-        loadTokensForSelection()
-    }
-
-    override fun setTokenToSend(newToken: Token.Active) {
-        token = newToken
-        updateValues()
-    }
-
-    override fun switchCurrencyMode() {
-        val token = token ?: return
-        currencyMode = when (currencyMode) {
-            is CurrencyMode.Token -> {
-                CurrencyMode.Usd
-            }
-            is CurrencyMode.Usd -> {
-                CurrencyMode.Token(token.tokenSymbol)
-            }
-        }
-        updateValues()
-    }
-
-    override fun setAmount(amount: String) {
-        inputAmount = amount
-
-        val token = token ?: return
-        updateMaxButtonVisibility(token)
-        validateAmounts(token)
-        calculateByMode(token)
-    }
-
-    private fun updateMaxButtonVisibility(token: Token.Active) {
-        val totalAvailable = when (currencyMode) {
-            is CurrencyMode.Usd -> token.totalInUsd
-            is CurrencyMode.Token -> token.total.scaleLong()
-        } ?: return
-        // TODO PWN-6092 check on max sum - min sum for creation account - 0.00089088 SOL
-        view?.setMaxButtonIsVisible(isVisible = inputAmount == emptyString())
-    }
-
-    private fun validateAmounts(token: Token.Active) {
-        // TODO PWN-6092 check min and max amount for SOL
-        val minAmount: BigDecimal
-        val currencySymbol: String
-        val maxAmount: BigDecimal
-        val inputValue = inputAmount.toBigDecimalOrZero()
-        when (currencyMode) {
-            is CurrencyMode.Token -> {
-                currencySymbol = token.tokenSymbol
-                minAmount = if (token.isSOL) {
-                    0.0000002.toBigDecimal() // TODO update PWN-6092
-                } else {
-                    BigDecimal.ZERO
-                }
-                maxAmount = token.total
-            }
-            is CurrencyMode.Usd -> {
-                currencySymbol = Constants.USD_READABLE_SYMBOL
-                minAmount = BigDecimal.ZERO
-                maxAmount = token.totalInUsd.orZero()
-            }
-        }
-
-        var hasIssue = false
-        var issueText: String = emptyString()
-        var validText: String = emptyString()
-        when {
-            inputValue == BigDecimal.ZERO -> {
-                hasIssue = true
-                issueText = resourcesProvider.getString(R.string.send_enter_amount)
-            }
-            inputValue < minAmount -> {
-                hasIssue = true
-                issueText = resourcesProvider.getString(
-                    R.string.send_min_warning_text_format,
-                    minAmount.scaleLong().toPlainString(),
-                    currencySymbol
-                )
-            }
-            inputValue > maxAmount -> {
-                hasIssue = true
-                issueText = resourcesProvider.getString(
-                    R.string.send_max_warning_text_format,
-                    maxAmount.scaleLong().toPlainString(),
-                    currencySymbol
-                )
-            }
-            else -> {
-                validText = resourcesProvider.getString(
-                    R.string.send_slider_text_format,
-                    inputAmount,
-                    currencySymbol
-                )
-            }
-        }
-        view?.setBottomButtonIsVisible(isVisible = hasIssue)
-        view?.setBottomButtonText(issueText)
-        view?.setSliderText(validText)
-    }
-
-    private fun calculateByMode(token: Token.Active) {
-        if (calculationJob?.isActive == true) return
-
-        launch(dispatchers.ui) {
-            when (currencyMode) {
-                is CurrencyMode.Token -> calculateByToken(token)
-                is CurrencyMode.Usd -> calculateByUsd(token)
-            }
-        }.also { calculationJob = it }
-    }
-
-    private fun calculateByUsd(token: Token.Active) {
-        usdAmount = inputAmount.toBigDecimalOrZero()
-        tokenAmount = if (token.usdRateOrZero.isZero()) {
-            BigDecimal.ZERO
-        } else {
-            usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
-        }
-
-        val tokenAround = if (usdAmount.isZero() || token.usdRateOrZero.isZero()) {
-            BigDecimal.ZERO
-        } else {
-            usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN)
-                .stripTrailingZeros()
-        }
-
-        view?.showAroundValue("${tokenAround.formatToken()} ${token.tokenSymbol}")
-    }
-
-    private fun calculateByToken(token: Token.Active) {
-        tokenAmount = inputAmount.toBigDecimalOrZero()
-        usdAmount = tokenAmount.multiply(token.usdRateOrZero)
-
-        val usdAround = tokenAmount.times(token.usdRateOrZero)
-        view?.showAroundValue("${usdAround.formatUsd()} ${Constants.USD_READABLE_SYMBOL}")
-    }
-
-    override fun setMaxAmountValue() {
-        val token = token ?: return
-
-        val totalAvailable = when (currencyMode) {
-            is CurrencyMode.Usd -> token.totalInUsd
-            is CurrencyMode.Token -> token.total.scaleLong()
-        } ?: return
-
-        view?.showInputValue(totalAvailable, forced = false)
-
-        val message = resourcesProvider.getString(R.string.send_using_max_amount, token.tokenSymbol)
-        view?.showUiKitSnackBar(message)
-
-        inputAmount = totalAvailable.toString()
-
-        updateMaxButtonVisibility(token)
-
-        calculateByMode(token)
-    }
-
-    private fun loadTokensForSelection() {
         launch {
             val tokens = userInteractor.getUserTokens()
             val result = tokens.filter { token -> !token.isZero }
-            browseAnalytics.logTokenListViewed(
-                lastScreenName = analyticsInteractor.getPreviousScreenName(),
-                tokenListLocation = BrowseAnalytics.TokenListLocation.SEND
-            )
-
             view?.navigateToTokenSelection(result, token)
         }
     }
+
+    override fun updateToken(newToken: Token.Active) {
+        token = newToken
+        recountAccordingToSelectedData()
+    }
+
+    override fun switchCurrencyMode() {
+        calculationMode.switchMode()
+        recountAccordingToSelectedData()
+    }
+
+    override fun updateInputAmount(amount: String) {
+        inputAmount = amount
+        recountAccordingToSelectedData()
+    }
+
+    private fun recountAccordingToSelectedData() {
+        showMaxButtonIfNeeded()
+        updateButton(requireToken(), feeRelayerManager.getState())
+
+        /*
+         * Calculating if we can pay with current token instead of already selected fee payer token
+         * */
+        executeSmartSelection(
+            token = requireToken(),
+            feePayerToken = requireToken(),
+            strategy = SELECT_FEE_PAYER
+        )
+    }
+
+    override fun updateFeePayerToken(feePayerToken: Token.Active) {
+        try {
+            sendInteractor.setFeePayerToken(feePayerToken)
+            executeSmartSelection(
+                token = requireToken(),
+                feePayerToken = feePayerToken,
+                strategy = NO_ACTION
+            )
+        } catch (e: Throwable) {
+            Timber.e(e, "Error updating fee payer token")
+        }
+    }
+
+    override fun setMaxAmountValue() {
+        val totalAvailable = calculationMode.getTotalAvailable() ?: return
+        view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
+        inputAmount = totalAvailable.toString()
+
+        showMaxButtonIfNeeded()
+
+        val token = token ?: return
+        val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
+        view?.showUiKitSnackBar(message)
+
+        /*
+        * Calculating if we can pay with current token instead of already selected fee payer token
+        * */
+        executeSmartSelection(
+            token = requireToken(),
+            feePayerToken = requireToken(),
+            strategy = CORRECT_AMOUNT
+        )
+    }
+
+    override fun onFeeInfoClicked() {
+        val currentState = feeRelayerManager.getState()
+        if (currentState !is FeeRelayerState.UpdateFee) return
+
+        val solanaFee = currentState.solanaFee
+        if (solanaFee == null) {
+            view?.showFreeTransactionsInfo()
+        } else {
+            val sourceToken = requireToken()
+            val currentAmount = calculationMode.getCurrentAmount()
+            val total = buildTotalFee(currentAmount, sourceToken, solanaFee, feeRelayerManager.getFeeLimitInfo())
+            view?.showTransactionDetails(total)
+        }
+    }
+
+    override fun send() {
+        val token = token ?: error("Token cannot be null!")
+        val address = recipientAddress.addressState.address
+        val currentAmount = calculationMode.getCurrentAmount()
+        val lamports = calculationMode.getCurrentAmountLamports()
+
+        // the internal id for controlling the transaction state
+        val internalTransactionId = UUID.randomUUID().toString()
+
+        appScope.launch {
+            try {
+                val destinationAddressShort = address.cutMiddle()
+                val data = ShowProgress(
+                    title = R.string.send_transaction_being_processed,
+                    subTitle = "${currentAmount.toPlainString()} ${token.tokenSymbol} → $destinationAddressShort",
+                    transactionId = emptyString()
+                )
+
+                view?.showProgressDialog(internalTransactionId, data)
+
+                val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+                val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
+                transactionManager.emitTransactionState(internalTransactionId, transactionState)
+            } catch (e: Throwable) {
+                val message = e.getErrorMessage { res -> resources.getString(res) }
+                transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
+            }
+        }
+    }
+
+    /**
+     * The smart selection of the Fee Payer token is being executed in four cases:
+     * 1. When the screen initializes. It checks if we need to create an account for the recipient
+     * 2. When user is typing the amount. We are checking what token we can choose for fee payment
+     * 3. When user updates the fee payer token manually. We don't do anything, only updating the info
+     * 4. When user clicks on MAX button. We are verifying if we need to reduce the amount for valid transaction
+     * */
+    private fun executeSmartSelection(
+        token: Token.Active,
+        feePayerToken: Token.Active?,
+        strategy: FeePayerSelectionStrategy
+    ) {
+        feePayerJob?.cancel()
+
+        launch {
+            feeRelayerManager.executeSmartSelection(
+                sourceToken = token,
+                feePayerToken = feePayerToken,
+                strategy = strategy,
+                tokenAmount = calculationMode.getCurrentAmount()
+            )
+        }
+    }
+
+    private fun showMaxButtonIfNeeded() {
+        view?.setMaxButtonVisible(isVisible = inputAmount.isEmpty())
+    }
+
+    private fun buildTransaction(transactionId: String): HistoryTransaction =
+        HistoryTransaction.Transfer(
+            signature = transactionId,
+            date = ZonedDateTime.now(),
+            blockNumber = null,
+            type = TransferType.SEND,
+            senderAddress = tokenKeyProvider.publicKey,
+            tokenData = TokenConverter.toTokenData(token!!),
+            totalInUsd = calculationMode.getCurrentAmountUsd(),
+            total = calculationMode.getCurrentAmount(),
+            destination = recipientAddress.addressState.address,
+            fee = BigInteger.ZERO,
+            status = TransactionStatus.PENDING
+        )
+
+    private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
+        val sendButton = NewSendButton(
+            sourceToken = sourceToken,
+            searchResult = recipientAddress,
+            tokenAmount = calculationMode.getCurrentAmount(),
+            feeRelayerState = feeRelayerState,
+            minRentExemption = feeRelayerManager.getMinRentExemption(),
+            resources = resources
+        )
+
+        when (val state = sendButton.state) {
+            is NewSendButton.State.Disabled -> {
+                view?.setBottomButtonText(state.textContainer)
+                view?.setSliderText(null)
+                view?.setInputColor(state.totalAmountTextColor)
+            }
+            is NewSendButton.State.Enabled -> {
+                view?.setSliderText(resources.getString(state.textResId, state.value))
+                view?.setBottomButtonText(null)
+                view?.setInputColor(state.totalAmountTextColor)
+            }
+        }
+    }
+
+    private fun requireToken(): Token.Active =
+        token ?: error("Source token cannot be empty!")
 }

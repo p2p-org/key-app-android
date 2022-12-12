@@ -2,6 +2,7 @@ package org.p2p.uikit.components
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import org.koin.core.component.KoinComponent
@@ -12,8 +13,9 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
+import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
-import java.math.BigDecimal
+import org.p2p.uikit.utils.withTextOrGone
 
 class UiKitSendDetailsWidget @JvmOverloads constructor(
     context: Context,
@@ -36,10 +38,13 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
             containerToken.setOnClickListener {
                 tokenClickListener?.invoke()
             }
-            imageViewSwitchTo.setOnClickListener {
+            viewSwitchToClickArea.setOnClickListener {
                 switchListener?.invoke()
             }
-            textViewFreeTransactions.setOnClickListener {
+            textViewFee.setOnClickListener {
+                feeButtonClickListener?.invoke()
+            }
+            imageViewFeesInfo.setOnClickListener {
                 feeButtonClickListener?.invoke()
             }
             textViewMax.setOnClickListener {
@@ -61,7 +66,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     fun setToken(token: Token.Active) {
         with(binding) {
             glideManager.load(imageViewTokenIcon, token.iconUrl)
-            textViewTokenName.text = token.tokenSymbol
+            textViewTokenName.text = token.tokenName
             textViewTokenTotal.text = token.getFormattedTotal(includeSymbol = true)
             textViewTokenAmountInUsd.text = token.getFormattedUsdTotal()
         }
@@ -75,26 +80,26 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.textViewMainAmount.text = text
     }
 
-    fun setFeeLabel(text: String) {
-        binding.textViewFreeTransactions.text = text
+    fun setFeeLabel(text: String?) {
+        binding.textViewFee withTextOrGone text
     }
 
-    fun setFeeProgressIsVisible(isVisible: Boolean) {
-        binding.progressBarFreeTransactions.isVisible = isVisible
-        binding.imageViewFreeTransactionsInfo.isVisible = !isVisible
+    fun showFeeLoading(isLoading: Boolean) {
+        binding.progressBarFees.isVisible = isLoading
+        binding.textViewFee.isEnabled = !isLoading
+        binding.imageViewFeesInfo.isVisible = !isLoading
     }
 
     fun setAroundValue(aroundValue: String) {
         binding.textViewSecondAmount.text = aroundValue
     }
 
-    fun setMaxButtonVisibility(isVisible: Boolean) {
+    fun setMaxButtonVisible(isVisible: Boolean) {
         binding.textViewMax.isVisible = isVisible
     }
 
-    fun setInput(value: BigDecimal, forced: Boolean) {
+    fun setInput(textValue: String, forced: Boolean) {
         with(binding.editTextAmount) {
-            val textValue = value.toPlainString()
             if (forced) {
                 AmountFractionTextWatcher.uninstallFrom(this)
                 setText(textValue)
@@ -107,13 +112,30 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
     }
 
-    private fun installAmountWatcher() {
-        AmountFractionTextWatcher.installOn(binding.editTextAmount) {
-            amountListener?.invoke(it)
-        }
+    fun setInputTextColor(@ColorRes colorRes: Int) {
+        binding.editTextAmount.setTextColor(getColor(colorRes))
     }
 
     fun focusAndShowKeyboard() {
         binding.editTextAmount.focusAndShowKeyboard()
     }
+
+    private fun installAmountWatcher() {
+        AmountFractionTextWatcher.installOn(binding.editTextAmount) {
+            amountListener?.invoke(it)
+        }
+    }
+}
+
+interface UiKitSendDetailsWidgetContract {
+    fun showToken(token: Token.Active)
+    fun showAroundValue(value: String)
+    fun setSwitchLabel(symbol: String)
+
+    fun setInputColor(@ColorRes colorRes: Int)
+    fun setMainAmountLabel(symbol: String)
+    fun setMaxButtonVisible(isVisible: Boolean)
+
+    fun showFeeViewLoading(isLoading: Boolean)
+    fun setFeeLabel(text: String?)
 }
