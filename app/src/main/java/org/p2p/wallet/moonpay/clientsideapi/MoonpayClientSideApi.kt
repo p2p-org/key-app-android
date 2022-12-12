@@ -1,10 +1,13 @@
-package org.p2p.wallet.moonpay.api
+package org.p2p.wallet.moonpay.clientsideapi
 
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyResponse
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface MoonpayApi {
+interface MoonpayClientSideApi {
 
     @GET("v3/currencies/{currencyCode}/buy_quote/")
     suspend fun getBuyCurrency(

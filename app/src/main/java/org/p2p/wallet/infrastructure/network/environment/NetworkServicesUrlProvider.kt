@@ -13,6 +13,7 @@ private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
 private const val KEY_TORUS_BASE_URL = "KEY_TORUS_BASE_URL"
 private const val KEY_TORUS_BASE_VERIFIER = "KEY_TORUS_BASE_VERIFIER"
 private const val KEY_TORUS_BASE_SUB_VERIFIER = "KEY_TORUS_BASE_SUB_VERIFIER"
+private const val KEY_MOONPAY_SERVER_SIDE_BASE_URL = "KEY_MOONPAY_SERVER_SIDE_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
@@ -85,5 +86,23 @@ class NetworkServicesUrlProvider(
             }
         }
         Timber.i("Torus environment changed and saved: $newUrl;$newVerifier;$newSubVerifier")
+    }
+
+    fun loadMoonpayEnvironment(): MoonpayEnvironment {
+        val serverSideBaseUrl = sharedPreferences.getString(
+            KEY_MOONPAY_SERVER_SIDE_BASE_URL,
+            context.getString(R.string.moonpayServerSideProxyBaseUrl)
+        ).orEmpty()
+        val clientSideBaseUrl = context.getString(R.string.moonpayClientSideBaseUrl)
+
+        return MoonpayEnvironment(baseServerSideUrl = serverSideBaseUrl, baseClientSideUrl = clientSideBaseUrl)
+    }
+
+    fun saveMoonpayEnvironment(newServerSideUrl: String) {
+        sharedPreferences.edit { putString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, newServerSideUrl) }
+    }
+
+    fun resetMoonpayEnvironment() {
+        sharedPreferences.edit { remove(KEY_MOONPAY_SERVER_SIDE_BASE_URL) }
     }
 }

@@ -10,7 +10,9 @@ import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import timber.log.Timber
 import java.io.IOException
 
-class MoonpayErrorInterceptor(private val gson: Gson) : Interceptor {
+class MoonpayInterceptor(
+    private val gson: Gson,
+) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

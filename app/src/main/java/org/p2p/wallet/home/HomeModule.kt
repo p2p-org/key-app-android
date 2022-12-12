@@ -28,8 +28,6 @@ import org.p2p.wallet.send.model.NetworkType
 
 object HomeModule : InjectionModule {
 
-    const val MOONPAY_QUALIFIER = "api.moonpay.com"
-
     override fun create() = module {
         initDataLayer()
         initDomainLayer()

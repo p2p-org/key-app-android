@@ -4,7 +4,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.PaymentMethod
-import org.p2p.wallet.moonpay.repository.NewMoonpayBuyRepository
+import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
 import kotlinx.coroutines.withContext
 
 const val GBP_BANK_TRANSFER = "gbp_bank_transfer"
