@@ -4,9 +4,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
@@ -38,7 +40,7 @@ class NewSendPresenter(
     private var searchResult: SearchResult? = null
 
     private var inputAmount: String = Constants.ZERO_AMOUNT
-    private var currencyMode: CurrencyMode = CurrencyMode.Token(Constants.SOL_SYMBOL)
+    private var currencyMode: CurrencyMode = CurrencyMode.Usd
     private var tokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
@@ -62,15 +64,16 @@ class NewSendPresenter(
         val mainSymbol: String
         when (currencyMode) {
             is CurrencyMode.Token -> {
-                switchSymbol = token.tokenSymbol
-                mainSymbol = Constants.USD_READABLE_SYMBOL
-            }
-            is CurrencyMode.Usd -> {
                 switchSymbol = Constants.USD_READABLE_SYMBOL
                 mainSymbol = token.tokenSymbol
             }
+            is CurrencyMode.Usd -> {
+                switchSymbol = token.tokenSymbol
+                mainSymbol = Constants.USD_READABLE_SYMBOL
+            }
         }
         updateMaxButtonVisibility(token)
+        validateAmounts(token)
         calculateByMode(token)
         view?.setSwitchLabel(switchSymbol)
         view?.setMainAmountLabel(mainSymbol)
@@ -82,6 +85,7 @@ class NewSendPresenter(
 
     override fun setTokenToSend(newToken: Token.Active) {
         token = newToken
+        updateValues()
     }
 
     override fun switchCurrencyMode() {
@@ -102,6 +106,7 @@ class NewSendPresenter(
 
         val token = token ?: return
         updateMaxButtonVisibility(token)
+        validateAmounts(token)
         calculateByMode(token)
     }
 
@@ -110,7 +115,68 @@ class NewSendPresenter(
             is CurrencyMode.Usd -> token.totalInUsd
             is CurrencyMode.Token -> token.total.scaleLong()
         } ?: return
-        view?.setMaxButtonVisibility(isVisible = inputAmount != totalAvailable.toString())
+        // TODO PWN-6092 check on max sum - min sum for creation account - 0.00089088 SOL
+        view?.setMaxButtonIsVisible(isVisible = inputAmount == emptyString())
+    }
+
+    private fun validateAmounts(token: Token.Active) {
+        // TODO PWN-6092 check min and max amount for SOL
+        val minAmount: BigDecimal
+        val currencySymbol: String
+        val maxAmount: BigDecimal
+        val inputValue = inputAmount.toBigDecimalOrZero()
+        when (currencyMode) {
+            is CurrencyMode.Token -> {
+                currencySymbol = token.tokenSymbol
+                minAmount = if (token.isSOL) {
+                    0.0000002.toBigDecimal() // TODO update PWN-6092
+                } else {
+                    BigDecimal.ZERO
+                }
+                maxAmount = token.total
+            }
+            is CurrencyMode.Usd -> {
+                currencySymbol = Constants.USD_READABLE_SYMBOL
+                minAmount = BigDecimal.ZERO
+                maxAmount = token.totalInUsd.orZero()
+            }
+        }
+
+        var hasIssue = false
+        var issueText: String = emptyString()
+        var validText: String = emptyString()
+        when {
+            inputValue == BigDecimal.ZERO -> {
+                hasIssue = true
+                issueText = resourcesProvider.getString(R.string.send_enter_amount)
+            }
+            inputValue < minAmount -> {
+                hasIssue = true
+                issueText = resourcesProvider.getString(
+                    R.string.send_min_warning_text_format,
+                    minAmount.scaleLong().toPlainString(),
+                    currencySymbol
+                )
+            }
+            inputValue > maxAmount -> {
+                hasIssue = true
+                issueText = resourcesProvider.getString(
+                    R.string.send_max_warning_text_format,
+                    maxAmount.scaleLong().toPlainString(),
+                    currencySymbol
+                )
+            }
+            else -> {
+                validText = resourcesProvider.getString(
+                    R.string.send_slider_text_format,
+                    inputAmount,
+                    currencySymbol
+                )
+            }
+        }
+        view?.setBottomButtonIsVisible(isVisible = hasIssue)
+        view?.setBottomButtonText(issueText)
+        view?.setSliderText(validText)
     }
 
     private fun calculateByMode(token: Token.Active) {
