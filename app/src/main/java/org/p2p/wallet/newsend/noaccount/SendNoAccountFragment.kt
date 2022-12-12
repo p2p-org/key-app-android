@@ -30,8 +30,11 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
     private val isCriticalIssue: Boolean by args(ARG_CRITICAL_ISSUE)
 
+    override val statusBarColor: Int
+        get() = R.color.bg_smoke
+
     override val navBarColor: Int
-        get() = R.color.night
+        get() = R.color.bg_night
 
     private val binding: FragmentSendNoAccountBinding by viewBinding()
 
@@ -48,9 +51,9 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
             buttonOk.isVisible = !isCriticalIssue
             textViewMessage.text = getString(
                 if (isCriticalIssue) {
-                    R.string.send_no_account_critical_message
-                } else {
                     R.string.send_no_account_non_critical_message
+                } else {
+                    R.string.send_no_account_critical_message
                 },
                 tokenSymbol
             )
