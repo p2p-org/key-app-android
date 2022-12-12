@@ -104,7 +104,9 @@ class HomePresenter(
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
 
-        view?.setSellActionButtonIsVisible(isVisible = sellInteractor.isSellAvailable())
+        launch {
+            view?.setSellActionButtonIsVisible(isVisible = sellInteractor.isSellAvailable())
+        }
     }
 
     private fun showUserAddressAndUsername() {

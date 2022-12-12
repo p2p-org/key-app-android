@@ -19,6 +19,8 @@ class HomeDatabaseRepository(
             .map(::calculateUserBalance)
             .catch { Timber.i(it) }
 
+    override suspend fun getUserBalance(): BigDecimal = calculateUserBalance(getUserTokens())
+
     private fun calculateUserBalance(tokens: List<Token.Active>): BigDecimal =
         tokens.mapNotNull(Token.Active::totalInUsd)
             .fold(BigDecimal.ZERO, BigDecimal::add)

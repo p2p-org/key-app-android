@@ -13,4 +13,5 @@ interface HomeLocalRepository {
     suspend fun setTokenHidden(mintAddress: String, visibility: String)
     suspend fun clear()
     fun observeUserBalance(): Flow<BigDecimal>
+    suspend fun getUserBalance(): BigDecimal
 }
