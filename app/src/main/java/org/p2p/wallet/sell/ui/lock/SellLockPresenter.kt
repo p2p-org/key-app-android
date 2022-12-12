@@ -9,4 +9,8 @@ class SellLockPresenter :
     override fun removeFromHistory() {}
 
     override fun onSendClicked() {}
+
+    override fun onRecipientClicked() {}
+
+    override fun onCopyClicked() {}
 }
