@@ -135,16 +135,6 @@ class HomePresenter(
     }
 
     override fun onSendClicked() {
-        if (newSendEnabledFeatureToggle.isFeatureEnabled) {
-            if (state.tokens.isEmpty()) {
-                view?.showSendNoTokens(fallbackUsdcTokenForBuy ?: return)
-            } else {
-                view?.navigateToSend(isNewSendAvailable = true)
-            }
-            fallbackUsdcTokenForBuy
-        } else {
-            view?.navigateToSend(isNewSendAvailable = false)
-        }
     }
 
     override fun onBuyTokenClicked(token: Token) {

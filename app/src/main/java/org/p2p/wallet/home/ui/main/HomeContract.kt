@@ -24,7 +24,8 @@ interface HomeContract {
         fun showNewBuyScreen(token: Token)
         fun showOldBuyScreen(token: Token)
         fun showSendNoTokens(fallbackToken: Token)
-        fun navigateToSend(isNewSendAvailable: Boolean)
+        fun navigateToNewSend()
+        fun navigateToOldSend()
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -236,12 +236,12 @@ class HomeFragment :
         replaceFragment(SendNoTokensFragment.create(fallbackToken))
     }
 
-    override fun navigateToSend(isNewSendAvailable: Boolean) {
-        if (isNewSendAvailable) {
-            replaceFragment(NewSearchFragment.create())
-        } else {
-            replaceFragment(SendFragment.create())
-        }
+    override fun navigateToNewSend() {
+        replaceFragment(NewSearchFragment.create())
+    }
+
+    override fun navigateToOldSend() {
+        replaceFragment(SendFragment.create())
     }
 
     override fun showNewBuyScreen(token: Token) {

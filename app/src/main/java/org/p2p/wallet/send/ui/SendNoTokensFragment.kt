@@ -36,10 +36,10 @@ class SendNoTokensFragment : BaseFragment(R.layout.fragment_send_no_token) {
                 popBackStack()
             }
             buttonBuy.setOnClickListener {
-                replaceFragment(NewBuyFragment.create(defaultTokenToBuy))
+                replaceFragment(NewBuyFragment.create(token = defaultTokenToBuy))
             }
             buttonReceive.setOnClickListener {
-                replaceFragment(ReceiveSolanaFragment.create(null))
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
         }
     }
