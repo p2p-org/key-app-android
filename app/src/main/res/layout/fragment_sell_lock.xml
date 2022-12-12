@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:background="@color/bg_snow"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_toolbar_back" />
+        app:navigationIcon="@drawable/ic_toolbar_back"
+        app:title="@string/common_cash_out_token" />
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -38,14 +39,27 @@
 
     <TextView
         android:id="@+id/textViewAmount"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="@string/sell_lock_title"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageViewToken"
         tools:text="6 SOL" />
+
+    <TextView
+        android:id="@+id/textViewUsdValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintEnd_toEndOf="@id/textViewAmount"
+        app:layout_constraintStart_toStartOf="@id/textViewAmount"
+        app:layout_constraintTop_toBottomOf="@id/textViewAmount"
+        tools:text="≈ $1930" />
 
     <LinearLayout
         android:id="@+id/viewMessageContainer"
@@ -57,7 +71,7 @@
         android:backgroundTint="@color/bg_rain"
         android:orientation="horizontal"
         android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewAmount">
+        app:layout_constraintTop_toBottomOf="@id/textViewUsdValue">
 
         <ImageView
             android:layout_width="20dp"
@@ -98,7 +112,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/textViewRecipient"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="8dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintEnd_toStartOf="@id/imageViewCopy"
+            tools:text="FfRB...BeJEr" />
+
         <ImageView
+            android:id="@+id/imageViewCopy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_copy_black"
@@ -106,6 +131,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/icons_mountain" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -119,7 +145,7 @@
         app:layout_constraintTop_toBottomOf="@id/viewReceiverContainer" />
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonCancel"
+        android:id="@+id/buttonRemove"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

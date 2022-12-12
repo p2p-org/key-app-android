@@ -29,7 +29,6 @@ import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
-import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -121,7 +120,6 @@ class CommonRestoreFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
         }
-        replaceFragment(SellPayloadFragment.create())
     }
 
     override fun startGoogleFlow() {

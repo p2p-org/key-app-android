@@ -4,4 +4,9 @@ import org.p2p.wallet.common.mvp.BasePresenter
 
 class SellLockPresenter :
     BasePresenter<SellLockContract.View>(),
-    SellLockContract.Presenter
+    SellLockContract.Presenter {
+
+    override fun removeFromHistory() {}
+
+    override fun onSendClicked() {}
+}

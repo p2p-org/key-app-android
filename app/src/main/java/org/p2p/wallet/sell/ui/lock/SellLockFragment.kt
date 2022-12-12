@@ -22,6 +22,18 @@ class SellLockFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            buttonRemove.setOnClickListener {
+                presenter.removeFromHistory()
+            }
+            buttonSend.setOnClickListener {
+                presenter.onSendClicked()
+            }
+            textViewRecipient.setOnClickListener {
+                presenter.onRecipientClicked()
+            }
+            imageViewCopy.setOnClickListener {
+                presenter.onCopyClicked()
+            }
         }
     }
 }
