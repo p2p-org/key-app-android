@@ -1,11 +1,13 @@
 package org.p2p.wallet.send.ui.dialogs
 
+import androidx.core.os.bundleOf
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toast
@@ -26,8 +28,14 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
         fun show(
             fm: FragmentManager,
             state: SendFeeTotal,
+            requestKey: String,
+            resultKey: String,
         ) = SendTransactionsDetailsBottomSheet()
-            .withArgs(ARG_SEND_STATE to state)
+            .withArgs(
+                ARG_SEND_STATE to state,
+                ARG_REQUEST_KEY to requestKey,
+                ARG_RESULT_KEY to resultKey
+            )
             .show(fm, SendTransactionsDetailsBottomSheet::javaClass.name)
     }
 
@@ -110,22 +118,20 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
         imageViewIconAccountFee.setImageResource(R.drawable.ic_user)
         textViewTitleAccountFee.text = getString(R.string.send_transactions_details_account_fee)
 
-        textViewSubtitleAccountFee.apply {
-            val fee = state.sendFee
-            if (fee != null) {
-                setTextColor(colorNight)
-                text = SpanUtils.highlightText(
-                    commonText = fee.accountCreationFullFee,
-                    highlightedText = fee.approxAccountCreationFeeUsd.orEmpty(),
-                    color = colorMountain
-                )
-            } else {
-                setTextColor(colorMint)
-                getString(R.string.send_free_fee_format, state.feeLimit.remaining)
+        val fee = state.sendFee
+        if (fee != null) {
+            textViewSubtitleAccountFee.setTextColor(colorNight)
+            textViewSubtitleAccountFee.text = SpanUtils.highlightText(
+                commonText = fee.accountCreationFullFee,
+                highlightedText = fee.approxAccountCreationFeeUsd.orEmpty(),
+                color = colorMountain
+            )
+            imageViewAccountFeeInfo.setOnClickListener {
+                setFragmentResult(requestKey, bundleOf(resultKey to fee))
             }
-        }
-        imageViewAccountFeeInfo.setOnClickListener {
-            // TODO PWN-6092 make info screens to open!
+        } else {
+            textViewSubtitleAccountFee.setTextColor(colorMint)
+            textViewSubtitleAccountFee.text = getString(R.string.send_free_fee_format, state.feeLimit.remaining)
         }
     }
 

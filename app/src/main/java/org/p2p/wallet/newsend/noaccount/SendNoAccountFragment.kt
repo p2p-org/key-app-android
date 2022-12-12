@@ -1,8 +1,10 @@
 package org.p2p.wallet.newsend.noaccount
 
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendNoAccountBinding
@@ -12,23 +14,35 @@ import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val ARG_TOKEN_SYMBOL = "ARG_TOKEN_SYMBOL"
-private const val ARG_CRITICAL_ISSUE = "ARG_CRITICAL_ISSUE"
+private const val ARG_HAS_ALTERNATIVE_TOKEN = "ARG_HAS_ALTERNATIVE_TOKEN"
+private const val ARG_APPROXIMATE_FEE = "ARG_APPROXIMATE_FEE"
+private const val ARG_REQUEST_KEY = "ARG_REQUEST_KEY"
+private const val ARG_RESULT_KEY = "ARG_RESULT_KEY"
 
 class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
 
     companion object {
         fun create(
             tokenSymbol: String,
-            isCriticalIssue: Boolean
+            approximateFeeUsd: String,
+            hasAlternativeFeePayerToken: Boolean,
+            requestKey: String,
+            resultKey: String
         ): SendNoAccountFragment = SendNoAccountFragment()
             .withArgs(
                 ARG_TOKEN_SYMBOL to tokenSymbol,
-                ARG_CRITICAL_ISSUE to isCriticalIssue
+                ARG_APPROXIMATE_FEE to approximateFeeUsd,
+                ARG_HAS_ALTERNATIVE_TOKEN to hasAlternativeFeePayerToken,
+                ARG_REQUEST_KEY to requestKey,
+                ARG_RESULT_KEY to resultKey,
             )
     }
 
+    private val requestKey: String by args(ARG_REQUEST_KEY)
+    private val resultKey: String by args(ARG_RESULT_KEY)
     private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
-    private val isCriticalIssue: Boolean by args(ARG_CRITICAL_ISSUE)
+    private val approximateFeeUsd: String by args(ARG_APPROXIMATE_FEE)
+    private val hasAlternativeFeePayerToken: Boolean by args(ARG_HAS_ALTERNATIVE_TOKEN)
 
     override val statusBarColor: Int
         get() = R.color.bg_smoke
@@ -46,17 +60,26 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
                 text = getString(R.string.send_no_account_non_critical_continue, tokenSymbol)
                 setOnClickListener { popBackStack() }
             }
-            textViewTitle.text = getString(R.string.send_no_account_title, tokenSymbol)
-            containerBottom.isVisible = isCriticalIssue
-            buttonOk.isVisible = !isCriticalIssue
-            textViewMessage.text = getString(
-                if (isCriticalIssue) {
-                    R.string.send_no_account_non_critical_message
-                } else {
-                    R.string.send_no_account_critical_message
-                },
-                tokenSymbol
-            )
+            buttonSwitch.setOnClickListener {
+                setFragmentResult(requestKey, bundleOf(resultKey to approximateFeeUsd))
+                popBackStack()
+            }
+            textViewTitle.setText(R.string.send_no_account_title)
+
+            containerBottom.isVisible = hasAlternativeFeePayerToken
+            buttonOk.isVisible = !hasAlternativeFeePayerToken
+
+            setMessage()
         }
+    }
+
+    private fun FragmentSendNoAccountBinding.setMessage() {
+        val messageRes = if (hasAlternativeFeePayerToken) {
+            R.string.send_no_account_non_critical_message
+        } else {
+            R.string.send_no_account_critical_message
+        }
+        val message = getString(messageRes, approximateFeeUsd)
+        textViewMessage.text = message
     }
 }
