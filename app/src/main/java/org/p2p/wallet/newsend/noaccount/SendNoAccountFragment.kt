@@ -19,16 +19,16 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     companion object {
         fun create(
             tokenSymbol: String,
-            criticalIssue: Boolean
+            isCriticalIssue: Boolean
         ): SendNoAccountFragment = SendNoAccountFragment()
             .withArgs(
                 ARG_TOKEN_SYMBOL to tokenSymbol,
-                ARG_CRITICAL_ISSUE to criticalIssue
+                ARG_CRITICAL_ISSUE to isCriticalIssue
             )
     }
 
     private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
-    private val criticalIssue: Boolean by args(ARG_CRITICAL_ISSUE)
+    private val isCriticalIssue: Boolean by args(ARG_CRITICAL_ISSUE)
 
     override val navBarColor: Int
         get() = R.color.night
@@ -44,10 +44,10 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
                 setOnClickListener { popBackStack() }
             }
             textViewTitle.text = getString(R.string.send_no_account_title, tokenSymbol)
-            containerBottom.isVisible = criticalIssue
-            buttonOk.isVisible = !criticalIssue
+            containerBottom.isVisible = isCriticalIssue
+            buttonOk.isVisible = !isCriticalIssue
             textViewMessage.text = getString(
-                if (criticalIssue) {
+                if (isCriticalIssue) {
                     R.string.send_no_account_critical_message
                 } else {
                     R.string.send_no_account_non_critical_message
