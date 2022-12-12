@@ -92,7 +92,7 @@ class NetworkServicesUrlProvider(
         val serverSideBaseUrl = sharedPreferences.getString(
             KEY_MOONPAY_SERVER_SIDE_BASE_URL,
             context.getString(R.string.moonpayServerSideProxyBaseUrl)
-        )!!
+        ).orEmpty()
         val clientSideBaseUrl = context.getString(R.string.moonpayClientSideBaseUrl)
 
         return MoonpayEnvironment(baseServerSideUrl = serverSideBaseUrl, baseClientSideUrl = clientSideBaseUrl)
