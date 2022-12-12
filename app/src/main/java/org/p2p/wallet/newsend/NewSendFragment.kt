@@ -114,7 +114,7 @@ class NewSendFragment :
                 presenter.onChangeFeePayerClicked(approximateFeeUsd)
             }
             result.containsKey(KEY_RESULT_FEE_PAYER) -> {
-                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
+                val token = result.getParcelable<Token.Active>(KEY_RESULT_FEE_PAYER)!!
                 presenter.updateFeePayerToken(token)
             }
         }
@@ -198,7 +198,8 @@ class NewSendFragment :
                 tokens = tokens,
                 selectedToken = currentFeePayerToken,
                 requestKey = KEY_REQUEST_SEND,
-                resultKey = KEY_RESULT_FEE_PAYER
+                resultKey = KEY_RESULT_FEE_PAYER,
+                title = getString(R.string.send_pick_fee_token_format, approximateFeeUsd)
             ),
             enter = R.anim.slide_up,
             exit = 0,

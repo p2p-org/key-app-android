@@ -128,6 +128,7 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
             )
             imageViewAccountFeeInfo.setOnClickListener {
                 setFragmentResult(requestKey, bundleOf(resultKey to fee))
+                dismissAllowingStateLoss()
             }
         } else {
             textViewSubtitleAccountFee.setTextColor(colorMint)

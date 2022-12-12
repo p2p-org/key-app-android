@@ -107,8 +107,8 @@ class NewSendPresenter(
                 return@launch
             }
 
-            val initialToken = userTokens.find { it.isUSDC && !it.isZero }
-                ?: userTokens.minBy { it.totalInLamports }
+            val initialToken = userTokens.find { it.isUSDC && !it.isZero } ?: userTokens.maxBy { it.totalInLamports }
+
             token = initialToken
             val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
             if (solToken == null) {
