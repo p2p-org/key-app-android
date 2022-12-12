@@ -63,17 +63,11 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
         binding.containerOval.outlineProvider = ViewOutlineProvider.BACKGROUND
         binding.containerOval.clipToOutline = true
 
+        binding.shimmerView.startShimmer()
+
         initializeTouchListener()
         post {
             updateGradient(horizontalMargin, horizontalMargin.toInt())
-        }
-    }
-
-    fun setHideShowShimmerState(isShowing: Boolean) {
-        if (isShowing) {
-            binding.shimmerView.showShimmer(true)
-        } else {
-            binding.shimmerView.hideShimmer()
         }
     }
 

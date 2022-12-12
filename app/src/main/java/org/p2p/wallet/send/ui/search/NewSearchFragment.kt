@@ -85,9 +85,6 @@ class NewSearchFragment :
                     menuRes = R.menu.menu_search_with_scan,
                     searchHintRes = R.string.search_edittext_hint
                 )
-                searchView?.setOnFocusChangeListener { _, hasFocus ->
-                    if (!hasFocus) toggleSearchView()
-                }
                 setNavigationOnClickListener { popBackStack() }
                 setOnMenuItemClickListener {
                     if (it.itemId == R.id.itemScan) {

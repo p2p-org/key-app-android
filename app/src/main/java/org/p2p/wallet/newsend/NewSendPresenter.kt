@@ -182,14 +182,20 @@ class NewSendPresenter(
 
     override fun updateToken(newToken: Token.Active) {
         token = newToken
+        recountAccordingToSelectedData()
     }
 
     override fun switchCurrencyMode() {
         calculationMode.switchMode()
+        recountAccordingToSelectedData()
     }
 
     override fun updateInputAmount(amount: String) {
         inputAmount = amount
+        recountAccordingToSelectedData()
+    }
+
+    private fun recountAccordingToSelectedData() {
         showMaxButtonIfNeeded()
         updateButton(requireToken(), feeRelayerManager.getState())
 

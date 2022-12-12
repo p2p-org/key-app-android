@@ -82,9 +82,6 @@ class NewSendFragment :
             KEY_REQUEST_SEND,
             viewLifecycleOwner
         ) { _, result -> handleSupportFragmentResult(result) }
-
-        binding.sliderSend.setHideShowShimmerState(isShowing = false)
-        binding.sliderSend.isVisible = false
     }
 
     private fun handleSupportFragmentResult(result: Bundle) {
@@ -123,12 +120,10 @@ class NewSendFragment :
 
     override fun setSliderText(text: String?) {
         if (text.isNullOrEmpty()) {
-            binding.sliderSend.setHideShowShimmerState(isShowing = false)
             binding.sliderSend.isVisible = !text.isNullOrEmpty()
         } else {
             binding.sliderSend.isVisible = true
             binding.sliderSend.setActionText(text)
-            binding.sliderSend.setHideShowShimmerState(isShowing = true)
         }
     }
 
