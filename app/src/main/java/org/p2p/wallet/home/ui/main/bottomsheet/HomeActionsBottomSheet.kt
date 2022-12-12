@@ -13,6 +13,7 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
@@ -45,44 +46,45 @@ class HomeActionsBottomSheet :
 
     override val presenter: HomeActionsContract.Presenter by inject()
 
-    private lateinit var binding: DialogHomeActionsBinding
+    private val binding: DialogHomeActionsBinding by viewBinding()
 
-    override fun setupHomeActions(isSellFeatureEnabled: Boolean) = with(binding) {
-        if (isSellFeatureEnabled) {
-            viewActionSell.apply {
-                root.isVisible = true
+    override fun setupHomeActions(isSellFeatureEnabled: Boolean) {
+        with(binding) {
+            if (isSellFeatureEnabled) {
+                viewActionSell.apply {
+                    root.isVisible = true
 
-                setResultClickListener(HomeAction.SELL)
-                imageViewAction.setImageResource(R.drawable.action_sell_icon)
-                textViewActionTitle.setText(R.string.home_actions_sell_title)
-                textViewActionSubtitle.setText(R.string.home_actions_sell_subtitle)
+                    setResultClickListener(HomeAction.SELL)
+                    imageViewAction.setImageResource(R.drawable.action_sell_icon)
+                    textViewActionTitle.setText(R.string.home_actions_sell_title)
+                    textViewActionSubtitle.setText(R.string.home_actions_sell_subtitle)
+                }
+            }
+            viewActionBuy.apply {
+                setResultClickListener(HomeAction.BUY)
+                imageViewAction.setImageResource(R.drawable.action_buy_icon)
+                textViewActionTitle.setText(R.string.home_actions_buy_title)
+                textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
+            }
+            viewActionReceive.apply {
+                setResultClickListener(HomeAction.RECEIVE)
+                imageViewAction.setImageResource(R.drawable.action_receive_icon)
+                textViewActionTitle.setText(R.string.home_actions_receive_title)
+                textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
+            }
+            viewActionSwap.apply {
+                setResultClickListener(HomeAction.SWAP)
+                imageViewAction.setImageResource(R.drawable.action_swap_icon)
+                textViewActionTitle.setText(R.string.home_actions_swap_title)
+                textViewActionSubtitle.setText(R.string.home_actions_swap_subtitle)
+            }
+            viewActionSend.apply {
+                setResultClickListener(HomeAction.SEND)
+                imageViewAction.setImageResource(R.drawable.action_send_icon)
+                textViewActionTitle.setText(R.string.home_actions_send_title)
+                textViewActionSubtitle.setText(R.string.home_actions_send_subtitle)
             }
         }
-        viewActionBuy.apply {
-            setResultClickListener(HomeAction.BUY)
-            imageViewAction.setImageResource(R.drawable.action_buy_icon)
-            textViewActionTitle.setText(R.string.home_actions_buy_title)
-            textViewActionSubtitle.setText(R.string.home_actions_buy_subtitle)
-        }
-        viewActionReceive.apply {
-            setResultClickListener(HomeAction.RECEIVE)
-            imageViewAction.setImageResource(R.drawable.action_receive_icon)
-            textViewActionTitle.setText(R.string.home_actions_receive_title)
-            textViewActionSubtitle.setText(R.string.home_actions_receive_subtitle)
-        }
-        viewActionSwap.apply {
-            setResultClickListener(HomeAction.SWAP)
-            imageViewAction.setImageResource(R.drawable.action_swap_icon)
-            textViewActionTitle.setText(R.string.home_actions_swap_title)
-            textViewActionSubtitle.setText(R.string.home_actions_swap_subtitle)
-        }
-        viewActionSend.apply {
-            setResultClickListener(HomeAction.SEND)
-            imageViewAction.setImageResource(R.drawable.action_send_icon)
-            textViewActionTitle.setText(R.string.home_actions_send_title)
-            textViewActionSubtitle.setText(R.string.home_actions_send_subtitle)
-        }
-        Unit
     }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
