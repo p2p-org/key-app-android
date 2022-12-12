@@ -7,23 +7,32 @@
     android:layout_height="wrap_content"
     android:paddingBottom="32dp">
 
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        android:text="@string/common_transaction_details"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <include
         android:id="@+id/layoutAddress"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
 
     <include
-        android:id="@+id/layoutGets"
+        android:id="@+id/layoutReceiveAmount"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutAddress" />
@@ -33,17 +42,16 @@
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutGets" />
+        app:layout_constraintTop_toBottomOf="@id/layoutReceiveAmount" />
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/imageViewIconAccountFee"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/bg_rain_circle"
         android:padding="12dp"
@@ -62,7 +70,7 @@
         android:textColor="@color/text_night"
         app:layout_constraintStart_toEndOf="@id/imageViewIconAccountFee"
         app:layout_constraintTop_toTopOf="@id/imageViewIconAccountFee"
-        tools:text="Enjoy free transactions!" />
+        tools:text="Account creation fee!" />
 
     <TextView
         android:id="@+id/textViewSubtitleAccountFee"
@@ -76,7 +84,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/imageViewIconAccountFee"
         app:layout_constraintTop_toBottomOf="@id/textViewTitleAccountFee"
-        tools:text="On the Solana network, the first 100 transactions in a day are paid by Key App" />
+        tools:text="0.027635 USDT (~$0.03)" />
 
     <ImageView
         android:id="@+id/imageViewAccountFeeInfo"
@@ -102,7 +110,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/bg_rain_circle"
         android:padding="12dp"
@@ -110,6 +118,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageViewIconAccountFee"
+        app:layout_constraintVertical_bias="0"
         app:tint="@color/icons_mountain"
         tools:src="@drawable/ic_lightling" />
 

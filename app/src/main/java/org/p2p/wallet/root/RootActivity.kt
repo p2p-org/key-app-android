@@ -1,14 +1,15 @@
 package org.p2p.wallet.root
 
-import androidx.activity.addCallback
-import androidx.lifecycle.lifecycleScope
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.activity.addCallback
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.toast
@@ -24,12 +25,16 @@ import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
+import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
-import kotlinx.coroutines.flow.collectLatest
 
-class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(), RootContract.View {
+class RootActivity :
+    BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
+    RootContract.View,
+    RootListener {
 
     companion object {
         const val ACTION_RESTART = "android.intent.action.RESTART"
@@ -106,6 +111,10 @@ class RootActivity : BaseMvpActivity<RootContract.View, RootContract.Presenter>(
         } else {
             popBackStack()
         }
+    }
+
+    override fun showTransactionProgress(internalTransactionId: String, data: ShowProgress) {
+        NewTransactionProgressBottomSheet.show(supportFragmentManager, internalTransactionId, data)
     }
 
     private fun checkForGoogleServices() {

@@ -24,21 +24,45 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewFreeTransactions"
+        android:id="@+id/textViewFee"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="20dp"
         android:ellipsize="none"
-        android:gravity="center|end"
+        android:enabled="false"
+        android:gravity="center_vertical|end"
         android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_sky"
-        app:drawableEndCompat="@drawable/ic_info_solid"
-        app:drawableTint="@color/icons_sky"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Fees: 0" />
+
+    <ProgressBar
+        android:id="@+id/progressBarFees"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="2dp"
+        android:indeterminateTint="@color/elements_sky"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/textViewFee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewFee" />
+
+    <ImageView
+        android:id="@+id/imageViewFeesInfo"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginTop="2dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_info_solid"
+        app:layout_constraintBottom_toBottomOf="@id/textViewFee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textViewFee"
+        app:tint="@color/icons_sky" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerToken"
@@ -49,15 +73,15 @@
         android:foreground="@drawable/ripple_button_large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewFreeTransactions">
+        app:layout_constraintTop_toBottomOf="@+id/textViewFee">
 
         <org.p2p.uikit.atoms.UiKitRoundedImageView
             android:id="@+id/imageViewTokenIcon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginVertical="12dp"
             android:layout_marginStart="20dp"
-            app:cornerRadius="30dp"
+            app:cornerRadius="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -81,10 +105,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="6dp"
+            android:drawablePadding="8dp"
             android:gravity="center"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             android:textColor="@color/text_mountain"
-            app:drawableStartCompat="@drawable/ic_main_wallet"
+            app:drawableStartCompat="@drawable/ic_wallet_small"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewTokenIcon"
             app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
             app:layout_constraintTop_toBottomOf="@+id/textViewTokenName"
@@ -214,10 +239,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
+            android:importantForAccessibility="no"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_arrows" />
+
+        <View
+            android:id="@+id/viewSwitchToClickArea"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/textViewMainAmount"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

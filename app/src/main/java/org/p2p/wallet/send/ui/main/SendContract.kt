@@ -10,8 +10,8 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
-import org.p2p.wallet.send.model.SendFee
-import org.p2p.wallet.send.model.SendTotal
+import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.transaction.model.ShowProgress
 import java.math.BigDecimal
 
@@ -21,7 +21,7 @@ interface SendContract {
         fun showSourceToken(token: Token.Active)
         fun showTransactionStatusMessage(amount: BigDecimal, symbol: String, isSuccess: Boolean)
         fun showTransactionDetails(transaction: HistoryTransaction)
-        fun showTotal(data: SendTotal?)
+        fun showTotal(data: SendFeeTotal?)
         fun showDetailsError(@StringRes errorTextRes: Int?)
         fun showWrongWalletError()
         fun showButtonText(@StringRes textRes: Int, @DrawableRes iconRes: Int? = null, vararg value: String)
@@ -36,8 +36,6 @@ interface SendContract {
         fun setMaxButtonVisibility(isVisible: Boolean)
         fun setTotalAmountTextColor(@ColorRes textColor: Int)
 
-        fun showNetworkDestination(type: NetworkType)
-        fun showNetworkSelectionView(isVisible: Boolean)
         fun navigateToNetworkSelection(currentNetworkType: NetworkType)
         fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
 
@@ -53,7 +51,7 @@ interface SendContract {
         fun showWarning(@StringRes messageRes: Int?)
 
         fun hideAccountFeeView()
-        fun showAccountFeeView(fee: SendFee)
+        fun showAccountFeeView(fee: SendSolanaFee)
 
         fun showInsufficientFundsView(tokenSymbol: String, feeUsd: BigDecimal?)
 
@@ -72,14 +70,12 @@ interface SendContract {
         fun loadInitialData()
         fun loadTokensForSelection()
         fun setMaxSourceAmountValue()
-        fun loadCurrentNetwork()
         fun loadFeePayerTokens()
         fun setSourceToken(newToken: Token.Active)
         fun setTargetResult(result: SearchResult?)
         fun validateTargetAddress(value: String)
         fun setNewSourceAmount(amount: String)
         fun switchCurrency()
-        fun setNetworkDestination(networkType: NetworkType)
         fun setFeePayerToken(feePayerToken: Token.Active)
         fun onScanClicked()
         fun onFeeClicked()

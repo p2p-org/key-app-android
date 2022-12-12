@@ -1,63 +1,83 @@
 package org.p2p.wallet.newsend
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
-import org.p2p.core.glide.GlideManager
+import org.koin.core.parameter.parametersOf
+import org.p2p.core.common.TextContainer
+import org.p2p.core.token.Token
+import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
-import org.p2p.wallet.utils.Base58String
-import org.p2p.core.utils.Constants
+import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SendFeeTotal
+import org.p2p.wallet.send.ui.dialogs.FreeTransactionsDetailsBottomSheet
+import org.p2p.wallet.send.ui.dialogs.SendTransactionsDetailsBottomSheet
+import org.p2p.wallet.send.ui.search.NewSearchFragment
+import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
-private const val ARG_RECIPIENT_ADDRESS = "ARG_RECIPIENT_ADDRESS"
-private const val ARG_RECIPIENT_USERNAME = "ARG_RECIPIENT_USERNAME"
+private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
+
+private const val TITLE_CUT_COUNT = 7
 
 class NewSendFragment :
     BaseMvpFragment<NewSendContract.View, NewSendContract.Presenter>(R.layout.fragment_send_new),
     NewSendContract.View {
 
     companion object {
-        fun create(recipientAddress: Base58String, recipientUsername: String?) =
+        fun create(recipient: SearchResult) =
             NewSendFragment()
-                .withArgs(
-                    ARG_RECIPIENT_ADDRESS to recipientAddress.base58Value,
-                    ARG_RECIPIENT_USERNAME to recipientUsername
-                )
+                .withArgs(ARG_RECIPIENT to recipient)
     }
 
-    private val recipientAddress: String by args(ARG_RECIPIENT_ADDRESS)
-    private val recipientUsername: String? by args(ARG_RECIPIENT_USERNAME)
+    private val recipient: SearchResult by args(ARG_RECIPIENT)
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
-    override val presenter: NewSendContract.Presenter by inject()
-    private val glideManager: GlideManager by inject()
+    override val presenter: NewSendContract.Presenter by inject {
+        parametersOf(recipient)
+    }
+    override val navBarColor: Int = R.color.smoke
+    override val statusBarColor: Int = R.color.smoke
+
+    private var listener: RootListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = context as? RootListener
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.title = recipientUsername ?: recipientAddress
-        // TODO PWN-6090 make logic of setting token!
+        binding.toolbar.setupToolbar()
         binding.widgetSendDetails.apply {
-            setSwitchLabel(
-                getString(R.string.send_switch_to_token, Constants.SOL_SYMBOL)
-            )
-            tokenClickListener = {
-                presenter.onTokenClicked()
-            }
+            tokenClickListener = presenter::onTokenClicked
+            amountListener = presenter::updateInputAmount
+            maxButtonClickListener = presenter::setMaxAmountValue
+            switchListener = presenter::switchCurrencyMode
+            feeButtonClickListener = presenter::onFeeInfoClicked
+            focusAndShowKeyboard()
         }
-        // TODO PWN-6090 make button
-        binding.sliderSend.setActionText(R.string.send_enter_amount)
-
+        binding.sliderSend.onSlideCompleteListener = {
+            presenter.send()
+        }
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SEND,
             viewLifecycleOwner
@@ -69,20 +89,66 @@ class NewSendFragment :
             // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
                 val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)
-                token?.let {
-                    presenter.setTokenToSend(it)
-                }
+                token?.let { presenter.updateToken(it) }
             }
         }
     }
 
-    override fun showTokenToSend(token: Token.Active) {
-        with(binding.widgetSendDetails) {
-            glideManager.load(imageViewTokenIcon, token.iconUrl)
-            textViewTokenName.text = token.tokenSymbol
-            textViewTokenTotal.text = token.getFormattedTotal(includeSymbol = true)
-            textViewTokenAmountInUsd.text = token.getFormattedUsdTotal()
+    override fun showTransactionDetails(sendFeeTotal: SendFeeTotal) {
+        SendTransactionsDetailsBottomSheet.show(childFragmentManager, sendFeeTotal)
+    }
+
+    override fun showFreeTransactionsInfo() {
+        FreeTransactionsDetailsBottomSheet.show(childFragmentManager)
+    }
+
+    override fun updateInputValue(textValue: String, forced: Boolean) {
+        binding.widgetSendDetails.setInput(textValue, forced)
+    }
+
+    override fun showToken(token: Token.Active) {
+        binding.widgetSendDetails.setToken(token)
+    }
+
+    override fun setMaxButtonVisible(isVisible: Boolean) {
+        binding.widgetSendDetails.setMaxButtonVisible(isVisible)
+    }
+
+    override fun setBottomButtonText(text: TextContainer?) {
+        binding.buttonBottom withTextOrGone text?.getString(requireContext())
+    }
+
+    override fun setSliderText(text: String?) {
+        if (text.isNullOrEmpty()) {
+            binding.sliderSend.isVisible = !text.isNullOrEmpty()
+        } else {
+            binding.sliderSend.isVisible = true
+            binding.sliderSend.setActionText(text)
         }
+    }
+
+    override fun showAroundValue(value: String) {
+        binding.widgetSendDetails.setAroundValue(value)
+    }
+
+    override fun showFeeViewLoading(isLoading: Boolean) {
+        binding.widgetSendDetails.showFeeLoading(isLoading)
+    }
+
+    override fun setFeeLabel(text: String?) {
+        binding.widgetSendDetails.setFeeLabel(text)
+    }
+
+    override fun setSwitchLabel(symbol: String) {
+        binding.widgetSendDetails.setSwitchLabel(getString(R.string.send_switch_to_token, symbol))
+    }
+
+    override fun setMainAmountLabel(symbol: String) {
+        binding.widgetSendDetails.setMainAmountLabel(symbol)
+    }
+
+    override fun setInputColor(@ColorRes colorRes: Int) {
+        binding.widgetSendDetails.setInputTextColor(colorRes)
     }
 
     override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
@@ -98,5 +164,16 @@ class NewSendFragment :
             popExit = R.anim.slide_down,
             popEnter = 0
         )
+    }
+
+    override fun showProgressDialog(internalTransactionId: String, data: ShowProgress) {
+        listener?.showTransactionProgress(internalTransactionId, data)
+        popBackStackTo(target = NewSearchFragment::class, inclusive = true)
+    }
+
+    private fun UiKitToolbar.setupToolbar() {
+        title = (recipient as? SearchResult.UsernameFound)?.username
+            ?: recipient.addressState.address.cutMiddle(TITLE_CUT_COUNT)
+        setNavigationOnClickListener { popBackStack() }
     }
 }

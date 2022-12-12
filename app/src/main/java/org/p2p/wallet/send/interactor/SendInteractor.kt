@@ -1,5 +1,8 @@
 package org.p2p.wallet.send.interactor
 
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.isZero
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
@@ -12,19 +15,16 @@ import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_L
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
+import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.TokenAccount
-import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
-import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.core.utils.isZero
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
@@ -51,8 +51,8 @@ class SendInteractor(
     /*
     * Initialize fee payer token
     * */
-    suspend fun initialize(sol: Token.Active) {
-        feePayerToken = sol
+    suspend fun initialize(token: Token.Active) {
+        feePayerToken = token
         feeRelayerInteractor.load()
         orcaInfoInteractor.load()
     }
@@ -103,9 +103,16 @@ class SendInteractor(
 
         if (fees.total.isZero()) return null
 
+        val feeInSpl = getFeesInPayingToken(
+            feePayerToken = feePayerToken,
+            transactionFeeInSOL = fees.transaction,
+            accountCreationFeeInSOL = fees.accountBalances
+        )
         return FeeRelayerFee(
-            feeInSol = fees.total,
-            feeInPayingToken = getFeesInPayingToken(feePayerToken, fees.total)
+            transactionFeeInSol = fees.transaction,
+            accountCreationFeeInSol = fees.accountBalances,
+            transactionFeeInSpl = feeInSpl.transaction,
+            accountCreationFeeInSpl = feeInSpl.accountBalances
         )
     }
 
@@ -179,15 +186,19 @@ class SendInteractor(
 
     private suspend fun getFeesInPayingToken(
         feePayerToken: Token.Active,
-        feeInSOL: BigInteger
-    ): BigInteger {
-        if (feePayerToken.isSOL) return feeInSOL
+        transactionFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
+    ): FeeAmount {
+        if (feePayerToken.isSOL)
+            return FeeAmount(
+                transaction = transactionFeeInSOL,
+                accountBalances = accountCreationFeeInSOL
+            )
 
-        val feeInPayingToken = feeRelayerInteractor.calculateFeeInPayingToken(
-            feeInSOL = FeeAmount(accountBalances = feeInSOL),
+        return feeRelayerInteractor.calculateFeeInPayingToken(
+            feeInSOL = FeeAmount(transaction = transactionFeeInSOL, accountBalances = accountCreationFeeInSOL),
             payingFeeTokenMint = feePayerToken.mintAddress
         )
-        return feeInPayingToken.total
     }
 
     private suspend fun prepareForSending(
