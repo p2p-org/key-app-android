@@ -2,19 +2,22 @@ package org.p2p.wallet.sell.ui.payload
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
-import org.p2p.wallet.sell.ui.lock.SellLockContract
+import org.p2p.wallet.sell.ui.lock.SellLockFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import java.math.BigDecimal
 
 class SellPayloadFragment :
     BaseMvpFragment<SellPayloadContract.View, SellPayloadContract.Presenter>(
         R.layout.fragment_sell_payload
     ),
-    SellLockContract.View {
+    SellPayloadContract.View {
 
     companion object {
         fun create() = SellPayloadFragment()
@@ -30,6 +33,24 @@ class SellPayloadFragment :
             buttonSend.setOnClickListener {
                 presenter.cashOut()
             }
+            presenter.load()
         }
+    }
+
+    override fun showLoading(isVisible: Boolean) {
+        binding.shimmerView.isVisible = isVisible
+    }
+
+    override fun navigateToSellLock() {
+        replaceFragment(SellLockFragment.create())
+    }
+
+    override fun showAvailableSolToSell(totalAmount: BigDecimal) {
+        binding.textViewSellAmount.text = getString(R.string.sell_all_sol, totalAmount)
+    }
+
+    override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
+        binding.editTextToken.setHint(tokenSymbol)
+        binding.editTextToken.setText(minAmount.toString())
     }
 }

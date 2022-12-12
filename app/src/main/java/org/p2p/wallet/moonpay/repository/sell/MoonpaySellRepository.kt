@@ -8,6 +8,7 @@ interface MoonpaySellRepository {
     fun isSellAllowedForUser(): Boolean
 
     suspend fun loadMoonpayFlags()
+
     @Throws(MoonpaySellError::class)
     suspend fun getUserSellTransactions(userAddress: Base58String): List<MoonpaySellTransaction>
 }

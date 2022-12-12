@@ -621,6 +621,7 @@
     <string name="sell_lock_button_action">Send SOL in Key App</string>
     <string name="sell_lock_button_cancel">Remove from history</string>
     <string name="sell_payload_title">Cash out token</string>
+    <string name="sell_all_sol">all %f SOL</string>
     <string name="common_sell_all">Sell all</string>
     <string name="common_sorry">Sorry</string>
     <string name="error_service_ruiner_message">Our payment service was ruined.\nVisit this page later</string>

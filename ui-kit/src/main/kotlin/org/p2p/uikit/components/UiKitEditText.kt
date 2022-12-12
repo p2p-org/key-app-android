@@ -6,6 +6,7 @@ import android.text.Editable
 import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetUikitEditTextBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
@@ -71,7 +72,7 @@ open class UiKitEditText @JvmOverloads constructor(
     }
 
     fun setHint(hint: String) {
-        binding.editText.hint = hint
+        binding.textViewHint.text = hint
     }
 
     val text: Editable?
@@ -94,5 +95,10 @@ open class UiKitEditText @JvmOverloads constructor(
 
     fun focusAndShowKeyboard() {
         binding.editText.focusAndShowKeyboard()
+    }
+
+    fun setupAmountFractionTextWatcher(block: () -> Unit) {
+        AmountFractionTextWatcher.installOn(binding.editText) {
+        }
     }
 }

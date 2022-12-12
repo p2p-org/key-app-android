@@ -91,16 +91,13 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <FrameLayout
+        android:id="@+id/shimmerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize"
-        android:background="@color/bg_smoke"
-        android:visibility="gone"
-        tools:visibility="gone">
+        android:background="@color/bg_smoke">
 
-        <include
-            android:id="@+id/shimmerView"
-            layout="@layout/view_sell_shimmer" />
+        <include layout="@layout/view_sell_shimmer" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

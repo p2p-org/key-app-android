@@ -1,12 +1,50 @@
 package org.p2p.wallet.sell.ui.payload
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.provider.SolanaTokenProvider
+import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
+import org.p2p.wallet.sell.interactor.SellInteractor
+import timber.log.Timber
+import java.math.BigDecimal
 
-class SellPayloadPresenter :
-    BasePresenter<SellPayloadContract.View>(),
+private val MIN_AMOUNT_TO_SELL = BigDecimal.valueOf(20)
+private val MAX_AMOUNT_TO_SELL = BigDecimal.valueOf(100)
+class SellPayloadPresenter(
+    private val sellInteractor: SellInteractor,
+    private val solTokenProvider: SolanaTokenProvider
+) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
 
-    override fun load() {}
+    override fun load() {
+        launch {
+            try {
+                view?.showLoading(isVisible = true)
+                if (isUserHasTransactionsInProcess()) {
+                    view?.navigateToSellLock()
+                    return@launch
+                }
+                initView()
+            } catch (e: Throwable) {
+                Timber.e("Error on init view $e")
+            } finally {
+                view?.showLoading(isVisible = false)
+            }
+        }
+    }
+
+    private suspend fun isUserHasTransactionsInProcess(): Boolean {
+        val userTransactions = sellInteractor.loadUserSellTransactions()
+        return userTransactions.isNotEmpty() && userTransactions.all {
+            it.status == MoonpaySellTransaction.TransactionStatus.COMPLETED
+        }
+    }
+
+    private suspend fun initView() {
+        val solToken = solTokenProvider.getUserSolanaToken() ?: return
+        view?.showAvailableSolToSell(solToken.total)
+        view?.setMinSolToSell(MIN_AMOUNT_TO_SELL, solToken.tokenSymbol.uppercase())
+    }
 
     override fun cashOut() {}
 }
