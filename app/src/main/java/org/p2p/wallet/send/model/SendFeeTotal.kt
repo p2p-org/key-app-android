@@ -5,39 +5,40 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.orZero
+import org.p2p.wallet.R
+import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import java.math.BigDecimal
 
 @Parcelize
-class SendTotal constructor(
+class SendFeeTotal constructor(
     val total: BigDecimal,
     val totalUsd: BigDecimal?,
     val receive: String,
     val receiveUsd: BigDecimal?,
-    val fee: SendFee?,
+    val sendFee: SendSolanaFee?,
+    val feeLimit: FreeTransactionFeeLimit,
     val sourceSymbol: String,
-    var recipientAddress: String? = null
+    val recipientAddress: String
 ) : Parcelable {
 
-    fun getTotalFee(): String =
-        when (fee) {
-            is SendFee.SolanaFee ->
-                if (sourceSymbol == fee.feePayerSymbol) totalSum
-                else "$totalFormatted + ${fee.feeDecimals} ${fee.feePayerSymbol}"
-            is SendFee.RenBtcFee ->
-                "$totalFormatted + ${fee.feeDecimals} ${fee.feePayerSymbol}"
+    fun getTotalFee(resourceDelegate: (res: Int) -> String): String =
+        when (sendFee) {
+            is SendSolanaFee ->
+                if (sourceSymbol == sendFee.feePayerSymbol) totalSum
+                else "$totalFormatted + ${sendFee.accountCreationFormattedFee}"
             else ->
-                totalFormatted
+                resourceDelegate(R.string.send_fees_free)
         }
 
     val showAdditionalFee: Boolean
-        get() = fee != null && sourceSymbol != fee.feePayerSymbol
+        get() = sendFee != null && sourceSymbol != sendFee.feePayerSymbol
 
     val showAccountCreation: Boolean
         // SendFee.SolanaFee is not null only if account creation is needed
-        get() = fee != null && fee is SendFee.SolanaFee
+        get() = sendFee != null
 
     val fullTotal: String
-        get() = if (sourceSymbol == fee?.feePayerSymbol) {
+        get() = if (sourceSymbol == sendFee?.feePayerSymbol) {
             if (approxTotalUsd != null) "$totalSum $approxTotalUsd" else totalSum
         } else {
             if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
@@ -55,5 +56,5 @@ class SendTotal constructor(
         get() = "${total.formatToken()} $sourceSymbol"
 
     private val totalSum: String
-        get() = "${(total + fee?.feeDecimals.orZero()).formatToken()} $sourceSymbol"
+        get() = "${(total + sendFee?.accountCreationFeeDecimals.orZero()).formatToken()} $sourceSymbol"
 }
