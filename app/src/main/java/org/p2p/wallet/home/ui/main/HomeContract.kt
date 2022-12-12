@@ -23,6 +23,7 @@ interface HomeContract {
         fun showBuyInfoScreen(token: Token)
         fun showNewBuyScreen(token: Token)
         fun showOldBuyScreen(token: Token)
+        fun setSellActionButtonIsVisible(isVisible: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

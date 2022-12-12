@@ -2,7 +2,7 @@ package org.p2p.wallet.infrastructure.network.moonpay
 
 import com.google.gson.annotations.SerializedName
 
-enum class MoonpayErrorType(val stringValue: String) {
+enum class MoonpayErrorResponseType(val stringValue: String) {
     @SerializedName("BadRequestError")
     BAD_REQUEST_ERROR("BadRequestError"),
 
@@ -19,11 +19,8 @@ enum class MoonpayErrorType(val stringValue: String) {
     UNKNOWN_ERROR("UnknownError");
 
     companion object {
-        fun parse(type: String): MoonpayErrorType = when (type) {
-            BAD_REQUEST_ERROR.name -> BAD_REQUEST_ERROR
-            NOT_FOUND_ERROR.name -> NOT_FOUND_ERROR
-            UNAUTHORIZED_ERROR.name -> UNAUTHORIZED_ERROR
-            else -> BAD_REQUEST_ERROR
+        fun fromStringValue(type: String): MoonpayErrorResponseType {
+            return values().find { it.stringValue == type } ?: UNKNOWN_ERROR
         }
     }
 }

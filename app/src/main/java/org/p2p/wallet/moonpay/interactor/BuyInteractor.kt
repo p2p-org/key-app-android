@@ -1,27 +1,27 @@
 package org.p2p.wallet.moonpay.interactor
 
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
+import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isMoreThan
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.moonpay.api.MoonpayBuyCurrencyResponse
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyQuote
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
-import org.p2p.wallet.moonpay.repository.MoonpayApiMapper
-import org.p2p.wallet.moonpay.repository.NewMoonpayRepository
-import org.p2p.core.utils.isLessThan
-import org.p2p.core.utils.isMoreThan
+import org.p2p.wallet.moonpay.repository.buy.MoonpayApiMapper
+import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
 import java.math.BigDecimal
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val CURRENCY_AMOUNT_FOR_PRICE_REQUEST = "1"
 private const val DEFAULT_MAX_CURRENCY_AMOUNT = 10000
 private const val DEFAULT_PAYMENT_TYPE = "credit_debit_card"
 private val FIAT_CURRENCY_CODES = listOf("eur", "usd", "gbp")
 
-class MoonpayBuyInteractor(
-    private val moonpayRepository: NewMoonpayRepository,
+class BuyInteractor(
+    private val moonpayRepository: NewMoonpayBuyRepository,
     private val moonpayApiMapper: MoonpayApiMapper,
     private val dispatchers: CoroutineDispatchers
 ) {

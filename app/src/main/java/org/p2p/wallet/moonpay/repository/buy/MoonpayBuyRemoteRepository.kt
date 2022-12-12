@@ -1,19 +1,21 @@
-package org.p2p.wallet.moonpay.repository
+package org.p2p.wallet.moonpay.repository.buy
 
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.moonpay.api.MoonpayApi
-import org.p2p.wallet.moonpay.api.MoonpayIpAddressResponse
+import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
-import org.p2p.core.utils.Constants.SOL_SYMBOL
 import java.math.BigDecimal
 
-class MoonpayRemoteRepository(
-    private val api: MoonpayApi,
-    private val moonpayApiKey: String,
+class MoonpayBuyRemoteRepository(
+    private val api: MoonpayClientSideApi,
     private val mapper: MoonpayApiMapper
-) : MoonpayRepository {
+) : MoonpayBuyRepository {
+
+    private val moonpayApiKey: String = BuildConfig.moonpayKey
 
     override suspend fun getBuyCurrencyData(
         baseCurrencyAmount: String?,

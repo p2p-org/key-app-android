@@ -39,7 +39,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/view_action_sell"
         app:layout_constraintStart_toEndOf="@+id/view_action_send" />
+
+    <include
+        android:id="@+id/view_action_sell"
+        layout="@layout/item_home_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/view_action_swap" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
