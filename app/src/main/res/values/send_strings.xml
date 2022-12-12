@@ -62,4 +62,11 @@
 
     <string name="send_cant_calculate_fees_error">Cannot calculate fees. Try again</string>
 
+    <string name="send_no_account_title">This address does not have a %s account</string>
+    <string name="send_no_account_critical_message">You will have to pay a one-time fee (~$0.03) to create a %s account for this address</string>
+    <string name="send_no_account_critical_button_text">@android:string/ok</string>
+    <string name="send_no_account_non_critical_message">You will have to pay a one-time fee (~$0.03) to create a %s account for this address. You can choose in which currency to pay with below.</string>
+    <string name="send_no_account_non_critical_continue">Continue with %s</string>
+    <string name="send_no_account_non_critical_switch">Switch to another token</string>
+
 </resources>
