@@ -1,10 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.BuildConfig
@@ -14,6 +14,7 @@ import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
+import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
@@ -175,50 +176,58 @@ class HomeFragment :
     }
 
     private fun ActionButtonsView.setupActionButtons() {
+        showActionButtons(
+            ActionButton.BUY_BUTTON,
+            ActionButton.RECEIVE_BUTTON,
+            ActionButton.SEND_BUTTON
+        )
+
         listener = ActionButtonsViewClickListener {
             when (it) {
-                ActionButtonsView.ActionButton.BUY_BUTTON -> {
+                ActionButton.BUY_BUTTON -> {
                     presenter.onBuyClicked()
                 }
-                ActionButtonsView.ActionButton.RECEIVE_BUTTON -> {
+                ActionButton.RECEIVE_BUTTON -> {
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
-                ActionButtonsView.ActionButton.SEND_BUTTON -> {
+                ActionButton.SEND_BUTTON -> {
                     if (newSendEnabledFeatureToggle.isFeatureEnabled) {
                         replaceFragment(NewSearchFragment.create())
                     } else {
                         replaceFragment(SendFragment.create())
                     }
                 }
-                ActionButtonsView.ActionButton.SWAP_BUTTON -> {
-                    replaceFragment(OrcaSwapFragment.create())
+                ActionButton.SELL_BUTTON -> {
+                    // todo: open sell fragment PWN-6260
                 }
+                else -> Unit
             }
         }
+    }
+
+    override fun setSellActionButtonIsVisible(isVisible: Boolean) {
+        binding.viewActionButtons.setActionButtonIsVisible(ActionButton.SELL_BUTTON, isVisible)
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
         when (requestKey) {
             KEY_REQUEST_TOKEN -> {
-                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.let {
-                    showOldBuyScreen(it)
-                }
+                result.getParcelable<Token>(KEY_RESULT_TOKEN)?.also(::showOldBuyScreen)
             }
             KEY_REQUEST_TOKEN_INFO -> {
-                result.getParcelable<Token>(KEY_RESULT_TOKEN_INFO)?.let {
-                    presenter.onInfoBuyTokenClicked(it)
-                }
+                result.getParcelable<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
             }
             KEY_REQUEST_ACTION -> {
-                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.let {
-                    openScreenByHomeAction(it)
-                }
+                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.also(::openScreenByHomeAction)
             }
         }
     }
 
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
+            HomeAction.SELL -> {
+                // todo: open sell fragment PWN-6260
+            }
             HomeAction.BUY -> {
                 presenter.onBuyClicked()
             }

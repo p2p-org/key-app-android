@@ -1,12 +1,12 @@
 package org.p2p.wallet.history.ui.token
 
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.glide.GlideManager
@@ -118,6 +118,13 @@ class TokenHistoryFragment :
     }
 
     private fun ActionButtonsView.setupListener() {
+        showActionButtons(
+            ActionButton.BUY_BUTTON,
+            ActionButton.RECEIVE_BUTTON,
+            ActionButton.SEND_BUTTON,
+            ActionButton.SWAP_BUTTON
+        )
+
         listener = ActionButtonsViewClickListener { actionButton ->
             when (actionButton) {
                 ActionButton.BUY_BUTTON -> {
@@ -143,6 +150,7 @@ class TokenHistoryFragment :
                 ActionButton.SWAP_BUTTON -> {
                     replaceFragment(OrcaSwapFragment.create(tokenForHistory))
                 }
+                else -> Unit
             }
         }
     }
@@ -177,7 +185,7 @@ class TokenHistoryFragment :
     }
 
     override fun hideBuyActionButton() {
-        binding.viewActionButtons.setActionButtonVisible(ActionButton.BUY_BUTTON, isVisible = false)
+        binding.viewActionButtons.setActionButtonIsVisible(ActionButton.BUY_BUTTON, isVisible = false)
     }
 
     override fun showPagingState(newState: PagingState) {

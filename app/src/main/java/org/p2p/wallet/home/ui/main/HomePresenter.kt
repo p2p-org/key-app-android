@@ -1,5 +1,14 @@
 package org.p2p.wallet.home.ui.main
 
+import org.p2p.core.token.Token
+import org.p2p.core.token.TokenVisibility
+import org.p2p.core.utils.Constants.BTC_SYMBOL
+import org.p2p.core.utils.Constants.ETH_SYMBOL
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.Constants.USDC_SYMBOL
+import org.p2p.core.utils.Constants.USDT_SYMBOL
+import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -10,25 +19,17 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
-import org.p2p.core.token.Token
-import org.p2p.core.token.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.core.utils.Constants.BTC_SYMBOL
-import org.p2p.core.utils.Constants.ETH_SYMBOL
-import org.p2p.core.utils.Constants.SOL_SYMBOL
-import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
-import org.p2p.core.utils.isMoreThan
-import org.p2p.core.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.time.DurationUnit
@@ -57,7 +58,8 @@ class HomePresenter(
     private val tokensPolling: UserTokensPolling,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
-    private val metadataInteractor: MetadataInteractor
+    private val metadataInteractor: MetadataInteractor,
+    private val sellInteractor: SellInteractor,
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var fallbackUsdcTokenForBuy: Token? = null
@@ -101,6 +103,10 @@ class HomePresenter(
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
+
+        launch {
+            view?.setSellActionButtonIsVisible(isVisible = sellInteractor.isSellAvailable())
+        }
     }
 
     private fun showUserAddressAndUsername() {
