@@ -345,7 +345,6 @@
     <string name="send_free_transaction">Free</string>
     <string name="send_transaction_fee">Transaction fee</string>
     <string name="send_transaction_fees">Transaction fees:</string>
-    <string name="send_fees_format">Fees: %s</string>
     <string name="send_paste">Paste</string>
     <string name="send_multiple_accounts">Multiple accounts were found</string>
     <string name="send_no_tokens">The token not found. Try to change name</string>

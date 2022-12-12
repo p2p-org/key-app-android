@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import com.google.android.material.appbar.MaterialToolbar
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.getString
+import org.p2p.uikit.utils.showSoftKeyboard
 
 class UiKitToolbar @JvmOverloads constructor(
     context: Context,
@@ -38,6 +39,7 @@ class UiKitToolbar @JvmOverloads constructor(
             setOnQueryTextListener(queryTextListener)
             if (isMenuVisible) {
                 onActionViewExpanded()
+                showSoftKeyboard()
             }
         }
     }
@@ -50,6 +52,7 @@ class UiKitToolbar @JvmOverloads constructor(
             } else {
                 isVisible = true
                 onActionViewExpanded()
+                showSoftKeyboard()
             }
         }
     }

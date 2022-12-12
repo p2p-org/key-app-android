@@ -1,19 +1,17 @@
 package org.p2p.wallet.send.interactor
 
+import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.model.RelayInfo
-import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Base58String
-
-private const val ZERO_BALANCE = 0L
 
 class SearchInteractor(
     private val usernameRepository: UsernameRepository,
@@ -48,7 +46,6 @@ class SearchInteractor(
     }
 
     suspend fun searchByAddress(address: Base58String): List<SearchResult> {
-        val balance = userInteractor.getBalance(address)
         val tokenData = transactionAddressInteractor.getTokenDataIfDirect(address)
         val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
         val hasNoTokensToSend = tokenData != null && userToken == null
@@ -57,7 +54,6 @@ class SearchInteractor(
         val hasNotEnoughFunds = !userTokens.any { it.hasFundsForSend(relayInfo) }
         val isOwnAddress = isOwnPublicKey(address.base58Value)
         val addressState = AddressState(address.base58Value)
-        val hasEmptyBalance = balance == ZERO_BALANCE
         return listOf(
             when {
                 isOwnAddress -> SearchResult.InvalidResult(
@@ -89,7 +85,6 @@ class SearchInteractor(
                     ),
                     canReceiveAndBuy = true
                 )
-                hasEmptyBalance -> SearchResult.EmptyBalance(addressState)
                 else -> SearchResult.AddressOnly(addressState)
             }
         )

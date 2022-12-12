@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_mail_with_btc"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:text="@string/send_no_account_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+        app:layout_constraintBottom_toTopOf="@+id/textViewMessage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView" />
+
+    <TextView
+        android:id="@+id/textViewMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/send_no_account_non_critical_message"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+        app:layout_constraintBottom_toTopOf="@+id/containerBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonOk"
+        style="@style/UiKit.Components.Button.Large.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/send_no_account_critical_button_text"
+        android:textColor="@color/text_lime"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/containerBottom"
+        app:strokeColor="@color/bg_night"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/containerBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_night_top_rounded"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonContinue"
+            style="@style/UiKit.Components.Button.Large.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/bg_snow"
+            android:text="@string/send_no_account_non_critical_continue"
+            android:textColor="@color/text_night" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonSwitch"
+            style="@style/UiKit.Components.Button.Large.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_kit_button_large_height"
+            android:text="@string/send_no_account_non_critical_switch"
+            android:textColor="@color/text_lime"
+            app:strokeColor="@color/bg_night" />
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
