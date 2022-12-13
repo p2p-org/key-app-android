@@ -7,7 +7,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
-import org.p2p.wallet.sell.ui.lock.SellLockFragment
+import org.p2p.wallet.sell.ui.lock.SellLockedFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -42,7 +42,7 @@ class SellPayloadFragment :
     }
 
     override fun navigateToSellLock() {
-        replaceFragment(SellLockFragment.create())
+        replaceFragment(SellLockedFragment.create())
     }
 
     override fun showAvailableSolToSell(totalAmount: BigDecimal) {

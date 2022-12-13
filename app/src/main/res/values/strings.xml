@@ -39,6 +39,8 @@
     <string name="common_cash_out">Cash out</string>
     <string name="common_cash_out_token">Cash out token</string>
     <string name="common_go_to_swap">Go to swap</string>
+    <string name="common_sell_all">Sell all</string>
+    <string name="common_sorry">Sorry</string>
     <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
@@ -622,11 +624,12 @@
     <string name="sell_lock_button_cancel">Remove from history</string>
     <string name="sell_payload_title">Cash out token</string>
     <string name="sell_all_sol">all %f SOL</string>
-    <string name="common_sell_all">Sell all</string>
-    <string name="common_sorry">Sorry</string>
+
     <string name="error_service_ruiner_message">Our payment service was ruined.\nVisit this page later</string>
     <string name="sell_need_more_sol_title">You need a little more SOL</string>
     <string name="sell_need_more_sol_message">The current minimum amount is %s SOL</string>
+    <string name="you_bank_account_via_moonpay">Your bank account via Moonpay</string>
+    <string name="sell_process_transaction_status">SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via Moonpay help center</string>
 
 
 </resources>

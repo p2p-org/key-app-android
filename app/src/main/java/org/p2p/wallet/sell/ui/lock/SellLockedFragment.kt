@@ -8,15 +8,15 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellLockBinding
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class SellLockFragment :
-    BaseMvpFragment<SellLockContract.View, SellLockContract.Presenter>(R.layout.fragment_sell_lock),
-    SellLockContract.View {
+class SellLockedFragment :
+    BaseMvpFragment<SellLockedContract.View, SellLockedContract.Presenter>(R.layout.fragment_sell_lock),
+    SellLockedContract.View {
 
     companion object {
-        fun create() = SellLockFragment()
+        fun create() = SellLockedFragment()
     }
 
-    override val presenter: SellLockContract.Presenter by inject()
+    override val presenter: SellLockedContract.Presenter by inject()
     private val binding: FragmentSellLockBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

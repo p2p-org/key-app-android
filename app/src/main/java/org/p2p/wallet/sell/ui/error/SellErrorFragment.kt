@@ -2,6 +2,8 @@ package org.p2p.wallet.sell.ui.error
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSellErrorBinding
@@ -17,12 +19,13 @@ private const val ARG_ERROR_STATE = "ARG_ERROR_STATE"
 class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
 
     companion object {
-        fun create(errorState: State) = SellErrorFragment()
-            .withArgs(ARG_ERROR_STATE to errorState)
+        fun create(errorState: SellScreenError): SellErrorFragment =
+            SellErrorFragment()
+                .withArgs(ARG_ERROR_STATE to errorState)
     }
 
     private val binding: FragmentSellErrorBinding by viewBinding()
-    private val sellErrorState: State by args(ARG_ERROR_STATE)
+    private val sellErrorState: SellScreenError by args(ARG_ERROR_STATE)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,16 +37,19 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
 
             buttonAction.setOnClickListener {
                 when (sellErrorState) {
-                    State.SERVER_ERROR -> popBackStack()
-                    State.NOT_ENOUGH_AMOUNT -> replaceFragment(OrcaSwapFragment.create())
+                    SellScreenError.SERVER_ERROR -> popBackStack()
+                    SellScreenError.NOT_ENOUGH_AMOUNT -> replaceFragment(OrcaSwapFragment.create())
                 }
             }
         }
     }
 
-    enum class State(
+    enum class SellScreenError(
+        @StringRes
         val titleResId: Int,
+        @StringRes
         val messageResId: Int,
+        @DrawableRes
         val iconResId: Int,
         val buttonTextResId: Int
     ) {

@@ -39,7 +39,7 @@
 
 
     <org.p2p.uikit.components.UiKitEditText
-        android:id="@+id/editTextToken"
+        android:id="@+id/editTextInputToken"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -53,7 +53,7 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
-        app:layout_constraintTop_toBottomOf="@id/editTextToken" />
+        app:layout_constraintTop_toBottomOf="@id/editTextInputToken" />
 
     <TextView
         android:id="@+id/textViewRate"

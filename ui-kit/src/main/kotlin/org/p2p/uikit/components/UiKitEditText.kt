@@ -78,8 +78,8 @@ open class UiKitEditText @JvmOverloads constructor(
     val text: Editable?
         get() = binding.editText.text
 
-    val stringText: String?
-        get() = text?.toString()
+    val stringText: String
+        get() = text?.toString().orEmpty()
 
     val hint: CharSequence
         get() = binding.editText.hint

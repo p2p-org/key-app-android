@@ -2,9 +2,9 @@ package org.p2p.wallet.sell.ui.payload
 
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.network.provider.SolanaTokenProvider
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.math.BigDecimal
 
@@ -12,7 +12,7 @@ private val MIN_AMOUNT_TO_SELL = BigDecimal.valueOf(20)
 private val MAX_AMOUNT_TO_SELL = BigDecimal.valueOf(100)
 class SellPayloadPresenter(
     private val sellInteractor: SellInteractor,
-    private val solTokenProvider: SolanaTokenProvider
+    private val userInteractor: UserInteractor
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
 
@@ -41,7 +41,7 @@ class SellPayloadPresenter(
     }
 
     private suspend fun initView() {
-        val solToken = solTokenProvider.getUserSolanaToken() ?: return
+        val solToken = userInteractor.getUserSolToken() ?: return
         view?.showAvailableSolToSell(solToken.total)
         view?.setMinSolToSell(MIN_AMOUNT_TO_SELL, solToken.tokenSymbol.uppercase())
     }
