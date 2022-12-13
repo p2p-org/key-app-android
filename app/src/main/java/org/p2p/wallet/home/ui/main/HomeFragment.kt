@@ -212,7 +212,7 @@ class HomeFragment :
                 result.getParcelable<Token>(KEY_RESULT_TOKEN_INFO)?.also(presenter::onInfoBuyTokenClicked)
             }
             KEY_REQUEST_ACTION -> {
-                result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.also(::openScreenByHomeAction)
+                (result.getSerializable(KEY_RESULT_ACTION) as? HomeAction)?.also(::openScreenByHomeAction)
             }
         }
     }
