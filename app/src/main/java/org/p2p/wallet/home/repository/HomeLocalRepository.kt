@@ -14,4 +14,5 @@ interface HomeLocalRepository {
     suspend fun clear()
     fun observeUserBalance(): Flow<BigDecimal>
     suspend fun getUserBalance(): BigDecimal
+    suspend fun getUserSolanaToken(): Token.Active?
 }
