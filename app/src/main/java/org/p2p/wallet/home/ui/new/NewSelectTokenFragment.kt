@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
@@ -16,7 +17,6 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSelectTokenNewBinding
 import org.p2p.wallet.home.model.SelectTokenItem
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.new.adapter.NewSelectTokenAdapter
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.utils.args
@@ -29,6 +29,7 @@ private const val ARG_ALL_TOKENS = "ARG_ALL_TOKENS"
 private const val ARG_SELECTED_TOKEN = "ARG_SELECTED_TOKEN"
 private const val ARG_REQUEST_KEY = "ARG_REQUEST_KEY"
 private const val ARG_RESULT_KEY = "ARG_RESULT_KEY"
+private const val ARG_TITLE = "ARG_TITLE"
 
 class NewSelectTokenFragment :
     BaseMvpFragment<NewSelectTokenContract.View, NewSelectTokenContract.Presenter>(R.layout.fragment_select_token_new),
@@ -36,23 +37,30 @@ class NewSelectTokenFragment :
     SearchView.OnQueryTextListener {
 
     companion object {
-        fun create(tokens: List<Token.Active>, selectedToken: Token.Active?, requestKey: String, resultKey: String) =
-            NewSelectTokenFragment()
-                .withArgs(
-                    ARG_ALL_TOKENS to tokens,
-                    ARG_SELECTED_TOKEN to selectedToken,
-                    ARG_REQUEST_KEY to requestKey,
-                    ARG_RESULT_KEY to resultKey
-                )
+        fun create(
+            tokens: List<Token.Active>,
+            selectedToken: Token.Active?,
+            requestKey: String,
+            resultKey: String,
+            title: String? = null
+        ) = NewSelectTokenFragment()
+            .withArgs(
+                ARG_ALL_TOKENS to tokens,
+                ARG_SELECTED_TOKEN to selectedToken,
+                ARG_REQUEST_KEY to requestKey,
+                ARG_RESULT_KEY to resultKey,
+                ARG_TITLE to title
+            )
     }
 
     private val tokens: List<Token.Active> by args(ARG_ALL_TOKENS)
     private val selectedToken: Token.Active? by args(ARG_SELECTED_TOKEN)
+    private val resultKey: String by args(ARG_RESULT_KEY)
+    private val requestKey: String by args(ARG_REQUEST_KEY)
+    private val title: String? by args(ARG_TITLE)
 
     override val presenter: NewSelectTokenContract.Presenter by inject()
 
-    private val resultKey: String by args(ARG_RESULT_KEY)
-    private val requestKey: String by args(ARG_REQUEST_KEY)
     private val buyAnalytics: BuyAnalytics by inject()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
@@ -74,6 +82,11 @@ class NewSelectTokenFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            if (title.isNullOrEmpty()) {
+                toolbar.setTitle(R.string.send_pick_token_title)
+            } else {
+                toolbar.title = title
+            }
             toolbar.setNavigationOnClickListener { popBackStack() }
             inflateSearchMenu(toolbar)
             recyclerViewTokens.layoutManager = LinearLayoutManager(requireContext())

@@ -23,6 +23,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
+import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
@@ -114,6 +115,15 @@ class SendInteractor(
             transactionFeeInSpl = feeInSpl.transaction,
             accountCreationFeeInSpl = feeInSpl.accountBalances
         )
+    }
+
+    fun hasAlternativeFeePayerTokens(userTokens: List<Token.Active>, fee: SendSolanaFee): Boolean {
+        val tokenToExclude = fee.feePayerToken.tokenSymbol
+        val tokens = userTokens.filter {
+            it.tokenSymbol != tokenToExclude && it.totalInLamports >= fee.feeRelayerFee.totalInSol
+        }
+
+        return tokens.isNotEmpty()
     }
 
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =

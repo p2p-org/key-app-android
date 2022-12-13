@@ -29,8 +29,8 @@ import kotlinx.parcelize.Parcelize
 data class SendSolanaFee constructor(
     val feePayerToken: Token.Active,
     val sourceTokenSymbol: String,
-    private val solToken: Token.Active?,
-    private val feeRelayerFee: FeeRelayerFee
+    val feeRelayerFee: FeeRelayerFee,
+    private val solToken: Token.Active?
 ) : Parcelable {
 
     @IgnoredOnParcel

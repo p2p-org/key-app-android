@@ -7,5 +7,5 @@ class NewSendEnabledFeatureToggle(
 ) : BooleanFeatureToggle(valuesProvider) {
     override val featureKey: String = "keyapp_new_send_enabled"
     override val featureDescription: String = "Enable New Send flow"
-    override val defaultValue: Boolean = false
+    override val defaultValue: Boolean = true // TODO PWN-6286 Disable on release if feature wont be passed in release
 }
