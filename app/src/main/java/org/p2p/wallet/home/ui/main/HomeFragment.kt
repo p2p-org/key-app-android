@@ -36,14 +36,13 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.send.ui.SendNoTokensFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.core.utils.formatUsd
-import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
