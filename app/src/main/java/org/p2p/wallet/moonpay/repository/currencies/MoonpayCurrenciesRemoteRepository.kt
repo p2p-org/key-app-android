@@ -4,37 +4,43 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyResponse
+
+private const val CURRENCY_TYPE_CRYPTO = "crypto"
 
 class MoonpayCurrenciesRemoteRepository(
     private val clientSideApi: MoonpayClientSideApi
 ) : MoonpayCurrenciesRepository {
+
     override suspend fun getAllCurrencies(): List<MoonpayCurrency> =
         clientSideApi.getAllCurrencies(BuildConfig.moonpayKey)
-            .map { response ->
-                response.run {
-                    val amounts = MoonpayCurrencyAmounts(
-                        minAmount = minAmount,
-                        maxAmount = maxAmount,
-                        minBuyAmount = minBuyAmount,
-                        maxBuyAmount = maxBuyAmount,
-                        minSellAmount = minSellAmount,
-                        maxSellAmount = maxSellAmount
-                    )
-                    if (currencyType == "crypto") {
-                        MoonpayCurrency.CryptoToken(
-                            tokenSymbol = currencySymbol,
-                            tokenName = currencyName,
-                            currencyId = currencyId,
-                            amounts = amounts
-                        )
-                    } else {
-                        MoonpayCurrency.Fiat(
-                            fiatCode = currencySymbol,
-                            fiatName = currencyName,
-                            currencyId = currencyId,
-                            amounts = amounts
-                        )
-                    }
-                }
-            }
+            .map(::mapToDomain)
+
+    private fun mapToDomain(response: MoonpayCurrencyResponse): MoonpayCurrency = response.run {
+        if (currencyType == CURRENCY_TYPE_CRYPTO) {
+            MoonpayCurrency.CryptoToken(
+                tokenSymbol = currencySymbol,
+                tokenName = currencyName,
+                currencyId = currencyId,
+                amounts = createAmounts()
+            )
+        } else {
+            MoonpayCurrency.Fiat(
+                fiatCode = currencySymbol,
+                fiatName = currencyName,
+                currencyId = currencyId,
+                amounts = createAmounts()
+            )
+        }
+    }
+
+    private fun MoonpayCurrencyResponse.createAmounts(): MoonpayCurrencyAmounts =
+        MoonpayCurrencyAmounts(
+            minAmount = minAmount,
+            maxAmount = maxAmount,
+            minBuyAmount = minBuyAmount,
+            maxBuyAmount = maxBuyAmount,
+            minSellAmount = minSellAmount,
+            maxSellAmount = maxSellAmount
+        )
 }
