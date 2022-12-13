@@ -45,7 +45,7 @@ class MoonpaySellRemoteRepository(
         if (ipFlags == null) {
             Timber.e(MoonpayRepositoryInternalError(IllegalStateException("Moonpay IP flags were not fetched")))
             crashLogger.setCustomKey("is_moonpay_sell_enabled", false)
-            crashLogger.setCustomKey("country_from_moonpay", false)
+            crashLogger.setCustomKey("country_from_moonpay", "not_set")
             return false
         }
 
@@ -79,6 +79,17 @@ class MoonpaySellRemoteRepository(
                 tokenAmount = tokenAmount
             )
         )
+    }
+
+    override suspend fun cancelSellTransaction(
+        transactionId: String
+    ): MoonpaySellCancelResult = withContext(dispatchers.io) {
+        try {
+            moonpayServerSideApi.cancelSellTransaction(transactionId)
+            MoonpaySellCancelResult.TransactionCancelled
+        } catch (error: Throwable) {
+            MoonpaySellCancelResult.CancelFailed(error)
+        }
     }
 
     @Throws(MoonpaySellError::class)

@@ -1,7 +1,7 @@
 package org.p2p.wallet.moonpay.repository.sell
 
 import okio.IOException
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
@@ -88,11 +88,9 @@ class MoonpaySellRepositoryMapper {
     fun fromNetworkError(error: Throwable): MoonpaySellError {
         // add more errors if needed
         return when (error) {
-            is ServerException -> {
-                val moonpayErrorType = error.jsonErrorBody
-                    ?.getAsJsonPrimitive("type")
-                    ?.asString
-                if (moonpayErrorType == MoonpayErrorResponseType.NOT_FOUND_ERROR.stringValue) {
+            is MoonpayRequestException -> {
+                val moonpayErrorType = error.errorType
+                if (moonpayErrorType == MoonpayErrorResponseType.NOT_FOUND_ERROR) {
                     MoonpaySellError.TokenToSellNotFound(error)
                 } else {
                     MoonpaySellError.UnknownError(error)
