@@ -11,6 +11,11 @@ interface MoonpayServerSideApi {
         @Query("externalCustomerId") userAddress: String
     ): List<MoonpaySellTransactionResponse>
 
+    /**
+     * HTTP status 204 No Content if the sell transaction was successfully canceled.
+     * If sell transaction could not be canceled (e.g. because it has already been completed)
+     * it will return HTTP status 409 Conflict.
+     */
     @DELETE("v3/sell_transactions/{transactionId}")
     suspend fun cancelSellTransaction(
         @Query("transactionId") sellTransactionId: String
