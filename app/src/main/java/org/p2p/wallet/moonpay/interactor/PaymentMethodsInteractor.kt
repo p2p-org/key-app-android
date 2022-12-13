@@ -1,11 +1,11 @@
 package org.p2p.wallet.moonpay.interactor
 
-import kotlinx.coroutines.withContext
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.PaymentMethod
-import org.p2p.wallet.moonpay.repository.NewMoonpayRepository
+import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
+import kotlinx.coroutines.withContext
 
 const val GBP_BANK_TRANSFER = "gbp_bank_transfer"
 const val SEPA_BANK_TRANSFER = "sepa_bank_transfer"
@@ -32,7 +32,7 @@ private val BANK_TRANSFER_PAYMENT_METHOD = PaymentMethod(
 )
 
 class PaymentMethodsInteractor(
-    private val repository: NewMoonpayRepository,
+    private val repository: NewMoonpayBuyRepository,
     private val dispatchers: CoroutineDispatchers,
     private val bankTransferFeatureToggle: BuyWithTransferFeatureToggle
 ) {
@@ -59,6 +59,6 @@ class PaymentMethodsInteractor(
     private fun bankTransferIsAvailable(alpha3Code: String): Boolean = BANK_TRANSFER_ALPHA3_CODES.contains(alpha3Code)
 
     suspend fun getBankTransferAlphaCode(): String = withContext(dispatchers.io) {
-        repository.getIpAddressData().alpha3
+        repository.getIpAddressData().currentCountryAbbreviation
     }
 }

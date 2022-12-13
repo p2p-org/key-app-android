@@ -14,7 +14,6 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
-import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseFragment
@@ -25,10 +24,10 @@ import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
+import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -127,17 +126,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     }
 
     override fun navigate(clickedTab: ScreenTab) {
-        if (clickedTab == ScreenTab.FEEDBACK_SCREEN) {
-            IntercomService.showMessenger()
-            analyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
-            with(binding.bottomNavigation) {
-                post { // not working reselection on last item without post
-                    setChecked(lastSelectedItemId)
-                }
-            }
-            return
-        }
-
         val itemId = clickedTab.itemId
 
         if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
@@ -146,7 +134,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
-                else -> error("No tab found for $clickedTab")
+                ScreenTab.SWAP_SCREEN -> OrcaSwapFragment.create()
             }
             tabCachedFragments[itemId] = fragment
         }
@@ -212,7 +200,6 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             R.menu.menu_ui_kit_bottom_navigation
         }
         binding.bottomNavigation.inflateMenu(menuRes)
-        binding.bottomNavigation.menu.findItem(R.id.feedbackItem).isCheckable = false
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {

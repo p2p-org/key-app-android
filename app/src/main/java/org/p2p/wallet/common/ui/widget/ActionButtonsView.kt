@@ -19,7 +19,11 @@ class ActionButtonsView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     enum class ActionButton {
-        BUY_BUTTON, RECEIVE_BUTTON, SEND_BUTTON, SWAP_BUTTON
+        BUY_BUTTON,
+        RECEIVE_BUTTON,
+        SEND_BUTTON,
+        SWAP_BUTTON,
+        SELL_BUTTON
     }
 
     private val binding: LayoutActionButtonsBinding = inflateViewBinding()
@@ -56,7 +60,17 @@ class ActionButtonsView @JvmOverloads constructor(
                     listener?.onActionButtonClicked(ActionButton.SWAP_BUTTON)
                 }
             }
+            viewActionSell.apply {
+                textViewButtonTitle.setText(R.string.home_sell)
+                imageButtonButtonIcon.setImageResource(R.drawable.ic_action_sell)
+                imageButtonButtonIcon.setOnClickListener {
+                    listener?.onActionButtonClicked(ActionButton.SEND_BUTTON)
+                }
+            }
         }
+
+        val actionButtonsIsGone: Map<ActionButton, Boolean> = ActionButton.values().associateWith { false }
+        setActionButtonsIsVisible(buttonsToIsVisible = actionButtonsIsGone)
     }
 
     var isVisible: Boolean
@@ -65,12 +79,21 @@ class ActionButtonsView @JvmOverloads constructor(
             binding.root.isVisible = value
         }
 
-    fun setActionButtonVisible(button: ActionButton, isVisible: Boolean) {
+    fun showActionButtons(vararg buttonsToIsVisible: ActionButton) {
+        buttonsToIsVisible.forEach { setActionButtonIsVisible(button = it, isVisible = true) }
+    }
+
+    fun setActionButtonsIsVisible(buttonsToIsVisible: Map<ActionButton, Boolean>) {
+        buttonsToIsVisible.forEach { (button, isVisible) -> setActionButtonIsVisible(button, isVisible) }
+    }
+
+    fun setActionButtonIsVisible(button: ActionButton, isVisible: Boolean) {
         when (button) {
             ActionButton.BUY_BUTTON -> binding.viewActionBuy.viewContainer.isVisible = isVisible
             ActionButton.RECEIVE_BUTTON -> binding.viewActionReceive.viewContainer.isVisible = isVisible
             ActionButton.SEND_BUTTON -> binding.viewActionSend.viewContainer.isVisible = isVisible
             ActionButton.SWAP_BUTTON -> binding.viewActionSwap.viewContainer.isVisible = isVisible
+            ActionButton.SELL_BUTTON -> binding.viewActionSell.viewContainer.isVisible = isVisible
         }
     }
 }

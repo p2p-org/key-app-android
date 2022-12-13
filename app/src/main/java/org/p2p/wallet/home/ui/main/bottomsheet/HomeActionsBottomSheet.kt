@@ -1,39 +1,40 @@
 package org.p2p.wallet.home.ui.main.bottomsheet
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.viewbinding.ViewBinding
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
+import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHomeActionsBinding
-import org.p2p.wallet.databinding.ViewActionItemBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
-class HomeActionsBottomSheet : BottomSheetDialogFragment() {
+class HomeActionsBottomSheet :
+    BaseMvpBottomSheet<HomeActionsContract.View, HomeActionsContract.Presenter>(R.layout.dialog_home_actions),
+    HomeActionsContract.View {
 
     companion object {
         fun show(
             fm: FragmentManager,
             requestKey: String,
             resultKey: String
-        ) = HomeActionsBottomSheet()
-            .withArgs(
+        ) {
+            HomeActionsBottomSheet().withArgs(
                 EXTRA_REQUEST_KEY to requestKey,
                 EXTRA_RESULT_KEY to resultKey
             )
-            .show(fm, HomeActionsBottomSheet::javaClass.name)
+                .show(fm, HomeActionsBottomSheet::javaClass.name)
+        }
     }
 
     private val resultKey: String by args(EXTRA_RESULT_KEY)
@@ -43,16 +44,22 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
     private val swapAnalytics: SwapAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
-    private lateinit var binding: DialogHomeActionsBinding
+    override val presenter: HomeActionsContract.Presenter by inject()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogHomeActionsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    private val binding: DialogHomeActionsBinding by viewBinding()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun setupHomeActions(isSellFeatureEnabled: Boolean) {
         with(binding) {
+            if (isSellFeatureEnabled) {
+                viewActionSell.apply {
+                    root.isVisible = true
+
+                    setResultClickListener(HomeAction.SELL)
+                    imageViewAction.setImageResource(R.drawable.action_sell_icon)
+                    textViewActionTitle.setText(R.string.home_actions_sell_title)
+                    textViewActionSubtitle.setText(R.string.home_actions_sell_subtitle)
+                }
+            }
             viewActionBuy.apply {
                 setResultClickListener(HomeAction.BUY)
                 imageViewAction.setImageResource(R.drawable.action_buy_icon)
@@ -82,8 +89,8 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
-    private fun ViewActionItemBinding.setResultClickListener(action: HomeAction) {
-        viewActionRoot.setOnClickListener {
+    private fun ViewBinding.setResultClickListener(action: HomeAction) {
+        root.setOnClickListener {
             logActionButtonClicked(action)
 
             setFragmentResult(requestKey, bundleOf(resultKey to action))
@@ -96,11 +103,11 @@ class HomeActionsBottomSheet : BottomSheetDialogFragment() {
             HomeAction.RECEIVE -> receiveAnalytics.logReceiveActionButtonClicked()
             HomeAction.SWAP -> swapAnalytics.logSwapActionButtonClicked()
             HomeAction.SEND -> sendAnalytics.logSendActionButtonClicked()
-            HomeAction.BUY -> Unit
+            else -> Unit
         }
     }
 }
 
 enum class HomeAction {
-    BUY, RECEIVE, SWAP, SEND
+    BUY, RECEIVE, SWAP, SEND, SELL
 }

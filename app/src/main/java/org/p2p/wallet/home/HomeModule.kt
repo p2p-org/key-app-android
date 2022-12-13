@@ -4,14 +4,16 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.core.token.Token
+import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.repository.HomeDatabaseRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.HomeContract
 import org.p2p.wallet.home.ui.main.HomeElementItemMapper
 import org.p2p.wallet.home.ui.main.HomePresenter
 import org.p2p.wallet.home.ui.main.UserTokensPolling
+import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsContract
+import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsPresenter
 import org.p2p.wallet.receive.list.TokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
@@ -25,8 +27,6 @@ import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.NetworkType
 
 object HomeModule : InjectionModule {
-
-    const val MOONPAY_QUALIFIER = "api.moonpay.com"
 
     override fun create() = module {
         initDataLayer()
@@ -57,6 +57,7 @@ object HomeModule : InjectionModule {
     private fun Module.initPresentationLayer() {
         factoryOf(::UserTokensPolling)
         /* Cached data exists, therefore creating singleton */
+        // todo: do something with this dependenices!
         factory<HomeContract.Presenter> {
             HomePresenter(
                 analytics = get(),
@@ -72,6 +73,7 @@ object HomeModule : InjectionModule {
                 networkObserver = get(),
                 tokensPolling = get(),
                 metadataInteractor = get(),
+                sellInteractor = get()
                 newSendEnabledFeatureToggle = get()
             )
         }
@@ -103,5 +105,7 @@ object HomeModule : InjectionModule {
 
         factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
         factoryOf(::ReceiveRenBtcPresenter) bind ReceiveRenBtcContract.Presenter::class
+
+        factoryOf(::HomeActionsPresenter) bind HomeActionsContract.Presenter::class
     }
 }

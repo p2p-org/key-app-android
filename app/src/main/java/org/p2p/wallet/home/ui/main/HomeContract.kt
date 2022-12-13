@@ -26,6 +26,7 @@ interface HomeContract {
         fun showSendNoTokens(fallbackToken: Token)
         fun navigateToNewSend()
         fun navigateToOldSend()
+        fun setSellActionButtonIsVisible(isVisible: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {
