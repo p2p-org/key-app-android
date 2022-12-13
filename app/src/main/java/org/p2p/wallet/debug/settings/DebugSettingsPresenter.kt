@@ -24,7 +24,7 @@ class DebugSettingsPresenter(
     private val context: Context,
     private val resourcesProvider: ResourcesProvider,
     private val tokenKeyProvider: TokenKeyProvider,
-    networkServicesUrlProvider: NetworkServicesUrlProvider
+    private val networkServicesUrlProvider: NetworkServicesUrlProvider
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
     private var networkName = environmentManager.loadCurrentEnvironment().name
@@ -50,6 +50,11 @@ class DebugSettingsPresenter(
             }
         }
 
+        loadData()
+    }
+
+    override fun switchMoonpayUrl(isSandboxSelected: Boolean) {
+        networkServicesUrlProvider.toggleMoonpayEnvironment(isSandboxSelected)
         loadData()
     }
 
@@ -92,6 +97,13 @@ class DebugSettingsPresenter(
                 subtitle = tokenKeyProvider.publicKey,
                 iconRes = R.drawable.ic_key
             ).takeIf { tokenKeyProvider.publicKey.isNotBlank() },
+            SettingsRow.Switcher(
+                titleResId = R.string.settings_moonpay_sandbox,
+                iconRes = R.drawable.ic_network,
+                isDivider = false,
+                subtitle = networkServicesUrlProvider.loadMoonpayEnvironment().baseServerSideUrl,
+                isSelected = networkServicesUrlProvider.loadMoonpayEnvironment().isSandboxEnabled
+            ),
             SettingsRow.Section(
                 titleResId = R.string.debug_settings_logs_title,
                 subtitle = resourcesProvider.getString(R.string.debug_settings_logs_subtitle),
