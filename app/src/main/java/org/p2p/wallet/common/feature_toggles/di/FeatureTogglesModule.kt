@@ -45,6 +45,7 @@ object FeatureTogglesModule : InjectionModule {
                 get<UsernameDomainFeatureToggle>(),
                 get<RegisterUsernameEnabledFeatureToggle>(),
                 get<RegisterUsernameSkipEnabledFeatureToggle>(),
+                get<SellEnabledFeatureToggle>()
             )
         }
 

@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.ui.phone.maskwatcher
 
 import android.text.Editable
 import android.text.TextWatcher
-import org.p2p.wallet.auth.widget.HintEditText
+import org.p2p.uikit.components.HintEditText
 
 class PhoneNumberTextWatcher(
     private val phoneField: HintEditText,

@@ -36,6 +36,11 @@
     <string name="common_hide">Hide</string>
     <string name="common_show">Show</string>
     <string name="common_skip">Skip</string>
+    <string name="common_cash_out">Cash out</string>
+    <string name="common_cash_out_token">Cash out token</string>
+    <string name="common_go_to_swap">Go to swap</string>
+    <string name="common_sell_all">Sell all</string>
+    <string name="common_sorry">Sorry</string>
     <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
@@ -386,8 +391,7 @@
     <string name="send_cannot_send_token">Cannot send the selected token</string>
     <string name="send_no_token_message_1">Send crypto in the Bitcoin and Solana network instantly and without fees</string>
     <string name="send_no_token_message_2">Effortlessly send tokens with usernames instead of long addresses</string>
-
-
+    
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
     <string name="swap_network_fee">Network fee</string>
@@ -618,6 +622,18 @@
     <string name="recovery_kit_logout_message">You have to log out and log in again.</string>
     <string name="send_no_token_title">Sending tokens has\nnever been EASIER</string>
     <string name="send_buy_crypto">Buy crypto</string>
+    <string name="sell_lock_title">Please, send crypto to\nMoonPay address</string>
+    <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
+    <string name="sell_lock_button_action">Send SOL in Key App</string>
+    <string name="sell_lock_button_cancel">Remove from history</string>
+    <string name="sell_payload_title">Cash out token</string>
+    <string name="sell_all_sol">all %f SOL</string>
+
+    <string name="error_service_ruiner_message">Our payment service was ruined.\nVisit this page later</string>
+    <string name="sell_need_more_sol_title">You need a little more SOL</string>
+    <string name="sell_need_more_sol_message">The current minimum amount is %s SOL</string>
+    <string name="you_bank_account_via_moonpay">Your bank account via Moonpay</string>
+    <string name="sell_process_transaction_status">SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via Moonpay help center</string>
 
 
 </resources>

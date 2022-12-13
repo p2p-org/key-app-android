@@ -42,6 +42,8 @@ import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.copyToClipBoard
+import org.p2p.core.utils.formatUsd
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
@@ -192,7 +194,7 @@ class HomeFragment :
                     presenter.onSendClicked()
                 }
                 ActionButton.SELL_BUTTON -> {
-                    // todo: open sell fragment PWN-6260
+                    replaceFragment(SellPayloadFragment.create())
                 }
                 else -> Unit
             }
@@ -220,7 +222,7 @@ class HomeFragment :
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
             HomeAction.SELL -> {
-                // todo: open sell fragment PWN-6260
+                replaceFragment(SellPayloadFragment.create())
             }
             HomeAction.BUY -> {
                 presenter.onBuyClicked()
