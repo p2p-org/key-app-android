@@ -1,10 +1,10 @@
 package org.p2p.wallet.history.ui.token.adapter.holders
 
+import androidx.core.view.isVisible
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemTransactionBinding
+import org.p2p.wallet.databinding.ItemHistoryTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.utils.cutMiddle
@@ -18,7 +18,7 @@ import timber.log.Timber
 class TransactionViewHolder(
     parent: ViewGroup,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
-    private val binding: ItemTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
+    private val binding: ItemHistoryTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
 
     fun onBind(item: HistoryItem.TransactionItem) {
