@@ -1,20 +1,25 @@
 package org.p2p.wallet.newsend.model
 
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
+import org.p2p.core.utils.toUsd
 import org.p2p.wallet.send.model.CurrencyMode
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 
 private const val ROUNDING_VALUE = 6
+private const val FIAT_MAX_FRACTION_LENGTH = 2
 
 class CalculationMode {
 
@@ -22,6 +27,8 @@ class CalculationMode {
     var onLabelsUpdated: ((switchSymbol: String, mainSymbol: String) -> Unit)? = null
 
     private var currencyMode: CurrencyMode = CurrencyMode.Usd
+    var maxSymbolsInputAllowed: Int = FIAT_MAX_FRACTION_LENGTH
+        private set
 
     private lateinit var token: Token.Active
 
@@ -40,8 +47,17 @@ class CalculationMode {
     }
 
     fun updateInputAmount(newInputAmount: String) {
-        this.inputAmount = newInputAmount
+        inputAmount = newInputAmount
         recalculate(inputAmount)
+    }
+
+    fun reduceAmount(newInputAmount: BigInteger): BigDecimal {
+        val newAmount = newInputAmount.fromLamports(token.decimals)
+        return if (currencyMode is CurrencyMode.Usd) {
+            newAmount.toUsd(token).orZero()
+        } else {
+            newAmount
+        }
     }
 
     fun getCurrentAmountLamports(): BigInteger = tokenAmount.toLamports(token.decimals)
@@ -59,8 +75,14 @@ class CalculationMode {
 
     fun switchMode() {
         currencyMode = when (currencyMode) {
-            is CurrencyMode.Token -> CurrencyMode.Usd
-            is CurrencyMode.Usd -> CurrencyMode.Token(token.tokenSymbol)
+            is CurrencyMode.Token -> {
+                maxSymbolsInputAllowed = FIAT_MAX_FRACTION_LENGTH
+                CurrencyMode.Usd
+            }
+            is CurrencyMode.Usd -> {
+                maxSymbolsInputAllowed = AmountFractionTextWatcher.MAX_FRACTION_LENGTH
+                CurrencyMode.Token(token.tokenSymbol)
+            }
         }
         updateLabels()
     }

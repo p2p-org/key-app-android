@@ -1,10 +1,10 @@
 package org.p2p.wallet.newsend
 
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.TextContainer
@@ -104,7 +104,6 @@ class NewSendFragment :
 
     private fun handleSupportFragmentResult(result: Bundle) {
         when {
-            // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
                 val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
@@ -139,8 +138,8 @@ class NewSendFragment :
         FreeTransactionsDetailsBottomSheet.show(childFragmentManager)
     }
 
-    override fun updateInputValue(textValue: String, forced: Boolean) {
-        binding.widgetSendDetails.setInput(textValue, forced)
+    override fun updateInputValue(textValue: String, forced: Boolean, maxSymbolsAllowed: Int) {
+        binding.widgetSendDetails.setInput(textValue, forced, maxSymbolsAllowed)
     }
 
     override fun showToken(token: Token.Active) {

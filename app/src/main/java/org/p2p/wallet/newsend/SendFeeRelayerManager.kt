@@ -34,7 +34,7 @@ class SendFeeRelayerManager(
     }
 
     private lateinit var feeLimitInfo: FreeTransactionFeeLimit
-    private lateinit var minRentExemption: BigInteger
+    private var minRentExemption: BigInteger = BigInteger.ZERO
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
 

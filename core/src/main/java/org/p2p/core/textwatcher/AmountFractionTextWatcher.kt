@@ -14,8 +14,6 @@ import kotlin.properties.Delegates
  * We prohibit entering the value after the dot if it's exceeded the max allowed length
  * For example: 10000.1234456789123123 -> 10 000.123456789
  * */
-private const val MAX_FRACTION_LENGTH = 9
-
 class AmountFractionTextWatcher(
     editText: EditText,
     maxLengthAllowed: Int,
@@ -25,6 +23,8 @@ class AmountFractionTextWatcher(
     private val amountFractionFormatter = AmountFractionFormatter(maxLengthAllowed)
 
     companion object {
+        const val MAX_FRACTION_LENGTH = 9
+
         fun installOn(
             editText: EditText,
             maxSymbolsAllowed: Int = MAX_FRACTION_LENGTH,
@@ -49,6 +49,12 @@ class AmountFractionTextWatcher(
     }
 
     private var cursorPosition: Int = 0
+
+    init {
+        valueText = amountFractionFormatter.formatAmountFraction(editText.text.toString(), 0, 0)
+        editText.setText(valueText)
+        editText.setSelection(valueText.length)
+    }
 
     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit
 

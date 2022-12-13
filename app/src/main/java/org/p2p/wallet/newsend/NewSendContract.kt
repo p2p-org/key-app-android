@@ -1,17 +1,17 @@
 package org.p2p.wallet.newsend
 
+import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.core.common.TextContainer
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.ShowProgress
 
 interface NewSendContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {
-        fun updateInputValue(textValue: String, forced: Boolean)
+        fun updateInputValue(textValue: String, forced: Boolean, maxSymbolsAllowed: Int)
 
         fun showFreeTransactionsInfo()
         fun showTransactionDetails(sendFeeTotal: SendFeeTotal)

@@ -98,13 +98,17 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.textViewMax.isVisible = isVisible
     }
 
-    fun setInput(textValue: String, forced: Boolean) {
+    fun setInput(
+        textValue: String,
+        forced: Boolean,
+        maxSymbolsAllowed: Int
+    ) {
         with(binding.editTextAmount) {
             if (forced) {
                 AmountFractionTextWatcher.uninstallFrom(this)
                 setText(textValue)
-                setSelection(textValue.length)
-                installAmountWatcher()
+                setSelection(text?.length.orZero())
+                installAmountWatcher(maxSymbolsAllowed)
             } else {
                 setText(textValue)
                 setSelection(text?.length.orZero())
@@ -120,8 +124,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.editTextAmount.focusAndShowKeyboard()
     }
 
-    private fun installAmountWatcher() {
-        AmountFractionTextWatcher.installOn(binding.editTextAmount) {
+    private fun installAmountWatcher(maxSymbolsAllowed: Int = AmountFractionTextWatcher.MAX_FRACTION_LENGTH) {
+        AmountFractionTextWatcher.installOn(binding.editTextAmount, maxSymbolsAllowed) {
             amountListener?.invoke(it)
         }
     }

@@ -1,10 +1,13 @@
 package org.p2p.wallet.newsend
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
@@ -40,8 +43,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -79,6 +80,13 @@ class NewSendPresenter(
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
             view.setSwitchLabel(switchSymbol)
             view.setMainAmountLabel(mainSymbol)
+            calculationMode.getTotalAvailable()?.let { total ->
+                view.updateInputValue(
+                    total.toPlainString(),
+                    forced = true,
+                    calculationMode.maxSymbolsInputAllowed
+                )
+            }
         }
 
         feeRelayerManager.onStateUpdated = { newState ->
@@ -87,8 +95,8 @@ class NewSendPresenter(
                     handleUpdateFee(newState, view)
                 }
                 is FeeRelayerState.ReduceAmount -> {
-                    inputAmount = newState.newInputAmount.fromLamports(requireToken().decimals).toPlainString()
-                    view.updateInputValue(inputAmount, forced = true)
+                    inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
+                    view.updateInputValue(inputAmount, forced = true, calculationMode.maxSymbolsInputAllowed)
                 }
                 is FeeRelayerState.Failure -> {
                     view.setFeeLabel(text = null)
@@ -107,7 +115,10 @@ class NewSendPresenter(
                 return@launch
             }
 
-            val initialToken = userTokens.find { it.isUSDC && !it.isZero } ?: userTokens.maxBy { it.totalInLamports }
+            // Get USDC or USDT or token with biggest amount
+            val initialToken = userTokens.find { it.isUSDC && !it.isZero }
+                ?: userTokens.find { it.tokenSymbol == USDT_SYMBOL && !it.isZero }
+                ?: userTokens.maxBy { it.totalInUsd.orZero() }
 
             token = initialToken
             val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
@@ -224,7 +235,7 @@ class NewSendPresenter(
 
     override fun setMaxAmountValue() {
         val totalAvailable = calculationMode.getTotalAvailable() ?: return
-        view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
+        view?.updateInputValue(totalAvailable.toPlainString(), forced = true, calculationMode.maxSymbolsInputAllowed)
         inputAmount = totalAvailable.toString()
 
         showMaxButtonIfNeeded()
