@@ -1,9 +1,9 @@
 package org.p2p.wallet.home.ui.main
 
+import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import java.math.BigDecimal
 
@@ -23,6 +23,8 @@ interface HomeContract {
         fun showBuyInfoScreen(token: Token)
         fun showNewBuyScreen(token: Token)
         fun showOldBuyScreen(token: Token)
+        fun showNewSendScreen()
+        fun showOldSendScreen()
         fun showSendNoTokens(fallbackToken: Token)
         fun navigateToNewSend()
         fun navigateToOldSend()

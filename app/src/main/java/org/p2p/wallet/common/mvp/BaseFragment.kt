@@ -1,6 +1,7 @@
 package org.p2p.wallet.common.mvp
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -14,8 +15,10 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.utils.keyboardIsVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
@@ -66,9 +69,12 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         return AnimationUtils.loadAnimation(requireContext(), animRes)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = super.onCreateView(inflater, container, savedInstanceState)?.apply {
+            setOnClickListener { if (keyboardIsVisible) hideKeyboard() }
+        }
         setSystemBarsColors(statusBarColor, navBarColor)
+        return view
     }
 
     override fun onResume() {

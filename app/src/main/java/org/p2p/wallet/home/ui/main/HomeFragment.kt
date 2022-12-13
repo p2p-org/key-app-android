@@ -1,12 +1,15 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -22,7 +25,6 @@ import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
@@ -39,9 +41,7 @@ import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
@@ -188,7 +188,7 @@ class HomeFragment :
                 ActionButton.RECEIVE_BUTTON -> {
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
-                ActionButtonsView.ActionButton.SEND_BUTTON -> {
+                ActionButton.SEND_BUTTON -> {
                     presenter.onSendClicked()
                 }
                 ActionButton.SELL_BUTTON -> {
@@ -239,6 +239,14 @@ class HomeFragment :
 
     override fun showOldBuyScreen(token: Token) {
         replaceFragment(BuySolanaFragment.create(token))
+    }
+
+    override fun showNewSendScreen() {
+        replaceFragment(NewSearchFragment.create())
+    }
+
+    override fun showOldSendScreen() {
+        replaceFragment(SendFragment.create())
     }
 
     override fun showSendNoTokens(fallbackToken: Token) {

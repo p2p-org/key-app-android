@@ -31,8 +31,10 @@ class CalculationMode {
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
     fun updateToken(newToken: Token.Active) {
-        this.token = newToken
-        this.currencyMode = CurrencyMode.Token(newToken.tokenSymbol)
+        token = newToken
+        if (currencyMode is CurrencyMode.Token) {
+            currencyMode = CurrencyMode.Token(newToken.tokenSymbol)
+        }
 
         updateLabels()
     }

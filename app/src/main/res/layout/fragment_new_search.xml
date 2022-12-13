@@ -17,6 +17,7 @@
         android:paddingEnd="16dp"
         app:contentInsetStartWithNavigation="0dp"
         app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_search_with_scan"
         app:navigationIcon="@drawable/ic_toolbar_back"
         app:navigationIconTint="@color/night"
         app:subtitle="@string/search_subtitle"

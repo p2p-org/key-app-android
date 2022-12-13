@@ -1,5 +1,10 @@
 package org.p2p.wallet.home.ui.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.BTC_SYMBOL
@@ -15,6 +20,7 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
@@ -34,12 +40,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 
@@ -141,6 +141,17 @@ class HomePresenter(
     }
 
     override fun onSendClicked() {
+        view?.apply {
+            if (newSendEnabledFeatureToggle.isFeatureEnabled) {
+                if (state.tokens.isEmpty()) {
+                    view?.showSendNoTokens(fallbackUsdcTokenForBuy ?: return)
+                } else {
+                    showNewSendScreen()
+                }
+            } else {
+                showOldSendScreen()
+            }
+        }
     }
 
     override fun onBuyTokenClicked(token: Token) {

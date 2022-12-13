@@ -7,6 +7,6 @@
     <string name="torusBaseUrl">https://metadata.tor.us</string>
 
     <string name="web3AuthServiceBaseUrl">https://web3-auth.key.app/</string>
-    <string name="registerUsernameServiceBaseUrl">https://name-register.key.app/</string>
+    <string name="registerUsernameServiceBaseUrl">@string/registerUsernameServiceReleaseUrl</string>
 
 </resources>
