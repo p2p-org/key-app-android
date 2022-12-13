@@ -50,7 +50,7 @@ class SellPayloadFragment :
     }
 
     override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
-        binding.editTextToken.setHint(tokenSymbol)
-        binding.editTextToken.setText(minAmount.toString())
+        binding.editTextInputToken.setHint(tokenSymbol)
+        binding.editTextInputToken.setText(minAmount.toString())
     }
 }

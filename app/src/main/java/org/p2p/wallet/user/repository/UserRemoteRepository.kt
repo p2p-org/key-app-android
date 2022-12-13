@@ -70,7 +70,6 @@ class UserRemoteRepository(
             mapAccountsToTokens(publicKey, accounts)
         }
 
-
     private suspend fun mapAccountsToTokens(publicKey: String, accounts: List<Account>): List<Token.Active> {
         val tokens = accounts.mapNotNull {
             val mintAddress = it.account.data.parsed.info.mint

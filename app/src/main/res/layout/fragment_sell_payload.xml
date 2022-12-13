@@ -22,8 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:text="@string/common_cash_out"
-        app:layout_constraintBottom_toTopOf="@id/editTextToken"
-        app:layout_constraintStart_toStartOf="@id/editTextToken" />
+        app:layout_constraintBottom_toTopOf="@id/editTextInputToken"
+        app:layout_constraintStart_toStartOf="@id/editTextInputToken" />
 
     <TextView
         android:id="@+id/textViewSellAmount"

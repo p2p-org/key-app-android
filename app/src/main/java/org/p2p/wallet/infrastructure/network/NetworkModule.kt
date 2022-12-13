@@ -58,7 +58,6 @@ object NetworkModule : InjectionModule {
         single { NetworkEnvironmentManager(get(), get(), get()) }
         singleOf(::TokenKeyProvider)
         singleOf(::SeedPhraseProvider)
-        singleOf(::SolanaTokenProvider)
         single { CertificateManager(get(), get()) }
 
         single {

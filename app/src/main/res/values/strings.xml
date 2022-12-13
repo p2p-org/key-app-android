@@ -391,8 +391,7 @@
     <string name="send_cannot_send_token">Cannot send the selected token</string>
     <string name="send_no_token_message_1">Send crypto in the Bitcoin and Solana network instantly and without fees</string>
     <string name="send_no_token_message_2">Effortlessly send tokens with usernames instead of long addresses</string>
-
-
+    
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
     <string name="swap_network_fee">Network fee</string>
