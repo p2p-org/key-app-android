@@ -1,10 +1,10 @@
 package org.p2p.wallet.newsend
 
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.TextContainer
@@ -12,11 +12,14 @@ import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet.Companion.ARG_RESULT_KEY
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
+import org.p2p.wallet.newsend.noaccount.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
+import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.send.ui.dialogs.FreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.dialogs.SendTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.search.NewSearchFragment
@@ -26,12 +29,15 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 
+private const val KEY_RESULT_APPROXIMATE_FEE_USD = "KEY_RESULT_APPROXIMATE_FEE_USD"
+private const val KEY_RESULT_FEE_PAYER = "KEY_RESULT_FEE_PAYER"
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
@@ -82,20 +88,51 @@ class NewSendFragment :
             KEY_REQUEST_SEND,
             viewLifecycleOwner
         ) { _, result -> handleSupportFragmentResult(result) }
+
+        childFragmentManager.setFragmentResultListener(
+            KEY_REQUEST_SEND,
+            viewLifecycleOwner
+        ) { _, result ->
+            when {
+                result.containsKey(ARG_RESULT_KEY) -> {
+                    val fee = result.getParcelable<SendSolanaFee>(ARG_RESULT_KEY)
+                    fee?.let { presenter.onAccountCreationFeeClicked(fee) }
+                }
+            }
+        }
     }
 
     private fun handleSupportFragmentResult(result: Bundle) {
         when {
             // will be more!
             result.containsKey(KEY_RESULT_TOKEN_TO_SEND) -> {
-                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)
-                token?.let { presenter.updateToken(it) }
+                val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
+                presenter.updateToken(token)
+            }
+            result.containsKey(KEY_RESULT_APPROXIMATE_FEE_USD) -> {
+                val approximateFeeUsd = result.getString(KEY_RESULT_APPROXIMATE_FEE_USD).orEmpty()
+                presenter.onChangeFeePayerClicked(approximateFeeUsd)
+            }
+            result.containsKey(KEY_RESULT_FEE_PAYER) -> {
+                val token = result.getParcelable<Token.Active>(KEY_RESULT_FEE_PAYER)!!
+                presenter.updateFeePayerToken(token)
             }
         }
     }
 
     override fun showTransactionDetails(sendFeeTotal: SendFeeTotal) {
-        SendTransactionsDetailsBottomSheet.show(childFragmentManager, sendFeeTotal)
+        SendTransactionsDetailsBottomSheet.show(childFragmentManager, sendFeeTotal, KEY_REQUEST_SEND, ARG_RESULT_KEY)
+    }
+
+    override fun showAccountCreationFeeInfo(tokenSymbol: String, amountInUsd: String, hasAlternativeToken: Boolean) {
+        val target = SendNoAccountFragment.create(
+            tokenSymbol = tokenSymbol,
+            approximateFeeUsd = amountInUsd,
+            hasAlternativeFeePayerToken = hasAlternativeToken,
+            requestKey = KEY_REQUEST_SEND,
+            resultKey = KEY_RESULT_APPROXIMATE_FEE_USD
+        )
+        replaceFragment(target)
     }
 
     override fun showFreeTransactionsInfo() {
@@ -151,7 +188,27 @@ class NewSendFragment :
         binding.widgetSendDetails.setInputTextColor(colorRes)
     }
 
-    override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
+    override fun showFeePayerTokenSelection(
+        tokens: List<Token.Active>,
+        currentFeePayerToken: Token.Active,
+        approximateFeeUsd: String
+    ) {
+        addFragment(
+            target = NewSelectTokenFragment.create(
+                tokens = tokens,
+                selectedToken = currentFeePayerToken,
+                requestKey = KEY_REQUEST_SEND,
+                resultKey = KEY_RESULT_FEE_PAYER,
+                title = getString(R.string.send_pick_fee_token_format, approximateFeeUsd)
+            ),
+            enter = R.anim.slide_up,
+            exit = 0,
+            popExit = R.anim.slide_down,
+            popEnter = 0
+        )
+    }
+
+    override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(
                 tokens = tokens,

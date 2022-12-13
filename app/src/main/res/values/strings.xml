@@ -389,6 +389,9 @@
     <string name="send_not_enough_funds">Not enough funds</string>
     <string name="send_min_required_amount_warning">You can\'t send less than 0.0009 SOL</string>
     <string name="send_cannot_send_token">Cannot send the selected token</string>
+    <string name="send_no_token_message_1">Send crypto in the Bitcoin and Solana network instantly and without fees</string>
+    <string name="send_no_token_message_2">Effortlessly send tokens with usernames instead of long addresses</string>
+
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -618,6 +621,8 @@
     <string name="recovery_kit_seed_phrase_must_never_share">Your seed phrase must never be shared</string>
     <string name="recovery_kit_logout_title"> Do you want to see your seed phrase?</string>
     <string name="recovery_kit_logout_message">You have to log out and log in again.</string>
+    <string name="send_no_token_title">Sending tokens has\nnever been EASIER</string>
+    <string name="send_buy_crypto">Buy crypto</string>
     <string name="sell_lock_title">Please, send crypto to\nMoonPay address</string>
     <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
     <string name="sell_lock_button_action">Send SOL in Key App</string>

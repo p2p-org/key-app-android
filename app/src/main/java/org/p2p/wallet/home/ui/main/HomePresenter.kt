@@ -39,6 +39,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 
@@ -58,8 +59,9 @@ class HomePresenter(
     private val tokensPolling: UserTokensPolling,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
-    private val metadataInteractor: MetadataInteractor,
     private val sellInteractor: SellInteractor,
+    private val metadataInteractor: MetadataInteractor,
+    private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var fallbackUsdcTokenForBuy: Token? = null
@@ -136,6 +138,9 @@ class HomePresenter(
             val tokensForBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
             view?.showTokensForBuy(tokensForBuy, newBuyFeatureToggle.value)
         }
+    }
+
+    override fun onSendClicked() {
     }
 
     override fun onBuyTokenClicked(token: Token) {
