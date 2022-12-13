@@ -9,6 +9,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSettingsInfoBinding
 import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
 import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
+import org.p2p.wallet.databinding.ItemSettingsSwitchBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -16,6 +17,7 @@ import org.p2p.wallet.utils.withTextOrGone
 
 class DebugSettingsAdapter(
     private val onSettingsRowClickListener: (titleResId: Int) -> Unit = {},
+    private val onSettingsRowSwitchListener: (titleResId: Int, isSelected: Boolean) -> Unit = { title, isSelected -> },
     private val onLogoutClickListener: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -26,6 +28,7 @@ class DebugSettingsAdapter(
         R.layout.item_settings_logout -> LogoutViewHolder(parent, onLogoutClickListener)
         R.layout.item_settings_title -> TitleViewHolder(parent)
         R.layout.item_settings_info -> InfoViewHolder(parent)
+        R.layout.item_settings_switch -> SwitchViewHolder(parent, onSettingsRowSwitchListener)
         else -> error("No view found for type $viewType")
     }
 
@@ -34,6 +37,7 @@ class DebugSettingsAdapter(
             is ViewHolder -> holder.bind(data[position] as SettingsRow.Section)
             is TitleViewHolder -> holder.bind(data[position] as SettingsRow.Title)
             is InfoViewHolder -> holder.bind(data[position] as SettingsRow.Info)
+            is SwitchViewHolder -> holder.bind(data[position] as SettingsRow.Switcher)
             is LogoutViewHolder -> holder.bind()
         }
     }
@@ -48,6 +52,7 @@ class DebugSettingsAdapter(
             is SettingsRow.Title -> R.layout.item_settings_title
             is SettingsRow.Info -> R.layout.item_settings_info
             is SettingsRow.Logout -> R.layout.item_settings_logout
+            is SettingsRow.Switcher -> R.layout.item_settings_switch
         }
 
     override fun getItemCount(): Int = data.count()
@@ -132,6 +137,34 @@ class DebugSettingsAdapter(
         fun bind(item: SettingsRow.Info) {
             title.setText(item.titleResId)
             value.text = item.subtitle
+        }
+    }
+
+    inner class SwitchViewHolder(
+        binding: ItemSettingsSwitchBinding,
+        private val onSettingsRowSwitchListener: (titleResId: Int, isSelected: Boolean) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        private val title = binding.textViewSettingName
+        private val subtitle = binding.textViewSettingSubtitle
+        private val switcher = binding.switchChangeSettings
+        private val icon = binding.imageViewSettingIcon
+
+        constructor(
+            parent: ViewGroup,
+            onSettingsRowSwitchListener: (titleResId: Int, isSelected: Boolean) -> Unit
+        ) : this(
+            parent.inflateViewBinding<ItemSettingsSwitchBinding>(attachToRoot = false), onSettingsRowSwitchListener
+        )
+
+        fun bind(item: SettingsRow.Switcher) {
+            title.setText(item.titleResId)
+            subtitle.text = item.subtitle.takeIf { !it.isNullOrEmpty() }
+            switcher.isChecked = item.isSelected
+            icon.setImageResource(item.iconRes)
+            switcher.setOnCheckedChangeListener { compoundButton, isSelected ->
+                onSettingsRowSwitchListener.invoke(item.titleResId, isSelected)
+            }
         }
     }
 }

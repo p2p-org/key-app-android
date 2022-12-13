@@ -173,7 +173,7 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(MoonpayRetrofitQualifier.SERVER_SIDE_PROXY)) {
-            val url = androidContext().getString(R.string.moonpayServerSideProxyBaseUrl)
+            val url = androidContext().getString(R.string.moonpayServerSideProxyUrl)
             getRetrofit(
                 baseUrl = url,
                 tag = "MoonpayServerSide",

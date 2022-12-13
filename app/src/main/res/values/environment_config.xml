@@ -17,7 +17,8 @@
     <string name="torusNetwork">testnet</string>
     <string name="torusLogLevel">debug</string>
 
-    <string name="moonpayServerSideProxyBaseUrl">https://moonpay-sandbox.key.app/</string>
+    <string name="moonpayServerSideProxyUrl">https://moonpay-sandbox.key.app/</string>
+    <string name="moonpayServerSideProxySandboxUrl">https://moonpay-sandbox.key.app/test</string>
     <string name="moonpayBaseDomain">buy-staging.moonpay.com</string>
     <string name="moonpayClientSideBaseUrl">https://api.moonpay.com/</string>
 
