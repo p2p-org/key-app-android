@@ -53,7 +53,7 @@ class DebugSettingsPresenter(
         loadData()
     }
 
-    override fun updateMoonpayUrl(isSandboxSelected: Boolean) {
+    override fun switchMoonpayUrl(isSandboxSelected: Boolean) {
         networkServicesUrlProvider.toggleMoonpayEnvironment(isSandboxSelected)
         loadData()
     }
@@ -102,7 +102,7 @@ class DebugSettingsPresenter(
                 iconRes = R.drawable.ic_network,
                 isDivider = false,
                 subtitle = networkServicesUrlProvider.loadMoonpayEnvironment().baseServerSideUrl,
-                isSelected = networkServicesUrlProvider.isMoonPaySandboxActive()
+                isSelected = networkServicesUrlProvider.loadMoonpayEnvironment().isSandboxEnabled
             ),
             SettingsRow.Section(
                 titleResId = R.string.debug_settings_logs_title,

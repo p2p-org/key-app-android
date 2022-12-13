@@ -14,6 +14,6 @@ interface DebugSettingsContract {
     interface Presenter : MvpPresenter<View> {
         fun loadData()
         fun onNetworkChanged(newNetworkEnvironment: NetworkEnvironment)
-        fun updateMoonpayUrl(isSandboxSelected: Boolean)
+        fun switchMoonpayUrl(isSandboxSelected: Boolean)
     }
 }

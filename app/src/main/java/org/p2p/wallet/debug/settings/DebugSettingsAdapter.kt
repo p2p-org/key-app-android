@@ -28,7 +28,10 @@ class DebugSettingsAdapter(
         R.layout.item_settings_logout -> LogoutViewHolder(parent, onLogoutClickListener)
         R.layout.item_settings_title -> TitleViewHolder(parent)
         R.layout.item_settings_info -> InfoViewHolder(parent)
-        R.layout.item_settings_switch -> SwitchViewHolder(parent, onSettingsRowSwitchListener)
+        R.layout.item_settings_switch -> SwitchViewHolder(
+            parent,
+            onSettingsRowSwitchListener = onSettingsRowSwitchListener
+        )
         else -> error("No view found for type $viewType")
     }
 
@@ -141,7 +144,8 @@ class DebugSettingsAdapter(
     }
 
     inner class SwitchViewHolder(
-        binding: ItemSettingsSwitchBinding,
+        parent: ViewGroup,
+        private val binding: ItemSettingsSwitchBinding = parent.inflateViewBinding(attachToRoot = false),
         private val onSettingsRowSwitchListener: (titleResId: Int, isSelected: Boolean) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -150,20 +154,13 @@ class DebugSettingsAdapter(
         private val switcher = binding.switchChangeSettings
         private val icon = binding.imageViewSettingIcon
 
-        constructor(
-            parent: ViewGroup,
-            onSettingsRowSwitchListener: (titleResId: Int, isSelected: Boolean) -> Unit
-        ) : this(
-            parent.inflateViewBinding<ItemSettingsSwitchBinding>(attachToRoot = false), onSettingsRowSwitchListener
-        )
-
         fun bind(item: SettingsRow.Switcher) {
             title.setText(item.titleResId)
             subtitle.text = item.subtitle.takeIf { !it.isNullOrEmpty() }
             switcher.isChecked = item.isSelected
             icon.setImageResource(item.iconRes)
-            switcher.setOnCheckedChangeListener { compoundButton, isSelected ->
-                onSettingsRowSwitchListener.invoke(item.titleResId, isSelected)
+            switcher.setOnCheckedChangeListener { compoundButton, isChecked ->
+                onSettingsRowSwitchListener.invoke(item.titleResId, isChecked)
             }
         }
     }

@@ -60,7 +60,9 @@ class DebugSettingsFragment :
     }
 
     override fun showSettings(item: List<SettingsRow>) {
-        adapter.setData(item)
+        requireView().post {
+            adapter.setData(item)
+        }
     }
 
     private fun onSettingsRowClicked(@StringRes titleResId: Int) {
@@ -92,10 +94,10 @@ class DebugSettingsFragment :
         }
     }
 
-    private fun onSettingsSwitchClicked(@StringRes titleResId: Int, isSelected: Boolean) {
+    private fun onSettingsSwitchClicked(@StringRes titleResId: Int, isChecked: Boolean) {
         when (titleResId) {
             R.string.settings_moonpay_sandbox -> {
-                presenter.updateMoonpayUrl(isSandboxSelected = isSelected)
+                presenter.switchMoonpayUrl(isSandboxSelected = isChecked)
             }
         }
     }
