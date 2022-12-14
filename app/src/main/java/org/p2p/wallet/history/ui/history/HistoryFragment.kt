@@ -16,6 +16,7 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
+import org.p2p.wallet.history.ui.token.adapter.HistoryMoonpayAdapter
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -40,6 +41,14 @@ class HistoryFragment :
         )
     }
 
+    private val historyMoonpayAdapter: HistoryMoonpayAdapter by unsafeLazy {
+        HistoryMoonpayAdapter(
+            onTransactionClicked = {
+                // todo: navigation https://p2pvalidator.atlassian.net/browse/PWN-6386
+            }
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
@@ -54,6 +63,8 @@ class HistoryFragment :
 
             historyRecyclerView.addOnScrollListener(scrollListener)
             historyRecyclerView.attachAdapter(adapter)
+
+            recyclerViewMoonpayTransactions.attachAdapter(historyMoonpayAdapter)
 
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()

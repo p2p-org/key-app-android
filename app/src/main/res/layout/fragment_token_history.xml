@@ -120,7 +120,7 @@
                 android:orientation="vertical"
                 android:paddingTop="24dp"
                 android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
-                tools:listitem="@layout/item_transaction" />
+                tools:listitem="@layout/item_history_transaction" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
