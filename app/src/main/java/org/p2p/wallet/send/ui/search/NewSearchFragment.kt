@@ -82,24 +82,18 @@ class NewSearchFragment :
                             return true
                         }
                     },
-                    menuRes = R.menu.menu_search_with_scan,
                     searchHintRes = R.string.search_edittext_hint
                 )
                 setNavigationOnClickListener { popBackStack() }
-                setOnMenuItemClickListener {
-                    if (it.itemId == R.id.itemScan) {
-                        presenter.onScanClicked()
-                        true
-                    } else {
-                        false
-                    }
-                }
             }
 
             buttonContinue.setOnClickListener { presenter.onContinueClicked() }
 
             buttonBuy.setOnClickListener {
                 presenter.onBuyClicked()
+            }
+            buttonScanQr.setOnClickListener {
+                presenter.onScanClicked()
             }
             buttonReceive.setOnClickListener {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))

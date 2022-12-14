@@ -11,18 +11,29 @@
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/toolbar_height"
         android:background="@color/bg_smoke"
-        android:paddingEnd="16dp"
-        app:contentInsetStartWithNavigation="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/buttonScanQr"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/menu_search_with_scan"
         app:navigationIcon="@drawable/ic_toolbar_back"
         app:navigationIconTint="@color/night"
         app:subtitle="@string/search_subtitle"
         app:title="@string/search_title"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
+
+    <ImageView
+        android:id="@+id/buttonScanQr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/qr_scan_hint"
+        android:padding="16dp"
+        android:src="@drawable/ic_search_qr"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/toolbar" />
 
     <ProgressBar
         android:id="@+id/progressBar"
