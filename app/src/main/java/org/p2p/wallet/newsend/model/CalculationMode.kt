@@ -87,16 +87,16 @@ class CalculationMode {
         updateLabels()
     }
 
-     fun updateLabels() {
-         val (switchSymbol, mainSymbol) = when (currencyMode) {
-             is CurrencyMode.Token -> USD_READABLE_SYMBOL to token.tokenSymbol
-             is CurrencyMode.Usd -> token.tokenSymbol to USD_READABLE_SYMBOL
-         }
+    fun updateLabels() {
+        val (switchSymbol, mainSymbol) = when (currencyMode) {
+            is CurrencyMode.Token -> USD_READABLE_SYMBOL to token.tokenSymbol
+            is CurrencyMode.Usd -> token.tokenSymbol to USD_READABLE_SYMBOL
+        }
 
-         onLabelsUpdated?.invoke(switchSymbol, mainSymbol)
+        onLabelsUpdated?.invoke(switchSymbol, mainSymbol)
 
-         recalculate(inputAmount)
-     }
+        recalculate(inputAmount)
+    }
 
     private fun recalculate(inputAmount: String) {
         when (currencyMode) {
