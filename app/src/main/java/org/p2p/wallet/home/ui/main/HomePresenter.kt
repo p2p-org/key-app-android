@@ -143,7 +143,8 @@ class HomePresenter(
     override fun onSendClicked() {
         view?.apply {
             if (newSendEnabledFeatureToggle.isFeatureEnabled) {
-                if (state.tokens.isEmpty()) {
+                val isAccountEmpty = state.tokens.all { it.isZero }
+                if (isAccountEmpty) {
                     view?.showSendNoTokens(fallbackUsdcTokenForBuy ?: return)
                 } else {
                     showNewSendScreen()
