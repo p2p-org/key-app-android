@@ -1,5 +1,13 @@
 package org.p2p.wallet.moonpay.repository.sell
 
+import okio.IOException
+import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellPaymentMethod
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellQuoteResponse
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionResponse
@@ -30,12 +38,72 @@ class MoonpaySellRepositoryMapper {
         }
     }
 
+    fun fromNetwork(
+        response: MoonpaySellQuoteResponse
+    ): MoonpaySellTokenQuote {
+        val tokenDetails = response.tokenDetails.run {
+            MoonpayCurrency.CryptoToken(
+                tokenSymbol = currencySymbol,
+                tokenName = currencyName,
+                currencyId = currencyId,
+                amounts = MoonpayCurrencyAmounts(
+                    minAmount = minAmount,
+                    maxAmount = maxAmount,
+                    minBuyAmount = minBuyAmount,
+                    maxBuyAmount = maxBuyAmount,
+                    minSellAmount = minSellAmount,
+                    maxSellAmount = maxSellAmount
+                )
+            )
+        }
+        val fiatDetails = response.fiatDetails.run {
+            MoonpayCurrency.Fiat(
+                fiatCode = currencySymbol,
+                fiatName = currencyName,
+                currencyId = currencyId,
+                amounts = MoonpayCurrencyAmounts(
+                    minAmount = minAmount,
+                    maxAmount = maxAmount,
+                    minBuyAmount = minBuyAmount,
+                    maxBuyAmount = maxBuyAmount,
+                    minSellAmount = minSellAmount,
+                    maxSellAmount = maxSellAmount
+                )
+            )
+        }
+        return response.run {
+            MoonpaySellTokenQuote(
+                tokenDetails = tokenDetails,
+                tokenAmount = tokenAmount,
+                tokenPrice = tokenPrice,
+                fiatDetails = fiatDetails,
+                paymentMethod = MoonpaySellPaymentMethod.fromStringValue(paymentMethod),
+                extraFeeAmount = extraFeeAmount,
+                feeAmount = feeAmount,
+                fiatEarning = fiatEarning
+            )
+        }
+    }
+
     fun fromNetworkError(error: Throwable): MoonpaySellError {
         // add more errors if needed
-        return if (error is IllegalStateException) {
-            MoonpaySellError.UnknownError(error)
-        } else {
-            MoonpaySellError.UnauthorizedRequest(error)
+        return when (error) {
+            is ServerException -> {
+                val moonpayErrorType = error.jsonErrorBody
+                    ?.getAsJsonPrimitive("type")
+                    ?.asString
+                if (moonpayErrorType == MoonpayErrorResponseType.NOT_FOUND_ERROR.stringValue) {
+                    MoonpaySellError.TokenToSellNotFound(error)
+                } else {
+                    MoonpaySellError.UnknownError(error)
+                }
+            }
+            is IllegalStateException, is IOException -> {
+                MoonpaySellError.UnknownError(error)
+            }
+            else -> {
+                MoonpaySellError.UnauthorizedRequest(error)
+            }
         }
     }
 }

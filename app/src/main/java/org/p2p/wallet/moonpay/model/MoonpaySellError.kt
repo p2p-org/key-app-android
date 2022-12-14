@@ -4,6 +4,12 @@ sealed class MoonpaySellError(
     override val message: String? = null,
     override val cause: Throwable? = null
 ) : Throwable() {
-    class UnauthorizedRequest(cause: Throwable) : MoonpaySellError(message = "Request was unauthorized", cause = cause)
-    class UnknownError(cause: Throwable) : MoonpaySellError(message = "Unexpected error from Moonpay", cause = cause)
+    class UnauthorizedRequest(cause: Throwable) :
+        MoonpaySellError(message = "Request was unauthorized", cause = cause)
+
+    class UnknownError(cause: Throwable) :
+        MoonpaySellError(message = "Unexpected error from Moonpay", cause = cause)
+
+    class TokenToSellNotFound(cause: Throwable) :
+        MoonpaySellError(message = "Cryptocurrency to sell not found", cause = cause)
 }

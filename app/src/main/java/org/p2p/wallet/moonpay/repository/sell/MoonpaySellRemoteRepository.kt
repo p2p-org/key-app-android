@@ -1,10 +1,12 @@
 package org.p2p.wallet.moonpay.repository.sell
 
+import org.p2p.core.token.Token
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
@@ -56,14 +58,37 @@ class MoonpaySellRemoteRepository(
     @Throws(MoonpaySellError::class)
     override suspend fun getUserSellTransactions(
         userAddress: Base58String
-    ): List<MoonpaySellTransaction> = withContext(dispatchers.io) {
-        try {
-            mapper.fromNetwork(
-                response = moonpayServerSideApi.getUserSellTransactions(userAddress.base58Value),
-                transactionOwnerAddress = userAddress
+    ): List<MoonpaySellTransaction> = doMoonpayRequest {
+        mapper.fromNetwork(
+            response = moonpayServerSideApi.getUserSellTransactions(userAddress.base58Value),
+            transactionOwnerAddress = userAddress
+        )
+    }
+
+    @Throws(MoonpaySellError::class)
+    override suspend fun getSellQuoteForToken(
+        tokenToSell: Token.Active,
+        tokenAmount: Double,
+        fiat: MoonpaySellFiatCurrency
+    ): MoonpaySellTokenQuote = doMoonpayRequest {
+        mapper.fromNetwork(
+            moonpayClientSideApi.getSellQuoteForToken(
+                tokenSymbol = tokenToSell.tokenSymbol.lowercase(),
+                apiKey = BuildConfig.moonpayKey,
+                fiatName = fiat.symbol,
+                tokenAmount = tokenAmount
             )
+        )
+    }
+
+    @Throws(MoonpaySellError::class)
+    private suspend inline fun <R> doMoonpayRequest(
+        crossinline request: suspend () -> R
+    ): R = withContext(dispatchers.io) {
+        try {
+            request.invoke()
         } catch (error: Throwable) {
-            Timber.tag(TAG).i(error)
+            Timber.tag(TAG).i(error, "Moonpay request failed")
             throw mapper.fromNetworkError(error)
         }
     }

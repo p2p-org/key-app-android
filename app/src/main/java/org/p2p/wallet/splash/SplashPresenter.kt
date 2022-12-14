@@ -3,7 +3,6 @@ package org.p2p.wallet.splash
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.sell.interactor.SellInteractor
-import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -20,7 +19,6 @@ class SplashPresenter(
             sellInteractor.loadSellAvailability()
             delay(MINIMUM_SPLASH_SHOWING_TIME_MS)
 
-            Timber.i(sellInteractor.loadUserSellTransactions().toString())
             openRootScreen()
         }
     }
