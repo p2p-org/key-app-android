@@ -11,6 +11,9 @@ interface SellPayloadContract {
         fun navigateToSellLock()
         fun showAvailableSolToSell(totalAmount: BigDecimal)
         fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String)
+        fun showErrorScreen()
+        fun showNotEnoughMoney(minAmount: Double)
+        fun updateValues(quoteAmount: Double, fee: Double)
     }
 
     interface Presenter : MvpPresenter<View> {

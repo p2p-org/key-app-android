@@ -22,4 +22,6 @@ interface MoonpaySellRepository {
         tokenAmount: Double,
         fiat: MoonpaySellFiatCurrency
     ): MoonpaySellTokenQuote
+
+    suspend fun getCurrentCountryAbbreviation(): String
 }

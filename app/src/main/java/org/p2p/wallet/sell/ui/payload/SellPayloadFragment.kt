@@ -7,7 +7,9 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
+import org.p2p.wallet.sell.ui.error.SellErrorFragment
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -52,5 +54,27 @@ class SellPayloadFragment :
     override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
         binding.editTextInputToken.setHint(tokenSymbol)
         binding.editTextInputToken.setText(minAmount.toString())
+    }
+
+    override fun showErrorScreen() {
+        popAndReplaceFragment(
+            SellErrorFragment.create(
+                errorState = SellErrorFragment.SellScreenError.SERVER_ERROR
+            )
+        )
+    }
+
+    override fun showNotEnoughMoney(minAmount: Double) {
+        popAndReplaceFragment(
+            SellErrorFragment.create(
+                errorState = SellErrorFragment.SellScreenError.NOT_ENOUGH_AMOUNT,
+                minAmount = minAmount
+            )
+        )
+    }
+
+    override fun updateValues(quoteAmount: Double, fee: Double) = with(binding) {
+        editTextAmount.setText(quoteAmount.toString())
+        textViewFee.text = getString(R.string.sell_included_fee, fee)
     }
 }

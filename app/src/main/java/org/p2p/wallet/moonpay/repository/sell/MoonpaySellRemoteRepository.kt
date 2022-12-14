@@ -81,6 +81,10 @@ class MoonpaySellRemoteRepository(
         )
     }
 
+    override suspend fun getCurrentCountryAbbreviation(): String {
+        return cachedMoonpayIpFlags?.currentCountryAbbreviation.orEmpty()
+    }
+
     @Throws(MoonpaySellError::class)
     private suspend inline fun <R> doMoonpayRequest(
         crossinline request: suspend () -> R
