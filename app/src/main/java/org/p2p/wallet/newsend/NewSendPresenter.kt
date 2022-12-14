@@ -80,13 +80,14 @@ class NewSendPresenter(
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
             view.setSwitchLabel(switchSymbol)
             view.setMainAmountLabel(mainSymbol)
-            calculationMode.getTotalAvailable()?.let { total ->
+            // remove if not needed!
+            /*calculationMode.getTotalAvailable()?.let { total ->
                 view.updateInputValue(
                     total.toPlainString(),
                     forced = true,
                     calculationMode.maxSymbolsInputAllowed
                 )
-            }
+            }*/
         }
 
         feeRelayerManager.onStateUpdated = { newState ->
