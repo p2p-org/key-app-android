@@ -391,7 +391,7 @@
     <string name="send_cannot_send_token">Cannot send the selected token</string>
     <string name="send_no_token_message_1">Send crypto in the Bitcoin and Solana network instantly and without fees</string>
     <string name="send_no_token_message_2">Effortlessly send tokens with usernames instead of long addresses</string>
-    
+
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
     <string name="swap_network_fee">Network fee</string>
@@ -522,6 +522,7 @@
     <string name="settings_torus">Torus Environment</string>
     <string name="settings_notification_service">Notification Service Environment</string>
     <string name="settings_stub_public_key">Public key stubbing 🗡️</string>
+    <string name="settings_moonpay_sandbox">Moonpay sandbox</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
     <string name="settings_security_face_id">FaceID</string>
