@@ -17,20 +17,23 @@ import kotlin.properties.Delegates
 class AmountFractionTextWatcher(
     editText: EditText,
     maxLengthAllowed: Int,
+    maxIntLength: Int,
     private val onValueChanged: (String) -> Unit
 ) : TextWatcher {
 
-    private val amountFractionFormatter = AmountFractionFormatter(maxLengthAllowed)
+    private val amountFractionFormatter = AmountFractionFormatter(maxLengthAllowed, maxIntLength)
 
     companion object {
         const val MAX_FRACTION_LENGTH = 9
+        private const val MAX_INT_LENGTH = 12
 
         fun installOn(
             editText: EditText,
             maxSymbolsAllowed: Int = MAX_FRACTION_LENGTH,
+            maxIntLength: Int = MAX_INT_LENGTH,
             onValueChanged: (String) -> Unit
         ): AmountFractionTextWatcher {
-            val textWatcher = AmountFractionTextWatcher(editText, maxSymbolsAllowed, onValueChanged)
+            val textWatcher = AmountFractionTextWatcher(editText, maxSymbolsAllowed, maxIntLength, onValueChanged)
             editText.addTextChangedListener(textWatcher)
             editText.setTag(R.id.length_watcher_tag_id, textWatcher)
             return textWatcher

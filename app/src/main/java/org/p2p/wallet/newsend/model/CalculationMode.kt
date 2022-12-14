@@ -1,6 +1,5 @@
 package org.p2p.wallet.newsend.model
 
-import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.emptyString
@@ -41,6 +40,7 @@ class CalculationMode {
         token = newToken
         if (currencyMode is CurrencyMode.Token) {
             currencyMode = CurrencyMode.Token(newToken.tokenSymbol)
+            maxSymbolsInputAllowed = token.decimals
         }
 
         updateLabels()
@@ -80,7 +80,7 @@ class CalculationMode {
                 CurrencyMode.Usd
             }
             is CurrencyMode.Usd -> {
-                maxSymbolsInputAllowed = AmountFractionTextWatcher.MAX_FRACTION_LENGTH
+                maxSymbolsInputAllowed = token.decimals
                 CurrencyMode.Token(token.tokenSymbol)
             }
         }

@@ -6,10 +6,10 @@ import org.p2p.core.utils.emptyString
 private const val SYMBOL_ZERO = "0"
 private const val SYMBOL_DOT = "."
 private const val SYMBOL_DOT_CHAR = '.'
-private const val MAX_INT_LENGTH = 12
 
 class AmountFractionFormatter(
-    private val maxLengthAllowed: Int
+    private val maxLengthAllowed: Int,
+    private val maxIntLength: Int
 ) {
     fun formatAmountFraction(value: String, before: Int, start: Int): String {
         val hasMultipleDots = value.count { it == SYMBOL_DOT_CHAR } > 1
@@ -45,7 +45,7 @@ class AmountFractionFormatter(
 
     private fun handleGeneralCase(value: String): String {
         return value.dropSpaces()
-            .take(MAX_INT_LENGTH)
+            .take(maxIntLength)
             .formatDecimal(maxLengthAllowed)
     }
 
@@ -53,7 +53,7 @@ class AmountFractionFormatter(
         val dotPosition = value.indexOf(SYMBOL_DOT)
         val intPart = value.substring(0, dotPosition)
             .dropSpaces()
-            .take(MAX_INT_LENGTH)
+            .take(maxIntLength)
 
         // Remove extra dots and shorten fractional part to maxLengthAllowed symbols
         val fractionalPart = value.substring(dotPosition + 1)
