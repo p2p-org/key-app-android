@@ -120,7 +120,12 @@ class NewSendFragment :
     }
 
     override fun showTransactionDetails(sendFeeTotal: SendFeeTotal) {
-        SendTransactionsDetailsBottomSheet.show(childFragmentManager, sendFeeTotal, KEY_REQUEST_SEND, ARG_RESULT_KEY)
+        SendTransactionsDetailsBottomSheet.show(
+            fm = childFragmentManager,
+            state = sendFeeTotal,
+            requestKey = KEY_REQUEST_SEND,
+            resultKey = ARG_RESULT_KEY
+        )
     }
 
     override fun showAccountCreationFeeInfo(tokenSymbol: String, amountInUsd: String, hasAlternativeToken: Boolean) {

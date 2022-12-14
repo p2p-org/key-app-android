@@ -1,15 +1,15 @@
 package org.p2p.wallet.send.ui.main
 
-import androidx.annotation.StringRes
-import androidx.core.text.bold
-import androidx.core.text.buildSpannedString
-import androidx.core.text.color
-import androidx.core.view.isVisible
 import android.content.Context
 import android.text.SpannedString
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.annotation.StringRes
+import androidx.core.text.bold
+import androidx.core.text.buildSpannedString
+import androidx.core.text.color
+import androidx.core.view.isVisible
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -102,7 +102,7 @@ class SendDetailsView @JvmOverloads constructor(
     }
 
     private fun buildTotalText(total: SendFeeTotal?): SpannedString {
-        val totalAmount = total?.getTotalFee { context.getString(it) }
+        val totalAmount = total?.getTotalFee()
             ?: context.getString(R.string.swap_total_zero_sol)
         val totalText = context.getString(R.string.swap_total)
         return buildSpannedString {

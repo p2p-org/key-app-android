@@ -72,7 +72,11 @@ class NewSendPresenter(
 
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
-        initialize(view)
+        token?.let {
+            view.showToken(it)
+            calculationMode.updateLabels()
+            recountAccordingToSelectedData()
+        } ?: initialize(view)
     }
 
     private fun initialize(view: NewSendContract.View) {
@@ -135,10 +139,15 @@ class NewSendPresenter(
         val sendFee = feeRelayerState.solanaFee
         val total = buildTotalFee(currentAmount, sourceToken, sendFee, feeRelayerState.feeLimitInfo)
 
-        val text = total.getTotalFee { resources.getString(it) }
+        val text = total.getTotalFee() ?: getFreeLabel()
         view.setFeeLabel(text)
 
         updateButton(sourceToken, feeRelayerState)
+    }
+
+    private fun getFreeLabel(): String {
+        return if (inputAmount == emptyString()) resources.getString(R.string.send_fees_free)
+        else "${resources.getString(R.string.send_fees)} 0"
     }
 
     private fun buildTotalFee(
@@ -252,13 +261,17 @@ class NewSendPresenter(
         val currentState = feeRelayerManager.getState()
         if (currentState !is FeeRelayerState.UpdateFee) return
 
-        val solanaFee = currentState.solanaFee
-        if (solanaFee == null) {
+        if (inputAmount == emptyString()) {
             view?.showFreeTransactionsInfo()
         } else {
             val sourceToken = requireToken()
             val currentAmount = calculationMode.getCurrentAmount()
-            val total = buildTotalFee(currentAmount, sourceToken, solanaFee, feeRelayerManager.getFeeLimitInfo())
+            val total = buildTotalFee(
+                currentAmount = currentAmount,
+                sourceToken = sourceToken,
+                sendFee = currentState.solanaFee,
+                feeLimitInfo = feeRelayerManager.getFeeLimitInfo()
+            )
             view?.showTransactionDetails(total)
         }
     }

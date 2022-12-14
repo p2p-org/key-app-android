@@ -5,7 +5,6 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.orZero
-import org.p2p.wallet.R
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import java.math.BigDecimal
 
@@ -21,14 +20,12 @@ class SendFeeTotal constructor(
     val recipientAddress: String
 ) : Parcelable {
 
-    fun getTotalFee(resourceDelegate: (res: Int) -> String): String =
-        when (sendFee) {
-            is SendSolanaFee ->
-                if (sourceSymbol == sendFee.feePayerSymbol) totalSum
-                else "$totalFormatted + ${sendFee.accountCreationFormattedFee}"
-            else ->
-                resourceDelegate(R.string.send_fees_free)
-        }
+    fun getTotalFee(): String? = when (sendFee) {
+        is SendSolanaFee ->
+            if (sourceSymbol == sendFee.feePayerSymbol) totalSum
+            else "$totalFormatted + ${sendFee.accountCreationFormattedFee}"
+        else -> null
+    }
 
     val showAdditionalFee: Boolean
         get() = sendFee != null && sourceSymbol != sendFee.feePayerSymbol
