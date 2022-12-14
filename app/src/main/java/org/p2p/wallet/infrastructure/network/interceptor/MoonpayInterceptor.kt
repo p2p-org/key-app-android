@@ -7,6 +7,7 @@ import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.feerelayer.ErrorTypeConverter
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponse
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
+import org.p2p.wallet.utils.toJsonObject
 import timber.log.Timber
 import java.io.IOException
 
@@ -35,7 +36,8 @@ class MoonpayInterceptor(
         ServerException(
             errorCode = errorCode,
             fullMessage = serverError.message,
-            errorMessage = serverError.message
+            errorMessage = serverError.message,
+            jsonErrorBody = gson.toJsonObject(responseBody)
         )
     } catch (e: Throwable) {
         Timber.i(e, "Error while making a request to moonpay: ${response.request.url}")
