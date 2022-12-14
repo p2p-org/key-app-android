@@ -54,7 +54,11 @@ class AmountFractionTextWatcher(
     private var cursorPosition: Int = 0
 
     init {
-        valueText = amountFractionFormatter.formatAmountFraction(editText.text.toString(), 0, 0)
+        valueText = amountFractionFormatter.formatAmountFraction(
+            value = editText.text.toString(),
+            before = 0,
+            start = 0
+        )
         editText.setText(valueText)
         editText.setSelection(valueText.length)
     }
