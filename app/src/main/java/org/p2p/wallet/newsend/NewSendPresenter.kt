@@ -1,7 +1,5 @@
 package org.p2p.wallet.newsend
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.emptyString
@@ -42,6 +40,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.UUID
 import kotlin.properties.Delegates
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -107,8 +107,8 @@ class NewSendPresenter(
                 return@launch
             }
 
-            val initialToken = userTokens.find { it.isUSDC && !it.isZero }
-                ?: userTokens.minBy { it.totalInLamports }
+            val initialToken = userTokens.find { it.isUSDC && !it.isZero } ?: userTokens.maxBy { it.totalInLamports }
+
             token = initialToken
             val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
             if (solToken == null) {
@@ -176,7 +176,7 @@ class NewSendPresenter(
         launch {
             val tokens = userInteractor.getUserTokens()
             val result = tokens.filter { token -> !token.isZero }
-            view?.navigateToTokenSelection(result, token)
+            view?.showTokenSelection(result, token)
         }
     }
 
@@ -255,6 +255,30 @@ class NewSendPresenter(
             val currentAmount = calculationMode.getCurrentAmount()
             val total = buildTotalFee(currentAmount, sourceToken, solanaFee, feeRelayerManager.getFeeLimitInfo())
             view?.showTransactionDetails(total)
+        }
+    }
+
+    override fun onAccountCreationFeeClicked(fee: SendSolanaFee) {
+        launch {
+            val userTokens = userInteractor.getUserTokens()
+            val hasAlternativeFeePayerTokens = sendInteractor.hasAlternativeFeePayerTokens(userTokens, fee)
+            view?.showAccountCreationFeeInfo(
+                tokenSymbol = fee.feePayerSymbol,
+                amountInUsd = fee.approxAccountCreationFeeUsd.orEmpty(),
+                hasAlternativeToken = hasAlternativeFeePayerTokens
+            )
+        }
+    }
+
+    override fun onChangeFeePayerClicked(approximateFeeUsd: String) {
+        launch {
+            val feePayerToken = sendInteractor.getFeePayerToken()
+            val userTokens = userInteractor.getUserTokens()
+            view?.showFeePayerTokenSelection(
+                tokens = userTokens,
+                currentFeePayerToken = feePayerToken,
+                approximateFeeUsd = approximateFeeUsd
+            )
         }
     }
 

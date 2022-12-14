@@ -11,7 +11,6 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
@@ -35,6 +34,7 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.send.ui.SendNoTokensFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
@@ -42,6 +42,7 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.core.utils.formatUsd
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
@@ -65,8 +66,6 @@ class HomeFragment :
     }
 
     override val presenter: HomeContract.Presenter by inject()
-
-    private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 
     private lateinit var binding: FragmentHomeBinding
 
@@ -190,15 +189,11 @@ class HomeFragment :
                 ActionButton.RECEIVE_BUTTON -> {
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
-                ActionButton.SEND_BUTTON -> {
-                    if (newSendEnabledFeatureToggle.isFeatureEnabled) {
-                        replaceFragment(NewSearchFragment.create())
-                    } else {
-                        replaceFragment(SendFragment.create())
-                    }
+                ActionButtonsView.ActionButton.SEND_BUTTON -> {
+                    presenter.onSendClicked()
                 }
                 ActionButton.SELL_BUTTON -> {
-                    // todo: open sell fragment PWN-6260
+                    replaceFragment(SellPayloadFragment.create())
                 }
                 else -> Unit
             }
@@ -226,7 +221,7 @@ class HomeFragment :
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
             HomeAction.SELL -> {
-                // todo: open sell fragment PWN-6260
+                replaceFragment(SellPayloadFragment.create())
             }
             HomeAction.BUY -> {
                 presenter.onBuyClicked()
@@ -238,17 +233,25 @@ class HomeFragment :
                 replaceFragment(OrcaSwapFragment.create())
             }
             HomeAction.SEND -> {
-                if (newSendEnabledFeatureToggle.isFeatureEnabled) {
-                    replaceFragment(NewSearchFragment.create())
-                } else {
-                    replaceFragment(SendFragment.create())
-                }
+                presenter.onSendClicked()
             }
         }
     }
 
     override fun showOldBuyScreen(token: Token) {
         replaceFragment(BuySolanaFragment.create(token))
+    }
+
+    override fun showSendNoTokens(fallbackToken: Token) {
+        replaceFragment(SendNoTokensFragment.create(fallbackToken))
+    }
+
+    override fun navigateToNewSend() {
+        replaceFragment(NewSearchFragment.create())
+    }
+
+    override fun navigateToOldSend() {
+        replaceFragment(SendFragment.create())
     }
 
     override fun showNewBuyScreen(token: Token) {

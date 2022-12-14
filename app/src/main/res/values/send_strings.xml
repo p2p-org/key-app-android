@@ -32,6 +32,7 @@
     <string name="send_pick_token_other">Other tokens</string>
     <string name="send_pick_token_search_result_text">Here\'s what we found</string>
     <string name="send_pick_token_search_not_found">Token not found. Try another one</string>
+    <string name="send_pick_fee_token_format">Pay the %s fee with</string>
 
     <!--Free Transactions Dialog-->
     <string name="free_transactions_title">Enjoy free transactions!</string>
@@ -62,10 +63,10 @@
 
     <string name="send_cant_calculate_fees_error">Cannot calculate fees. Try again</string>
 
-    <string name="send_no_account_title">This address does not have a %s account</string>
-    <string name="send_no_account_critical_message">You will have to pay a one-time fee (~$0.03) to create a %s account for this address</string>
+    <string name="send_no_account_title">This address doesn\'t have an account for this token</string>
+    <string name="send_no_account_critical_message">You will have to pay a one-time fee %s to create an account for this address</string>
     <string name="send_no_account_critical_button_text">@android:string/ok</string>
-    <string name="send_no_account_non_critical_message">You will have to pay a one-time fee (~$0.03) to create a %s account for this address. You can choose in which currency to pay with below.</string>
+    <string name="send_no_account_non_critical_message">You will have to pay a one-time fee %s to create an account for this address. You can choose in which currency to pay with below.</string>
     <string name="send_no_account_non_critical_continue">Continue with %s</string>
     <string name="send_no_account_non_critical_switch">Switch to another token</string>
 

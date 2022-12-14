@@ -38,7 +38,7 @@ class DebugSettingsFragment :
     override val presenter: DebugSettingsContract.Presenter by inject()
 
     private val binding: FragmentDebugSettingsBinding by viewBinding()
-    private val adapter = DebugSettingsAdapter(::onSettingsRowClicked)
+    private val adapter = DebugSettingsAdapter(::onSettingsRowClicked, ::onSettingsSwitchClicked)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,7 +60,9 @@ class DebugSettingsFragment :
     }
 
     override fun showSettings(item: List<SettingsRow>) {
-        adapter.setData(item)
+        requireView().post {
+            adapter.setData(item)
+        }
     }
 
     private fun onSettingsRowClicked(@StringRes titleResId: Int) {
@@ -88,6 +90,14 @@ class DebugSettingsFragment :
             }
             R.string.settings_stub_public_key -> {
                 replaceFragment(DebugPublicKeyFragment.create())
+            }
+        }
+    }
+
+    private fun onSettingsSwitchClicked(@StringRes titleResId: Int, isChecked: Boolean) {
+        when (titleResId) {
+            R.string.settings_moonpay_sandbox -> {
+                presenter.switchMoonpayUrl(isSandboxSelected = isChecked)
             }
         }
     }
