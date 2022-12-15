@@ -76,6 +76,8 @@ class CheckModulesTest : KoinTest {
             .returns("https://test-solana-fee-relayer.wallet.p2p.org/")
         every { getString(eq("KEY_NOTIFICATION_SERVICE_BASE_URL"), any()) }
             .returns("http://35.234.120.240:9090/")
+        every { getString(eq("KEY_MOONPAY_SERVER_SIDE_BASE_URL"), any()) }
+            .returns("http://example.com")
         every { getString(eq("KEY_DEPOSIT_TICKER_BALANCE"), any()) }
             .returns("0")
     }

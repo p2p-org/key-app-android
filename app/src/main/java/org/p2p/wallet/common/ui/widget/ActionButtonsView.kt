@@ -64,7 +64,7 @@ class ActionButtonsView @JvmOverloads constructor(
                 textViewButtonTitle.setText(R.string.home_sell)
                 imageButtonButtonIcon.setImageResource(R.drawable.ic_action_sell)
                 imageButtonButtonIcon.setOnClickListener {
-                    listener?.onActionButtonClicked(ActionButton.SEND_BUTTON)
+                    listener?.onActionButtonClicked(ActionButton.SELL_BUTTON)
                 }
             }
         }

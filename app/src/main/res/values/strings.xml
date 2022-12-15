@@ -635,8 +635,8 @@
     <string name="send_buy_crypto">Buy crypto</string>
     <string name="sell_lock_title">Please, send crypto to\nMoonPay address</string>
     <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
-    <string name="sell_lock_button_action">Send SOL in Key App</string>
     <string name="sell_lock_button_cancel">Remove from history</string>
+    <string name="sell_lock_usd_amount">≈ $%s</string>
     <string name="sell_payload_title">Cash out token</string>
     <string name="sell_all_sol">all %f SOL</string>
 
