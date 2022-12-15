@@ -25,7 +25,7 @@ class TransactionSwapViewHolder(
         if (item.transaction is HistoryTransaction.Swap) {
             showSwapTransaction(item.transaction)
         } else {
-            Timber.e("Unsupported transaction type for this ViewHolder: $item")
+            Timber.e(IllegalArgumentException("Unsupported transaction type for this ViewHolder: $item"))
         }
         itemView.setOnClickListener { onTransactionClicked(item.transaction) }
     }

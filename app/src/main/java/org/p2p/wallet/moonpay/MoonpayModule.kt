@@ -14,6 +14,8 @@ import org.p2p.wallet.moonpay.repository.buy.MoonpayBuyRemoteRepository
 import org.p2p.wallet.moonpay.repository.buy.MoonpayBuyRepository
 import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRemoteRepository
 import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
+import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRemoteRepository
+import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRemoteRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepositoryMapper
@@ -38,6 +40,8 @@ object MoonpayModule : InjectionModule {
 
         factoryOf(::MoonpaySellRepositoryMapper)
         singleOf(::MoonpaySellRemoteRepository) bind MoonpaySellRepository::class
+
+        singleOf(::MoonpayCurrenciesRemoteRepository) bind MoonpayCurrenciesRepository::class
 
         factoryOf(::MoonpayWidgetUrlBuilder)
     }
