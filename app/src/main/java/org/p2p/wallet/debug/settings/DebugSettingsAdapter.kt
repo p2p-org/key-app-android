@@ -6,10 +6,10 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
+import org.p2p.wallet.databinding.ItemSettingsDebugSwitchBinding
 import org.p2p.wallet.databinding.ItemSettingsInfoBinding
 import org.p2p.wallet.databinding.ItemSettingsLogoutBinding
 import org.p2p.wallet.databinding.ItemSettingsRowItemBinding
-import org.p2p.wallet.databinding.ItemSettingsSwitchBinding
 import org.p2p.wallet.databinding.ItemSettingsTitleBinding
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -28,7 +28,7 @@ class DebugSettingsAdapter(
         R.layout.item_settings_logout -> LogoutViewHolder(parent, onLogoutClickListener)
         R.layout.item_settings_title -> TitleViewHolder(parent)
         R.layout.item_settings_info -> InfoViewHolder(parent)
-        R.layout.item_settings_switch -> SwitchViewHolder(
+        R.layout.item_settings_debug_switch -> SwitchViewHolder(
             parent,
             onSettingsRowSwitchListener = onSettingsRowSwitchListener
         )
@@ -55,7 +55,7 @@ class DebugSettingsAdapter(
             is SettingsRow.Title -> R.layout.item_settings_title
             is SettingsRow.Info -> R.layout.item_settings_info
             is SettingsRow.Logout -> R.layout.item_settings_logout
-            is SettingsRow.Switcher -> R.layout.item_settings_switch
+            is SettingsRow.Switcher -> R.layout.item_settings_debug_switch
         }
 
     override fun getItemCount(): Int = data.count()
@@ -145,7 +145,7 @@ class DebugSettingsAdapter(
 
     inner class SwitchViewHolder(
         parent: ViewGroup,
-        private val binding: ItemSettingsSwitchBinding = parent.inflateViewBinding(attachToRoot = false),
+        private val binding: ItemSettingsDebugSwitchBinding = parent.inflateViewBinding(attachToRoot = false),
         private val onSettingsRowSwitchListener: (titleResId: Int, isSelected: Boolean) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
