@@ -38,11 +38,6 @@ class SellPayloadFragment :
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        presenter.load()
-    }
-
     override fun showLoading(isVisible: Boolean) {
         binding.shimmerView.isVisible = isVisible
     }

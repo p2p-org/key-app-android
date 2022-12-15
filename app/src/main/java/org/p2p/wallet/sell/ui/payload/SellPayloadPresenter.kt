@@ -25,7 +25,7 @@ class SellPayloadPresenter(
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
 
-    sealed interface ViewState {
+    private sealed interface ViewState {
         object Initial : ViewState
 
         data class Content(
@@ -37,28 +37,31 @@ class SellPayloadPresenter(
 
     private var state: ViewState = ViewState.Initial
 
-    override fun load() {
+    override fun attach(view: SellPayloadContract.View) {
+        super.attach(view)
         launch {
             try {
-                view?.showLoading(isVisible = true)
-                val userTransactionInProcess = getUserTransactionInProcess()
-                if (userTransactionInProcess != null) {
-                    // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
-                    view?.navigateToSellLock(
-                        solAmount = userTransactionInProcess.amounts.tokenAmount,
-                        usdAmount = userTransactionInProcess.amounts.usdAmount.toPlainString(),
-                        moonpayAddress = tokenKeyProvider.publicKey.toBase58Instance()
-                    )
-                    return@launch
-                }
-                if (state == ViewState.Initial) {
-                    initView()
-                }
+                view.showLoading(isVisible = true)
+                checkForSellLock()
+                initView()
             } catch (e: Throwable) {
                 Timber.e("Error on init view $e")
             } finally {
-                view?.showLoading(isVisible = false)
+                view.showLoading(isVisible = false)
             }
+        }
+    }
+
+    private suspend fun checkForSellLock() {
+        val userTransactionInProcess = getUserTransactionInProcess()
+        if (userTransactionInProcess != null) {
+            // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
+            val amounts = userTransactionInProcess.amounts
+            view?.navigateToSellLock(
+                solAmount = amounts.tokenAmount,
+                usdAmount = amounts.usdAmount.toPlainString(),
+                moonpayAddress = tokenKeyProvider.publicKey.toBase58Instance()
+            )
         }
     }
 

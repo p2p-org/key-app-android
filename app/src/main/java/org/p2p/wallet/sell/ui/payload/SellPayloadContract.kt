@@ -16,7 +16,6 @@ interface SellPayloadContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun load()
         fun cashOut()
     }
 }
