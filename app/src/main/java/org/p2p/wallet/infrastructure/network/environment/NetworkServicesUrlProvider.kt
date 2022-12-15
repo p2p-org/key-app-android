@@ -98,13 +98,11 @@ class NetworkServicesUrlProvider(
         val clientSideBaseUrl = context.getString(R.string.moonpayClientSideBaseUrl)
         val isSandboxEnabled = serverSideBaseUrl == context.getString(R.string.moonpayServerSideProxySandboxUrl)
 
-        val moonpayApiKey = BuildConfig.moonpayKey
-        val moonpaySandboxKey = "pk_test_7hlWggs2UKnylNLSTX3NcpglsU6zDv75"
         return MoonpayEnvironment(
             baseServerSideUrl = serverSideBaseUrl,
             baseClientSideUrl = clientSideBaseUrl,
             isSandboxEnabled = isSandboxEnabled,
-            moonpayApiKey = if (isSandboxEnabled) moonpaySandboxKey else moonpayApiKey
+            moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpayKey else BuildConfig.moonpaySandboxKey
         )
     }
 
