@@ -12,6 +12,20 @@ data class MoonpaySellTransactionResponse(
     val updatedAt: String,
     @SerializedName("status")
     val status: String,
+    @SerializedName("baseCurrencyAmount")
+    val tokenAmount: Double,
+    @SerializedName("feeAmount")
+    val feeAmount: Double?,
+    @SerializedName("extraFeeAmount")
+    val extraFeeAmount: Double?,
+    @SerializedName("quoteCurrencyAmount")
+    val fiatAmount: Double?,
+    @SerializedName("usdRate")
+    val usdRate: Double,
+    @SerializedName("eurRate")
+    val eurRate: Double,
+    @SerializedName("gbpRate")
+    val gbpRate: Double,
     @SerializedName("accountId")
     val accountId: String,
     @SerializedName("customerId")
@@ -27,5 +41,5 @@ data class MoonpaySellTransactionResponse(
     @SerializedName("country")
     val countryAbbreviation: String,
     @SerializedName("state")
-    val stateAbbreviation: String
+    val stateAbbreviation: String?
 )

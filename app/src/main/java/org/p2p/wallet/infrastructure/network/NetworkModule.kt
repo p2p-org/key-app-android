@@ -164,7 +164,7 @@ object NetworkModule : InjectionModule {
     private fun Module.createMoonpayNetworkModule() {
         singleOf(::MoonpayInterceptor)
         single(named(MoonpayRetrofitQualifier.CLIENT_SIDE_MOONPAY)) {
-            val url = androidContext().getString(R.string.moonpayClientSideBaseUrl)
+            val url = get<NetworkServicesUrlProvider>().loadMoonpayEnvironment().baseClientSideUrl
             getRetrofit(
                 baseUrl = url,
                 tag = "MoonpayClientSide",
@@ -173,7 +173,7 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(MoonpayRetrofitQualifier.SERVER_SIDE_PROXY)) {
-            val url = androidContext().getString(R.string.moonpayServerSideProxyUrl)
+            val url = get<NetworkServicesUrlProvider>().loadMoonpayEnvironment().baseServerSideUrl
             getRetrofit(
                 baseUrl = url,
                 tag = "MoonpayServerSide",

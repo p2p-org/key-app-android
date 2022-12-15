@@ -13,7 +13,16 @@ import org.p2p.wallet.sell.ui.payload.SellPayloadPresenter
 object SellModule : InjectionModule {
     override fun create() = module {
         factoryOf(::SellInteractor)
-        factoryOf(::SellPayloadPresenter) bind SellPayloadContract.Presenter::class
+        factory {
+            SellPayloadPresenter(
+                get(),
+                get(),
+                get(),
+                get(),
+            )
+        } bind SellPayloadContract.Presenter::class
         factoryOf(::SellLockedPresenter) bind SellLockedContract.Presenter::class
+
+//        factoryOf(::MoonpaySellWidgetPresenter) bind MoonpaySellWidgetContract.Presenter::class
     }
 }

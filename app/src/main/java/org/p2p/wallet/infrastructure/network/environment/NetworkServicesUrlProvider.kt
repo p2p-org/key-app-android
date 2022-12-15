@@ -89,16 +89,22 @@ class NetworkServicesUrlProvider(
     }
 
     fun loadMoonpayEnvironment(): MoonpayEnvironment {
-        val serverSideBaseUrl = sharedPreferences.getString(
-            KEY_MOONPAY_SERVER_SIDE_BASE_URL,
+        val defaultUrl = if (BuildConfig.DEBUG) {
+            context.getString(R.string.moonpayServerSideProxySandboxUrl)
+        } else {
             context.getString(R.string.moonpayServerSideProxyUrl)
-        ).orEmpty()
+        }
+        val serverSideBaseUrl = sharedPreferences.getString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, defaultUrl).orEmpty()
         val clientSideBaseUrl = context.getString(R.string.moonpayClientSideBaseUrl)
         val isSandboxEnabled = serverSideBaseUrl == context.getString(R.string.moonpayServerSideProxySandboxUrl)
+
+        val moonpayApiKey = BuildConfig.moonpayKey
+        val moonpaySandboxKey = "pk_test_7hlWggs2UKnylNLSTX3NcpglsU6zDv75"
         return MoonpayEnvironment(
             baseServerSideUrl = serverSideBaseUrl,
             baseClientSideUrl = clientSideBaseUrl,
-            isSandboxEnabled = isSandboxEnabled
+            isSandboxEnabled = isSandboxEnabled,
+            moonpayApiKey = if (isSandboxEnabled) moonpaySandboxKey else moonpayApiKey
         )
     }
 
