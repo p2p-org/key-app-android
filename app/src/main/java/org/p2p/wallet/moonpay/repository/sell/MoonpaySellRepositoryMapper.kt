@@ -47,12 +47,12 @@ class MoonpaySellRepositoryMapper {
                 tokenName = currencyName,
                 currencyId = currencyId,
                 amounts = MoonpayCurrencyAmounts(
-                    minAmount = minAmount,
-                    maxAmount = maxAmount,
-                    minBuyAmount = minBuyAmount,
-                    maxBuyAmount = maxBuyAmount,
-                    minSellAmount = minSellAmount,
-                    maxSellAmount = maxSellAmount
+                    minAmount = minAmount.toBigDecimal(),
+                    maxAmount = maxAmount.toBigDecimal(),
+                    minBuyAmount = minBuyAmount.toBigDecimal(),
+                    maxBuyAmount = maxBuyAmount.toBigDecimal(),
+                    minSellAmount = minSellAmount.toBigDecimal(),
+                    maxSellAmount = maxSellAmount.toBigDecimal()
                 )
             )
         }
@@ -62,12 +62,12 @@ class MoonpaySellRepositoryMapper {
                 fiatName = currencyName,
                 currencyId = currencyId,
                 amounts = MoonpayCurrencyAmounts(
-                    minAmount = minAmount,
-                    maxAmount = maxAmount,
-                    minBuyAmount = minBuyAmount,
-                    maxBuyAmount = maxBuyAmount,
-                    minSellAmount = minSellAmount,
-                    maxSellAmount = maxSellAmount
+                    minAmount = minAmount.toBigDecimal(),
+                    maxAmount = maxAmount.toBigDecimal(),
+                    minBuyAmount = minBuyAmount.toBigDecimal(),
+                    maxBuyAmount = maxBuyAmount.toBigDecimal(),
+                    minSellAmount = minSellAmount.toBigDecimal(),
+                    maxSellAmount = maxSellAmount.toBigDecimal()
                 )
             )
         }

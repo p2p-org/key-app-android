@@ -1,28 +1,44 @@
 package org.p2p.wallet.sell.ui.payload
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
+import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.wallet.R
+import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
 
 class SellPayloadPresenter(
     private val sellInteractor: SellInteractor,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val resourceProvider: ResourcesProvider
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
 
     private var userSolToken: Token.Active? = null
-    private var minSellAmount: Double = 0.0
+    private var minSellAmount: BigDecimal = BigDecimal.ZERO
+    private var maxSellAmount: BigDecimal? = null
+    private var userSelectedAmount: BigDecimal = BigDecimal.ZERO
     private var fiat: MoonpaySellFiatCurrency? = null
+    private var tokenPrice: BigDecimal = BigDecimal.ZERO
+    private var sellQuoteJob: Job? = null
 
     override fun load() {
         launch {
@@ -37,7 +53,7 @@ class SellPayloadPresenter(
                 checkForMinAmount()
                 startLoadSellQuoteJob()
             } catch (e: Throwable) {
-                Timber.e("Error on init view $e")
+                Timber.e("Error on loading data from Moonpay $e")
                 view?.showErrorScreen()
             } finally {
                 view?.showLoading(isVisible = false)
@@ -54,18 +70,21 @@ class SellPayloadPresenter(
 
     private suspend fun loadCurrencies() {
         val solCurrency = sellInteractor.getAllCurrencies().firstOrNull { it.isSol() }
-        minSellAmount = solCurrency?.amounts?.minSellAmount ?: 0.0
+        minSellAmount = solCurrency?.amounts?.minSellAmount.orZero()
+        maxSellAmount = solCurrency?.amounts?.maxSellAmount
+        userSelectedAmount = minSellAmount
         fiat = sellInteractor.getMoonpaySellFiatCurrency()
     }
 
     private fun checkForMinAmount() {
-        if (userSolToken?.total.orZero() < minSellAmount.toBigDecimal()) {
-            // view?.showNotEnoughMoney(minSellAmount)
+        if (userSolToken?.total.orZero() < minSellAmount) {
+            view?.showNotEnoughMoney(minSellAmount)
         }
     }
 
     private fun startLoadSellQuoteJob() {
-        launch {
+        sellQuoteJob?.cancel()
+        sellQuoteJob = launch {
             while (isActive) {
                 try {
                     val selectedFiat = fiat ?: error("Fiat cannot be null")
@@ -73,12 +92,23 @@ class SellPayloadPresenter(
                         solAmount = minSellAmount,
                         fiat = selectedFiat
                     )
-                    val quoteCurrencyAmount = sellQuote.fiatEarning / sellQuote.tokenAmount
                     val fee = sellQuote.feeAmount
-                    view?.updateValues(quoteCurrencyAmount, fee)
+                    tokenPrice = sellQuote.tokenPrice.toBigDecimal()
+                    val fiat = "${tokenPrice}${selectedFiat.currencySymbol}"
+                    view?.updateValues(
+                        quoteAmount = sellQuote.fiatEarning.toBigDecimal().formatToken(),
+                        fee = fee.toBigDecimal().formatToken(),
+                        fiat = fiat,
+                        minSolToSell = userSelectedAmount.toString(),
+                        tokenSymbol = Constants.SOL_SYMBOL,
+                        fiatSymbol = selectedFiat.currencySymbol,
+                        userBalance = userSolToken?.total.orZero().toString()
+                    )
                     delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
+                } catch (e: CancellationException) {
+                    Timber.e(e)
                 } catch (e: Throwable) {
-                    Timber.e("Error on init view $e")
+                    Timber.e("Error on loading data from Moonpay $e")
                     view?.showErrorScreen()
                 }
             }
@@ -86,4 +116,56 @@ class SellPayloadPresenter(
     }
 
     override fun cashOut() {}
+
+    override fun onTokenAmountChanged(newValue: String) {
+        val newDoubleValue = newValue.toBigDecimalOrZero()
+        sellQuoteJob?.cancel()
+        val buttonState = when {
+            newDoubleValue.isLessThan(minSellAmount) -> {
+                ButtonState(
+                    isEnabled = false,
+                    backgroundColor = R.color.bg_rain,
+                    textColor = R.color.text_mountain,
+                    text = resourceProvider.getString(R.string.sell_min_sol_amount, minSellAmount.toString())
+                )
+            }
+            newDoubleValue.isMoreThan(maxSellAmount.orZero()) -> {
+                ButtonState(
+                    isEnabled = false,
+                    backgroundColor = R.color.bg_rain,
+                    textColor = R.color.text_mountain,
+                    text = resourceProvider.getString(R.string.sell_max_sol_amount, maxSellAmount.toString())
+                )
+            }
+            newDoubleValue.isMoreThan(userSolToken?.total.orZero()) -> {
+                ButtonState(
+                    isEnabled = false,
+                    backgroundColor = R.color.bg_rain,
+                    textColor = R.color.text_mountain,
+                    text = resourceProvider.getString(R.string.sell_not_enough_sol)
+                )
+            }
+            else -> {
+                userSelectedAmount = newDoubleValue
+                startLoadSellQuoteJob()
+                ButtonState(
+                    isEnabled = true,
+                    backgroundColor = R.color.bg_night,
+                    textColor = R.color.text_snow,
+                    text = resourceProvider.getString(R.string.common_cash_out)
+                )
+            }
+        }
+        view?.reset().takeIf { !buttonState.isEnabled }
+        view?.setButtonState(buttonState)
+    }
+
+    override fun onCurrencyAmountChanged(newValue: String) {
+        val newCurrencyAmount = newValue.toBigDecimalOrZero()
+        val newTokenAmount = newCurrencyAmount.divide(tokenPrice, 2, RoundingMode.HALF_UP)
+    }
+
+    override fun onUserMaxClicked() {
+        view?.setTokenAmount(userSolToken?.total.orZero().toString())
+    }
 }

@@ -5,6 +5,7 @@ import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.utils.Base58String
+import java.math.BigDecimal
 
 interface MoonpaySellRepository {
     fun isSellAllowedForUser(): Boolean
@@ -19,7 +20,7 @@ interface MoonpaySellRepository {
     @Throws(MoonpaySellError::class)
     suspend fun getSellQuoteForToken(
         tokenToSell: Token.Active,
-        tokenAmount: Double,
+        tokenAmount: BigDecimal,
         fiat: MoonpaySellFiatCurrency
     ): MoonpaySellTokenQuote
 

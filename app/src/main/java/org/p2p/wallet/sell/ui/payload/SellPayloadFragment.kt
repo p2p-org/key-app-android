@@ -2,8 +2,10 @@ package org.p2p.wallet.sell.ui.payload
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.ColorRes
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
@@ -35,6 +37,15 @@ class SellPayloadFragment :
             buttonSend.setOnClickListener {
                 presenter.cashOut()
             }
+            editTextInputToken.setOnTokenAmountChangeListener {
+                presenter.onTokenAmountChanged(it)
+            }
+            editTextAmount.setOnCurrencyAmountChangeListener {
+                presenter.onCurrencyAmountChanged(it)
+            }
+            textViewSellAmount.setOnClickListener {
+                presenter.onUserMaxClicked()
+            }
             presenter.load()
         }
     }
@@ -47,15 +58,6 @@ class SellPayloadFragment :
         replaceFragment(SellLockedFragment.create())
     }
 
-    override fun showAvailableSolToSell(totalAmount: BigDecimal) {
-        binding.textViewSellAmount.text = getString(R.string.sell_all_sol, totalAmount)
-    }
-
-    override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
-        binding.editTextInputToken.setHint(tokenSymbol)
-        binding.editTextInputToken.setText(minAmount.toString())
-    }
-
     override fun showErrorScreen() {
         popAndReplaceFragment(
             SellErrorFragment.create(
@@ -64,7 +66,7 @@ class SellPayloadFragment :
         )
     }
 
-    override fun showNotEnoughMoney(minAmount: Double) {
+    override fun showNotEnoughMoney(minAmount: BigDecimal) {
         popAndReplaceFragment(
             SellErrorFragment.create(
                 errorState = SellErrorFragment.SellScreenError.NOT_ENOUGH_AMOUNT,
@@ -73,8 +75,48 @@ class SellPayloadFragment :
         )
     }
 
-    override fun updateValues(quoteAmount: Double, fee: Double) = with(binding) {
-        editTextAmount.setText(quoteAmount.toString())
+    override fun updateValues(
+        quoteAmount: String,
+        fee: String,
+        fiat: String,
+        minSolToSell: String,
+        tokenSymbol: String,
+        fiatSymbol: String,
+        userBalance: String
+    ) = with(binding) {
+        editTextAmount.setText(quoteAmount)
+        editTextAmount.setHint(fiatSymbol)
         textViewFee.text = getString(R.string.sell_included_fee, fee)
+        textViewRate.text = getString(R.string.sell_sol_fiat_value, fiat)
+        binding.editTextInputToken.setHint(tokenSymbol)
+        binding.editTextInputToken.setText(minSolToSell)
+        binding.textViewSellAmount.text = getString(R.string.sell_all_sol, userBalance)
+    }
+
+    override fun setButtonState(state: ButtonState) {
+        with(binding) {
+            buttonSend.isEnabled = state.isEnabled
+            buttonSend.setBackgroundColor(getColor(state.backgroundColor))
+            buttonSend.setTextColor(getColor(state.textColor))
+            buttonSend.text = state.text
+
+            editTextInputToken.showError(isVisible = !state.isEnabled)
+        }
+    }
+
+    override fun setTokenAmount(newValue: String) {
+        binding.editTextInputToken.setTokenAmount(newValue)
+    }
+
+    override fun reset(): Unit = with(binding) {
+        editTextInputToken.setTokenAmount(BigDecimal.ZERO.toString())
+        editTextAmount.setCurrencyAmount(BigDecimal.ZERO.toString())
     }
 }
+
+data class ButtonState(
+    val isEnabled: Boolean,
+    @ColorRes val backgroundColor: Int,
+    @ColorRes val textColor: Int,
+    val text: String
+)

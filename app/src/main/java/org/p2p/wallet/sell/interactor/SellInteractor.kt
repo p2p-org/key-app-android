@@ -12,6 +12,7 @@ import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
+import java.math.BigDecimal
 
 private const val TAG = "SellInteractor"
 
@@ -48,7 +49,7 @@ class SellInteractor(
         return sellRepository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
     }
 
-    suspend fun getSellQuoteForSol(solAmount: Double, fiat: MoonpaySellFiatCurrency): MoonpaySellTokenQuote {
+    suspend fun getSellQuoteForSol(solAmount: BigDecimal, fiat: MoonpaySellFiatCurrency): MoonpaySellTokenQuote {
         val solToken = homeLocalRepository.getUserTokens().find(Token.Active::isSOL)
         requireNotNull(solToken) { "SOL token is not found for current user, can't sell" }
 

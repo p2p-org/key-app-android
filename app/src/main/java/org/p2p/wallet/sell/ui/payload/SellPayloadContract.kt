@@ -9,15 +9,27 @@ interface SellPayloadContract {
     interface View : MvpView {
         fun showLoading(isVisible: Boolean)
         fun navigateToSellLock()
-        fun showAvailableSolToSell(totalAmount: BigDecimal)
-        fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String)
         fun showErrorScreen()
-        fun showNotEnoughMoney(minAmount: Double)
-        fun updateValues(quoteAmount: Double, fee: Double)
+        fun showNotEnoughMoney(minAmount: BigDecimal)
+        fun updateValues(
+            quoteAmount: String,
+            fee: String,
+            fiat: String,
+            minSolToSell: String,
+            tokenSymbol: String,
+            fiatSymbol: String,
+            userBalance: String
+        )
+        fun setButtonState(state: ButtonState)
+        fun setTokenAmount(newValue: String)
+        fun reset()
     }
 
     interface Presenter : MvpPresenter<View> {
         fun load()
         fun cashOut()
+        fun onTokenAmountChanged(newValue: String)
+        fun onCurrencyAmountChanged(newValue: String)
+        fun onUserMaxClicked()
     }
 }

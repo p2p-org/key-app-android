@@ -13,6 +13,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val ARG_ERROR_STATE = "ARG_ERROR_STATE"
 private const val ARG_MIN_AMOUNT = "ARG_MIN_AMOUNT"
@@ -22,7 +23,7 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
     companion object {
         fun create(
             errorState: SellScreenError,
-            minAmount: Double? = null,
+            minAmount: BigDecimal? = null,
         ): SellErrorFragment =
             SellErrorFragment()
                 .withArgs(

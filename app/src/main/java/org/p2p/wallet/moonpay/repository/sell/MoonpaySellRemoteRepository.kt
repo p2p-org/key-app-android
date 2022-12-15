@@ -13,6 +13,7 @@ import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
 import org.p2p.wallet.utils.Base58String
 import timber.log.Timber
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 
 private const val TAG = "MoonpaySellRemoteRepository"
 
@@ -68,7 +69,7 @@ class MoonpaySellRemoteRepository(
     @Throws(MoonpaySellError::class)
     override suspend fun getSellQuoteForToken(
         tokenToSell: Token.Active,
-        tokenAmount: Double,
+        tokenAmount: BigDecimal,
         fiat: MoonpaySellFiatCurrency
     ): MoonpaySellTokenQuote = doMoonpayRequest {
         mapper.fromNetwork(
