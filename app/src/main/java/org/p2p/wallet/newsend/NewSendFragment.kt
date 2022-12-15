@@ -1,10 +1,10 @@
 package org.p2p.wallet.newsend
 
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.TextContainer
@@ -23,7 +23,7 @@ import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.send.ui.dialogs.FreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.dialogs.SendTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.search.NewSearchFragment
-import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
@@ -223,7 +223,7 @@ class NewSendFragment :
         )
     }
 
-    override fun showProgressDialog(internalTransactionId: String, data: ShowProgress) {
+    override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
         listener?.showTransactionProgress(internalTransactionId, data)
         popBackStackTo(target = NewSearchFragment::class, inclusive = true)
     }

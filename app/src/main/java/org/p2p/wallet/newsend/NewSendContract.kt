@@ -1,13 +1,13 @@
 package org.p2p.wallet.newsend
 
+import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.core.common.TextContainer
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
-import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.NewShowProgress
 
 interface NewSendContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {
@@ -16,7 +16,7 @@ interface NewSendContract {
         fun showFreeTransactionsInfo()
         fun showTransactionDetails(sendFeeTotal: SendFeeTotal)
         fun showAccountCreationFeeInfo(tokenSymbol: String, amountInUsd: String, hasAlternativeToken: Boolean)
-        fun showProgressDialog(internalTransactionId: String, data: ShowProgress)
+        fun showProgressDialog(internalTransactionId: String, data: NewShowProgress)
 
         fun setBottomButtonText(text: TextContainer?)
         fun setSliderText(text: String?)

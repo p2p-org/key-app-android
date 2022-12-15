@@ -1,5 +1,7 @@
 package org.p2p.wallet.newsend
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.emptyString
@@ -27,7 +29,7 @@ import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
-import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -38,10 +40,9 @@ import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -286,6 +287,7 @@ class NewSendPresenter(
         val token = token ?: error("Token cannot be null!")
         val address = recipientAddress.addressState.address
         val currentAmount = calculationMode.getCurrentAmount()
+        val currentAmountUsd = calculationMode.getCurrentAmount()
         val lamports = calculationMode.getCurrentAmountLamports()
 
         // the internal id for controlling the transaction state
@@ -293,11 +295,12 @@ class NewSendPresenter(
 
         appScope.launch {
             try {
-                val destinationAddressShort = address.cutMiddle()
-                val data = ShowProgress(
-                    title = R.string.send_transaction_being_processed,
-                    subTitle = "${currentAmount.toPlainString()} ${token.tokenSymbol} → $destinationAddressShort",
-                    transactionId = emptyString()
+                val data = NewShowProgress(
+                    date = Date(),
+                    tokenUrl = token.iconUrl.orEmpty(),
+                    amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
+                    amountUsd = "-$$currentAmountUsd",
+                    recipient = recipientAddress.nickNameOrAddress(),
                 )
 
                 view?.showProgressDialog(internalTransactionId, data)
@@ -310,6 +313,11 @@ class NewSendPresenter(
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
             }
         }
+    }
+
+    private fun SearchResult.nickNameOrAddress(): String {
+        return if (this is SearchResult.UsernameFound) username
+        else addressState.address.cutMiddle()
     }
 
     /**

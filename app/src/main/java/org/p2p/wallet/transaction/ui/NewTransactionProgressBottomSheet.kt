@@ -8,13 +8,13 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ui.NonDraggableBottomSheetDialogFragment
-import org.p2p.wallet.databinding.DialogTransactionProgressBinding
+import org.p2p.wallet.databinding.DialogNewTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.showUrlInCustomTabs
@@ -29,14 +29,13 @@ import org.p2p.wallet.utils.withArgs
 private const val EXTRA_DATA = "EXTRA_DATA"
 private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
 
-// TODO: change to NON-settling bottomSheet
-class NewTransactionProgressBottomSheet : NonDraggableBottomSheetDialogFragment() {
+class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         fun show(
             fragmentManager: FragmentManager,
             transactionId: String,
-            data: ShowProgress
+            data: NewShowProgress
         ) {
             NewTransactionProgressBottomSheet()
                 .withArgs(
@@ -54,24 +53,23 @@ class NewTransactionProgressBottomSheet : NonDraggableBottomSheetDialogFragment(
 
     private val transactionManager: TransactionManager by inject()
 
-    private val binding: DialogTransactionProgressBinding by viewBinding()
+    private val binding: DialogNewTransactionProgressBinding by viewBinding()
 
-    private val data: ShowProgress by args(EXTRA_DATA)
+    private val data: NewShowProgress by args(EXTRA_DATA)
     private val transactionId: String by args(EXTRA_TRANSACTION_ID)
+
+    private lateinit var progressStateFormat: String
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        inflater.inflate(R.layout.dialog_transaction_progress, container, false)
+        inflater.inflate(R.layout.dialog_new_transaction_progress, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        progressStateFormat = getString(R.string.transaction_progress_title)
         with(binding) {
-            subTitleTextView.text = data.subTitle
-            arrowImageView.setOnClickListener {
-                dismissAllowingStateLoss()
-            }
-            doneButton.setOnClickListener {
+            buttonDone.setOnClickListener {
                 dismissAllowingStateLoss()
             }
         }
@@ -107,9 +105,11 @@ class NewTransactionProgressBottomSheet : NonDraggableBottomSheetDialogFragment(
 
     private fun setSuccessState(message: String, signature: String) {
         with(binding) {
-
+            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_succeeded))
             titleTextView.text = message
             progressBar.isVisible = false
+            progressStateTransaction.setSuccessState()
+            progressStateTransaction.setDescriptionText(R.string.transaction_description_succeeded)
 
             transactionIdGroup.isVisible = true
             transactionIdTextView.text = signature
@@ -121,30 +121,37 @@ class NewTransactionProgressBottomSheet : NonDraggableBottomSheetDialogFragment(
             transactionImageView.setImageResource(R.drawable.ic_success)
             lineView.isVisible = true
             lineView.setBackgroundColor(getColor(R.color.systemSuccessMain))
+            buttonDone.setText(R.string.common_done)
         }
     }
 
     private fun handleProgress(state: TransactionState.Progress) {
         with(binding) {
-            titleTextView.setText(state.message)
+            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_submitted))
             progressBar.isVisible = true
 
             transactionIdGroup.isVisible = true
             transactionIdTextView.text = getString(R.string.common_commas)
+            progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
 
             transactionImageView.setImageResource(R.drawable.ic_pending)
             lineView.isVisible = false
+            buttonDone.setText(R.string.common_done)
         }
     }
 
     private fun handleError(state: TransactionState.Error) {
         with(binding) {
+            textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
             titleTextView.text = state.message
             progressBar.isVisible = false
+            progressStateTransaction.setFailedState()
+            progressStateTransaction.setDescriptionText(R.string.transaction_description_failed)
 
             transactionImageView.setImageResource(R.drawable.ic_error_transaction)
             lineView.isVisible = true
             lineView.setBackgroundColor(getColor(R.color.systemErrorMain))
+            buttonDone.setText(R.string.common_close)
         }
     }
 }
