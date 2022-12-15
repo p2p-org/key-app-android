@@ -20,6 +20,7 @@ import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
+import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
