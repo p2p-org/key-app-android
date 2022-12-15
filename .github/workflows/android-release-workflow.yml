@@ -25,6 +25,7 @@ jobs:
           torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
@@ -55,6 +56,7 @@ jobs:
           torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
@@ -90,6 +92,7 @@ jobs:
           torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
@@ -143,6 +146,7 @@ jobs:
           torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
@@ -221,6 +225,7 @@ jobs:
           torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
