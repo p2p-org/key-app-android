@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
@@ -39,11 +40,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
+val TOKENS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
-private val TOKENS_VALID_FOR_BUY = setOf(SOL_SYMBOL, USDC_SYMBOL)
 private val LOAD_TOKENS_DELAY_MS = 1.toDuration(DurationUnit.SECONDS).inWholeMilliseconds
 
 class HomePresenter(
@@ -64,14 +64,12 @@ class HomePresenter(
     private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
-    private var fallbackUsdcTokenForBuy: Token? = null
     private var username: Username? = null
 
     init {
         // TODO maybe we can find better place to start this service
         launch {
             awaitAll(
-                async { fallbackUsdcTokenForBuy = userInteractor.getTokensForBuy(listOf(USDC_SYMBOL)).firstOrNull() },
                 async { networkObserver.start() },
                 async { metadataInteractor.tryLoadAndSaveMetadata() }
             )
@@ -135,12 +133,34 @@ class HomePresenter(
 
     override fun onBuyClicked() {
         launch {
-            val tokensForBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
-            view?.showTokensForBuy(tokensForBuy, newBuyFeatureToggle.value)
+            val tokensForBuy = userInteractor.getTokensForBuy()
+            if (tokensForBuy.isEmpty()) return@launch
+
+            if (newSendEnabledFeatureToggle.isFeatureEnabled) {
+                // this cannot be empty
+                view?.showNewBuyScreen(tokensForBuy.first())
+            } else {
+                view?.showTokensForBuy(tokensForBuy)
+            }
         }
     }
 
     override fun onSendClicked() {
+        if (!newSendEnabledFeatureToggle.isFeatureEnabled) {
+            view?.showOldSendScreen()
+            return
+        }
+
+        launch {
+            val isEmptyAccount = state.tokens.all { it.isZero }
+            if (isEmptyAccount) {
+                // this cannot be empty
+                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
+                view?.showSendNoTokens(validTokenToBuy)
+            } else {
+                view?.showNewSendScreen()
+            }
+        }
     }
 
     override fun onBuyTokenClicked(token: Token) {
@@ -156,21 +176,18 @@ class HomePresenter(
     }
 
     private fun onBuyToken(token: Token) {
-        val tokenToBuy: Token? = if (token.tokenSymbol !in TOKENS_VALID_FOR_BUY) {
-            fallbackUsdcTokenForBuy
-        } else {
-            token
-        }
-        if (tokenToBuy == null) {
-            Timber.i("Token to buy: token=$token")
-            Timber.e(IllegalArgumentException("No fallback USDC token to buy found"))
-            return
-        }
+        launch {
+            val tokenToBuy = if (token.isSOL || token.isUSDC) {
+                token
+            } else {
+                userInteractor.getSingleTokenForBuy() ?: return@launch
+            }
 
-        if (newBuyFeatureToggle.value) {
-            view?.showNewBuyScreen(tokenToBuy)
-        } else {
-            view?.showOldBuyScreen(tokenToBuy)
+            if (newBuyFeatureToggle.value) {
+                view?.showNewBuyScreen(tokenToBuy)
+            } else {
+                view?.showOldBuyScreen(tokenToBuy)
+            }
         }
     }
 
@@ -199,9 +216,8 @@ class HomePresenter(
         launch {
             view?.showEmptyState(isEmpty = true)
 
-            val tokensForBuy =
-                userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
-                    .sortedBy { tokenToBuy -> POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol) }
+            val tokensForBuy = userInteractor.findMultipleTokenData(POPULAR_TOKENS.toList())
+                .sortedBy { tokenToBuy -> POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol) }
             val homeBannerItem = HomeBannerItem(
                 id = R.id.home_banner_top_up,
                 titleTextId = R.string.main_banner_title,

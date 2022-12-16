@@ -8,11 +8,13 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import org.p2p.core.utils.emptyString
 import org.p2p.uikit.R
 
 object SpanUtils {
 
     fun highlightText(commonText: String, highlightedText: String, @ColorInt color: Int): SpannableString {
+        if (commonText.isEmpty()) return SpannableString(emptyString())
         val span = SpannableString(commonText)
         val startIndex = commonText.indexOf(highlightedText).coerceAtLeast(0)
         val endIndex = (startIndex + highlightedText.length).coerceAtMost(commonText.length)

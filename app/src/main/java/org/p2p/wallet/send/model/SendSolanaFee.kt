@@ -8,6 +8,7 @@ import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.isZeroOrLess
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
@@ -42,6 +43,14 @@ data class SendSolanaFee constructor(
         get() = "${accountCreationFeeDecimals.formatToken()} ${feePayerToken.tokenSymbol}"
 
     @IgnoredOnParcel
+    val totalFee: String
+        get() = if (isTransactionFree) accountCreationFormattedFee else summedFeeDecimalsFormatted
+
+    @IgnoredOnParcel
+    val totalFeeUsdFormatted: String?
+        get() = if (isTransactionFree) accountCreationFeeUsd else summedFeeDecimalsUsd
+
+    @IgnoredOnParcel
     val feeUsd: BigDecimal?
         get() = accountCreationFeeDecimals.toUsd(feePayerToken)
 
@@ -58,8 +67,16 @@ data class SendSolanaFee constructor(
         get() = transactionDecimals.toUsd(feePayerToken)?.let { "(~$$it)" }
 
     @IgnoredOnParcel
-    val accountCreationFullFee: String
+    val accountCreationFeeUsd: String
         get() = "$accountCreationFeeDecimals $feePayerSymbol ${approxAccountCreationFeeUsd.orEmpty()}"
+
+    @IgnoredOnParcel
+    val summedFeeDecimalsFormatted: String
+        get() = "${(summedFeeDecimals).formatToken()} $feePayerSymbol"
+
+    @IgnoredOnParcel
+    val summedFeeDecimalsUsd: String?
+        get() = summedFeeDecimals.toUsd(feePayerToken)?.let { ("(~$$it)") }
 
     @IgnoredOnParcel
     val approxAccountCreationFeeUsd: String?
@@ -80,6 +97,9 @@ data class SendSolanaFee constructor(
         (if (feePayerToken.isSOL) feeRelayerFee.transactionFeeInSol else feeRelayerFee.transactionFeeInSpl)
             .fromLamports(feePayerToken.decimals)
             .scaleMedium()
+
+    @IgnoredOnParcel
+    private val summedFeeDecimals: BigDecimal = accountCreationFeeDecimals + transactionDecimals.orZero()
 
     fun isEnoughToCoverExpenses(
         sourceTokenTotal: BigInteger,
