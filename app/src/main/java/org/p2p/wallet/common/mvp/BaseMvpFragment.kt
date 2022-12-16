@@ -48,10 +48,6 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
         showErrorDialog(messageRes = messageResId)
     }
 
-    override fun showErrorMessage(message: String) {
-        showUiKitSnackBar(message)
-    }
-
     override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(getString(messageResId))

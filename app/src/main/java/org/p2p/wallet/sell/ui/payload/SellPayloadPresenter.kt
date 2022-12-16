@@ -57,7 +57,7 @@ class SellPayloadPresenter(
                 checkForMinAmount()
                 startLoadSellQuoteJob()
             } catch (e: Throwable) {
-                Timber.e("Error on loading data from Moonpay $e")
+                Timber.e(e, "Error on loading data from Moonpay")
                 view.showErrorScreen()
             } finally {
                 view.showLoading(isVisible = false)
@@ -66,7 +66,7 @@ class SellPayloadPresenter(
     }
 
     private suspend fun checkForSellLock() {
-        val userTransactionInProcess = isUserHasTransactionInProcess()
+        val userTransactionInProcess = getUserTransactionInProcess()
         if (userTransactionInProcess != null) {
             // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
             val amounts = userTransactionInProcess.amounts
@@ -78,7 +78,7 @@ class SellPayloadPresenter(
         }
     }
 
-    private suspend fun isUserHasTransactionInProcess(): MoonpaySellTransaction? {
+    private suspend fun getUserTransactionInProcess(): MoonpaySellTransaction? {
         val userTransactions = sellInteractor.loadUserSellTransactions()
         return userTransactions.find { it.status == MoonpaySellTransaction.TransactionStatus.WAITING_FOR_DEPOSIT }
     }
@@ -108,22 +108,22 @@ class SellPayloadPresenter(
                     tokenPrice = sellQuote.tokenPrice
 
                     val moonpayFee = sellQuote.feeAmount
-                    val fiat = "${tokenPrice}${selectedFiat.currencySymbol}"
+                    val fiat = "${tokenPrice}${selectedFiat.uiSymbol}"
 
-                    val viewState = ViewState(
+                    val viewState = SellPayloadContract.ViewState(
                         quoteAmount = sellQuote.fiatEarning.formatToken(),
                         fee = moonpayFee.scaleShortOrFirstNotZero().toString(),
                         fiat = fiat,
                         solToSell = userSelectedAmount.toString(),
                         tokenSymbol = Constants.SOL_SYMBOL,
-                        fiatSymbol = selectedFiat.currencySymbol,
+                        fiatSymbol = selectedFiat.uiSymbol,
                         userBalance = userBalance.toString()
                     )
 
                     view?.updateViewState(viewState)
                     delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                 } catch (e: CancellationException) {
-                    Timber.e(e)
+                    Timber.i(e)
                 } catch (e: Throwable) {
                     Timber.e("Error on loading data from Moonpay $e")
                     view?.showErrorScreen()
@@ -177,10 +177,10 @@ class SellPayloadPresenter(
         view?.setTokenAmount(userBalance.toString())
     }
 
-    private fun determineButtonState(selectedTokenAmount: BigDecimal): CashOutButtonState {
+    private fun determineButtonState(selectedTokenAmount: BigDecimal): SellPayloadContract.CashOutButtonState {
         return when {
             selectedTokenAmount.isLessThan(minSellAmount) -> {
-                CashOutButtonState(
+                SellPayloadContract.CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
@@ -188,7 +188,7 @@ class SellPayloadPresenter(
                 )
             }
             selectedTokenAmount.isMoreThan(maxSellAmount.orZero()) -> {
-                CashOutButtonState(
+                SellPayloadContract.CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
@@ -196,7 +196,7 @@ class SellPayloadPresenter(
                 )
             }
             selectedTokenAmount.isMoreThan(userBalance) -> {
-                CashOutButtonState(
+                SellPayloadContract.CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
@@ -205,7 +205,7 @@ class SellPayloadPresenter(
             }
             else -> {
                 userSelectedAmount = selectedTokenAmount
-                CashOutButtonState(
+                SellPayloadContract.CashOutButtonState(
                     isEnabled = true,
                     backgroundColor = R.color.bg_night,
                     textColor = R.color.text_snow,

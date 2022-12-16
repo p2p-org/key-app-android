@@ -7,7 +7,6 @@ import com.google.android.material.snackbar.Snackbar
 interface MvpView {
     fun showErrorMessage(e: Throwable? = null)
     fun showErrorMessage(@StringRes messageResId: Int)
-    fun showErrorMessage(message: String)
 
     @Deprecated(
         message = "Old design snackbar, use the UiKit snackbar",

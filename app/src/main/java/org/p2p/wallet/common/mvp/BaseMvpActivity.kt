@@ -37,9 +37,6 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
         showErrorDialog(e)
     }
 
-    override fun showErrorMessage(message: String) {
-    }
-
     override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(getString(messageResId))

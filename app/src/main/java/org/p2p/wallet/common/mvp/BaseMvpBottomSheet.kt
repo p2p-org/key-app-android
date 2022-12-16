@@ -51,10 +51,6 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         showErrorDialog(messageRes = messageResId)
     }
 
-    override fun showErrorMessage(message: String) {
-        showErrorDialog(message)
-    }
-
     override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(getString(messageResId))

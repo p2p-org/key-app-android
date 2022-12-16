@@ -66,7 +66,8 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
         val messageResId: Int,
         @DrawableRes
         val iconResId: Int,
-        val buttonTextResId: Int
+        val buttonTextResId: Int,
+        val minAmount: BigDecimal? = null
     ) {
         SERVER_ERROR(
             titleResId = R.string.common_sorry,

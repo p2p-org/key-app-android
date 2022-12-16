@@ -3,7 +3,6 @@ package org.p2p.wallet.sell.ui.payload
 import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.ColorRes
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -89,14 +88,14 @@ class SellPayloadFragment :
         )
     }
 
-    override fun updateViewState(newState: ViewState) = with(binding) {
+    override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {
         editTextFiatAmount.setCurrencyAmount(newState.quoteAmount)
         editTextFiatAmount.setHint(newState.fiatSymbol)
         textViewFee.text = getString(R.string.sell_included_fee, newState.fee)
         textViewRate.text = getString(R.string.sell_sol_fiat_value, newState.fiat)
-        binding.editTextTokenAmount.setHint(newState.tokenSymbol)
-        binding.editTextTokenAmount.setTokenAmount(newState.solToSell)
-        binding.textViewAvailableAmount.text = getString(R.string.sell_all_sol, newState.userBalance)
+        editTextTokenAmount.setHint(newState.tokenSymbol)
+        editTextTokenAmount.setTokenAmount(newState.solToSell)
+        textViewAvailableAmount.text = getString(R.string.sell_all_sol, newState.userBalance)
     }
 
     override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
@@ -109,7 +108,7 @@ class SellPayloadFragment :
         requireContext().showUrlInCustomTabs(url)
     }
 
-    override fun setButtonState(state: CashOutButtonState) {
+    override fun setButtonState(state: SellPayloadContract.CashOutButtonState) {
         with(binding) {
             buttonSend.isEnabled = state.isEnabled
             buttonSend.setBackgroundColor(getColor(state.backgroundColor))
@@ -134,20 +133,3 @@ class SellPayloadFragment :
         binding.textViewFee.text = getString(R.string.sell_included_fee, newValue)
     }
 }
-
-data class CashOutButtonState(
-    val isEnabled: Boolean,
-    @ColorRes val backgroundColor: Int,
-    @ColorRes val textColor: Int,
-    val text: String
-)
-
-data class ViewState(
-    val quoteAmount: String,
-    val fee: String,
-    val fiat: String,
-    val solToSell: String,
-    val tokenSymbol: String,
-    val fiatSymbol: String,
-    val userBalance: String
-)
