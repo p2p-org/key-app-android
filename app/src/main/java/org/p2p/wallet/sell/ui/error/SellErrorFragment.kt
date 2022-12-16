@@ -34,7 +34,7 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
 
     private val binding: FragmentSellErrorBinding by viewBinding()
     private val sellErrorState: SellScreenError by args(ARG_ERROR_STATE)
-    private val minAmount: Double? by args(ARG_MIN_AMOUNT)
+    private val minAmount: BigDecimal? by args(ARG_MIN_AMOUNT)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

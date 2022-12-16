@@ -1,12 +1,14 @@
 package org.p2p.wallet.moonpay.clientsideapi.response
 
+import java.math.BigDecimal
+
 class MoonpaySellTokenQuote(
     val tokenDetails: MoonpayCurrency.CryptoToken,
-    val tokenAmount: Double,
-    val tokenPrice: Double,
+    val tokenAmount: BigDecimal,
+    val tokenPrice: BigDecimal,
     val fiatDetails: MoonpayCurrency.Fiat,
     val paymentMethod: MoonpaySellPaymentMethod,
     val extraFeeAmount: Int,
-    val feeAmount: Double,
-    val fiatEarning: Double,
+    val feeAmount: BigDecimal,
+    val fiatEarning: BigDecimal,
 )

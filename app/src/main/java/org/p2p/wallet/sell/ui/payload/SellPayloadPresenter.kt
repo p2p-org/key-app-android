@@ -5,12 +5,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
+import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
@@ -27,6 +27,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
+private const val ZERO_STRING_VALUE = "0"
 
 class SellPayloadPresenter(
     private val sellInteractor: SellInteractor,
@@ -37,7 +38,7 @@ class SellPayloadPresenter(
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
 
-    private var userSolToken: Token.Active? = null
+    private var userBalance: BigDecimal = BigDecimal.ZERO
     private var minSellAmount: BigDecimal = BigDecimal.ZERO
     private var maxSellAmount: BigDecimal? = null
     private var userSelectedAmount: BigDecimal = BigDecimal.ZERO
@@ -49,9 +50,9 @@ class SellPayloadPresenter(
         super.attach(view)
         launch {
             try {
-                view?.showLoading(isVisible = true)
+                view.showLoading(isVisible = true)
                 checkForSellLock()
-                userSolToken = userInteractor.getUserSolToken()
+                userBalance = userInteractor.getUserSolToken()?.total.orZero()
                 loadCurrencies()
                 checkForMinAmount()
                 startLoadSellQuoteJob()
@@ -91,7 +92,7 @@ class SellPayloadPresenter(
     }
 
     private fun checkForMinAmount() {
-        if (userSolToken?.total.orZero() < minSellAmount) {
+        if (userBalance < minSellAmount) {
             view?.showNotEnoughMoney(minSellAmount)
         }
     }
@@ -102,22 +103,23 @@ class SellPayloadPresenter(
             while (isActive) {
                 try {
                     val selectedFiat = fiat ?: error("Fiat cannot be null")
-                    val sellQuote = sellInteractor.getSellQuoteForSol(
-                        solAmount = minSellAmount,
-                        fiat = selectedFiat
-                    )
-                    val fee = sellQuote.feeAmount
-                    tokenPrice = sellQuote.tokenPrice.toBigDecimal()
+                    val sellQuote = sellInteractor.getSellQuoteForSol(userSelectedAmount, selectedFiat)
+
+                    tokenPrice = sellQuote.tokenPrice
+
+                    val moonpayFee = sellQuote.feeAmount
                     val fiat = "${tokenPrice}${selectedFiat.currencySymbol}"
+
                     val viewState = ViewState(
-                        quoteAmount = sellQuote.fiatEarning.toBigDecimal().formatToken(),
-                        fee = fee.toBigDecimal().formatToken(),
+                        quoteAmount = sellQuote.fiatEarning.formatToken(),
+                        fee = moonpayFee.scaleShortOrFirstNotZero().toString(),
                         fiat = fiat,
-                        minSolToSell = userSelectedAmount.toString(),
+                        solToSell = userSelectedAmount.toString(),
                         tokenSymbol = Constants.SOL_SYMBOL,
                         fiatSymbol = selectedFiat.currencySymbol,
-                        userBalance = userSolToken?.total.orZero().toString()
+                        userBalance = userBalance.toString()
                     )
+
                     view?.updateViewState(viewState)
                     delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                 } catch (e: CancellationException) {
@@ -143,10 +145,41 @@ class SellPayloadPresenter(
     }
 
     override fun onTokenAmountChanged(newValue: String) {
-        val newDoubleValue = newValue.toBigDecimalOrZero()
+        val newTokenValue = newValue.toBigDecimalOrZero()
         sellQuoteJob?.cancel()
-        val buttonState = when {
-            newDoubleValue.isLessThan(minSellAmount) -> {
+
+        val buttonState = determineButtonState(newTokenValue)
+        if (buttonState.isEnabled) {
+            userSelectedAmount = newTokenValue
+            startLoadSellQuoteJob()
+        } else {
+            view?.setFiatAndFeeValue(ZERO_STRING_VALUE)
+        }
+        view?.setButtonState(buttonState)
+    }
+
+    override fun onCurrencyAmountChanged(newValue: String) {
+        sellQuoteJob?.cancel()
+
+        val newCurrencyAmount = newValue.toBigDecimalOrZero()
+        val newTokenAmount = newCurrencyAmount.divide(tokenPrice, 2, RoundingMode.HALF_EVEN)
+        val buttonState = determineButtonState(newTokenAmount)
+        if (buttonState.isEnabled) {
+            userSelectedAmount = newTokenAmount
+            startLoadSellQuoteJob()
+        } else {
+            view?.setTokenAndFeeValue(ZERO_STRING_VALUE)
+        }
+        view?.setButtonState(buttonState)
+    }
+
+    override fun onUserMaxClicked() {
+        view?.setTokenAmount(userBalance.toString())
+    }
+
+    private fun determineButtonState(selectedTokenAmount: BigDecimal): CashOutButtonState {
+        return when {
+            selectedTokenAmount.isLessThan(minSellAmount) -> {
                 CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
@@ -154,7 +187,7 @@ class SellPayloadPresenter(
                     text = resourceProvider.getString(R.string.sell_min_sol_amount, minSellAmount.toString())
                 )
             }
-            newDoubleValue.isMoreThan(maxSellAmount.orZero()) -> {
+            selectedTokenAmount.isMoreThan(maxSellAmount.orZero()) -> {
                 CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
@@ -162,7 +195,7 @@ class SellPayloadPresenter(
                     text = resourceProvider.getString(R.string.sell_max_sol_amount, maxSellAmount.toString())
                 )
             }
-            newDoubleValue.isMoreThan(userSolToken?.total.orZero()) -> {
+            selectedTokenAmount.isMoreThan(userBalance) -> {
                 CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
@@ -171,8 +204,7 @@ class SellPayloadPresenter(
                 )
             }
             else -> {
-                userSelectedAmount = newDoubleValue
-                startLoadSellQuoteJob()
+                userSelectedAmount = selectedTokenAmount
                 CashOutButtonState(
                     isEnabled = true,
                     backgroundColor = R.color.bg_night,
@@ -181,16 +213,5 @@ class SellPayloadPresenter(
                 )
             }
         }
-        view?.reset().takeIf { !buttonState.isEnabled }
-        view?.setButtonState(buttonState)
-    }
-
-    override fun onCurrencyAmountChanged(newValue: String) {
-        val newCurrencyAmount = newValue.toBigDecimalOrZero()
-        val newTokenAmount = newCurrencyAmount.divide(tokenPrice, 2, RoundingMode.HALF_UP)
-    }
-
-    override fun onUserMaxClicked() {
-        view?.setTokenAmount(userSolToken?.total.orZero().toString())
     }
 }

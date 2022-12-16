@@ -18,7 +18,8 @@ interface SellPayloadContract {
         fun updateViewState(newState: ViewState)
         fun setButtonState(state: CashOutButtonState)
         fun setTokenAmount(newValue: String)
-        fun reset()
+        fun setFiatAndFeeValue(newValue: String)
+        fun setTokenAndFeeValue(newValue: String)
     }
 
     interface Presenter : MvpPresenter<View> {

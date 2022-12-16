@@ -90,18 +90,18 @@ class SellPayloadFragment :
     }
 
     override fun updateViewState(newState: ViewState) = with(binding) {
-        editTextFiatAmount.setText(newState.quoteAmount)
+        editTextFiatAmount.setCurrencyAmount(newState.quoteAmount)
         editTextFiatAmount.setHint(newState.fiatSymbol)
         textViewFee.text = getString(R.string.sell_included_fee, newState.fee)
         textViewRate.text = getString(R.string.sell_sol_fiat_value, newState.fiat)
         binding.editTextTokenAmount.setHint(newState.tokenSymbol)
-        binding.editTextTokenAmount.setText(newState.minSolToSell)
+        binding.editTextTokenAmount.setTokenAmount(newState.solToSell)
         binding.textViewAvailableAmount.text = getString(R.string.sell_all_sol, newState.userBalance)
     }
 
     override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
         binding.editTextTokenAmount.setHint(tokenSymbol)
-        binding.editTextTokenAmount.setText(minAmount.toString())
+        binding.editTextTokenAmount.setupText(minAmount.toString())
     }
 
     override fun showMoonpayWidget(url: String) {
@@ -124,9 +124,14 @@ class SellPayloadFragment :
         binding.editTextTokenAmount.setTokenAmount(newValue)
     }
 
-    override fun reset(): Unit = with(binding) {
-        editTextTokenAmount.setTokenAmount(BigDecimal.ZERO.toString())
-        editTextFiatAmount.setCurrencyAmount(BigDecimal.ZERO.toString())
+    override fun setFiatAndFeeValue(newValue: String) {
+        binding.editTextFiatAmount.setCurrencyAmount(newValue)
+        binding.textViewFee.text = getString(R.string.sell_included_fee, newValue)
+    }
+
+    override fun setTokenAndFeeValue(newValue: String) {
+        binding.editTextTokenAmount.setTokenAmount(newValue)
+        binding.textViewFee.text = getString(R.string.sell_included_fee, newValue)
     }
 }
 
@@ -141,7 +146,7 @@ data class ViewState(
     val quoteAmount: String,
     val fee: String,
     val fiat: String,
-    val minSolToSell: String,
+    val solToSell: String,
     val tokenSymbol: String,
     val fiatSymbol: String,
     val userBalance: String

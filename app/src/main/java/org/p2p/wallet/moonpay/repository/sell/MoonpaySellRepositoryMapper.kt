@@ -84,13 +84,13 @@ class MoonpaySellRepositoryMapper {
         return response.run {
             MoonpaySellTokenQuote(
                 tokenDetails = tokenDetails,
-                tokenAmount = tokenAmount,
-                tokenPrice = tokenPrice,
+                tokenAmount = tokenAmount.toBigDecimal(),
+                tokenPrice = tokenPrice.toBigDecimal(),
                 fiatDetails = fiatDetails,
                 paymentMethod = MoonpaySellPaymentMethod.fromStringValue(paymentMethod),
                 extraFeeAmount = extraFeeAmount,
-                feeAmount = feeAmount,
-                fiatEarning = fiatEarning
+                feeAmount = feeAmount.toBigDecimal(),
+                fiatEarning = fiatEarning.toBigDecimal()
             )
         }
     }

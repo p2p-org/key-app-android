@@ -69,7 +69,7 @@ open class UiKitEditText @JvmOverloads constructor(
         styleAttrs.recycle()
     }
 
-    fun setText(text: String) {
+    fun setupText(text: String) {
         binding.editText.setText(text)
         val selectionIndex = if (text.isNotEmpty()) text.length else 0
         binding.editText.setSelection(selectionIndex)
@@ -115,13 +115,13 @@ open class UiKitEditText @JvmOverloads constructor(
 
     fun setTokenAmount(tokenAmount: String?) = with(binding.editText) {
         removeTextChangedListener(tokenTextWatcher)
-        setText(tokenAmount.orEmpty())
+        setupText(tokenAmount.orEmpty())
         addTextChangedListener(tokenTextWatcher)
     }
 
     fun setCurrencyAmount(currencyAmount: String?) = with(binding.editText) {
         removeTextChangedListener(amountTextWatcher)
-        setText(currencyAmount.orEmpty())
+        setupText(currencyAmount.orEmpty())
         addTextChangedListener(amountTextWatcher)
     }
 }
