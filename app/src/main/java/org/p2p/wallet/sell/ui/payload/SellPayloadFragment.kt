@@ -37,13 +37,13 @@ class SellPayloadFragment :
             buttonSend.setOnClickListener {
                 presenter.cashOut()
             }
-            editTextInputToken.setOnTokenAmountChangeListener {
+            editTextTokenAmount.setOnTokenAmountChangeListener {
                 presenter.onTokenAmountChanged(it)
             }
-            editTextAmount.setOnCurrencyAmountChangeListener {
+            editTextFiatAmount.setOnCurrencyAmountChangeListener {
                 presenter.onCurrencyAmountChanged(it)
             }
-            textViewSellAmount.setOnClickListener {
+            textViewAvailableAmount.setOnClickListener {
                 presenter.onUserMaxClicked()
             }
             presenter.load()
@@ -75,48 +75,49 @@ class SellPayloadFragment :
         )
     }
 
-    override fun updateValues(
-        quoteAmount: String,
-        fee: String,
-        fiat: String,
-        minSolToSell: String,
-        tokenSymbol: String,
-        fiatSymbol: String,
-        userBalance: String
-    ) = with(binding) {
-        editTextAmount.setText(quoteAmount)
-        editTextAmount.setHint(fiatSymbol)
-        textViewFee.text = getString(R.string.sell_included_fee, fee)
-        textViewRate.text = getString(R.string.sell_sol_fiat_value, fiat)
-        binding.editTextInputToken.setHint(tokenSymbol)
-        binding.editTextInputToken.setText(minSolToSell)
-        binding.textViewSellAmount.text = getString(R.string.sell_all_sol, userBalance)
+    override fun updateViewState(newState: ViewState) = with(binding) {
+        editTextFiatAmount.setText(newState.quoteAmount)
+        editTextFiatAmount.setHint(newState.fiatSymbol)
+        textViewFee.text = getString(R.string.sell_included_fee, newState.fee)
+        textViewRate.text = getString(R.string.sell_sol_fiat_value, newState.fiat)
+        binding.editTextTokenAmount.setHint(newState.tokenSymbol)
+        binding.editTextTokenAmount.setText(newState.minSolToSell)
+        binding.textViewAvailableAmount.text = getString(R.string.sell_all_sol, newState.userBalance)
     }
 
-    override fun setButtonState(state: ButtonState) {
+    override fun setButtonState(state: CashOutButtonState) {
         with(binding) {
             buttonSend.isEnabled = state.isEnabled
             buttonSend.setBackgroundColor(getColor(state.backgroundColor))
             buttonSend.setTextColor(getColor(state.textColor))
             buttonSend.text = state.text
 
-            editTextInputToken.showError(isVisible = !state.isEnabled)
+            editTextTokenAmount.showError(isVisible = !state.isEnabled)
         }
     }
 
     override fun setTokenAmount(newValue: String) {
-        binding.editTextInputToken.setTokenAmount(newValue)
+        binding.editTextTokenAmount.setTokenAmount(newValue)
     }
 
     override fun reset(): Unit = with(binding) {
-        editTextInputToken.setTokenAmount(BigDecimal.ZERO.toString())
-        editTextAmount.setCurrencyAmount(BigDecimal.ZERO.toString())
+        editTextTokenAmount.setTokenAmount(BigDecimal.ZERO.toString())
+        editTextFiatAmount.setCurrencyAmount(BigDecimal.ZERO.toString())
     }
 }
 
-data class ButtonState(
+data class CashOutButtonState(
     val isEnabled: Boolean,
     @ColorRes val backgroundColor: Int,
     @ColorRes val textColor: Int,
     val text: String
+)
+data class ViewState(
+    val quoteAmount: String,
+    val fee: String,
+    val fiat: String,
+    val minSolToSell: String,
+    val tokenSymbol: String,
+    val fiatSymbol: String,
+    val userBalance: String
 )

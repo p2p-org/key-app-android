@@ -22,11 +22,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:text="@string/common_cash_out"
-        app:layout_constraintBottom_toTopOf="@id/editTextInputToken"
-        app:layout_constraintStart_toStartOf="@id/editTextInputToken" />
+        app:layout_constraintBottom_toTopOf="@id/editTextTokenAmount"
+        app:layout_constraintStart_toStartOf="@id/editTextTokenAmount" />
 
     <TextView
-        android:id="@+id/textViewSellAmount"
+        android:id="@+id/textViewAvailableAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -39,7 +39,7 @@
 
 
     <org.p2p.uikit.components.UiKitEditText
-        android:id="@+id/editTextInputToken"
+        android:id="@+id/editTextTokenAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -47,13 +47,13 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <org.p2p.uikit.components.UiKitEditText
-        android:id="@+id/editTextAmount"
+        android:id="@+id/editTextFiatAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
-        app:layout_constraintTop_toBottomOf="@id/editTextInputToken" />
+        app:layout_constraintTop_toBottomOf="@id/editTextTokenAmount" />
 
     <TextView
         android:id="@+id/textViewRate"
@@ -65,7 +65,7 @@
         android:padding="16dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
-        app:layout_constraintTop_toBottomOf="@id/editTextAmount"
+        app:layout_constraintTop_toBottomOf="@id/editTextTokenAmount"
         tools:text="1 SOL ≈ 34.65 EUR" />
 
     <TextView

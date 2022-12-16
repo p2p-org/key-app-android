@@ -11,16 +11,8 @@ interface SellPayloadContract {
         fun navigateToSellLock()
         fun showErrorScreen()
         fun showNotEnoughMoney(minAmount: BigDecimal)
-        fun updateValues(
-            quoteAmount: String,
-            fee: String,
-            fiat: String,
-            minSolToSell: String,
-            tokenSymbol: String,
-            fiatSymbol: String,
-            userBalance: String
-        )
-        fun setButtonState(state: ButtonState)
+        fun updateViewState(newState: ViewState)
+        fun setButtonState(state: CashOutButtonState)
         fun setTokenAmount(newValue: String)
         fun reset()
     }

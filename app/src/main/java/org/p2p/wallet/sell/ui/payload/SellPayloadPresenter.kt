@@ -95,7 +95,7 @@ class SellPayloadPresenter(
                     val fee = sellQuote.feeAmount
                     tokenPrice = sellQuote.tokenPrice.toBigDecimal()
                     val fiat = "${tokenPrice}${selectedFiat.currencySymbol}"
-                    view?.updateValues(
+                    val viewState = ViewState(
                         quoteAmount = sellQuote.fiatEarning.toBigDecimal().formatToken(),
                         fee = fee.toBigDecimal().formatToken(),
                         fiat = fiat,
@@ -104,6 +104,7 @@ class SellPayloadPresenter(
                         fiatSymbol = selectedFiat.currencySymbol,
                         userBalance = userSolToken?.total.orZero().toString()
                     )
+                    view?.updateViewState(viewState)
                     delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                 } catch (e: CancellationException) {
                     Timber.e(e)
@@ -122,7 +123,7 @@ class SellPayloadPresenter(
         sellQuoteJob?.cancel()
         val buttonState = when {
             newDoubleValue.isLessThan(minSellAmount) -> {
-                ButtonState(
+                CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
@@ -130,7 +131,7 @@ class SellPayloadPresenter(
                 )
             }
             newDoubleValue.isMoreThan(maxSellAmount.orZero()) -> {
-                ButtonState(
+                CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
@@ -138,7 +139,7 @@ class SellPayloadPresenter(
                 )
             }
             newDoubleValue.isMoreThan(userSolToken?.total.orZero()) -> {
-                ButtonState(
+                CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
@@ -148,7 +149,7 @@ class SellPayloadPresenter(
             else -> {
                 userSelectedAmount = newDoubleValue
                 startLoadSellQuoteJob()
-                ButtonState(
+                CashOutButtonState(
                     isEnabled = true,
                     backgroundColor = R.color.bg_night,
                     textColor = R.color.text_snow,

@@ -8,7 +8,6 @@ import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayTokenCurrencyRespons
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.math.BigDecimal
 
 interface MoonpayClientSideApi {
 
@@ -46,6 +45,6 @@ interface MoonpayClientSideApi {
         @Path("token") tokenSymbol: String,
         @Query("apiKey") apiKey: String,
         @Query("quoteCurrencyCode") fiatName: String,
-        @Query("baseCurrencyAmount") tokenAmount: BigDecimal
+        @Query("baseCurrencyAmount") tokenAmount: Double
     ): MoonpaySellQuoteResponse
 }

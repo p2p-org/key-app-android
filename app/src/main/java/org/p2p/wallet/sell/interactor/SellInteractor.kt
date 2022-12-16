@@ -5,6 +5,7 @@ import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
@@ -56,11 +57,9 @@ class SellInteractor(
         return sellRepository.getSellQuoteForToken(solToken, solAmount, fiat)
     }
 
-    suspend fun getAllCurrencies() = currencyRepository.getAllCurrencies()
+    suspend fun getAllCurrencies(): List<MoonpayCurrency> = currencyRepository.getAllCurrencies()
 
     suspend fun getMoonpaySellFiatCurrency(): MoonpaySellFiatCurrency {
-        return MoonpaySellFiatCurrency.getFromCountryAbbreviation(
-            sellRepository.getCurrentCountryAbbreviation()
-        )
+        return sellRepository.getSellFiatCurrency()
     }
 }

@@ -77,13 +77,14 @@ class MoonpaySellRemoteRepository(
                 tokenSymbol = tokenToSell.tokenSymbol.lowercase(),
                 apiKey = BuildConfig.moonpayKey,
                 fiatName = fiat.symbol,
-                tokenAmount = tokenAmount
+                tokenAmount = tokenAmount.toDouble()
             )
         )
     }
 
-    override suspend fun getCurrentCountryAbbreviation(): String {
-        return cachedMoonpayIpFlags?.currentCountryAbbreviation.orEmpty()
+    override suspend fun getSellFiatCurrency(): MoonpaySellFiatCurrency {
+        val countryAbbreviation = cachedMoonpayIpFlags?.currentCountryAbbreviation.orEmpty()
+        return MoonpaySellFiatCurrency.getFromCountryAbbreviation(countryAbbreviation)
     }
 
     @Throws(MoonpaySellError::class)
