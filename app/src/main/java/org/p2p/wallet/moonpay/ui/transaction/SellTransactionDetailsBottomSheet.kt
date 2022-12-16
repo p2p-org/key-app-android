@@ -8,12 +8,12 @@ import org.p2p.wallet.databinding.DialogSendTransactionDetailsBinding
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.R
 
-class BuyTransactionDetailsBottomSheet : BaseMvpBottomSheet<
-    BuyTransactionDetailsContract.View, BuyTransactionDetailsContract.Presenter>(
+class SellTransactionDetailsBottomSheet : BaseMvpBottomSheet<
+    SellTransactionDetailsContract.View, SellTransactionDetailsContract.Presenter>(
     R.layout.dialog_send_transaction_details
 ) {
 
-    override val presenter: BuyTransactionDetailsContract.Presenter by inject()
+    override val presenter: SellTransactionDetailsContract.Presenter by inject()
     private val binding: DialogSendTransactionDetailsBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

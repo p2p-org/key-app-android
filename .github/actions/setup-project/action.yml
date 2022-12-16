@@ -28,6 +28,9 @@ inputs:
   moonpay-secret:
     description: "Moonpay api key"
     required: true
+  moonpay-sandbox-secret:
+    description: "Moonpay sandbox api key"
+    required: true
   compare-secret:
     description: "Compare token api key"
     required: true
@@ -95,6 +98,7 @@ runs:
         intercom-key-secret: ${{ inputs.intercom-key-secret }}
         amplitude-secret: ${{ inputs.amplitude-secret }}
         apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
+        moonpay-sandbox-secret: ${{ inputs.moonpay-sandbox-secret }}
 
     - name: "Create cert.pem file"
       env:

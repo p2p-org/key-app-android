@@ -7,6 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -22,7 +25,6 @@ import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
@@ -34,15 +36,13 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.send.ui.SendNoTokensFragment
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.core.utils.formatUsd
-import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
@@ -189,7 +189,7 @@ class HomeFragment :
                 ActionButton.RECEIVE_BUTTON -> {
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
-                ActionButtonsView.ActionButton.SEND_BUTTON -> {
+                ActionButton.SEND_BUTTON -> {
                     presenter.onSendClicked()
                 }
                 ActionButton.SELL_BUTTON -> {

@@ -65,7 +65,7 @@
         android:padding="16dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
-        app:layout_constraintTop_toBottomOf="@id/editTextTokenAmount"
+        app:layout_constraintTop_toBottomOf="@id/editTextFiatAmount"
         tools:text="1 SOL ≈ 34.65 EUR" />
 
     <TextView
@@ -95,8 +95,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize"
-        tools:visibility="gone"
-        android:background="@color/bg_smoke">
+        android:background="@color/bg_smoke"
+        tools:visibility="gone">
 
         <include layout="@layout/view_sell_shimmer" />
     </FrameLayout>

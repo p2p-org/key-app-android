@@ -148,6 +148,7 @@ class DebugSettingsPresenter(
             createApiKeyRecord("intercomApiKey", BuildConfig.intercomApiKey)
             createApiKeyRecord("intercomAppId", BuildConfig.intercomAppId)
             createApiKeyRecord("moonpayKey", BuildConfig.moonpayKey)
+            createApiKeyRecord("moonpaySanbdoxKey", BuildConfig.moonpaySandboxKey)
             createApiKeyRecord("rpcPoolApiKey", BuildConfig.rpcPoolApiKey)
 
             appendBreakLine()

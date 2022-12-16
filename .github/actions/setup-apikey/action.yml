@@ -7,6 +7,9 @@ inputs:
   moonpay-secret:
     description: "Moonpay api key"
     required: true
+  moonpay-sandbox-secret:
+    description: "Moonpay sandbox api key"
+    required: true
   compare-secret:
     description: "Compare token api key"
     required: true
@@ -37,4 +40,5 @@ runs:
         echo "intercomAppId=\"${{ inputs.intercom-id-secret }}\"" >> apikey.properties
         echo "amplitudeKey=\"${{ inputs.amplitude-secret }}\"" >> apikey.properties
         echo "appsFlyerKey=\"${{ inputs.apps-flyer-secret }}\"" >> apikey.properties
+        echo "moonpaySandboxKey=\"${{ inputs.moonpay-sandbox-secret }}\"" >> apikey.properties
         echo "apikeys.properties successfully created"

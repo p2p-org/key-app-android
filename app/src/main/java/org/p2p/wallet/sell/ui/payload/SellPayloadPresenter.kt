@@ -15,10 +15,13 @@ import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
+import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -27,6 +30,8 @@ private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
 
 class SellPayloadPresenter(
     private val sellInteractor: SellInteractor,
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder,
     private val userInteractor: UserInteractor,
     private val resourceProvider: ResourcesProvider
 ) : BasePresenter<SellPayloadContract.View>(),
@@ -40,32 +45,41 @@ class SellPayloadPresenter(
     private var tokenPrice: BigDecimal = BigDecimal.ZERO
     private var sellQuoteJob: Job? = null
 
-    override fun load() {
+    override fun attach(view: SellPayloadContract.View) {
+        super.attach(view)
         launch {
             try {
                 view?.showLoading(isVisible = true)
-                if (isUserHasTransactionsInProcess()) {
-                    view?.navigateToSellLock()
-                    return@launch
-                }
+                checkForSellLock()
                 userSolToken = userInteractor.getUserSolToken()
                 loadCurrencies()
                 checkForMinAmount()
                 startLoadSellQuoteJob()
             } catch (e: Throwable) {
                 Timber.e("Error on loading data from Moonpay $e")
-                view?.showErrorScreen()
+                view.showErrorScreen()
             } finally {
-                view?.showLoading(isVisible = false)
+                view.showLoading(isVisible = false)
             }
         }
     }
 
-    private suspend fun isUserHasTransactionsInProcess(): Boolean {
-        val userTransactions = sellInteractor.loadUserSellTransactions()
-        return userTransactions.isNotEmpty() && userTransactions.all {
-            it.status == MoonpaySellTransaction.TransactionStatus.COMPLETED
+    private suspend fun checkForSellLock() {
+        val userTransactionInProcess = isUserHasTransactionInProcess()
+        if (userTransactionInProcess != null) {
+            // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
+            val amounts = userTransactionInProcess.amounts
+            view?.navigateToSellLock(
+                solAmount = amounts.tokenAmount,
+                usdAmount = amounts.usdAmount.toPlainString(),
+                moonpayAddress = tokenKeyProvider.publicKey.toBase58Instance()
+            )
         }
+    }
+
+    private suspend fun isUserHasTransactionInProcess(): MoonpaySellTransaction? {
+        val userTransactions = sellInteractor.loadUserSellTransactions()
+        return userTransactions.find { it.status == MoonpaySellTransaction.TransactionStatus.WAITING_FOR_DEPOSIT }
     }
 
     private suspend fun loadCurrencies() {
@@ -116,7 +130,17 @@ class SellPayloadPresenter(
         }
     }
 
-    override fun cashOut() {}
+    override fun cashOut() {
+        val userAddress = tokenKeyProvider.publicKey.toBase58Instance()
+
+        val moonpayUrl = moonpayWidgetUrlBuilder.buildSellWidgetUrl(
+            tokenSymbol = Constants.SOL_SYMBOL,
+            userAddress = userAddress,
+            fiatSymbol = fiat?.symbol.orEmpty(),
+            tokenAmountToSell = userSelectedAmount.toString(),
+        )
+        view?.showMoonpayWidget(url = moonpayUrl)
+    }
 
     override fun onTokenAmountChanged(newValue: String) {
         val newDoubleValue = newValue.toBigDecimalOrZero()

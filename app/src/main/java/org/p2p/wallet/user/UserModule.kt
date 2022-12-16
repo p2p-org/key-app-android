@@ -1,6 +1,7 @@
 package org.p2p.wallet.user
 
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.wallet.R
@@ -31,6 +32,6 @@ object UserModule : InjectionModule {
         single { UserAccountRemoteRepository(get()) } bind UserAccountRepository::class
         single { UserInMemoryRepository() } bind UserLocalRepository::class
 
-        factory { UserInteractor(get(), get(), get(), get(), get(), get()) }
+        factoryOf(::UserInteractor)
     }
 }
