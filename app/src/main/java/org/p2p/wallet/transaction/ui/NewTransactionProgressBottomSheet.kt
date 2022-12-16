@@ -4,22 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.utils.getColor
+import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogNewTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.showUrlInCustomTabs
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /**
  * Bottom sheet dialog which shows current transaction's state
@@ -28,6 +29,9 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_DATA = "EXTRA_DATA"
 private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
+
+private const val IMAGE_SIZE = 64
+private const val TIME_FORMAT = "HH:mm"
 
 class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
@@ -52,11 +56,14 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private val transactionManager: TransactionManager by inject()
+    private val glideManager: GlideManager by inject()
 
     private val binding: DialogNewTransactionProgressBinding by viewBinding()
 
     private val data: NewShowProgress by args(EXTRA_DATA)
     private val transactionId: String by args(EXTRA_TRANSACTION_ID)
+
+    private val dateFormat by unsafeLazy { SimpleDateFormat(TIME_FORMAT, Locale.getDefault()) }
 
     private lateinit var progressStateFormat: String
 
@@ -69,6 +76,12 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         progressStateFormat = getString(R.string.transaction_progress_title)
         with(binding) {
+            textViewSubtitle.text = getString(R.string.transaction_date_format, dateFormat.format(data.date))
+            glideManager.load(imageViewToken, data.tokenUrl, IMAGE_SIZE)
+            textViewAmountUsd.text = data.amountUsd
+            textViewAmountTokens.text = data.amountTokens
+            textViewSendToValue.text = data.recipient
+            textViewFeeValue.text = data.totalFee // need to fix it with total.getTotalFee
             buttonDone.setOnClickListener {
                 dismissAllowingStateLoss()
             }
@@ -106,21 +119,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun setSuccessState(message: String, signature: String) {
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_succeeded))
-            titleTextView.text = message
-            progressBar.isVisible = false
             progressStateTransaction.setSuccessState()
             progressStateTransaction.setDescriptionText(R.string.transaction_description_succeeded)
-
-            transactionIdGroup.isVisible = true
-            transactionIdTextView.text = signature
-            transactionLabelTextView.setOnClickListener {
-                val solanaUrl = getString(R.string.solanaExplorer, signature)
-                showUrlInCustomTabs(solanaUrl)
-            }
-
-            transactionImageView.setImageResource(R.drawable.ic_success)
-            lineView.isVisible = true
-            lineView.setBackgroundColor(getColor(R.color.systemSuccessMain))
             buttonDone.setText(R.string.common_done)
         }
     }
@@ -128,14 +128,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun handleProgress(state: TransactionState.Progress) {
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_submitted))
-            progressBar.isVisible = true
-
-            transactionIdGroup.isVisible = true
-            transactionIdTextView.text = getString(R.string.common_commas)
             progressStateTransaction.setDescriptionText(R.string.transaction_description_progress)
-
-            transactionImageView.setImageResource(R.drawable.ic_pending)
-            lineView.isVisible = false
             buttonDone.setText(R.string.common_done)
         }
     }
@@ -143,14 +136,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private fun handleError(state: TransactionState.Error) {
         with(binding) {
             textViewTitle.text = progressStateFormat.format(getString(R.string.transaction_progress_failed))
-            titleTextView.text = state.message
-            progressBar.isVisible = false
             progressStateTransaction.setFailedState()
             progressStateTransaction.setDescriptionText(R.string.transaction_description_failed)
-
-            transactionImageView.setImageResource(R.drawable.ic_error_transaction)
-            lineView.isVisible = true
-            lineView.setBackgroundColor(getColor(R.color.systemErrorMain))
             buttonDone.setText(R.string.common_close)
         }
     }

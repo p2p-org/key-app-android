@@ -33,124 +33,127 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/viewPointer" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <TextView
+        android:id="@+id/textViewSubtitle"
+        style="@style/UiKit.TextAppearance.Regular.Text3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonDone"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:textColor="@color/text_mountain"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewTitle"
-        app:layout_goneMarginTop="6dp">
+        tools:text="Today @ 15:28" />
 
-        <TextView
-            android:id="@+id/titleTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:maxLines="2"
-            android:text="@string/send_transaction_being_processed"
-            android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16"
-            app:autoSizeMaxTextSize="16sp"
-            app:autoSizeMinTextSize="8sp"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/subTitleTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-            android:textColor="@color/textIconSecondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleTextView"
-            tools:text="0.02113 renBTC → bc1q...4tyf" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminateOnly="true"
-            android:indeterminateTint="@color/icons_night"
-            app:layout_constraintBottom_toBottomOf="@id/transactionImageView"
-            app:layout_constraintTop_toTopOf="@id/transactionImageView" />
-
-        <View
-            android:id="@+id/lineView"
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@color/systemSuccessMain"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/transactionImageView"
-            app:layout_constraintTop_toTopOf="@id/transactionImageView" />
+    <LinearLayout
+        android:id="@+id/layoutTransactionDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@color/smoke"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingVertical="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitle">
 
         <org.p2p.uikit.atoms.UiKitRoundedImageView
-            android:id="@+id/transactionImageView"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="16dp"
-            android:src="@drawable/ic_pending"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progressStateTransaction" />
-
-        <org.p2p.wallet.transaction.ui.ProgressStateWidget
-            android:id="@+id/progressStateTransaction"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="@id/subTitleTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/subTitleTextView" />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/transactionIdGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="transactionLabelTextView,transactionIdTextView"
-            tools:visibility="visible" />
+            android:id="@+id/imageViewToken"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cornerRadius="32dp"
+            tools:src="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/transactionLabelTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            android:layout_marginTop="8dp"
-            android:drawablePadding="8dp"
-            android:text="@string/main_send_transaction_id"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-            android:textColor="@color/textIconSecondary"
-            app:drawableEndCompat="@drawable/ic_share_small"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/transactionImageView"
-            app:layout_goneMarginTop="28dp" />
-
-        <TextView
-            android:id="@+id/transactionIdTextView"
+            android:id="@+id/textViewAmountUsd"
+            style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textColor="@color/text_night"
+            tools:text="-$10" />
+
+        <TextView
+            android:id="@+id/textViewAmountTokens"
+            style="@style/UiKit.TextAppearance.Regular.Text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
             android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:text="@string/main_send_transaction_id"
-            android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
-            app:layout_constraintTop_toBottomOf="@id/transactionLabelTextView"
-            app:layout_goneMarginTop="28dp"
-            tools:text="k97y8u209j08fh98yu20uiei92jke...uiei" />
+            android:gravity="center"
+            android:textColor="@color/text_mountain"
+            tools:text="0.622181417 SOL" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewSendToTitle"
+        style="@style/UiKit.TextAppearance.Regular.Text4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="28dp"
+        android:gravity="center_vertical"
+        android:text="@string/transaction_send_to_title"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutTransactionDetails" />
+
+    <TextView
+        android:id="@+id/textViewSendToValue"
+        style="@style/UiKit.TextAppearance.SemiBold.Text4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="28dp"
+        android:gravity="center_vertical|end"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textViewSendToTitle"
+        app:layout_constraintTop_toBottomOf="@id/layoutTransactionDetails"
+        tools:text="\@kirill.key" />
+
+    <TextView
+        android:id="@+id/textViewFeeTitle"
+        style="@style/UiKit.TextAppearance.Regular.Text4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:gravity="center_vertical"
+        android:text="@string/transaction_transaction_fee_title"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSendToTitle" />
+
+    <TextView
+        android:id="@+id/textViewFeeValue"
+        style="@style/UiKit.TextAppearance.SemiBold.Text4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="32dp"
+        android:gravity="center_vertical|end"
+        android:text="@string/transaction_transaction_fee_free_value"
+        android:textColor="@color/text_night"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textViewFeeTitle"
+        app:layout_constraintTop_toBottomOf="@id/textViewSendToTitle" />
+
+    <org.p2p.wallet.transaction.ui.ProgressStateWidget
+        android:id="@+id/progressStateTransaction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonDone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewFeeValue" />
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonDone"

@@ -4,6 +4,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -284,14 +285,20 @@ class NewSendPresenter(
     }
 
     override fun send() {
+        val feeState = feeRelayerManager.getState()
+        if (feeState !is FeeRelayerState.UpdateFee) return
         val token = token ?: error("Token cannot be null!")
         val address = recipientAddress.addressState.address
         val currentAmount = calculationMode.getCurrentAmount()
-        val currentAmountUsd = calculationMode.getCurrentAmount()
+        val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
 
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
+
+        val sourceToken = requireToken()
+        val sendFee = feeState.solanaFee
+        val total = buildTotalFee(currentAmount, sourceToken, sendFee, feeState.feeLimitInfo)
 
         appScope.launch {
             try {
@@ -299,8 +306,9 @@ class NewSendPresenter(
                     date = Date(),
                     tokenUrl = token.iconUrl.orEmpty(),
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
-                    amountUsd = "-$$currentAmountUsd",
+                    amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
                     recipient = recipientAddress.nickNameOrAddress(),
+                    totalFee = total.getTotalFee { resources.getString(it) }
                 )
 
                 view?.showProgressDialog(internalTransactionId, data)
@@ -317,7 +325,7 @@ class NewSendPresenter(
 
     private fun SearchResult.nickNameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) username
-        else addressState.address.cutMiddle()
+        else addressState.address.cutMiddle(7)
     }
 
     /**

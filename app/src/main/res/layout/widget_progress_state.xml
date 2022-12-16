@@ -53,6 +53,7 @@
             android:id="@+id/textViewDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="20dp"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
