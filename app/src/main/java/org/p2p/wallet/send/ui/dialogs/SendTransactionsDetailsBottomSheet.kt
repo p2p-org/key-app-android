@@ -1,13 +1,13 @@
 package org.p2p.wallet.send.ui.dialogs
 
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.setFragmentResult
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toast
@@ -122,7 +122,7 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
         if (fee != null) {
             textViewSubtitleAccountFee.setTextColor(colorNight)
             textViewSubtitleAccountFee.text = SpanUtils.highlightText(
-                commonText = fee.accountCreationFullFee,
+                commonText = fee.accountCreationFeeUsd,
                 highlightedText = fee.approxAccountCreationFeeUsd.orEmpty(),
                 color = colorMountain
             )
@@ -144,6 +144,7 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
             highlightedText = state.approxTotalUsd.orEmpty(),
             color = colorMountain
         )
-        textViewSubtitleSecondTotal.isVisible = false
+        textViewSubtitleSecondTotal.isVisible = state.showAdditionalFee
+        textViewSubtitleSecondTotal.text = state.getFeesCombined(colorMountain)
     }
 }

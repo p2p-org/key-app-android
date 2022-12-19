@@ -27,6 +27,8 @@ class SendNoTokensFragment : BaseFragment(R.layout.fragment_send_no_token) {
 
     private val binding: FragmentSendNoTokenBinding by viewBinding()
     private val defaultTokenToBuy: Token by args(ARG_DEFAULT_TOKEN)
+
+    override val statusBarColor: Int = R.color.bg_smoke
     override val navBarColor: Int = R.color.bg_night
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -8,7 +8,8 @@ import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.isZeroOrLess
-import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.orZero
+import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -42,6 +43,10 @@ data class SendSolanaFee constructor(
         get() = "${accountCreationFeeDecimals.formatToken()} ${feePayerToken.tokenSymbol}"
 
     @IgnoredOnParcel
+    val totalFee: String
+        get() = if (isTransactionFree) accountCreationFormattedFee else summedFeeDecimalsFormatted
+
+    @IgnoredOnParcel
     val feeUsd: BigDecimal?
         get() = accountCreationFeeDecimals.toUsd(feePayerToken)
 
@@ -58,8 +63,16 @@ data class SendSolanaFee constructor(
         get() = transactionDecimals.toUsd(feePayerToken)?.let { "(~$$it)" }
 
     @IgnoredOnParcel
-    val accountCreationFullFee: String
+    val accountCreationFeeUsd: String
         get() = "$accountCreationFeeDecimals $feePayerSymbol ${approxAccountCreationFeeUsd.orEmpty()}"
+
+    @IgnoredOnParcel
+    val summedFeeDecimalsFormatted: String
+        get() = "${(summedFeeDecimals).formatToken()} $feePayerSymbol"
+
+    @IgnoredOnParcel
+    val summedFeeDecimalsUsd: String?
+        get() = summedFeeDecimals.toUsd(feePayerToken)?.let { ("(~$$it)") }
 
     @IgnoredOnParcel
     val approxAccountCreationFeeUsd: String?
@@ -69,7 +82,7 @@ data class SendSolanaFee constructor(
     val accountCreationFeeDecimals: BigDecimal =
         (if (feePayerToken.isSOL) feeRelayerFee.accountCreationFeeInSol else feeRelayerFee.accountCreationFeeInSpl)
             .fromLamports(feePayerToken.decimals)
-            .scaleMedium()
+            .scaleLong()
 
     @IgnoredOnParcel
     private val feePayerTotalLamports: BigInteger
@@ -79,7 +92,10 @@ data class SendSolanaFee constructor(
     private val transactionDecimals: BigDecimal =
         (if (feePayerToken.isSOL) feeRelayerFee.transactionFeeInSol else feeRelayerFee.transactionFeeInSpl)
             .fromLamports(feePayerToken.decimals)
-            .scaleMedium()
+            .scaleLong()
+
+    @IgnoredOnParcel
+    private val summedFeeDecimals: BigDecimal = accountCreationFeeDecimals + transactionDecimals.orZero()
 
     fun isEnoughToCoverExpenses(
         sourceTokenTotal: BigInteger,

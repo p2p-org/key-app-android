@@ -22,11 +22,6 @@ interface NewSendContract {
         fun setSliderText(text: String?)
 
         fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
-        fun showFeePayerTokenSelection(
-            tokens: List<Token.Active>,
-            currentFeePayerToken: Token.Active,
-            approximateFeeUsd: String
-        )
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -35,9 +30,8 @@ interface NewSendContract {
         fun updateFeePayerToken(feePayerToken: Token.Active)
 
         fun switchCurrencyMode()
-        fun setMaxAmountValue()
+        fun onMaxButtonClicked()
 
-        fun onChangeFeePayerClicked(approximateFeeUsd: String)
         fun onAccountCreationFeeClicked(fee: SendSolanaFee)
         fun onTokenClicked()
         fun onFeeInfoClicked()

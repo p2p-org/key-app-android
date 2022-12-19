@@ -1,13 +1,15 @@
 package org.p2p.wallet.send.model
 
 import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.asApproximateUsd
+import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.orZero
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import java.math.BigDecimal
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class SendFeeTotal constructor(
@@ -21,6 +23,7 @@ class SendFeeTotal constructor(
     val recipientAddress: String
 ) : Parcelable {
 
+    @Deprecated("for old send screen, will be removed")
     fun getTotalFee(resourceDelegate: (res: Int) -> String): String =
         when (sendFee) {
             is SendSolanaFee ->
@@ -29,6 +32,22 @@ class SendFeeTotal constructor(
             else ->
                 resourceDelegate(R.string.send_fees_free)
         }
+
+    fun getFeesInToken(isInputEmpty: Boolean, resourceDelegate: (res: Int) -> String): String {
+        if (sendFee == null) {
+            val text = if (isInputEmpty) R.string.send_fees_free else R.string.send_fees_zero
+            return resourceDelegate(text)
+        }
+
+        return sendFee.totalFee
+    }
+
+    fun getFeesCombined(colorMountain: Int): CharSequence {
+        if (sendFee == null) return emptyString()
+        val usdText = sendFee.summedFeeDecimalsUsd.orEmpty()
+        val combinedFees = "${sendFee.totalFee} $usdText"
+        return SpanUtils.highlightText(combinedFees, usdText, colorMountain)
+    }
 
     val showAdditionalFee: Boolean
         get() = sendFee != null && sourceSymbol != sendFee.feePayerSymbol

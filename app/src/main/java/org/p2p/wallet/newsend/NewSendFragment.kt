@@ -36,8 +36,7 @@ import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 
-private const val KEY_RESULT_APPROXIMATE_FEE_USD = "KEY_RESULT_APPROXIMATE_FEE_USD"
-private const val KEY_RESULT_FEE_PAYER = "KEY_RESULT_FEE_PAYER"
+private const val KEY_RESULT_NEW_FEE_PAYER = "KEY_RESULT_APPROXIMATE_FEE_USD"
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
@@ -76,7 +75,7 @@ class NewSendFragment :
         binding.widgetSendDetails.apply {
             tokenClickListener = presenter::onTokenClicked
             amountListener = presenter::updateInputAmount
-            maxButtonClickListener = presenter::setMaxAmountValue
+            maxButtonClickListener = presenter::onMaxButtonClicked
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
             focusAndShowKeyboard()
@@ -109,13 +108,9 @@ class NewSendFragment :
                 val token = result.getParcelable<Token.Active>(KEY_RESULT_TOKEN_TO_SEND)!!
                 presenter.updateToken(token)
             }
-            result.containsKey(KEY_RESULT_APPROXIMATE_FEE_USD) -> {
-                val approximateFeeUsd = result.getString(KEY_RESULT_APPROXIMATE_FEE_USD).orEmpty()
-                presenter.onChangeFeePayerClicked(approximateFeeUsd)
-            }
-            result.containsKey(KEY_RESULT_FEE_PAYER) -> {
-                val token = result.getParcelable<Token.Active>(KEY_RESULT_FEE_PAYER)!!
-                presenter.updateFeePayerToken(token)
+            result.containsKey(KEY_RESULT_NEW_FEE_PAYER) -> {
+                val newFeePayer = result.getParcelable<Token.Active>(KEY_RESULT_NEW_FEE_PAYER)!!
+                presenter.updateFeePayerToken(newFeePayer)
             }
         }
     }
@@ -130,7 +125,7 @@ class NewSendFragment :
             approximateFeeUsd = amountInUsd,
             hasAlternativeFeePayerToken = hasAlternativeToken,
             requestKey = KEY_REQUEST_SEND,
-            resultKey = KEY_RESULT_APPROXIMATE_FEE_USD
+            resultKey = KEY_RESULT_NEW_FEE_PAYER
         )
         replaceFragment(target)
     }
@@ -186,26 +181,6 @@ class NewSendFragment :
 
     override fun setInputColor(@ColorRes colorRes: Int) {
         binding.widgetSendDetails.setInputTextColor(colorRes)
-    }
-
-    override fun showFeePayerTokenSelection(
-        tokens: List<Token.Active>,
-        currentFeePayerToken: Token.Active,
-        approximateFeeUsd: String
-    ) {
-        addFragment(
-            target = NewSelectTokenFragment.create(
-                tokens = tokens,
-                selectedToken = currentFeePayerToken,
-                requestKey = KEY_REQUEST_SEND,
-                resultKey = KEY_RESULT_FEE_PAYER,
-                title = getString(R.string.send_pick_fee_token_format, approximateFeeUsd)
-            ),
-            enter = R.anim.slide_up,
-            exit = 0,
-            popExit = R.anim.slide_down,
-            popEnter = 0
-        )
     }
 
     override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
