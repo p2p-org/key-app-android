@@ -7,7 +7,7 @@ import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellLockBinding
-import org.p2p.wallet.newsend.NewSendFragment
+import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult

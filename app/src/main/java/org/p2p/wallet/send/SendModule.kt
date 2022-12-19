@@ -9,8 +9,8 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
-import org.p2p.wallet.newsend.NewSendContract
-import org.p2p.wallet.newsend.NewSendPresenter
+import org.p2p.wallet.newsend.ui.NewSendContract
+import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.main.SendContract
 import org.p2p.wallet.send.ui.main.SendPresenter

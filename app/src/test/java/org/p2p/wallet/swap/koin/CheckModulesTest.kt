@@ -40,7 +40,7 @@ import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
-import org.p2p.wallet.newsend.NewSendPresenter
+import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
 import org.p2p.wallet.send.model.AddressState

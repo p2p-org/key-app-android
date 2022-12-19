@@ -8,7 +8,7 @@ import java.math.BigInteger
 class SendPresenterState(
     var inputAmount: String = "0",
     var solToken: Token.Active? = null,
-    var mode: CurrencyMode = CurrencyMode.Token(SOL_SYMBOL),
+    var mode: CurrencyMode = CurrencyMode.Token(SOL_SYMBOL, 0),
     var sendFeeRelayerFee: SendSolanaFee? = null,
     var searchResult: SearchResult? = null,
     var initialToken: Token.Active? = null,
@@ -19,6 +19,6 @@ class SendPresenterState(
 
     fun updateInitialToken(initialToken: Token.Active) {
         this.initialToken = initialToken
-        mode = CurrencyMode.Token(initialToken.tokenSymbol)
+        mode = CurrencyMode.Token(initialToken.tokenSymbol, initialToken.decimals)
     }
 }
