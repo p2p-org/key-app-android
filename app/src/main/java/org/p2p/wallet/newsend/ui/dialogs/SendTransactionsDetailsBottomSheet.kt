@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui.dialogs
+package org.p2p.wallet.newsend.ui.dialogs
 
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -19,6 +19,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_SEND_STATE = "ARG_SEND_STATE"
 
@@ -139,12 +140,8 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
     private fun DialogSendTransactionsDetailsBinding.setTotal() {
         imageViewIconTotal.setImageResource(R.drawable.ic_receipt)
         textViewTitleTotal.text = getString(R.string.send_transactions_details_total)
-        textViewSubtitleFirstTotal.text = SpanUtils.highlightText(
-            commonText = state.fullTotal,
-            highlightedText = state.approxTotalUsd.orEmpty(),
-            color = colorMountain
-        )
-        textViewSubtitleSecondTotal.isVisible = state.showAdditionalFee
-        textViewSubtitleSecondTotal.text = state.getFeesCombined(colorMountain)
+        textViewSubtitleFirstTotal.text = state.getTotalCombined(colorMountain)
+
+        textViewSubtitleSecondTotal withTextOrGone state.getFeesCombined(colorMountain)
     }
 }

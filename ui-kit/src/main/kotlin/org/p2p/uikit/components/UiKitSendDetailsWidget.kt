@@ -16,6 +16,9 @@ import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withTextOrGone
+import java.util.concurrent.atomic.AtomicInteger
+
+private const val MAX_FRACTION_LENGTH = 9
 
 class UiKitSendDetailsWidget @JvmOverloads constructor(
     context: Context,
@@ -32,6 +35,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     var tokenClickListener: (() -> Unit)? = null
     var maxButtonClickListener: (() -> Unit)? = null
     var feeButtonClickListener: (() -> Unit)? = null
+
+    private var maxFractionLength: AtomicInteger = AtomicInteger(MAX_FRACTION_LENGTH)
 
     init {
         with(binding) {
@@ -55,7 +60,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        installAmountWatcher()
+        installAmountWatcher(maxFractionLength.get())
     }
 
     override fun onDetachedFromWindow() {
@@ -103,7 +108,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
                 AmountFractionTextWatcher.uninstallFrom(this)
                 setText(textValue)
                 setSelection(textValue.length)
-                installAmountWatcher()
+                installAmountWatcher(maxFractionLength.get())
             } else {
                 setText(textValue)
                 setSelection(text?.length.orZero())
@@ -119,9 +124,16 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.editTextAmount.focusAndShowKeyboard()
     }
 
-    private fun installAmountWatcher() {
-        AmountFractionTextWatcher.installOn(binding.editTextAmount) {
-            amountListener?.invoke(it)
+    fun updateFractionLength(newFractionLength: Int) {
+        maxFractionLength.set(newFractionLength)
+    }
+
+    private fun installAmountWatcher(maxFractionLength: Int) {
+        AmountFractionTextWatcher.installOn(
+            editText = binding.editTextAmount,
+            maxSymbolsAllowed = maxFractionLength
+        ) { amount ->
+            amountListener?.invoke(amount)
         }
     }
 }

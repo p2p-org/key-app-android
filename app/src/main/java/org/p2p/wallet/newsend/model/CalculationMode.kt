@@ -18,13 +18,15 @@ import java.math.BigInteger
 import java.math.RoundingMode
 
 private const val ROUNDING_VALUE = 6
+private const val FIAT_FRACTION_LENGTH = 2
 
 class CalculationMode {
 
     var onCalculationCompleted: ((aroundValue: String) -> Unit)? = null
+    var onInputFractionUpdated: ((Int) -> Unit)? = null
     var onLabelsUpdated: ((switchSymbol: String, mainSymbol: String) -> Unit)? = null
 
-    private var currencyMode: CurrencyMode = CurrencyMode.Token(emptyString())
+    private var currencyMode: CurrencyMode = CurrencyMode.Token(emptyString(), 0)
 
     private lateinit var token: Token.Active
 
@@ -37,8 +39,10 @@ class CalculationMode {
         this.token = newToken
 
         if (currencyMode is CurrencyMode.Token) {
-            currencyMode = CurrencyMode.Token(newToken.tokenSymbol)
+            currencyMode = CurrencyMode.Token(newToken)
         }
+
+        handleFractionUpdate(currencyMode)
 
         updateLabels()
     }
@@ -63,6 +67,20 @@ class CalculationMode {
 
     fun getCurrentAmountUsd(): BigDecimal = usdAmount
 
+    fun getValueByMode(): BigDecimal = if (currencyMode is CurrencyMode.Token) {
+        tokenAmount
+    } else {
+        usdAmount
+    }
+
+    fun getSymbolByMode(): String = if (currencyMode is CurrencyMode.Token) {
+        token.tokenSymbol
+    } else {
+        USD_READABLE_SYMBOL
+    }
+
+    fun getCurrentMode(): CurrencyMode = currencyMode
+
     fun getTotalAvailable(): BigDecimal? {
         return when (currencyMode) {
             is CurrencyMode.Usd -> token.totalInUsd
@@ -73,8 +91,10 @@ class CalculationMode {
     fun switchMode() {
         currencyMode = when (currencyMode) {
             is CurrencyMode.Token -> CurrencyMode.Usd
-            is CurrencyMode.Usd -> CurrencyMode.Token(token.tokenSymbol)
+            is CurrencyMode.Usd -> CurrencyMode.Token(token)
         }
+
+        handleFractionUpdate(currencyMode)
         updateLabels()
     }
 
@@ -119,5 +139,14 @@ class CalculationMode {
 
         val usdAround = tokenAmount.times(token.usdRateOrZero)
         onCalculationCompleted?.invoke("${usdAround.formatUsd()} $USD_READABLE_SYMBOL")
+    }
+
+    private fun handleFractionUpdate(mode: CurrencyMode) {
+        val newInputFractionLength = when (mode) {
+            is CurrencyMode.Token -> mode.fractionLength
+            is CurrencyMode.Usd -> FIAT_FRACTION_LENGTH
+        }
+
+        onInputFractionUpdated?.invoke(newInputFractionLength)
     }
 }

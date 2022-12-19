@@ -17,7 +17,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatur
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
-import org.p2p.wallet.newsend.NewSendFragment
+import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.model.SearchResult

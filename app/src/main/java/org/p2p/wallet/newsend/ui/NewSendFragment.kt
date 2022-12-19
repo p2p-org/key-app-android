@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend
+package org.p2p.wallet.newsend.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -20,8 +20,8 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
-import org.p2p.wallet.send.ui.dialogs.FreeTransactionsDetailsBottomSheet
-import org.p2p.wallet.send.ui.dialogs.SendTransactionsDetailsBottomSheet
+import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
+import org.p2p.wallet.newsend.ui.dialogs.SendTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
@@ -135,6 +135,10 @@ class NewSendFragment :
 
     override fun updateInputValue(textValue: String, forced: Boolean) {
         binding.widgetSendDetails.setInput(textValue, forced)
+    }
+
+    override fun updateInputFraction(newInputFractionLength: Int) {
+        binding.widgetSendDetails.updateFractionLength(newInputFractionLength)
     }
 
     override fun showToken(token: Token.Active) {
