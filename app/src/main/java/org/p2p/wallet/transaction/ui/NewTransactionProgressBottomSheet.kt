@@ -11,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
+import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogNewTransactionProgressBinding
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -68,6 +69,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var progressStateFormat: String
 
+    private val colorMountain by unsafeLazy { getColor(R.color.text_mountain) }
+
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
@@ -82,7 +85,11 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
             textViewAmountUsd.text = data.amountUsd
             textViewAmountTokens.text = data.amountTokens
             textViewSendToValue.text = data.recipient
-            textViewFeeValue.text = data.totalFee // need to fix it with total.getTotalFee
+            textViewFeeValue.text = if (data.totalFee.sendFee != null) {
+                data.totalFee.getFeesCombined(colorMountain)
+            } else {
+                resources.getString(R.string.transaction_transaction_fee_free_value)
+            }
             buttonDone.setOnClickListener {
                 dismissAllowingStateLoss()
             }

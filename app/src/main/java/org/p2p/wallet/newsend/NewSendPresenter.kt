@@ -53,8 +53,6 @@ class NewSendPresenter(
     private val appScope: AppScope
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
-    private val colorMountain = resources.getColor(R.color.text_mountain)
-
     private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
         if (newToken != null) {
             view?.showToken(newToken)
@@ -326,17 +324,16 @@ class NewSendPresenter(
 
         appScope.launch {
             try {
-                val data = NewShowProgress(
+                val progressDetails = NewShowProgress(
                     date = Date(),
                     tokenUrl = token.iconUrl.orEmpty(),
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
-                    recipient = recipientAddress.nickNameOrAddress(),
-                    totalFee = if (total.sendFee != null) total.getFeesCombined(colorMountain)
-                    else resources.getString(R.string.transaction_transaction_fee_free_value)
+                    recipient = recipientAddress.nicknameOrAddress(),
+                    totalFee = total
                 )
 
-                view?.showProgressDialog(internalTransactionId, data)
+                view?.showProgressDialog(internalTransactionId, progressDetails)
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
@@ -348,7 +345,7 @@ class NewSendPresenter(
         }
     }
 
-    private fun SearchResult.nickNameOrAddress(): String {
+    private fun SearchResult.nicknameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) username
         else addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
     }

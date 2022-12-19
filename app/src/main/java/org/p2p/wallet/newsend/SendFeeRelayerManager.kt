@@ -55,8 +55,6 @@ class SendFeeRelayerManager(
         minRentExemption = sendInteractor.getMinRelayRentExemption()
     }
 
-    fun getFeeLimitInfo(): FreeTransactionFeeLimit = feeLimitInfo
-
     fun getMinRentExemption(): BigInteger = minRentExemption
 
     fun getState(): FeeRelayerState = currentState
