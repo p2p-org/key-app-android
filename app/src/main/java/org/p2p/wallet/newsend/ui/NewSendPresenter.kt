@@ -1,15 +1,14 @@
-package org.p2p.wallet.newsend
+package org.p2p.wallet.newsend.ui
 
+import android.content.res.Resources
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -22,6 +21,7 @@ import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButton
@@ -49,7 +49,7 @@ class NewSendPresenter(
     private val recipientAddress: SearchResult,
     private val userInteractor: UserInteractor,
     private val sendInteractor: SendInteractor,
-    private val resources: ResourcesProvider,
+    private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
     private val appScope: AppScope
@@ -78,6 +78,7 @@ class NewSendPresenter(
 
     private fun initialize(view: NewSendContract.View) {
         calculationMode.onCalculationCompleted = { view.showAroundValue(it) }
+        calculationMode.onInputFractionUpdated = { view.updateInputFraction(it) }
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
             view.setSwitchLabel(switchSymbol)
             view.setMainAmountLabel(mainSymbol)
@@ -105,10 +106,8 @@ class NewSendPresenter(
                 return@launch
             }
 
-            // if user already selected another fee payer, we shouldn't launch selection mechanism
-            if (sendInteractor.getFeePayerToken().tokenSymbol != token.tokenSymbol) return@launch
-
-            initializeFeeRelayer(view, token, solToken)
+            val currentState = feeRelayerManager.getState()
+            handleFeeRelayerStateUpdate(currentState, view)
         }
     }
 
@@ -150,8 +149,8 @@ class NewSendPresenter(
         val sendFee = feeRelayerState.solanaFee
         val total = buildTotalFee(currentAmount, sourceToken, sendFee, feeRelayerState.feeLimitInfo)
 
-        val text = total.getFeesInToken(inputAmount.isEmpty()) { resources.getString(it) }
-        view.setFeeLabel(text)
+        val feesLabel = total.getFeesInToken(inputAmount.isEmpty()).format(resources)
+        view.setFeeLabel(feesLabel)
 
         updateButton(sourceToken, feeRelayerState)
     }
@@ -165,7 +164,7 @@ class NewSendPresenter(
                 handleUpdateFee(newState, view)
             }
             is FeeRelayerState.ReduceAmount -> {
-                inputAmount = newState.newInputAmount.fromLamports(requireToken().decimals).toPlainString()
+                inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
                 view.updateInputValue(inputAmount, forced = true)
             }
             is FeeRelayerState.Failure -> {
@@ -182,8 +181,8 @@ class NewSendPresenter(
         sendFee: SendSolanaFee?,
         feeLimitInfo: FreeTransactionFeeLimit
     ) = SendFeeTotal(
-        total = currentAmount,
-        totalUsd = calculationMode.getCurrentAmountUsd(),
+        currentAmount = currentAmount,
+        currentAmountUsd = calculationMode.getCurrentAmountUsd(),
         receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
         receiveUsd = currentAmount.toUsd(sourceToken),
         sourceSymbol = sourceToken.tokenSymbol,
@@ -401,7 +400,7 @@ class NewSendPresenter(
         val sendButton = NewSendButton(
             sourceToken = sourceToken,
             searchResult = recipientAddress,
-            tokenAmount = calculationMode.getCurrentAmount(),
+            calculationMode = calculationMode,
             feeRelayerState = feeRelayerState,
             minRentExemption = feeRelayerManager.getMinRentExemption(),
             resources = resources

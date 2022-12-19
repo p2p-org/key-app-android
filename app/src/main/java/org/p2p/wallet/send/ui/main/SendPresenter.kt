@@ -370,7 +370,7 @@ class SendPresenter(
             }
             is CurrencyMode.Usd -> {
                 sendCurrency = token.tokenSymbol.uppercase(Locale.getDefault())
-                CurrencyMode.Token(token.tokenSymbol)
+                CurrencyMode.Token(token)
             }
         }
         sendAnalytics.logSendChangingCurrency(sendCurrency)
@@ -573,8 +573,8 @@ class SendPresenter(
         val sourceToken = token ?: return
 
         val data = SendFeeTotal(
-            total = state.tokenAmount,
-            totalUsd = state.usdAmount,
+            currentAmount = state.tokenAmount,
+            currentAmountUsd = state.usdAmount,
             receive = "${state.tokenAmount.formatToken()} ${sourceToken.tokenSymbol}",
             receiveUsd = state.tokenAmount.toUsd(sourceToken),
             sendFee = sendFeeRelayerFee,

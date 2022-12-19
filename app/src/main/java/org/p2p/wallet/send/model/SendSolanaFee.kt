@@ -68,11 +68,11 @@ data class SendSolanaFee constructor(
 
     @IgnoredOnParcel
     val summedFeeDecimalsFormatted: String
-        get() = "${(summedFeeDecimals).formatToken()} $feePayerSymbol"
+        get() = "${(totalFeeDecimals).formatToken()} $feePayerSymbol"
 
     @IgnoredOnParcel
     val summedFeeDecimalsUsd: String?
-        get() = summedFeeDecimals.toUsd(feePayerToken)?.let { ("(~$$it)") }
+        get() = totalFeeDecimals.toUsd(feePayerToken)?.let { ("(~$$it)") }
 
     @IgnoredOnParcel
     val approxAccountCreationFeeUsd: String?
@@ -95,7 +95,12 @@ data class SendSolanaFee constructor(
             .scaleLong()
 
     @IgnoredOnParcel
-    private val summedFeeDecimals: BigDecimal = accountCreationFeeDecimals + transactionDecimals.orZero()
+    val totalFeeDecimals: BigDecimal
+        get() = accountCreationFeeDecimals + transactionDecimals.orZero()
+
+    @IgnoredOnParcel
+    val totalFeeDecimalsUsd: BigDecimal?
+        get() = totalFeeDecimals.toUsd(feePayerToken)
 
     fun isEnoughToCoverExpenses(
         sourceTokenTotal: BigInteger,
