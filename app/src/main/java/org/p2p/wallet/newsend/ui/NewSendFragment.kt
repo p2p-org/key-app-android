@@ -1,10 +1,10 @@
 package org.p2p.wallet.newsend.ui
 
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.TextContainer
@@ -23,7 +23,8 @@ import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.dialogs.SendTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.search.NewSearchFragment
-import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
@@ -39,8 +40,6 @@ private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 private const val KEY_RESULT_NEW_FEE_PAYER = "KEY_RESULT_APPROXIMATE_FEE_USD"
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
 private const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
-
-private const val TITLE_CUT_COUNT = 7
 
 class NewSendFragment :
     BaseMvpFragment<NewSendContract.View, NewSendContract.Presenter>(R.layout.fragment_send_new),
@@ -202,14 +201,14 @@ class NewSendFragment :
         )
     }
 
-    override fun showProgressDialog(internalTransactionId: String, data: ShowProgress) {
+    override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
         listener?.showTransactionProgress(internalTransactionId, data)
         popBackStackTo(target = NewSearchFragment::class, inclusive = true)
     }
 
     private fun UiKitToolbar.setupToolbar() {
         title = (recipient as? SearchResult.UsernameFound)?.username
-            ?: recipient.addressState.address.cutMiddle(TITLE_CUT_COUNT)
+            ?: recipient.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
         setNavigationOnClickListener { popBackStack() }
     }
 }

@@ -2,10 +2,13 @@ package org.p2p.wallet.newsend
 
 import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
+import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.toLamports
+import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.FeeRelayerState.Failure
 import org.p2p.wallet.newsend.model.FeeRelayerState.ReduceAmount
@@ -16,6 +19,7 @@ import org.p2p.wallet.newsend.model.FeeRelayerStateError.InsufficientFundsToCove
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
 import timber.log.Timber
 import java.math.BigDecimal
@@ -51,11 +55,26 @@ class SendFeeRelayerManager(
         minRentExemption = sendInteractor.getMinRelayRentExemption()
     }
 
-    fun getFeeLimitInfo(): FreeTransactionFeeLimit = feeLimitInfo
-
     fun getMinRentExemption(): BigInteger = minRentExemption
 
     fun getState(): FeeRelayerState = currentState
+
+    fun buildTotalFee(
+        sourceToken: Token.Active,
+        calculationMode: CalculationMode,
+    ): SendFeeTotal {
+        val currentAmount = calculationMode.getCurrentAmount()
+        return SendFeeTotal(
+            currentAmount = currentAmount,
+            currentAmountUsd = calculationMode.getCurrentAmountUsd(),
+            receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
+            receiveUsd = currentAmount.toUsd(sourceToken),
+            sourceSymbol = sourceToken.tokenSymbol,
+            sendFee = (currentState as? UpdateFee)?.solanaFee,
+            recipientAddress = recipientAddress.addressState.address,
+            feeLimit = feeLimitInfo
+        )
+    }
 
     /**
      * Launches the auto-selection mechanism

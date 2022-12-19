@@ -1,13 +1,14 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USDT_SYMBOL
+import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.emptyString
-import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.toUsd
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -15,7 +16,6 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.model.TokenConverter
@@ -27,23 +27,21 @@ import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButton
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
-import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
-import java.math.BigDecimal
 import java.math.BigInteger
+import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -145,9 +143,10 @@ class NewSendPresenter(
         view: NewSendContract.View
     ) {
         val sourceToken = requireToken()
-        val currentAmount = calculationMode.getCurrentAmount()
-        val sendFee = feeRelayerState.solanaFee
-        val total = buildTotalFee(currentAmount, sourceToken, sendFee, feeRelayerState.feeLimitInfo)
+        val total = feeRelayerManager.buildTotalFee(
+            sourceToken = sourceToken,
+            calculationMode = calculationMode
+        )
 
         val feesLabel = total.getFeesInToken(inputAmount.isEmpty()).format(resources)
         view.setFeeLabel(feesLabel)
@@ -174,22 +173,6 @@ class NewSendPresenter(
             is FeeRelayerState.Idle -> Unit
         }
     }
-
-    private fun buildTotalFee(
-        currentAmount: BigDecimal,
-        sourceToken: Token.Active,
-        sendFee: SendSolanaFee?,
-        feeLimitInfo: FreeTransactionFeeLimit
-    ) = SendFeeTotal(
-        currentAmount = currentAmount,
-        currentAmountUsd = calculationMode.getCurrentAmountUsd(),
-        receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
-        receiveUsd = currentAmount.toUsd(sourceToken),
-        sourceSymbol = sourceToken.tokenSymbol,
-        sendFee = sendFee,
-        recipientAddress = recipientAddress.addressState.address,
-        feeLimit = feeLimitInfo
-    )
 
     private suspend fun initializeFeeRelayer(
         view: NewSendContract.View,
@@ -303,9 +286,10 @@ class NewSendPresenter(
         if (inputAmount.isEmpty() && solanaFee == null) {
             view?.showFreeTransactionsInfo()
         } else {
-            val sourceToken = requireToken()
-            val currentAmount = calculationMode.getCurrentAmount()
-            val total = buildTotalFee(currentAmount, sourceToken, solanaFee, feeRelayerManager.getFeeLimitInfo())
+            val total = feeRelayerManager.buildTotalFee(
+                sourceToken = requireToken(),
+                calculationMode = calculationMode
+            )
             view?.showTransactionDetails(total)
         }
     }
@@ -326,21 +310,29 @@ class NewSendPresenter(
         val token = token ?: error("Token cannot be null!")
         val address = recipientAddress.addressState.address
         val currentAmount = calculationMode.getCurrentAmount()
+        val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
 
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
 
+        val total = feeRelayerManager.buildTotalFee(
+            sourceToken = requireToken(),
+            calculationMode = calculationMode
+        )
+
         appScope.launch {
             try {
-                val destinationAddressShort = address.cutMiddle()
-                val data = ShowProgress(
-                    title = R.string.send_transaction_being_processed,
-                    subTitle = "${currentAmount.toPlainString()} ${token.tokenSymbol} → $destinationAddressShort",
-                    transactionId = emptyString()
+                val progressDetails = NewShowProgress(
+                    date = Date(),
+                    tokenUrl = token.iconUrl.orEmpty(),
+                    amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
+                    amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
+                    recipient = recipientAddress.nicknameOrAddress(),
+                    totalFee = total
                 )
 
-                view?.showProgressDialog(internalTransactionId, data)
+                view?.showProgressDialog(internalTransactionId, progressDetails)
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
@@ -350,6 +342,11 @@ class NewSendPresenter(
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
             }
         }
+    }
+
+    private fun SearchResult.nicknameOrAddress(): String {
+        return if (this is SearchResult.UsernameFound) username
+        else addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
     }
 
     /**
