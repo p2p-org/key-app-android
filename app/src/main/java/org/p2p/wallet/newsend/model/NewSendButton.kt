@@ -1,8 +1,9 @@
 package org.p2p.wallet.newsend.model
 
+import android.content.res.Resources
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import android.content.res.Resources
+import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
@@ -13,7 +14,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.SearchResult
 import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
 
 class NewSendButton(
     private val sourceToken: Token.Active,
@@ -89,7 +89,7 @@ class NewSendButton(
                     )
                 }
                 else -> {
-                    val valueText = calculationMode.getValueByMode()
+                    val valueText = calculationMode.getValueByMode().toPlainString()
                     val symbol = calculationMode.getSymbolByMode()
                     State.Enabled(
                         textResId = R.string.send_format,

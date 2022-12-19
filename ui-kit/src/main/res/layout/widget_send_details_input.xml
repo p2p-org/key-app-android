@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
+    tools:background="@color/icons_rain"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <TextView
@@ -15,7 +16,6 @@
         android:layout_marginStart="8dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingVertical="12dp"
         android:text="@string/send_label"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
@@ -27,16 +27,17 @@
         android:id="@+id/textViewFee"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:ellipsize="none"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        android:ellipsize="middle"
         android:enabled="false"
         android:gravity="center_vertical|end"
         android:maxLines="1"
-        android:paddingVertical="12dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_sky"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textViewSendLabel"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Fees: 0" />
 
@@ -55,11 +56,9 @@
 
     <ImageView
         android:id="@+id/imageViewFeesInfo"
-        android:layout_width="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_height="wrap_content"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
         android:layout_marginTop="2dp"
-        android:padding="4dp"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_info_solid"
         app:layout_constraintBottom_toBottomOf="@id/textViewFee"
@@ -71,6 +70,7 @@
         android:id="@+id/containerToken"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:background="@drawable/bg_rounded_solid_snow_12"
         android:foreground="@drawable/ripple_button_large"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,11 +91,16 @@
 
         <TextView
             android:id="@+id/textViewTokenName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
             app:layout_constraintBottom_toTopOf="@id/textViewTokenTotal"
+            app:layout_constraintEnd_toStartOf="@+id/textViewTokenAmountInUsd"
             app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
             app:layout_constraintTop_toTopOf="@+id/imageViewTokenIcon"
             app:layout_constraintVertical_chainStyle="packed"
@@ -103,19 +108,23 @@
 
         <TextView
             android:id="@+id/textViewTokenTotal"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="6dp"
+            android:layout_marginEnd="8dp"
             android:drawablePadding="8dp"
-            android:gravity="center"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             android:textColor="@color/text_mountain"
             app:drawableStartCompat="@drawable/ic_wallet_small"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewTokenIcon"
+            app:layout_constraintEnd_toStartOf="@+id/textViewTokenAmountInUsd"
             app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
             app:layout_constraintTop_toBottomOf="@+id/textViewTokenName"
-            tools:text="4.22222222222" />
+            tools:text="4.222" />
 
         <TextView
             android:id="@+id/textViewTokenAmountInUsd"
@@ -168,7 +177,7 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginStart="24dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:background="@android:color/transparent"
             android:digits="0123456789."
             android:gravity="center_vertical|start"
@@ -177,9 +186,11 @@
             android:inputType="numberDecimal"
             android:maxLines="1"
             android:minWidth="30dp"
+            android:singleLine="true"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
             android:textColor="@color/text_night"
             android:textColorHint="@color/text_silver"
+            app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@id/textViewMainAmount"
             app:layout_constraintEnd_toStartOf="@id/textViewMainAmount"
             app:layout_constraintHorizontal_bias="0"
@@ -200,7 +211,8 @@
             android:textColor="@color/text_mountain"
             app:layout_constraintBottom_toBottomOf="@id/editTextAmount"
             app:layout_constraintStart_toEndOf="@id/editTextAmount"
-            app:layout_constraintTop_toTopOf="@id/editTextAmount" />
+            app:layout_constraintTop_toTopOf="@id/editTextAmount"
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/textViewAmountTypeSwitchLabel"
@@ -223,9 +235,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="6dp"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="20dp"
-            android:autoSizeMinTextSize="8sp"
-            android:autoSizeTextType="uniform"
+            android:ellipsize="middle"
             android:gravity="center_vertical|start"
             android:maxLines="1"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
