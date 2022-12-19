@@ -9,7 +9,7 @@ data class MoonpayCurrencyResponse(
     val currencyName: String,
     @SerializedName("code")
     val currencySymbol: String,
-    @SerializedName("currencyType")
+    @SerializedName("type")
     val currencyType: String,
     @SerializedName("minAmount")
     val minAmount: Double,
