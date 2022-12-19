@@ -85,8 +85,9 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
             textViewAmountUsd.text = data.amountUsd
             textViewAmountTokens.text = data.amountTokens
             textViewSendToValue.text = data.recipient
-            textViewFeeValue.text = if (data.totalFee.sendFee != null) {
-                data.totalFee.getFeesCombined(colorMountain)
+            val total = data.totalFee
+            textViewFeeValue.text = if (total.sendFee != null) {
+                total.getFeesCombined(colorMountain, checkFeePayer = false)
             } else {
                 resources.getString(R.string.transaction_transaction_fee_free_value)
             }

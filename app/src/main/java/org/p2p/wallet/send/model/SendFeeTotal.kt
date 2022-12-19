@@ -60,8 +60,8 @@ class SendFeeTotal constructor(
         return SpanUtils.highlightText(totalText, totalAmountUsd, colorMountain)
     }
 
-    fun getFeesCombined(@ColorInt colorMountain: Int): CharSequence? {
-        if (sendFee == null || sourceSymbol == sendFee.feePayerSymbol) return null
+    fun getFeesCombined(@ColorInt colorMountain: Int, checkFeePayer: Boolean = true): CharSequence? {
+        if (sendFee == null || (checkFeePayer && sourceSymbol == sendFee.feePayerSymbol)) return null
 
         val usdText = sendFee.summedFeeDecimalsUsd.orEmpty()
         val combinedFees = "${sendFee.totalFee} $usdText"
