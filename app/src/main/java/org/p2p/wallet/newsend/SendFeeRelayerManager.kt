@@ -65,8 +65,8 @@ class SendFeeRelayerManager(
     ): SendFeeTotal {
         val currentAmount = calculationMode.getCurrentAmount()
         return SendFeeTotal(
-            total = currentAmount,
-            totalUsd = calculationMode.getCurrentAmountUsd(),
+            currentAmount = currentAmount,
+            currentAmountUsd = calculationMode.getCurrentAmountUsd(),
             receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
             receiveUsd = currentAmount.toUsd(sourceToken),
             sourceSymbol = sourceToken.tokenSymbol,

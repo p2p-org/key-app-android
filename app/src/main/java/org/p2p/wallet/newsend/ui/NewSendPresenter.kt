@@ -1,5 +1,6 @@
 package org.p2p.wallet.newsend.ui
 
+import android.content.res.Resources
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
@@ -7,7 +8,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.emptyString
-import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
