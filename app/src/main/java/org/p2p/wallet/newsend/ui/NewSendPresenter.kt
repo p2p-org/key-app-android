@@ -2,7 +2,6 @@ package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
@@ -36,12 +35,12 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
+import org.p2p.wallet.utils.toPublicKey
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 class NewSendPresenter(
@@ -335,9 +334,8 @@ class NewSendPresenter(
 
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-                //val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
-                delay(TimeUnit.SECONDS.toMillis(10))
-                val transactionState = TransactionState.SendSuccess(buildTransaction("result"), token.tokenSymbol)
+                val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+                val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
             } catch (e: Throwable) {
                 val message = e.getErrorMessage { res -> resources.getString(res) }
