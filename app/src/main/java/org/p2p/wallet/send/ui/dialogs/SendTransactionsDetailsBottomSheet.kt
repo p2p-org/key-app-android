@@ -145,6 +145,6 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
             color = colorMountain
         )
         textViewSubtitleSecondTotal.isVisible = state.showAdditionalFee
-        textViewSubtitleSecondTotal.text = state.getFeesFormatted(colorMountain)
+        textViewSubtitleSecondTotal.text = state.getFeesCombined(colorMountain)
     }
 }

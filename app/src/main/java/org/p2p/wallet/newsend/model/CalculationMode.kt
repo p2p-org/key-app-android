@@ -24,7 +24,7 @@ class CalculationMode {
     var onCalculationCompleted: ((aroundValue: String) -> Unit)? = null
     var onLabelsUpdated: ((switchSymbol: String, mainSymbol: String) -> Unit)? = null
 
-    private var currencyMode: CurrencyMode = CurrencyMode.Usd
+    private var currencyMode: CurrencyMode = CurrencyMode.Token(emptyString())
 
     private lateinit var token: Token.Active
 

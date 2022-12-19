@@ -105,6 +105,9 @@ class NewSendPresenter(
                 return@launch
             }
 
+            // if user already selected another fee payer, we shouldn't launch selection mechanism
+            if (sendInteractor.getFeePayerToken().tokenSymbol != token.tokenSymbol) return@launch
+
             initializeFeeRelayer(view, token, solToken)
         }
     }
@@ -147,7 +150,7 @@ class NewSendPresenter(
         val sendFee = feeRelayerState.solanaFee
         val total = buildTotalFee(currentAmount, sourceToken, sendFee, feeRelayerState.feeLimitInfo)
 
-        val text = total.getFees { resources.getString(it) }
+        val text = total.getFeesInToken(inputAmount.isEmpty()) { resources.getString(it) }
         view.setFeeLabel(text)
 
         updateButton(sourceToken, feeRelayerState)
@@ -157,6 +160,7 @@ class NewSendPresenter(
         newState: FeeRelayerState,
         view: NewSendContract.View
     ) {
+        Timber.d("### state updated $newState")
         when (newState) {
             is FeeRelayerState.UpdateFee -> {
                 handleUpdateFee(newState, view)
@@ -272,14 +276,14 @@ class NewSendPresenter(
         }
     }
 
-    override fun setMaxAmountValue() {
+    override fun onMaxButtonClicked() {
+        val token = token ?: return
         val totalAvailable = calculationMode.getTotalAvailable() ?: return
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
         inputAmount = totalAvailable.toString()
 
         showMaxButtonIfNeeded()
 
-        val token = token ?: return
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showUiKitSnackBar(message)
 
@@ -298,7 +302,7 @@ class NewSendPresenter(
         if (currentState !is FeeRelayerState.UpdateFee) return
 
         val solanaFee = currentState.solanaFee
-        if (solanaFee == null) {
+        if (inputAmount.isEmpty() && solanaFee == null) {
             view?.showFreeTransactionsInfo()
         } else {
             val sourceToken = requireToken()
@@ -316,18 +320,6 @@ class NewSendPresenter(
                 tokenSymbol = fee.feePayerSymbol,
                 amountInUsd = fee.approxAccountCreationFeeUsd.orEmpty(),
                 hasAlternativeToken = hasAlternativeFeePayerTokens
-            )
-        }
-    }
-
-    override fun onChangeFeePayerClicked(approximateFeeUsd: String) {
-        launch {
-            val feePayerToken = sendInteractor.getFeePayerToken()
-            val userTokens = userInteractor.getUserTokens()
-            view?.showFeePayerTokenSelection(
-                tokens = userTokens,
-                currentFeePayerToken = feePayerToken,
-                approximateFeeUsd = approximateFeeUsd
             )
         }
     }
@@ -368,6 +360,7 @@ class NewSendPresenter(
      * 2. When user is typing the amount. We are checking what token we can choose for fee payment
      * 3. When user updates the fee payer token manually. We don't do anything, only updating the info
      * 4. When user clicks on MAX button. We are verifying if we need to reduce the amount for valid transaction
+     * 5. When user updated the source token. We are checking for valid fee payer and if the entered amount is not much
      * */
     private fun executeSmartSelection(
         token: Token.Active,

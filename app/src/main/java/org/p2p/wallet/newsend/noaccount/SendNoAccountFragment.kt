@@ -1,17 +1,22 @@
 package org.p2p.wallet.newsend.noaccount
 
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendNoAccountBinding
+import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
+import org.p2p.wallet.send.interactor.SendInteractor
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import kotlinx.coroutines.launch
 
 private const val ARG_TOKEN_SYMBOL = "ARG_TOKEN_SYMBOL"
 private const val ARG_HAS_ALTERNATIVE_TOKEN = "ARG_HAS_ALTERNATIVE_TOKEN"
@@ -44,11 +49,11 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     private val approximateFeeUsd: String by args(ARG_APPROXIMATE_FEE)
     private val hasAlternativeFeePayerToken: Boolean by args(ARG_HAS_ALTERNATIVE_TOKEN)
 
-    override val statusBarColor: Int
-        get() = R.color.bg_smoke
+    override val statusBarColor: Int get() = R.color.bg_smoke
+    override val navBarColor: Int get() = R.color.bg_night
 
-    override val navBarColor: Int
-        get() = R.color.bg_night
+    private val userInteractor: UserInteractor by inject()
+    private val sendInteractor: SendInteractor by inject()
 
     private val binding: FragmentSendNoAccountBinding by viewBinding()
 
@@ -61,8 +66,7 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
                 setOnClickListener { popBackStack() }
             }
             buttonSwitch.setOnClickListener {
-                setFragmentResult(requestKey, bundleOf(resultKey to approximateFeeUsd))
-                popBackStack()
+                showFeePayerSelection()
             }
             textViewTitle.setText(R.string.send_no_account_title)
 
@@ -81,5 +85,25 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
         }
         val message = getString(messageRes, approximateFeeUsd)
         textViewMessage.text = message
+    }
+
+    private fun showFeePayerSelection() {
+        lifecycleScope.launch {
+            val tokens = userInteractor.getUserTokens()
+            val currentFeePayerToken = sendInteractor.getFeePayerToken()
+            addFragment(
+                target = NewSelectTokenFragment.create(
+                    tokens = tokens,
+                    selectedToken = currentFeePayerToken,
+                    requestKey = requestKey,
+                    resultKey = resultKey,
+                    title = getString(R.string.send_pick_fee_token_format, approximateFeeUsd)
+                ),
+                enter = R.anim.slide_up,
+                exit = 0,
+                popExit = R.anim.slide_down,
+                popEnter = 0
+            )
+        }
     }
 }

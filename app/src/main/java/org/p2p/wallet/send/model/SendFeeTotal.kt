@@ -23,6 +23,7 @@ class SendFeeTotal constructor(
     val recipientAddress: String
 ) : Parcelable {
 
+    @Deprecated("for old send screen, will be removed")
     fun getTotalFee(resourceDelegate: (res: Int) -> String): String =
         when (sendFee) {
             is SendSolanaFee ->
@@ -32,18 +33,20 @@ class SendFeeTotal constructor(
                 resourceDelegate(R.string.send_fees_free)
         }
 
-    fun getFees(resourceDelegate: (res: Int) -> String): String {
+    fun getFeesInToken(isInputEmpty: Boolean, resourceDelegate: (res: Int) -> String): String {
         if (sendFee == null) {
-            return resourceDelegate(R.string.send_fees_free)
+            val text = if (isInputEmpty) R.string.send_fees_free else R.string.send_fees_zero
+            return resourceDelegate(text)
         }
 
         return sendFee.totalFee
     }
 
-    fun getFeesFormatted(colorMountain: Int): CharSequence {
+    fun getFeesCombined(colorMountain: Int): CharSequence {
         if (sendFee == null) return emptyString()
-        val usdText = sendFee.totalFeeUsdFormatted.orEmpty()
-        return "${sendFee.totalFee} ${SpanUtils.highlightText(usdText, usdText, colorMountain)} "
+        val usdText = sendFee.summedFeeDecimalsUsd.orEmpty()
+        val combinedFees = "${sendFee.totalFee} $usdText"
+        return SpanUtils.highlightText(combinedFees, usdText, colorMountain)
     }
 
     val showAdditionalFee: Boolean
