@@ -160,7 +160,6 @@ class NewSendPresenter(
         newState: FeeRelayerState,
         view: NewSendContract.View
     ) {
-        Timber.d("### state updated $newState")
         when (newState) {
             is FeeRelayerState.UpdateFee -> {
                 handleUpdateFee(newState, view)
