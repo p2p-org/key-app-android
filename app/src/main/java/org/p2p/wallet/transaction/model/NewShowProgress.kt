@@ -11,5 +11,5 @@ class NewShowProgress(
     val amountTokens: String,
     val amountUsd: String,
     val recipient: String,
-    val totalFee: String
+    val totalFee: CharSequence
 ) : Parcelable

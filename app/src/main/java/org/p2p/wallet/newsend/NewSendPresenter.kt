@@ -7,10 +7,8 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.emptyString
-import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.toUsd
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.di.AppScope
@@ -19,7 +17,6 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
-import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.model.TokenConverter
@@ -30,7 +27,6 @@ import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButton
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
@@ -42,7 +38,6 @@ import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
-import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
@@ -57,6 +52,8 @@ class NewSendPresenter(
     private val transactionManager: TransactionManager,
     private val appScope: AppScope
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
+
+    private val colorMountain = resources.getColor(R.color.text_mountain)
 
     private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
         if (newToken != null) {
@@ -149,9 +146,10 @@ class NewSendPresenter(
         view: NewSendContract.View
     ) {
         val sourceToken = requireToken()
-        val currentAmount = calculationMode.getCurrentAmount()
-        val sendFee = feeRelayerState.solanaFee
-        val total = buildTotalFee(currentAmount, sourceToken, sendFee, feeRelayerState.feeLimitInfo)
+        val total = feeRelayerManager.buildTotalFee(
+            sourceToken = sourceToken,
+            calculationMode = calculationMode
+        )
 
         val text = total.getFeesInToken(inputAmount.isEmpty()) { resources.getString(it) }
         view.setFeeLabel(text)
@@ -178,22 +176,6 @@ class NewSendPresenter(
             is FeeRelayerState.Idle -> Unit
         }
     }
-
-    private fun buildTotalFee(
-        currentAmount: BigDecimal,
-        sourceToken: Token.Active,
-        sendFee: SendSolanaFee?,
-        feeLimitInfo: FreeTransactionFeeLimit
-    ) = SendFeeTotal(
-        total = currentAmount,
-        totalUsd = calculationMode.getCurrentAmountUsd(),
-        receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
-        receiveUsd = currentAmount.toUsd(sourceToken),
-        sourceSymbol = sourceToken.tokenSymbol,
-        sendFee = sendFee,
-        recipientAddress = recipientAddress.addressState.address,
-        feeLimit = feeLimitInfo
-    )
 
     private suspend fun initializeFeeRelayer(
         view: NewSendContract.View,
@@ -307,9 +289,10 @@ class NewSendPresenter(
         if (inputAmount.isEmpty() && solanaFee == null) {
             view?.showFreeTransactionsInfo()
         } else {
-            val sourceToken = requireToken()
-            val currentAmount = calculationMode.getCurrentAmount()
-            val total = buildTotalFee(currentAmount, sourceToken, solanaFee, feeRelayerManager.getFeeLimitInfo())
+            val total = feeRelayerManager.buildTotalFee(
+                sourceToken = requireToken(),
+                calculationMode = calculationMode
+            )
             view?.showTransactionDetails(total)
         }
     }
@@ -327,8 +310,6 @@ class NewSendPresenter(
     }
 
     override fun send() {
-        val feeState = feeRelayerManager.getState()
-        if (feeState !is FeeRelayerState.UpdateFee) return
         val token = token ?: error("Token cannot be null!")
         val address = recipientAddress.addressState.address
         val currentAmount = calculationMode.getCurrentAmount()
@@ -338,9 +319,10 @@ class NewSendPresenter(
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
 
-        val sourceToken = requireToken()
-        val sendFee = feeState.solanaFee
-        val total = buildTotalFee(currentAmount, sourceToken, sendFee, feeState.feeLimitInfo)
+        val total = feeRelayerManager.buildTotalFee(
+            sourceToken = requireToken(),
+            calculationMode = calculationMode
+        )
 
         appScope.launch {
             try {
@@ -350,7 +332,8 @@ class NewSendPresenter(
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
                     recipient = recipientAddress.nickNameOrAddress(),
-                    totalFee = total.getTotalFee { resources.getString(it) }
+                    totalFee = if (total.sendFee != null) total.getFeesCombined(colorMountain)
+                    else resources.getString(R.string.transaction_transaction_fee_free_value)
                 )
 
                 view?.showProgressDialog(internalTransactionId, data)
