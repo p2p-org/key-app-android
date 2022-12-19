@@ -36,11 +36,11 @@ class MoonpayCurrenciesRemoteRepository(
 
     private fun MoonpayCurrencyResponse.createAmounts(): MoonpayCurrencyAmounts =
         MoonpayCurrencyAmounts(
-            minAmount = minAmount,
-            maxAmount = maxAmount,
-            minBuyAmount = minBuyAmount,
-            maxBuyAmount = maxBuyAmount,
-            minSellAmount = minSellAmount,
-            maxSellAmount = maxSellAmount
+            minAmount = minAmount.toBigDecimal(),
+            maxAmount = maxAmount.toBigDecimal(),
+            minBuyAmount = minBuyAmount.toBigDecimal(),
+            maxBuyAmount = maxBuyAmount.toBigDecimal(),
+            minSellAmount = minSellAmount.toBigDecimal(),
+            maxSellAmount = maxSellAmount.toBigDecimal()
         )
 }

@@ -5,17 +5,21 @@ import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
+import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
+import java.math.BigDecimal
 
 private const val TAG = "SellInteractor"
 
 class SellInteractor(
     private val sellRepository: MoonpaySellRepository,
+    private val currencyRepository: MoonpayCurrenciesRepository,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -46,10 +50,16 @@ class SellInteractor(
         return sellRepository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
     }
 
-    suspend fun getSellQuoteForSol(solAmount: Double, fiat: MoonpaySellFiatCurrency): MoonpaySellTokenQuote {
+    suspend fun getSellQuoteForSol(solAmount: BigDecimal, fiat: MoonpaySellFiatCurrency): MoonpaySellTokenQuote {
         val solToken = homeLocalRepository.getUserTokens().find(Token.Active::isSOL)
         requireNotNull(solToken) { "SOL token is not found for current user, can't sell" }
 
         return sellRepository.getSellQuoteForToken(solToken, solAmount, fiat)
+    }
+
+    suspend fun getAllCurrencies(): List<MoonpayCurrency> = currencyRepository.getAllCurrencies()
+
+    suspend fun getMoonpaySellFiatCurrency(): MoonpaySellFiatCurrency {
+        return sellRepository.getSellFiatCurrency()
     }
 }

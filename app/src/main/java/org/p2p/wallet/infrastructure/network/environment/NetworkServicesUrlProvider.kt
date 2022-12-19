@@ -102,7 +102,7 @@ class NetworkServicesUrlProvider(
             baseServerSideUrl = serverSideBaseUrl,
             baseClientSideUrl = clientSideBaseUrl,
             isSandboxEnabled = isSandboxEnabled,
-            moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpayKey else BuildConfig.moonpaySandboxKey
+            moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpaySandboxKey else BuildConfig.moonpayKey
         )
     }
 
