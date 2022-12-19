@@ -1,22 +1,20 @@
 package org.p2p.wallet.send.ui.search
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.core.token.Token
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.findInstance
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 250L
 
@@ -29,13 +27,6 @@ class NewSearchPresenter(
 
     private var searchJob: Job? = null
     private var lastResult: List<SearchResult> = emptyList()
-    private var usdcTokenForBuy: Token? = null
-
-    init {
-        launch {
-            usdcTokenForBuy = userInteractor.getTokensForBuy(listOf(Constants.USDC_SYMBOL)).firstOrNull()
-        }
-    }
 
     override fun loadInitialData() {
         val data = usernames
@@ -87,9 +78,14 @@ class NewSearchPresenter(
     }
 
     override fun onBuyClicked() {
-        usdcTokenForBuy?.let {
-            view?.showBuyScreen(it)
-        } ?: Timber.i("Unable to find USDC TokenForBuy!")
+        launch {
+            val tokenForBuying = userInteractor.getTokensForBuy().firstOrNull()
+            if (tokenForBuying == null) {
+                Timber.e("Unable to find a token for buying")
+                return@launch
+            }
+            view?.showBuyScreen(tokenForBuying)
+        }
     }
 
     private suspend fun validateAndSearch(target: SearchTarget) {

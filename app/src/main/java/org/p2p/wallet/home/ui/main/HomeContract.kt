@@ -11,21 +11,23 @@ interface HomeContract {
 
     interface View : MvpView, OnHomeItemsClickListener {
         fun showTokens(tokens: List<HomeElementItem>, isZerosHidden: Boolean)
-        fun showTokensForBuy(tokens: List<Token>, newBuyEnabled: Boolean)
+        fun showTokensForBuy(tokens: List<Token>)
+        fun showNewBuyScreen(token: Token)
+        fun showOldBuyScreen(token: Token)
         fun showBalance(balance: BigDecimal)
         fun showRefreshing(isRefreshing: Boolean)
         fun showEmptyViewData(data: List<Any>)
         fun showEmptyState(isEmpty: Boolean)
         fun showUserAddress(ellipsizedAddress: String)
+        fun showNewSendScreen()
+        fun showOldSendScreen()
+
         fun navigateToProfile()
         fun navigateToReserveUsername()
         fun showAddressCopied(addressAndUsername: String)
         fun showBuyInfoScreen(token: Token)
-        fun showNewBuyScreen(token: Token)
-        fun showOldBuyScreen(token: Token)
+
         fun showSendNoTokens(fallbackToken: Token)
-        fun navigateToNewSend()
-        fun navigateToOldSend()
         fun setSellActionButtonIsVisible(isVisible: Boolean)
     }
 

@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    tools:background="@color/icons_rain"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <TextView
@@ -16,6 +15,7 @@
         android:layout_marginStart="8dp"
         android:ellipsize="end"
         android:maxLines="1"
+        android:paddingVertical="12dp"
         android:text="@string/send_label"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
@@ -27,11 +27,12 @@
         android:id="@+id/textViewFee"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="32dp"
         android:ellipsize="none"
         android:enabled="false"
         android:gravity="center_vertical|end"
         android:maxLines="1"
+        android:paddingVertical="12dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_sky"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
@@ -54,9 +55,11 @@
 
     <ImageView
         android:id="@+id/imageViewFeesInfo"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:padding="4dp"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_info_solid"
         app:layout_constraintBottom_toBottomOf="@id/textViewFee"
@@ -68,7 +71,6 @@
         android:id="@+id/containerToken"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:background="@drawable/bg_rounded_solid_snow_12"
         android:foreground="@drawable/ripple_button_large"
         app:layout_constraintEnd_toEndOf="parent"

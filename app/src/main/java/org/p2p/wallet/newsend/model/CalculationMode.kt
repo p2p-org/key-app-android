@@ -5,10 +5,13 @@ import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
+import org.p2p.core.utils.toUsd
 import org.p2p.wallet.send.model.CurrencyMode
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -21,7 +24,7 @@ class CalculationMode {
     var onCalculationCompleted: ((aroundValue: String) -> Unit)? = null
     var onLabelsUpdated: ((switchSymbol: String, mainSymbol: String) -> Unit)? = null
 
-    private var currencyMode: CurrencyMode = CurrencyMode.Usd
+    private var currencyMode: CurrencyMode = CurrencyMode.Token(emptyString())
 
     private lateinit var token: Token.Active
 
@@ -32,7 +35,10 @@ class CalculationMode {
 
     fun updateToken(newToken: Token.Active) {
         this.token = newToken
-        this.currencyMode = CurrencyMode.Token(newToken.tokenSymbol)
+
+        if (currencyMode is CurrencyMode.Token) {
+            currencyMode = CurrencyMode.Token(newToken.tokenSymbol)
+        }
 
         updateLabels()
     }
@@ -40,6 +46,15 @@ class CalculationMode {
     fun updateInputAmount(newInputAmount: String) {
         this.inputAmount = newInputAmount
         recalculate(inputAmount)
+    }
+
+    fun reduceAmount(newInputAmount: BigInteger): BigDecimal {
+        val newAmount = newInputAmount.fromLamports(token.decimals)
+        return if (currencyMode is CurrencyMode.Usd) {
+            newAmount.toUsd(token).orZero()
+        } else {
+            newAmount
+        }
     }
 
     fun getCurrentAmountLamports(): BigInteger = tokenAmount.toLamports(token.decimals)

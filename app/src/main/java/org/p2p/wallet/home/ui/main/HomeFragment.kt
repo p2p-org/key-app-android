@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -238,20 +237,20 @@ class HomeFragment :
         }
     }
 
+    override fun showNewSendScreen() {
+        replaceFragment(NewSearchFragment.create())
+    }
+
+    override fun showOldSendScreen() {
+        replaceFragment(SendFragment.create())
+    }
+
     override fun showOldBuyScreen(token: Token) {
         replaceFragment(BuySolanaFragment.create(token))
     }
 
     override fun showSendNoTokens(fallbackToken: Token) {
         replaceFragment(SendNoTokensFragment.create(fallbackToken))
-    }
-
-    override fun navigateToNewSend() {
-        replaceFragment(NewSearchFragment.create())
-    }
-
-    override fun navigateToOldSend() {
-        replaceFragment(SendFragment.create())
     }
 
     override fun showNewBuyScreen(token: Token) {
@@ -266,19 +265,13 @@ class HomeFragment :
         contentAdapter.setItems(tokens, isZerosHidden)
     }
 
-    override fun showTokensForBuy(tokens: List<Token>, newBuyEnabled: Boolean) {
-        if (newBuyEnabled) {
-            tokens.find { it.tokenSymbol == Constants.USDC_SYMBOL }?.let { token ->
-                replaceFragment(NewBuyFragment.create(token))
-            }
-        } else {
-            SelectTokenBottomSheet.show(
-                fm = childFragmentManager,
-                tokens = tokens,
-                requestKey = KEY_REQUEST_TOKEN,
-                resultKey = KEY_RESULT_TOKEN
-            )
-        }
+    override fun showTokensForBuy(tokens: List<Token>) {
+        SelectTokenBottomSheet.show(
+            fm = childFragmentManager,
+            tokens = tokens,
+            requestKey = KEY_REQUEST_TOKEN,
+            resultKey = KEY_RESULT_TOKEN
+        )
     }
 
     override fun showBalance(balance: BigDecimal) {

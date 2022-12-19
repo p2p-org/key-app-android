@@ -6,6 +6,7 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.home.ui.main.TOKENS_VALID_FOR_BUY
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -36,19 +37,17 @@ class UserInteractor(
         mainLocalRepository.getTokensFlow()
             .map { it.sortedWith(TokenComparator()) }
 
-    suspend fun getTokensForBuy(availableTokensSymbols: List<String>): List<Token> {
+    suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKENS_VALID_FOR_BUY): Token? =
+        getTokensForBuy(availableTokensSymbols).firstOrNull()
+
+    suspend fun getTokensForBuy(
+        availableTokensSymbols: List<String> = TOKENS_VALID_FOR_BUY
+    ): List<Token> {
         val userTokens = getUserTokens()
-        val publicKey = tokenKeyProvider.publicKey
-        val allTokens = availableTokensSymbols
-            .mapNotNull { tokenSymbol ->
-                val userToken = userTokens.find { it.tokenSymbol == tokenSymbol }
-                return@mapNotNull when {
-                    userToken != null ->
-                        if (userToken.isSOL && userToken.publicKey != publicKey) null else userToken
-                    else -> findTokenDataBySymbol(tokenSymbol)
-                }
-            }
-            .sortedWith(TokenComparator())
+        val allTokens = availableTokensSymbols.mapNotNull { tokenSymbol ->
+            val userToken = userTokens.find { it.tokenSymbol == tokenSymbol }
+            userToken ?: findTokenDataBySymbol(tokenSymbol)
+        }
 
         return allTokens
     }
@@ -105,6 +104,9 @@ class UserInteractor(
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
+
+    fun findMultipleTokenData(tokenSymbols: List<String>): List<Token> =
+        tokenSymbols.mapNotNull { findTokenDataBySymbol(it) }
 
     private fun findTokenDataBySymbol(symbol: String): Token? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
