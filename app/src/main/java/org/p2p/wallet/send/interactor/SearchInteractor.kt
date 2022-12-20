@@ -52,19 +52,23 @@ class SearchInteractor(
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val userTokens = userInteractor.getUserTokens()
         val hasNotEnoughFunds = !userTokens.any { it.hasFundsForSend(relayInfo) }
-        val isOwnAddress = userToken?.publicKey == address.base58Value
+        val isOwnAddress = isOwnPublicKey(address.base58Value)
+        val isOwnToken = userToken?.publicKey == address.base58Value
         val addressState = AddressState(address.base58Value)
         val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
         return listOf(
             when {
-                isOwnAddress -> SearchResult.InvalidResult(
+                isOwnAddress || isOwnToken -> SearchResult.InvalidResult(
                     addressState = addressState,
                     errorMessage = resourcesProvider.getString(
                         R.string.search_yourself_error
                     ),
                     tokenData = tokenData,
-                    description = resourcesProvider.getString(
+                    description = if (isOwnAddress) resourcesProvider.getString(
                         R.string.search_yourself_description
+                    ) else resourcesProvider.getString(
+                        R.string.search_your_token_description,
+                        tokenData?.symbol.orEmpty()
                     ),
                 )
                 hasNoTokensToSend || sendToOtherDirectToken -> SearchResult.InvalidResult(
