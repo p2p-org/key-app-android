@@ -27,20 +27,23 @@ class UiKitToolbar @JvmOverloads constructor(
         queryTextListener: SearchView.OnQueryTextListener,
         @MenuRes menuRes: Int = R.menu.menu_ui_kit_toolbar_search,
         @StringRes searchHintRes: Int = R.string.common_search,
-        isMenuVisible: Boolean = true
+        isMenuVisible: Boolean = true,
+        lastQuery: String? = null
     ) {
         inflateMenu(menuRes)
 
         val search = menu.findItem(R.id.menuItemSearch)
         searchView = search.actionView as SearchView
         searchView?.apply {
+            // need to set old query and call onActionViewExpanded() because setText="" called in it!
+            setQuery(lastQuery, false)
             queryHint = getString(searchHintRes)
             isVisible = isMenuVisible
-            setOnQueryTextListener(queryTextListener)
             if (isMenuVisible) {
                 onActionViewExpanded()
                 showSoftKeyboard()
             }
+            setOnQueryTextListener(queryTextListener)
         }
     }
 
