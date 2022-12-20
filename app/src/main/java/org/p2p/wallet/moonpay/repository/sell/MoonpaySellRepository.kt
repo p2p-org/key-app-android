@@ -25,4 +25,6 @@ interface MoonpaySellRepository {
     ): MoonpaySellTokenQuote
 
     suspend fun getSellFiatCurrency(): MoonpaySellFiatCurrency
+
+    suspend fun cancelSellTransaction(transactionId: String): MoonpaySellCancelResult
 }

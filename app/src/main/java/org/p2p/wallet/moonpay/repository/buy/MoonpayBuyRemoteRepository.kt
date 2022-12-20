@@ -3,8 +3,7 @@ package org.p2p.wallet.moonpay.repository.buy
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
@@ -33,8 +32,8 @@ class MoonpayBuyRemoteRepository(
             paymentMethod = paymentMethod
         )
         MoonpayBuyResult.Success(mapper.fromNetworkToDomain(response))
-    } catch (error: ServerException) {
-        if (error.errorCode == ErrorCode.BAD_REQUEST) {
+    } catch (error: MoonpayRequestException) {
+        if (error.isBadRequest) {
             MoonpayBuyResult.Error(mapper.fromNetworkErrorToDomainMessage(error))
         } else {
             throw error

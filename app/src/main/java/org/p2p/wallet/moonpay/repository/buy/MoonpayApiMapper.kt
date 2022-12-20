@@ -1,10 +1,10 @@
 package org.p2p.wallet.moonpay.repository.buy
 
-import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
-import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_SYMBOL
+import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
+import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.utils.emptyString
 
 class MoonpayApiMapper {
@@ -29,8 +29,8 @@ class MoonpayApiMapper {
         )
     }
 
-    fun fromNetworkErrorToDomainMessage(error: ServerException): String {
-        val errorMessage = error.getDirectMessage() ?: error.localizedMessage
+    fun fromNetworkErrorToDomainMessage(error: MoonpayRequestException): String {
+        val errorMessage = error.message
         return errorMessage.removeUnderscoreSolIfUsdc()
     }
 

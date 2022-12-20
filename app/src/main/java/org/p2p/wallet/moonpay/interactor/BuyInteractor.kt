@@ -4,14 +4,14 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.infrastructure.network.data.ErrorCode
-import org.p2p.wallet.infrastructure.network.data.ServerException
+import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyQuote
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.buy.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
 import java.math.BigDecimal
+import javax.net.ssl.HttpsURLConnection
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -75,12 +75,12 @@ class BuyInteractor(
                     MoonpayBuyResult.Success(moonpayApiMapper.fromNetworkToDomain(response))
                 }
             }
-        } catch (error: ServerException) {
+        } catch (error: MoonpayRequestException) {
             return when {
                 isMinimumAmountException(error) -> {
                     MoonpayBuyResult.MinAmountError(minBuyAmount)
                 }
-                error.errorCode == ErrorCode.BAD_REQUEST -> {
+                error.httpCode == HttpsURLConnection.HTTP_BAD_REQUEST -> {
                     MoonpayBuyResult.Error(moonpayApiMapper.fromNetworkErrorToDomainMessage(error))
                 }
                 else -> {
@@ -132,8 +132,7 @@ class BuyInteractor(
         return if (isFiatCurrency) !isMoreThenMax else true
     }
 
-    private fun isMinimumAmountException(error: ServerException): Boolean {
-        return error.errorCode == ErrorCode.BAD_REQUEST &&
-            error.getDirectMessage()?.startsWith("Minimum purchase") == true
+    private fun isMinimumAmountException(error: MoonpayRequestException): Boolean {
+        return error.httpCode == HttpsURLConnection.HTTP_BAD_REQUEST && error.message.startsWith("Minimum purchase")
     }
 }
