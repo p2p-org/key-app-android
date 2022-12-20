@@ -54,7 +54,7 @@ class SellPayloadPresenter(
             try {
                 view.showLoading(isVisible = true)
                 checkForSellLock()
-                userBalance = userInteractor.getUserSolToken()?.total.orZero()
+                userSolBalance = userInteractor.getUserSolToken()?.total.orZero()
                 loadCurrencies()
                 checkForMinAmount()
                 startLoadSellQuoteJob()
@@ -86,15 +86,15 @@ class SellPayloadPresenter(
     }
 
     private suspend fun loadCurrencies() {
-        val solCurrency = sellInteractor.getAllCurrencies().firstOrNull { it.isSol() }
-        minSellAmount = solCurrency?.amounts?.minSellAmount.orZero()
-        maxSellAmount = solCurrency?.amounts?.maxSellAmount
+        val solCurrency = sellInteractor.getSolCurrency()
+        minSellAmount = solCurrency.amounts.minSellAmount.orZero()
+        maxSellAmount = solCurrency.amounts.maxSellAmount
         userSelectedAmount = minSellAmount
         currentFiat = sellInteractor.getMoonpaySellFiatCurrency()
     }
 
     private fun checkForMinAmount() {
-        if (userBalance < minSellAmount) {
+        if (userSolBalance < minSellAmount) {
             view?.showNotEnoughMoney(minSellAmount)
         }
     }
