@@ -67,6 +67,8 @@ class NewSearchFragment :
         )
     }
 
+    private var lastQuery: String? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -87,7 +89,8 @@ class NewSearchFragment :
                             return true
                         }
                     },
-                    searchHintRes = R.string.search_edittext_hint
+                    searchHintRes = R.string.search_edittext_hint,
+                    lastQuery = lastQuery
                 )
                 setNavigationOnClickListener { popBackStack() }
             }
@@ -115,6 +118,7 @@ class NewSearchFragment :
     }
 
     private fun onSearchQueryChanged(newQuery: String) {
+        lastQuery = newQuery
         presenter.search(newQuery)
     }
 
