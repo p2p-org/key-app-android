@@ -1,9 +1,9 @@
 package org.p2p.wallet.send.ui.search.adapter
 
-import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
@@ -74,8 +74,11 @@ class SearchViewHolder(
     private fun renderEmptyBalance(item: SearchResult.EmptyBalance) {
         with(binding) {
             topTextView.text = item.addressState.address.cutEnd()
-            bottomTextView.setText(R.string.send_caution_empty_balance)
-            bottomTextView.setTextColorRes(R.color.systemWarningMain)
+            bottomTextView.isVisible = false
+
+            // fixme: temporary not showing empty balance
+//            bottomTextView.setText(R.string.send_caution_empty_balance)
+//            bottomTextView.setTextColorRes(R.color.systemWarningMain)
         }
     }
 }

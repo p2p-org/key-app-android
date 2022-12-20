@@ -145,7 +145,7 @@ class NewSearchPresenter(
         view?.apply {
             showMessage(R.string.search_found)
             showSearchResult(result)
-            setContinueButtonVisibility(result.findInstance<SearchResult.EmptyBalance>() != null)
+            setContinueButtonVisibility(isVisible = true)
             val invalidResult = result.findInstance<SearchResult.InvalidResult>()
             setBuyReceiveButtonsVisibility(invalidResult?.canReceiveAndBuy == true)
             setListBackgroundVisibility(invalidResult == null)

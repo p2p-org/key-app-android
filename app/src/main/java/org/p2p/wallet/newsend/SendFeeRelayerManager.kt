@@ -3,7 +3,6 @@ package org.p2p.wallet.newsend
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
@@ -42,9 +41,10 @@ class SendFeeRelayerManager(
     }
 
     private lateinit var feeLimitInfo: FreeTransactionFeeLimit
-    private lateinit var minRentExemption: BigInteger
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
+
+    private var minRentExemption: BigInteger? = null
 
     suspend fun initialize(
         initialToken: Token.Active,
@@ -54,12 +54,12 @@ class SendFeeRelayerManager(
         this.recipientAddress = recipientAddress
         this.solToken = solToken
 
-        sendInteractor.initialize(initialToken)
-        feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
         minRentExemption = sendInteractor.getMinRelayRentExemption()
+        feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
+        sendInteractor.initialize(initialToken)
     }
 
-    fun getMinRentExemption(): BigInteger = minRentExemption
+    fun getMinRentExemption(): BigInteger = minRentExemption.orZero()
 
     fun getState(): FeeRelayerState = currentState
 
@@ -137,27 +137,24 @@ class SendFeeRelayerManager(
             if (solanaFee == null) {
                 append("Expected total fee in SOL: 0 (E)")
                 appendLine()
-                append("Expected total fee in Token: 0 (T)")
-                appendLine()
                 append("Needed top up amount (E - R): 0 (S)")
+                appendLine()
+                append("Expected total fee in Token: 0 (T)")
             } else {
-                val currentRelayAccountBalance = relayAccount.balance.orZero() - relayInfo.minimumRelayAccountRent
+                val expectedFee = solanaFee.feeRelayerFee.expectedFee.accountBalances
+                append("Expected total fee in SOL: $expectedFee (E)")
+                appendLine()
 
-                val feeRelayerFee = solanaFee.feeRelayerFee
-                append("Expected total fee in SOL: ${feeRelayerFee.totalInSol.orZero()} (E)")
+                val neededTopUpAmount = solanaFee.feeRelayerFee.totalInSol
+                append("Needed top up amount (E - R): $neededTopUpAmount (S)")
+
                 appendLine()
 
                 val feePayerToken = solanaFee.feePayerToken
-                val expectedFeeInSpl = feeRelayerFee.totalInSpl.orZero()
+                val expectedFeeInSpl = solanaFee.feeRelayerFee.totalInSpl.orZero()
                     .fromLamports(feePayerToken.decimals)
                     .scaleLong()
                 append("Expected total fee in Token: $expectedFeeInSpl ${feePayerToken.tokenSymbol} (T)")
-                appendLine()
-
-                val neededTopUpAmount = feeRelayerFee.totalInSol.orZero() - currentRelayAccountBalance
-                val result =
-                    if (neededTopUpAmount.isLessThan(BigInteger.ZERO)) BigInteger.ZERO else neededTopUpAmount
-                append("Needed top up amount (E - R): $result (S)")
             }
         }
     }

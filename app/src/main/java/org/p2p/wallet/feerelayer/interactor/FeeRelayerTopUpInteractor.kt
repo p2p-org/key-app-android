@@ -138,7 +138,7 @@ class FeeRelayerTopUpInteractor(
     suspend fun calculateNeededTopUpAmount(expectedFee: FeeAmount): FeeAmount {
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val neededAmount = expectedFee
+        val neededAmount = FeeAmount(expectedFee.transaction, expectedFee.accountBalances)
 
         // expected fees
         val expectedTopUpNetworkFee = BigInteger.valueOf(2L) * info.lamportsPerSignature

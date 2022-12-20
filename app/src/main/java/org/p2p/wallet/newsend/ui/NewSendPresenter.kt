@@ -21,7 +21,7 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeRelayerState
-import org.p2p.wallet.newsend.model.NewSendButton
+import org.p2p.wallet.newsend.model.NewSendButtonValidator
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendSolanaFee
@@ -294,18 +294,6 @@ class NewSendPresenter(
         }
     }
 
-    override fun onAccountCreationFeeClicked(fee: SendSolanaFee) {
-        launch {
-            val userTokens = userInteractor.getUserTokens()
-            val hasAlternativeFeePayerTokens = sendInteractor.hasAlternativeFeePayerTokens(userTokens, fee)
-            view?.showAccountCreationFeeInfo(
-                tokenSymbol = fee.feePayerSymbol,
-                amountInUsd = fee.approxAccountCreationFeeUsd.orEmpty(),
-                hasAlternativeToken = hasAlternativeFeePayerTokens
-            )
-        }
-    }
-
     override fun send() {
         val token = token ?: error("Token cannot be null!")
         val address = recipientAddress.addressState.address
@@ -393,7 +381,7 @@ class NewSendPresenter(
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
-        val sendButton = NewSendButton(
+        val sendButton = NewSendButtonValidator(
             sourceToken = sourceToken,
             searchResult = recipientAddress,
             calculationMode = calculationMode,
@@ -403,12 +391,12 @@ class NewSendPresenter(
         )
 
         when (val state = sendButton.state) {
-            is NewSendButton.State.Disabled -> {
+            is NewSendButtonValidator.State.Disabled -> {
                 view?.setBottomButtonText(state.textContainer)
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
-            is NewSendButton.State.Enabled -> {
+            is NewSendButtonValidator.State.Enabled -> {
                 view?.setSliderText(resources.getString(state.textResId, state.value))
                 view?.setBottomButtonText(null)
                 view?.setInputColor(state.totalAmountTextColor)

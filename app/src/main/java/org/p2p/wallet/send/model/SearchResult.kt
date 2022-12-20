@@ -11,7 +11,7 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     data class InvalidAddress(override val addressState: AddressState) : SearchResult(addressState)
 
     @Parcelize
-    data class AddressOnly(
+    data class AddressOnly constructor(
         override val addressState: AddressState,
         val sourceToken: Token.Active? = null
     ) : SearchResult(addressState)

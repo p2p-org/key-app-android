@@ -49,6 +49,7 @@ object HomeModule : InjectionModule {
                 amountRepository = get(),
                 transactionInteractor = get(),
                 tokenKeyProvider = get(),
+                dispatchers = get()
             )
         }
         factoryOf(::SearchInteractor)
