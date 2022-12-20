@@ -1,7 +1,7 @@
 package org.p2p.wallet.moonpay.repository.sell
 
 enum class MoonpaySellFiatCurrency(val symbol: String, val uiSymbol: String) {
-    EUR("eur", "€"),
+    EUR("eur", "EUR"),
     USD("usd", "$"),
     GBP("gbp", "GBP");
 

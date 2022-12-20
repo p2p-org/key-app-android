@@ -50,12 +50,13 @@
             android:id="@+id/textViewHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_night_30"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
-            android:textAllCaps="true"
-            android:textColor="@color/text_night_30"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="EUR" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

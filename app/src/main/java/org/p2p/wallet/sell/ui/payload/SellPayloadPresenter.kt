@@ -39,12 +39,13 @@ class SellPayloadPresenter(
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
 
-    private var userBalance: BigDecimal = BigDecimal.ZERO
+    private var userSolBalance: BigDecimal = BigDecimal.ZERO
     private var minSellAmount: BigDecimal = BigDecimal.ZERO
     private var maxSellAmount: BigDecimal? = null
     private var userSelectedAmount: BigDecimal = BigDecimal.ZERO
-    private var fiat: MoonpaySellFiatCurrency? = null
+    private var currentFiat: MoonpaySellFiatCurrency = MoonpaySellFiatCurrency.USD
     private var tokenPrice: BigDecimal = BigDecimal.ZERO
+
     private var sellQuoteJob: Job? = null
 
     override fun attach(view: SellPayloadContract.View) {
@@ -89,7 +90,7 @@ class SellPayloadPresenter(
         minSellAmount = solCurrency?.amounts?.minSellAmount.orZero()
         maxSellAmount = solCurrency?.amounts?.maxSellAmount
         userSelectedAmount = minSellAmount
-        fiat = sellInteractor.getMoonpaySellFiatCurrency()
+        currentFiat = sellInteractor.getMoonpaySellFiatCurrency()
     }
 
     private fun checkForMinAmount() {
@@ -100,25 +101,26 @@ class SellPayloadPresenter(
 
     private fun startLoadSellQuoteJob() {
         sellQuoteJob?.cancel()
+
         sellQuoteJob = launch {
             while (isActive) {
                 try {
-                    val selectedFiat = fiat ?: error("Fiat cannot be null")
-                    val sellQuote = sellInteractor.getSellQuoteForSol(userSelectedAmount, selectedFiat)
+                    val sellQuote = sellInteractor.getSellQuoteForSol(userSelectedAmount, currentFiat)
 
                     tokenPrice = sellQuote.tokenPrice
 
+                    val fiatUiSymbol = currentFiat.uiSymbol
                     val moonpayFee = sellQuote.feeAmount
-                    val fiat = "${tokenPrice}${selectedFiat.uiSymbol}"
+                    val fiatAmount = "$tokenPrice $fiatUiSymbol"
 
                     val viewState = ViewState(
                         quoteAmount = sellQuote.fiatEarning.formatToken(),
                         fee = moonpayFee.scaleShortOrFirstNotZero().toString(),
-                        fiat = fiat,
+                        fiat = fiatAmount,
                         solToSell = userSelectedAmount.toString(),
                         tokenSymbol = Constants.SOL_SYMBOL,
-                        fiatSymbol = selectedFiat.uiSymbol,
-                        userBalance = userBalance.toString()
+                        fiatSymbol = fiatUiSymbol,
+                        userBalance = userSolBalance.toString()
                     )
 
                     view?.updateViewState(viewState)
@@ -139,7 +141,7 @@ class SellPayloadPresenter(
         val moonpayUrl = moonpayWidgetUrlBuilder.buildSellWidgetUrl(
             tokenSymbol = Constants.SOL_SYMBOL,
             userAddress = userAddress,
-            fiatSymbol = fiat?.symbol.orEmpty(),
+            fiatSymbol = currentFiat.symbol.orEmpty(),
             tokenAmountToSell = userSelectedAmount.toString(),
         )
         view?.showMoonpayWidget(url = moonpayUrl)
@@ -175,7 +177,7 @@ class SellPayloadPresenter(
     }
 
     override fun onUserMaxClicked() {
-        view?.setTokenAmount(userBalance.toString())
+        view?.setTokenAmount(userSolBalance.toString())
     }
 
     private fun determineButtonState(selectedTokenAmount: BigDecimal): SellPayloadContract.CashOutButtonState {
@@ -196,7 +198,7 @@ class SellPayloadPresenter(
                     text = resourceProvider.getString(R.string.sell_max_sol_amount, maxSellAmount.toString())
                 )
             }
-            selectedTokenAmount.isMoreThan(userBalance) -> {
+            selectedTokenAmount.isMoreThan(userSolBalance) -> {
                 SellPayloadContract.CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,

@@ -35,8 +35,8 @@ open class UiKitAmountEditText @JvmOverloads constructor(
     private val bgNormal = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
         cornerRadius = CORNER_RADIUS
-        setColor(context.getColor(R.color.rain))
-        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rain))
+        setColor(context.getColor(R.color.bg_snow))
+        setStroke(STROKE_WIDTH, context.getColor(R.color.bg_snow))
     }
 
     init {
