@@ -47,7 +47,6 @@ class SearchAdapter(
     }
 
     override fun getItemViewType(position: Int): Int = when (data[position]) {
-        is SearchResult.EmptyBalance -> R.layout.item_search_empty_balance
         is SearchResult.InvalidResult -> R.layout.item_search_invalid_result
         else -> R.layout.item_search
     }
@@ -58,10 +57,6 @@ class SearchAdapter(
         return when (viewType) {
             R.layout.item_search_invalid_result -> SearchInvalidResultViewHolder(
                 parent = parent
-            )
-            R.layout.item_search_empty_balance -> SearchEmptyBalanceViewHolder(
-                parent = parent,
-                onItemClicked = onItemClicked
             )
             else -> SearchViewHolder(
                 parent = parent,
@@ -74,7 +69,6 @@ class SearchAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is SearchViewHolder -> holder.onBind(data[position])
-            is SearchEmptyBalanceViewHolder -> holder.onBind(data[position] as SearchResult.EmptyBalance)
             is SearchInvalidResultViewHolder -> holder.onBind(data[position] as SearchResult.InvalidResult)
         }
     }

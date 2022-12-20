@@ -45,6 +45,7 @@ class SearchInteractor(
         }
     }
 
+    // todo: refactor this method. too complex
     suspend fun searchByAddress(address: Base58String, sourceToken: Token.Active? = null): List<SearchResult> {
         val tokenData = transactionAddressInteractor.getTokenDataIfDirect(address)
         val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
@@ -56,6 +57,7 @@ class SearchInteractor(
         val isOwnToken = userToken?.publicKey == address.base58Value
         val addressState = AddressState(address.base58Value)
         val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
+
         return listOf(
             when {
                 isOwnAddress || isOwnToken -> SearchResult.InvalidResult(
@@ -90,7 +92,15 @@ class SearchInteractor(
                     ),
                     canReceiveAndBuy = true
                 )
-                else -> SearchResult.AddressOnly(addressState, userToken)
+                else -> {
+                    val balance = userInteractor.getBalance(address)
+                    val hasEmptyBalance = balance == 0L
+                    if (hasEmptyBalance) {
+                        SearchResult.EmptyBalance(addressState)
+                    } else {
+                        SearchResult.AddressOnly(addressState)
+                    }
+                }
             }
         )
     }

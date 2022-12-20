@@ -22,12 +22,18 @@ class FeeRelayerRemoteRepository(
     private val environmentManager: NetworkEnvironmentManager
 ) : FeeRelayerRepository {
 
+    private var feeRelayerPublicKey: PublicKey? = null
+
     override suspend fun getFeePayerPublicKey(): PublicKey {
-        return if (environmentManager.isDevnet()) {
-            devnetApi.getPublicKeyV2().toPublicKey()
-        } else {
-            api.getPublicKey().toPublicKey()
+        if (feeRelayerPublicKey == null) {
+            feeRelayerPublicKey = if (environmentManager.isDevnet()) {
+                devnetApi.getPublicKeyV2().toPublicKey()
+            } else {
+                api.getPublicKey().toPublicKey()
+            }
         }
+
+        return feeRelayerPublicKey!!
     }
 
     override suspend fun getFreeFeeLimits(owner: String): FreeTransactionFeeLimit {
