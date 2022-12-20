@@ -25,6 +25,8 @@ interface NewSendContract {
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun setInitialToken(selectedToken: Token.Active?)
+
         fun updateToken(newToken: Token.Active)
         fun updateInputAmount(amount: String)
         fun updateFeePayerToken(feePayerToken: Token.Active)

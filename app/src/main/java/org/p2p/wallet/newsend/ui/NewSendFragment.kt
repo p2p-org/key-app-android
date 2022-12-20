@@ -1,28 +1,29 @@
 package org.p2p.wallet.newsend.ui
 
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet.Companion.ARG_RESULT_KEY
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
-import org.p2p.wallet.newsend.noaccount.SendNoAccountFragment
+import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
+import org.p2p.wallet.newsend.ui.dialogs.SendTransactionsDetailsBottomSheet
+import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
-import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
-import org.p2p.wallet.newsend.ui.dialogs.SendTransactionsDetailsBottomSheet
-import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
 import org.p2p.wallet.utils.addFragment
@@ -36,6 +37,7 @@ import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
+private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
 
 private const val KEY_RESULT_NEW_FEE_PAYER = "KEY_RESULT_APPROXIMATE_FEE_USD"
 private const val KEY_RESULT_TOKEN_TO_SEND = "KEY_RESULT_TOKEN_TO_SEND"
@@ -46,12 +48,16 @@ class NewSendFragment :
     NewSendContract.View {
 
     companion object {
-        fun create(recipient: SearchResult) =
+        fun create(recipient: SearchResult, initialToken: Token.Active? = null) =
             NewSendFragment()
-                .withArgs(ARG_RECIPIENT to recipient)
+                .withArgs(
+                    ARG_RECIPIENT to recipient,
+                    ARG_INITIAL_TOKEN to initialToken
+                )
     }
 
     private val recipient: SearchResult by args(ARG_RECIPIENT)
+    private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
@@ -68,6 +74,11 @@ class NewSendFragment :
         listener = context as? RootListener
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        presenter.setInitialToken(initialToken)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setupToolbar()
@@ -78,10 +89,14 @@ class NewSendFragment :
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
             focusAndShowKeyboard()
+            setTokenContainerEnabled(isEnabled = initialToken == null)
         }
         binding.sliderSend.onSlideCompleteListener = {
             presenter.send()
         }
+
+        binding.textViewDebug.isVisible = BuildConfig.DEBUG
+
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_REQUEST_SEND,
             viewLifecycleOwner
