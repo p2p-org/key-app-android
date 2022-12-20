@@ -10,7 +10,9 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
@@ -52,7 +54,7 @@ class SearchViewHolder(
             walletImageView.setImageResource(imageResource)
 
             topTextView.text = item.username
-            bottomTextView withTextOrGone item.addressState.address.cutEnd()
+            bottomTextView withTextOrGone item.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
             bottomTextView.setTextColorRes(R.color.backgroundDisabled)
         }
     }
@@ -66,7 +68,7 @@ class SearchViewHolder(
                 walletImageView.setImageResource(R.drawable.ic_search_wallet)
                 walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
             }
-            topTextView.text = item.addressState.address.cutEnd()
+            topTextView.text = item.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
             bottomTextView.isVisible = false
         }
     }

@@ -27,40 +27,46 @@ class NewSearchPresenter(
     private val userInteractor: UserInteractor,
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
+    private var lastQuery: String? = null
     private var searchJob: Job? = null
     private var lastResult: List<SearchResult> = emptyList()
 
     override fun loadInitialData() {
-        val data = usernames
+        val data = lastResult.takeIf { lastResult.isNotEmpty() } ?: usernames
         if (data.isNullOrEmpty()) {
             // TODO PWN-6077 check latest recipients and show if exists
             view?.showEmptyState(isEmpty = true)
         } else {
-            val value = (data.first() as SearchResult.UsernameFound).username
-            view?.showSearchValue(value)
+            val searchedItem = data.first()
+            val value = (searchedItem as? SearchResult.UsernameFound)?.username
+                ?: searchedItem.addressState.address
+            view?.showSearchValue(lastQuery ?: value)
             setResult(data)
         }
     }
 
     override fun search(newQuery: String) {
-        val target = SearchTarget(
-            value = newQuery,
-            keyAppDomainIfUsername = usernameDomainFeatureToggle.value
-        )
+        if (lastQuery != newQuery) {
+            lastQuery = newQuery
+            val target = SearchTarget(
+                value = newQuery,
+                keyAppDomainIfUsername = usernameDomainFeatureToggle.value
+            )
 
-        searchJob?.cancel()
-        searchJob = launch {
-            try {
-                delay(DELAY_IN_MS)
-                view?.showLoading(isLoading = true)
-                validateAndSearch(target)
-            } catch (e: CancellationException) {
-                Timber.i("Cancelled search target validation: ${target.value}")
-            } catch (e: Throwable) {
-                Timber.e(e, "Error searching target: $newQuery")
-                validateOnlyAddress(target)
-            } finally {
-                view?.showLoading(false)
+            searchJob?.cancel()
+            searchJob = launch {
+                try {
+                    delay(DELAY_IN_MS)
+                    view?.showLoading(isLoading = true)
+                    validateAndSearch(target)
+                } catch (e: CancellationException) {
+                    Timber.i("Cancelled search target validation: ${target.value}")
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error searching target: $newQuery")
+                    validateOnlyAddress(target)
+                } finally {
+                    view?.showLoading(false)
+                }
             }
         }
     }
