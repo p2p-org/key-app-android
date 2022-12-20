@@ -52,7 +52,7 @@ class SearchInteractor(
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val userTokens = userInteractor.getUserTokens()
         val hasNotEnoughFunds = !userTokens.any { it.hasFundsForSend(relayInfo) }
-        val isOwnAddress = isOwnPublicKey(address.base58Value) || userToken != null
+        val isOwnAddress = userToken?.publicKey == address.base58Value
         val addressState = AddressState(address.base58Value)
         return listOf(
             when {
