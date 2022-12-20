@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui.search
+package org.p2p.wallet.newsend.ui.search
 
 import android.os.Bundle
 import android.view.View
@@ -13,15 +13,13 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
-import org.p2p.wallet.newsend.NewSendFragment
+import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -34,23 +32,30 @@ import org.p2p.wallet.utils.withTextResOrGone
 private const val REQUEST_QR_KEY = "REQUEST_QR_KEY"
 private const val RESULT_QR_KEY = "RESULT_QR_KEY"
 
+private const val EXTRA_USERNAMES = "EXTRA_USERNAMES"
+private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+
 class NewSearchFragment :
     BaseMvpFragment<NewSearchContract.View, NewSearchContract.Presenter>(R.layout.fragment_new_search),
     NewSearchContract.View {
 
     companion object {
-        private const val EXTRA_USERNAMES = "EXTRA_USERNAMES"
-
         fun create(preselectedRecipients: List<SearchResult>? = null): NewSearchFragment =
             NewSearchFragment()
                 .withArgs(EXTRA_USERNAMES to preselectedRecipients)
+
+        fun create(selectedToken: Token.Active): NewSearchFragment =
+            NewSearchFragment()
+                .withArgs(EXTRA_TOKEN to selectedToken)
     }
 
     private val usernames: List<SearchResult>? by args(EXTRA_USERNAMES)
-    override val presenter: NewSearchContract.Presenter by inject { parametersOf(usernames) }
-    private val binding: FragmentNewSearchBinding by viewBinding()
+    private val selectedToken: Token.Active? by args(EXTRA_TOKEN)
 
-    private val newSendFeatureToggle: NewSendEnabledFeatureToggle by inject()
+    override val presenter: NewSearchContract.Presenter by inject {
+        parametersOf(usernames, selectedToken)
+    }
+    private val binding: FragmentNewSearchBinding by viewBinding()
 
     override val statusBarColor: Int = R.color.bg_smoke
     override val navBarColor: Int = R.color.bg_smoke
@@ -82,24 +87,18 @@ class NewSearchFragment :
                             return true
                         }
                     },
-                    menuRes = R.menu.menu_search_with_scan,
                     searchHintRes = R.string.search_edittext_hint
                 )
                 setNavigationOnClickListener { popBackStack() }
-                setOnMenuItemClickListener {
-                    if (it.itemId == R.id.itemScan) {
-                        presenter.onScanClicked()
-                        true
-                    } else {
-                        false
-                    }
-                }
             }
 
             buttonContinue.setOnClickListener { presenter.onContinueClicked() }
 
             buttonBuy.setOnClickListener {
                 presenter.onBuyClicked()
+            }
+            buttonScanQr.setOnClickListener {
+                presenter.onScanClicked()
             }
             buttonReceive.setOnClickListener {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
@@ -175,14 +174,8 @@ class NewSearchFragment :
         binding.messageTextView.withTextResOrGone(textRes)
     }
 
-    override fun submitSearchResult(searchResult: SearchResult) {
-        val sendFragmentToOpen = if (newSendFeatureToggle.isFeatureEnabled) {
-            NewSendFragment.create(recipient = searchResult)
-        } else {
-            SendFragment.create(address = searchResult.addressState.address)
-        }
-
-        replaceFragment(sendFragmentToOpen)
+    override fun submitSearchResult(searchResult: SearchResult, initialToken: Token.Active?) {
+        replaceFragment(NewSendFragment.create(recipient = searchResult, initialToken = initialToken))
     }
 
     override fun showScanner() {

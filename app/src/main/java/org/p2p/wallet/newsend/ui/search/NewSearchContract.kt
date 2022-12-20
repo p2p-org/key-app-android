@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui.search
+package org.p2p.wallet.newsend.ui.search
 
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
@@ -19,7 +19,7 @@ interface NewSearchContract {
         fun setListBackgroundVisibility(isVisible: Boolean)
         fun setContinueButtonVisibility(isVisible: Boolean)
         fun setBuyReceiveButtonsVisibility(isVisible: Boolean)
-        fun submitSearchResult(searchResult: SearchResult)
+        fun submitSearchResult(searchResult: SearchResult, initialToken: Token.Active?)
         fun showScanner()
         fun showBuyScreen(token: Token)
     }

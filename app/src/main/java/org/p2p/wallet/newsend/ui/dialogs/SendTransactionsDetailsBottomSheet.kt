@@ -1,13 +1,13 @@
-package org.p2p.wallet.send.ui.dialogs
+package org.p2p.wallet.newsend.ui.dialogs
 
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.setFragmentResult
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toast
@@ -19,6 +19,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_SEND_STATE = "ARG_SEND_STATE"
 
@@ -122,7 +123,7 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
         if (fee != null) {
             textViewSubtitleAccountFee.setTextColor(colorNight)
             textViewSubtitleAccountFee.text = SpanUtils.highlightText(
-                commonText = fee.accountCreationFullFee,
+                commonText = fee.accountCreationFeeUsd,
                 highlightedText = fee.approxAccountCreationFeeUsd.orEmpty(),
                 color = colorMountain
             )
@@ -139,11 +140,8 @@ class SendTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
     private fun DialogSendTransactionsDetailsBinding.setTotal() {
         imageViewIconTotal.setImageResource(R.drawable.ic_receipt)
         textViewTitleTotal.text = getString(R.string.send_transactions_details_total)
-        textViewSubtitleFirstTotal.text = SpanUtils.highlightText(
-            commonText = state.fullTotal,
-            highlightedText = state.approxTotalUsd.orEmpty(),
-            color = colorMountain
-        )
-        textViewSubtitleSecondTotal.isVisible = false
+        textViewSubtitleFirstTotal.text = state.getTotalCombined(colorMountain)
+
+        textViewSubtitleSecondTotal withTextOrGone state.getFeesCombined(colorMountain)
     }
 }

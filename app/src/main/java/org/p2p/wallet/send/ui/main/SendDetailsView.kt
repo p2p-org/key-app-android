@@ -73,7 +73,7 @@ class SendDetailsView @JvmOverloads constructor(
             if (data.sendFee != null) {
                 accountCreationFeeView.isVisible = isExpanded
                 val feeText = SpanUtils.highlightText(
-                    data.sendFee.accountCreationFullFee,
+                    data.sendFee.accountCreationFeeUsd,
                     data.sendFee.approxAccountCreationFeeUsd.orEmpty(),
                     color
                 )

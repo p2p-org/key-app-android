@@ -25,7 +25,7 @@ import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
-import org.p2p.wallet.transaction.model.ShowProgress
+import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -72,7 +72,6 @@ class RootActivity :
 
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
 
-        presenter.loadPricesAndBids()
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
         }
@@ -113,7 +112,7 @@ class RootActivity :
         }
     }
 
-    override fun showTransactionProgress(internalTransactionId: String, data: ShowProgress) {
+    override fun showTransactionProgress(internalTransactionId: String, data: NewShowProgress) {
         NewTransactionProgressBottomSheet.show(supportFragmentManager, internalTransactionId, data)
     }
 

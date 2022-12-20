@@ -97,6 +97,13 @@ fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     else -> "~$${formatUsd()}"
 }
 
+fun BigDecimal.asPositiveUsdTransaction(): String = asUsdTransaction("+")
+fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
+private fun BigDecimal.asUsdTransaction(
+    transactionSymbol: String
+): String = if (lessThenMinValue()) "<$ 0.01" else "$transactionSymbol$ ${formatUsd()}"
+
 fun Int?.orZero(): Int = this ?: 0
+
 // value is in (0..0.01)
 private fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())

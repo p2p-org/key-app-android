@@ -10,6 +10,7 @@ import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellQuoteResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
+import org.p2p.wallet.moonpay.model.SellTransactionAmounts
 import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionResponse
 import org.p2p.wallet.utils.Base58String
 
@@ -20,11 +21,20 @@ class MoonpaySellRepositoryMapper {
     ): List<MoonpaySellTransaction> {
         return response.map { transactionResponse ->
             transactionResponse.run {
+                val amounts = SellTransactionAmounts(
+                    tokenAmount = tokenAmount.toBigDecimal(),
+                    feeAmount = (feeAmount ?: 0.0).toBigDecimal(),
+                    usdAmount = usdRate.toBigDecimal(),
+                    eurAmount = eurRate.toBigDecimal(),
+                    gbpAmount = gbpRate.toBigDecimal()
+                )
+
                 MoonpaySellTransaction(
                     transactionId = transactionId,
                     createdAt = createdAt,
                     updatedAt = updatedAt,
                     status = MoonpaySellTransaction.TransactionStatus.fromString(status),
+                    amounts = amounts,
                     accountId = accountId,
                     customerId = customerId,
                     bankAccountId = bankAccountId,
@@ -47,12 +57,12 @@ class MoonpaySellRepositoryMapper {
                 tokenName = currencyName,
                 currencyId = currencyId,
                 amounts = MoonpayCurrencyAmounts(
-                    minAmount = minAmount,
-                    maxAmount = maxAmount,
-                    minBuyAmount = minBuyAmount,
-                    maxBuyAmount = maxBuyAmount,
-                    minSellAmount = minSellAmount,
-                    maxSellAmount = maxSellAmount
+                    minAmount = minAmount.toBigDecimal(),
+                    maxAmount = maxAmount.toBigDecimal(),
+                    minBuyAmount = minBuyAmount.toBigDecimal(),
+                    maxBuyAmount = maxBuyAmount.toBigDecimal(),
+                    minSellAmount = minSellAmount.toBigDecimal(),
+                    maxSellAmount = maxSellAmount.toBigDecimal()
                 )
             )
         }
@@ -62,25 +72,25 @@ class MoonpaySellRepositoryMapper {
                 fiatName = currencyName,
                 currencyId = currencyId,
                 amounts = MoonpayCurrencyAmounts(
-                    minAmount = minAmount,
-                    maxAmount = maxAmount,
-                    minBuyAmount = minBuyAmount,
-                    maxBuyAmount = maxBuyAmount,
-                    minSellAmount = minSellAmount,
-                    maxSellAmount = maxSellAmount
+                    minAmount = minAmount.toBigDecimal(),
+                    maxAmount = maxAmount.toBigDecimal(),
+                    minBuyAmount = minBuyAmount.toBigDecimal(),
+                    maxBuyAmount = maxBuyAmount.toBigDecimal(),
+                    minSellAmount = minSellAmount.toBigDecimal(),
+                    maxSellAmount = maxSellAmount.toBigDecimal()
                 )
             )
         }
         return response.run {
             MoonpaySellTokenQuote(
                 tokenDetails = tokenDetails,
-                tokenAmount = tokenAmount,
-                tokenPrice = tokenPrice,
+                tokenAmount = tokenAmount.toBigDecimal(),
+                tokenPrice = tokenPrice.toBigDecimal(),
                 fiatDetails = fiatDetails,
                 paymentMethod = MoonpaySellPaymentMethod.fromStringValue(paymentMethod),
                 extraFeeAmount = extraFeeAmount,
-                feeAmount = feeAmount,
-                fiatEarning = fiatEarning
+                feeAmount = feeAmount.toBigDecimal(),
+                fiatEarning = fiatEarning.toBigDecimal()
             )
         }
     }

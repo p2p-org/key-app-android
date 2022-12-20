@@ -45,15 +45,16 @@ class SearchInteractor(
         }
     }
 
-    suspend fun searchByAddress(address: Base58String): List<SearchResult> {
+    suspend fun searchByAddress(address: Base58String, sourceToken: Token.Active? = null): List<SearchResult> {
         val tokenData = transactionAddressInteractor.getTokenDataIfDirect(address)
         val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
         val hasNoTokensToSend = tokenData != null && userToken == null
         val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
         val userTokens = userInteractor.getUserTokens()
         val hasNotEnoughFunds = !userTokens.any { it.hasFundsForSend(relayInfo) }
-        val isOwnAddress = isOwnPublicKey(address.base58Value)
+        val isOwnAddress = userToken?.publicKey == address.base58Value
         val addressState = AddressState(address.base58Value)
+        val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
         return listOf(
             when {
                 isOwnAddress -> SearchResult.InvalidResult(
@@ -61,15 +62,15 @@ class SearchInteractor(
                     errorMessage = resourcesProvider.getString(
                         R.string.search_yourself_error
                     ),
+                    tokenData = tokenData,
                     description = resourcesProvider.getString(
                         R.string.search_yourself_description
                     ),
                 )
-                hasNoTokensToSend -> SearchResult.InvalidResult(
+                hasNoTokensToSend || sendToOtherDirectToken -> SearchResult.InvalidResult(
                     addressState = addressState,
                     errorMessage = resourcesProvider.getString(
-                        R.string.search_no_other_tokens_error,
-                        tokenData?.symbol.orEmpty()
+                        R.string.search_no_other_tokens_error
                     ),
                     tokenData = tokenData,
                     description = resourcesProvider.getString(
@@ -85,7 +86,7 @@ class SearchInteractor(
                     ),
                     canReceiveAndBuy = true
                 )
-                else -> SearchResult.AddressOnly(addressState)
+                else -> SearchResult.AddressOnly(addressState, userToken)
             }
         )
     }

@@ -10,11 +10,11 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -26,13 +26,11 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
-import org.p2p.core.token.Token
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
-import org.p2p.wallet.send.ui.main.SendFragment
-import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -60,8 +58,6 @@ class TokenHistoryFragment :
     private val tokenForHistory: Token.Active by args(EXTRA_TOKEN)
 
     private val glideManager: GlideManager by inject()
-
-    private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 
     private val historyAdapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
@@ -141,11 +137,7 @@ class TokenHistoryFragment :
                     replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
                 }
                 ActionButton.SEND_BUTTON -> {
-                    if (newSendEnabledFeatureToggle.isFeatureEnabled) {
-                        replaceFragment(NewSearchFragment.create())
-                    } else {
-                        replaceFragment(SendFragment.create(tokenForHistory))
-                    }
+                    replaceFragment(NewSearchFragment.create(tokenForHistory))
                 }
                 ActionButton.SWAP_BUTTON -> {
                     replaceFragment(OrcaSwapFragment.create(tokenForHistory))

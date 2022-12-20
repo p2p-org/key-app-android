@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.core.token.Token
+import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -22,7 +24,6 @@ import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
-import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.main.adapter.TokenAdapter
 import org.p2p.wallet.home.ui.main.bottomsheet.BuyInfoDetailsBottomSheet
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
@@ -32,17 +33,14 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.newsend.ui.stub.SendNoTokensFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.send.ui.SendNoTokensFragment
-import org.p2p.wallet.send.ui.main.SendFragment
-import org.p2p.wallet.send.ui.search.NewSearchFragment
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.copyToClipBoard
-import org.p2p.core.utils.formatUsd
-import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
@@ -189,7 +187,7 @@ class HomeFragment :
                 ActionButton.RECEIVE_BUTTON -> {
                     replaceFragment(ReceiveSolanaFragment.create(token = null))
                 }
-                ActionButtonsView.ActionButton.SEND_BUTTON -> {
+                ActionButton.SEND_BUTTON -> {
                     presenter.onSendClicked()
                 }
                 ActionButton.SELL_BUTTON -> {
@@ -238,20 +236,16 @@ class HomeFragment :
         }
     }
 
+    override fun showNewSendScreen() {
+        replaceFragment(NewSearchFragment.create())
+    }
+
     override fun showOldBuyScreen(token: Token) {
         replaceFragment(BuySolanaFragment.create(token))
     }
 
     override fun showSendNoTokens(fallbackToken: Token) {
         replaceFragment(SendNoTokensFragment.create(fallbackToken))
-    }
-
-    override fun navigateToNewSend() {
-        replaceFragment(NewSearchFragment.create())
-    }
-
-    override fun navigateToOldSend() {
-        replaceFragment(SendFragment.create())
     }
 
     override fun showNewBuyScreen(token: Token) {
@@ -266,19 +260,13 @@ class HomeFragment :
         contentAdapter.setItems(tokens, isZerosHidden)
     }
 
-    override fun showTokensForBuy(tokens: List<Token>, newBuyEnabled: Boolean) {
-        if (newBuyEnabled) {
-            tokens.find { it.tokenSymbol == Constants.USDC_SYMBOL }?.let { token ->
-                replaceFragment(NewBuyFragment.create(token))
-            }
-        } else {
-            SelectTokenBottomSheet.show(
-                fm = childFragmentManager,
-                tokens = tokens,
-                requestKey = KEY_REQUEST_TOKEN,
-                resultKey = KEY_RESULT_TOKEN
-            )
-        }
+    override fun showTokensForBuy(tokens: List<Token>) {
+        SelectTokenBottomSheet.show(
+            fm = childFragmentManager,
+            tokens = tokens,
+            requestKey = KEY_REQUEST_TOKEN,
+            resultKey = KEY_RESULT_TOKEN
+        )
     }
 
     override fun showBalance(balance: BigDecimal) {

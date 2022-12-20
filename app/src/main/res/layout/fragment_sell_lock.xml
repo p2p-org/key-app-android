@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_smoke">
+    android:background="@color/bg_snow">
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
@@ -20,11 +20,16 @@
         android:id="@+id/textViewTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="@string/sell_lock_title"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintBottom_toTopOf="@+id/imageViewToken"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageView
         android:id="@+id/imageViewToken"
@@ -32,10 +37,11 @@
         android:layout_height="64dp"
         android:layout_marginTop="24dp"
         android:src="@drawable/ic_sol"
+        app:layout_constraintBottom_toTopOf="@+id/textViewAmount"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
-
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
     <TextView
         android:id="@+id/textViewAmount"
@@ -43,11 +49,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="@string/sell_lock_title"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+        app:layout_constraintBottom_toTopOf="@+id/textViewUsdValue"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageViewToken"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewToken"
         tools:text="6 SOL" />
 
     <TextView
@@ -56,9 +63,11 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
         android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toTopOf="@+id/viewMessageContainer"
         app:layout_constraintEnd_toEndOf="@id/textViewAmount"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@id/textViewAmount"
-        app:layout_constraintTop_toBottomOf="@id/textViewAmount"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAmount"
         tools:text="≈ $1930" />
 
     <LinearLayout
@@ -66,12 +75,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/bg_rounded_transparent_12"
         android:backgroundTint="@color/bg_rain"
         android:orientation="horizontal"
         android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewUsdValue">
+        app:layout_constraintBottom_toTopOf="@+id/viewReceiverContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewUsdValue">
 
         <ImageView
             android:layout_width="20dp"
@@ -85,7 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:gravity="center"
+            android:gravity="start"
             android:text="@string/sell_lock_message"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
             app:layout_constraintTop_toBottomOf="@id/imageViewToken" />
@@ -97,11 +112,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/bg_rounded_transparent_12"
         android:backgroundTint="@color/bg_snow"
         android:orientation="horizontal"
         android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/viewMessageContainer">
+        app:layout_constraintBottom_toTopOf="@+id/buttonSend"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewMessageContainer">
 
         <TextView
             android:layout_width="wrap_content"
@@ -119,7 +139,9 @@
             android:layout_marginHorizontal="8dp"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
             android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toBottomOf="@+id/imageViewCopy"
             app:layout_constraintEnd_toStartOf="@id/imageViewCopy"
+            app:layout_constraintTop_toTopOf="@+id/imageViewCopy"
             tools:text="FfRB...BeJEr" />
 
         <ImageView
@@ -132,7 +154,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/icons_mountain" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <org.p2p.uikit.components.UiKitButton
@@ -141,8 +162,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="@string/sell_lock_button_action"
-        app:layout_constraintTop_toBottomOf="@id/viewReceiverContainer" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/common_send"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRemove"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonRemove"
@@ -150,11 +175,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/sell_lock_button_cancel"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
         android:textColor="@color/text_night"
+        android:visibility="gone"
         app:backgroundTint="@color/bg_smoke"
-        app:layout_constraintTop_toBottomOf="@id/buttonSend" />
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

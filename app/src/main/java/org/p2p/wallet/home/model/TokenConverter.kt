@@ -7,6 +7,7 @@ import org.p2p.wallet.user.local.TokenResponse
 import org.p2p.core.token.TokenData
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import java.math.BigDecimal
@@ -40,7 +41,7 @@ object TokenConverter {
             mintAddress = mintAddress,
             tokenName = tokenData.name,
             iconUrl = tokenData.iconUrl,
-            totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price) },
+            totalInUsd = price?.let { total.fromLamports(tokenData.decimals).times(it.price).scaleShort() },
             total = BigDecimal(total).divide(tokenData.decimals.toPowerValue()),
             rate = price?.price,
             visibility = TokenVisibility.DEFAULT,

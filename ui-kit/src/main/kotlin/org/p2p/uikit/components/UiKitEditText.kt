@@ -21,6 +21,8 @@ open class UiKitEditText @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs) {
 
     protected val binding = inflateViewBinding<WidgetUikitEditTextBinding>()
+    private var amountTextWatcher: AmountFractionTextWatcher? = null
+    private var tokenTextWatcher: AmountFractionTextWatcher? = null
 
     private val bgRed = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
@@ -67,8 +69,10 @@ open class UiKitEditText @JvmOverloads constructor(
         styleAttrs.recycle()
     }
 
-    fun setText(text: String) {
+    fun setupText(text: String) {
         binding.editText.setText(text)
+        val selectionIndex = if (text.isNotEmpty()) text.length else 0
+        binding.editText.setSelection(selectionIndex)
     }
 
     fun setHint(hint: String) {
@@ -87,18 +91,37 @@ open class UiKitEditText @JvmOverloads constructor(
     val length: Int
         get() = binding.editText.length()
 
-    fun showError(text: String?) = with(binding) {
-        textViewError.text = text
-        textViewError.isVisible = !text.isNullOrEmpty()
-        inputViewContainer.background = if (!text.isNullOrEmpty()) bgRed else bgNormal
+    fun showError(isVisible: Boolean) = with(binding) {
+        inputViewContainer.background = if (isVisible) bgRed else bgNormal
     }
 
     fun focusAndShowKeyboard() {
         binding.editText.focusAndShowKeyboard()
     }
 
-    fun setupAmountFractionTextWatcher(block: () -> Unit) {
-        AmountFractionTextWatcher.installOn(binding.editText) {
+    fun setOnTokenAmountChangeListener(onTokenAmountChange: (String) -> Unit) {
+        tokenTextWatcher = AmountFractionTextWatcher.installOn(binding.editText) {
+            val amountWithoutSpaces = it.replace(" ", "")
+            onTokenAmountChange(amountWithoutSpaces)
         }
+    }
+
+    fun setOnCurrencyAmountChangeListener(onCurrencyAmountChange: (String) -> Unit) {
+        amountTextWatcher = AmountFractionTextWatcher.installOn(binding.editText) {
+            val amountWithoutSpaces = it.replace(" ", "")
+            onCurrencyAmountChange(amountWithoutSpaces)
+        }
+    }
+
+    fun setTokenAmount(tokenAmount: String?) = with(binding.editText) {
+        removeTextChangedListener(tokenTextWatcher)
+        setupText(tokenAmount.orEmpty())
+        addTextChangedListener(tokenTextWatcher)
+    }
+
+    fun setCurrencyAmount(currencyAmount: String?) = with(binding.editText) {
+        removeTextChangedListener(amountTextWatcher)
+        setupText(currencyAmount.orEmpty())
+        addTextChangedListener(amountTextWatcher)
     }
 }

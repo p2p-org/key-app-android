@@ -9,6 +9,7 @@
     <string name="common_yes">Yes</string>
     <string name="common_no">No</string>
     <string name="common_done">Done</string>
+    <string name="common_close">Close</string>
     <string name="common_great">Great!</string>
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
@@ -635,16 +636,21 @@
     <string name="send_buy_crypto">Buy crypto</string>
     <string name="sell_lock_title">Please, send crypto to\nMoonPay address</string>
     <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
-    <string name="sell_lock_button_action">Send SOL in Key App</string>
     <string name="sell_lock_button_cancel">Remove from history</string>
+    <string name="sell_lock_usd_amount">≈ $%s</string>
     <string name="sell_payload_title">Cash out token</string>
-    <string name="sell_all_sol">all %f SOL</string>
+    <string name="sell_all_sol">all %s SOL</string>
+    <string name="sell_included_fee">Included fee %s SOL</string>
+    <string name="sell_min_sol_amount">The minimum amount is %s SOL</string>
+    <string name="sell_max_sol_amount">The maximum amount is %s SOL</string>
+    <string name="sell_not_enough_sol">Not enough SOL</string>
 
     <string name="error_service_ruiner_message">Our payment service was ruined.\nVisit this page later</string>
     <string name="sell_need_more_sol_title">You need a little more SOL</string>
-    <string name="sell_need_more_sol_message">The current minimum amount is %s SOL</string>
+    <string name="sell_need_more_sol_message">The current minimum amount is %.1f SOL</string>
     <string name="you_bank_account_via_moonpay">Your bank account via Moonpay</string>
     <string name="sell_process_transaction_status">SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via Moonpay help center</string>
+    <string name="sell_sol_fiat_value">1 SOL = %s</string>
 
 
 </resources>

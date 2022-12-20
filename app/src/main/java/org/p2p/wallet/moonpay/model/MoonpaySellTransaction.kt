@@ -7,13 +7,14 @@ data class MoonpaySellTransaction(
     val createdAt: String,
     val updatedAt: String,
     val status: TransactionStatus,
+    val amounts: SellTransactionAmounts,
     val accountId: String,
     val customerId: String,
     val bankAccountId: String,
     val externalTransactionId: String?,
     val externalCustomerId: String?,
     val countryAbbreviation: String,
-    val stateAbbreviation: String,
+    val stateAbbreviation: String?,
     val userAddress: Base58String
 ) {
     enum class TransactionStatus(val jsonValue: String) {

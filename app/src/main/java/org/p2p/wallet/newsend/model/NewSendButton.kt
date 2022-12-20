@@ -1,26 +1,27 @@
 package org.p2p.wallet.newsend.model
 
+import android.content.res.Resources
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
+import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.SearchResult
-import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
 
 class NewSendButton(
     private val sourceToken: Token.Active,
     private val searchResult: SearchResult,
     private val feeRelayerState: FeeRelayerState,
-    private val tokenAmount: BigDecimal,
+    private val calculationMode: CalculationMode,
     private val minRentExemption: BigInteger,
-    private val resources: ResourcesProvider
+    private val resources: Resources
 ) {
 
     sealed interface State {
@@ -40,7 +41,7 @@ class NewSendButton(
     val state: State
         get() {
             val total = sourceToken.total.toLamports(sourceToken.decimals)
-            val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
+            val inputAmount = calculationMode.getCurrentAmountLamports()
 
             val isEnoughBalance = !total.isLessThan(inputAmount)
             val isFeeCalculationValid = feeRelayerState.isValidState()
@@ -67,8 +68,13 @@ class NewSendButton(
                 }
                 !isEnoughBalance -> {
                     val tokenSymbol = sourceToken.tokenSymbol
-                    val maxAmount = sourceToken.total.toPlainString()
-                    val text = resources.getString(R.string.send_max_warning_text_format, maxAmount, tokenSymbol)
+                    val textResFormat = R.string.send_max_warning_text_format
+                    val currentMode = calculationMode.getCurrentMode()
+                    val text = if (currentMode is CurrencyMode.Usd && sourceToken.totalInUsd != null) {
+                        resources.getString(textResFormat, sourceToken.totalInUsd, USD_READABLE_SYMBOL)
+                    } else {
+                        resources.getString(textResFormat, sourceToken.total.toPlainString(), tokenSymbol)
+                    }
                     val textContainer = TextContainer.Raw(text)
                     State.Disabled(textContainer, inputTextColor)
                 }
@@ -82,12 +88,15 @@ class NewSendButton(
                         totalAmountTextColor = inputTextColor
                     )
                 }
-                else ->
+                else -> {
+                    val valueText = calculationMode.getValueByMode().toPlainString()
+                    val symbol = calculationMode.getSymbolByMode()
                     State.Enabled(
                         textResId = R.string.send_format,
-                        value = "${tokenAmount.toPlainString()} ${sourceToken.tokenSymbol}",
+                        value = "$valueText $symbol",
                         totalAmountTextColor = inputTextColor
                     )
+                }
             }
         }
 

@@ -19,8 +19,10 @@ import org.p2p.wallet.databinding.FragmentSelectTokenNewBinding
 import org.p2p.wallet.home.model.SelectTokenItem
 import org.p2p.wallet.home.ui.new.adapter.NewSelectTokenAdapter
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -73,8 +75,8 @@ class NewSelectTokenFragment :
         NewSelectTokenAdapter(
             onItemClicked = {
                 setFragmentResult(requestKey, bundleOf(resultKey to it))
-                parentFragmentManager.popBackStack()
                 buyAnalytics.logBuyTokenChosen(it.tokenSymbol, analyticsInteractor.getPreviousScreenName())
+                closeFragment()
             }
         )
     }
@@ -124,5 +126,14 @@ class NewSelectTokenFragment :
             setOnQueryTextListener(this@NewSelectTokenFragment)
         }
         searchView.showSoftKeyboard()
+    }
+
+    private fun closeFragment() {
+        // verifying if previous screen is `SendNoAccountFragment`
+        // if popBackStack returns true then we popped successfully
+        if (popBackStackTo(target = SendNoAccountFragment::class, inclusive = true)) return
+
+        // for all other flows and cases just popping current screen
+        popBackStack()
     }
 }
