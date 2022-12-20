@@ -11,7 +11,7 @@
     <!--Home Screen Actions-->
     <string name="home_actions_title">Actions</string>
 
-    <string name="home_actions_sell_title">Sell crypto to fiat</string>
+    <string name="home_actions_sell_title">Cash out crypto to fiat</string>
     <string name="home_actions_sell_subtitle">via bank transfer</string>
 
     <string name="home_actions_buy_title">Buy</string>
