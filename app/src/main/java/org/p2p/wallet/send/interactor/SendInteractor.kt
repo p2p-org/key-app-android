@@ -18,6 +18,8 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.RelayAccount
+import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -119,8 +121,11 @@ class SendInteractor(
 
     fun hasAlternativeFeePayerTokens(userTokens: List<Token.Active>, fee: SendSolanaFee): Boolean {
         val tokenToExclude = fee.feePayerToken.tokenSymbol
-        val tokens = userTokens.filter {
-            it.tokenSymbol != tokenToExclude && it.totalInLamports >= fee.feeRelayerFee.totalInSol
+        val tokens = userTokens.filter { token ->
+            if (token.tokenSymbol == tokenToExclude) return@filter false
+
+            val totalFee = if (token.isSOL) fee.feeRelayerFee.totalInSol else fee.feeRelayerFee.totalInSpl
+            token.totalInLamports >= totalFee
         }
 
         return tokens.isNotEmpty()
@@ -193,6 +198,12 @@ class SendInteractor(
 
     suspend fun getMinRelayRentExemption(): BigInteger =
         feeRelayerAccountInteractor.getRelayInfo().minimumRelayAccountRent
+
+    suspend fun getRelayInfo(): RelayInfo =
+        feeRelayerAccountInteractor.getRelayInfo()
+
+    suspend fun getUserRelayAccount(): RelayAccount =
+        feeRelayerAccountInteractor.getUserRelayAccount()
 
     private suspend fun getFeesInPayingToken(
         feePayerToken: Token.Active,

@@ -201,6 +201,10 @@ class NewSendFragment :
         binding.widgetSendDetails.setInputTextColor(colorRes)
     }
 
+    override fun showDebugInfo(text: CharSequence) {
+        binding.textViewDebug.text = text
+    }
+
     override fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
         addFragment(
             target = NewSelectTokenFragment.create(

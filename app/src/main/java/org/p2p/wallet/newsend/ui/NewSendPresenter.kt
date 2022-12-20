@@ -5,6 +5,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.emptyString
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -147,8 +148,10 @@ class NewSendPresenter(
 
         val feesLabel = total.getFeesInToken(inputAmount.isEmpty()).format(resources)
         view.setFeeLabel(feesLabel)
-
         updateButton(sourceToken, feeRelayerState)
+
+        // FIXME: only for debug needs, remove after release
+        if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
     }
 
     private fun handleFeeRelayerStateUpdate(
@@ -410,6 +413,13 @@ class NewSendPresenter(
                 view?.setBottomButtonText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
+        }
+    }
+
+    private fun buildDebugInfo(solanaFee: SendSolanaFee?) {
+        launch {
+            val debugInfo = feeRelayerManager.buildDebugInfo(solanaFee)
+            view?.showDebugInfo(debugInfo)
         }
     }
 

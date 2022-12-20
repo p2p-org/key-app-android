@@ -19,6 +19,7 @@ interface NewSendContract {
         fun showAccountCreationFeeInfo(tokenSymbol: String, amountInUsd: String, hasAlternativeToken: Boolean)
         fun showProgressDialog(internalTransactionId: String, data: NewShowProgress)
         fun showTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?)
+        fun showDebugInfo(text: CharSequence)
 
         fun setBottomButtonText(text: TextContainer?)
         fun setSliderText(text: String?)
