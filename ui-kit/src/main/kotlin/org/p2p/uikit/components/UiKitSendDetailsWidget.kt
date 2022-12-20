@@ -77,6 +77,11 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
     }
 
+    fun setTokenContainerEnabled(isEnabled: Boolean) {
+        binding.containerToken.isEnabled = isEnabled
+        binding.imageViewSelectToken.isVisible = isEnabled
+    }
+
     fun setSwitchLabel(text: String) {
         binding.textViewAmountTypeSwitchLabel.text = text
     }
@@ -126,12 +131,15 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun updateFractionLength(newFractionLength: Int) {
         maxFractionLength.set(newFractionLength)
+        AmountFractionTextWatcher.uninstallFrom(binding.editTextAmount)
+        installAmountWatcher(newFractionLength)
     }
 
     private fun installAmountWatcher(maxFractionLength: Int) {
         AmountFractionTextWatcher.installOn(
             editText = binding.editTextAmount,
-            maxSymbolsAllowed = maxFractionLength
+            maxSymbolsAllowed = maxFractionLength,
+            maxIntLength = Int.MAX_VALUE
         ) { amount ->
             amountListener?.invoke(amount)
         }

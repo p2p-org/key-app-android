@@ -15,7 +15,6 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
@@ -60,8 +59,7 @@ class HomePresenter(
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
     private val sellInteractor: SellInteractor,
-    private val metadataInteractor: MetadataInteractor,
-    private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle
+    private val metadataInteractor: MetadataInteractor
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -136,29 +134,11 @@ class HomePresenter(
             val tokensForBuy = userInteractor.getTokensForBuy()
             if (tokensForBuy.isEmpty()) return@launch
 
-            if (newSendEnabledFeatureToggle.isFeatureEnabled) {
+            if (newBuyFeatureToggle.isFeatureEnabled) {
                 // this cannot be empty
                 view?.showNewBuyScreen(tokensForBuy.first())
             } else {
                 view?.showTokensForBuy(tokensForBuy)
-            }
-        }
-    }
-
-    override fun onSendClicked() {
-        if (!newSendEnabledFeatureToggle.isFeatureEnabled) {
-            view?.showOldSendScreen()
-            return
-        }
-
-        launch {
-            val isEmptyAccount = state.tokens.all { it.isZero }
-            if (isEmptyAccount) {
-                // this cannot be empty
-                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
-                view?.showSendNoTokens(validTokenToBuy)
-            } else {
-                view?.showNewSendScreen()
             }
         }
     }
@@ -183,10 +163,23 @@ class HomePresenter(
                 userInteractor.getSingleTokenForBuy() ?: return@launch
             }
 
-            if (newBuyFeatureToggle.value) {
+            if (newBuyFeatureToggle.isFeatureEnabled) {
                 view?.showNewBuyScreen(tokenToBuy)
             } else {
                 view?.showOldBuyScreen(tokenToBuy)
+            }
+        }
+    }
+
+    override fun onSendClicked() {
+        launch {
+            val isEmptyAccount = state.tokens.all { it.isZero }
+            if (isEmptyAccount) {
+                // this cannot be empty
+                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
+                view?.showSendNoTokens(validTokenToBuy)
+            } else {
+                view?.showNewSendScreen()
             }
         }
     }

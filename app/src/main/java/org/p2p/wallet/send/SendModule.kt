@@ -3,19 +3,19 @@ package org.p2p.wallet.send
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.core.token.Token
+import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.newsend.ui.NewSendContract
 import org.p2p.wallet.newsend.ui.NewSendPresenter
+import org.p2p.wallet.newsend.ui.search.NewSearchContract
+import org.p2p.wallet.newsend.ui.search.NewSearchPresenter
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.main.SendContract
 import org.p2p.wallet.send.ui.main.SendPresenter
-import org.p2p.wallet.send.ui.search.NewSearchContract
-import org.p2p.wallet.send.ui.search.NewSearchPresenter
 import org.p2p.wallet.send.ui.search.SearchContract
 import org.p2p.wallet.send.ui.search.SearchPresenter
 
@@ -46,9 +46,10 @@ object SendModule : InjectionModule {
             )
         }
 
-        factory<NewSearchContract.Presenter> { (usernames: List<SearchResult>) ->
+        factory<NewSearchContract.Presenter> { (usernames: List<SearchResult>?, initialToken: Token.Active?) ->
             NewSearchPresenter(
                 usernames = usernames,
+                initialToken = initialToken,
                 searchInteractor = get(),
                 usernameDomainFeatureToggle = get(),
                 userInteractor = get()

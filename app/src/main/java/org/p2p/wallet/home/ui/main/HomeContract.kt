@@ -20,7 +20,6 @@ interface HomeContract {
         fun showEmptyState(isEmpty: Boolean)
         fun showUserAddress(ellipsizedAddress: String)
         fun showNewSendScreen()
-        fun showOldSendScreen()
 
         fun navigateToProfile()
         fun navigateToReserveUsername()

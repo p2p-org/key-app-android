@@ -33,12 +33,11 @@ import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.newsend.ui.stub.SendNoTokensFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.send.ui.SendNoTokensFragment
-import org.p2p.wallet.send.ui.main.SendFragment
-import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.copyToClipBoard
@@ -239,10 +238,6 @@ class HomeFragment :
 
     override fun showNewSendScreen() {
         replaceFragment(NewSearchFragment.create())
-    }
-
-    override fun showOldSendScreen() {
-        replaceFragment(SendFragment.create())
     }
 
     override fun showOldBuyScreen(token: Token) {

@@ -1,5 +1,6 @@
-package org.p2p.wallet.send.ui.search
+package org.p2p.wallet.newsend.ui.search
 
+import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
@@ -20,6 +21,7 @@ private const val DELAY_IN_MS = 250L
 
 class NewSearchPresenter(
     private val usernames: List<SearchResult>?,
+    private val initialToken: Token.Active?,
     private val searchInteractor: SearchInteractor,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val userInteractor: UserInteractor,
@@ -64,7 +66,7 @@ class NewSearchPresenter(
     }
 
     override fun onSearchResultClick(result: SearchResult) {
-        view?.submitSearchResult(result)
+        view?.submitSearchResult(result, initialToken)
     }
 
     override fun onScanClicked() {
@@ -73,7 +75,7 @@ class NewSearchPresenter(
 
     override fun onContinueClicked() {
         lastResult.findInstance<SearchResult.EmptyBalance>()?.let {
-            view?.submitSearchResult(it)
+            view?.submitSearchResult(it, initialToken)
         }
     }
 

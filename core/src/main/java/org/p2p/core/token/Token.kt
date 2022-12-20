@@ -6,6 +6,7 @@ import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.SOL_NAME
 import org.p2p.core.utils.Constants.USDC_SYMBOL
+import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.asUsd
@@ -137,6 +138,10 @@ sealed class Token constructor(
     @IgnoredOnParcel
     val isUSDC: Boolean
         get() = tokenSymbol == USDC_SYMBOL
+
+    @IgnoredOnParcel
+    val isUSDT: Boolean
+        get() = tokenSymbol == USDT_SYMBOL
 
     @IgnoredOnParcel
     val usdRateOrZero: BigDecimal
