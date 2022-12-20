@@ -1,14 +1,10 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.emptyString
-import org.p2p.core.utils.orZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -42,6 +38,8 @@ import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -66,12 +64,17 @@ class NewSendPresenter(
 
     private val calculationMode = CalculationMode()
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
+    private var selectedToken: Token.Active? = null
 
     private var feePayerJob: Job? = null
 
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
         initialize(view)
+    }
+
+    override fun setInitialToken(selectedToken: Token.Active?) {
+        this.selectedToken = selectedToken
     }
 
     private fun initialize(view: NewSendContract.View) {
@@ -82,9 +85,8 @@ class NewSendPresenter(
             view.setMainAmountLabel(mainSymbol)
         }
 
-        feeRelayerManager.onStateUpdated = { newState ->
-            handleFeeRelayerStateUpdate(newState, view)
-        }
+        feeRelayerManager.onStateUpdated = { newState -> handleFeeRelayerStateUpdate(newState, view) }
+        feeRelayerManager.onFeeLoading = { isLoading -> view.showFeeViewLoading(isLoading = isLoading) }
 
         if (token != null) {
             restoreSelectedToken(view, token!!)
@@ -120,12 +122,7 @@ class NewSendPresenter(
             }
 
             // Get USDC or USDT or token with biggest amount
-            val initialToken = userTokens.find {
-                val isValidUsdc = it.isUSDC && !it.isZero
-                val isValidUsdt = it.tokenSymbol == USDT_SYMBOL && !it.isZero
-                isValidUsdc || isValidUsdt
-            } ?: userTokens.maxBy { it.totalInUsd.orZero() }
-
+            val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
             token = initialToken
             val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
             if (solToken == null) {
@@ -363,8 +360,7 @@ class NewSendPresenter(
         strategy: FeePayerSelectionStrategy
     ) {
         feePayerJob?.cancel()
-
-        launch {
+        feePayerJob = launch {
             feeRelayerManager.executeSmartSelection(
                 sourceToken = token,
                 feePayerToken = feePayerToken,

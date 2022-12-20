@@ -1,4 +1,4 @@
-package org.p2p.wallet.newsend.noaccount
+package org.p2p.wallet.newsend.ui.stub
 
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope

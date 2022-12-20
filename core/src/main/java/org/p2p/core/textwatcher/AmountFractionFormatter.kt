@@ -6,10 +6,10 @@ import org.p2p.core.utils.emptyString
 private const val SYMBOL_ZERO = "0"
 private const val SYMBOL_DOT = "."
 private const val SYMBOL_DOT_CHAR = '.'
-private const val MAX_INT_LENGTH = 12
 
 class AmountFractionFormatter(
-    private val maxLengthAllowed: Int
+    private val maxFractionLengthAllowed: Int,
+    private val maxIntLength: Int
 ) {
     fun formatAmountFraction(value: String, before: Int, start: Int): String {
         val hasMultipleDots = value.count { it == SYMBOL_DOT_CHAR } > 1
@@ -34,34 +34,34 @@ class AmountFractionFormatter(
     private fun handleEndsWithDotCaseWithMultipleDots(value: String): String {
         return value.dropLast(1)
             .dropSpaces()
-            .formatDecimal(maxLengthAllowed)
+            .formatDecimal(maxFractionLengthAllowed)
     }
 
     private fun handleEndWithDotCase(value: String): String {
         return value.dropLast(1)
             .dropSpaces()
-            .formatDecimal(maxLengthAllowed) + SYMBOL_DOT
+            .formatDecimal(maxFractionLengthAllowed) + SYMBOL_DOT
     }
 
     private fun handleGeneralCase(value: String): String {
         return value.dropSpaces()
-            .take(MAX_INT_LENGTH)
-            .formatDecimal(maxLengthAllowed)
+            .take(maxIntLength)
+            .formatDecimal(maxFractionLengthAllowed)
     }
 
     private fun handleValueWithDotCase(value: String): String {
         val dotPosition = value.indexOf(SYMBOL_DOT)
         val intPart = value.substring(0, dotPosition)
             .dropSpaces()
-            .take(MAX_INT_LENGTH)
+            .take(maxIntLength)
 
         // Remove extra dots and shorten fractional part to maxLengthAllowed symbols
         val fractionalPart = value.substring(dotPosition + 1)
             .dropSpaces()
             .replace(SYMBOL_DOT, emptyString())
-            .take(maxLengthAllowed)
+            .take(maxFractionLengthAllowed)
 
-        return intPart.formatDecimal(maxLengthAllowed) + SYMBOL_DOT + fractionalPart
+        return intPart.formatDecimal(maxFractionLengthAllowed) + SYMBOL_DOT + fractionalPart
     }
 
     private fun String.dropSpaces(): String {

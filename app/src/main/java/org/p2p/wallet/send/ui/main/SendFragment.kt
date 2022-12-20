@@ -26,7 +26,6 @@ import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
 import org.p2p.core.common.TextContainer
@@ -96,7 +95,6 @@ class SendFragment :
 
     override val presenter: SendContract.Presenter by inject()
     private val glideManager: GlideManager by inject()
-    private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 
     private val binding: FragmentSendBinding by viewBinding()
 
@@ -266,11 +264,12 @@ class SendFragment :
     override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.FEE_CURRENCY)
 
-        val fragment = if (newSendEnabledFeatureToggle.isFeatureEnabled) {
-            NewSelectTokenFragment.create(tokens, selectedToken, KEY_REQUEST_SEND, EXTRA_TOKEN)
-        } else {
-            SelectTokenFragment.create(tokens, KEY_REQUEST_SEND, EXTRA_TOKEN)
-        }
+        val fragment = NewSelectTokenFragment.create(
+            tokens = tokens,
+            selectedToken = selectedToken,
+            requestKey = KEY_REQUEST_SEND,
+            resultKey = EXTRA_TOKEN
+        )
         addFragment(
             target = fragment,
             enter = R.anim.slide_up,

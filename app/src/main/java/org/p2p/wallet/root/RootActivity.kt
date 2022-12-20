@@ -72,7 +72,6 @@ class RootActivity :
 
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
 
-        presenter.loadPricesAndBids()
         onBackPressedDispatcher.addCallback {
             logScreenOpenEvent()
         }

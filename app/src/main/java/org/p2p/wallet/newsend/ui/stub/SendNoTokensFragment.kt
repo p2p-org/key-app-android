@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui
+package org.p2p.wallet.newsend.ui.stub
 
 import android.os.Bundle
 import android.view.View
