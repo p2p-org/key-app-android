@@ -1,26 +1,27 @@
 package org.p2p.uikit.components
 
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.util.AttributeSet
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.R
-import org.p2p.uikit.databinding.WidgetUikitEditTextBinding
+import org.p2p.uikit.databinding.WidgetUiKitAmountEditTextBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
 
 private const val CORNER_RADIUS = 20f
 private const val STROKE_WIDTH = 1
 
-open class UiKitEditText @JvmOverloads constructor(
+open class UiKitAmountEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
-    protected val binding = inflateViewBinding<WidgetUikitEditTextBinding>()
+    protected val binding = inflateViewBinding<WidgetUiKitAmountEditTextBinding>()
+
     private var amountTextWatcher: AmountFractionTextWatcher? = null
     private var tokenTextWatcher: AmountFractionTextWatcher? = null
 

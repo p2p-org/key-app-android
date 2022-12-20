@@ -37,8 +37,7 @@
         app:layout_constraintTop_toTopOf="@id/textViewSell"
         tools:text="all 4.53 SOL" />
 
-
-    <org.p2p.uikit.components.UiKitEditText
+    <org.p2p.uikit.components.UiKitAmountEditText
         android:id="@+id/editTextTokenAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -46,7 +45,7 @@
         android:layout_marginTop="120dp"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <org.p2p.uikit.components.UiKitEditText
+    <org.p2p.uikit.components.UiKitAmountEditText
         android:id="@+id/editTextFiatAmount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

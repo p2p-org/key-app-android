@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -39,6 +39,7 @@
             android:inputType="phone"
             android:paddingVertical="12dp"
             android:saveEnabled="true"
+            android:digits="0123456789."
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
             android:textCursorDrawable="@drawable/ic_text_cursor"
             android:textIsSelectable="true"

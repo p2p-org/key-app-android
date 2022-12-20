@@ -1,10 +1,5 @@
 package org.p2p.wallet.sell.ui.payload
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isLessThan
@@ -20,11 +15,17 @@ import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
 private const val ZERO_STRING_VALUE = "0"
@@ -110,7 +111,7 @@ class SellPayloadPresenter(
                     val moonpayFee = sellQuote.feeAmount
                     val fiat = "${tokenPrice}${selectedFiat.uiSymbol}"
 
-                    val viewState = SellPayloadContract.ViewState(
+                    val viewState = ViewState(
                         quoteAmount = sellQuote.fiatEarning.formatToken(),
                         fee = moonpayFee.scaleShortOrFirstNotZero().toString(),
                         fiat = fiat,
