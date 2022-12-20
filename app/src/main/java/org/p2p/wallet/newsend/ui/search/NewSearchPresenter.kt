@@ -1,5 +1,9 @@
 package org.p2p.wallet.newsend.ui.search
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
@@ -12,10 +16,6 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.findInstance
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 250L
 
@@ -66,7 +66,7 @@ class NewSearchPresenter(
     }
 
     override fun onSearchResultClick(result: SearchResult) {
-        view?.submitSearchResult(result, initialToken)
+        checkPreselectedTokenAndSubmitResult(result)
     }
 
     override fun onScanClicked() {
@@ -75,8 +75,16 @@ class NewSearchPresenter(
 
     override fun onContinueClicked() {
         lastResult.findInstance<SearchResult.EmptyBalance>()?.let {
-            view?.submitSearchResult(it, initialToken)
+            checkPreselectedTokenAndSubmitResult(it)
         }
+    }
+
+    fun checkPreselectedTokenAndSubmitResult(result: SearchResult) {
+        val preselectedToken = if (result is SearchResult.AddressOnly) {
+            // in case if user inserts direct token address
+            result.sourceToken ?: initialToken
+        } else initialToken
+        view?.submitSearchResult(result, preselectedToken)
     }
 
     override fun onBuyClicked() {
@@ -125,7 +133,10 @@ class NewSearchPresenter(
             return
         }
 
-        val result = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance())
+        val result = searchInteractor.searchByAddress(
+            publicKey.toBase58().toBase58Instance(),
+            initialToken
+        )
         setResult(result)
     }
 
