@@ -15,7 +15,7 @@ data class RecipientEntity(
     val address: String,
 
     @ColumnInfo(name = COLUMN_NICKNAME)
-    val nickname: String?,
+    val username: String?,
 
     @ColumnInfo(name = COLUMN_DATE_TIMESTAMP)
     val dateTimestamp: Long
