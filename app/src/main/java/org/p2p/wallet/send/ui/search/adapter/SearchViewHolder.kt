@@ -11,7 +11,6 @@ import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
-import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx

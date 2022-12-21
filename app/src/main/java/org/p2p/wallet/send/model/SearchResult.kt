@@ -25,6 +25,7 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         val date: Date? = null
     ) : SearchResult(addressState)
 
+    @Parcelize
     data class EmptyBalance constructor(
         override val addressState: AddressState,
         val sourceToken: Token.Active? = null
