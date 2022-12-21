@@ -67,7 +67,7 @@
                 tools:text="~$989.12" />
 
             <TextView
-                android:id="@+id/dateTextView"
+                android:id="@+id/textViewDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="32dp"

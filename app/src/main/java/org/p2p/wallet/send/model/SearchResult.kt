@@ -4,6 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import java.util.Date
 
 sealed class SearchResult(open val addressState: AddressState) : Parcelable {
 
@@ -13,7 +14,15 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     @Parcelize
     data class AddressOnly constructor(
         override val addressState: AddressState,
-        val sourceToken: Token.Active? = null
+        val sourceToken: Token.Active? = null,
+        val date: Date? = null
+    ) : SearchResult(addressState)
+
+    @Parcelize
+    data class UsernameFound(
+        override val addressState: AddressState,
+        val username: String,
+        val date: Date? = null
     ) : SearchResult(addressState)
 
     @Parcelize
@@ -21,9 +30,6 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         override val addressState: AddressState,
         val sourceToken: Token.Active? = null
     ) : SearchResult(addressState)
-
-    @Parcelize
-    data class UsernameFound(override val addressState: AddressState, val username: String) : SearchResult(addressState)
 
     @Parcelize
     data class InvalidResult(

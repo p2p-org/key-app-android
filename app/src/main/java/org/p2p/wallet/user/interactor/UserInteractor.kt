@@ -1,20 +1,23 @@
 package org.p2p.wallet.user.interactor
 
-import androidx.core.content.edit
 import android.content.SharedPreferences
+import androidx.core.content.edit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.TOKENS_VALID_FOR_BUY
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
+import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import java.util.Date
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
@@ -22,6 +25,7 @@ class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: HomeLocalRepository,
+    private val recipientsLocalRepository: RecipientsLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences
@@ -113,4 +117,10 @@ class UserInteractor(
         val price = tokenData?.let { userLocalRepository.getPriceByToken(it.symbol) }
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
+
+    suspend fun addRecipient(searchResult: SearchResult, date: Date) {
+        recipientsLocalRepository.addRecipient(searchResult, date)
+    }
+
+    suspend fun getRecipients(): List<SearchResult> = recipientsLocalRepository.getRecipients()
 }
