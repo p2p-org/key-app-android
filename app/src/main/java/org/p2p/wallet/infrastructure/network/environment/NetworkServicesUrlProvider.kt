@@ -40,10 +40,20 @@ class NetworkServicesUrlProvider(
             context.getString(R.string.registerUsernameServiceProductionUrl)
         ).orEmpty()
 
-        return NameServiceEnvironment(url)
+        val isProductionSelected = url == context.getString(R.string.registerUsernameServiceProductionUrl)
+
+        return NameServiceEnvironment(url, isProductionSelected)
     }
 
-    fun saveNameServiceEnvironment(newUrl: String) {
+    fun toggleNameServiceEnvironment(isProdSelected: Boolean) {
+        if (isProdSelected) {
+            saveNameServiceEnvironment(context.getString(R.string.registerUsernameServiceProductionUrl))
+        } else {
+            saveNameServiceEnvironment(context.getString(R.string.registerUsernameServiceTestUrl))
+        }
+    }
+
+    private fun saveNameServiceEnvironment(newUrl: String) {
         sharedPreferences.edit { putString(KEY_NAME_SERVICE_BASE_URL, newUrl) }
     }
 
