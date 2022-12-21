@@ -95,8 +95,6 @@ class NewSearchFragment :
                 setNavigationOnClickListener { popBackStack() }
             }
 
-            buttonContinue.setOnClickListener { presenter.onContinueClicked() }
-
             buttonBuy.setOnClickListener {
                 presenter.onBuyClicked()
             }
@@ -155,10 +153,6 @@ class NewSearchFragment :
                 background = null
             }
         }
-    }
-
-    override fun setContinueButtonVisibility(isVisible: Boolean) {
-        binding.buttonContinue.isVisible = isVisible
     }
 
     override fun setBuyReceiveButtonsVisibility(isVisible: Boolean) {

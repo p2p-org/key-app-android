@@ -152,21 +152,6 @@
         app:layout_constraintTop_toBottomOf="@id/progressBar" />
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonContinue"
-        style="@style/UiKit.Components.Button.Large"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/selector_night_to_rain_tint"
-        android:text="@string/search_error_continue_button"
-        android:textColor="@color/selector_lime_to_mountain_text"
-        android:visibility="gone"
-        app:cornerRadius="28dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <org.p2p.uikit.components.UiKitButton
         android:id="@+id/buttonReceive"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="0dp"

@@ -79,12 +79,6 @@ class NewSearchPresenter(
         view?.showScanner()
     }
 
-    override fun onContinueClicked() {
-        lastResult.findInstance<SearchResult.EmptyBalance>()?.let {
-            checkPreselectedTokenAndSubmitResult(it)
-        }
-    }
-
     fun checkPreselectedTokenAndSubmitResult(result: SearchResult) {
         val preselectedToken = if (result is SearchResult.AddressOnly) {
             // in case if user inserts direct token address
@@ -151,7 +145,6 @@ class NewSearchPresenter(
         view?.apply {
             showMessage(R.string.search_found)
             showSearchResult(result)
-            setContinueButtonVisibility(isVisible = true)
             val invalidResult = result.findInstance<SearchResult.InvalidResult>()
             setBuyReceiveButtonsVisibility(invalidResult?.canReceiveAndBuy == true)
             setListBackgroundVisibility(invalidResult == null)
