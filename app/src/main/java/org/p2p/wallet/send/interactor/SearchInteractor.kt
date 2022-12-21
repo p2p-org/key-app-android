@@ -96,9 +96,9 @@ class SearchInteractor(
                     val balance = userInteractor.getBalance(address)
                     val hasEmptyBalance = balance == 0L
                     if (hasEmptyBalance) {
-                        SearchResult.EmptyBalance(addressState)
+                        SearchResult.EmptyBalance(addressState, userToken)
                     } else {
-                        SearchResult.AddressOnly(addressState)
+                        SearchResult.AddressOnly(addressState, userToken)
                     }
                 }
             }

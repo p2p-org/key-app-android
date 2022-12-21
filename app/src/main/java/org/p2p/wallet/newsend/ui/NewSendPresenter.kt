@@ -32,7 +32,7 @@ import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
+import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
@@ -359,7 +359,7 @@ class NewSendPresenter(
 
     private fun SearchResult.nicknameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) username
-        else addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
+        else addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
     }
 
     /**

@@ -24,7 +24,7 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
+import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
@@ -249,7 +249,7 @@ class NewSendFragment :
 
     private fun UiKitToolbar.setupToolbar() {
         title = (recipient as? SearchResult.UsernameFound)?.username
-            ?: recipient.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
+            ?: recipient.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
         setNavigationOnClickListener { popBackStack() }
     }
 }

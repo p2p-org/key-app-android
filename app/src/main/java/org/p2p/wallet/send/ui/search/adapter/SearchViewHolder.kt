@@ -10,7 +10,8 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
+import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
+import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
@@ -55,7 +56,7 @@ class SearchViewHolder(
             walletImageView.setImageResource(imageResource)
 
             textViewTop.text = item.username
-            textViewBottom withTextOrGone item.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
+            textViewBottom withTextOrGone item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
             textViewBottom.setTextColorRes(R.color.backgroundDisabled)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
         }
@@ -70,7 +71,7 @@ class SearchViewHolder(
                 walletImageView.setImageResource(R.drawable.ic_search_wallet)
                 walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
             }
-            textViewTop.text = item.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
+            textViewTop.text = item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
             textViewBottom.isVisible = false
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
         }
@@ -78,7 +79,7 @@ class SearchViewHolder(
 
     private fun renderEmptyBalance(item: SearchResult.EmptyBalance) {
         with(binding) {
-            textViewTop.text = item.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
+            textViewTop.text = item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
             textViewBottom.isVisible = false
         }
     }
