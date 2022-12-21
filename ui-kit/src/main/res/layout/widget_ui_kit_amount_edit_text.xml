@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -39,6 +39,7 @@
             android:inputType="phone"
             android:paddingVertical="12dp"
             android:saveEnabled="true"
+            android:digits="0123456789."
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
             android:textCursorDrawable="@drawable/ic_text_cursor"
             android:textIsSelectable="true"
@@ -49,12 +50,13 @@
             android:id="@+id/textViewHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_night_30"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
-            android:textAllCaps="true"
-            android:textColor="@color/text_night_30"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="EUR" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -57,7 +57,7 @@ class SellInteractor(
         return sellRepository.getSellQuoteForToken(solToken, solAmount, fiat)
     }
 
-    suspend fun getAllCurrencies(): List<MoonpayCurrency> = currencyRepository.getAllCurrencies()
+    suspend fun getSolCurrency(): MoonpayCurrency = currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)
 
     suspend fun getMoonpaySellFiatCurrency(): MoonpaySellFiatCurrency {
         return sellRepository.getSellFiatCurrency()

@@ -651,7 +651,8 @@
     <string name="sell_need_more_sol_message">The current minimum amount is %.1f SOL</string>
     <string name="you_bank_account_via_moonpay">Your bank account via Moonpay</string>
     <string name="sell_process_transaction_status">SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via Moonpay help center</string>
-    <string name="sell_sol_fiat_value">1 SOL = %s</string>
+    <string name="sell_sol_fiat_value">1 SOL ≈ %s</string>
+    <string name="sell_input_fiat_symbol">≈ %s</string>
 
 
 </resources>

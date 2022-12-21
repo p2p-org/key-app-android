@@ -90,7 +90,7 @@ class SellPayloadFragment :
 
     override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {
         editTextFiatAmount.setCurrencyAmount(newState.quoteAmount)
-        editTextFiatAmount.setHint(newState.fiatSymbol)
+        editTextFiatAmount.setHint(getString(R.string.sell_input_fiat_symbol, newState.fiatSymbol))
         textViewFee.text = getString(R.string.sell_included_fee, newState.fee)
         textViewRate.text = getString(R.string.sell_sol_fiat_value, newState.fiat)
         editTextTokenAmount.setHint(newState.tokenSymbol)
