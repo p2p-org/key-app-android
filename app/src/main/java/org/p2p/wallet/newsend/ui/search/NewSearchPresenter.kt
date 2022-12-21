@@ -35,8 +35,8 @@ class NewSearchPresenter(
 
     override fun loadInitialData() {
         launch {
-            val data = lastResult.takeIf { lastResult.isNotEmpty() } ?: usernames
-            if (data.isNullOrEmpty()) {
+            val finalSearchResult = lastResult.takeIf { lastResult.isNotEmpty() } ?: usernames
+            if (finalSearchResult.isNullOrEmpty()) {
                 recentRecipients = userInteractor.getRecipients()
                 if (recentRecipients.isEmpty()) {
                     view?.showEmptyState(isEmpty = true)
@@ -44,11 +44,11 @@ class NewSearchPresenter(
                     setResult(recentRecipients, R.string.search_recently)
                 }
             } else {
-                val searchedItem = data.first()
+                val searchedItem = finalSearchResult.first()
                 val value = (searchedItem as? SearchResult.UsernameFound)?.username
                     ?: searchedItem.addressState.address
                 view?.showSearchValue(lastQuery ?: value)
-                setResult(data)
+                setResult(finalSearchResult)
             }
         }
     }

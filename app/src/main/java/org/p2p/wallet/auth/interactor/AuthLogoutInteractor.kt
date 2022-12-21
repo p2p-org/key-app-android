@@ -11,7 +11,7 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
+import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.push_notifications.ineractor.PushNotificationsInteractor
 import org.p2p.wallet.renbtc.RenTransactionManager
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
@@ -26,7 +26,7 @@ class AuthLogoutInteractor(
     private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider,
     private val mainLocalRepository: HomeLocalRepository,
-    private val recipientsDatabaseRepository: RecipientsDatabaseRepository,
+    private val recipientsLocalRepository: RecipientsLocalRepository,
     private val updatesManager: UpdatesManager,
     private val transactionManager: RenTransactionManager,
     private val transactionDetailsLocalRepository: TransactionDetailsLocalRepository,
@@ -48,7 +48,7 @@ class AuthLogoutInteractor(
             secureStorage.clear()
             transactionManager.stop()
             mainLocalRepository.clear()
-            recipientsDatabaseRepository.clear()
+            recipientsLocalRepository.clear()
             renBtcInteractor.clearSession()
             transactionDetailsLocalRepository.deleteAll()
             IntercomService.logout()

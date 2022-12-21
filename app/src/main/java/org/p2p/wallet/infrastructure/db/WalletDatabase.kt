@@ -18,8 +18,8 @@ import org.p2p.wallet.history.repository.local.db.entities.UnknownTransactionEnt
 import org.p2p.wallet.home.db.TokenDao
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_VERSION
-import org.p2p.wallet.newsend.db.RecipientDao
-import org.p2p.wallet.newsend.db.RecipientEntry
+import org.p2p.wallet.newsend.db.RecipientEntity
+import org.p2p.wallet.newsend.db.RecipientsDao
 import org.p2p.wallet.renbtc.db.SessionDao
 import org.p2p.wallet.renbtc.db.SessionEntity
 
@@ -35,7 +35,7 @@ import org.p2p.wallet.renbtc.db.SessionEntity
         RenBtcBurnOrMintTransactionEntity::class,
         UnknownTransactionEntity::class,
 
-        RecipientEntry::class
+        RecipientEntity::class
     ],
     version = DATABASE_VERSION,
     exportSchema = false
@@ -58,5 +58,5 @@ abstract class WalletDatabase : RoomDatabase() {
     abstract fun renBtcBurnOrMintTransactionsDao(): RenBtcBurnOrMintTransactionsDao
     abstract fun unknownTransactionsDao(): UnknownTransactionsDao
 
-    abstract fun recipientDao(): RecipientDao
+    abstract fun recipientsDao(): RecipientsDao
 }

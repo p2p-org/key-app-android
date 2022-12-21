@@ -11,6 +11,7 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
+import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.ui.NewSendContract
 import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.newsend.ui.details.NewSendDetailsContract
@@ -66,6 +67,6 @@ object SendModule : InjectionModule {
     }
 
     private fun Module.initDataLayer() {
-        factoryOf(::RecipientsDatabaseRepository)
+        factoryOf(::RecipientsDatabaseRepository) bind RecipientsLocalRepository::class
     }
 }

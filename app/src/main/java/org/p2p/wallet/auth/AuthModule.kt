@@ -108,7 +108,7 @@ object AuthModule {
                 sharedPreferences = get(),
                 tokenKeyProvider = get(),
                 mainLocalRepository = get(),
-                recipientsDatabaseRepository = get(),
+                recipientsLocalRepository = get(),
                 updatesManager = get(),
                 transactionManager = get(),
                 transactionDetailsLocalRepository = get(),

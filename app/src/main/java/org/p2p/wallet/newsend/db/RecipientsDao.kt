@@ -6,19 +6,19 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface RecipientDao {
+interface RecipientsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplace(entities: List<RecipientEntry>)
+    suspend fun insertOrReplace(entities: List<RecipientEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplace(entity: RecipientEntry)
+    suspend fun insertOrReplace(entity: RecipientEntity)
 
     @Query("SELECT * FROM recipient_table WHERE address = :address")
-    suspend fun findByAddress(address: String): RecipientEntry?
+    suspend fun findByAddress(address: String): RecipientEntity?
 
     @Query("SELECT * FROM recipient_table ORDER BY date_timestamp DESC LIMIT 10")
-    suspend fun getRecipients(): List<RecipientEntry>
+    suspend fun getRecipients(): List<RecipientEntity>
 
     @Query("DELETE FROM token_table")
     suspend fun clearAll()

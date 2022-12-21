@@ -3,12 +3,12 @@ package org.p2p.wallet.newsend.db
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.p2p.wallet.newsend.db.RecipientEntry.Companion.TABLE_NAME
+import org.p2p.wallet.newsend.db.RecipientEntity.Companion.TABLE_NAME
 
 @Entity(
     tableName = TABLE_NAME
 )
-data class RecipientEntry(
+data class RecipientEntity(
 
     @PrimaryKey
     @ColumnInfo(name = COLUMN_ADDRESS)

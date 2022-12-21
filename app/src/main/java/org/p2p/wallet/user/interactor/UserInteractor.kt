@@ -10,7 +10,7 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.home.ui.main.TOKENS_VALID_FOR_BUY
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
+import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -25,7 +25,7 @@ class UserInteractor(
     private val userRepository: UserRepository,
     private val userLocalRepository: UserLocalRepository,
     private val mainLocalRepository: HomeLocalRepository,
-    private val recipientsDatabaseRepository: RecipientsDatabaseRepository,
+    private val recipientsLocalRepository: RecipientsLocalRepository,
     private val rpcRepository: RpcBalanceRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val sharedPreferences: SharedPreferences
@@ -119,8 +119,8 @@ class UserInteractor(
     }
 
     suspend fun addRecipient(searchResult: SearchResult, date: Date) {
-        recipientsDatabaseRepository.addRecipient(searchResult, date)
+        recipientsLocalRepository.addRecipient(searchResult, date)
     }
 
-    suspend fun getRecipients(): List<SearchResult> = recipientsDatabaseRepository.getRecipients()
+    suspend fun getRecipients(): List<SearchResult> = recipientsLocalRepository.getRecipients()
 }

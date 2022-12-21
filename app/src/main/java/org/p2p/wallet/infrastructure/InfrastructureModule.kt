@@ -67,7 +67,7 @@ object InfrastructureModule : InjectionModule {
         single { get<WalletDatabase>().transferTransactionsDao() }
         single { get<WalletDatabase>().renBtcBurnOrMintTransactionsDao() }
         single { get<WalletDatabase>().unknownTransactionsDao() }
-        single { get<WalletDatabase>().recipientDao() }
+        single { get<WalletDatabase>().recipientsDao() }
 
         single {
             val allTransactionDaos: List<TransactionsDao<*>> = listOf(
