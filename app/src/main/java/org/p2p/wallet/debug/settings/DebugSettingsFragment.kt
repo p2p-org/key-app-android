@@ -99,6 +99,9 @@ class DebugSettingsFragment :
             R.string.settings_moonpay_sandbox -> {
                 presenter.switchMoonpayUrl(isSandboxSelected = isChecked)
             }
+            R.string.settings_name_service -> {
+                presenter.switchNameServiceUrl(isProdSelected = isChecked)
+            }
         }
     }
 
