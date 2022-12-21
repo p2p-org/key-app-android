@@ -89,11 +89,22 @@ class NewSearchPresenter(
     }
 
     fun checkPreselectedTokenAndSubmitResult(result: SearchResult) {
-        val preselectedToken = if (result is SearchResult.AddressOnly) {
-            // in case if user inserts direct token address
-            result.sourceToken ?: initialToken
-        } else initialToken
-        view?.submitSearchResult(result, preselectedToken)
+        launch {
+            val finalResult: SearchResult
+            val preselectedToken: Token.Active?
+            if (result is SearchResult.AddressOnly) {
+                finalResult = result.copyWithBalance(
+                    userInteractor.getBalance(
+                        result.addressState.address.toBase58Instance()
+                    )
+                )
+                preselectedToken = result.sourceToken ?: initialToken
+            } else {
+                finalResult = result
+                preselectedToken = initialToken
+            }
+            view?.submitSearchResult(finalResult, preselectedToken)
+        }
     }
 
     override fun onBuyClicked() {
