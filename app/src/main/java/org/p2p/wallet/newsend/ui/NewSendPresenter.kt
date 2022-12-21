@@ -1,6 +1,8 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
@@ -40,8 +42,6 @@ import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -333,9 +333,10 @@ class NewSendPresenter(
         )
 
         appScope.launch {
+            val transactionDate = Date()
             try {
                 val progressDetails = NewShowProgress(
-                    date = Date(),
+                    date = transactionDate,
                     tokenUrl = token.iconUrl.orEmpty(),
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
@@ -346,6 +347,7 @@ class NewSendPresenter(
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+                userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
             } catch (e: Throwable) {

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.scaleMedium
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
@@ -16,7 +17,6 @@ import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -48,7 +48,7 @@ class RenStatusesFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getTransactionTitle()
 
-            dateTextView.text = DateTimeUtils.getFormattedDate(
+            textViewDate.text = DateTimeUtils.getFormattedDate(
                 transaction.getLatestStatus()?.date ?: System.currentTimeMillis()
             )
             recyclerView.layoutManager = LinearLayoutManager(requireContext()).apply {

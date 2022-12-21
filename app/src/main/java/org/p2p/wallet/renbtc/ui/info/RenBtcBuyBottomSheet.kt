@@ -52,7 +52,7 @@ class RenBtcBuyBottomSheet : NonDraggableBottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             val feeUsd = if (priceInUsd != null) "~$$priceInUsd" else getString(R.string.common_not_available)
-            topTextView.text = getString(R.string.send_account_creation_fee_format, feeUsd)
+            textViewTop.text = getString(R.string.send_account_creation_fee_format, feeUsd)
             amountTextView.text = getString(R.string.receive_amount_in_sol, priceInSol.toString())
             with(progressButton) {
                 text = getString(R.string.receive_pay_and_countinue, priceInSol.toString())
