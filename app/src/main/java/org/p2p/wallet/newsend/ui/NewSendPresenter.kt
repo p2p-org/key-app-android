@@ -28,6 +28,7 @@ import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
 import org.p2p.wallet.utils.cutMiddle
@@ -49,6 +50,7 @@ class NewSendPresenter(
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
+    private val connectionStateProvider: ConnectionStateProvider,
     private val appScope: AppScope
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
@@ -101,6 +103,10 @@ class NewSendPresenter(
             view.showToken(token)
             calculationMode.updateToken(token)
 
+            val userTokens = userInteractor.getUserTokens()
+            val isTokenChangeEnabled = userTokens.size == 1 || selectedToken == null
+            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
+
             val solToken = userInteractor.getUserSolToken()
             if (solToken == null) {
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
@@ -121,6 +127,9 @@ class NewSendPresenter(
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
                 return@launch
             }
+
+            val isTokenChangeEnabled = userTokens.size == 1 || selectedToken == null
+            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
             // Get USDC or USDT or token with biggest amount
             val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
@@ -165,6 +174,7 @@ class NewSendPresenter(
             is FeeRelayerState.ReduceAmount -> {
                 inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
                 view.updateInputValue(inputAmount, forced = true)
+                view.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
             }
             is FeeRelayerState.Failure -> {
                 view.setFeeLabel(text = null)
@@ -294,6 +304,19 @@ class NewSendPresenter(
         }
     }
 
+    override fun checkInternetConnection() {
+        if (!isInternetConnectionEnabled()) {
+            view?.showUiKitSnackBar(
+                message = resources.getString(R.string.error_no_internet_message),
+                actionButtonResId = R.string.common_hide
+            )
+            view?.restoreSlider()
+            return
+        }
+
+        view?.showSliderCompleteAnimation()
+    }
+
     override fun send() {
         val token = token ?: error("Token cannot be null!")
         val address = recipientAddress.addressState.address
@@ -410,6 +433,9 @@ class NewSendPresenter(
             view?.showDebugInfo(debugInfo)
         }
     }
+
+    private fun isInternetConnectionEnabled(): Boolean =
+        connectionStateProvider.hasConnection()
 
     private fun requireToken(): Token.Active =
         token ?: error("Source token cannot be empty!")

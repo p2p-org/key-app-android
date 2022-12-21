@@ -13,6 +13,6 @@ interface NewSendDetailsContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun findAlternativeFeePayerTokens(fee: SendSolanaFee)
+        fun loadFeePayerTokens(fee: SendSolanaFee)
     }
 }
