@@ -15,7 +15,7 @@ class NewSendDetailsPresenter(
     private val resources: Resources
 ) : BasePresenter<NewSendDetailsContract.View>(), NewSendDetailsContract.Presenter {
 
-    override fun findAlternativeFeePayerTokens(fee: SendSolanaFee) {
+    override fun loadFeePayerTokens(fee: SendSolanaFee) {
         view?.showAccountCreationFeeLoading(isLoading = true)
         launch {
             try {

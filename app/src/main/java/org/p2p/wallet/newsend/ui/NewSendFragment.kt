@@ -90,11 +90,9 @@ class NewSendFragment :
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
             focusAndShowKeyboard()
-            setTokenContainerEnabled(isEnabled = initialToken == null)
         }
-        binding.sliderSend.onSlideCompleteListener = {
-            presenter.send()
-        }
+        binding.sliderSend.onSlideCompleteListener = { presenter.checkInternetConnection() }
+        binding.sliderSend.onSlideCollapseCompleted = { presenter.send() }
 
         binding.textViewDebug.isVisible = BuildConfig.DEBUG
 
@@ -179,6 +177,10 @@ class NewSendFragment :
         binding.widgetSendDetails.setAroundValue(value)
     }
 
+    override fun setTokenContainerEnabled(isEnabled: Boolean) {
+        binding.widgetSendDetails.setTokenContainerEnabled(isEnabled = isEnabled)
+    }
+
     override fun showFeeViewLoading(isLoading: Boolean) {
         binding.widgetSendDetails.showFeeLoading(isLoading)
     }
@@ -221,6 +223,14 @@ class NewSendFragment :
     override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
         listener?.showTransactionProgress(internalTransactionId, data)
         popBackStackTo(target = NewSearchFragment::class, inclusive = true)
+    }
+
+    override fun showSliderCompleteAnimation() {
+        binding.sliderSend.showCompleteAnimation()
+    }
+
+    override fun restoreSlider() {
+        binding.sliderSend.restoreSlider()
     }
 
     private fun showAccountCreationFeeInfo(

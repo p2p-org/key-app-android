@@ -57,8 +57,7 @@ class NewSendButtonValidator(
             val isAmountValidForSender = isAmountValidForSender(inputAmount)
 
             val inputTextColor = when {
-                !isEnoughBalance -> R.color.text_rose
-                !isEnoughToCoverExpenses -> R.color.text_rose
+                !isEnoughBalance || !isEnoughToCoverExpenses || !isAmountValidForSender -> R.color.text_rose
                 else -> R.color.text_night
             }
 
@@ -96,8 +95,12 @@ class NewSendButtonValidator(
                     )
                 }
                 !isAmountValidForSender -> {
-                    val solAmount = minRentExemption.fromLamports().scaleLong().toPlainString()
-                    val format = resources.getString(R.string.send_min_required_user_balance, solAmount, SOL_SYMBOL)
+                    val maxSolAmountAllowed = sourceToken.totalInLamports - minRentExemption
+                    val format = resources.getString(
+                        R.string.send_min_required_user_balance,
+                        maxSolAmountAllowed.fromLamports().scaleLong().toPlainString(),
+                        SOL_SYMBOL
+                    )
                     State.Disabled(
                         textContainer = TextContainer.Raw(format),
                         totalAmountTextColor = inputTextColor
@@ -118,9 +121,8 @@ class NewSendButtonValidator(
     /**
      * This case is only for sending SOL
      *
-     * 1. The recipient and sender should have at least [minRentExemption] SOL balance
-     * 2. The sender is allowed to sent exactly the whole SOL balance.
-     * It's allowed for the sender to have a SOL balance 0 or at least [minRentExemption]
+     * 1. The recipient should receive at least [minRentExemption] SOL balance if his current balance is 0
+     * 2. The recipient should have at least [minRentExemption] after the transaction
      * */
     private fun isAmountValidForRecipient(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
@@ -136,9 +138,8 @@ class NewSendButtonValidator(
     /**
      * This case is only for sending SOL
      *
-     * 1. The recipient and sender should have at least [minRentExemption] balance
-     * 2. The sender is allowed to sent exactly the whole balance.
-     * It's allowed for the sender to have a SOL balance 0 or at least [minRentExemption]
+     * 1. The sender is allowed to sent exactly the whole balance.
+     * 2. It's allowed for the sender to have a SOL balance 0 or at least [minRentExemption]
      * */
     private fun isAmountValidForSender(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL

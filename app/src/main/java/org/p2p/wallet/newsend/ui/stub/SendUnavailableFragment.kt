@@ -1,12 +1,12 @@
 package org.p2p.wallet.newsend.ui.stub
 
+import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
-import org.p2p.wallet.databinding.FragmentSendNoTokenBinding
+import org.p2p.wallet.databinding.FragmentSendUnavailableBinding
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.utils.args
@@ -17,15 +17,15 @@ import org.p2p.wallet.utils.withArgs
 
 private const val ARG_DEFAULT_TOKEN = "ARG_DEFAULT_TOKEN"
 
-class SendNoTokensFragment : BaseFragment(R.layout.fragment_send_no_token) {
+class SendUnavailableFragment : BaseFragment(R.layout.fragment_send_unavailable) {
 
     companion object {
-        fun create(token: Token): Fragment = SendNoTokensFragment().withArgs(
+        fun create(token: Token): Fragment = SendUnavailableFragment().withArgs(
             ARG_DEFAULT_TOKEN to token
         )
     }
 
-    private val binding: FragmentSendNoTokenBinding by viewBinding()
+    private val binding: FragmentSendUnavailableBinding by viewBinding()
     private val defaultTokenToBuy: Token by args(ARG_DEFAULT_TOKEN)
 
     override val statusBarColor: Int = R.color.bg_smoke

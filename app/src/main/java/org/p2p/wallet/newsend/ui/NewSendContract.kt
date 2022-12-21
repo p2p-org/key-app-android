@@ -36,6 +36,7 @@ interface NewSendContract {
         fun onTokenClicked()
         fun onFeeInfoClicked()
 
+        fun checkInternetConnection()
         fun send()
     }
 }

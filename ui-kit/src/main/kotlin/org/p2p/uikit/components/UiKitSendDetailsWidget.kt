@@ -149,12 +149,16 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 interface UiKitSendDetailsWidgetContract {
     fun showToken(token: Token.Active)
     fun showAroundValue(value: String)
-    fun setSwitchLabel(symbol: String)
+    fun showSliderCompleteAnimation()
 
+    fun setSwitchLabel(symbol: String)
     fun setInputColor(@ColorRes colorRes: Int)
     fun setMainAmountLabel(symbol: String)
     fun setMaxButtonVisible(isVisible: Boolean)
 
     fun showFeeViewLoading(isLoading: Boolean)
     fun setFeeLabel(text: String?)
+    fun setTokenContainerEnabled(isEnabled: Boolean)
+
+    fun restoreSlider()
 }
