@@ -35,6 +35,7 @@ class NewSearchPresenter(
 
     override fun loadInitialData() {
         launch {
+            // TODO make it more optimized
             val finalSearchResult = lastResult.takeIf { lastResult.isNotEmpty() } ?: usernames
             if (finalSearchResult.isNullOrEmpty()) {
                 recentRecipients = userInteractor.getRecipients()
