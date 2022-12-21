@@ -2,10 +2,11 @@ package org.p2p.wallet.sell.ui.payload
 
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatTokenForMoonpay
+import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
@@ -17,10 +18,10 @@ import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.RoundingMode
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -28,7 +29,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
-private const val ZERO_STRING_VALUE = "0"
 
 class SellPayloadPresenter(
     private val sellInteractor: SellInteractor,
@@ -40,9 +40,11 @@ class SellPayloadPresenter(
     SellPayloadContract.Presenter {
 
     private var userSolBalance: BigDecimal = BigDecimal.ZERO
-    private var minSellAmount: BigDecimal = BigDecimal.ZERO
-    private var maxSellAmount: BigDecimal? = null
-    private var userSelectedAmount: BigDecimal = BigDecimal.ZERO
+    private var minTokenSellAmount: BigDecimal = BigDecimal.ZERO
+    private var maxTokenSellAmount: BigDecimal? = null
+    private var rawUserSelectedAmount: String = emptyString()
+    private val userSelectedAmount: BigDecimal
+        get() = rawUserSelectedAmount.toBigDecimalOrZero()
     private var currentFiat: MoonpaySellFiatCurrency = MoonpaySellFiatCurrency.USD
     private var tokenPrice: BigDecimal = BigDecimal.ZERO
 
@@ -57,10 +59,10 @@ class SellPayloadPresenter(
                 userSolBalance = userInteractor.getUserSolToken()?.total.orZero()
                 loadCurrencies()
                 checkForMinAmount()
-                startLoadSellQuoteJob()
+                restartLoadSellQuoteJob()
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading data from Moonpay")
-                view.showErrorScreen()
+                view.navigateToErrorScreen()
             } finally {
                 view.showLoading(isVisible = false)
             }
@@ -87,19 +89,19 @@ class SellPayloadPresenter(
 
     private suspend fun loadCurrencies() {
         val solCurrency = sellInteractor.getSolCurrency()
-        minSellAmount = solCurrency.amounts.minSellAmount.orZero()
-        maxSellAmount = solCurrency.amounts.maxSellAmount
-        userSelectedAmount = minSellAmount
+        minTokenSellAmount = solCurrency.amounts.minSellAmount.orZero()
+        maxTokenSellAmount = solCurrency.amounts.maxSellAmount
+        rawUserSelectedAmount = minTokenSellAmount.formatToken()
         currentFiat = sellInteractor.getMoonpaySellFiatCurrency()
     }
 
     private fun checkForMinAmount() {
-        if (userSolBalance < minSellAmount) {
-            view?.showNotEnoughMoney(minSellAmount)
+        if (userSolBalance < minTokenSellAmount) {
+            view?.showNotEnoughMoney(minTokenSellAmount)
         }
     }
 
-    private fun startLoadSellQuoteJob() {
+    private fun restartLoadSellQuoteJob() {
         sellQuoteJob?.cancel()
 
         sellQuoteJob = launch {
@@ -110,17 +112,16 @@ class SellPayloadPresenter(
                     tokenPrice = sellQuote.tokenPrice
 
                     val fiatUiSymbol = currentFiat.uiSymbol
-                    val moonpayFee = sellQuote.feeAmount
-                    val fiatAmount = "$tokenPrice $fiatUiSymbol"
+                    val moonpayFee = sellQuote.feeAmount.formatUsd()
 
                     val viewState = ViewState(
-                        quoteAmount = sellQuote.fiatEarning.formatToken(),
-                        fee = moonpayFee.scaleShortOrFirstNotZero().toString(),
-                        fiat = fiatAmount,
-                        solToSell = userSelectedAmount.toString(),
-                        tokenSymbol = Constants.SOL_SYMBOL,
+                        formattedUserAvailableBalance = userSolBalance.formatTokenForMoonpay(),
+                        solToSell = rawUserSelectedAmount,
+                        formattedFiatAmount = sellQuote.fiatEarning.formatUsd(),
+                        formattedSellFiatFee = moonpayFee,
+                        formattedTokenPrice = tokenPrice.formatUsd(),
                         fiatSymbol = fiatUiSymbol,
-                        userBalance = userSolBalance.toString()
+                        tokenSymbol = Constants.SOL_SYMBOL,
                     )
 
                     view?.updateViewState(viewState)
@@ -128,8 +129,8 @@ class SellPayloadPresenter(
                 } catch (e: CancellationException) {
                     Timber.i(e)
                 } catch (e: Throwable) {
-                    Timber.e("Error on loading data from Moonpay $e")
-                    view?.showErrorScreen()
+                    Timber.e(e, "Error on loading data from Moonpay $e")
+                    view?.navigateToErrorScreen()
                 }
             }
         }
@@ -141,64 +142,70 @@ class SellPayloadPresenter(
         val moonpayUrl = moonpayWidgetUrlBuilder.buildSellWidgetUrl(
             tokenSymbol = Constants.SOL_SYMBOL,
             userAddress = userAddress,
-            fiatSymbol = currentFiat.symbol.orEmpty(),
-            tokenAmountToSell = userSelectedAmount.toString(),
+            fiatSymbol = currentFiat.symbol,
+            tokenAmountToSell = userSelectedAmount.formatTokenForMoonpay(),
         )
         view?.showMoonpayWidget(url = moonpayUrl)
     }
 
     override fun onTokenAmountChanged(newValue: String) {
-        val newTokenValue = newValue.toBigDecimalOrZero()
-        sellQuoteJob?.cancel()
+        rawUserSelectedAmount = newValue
 
-        val buttonState = determineButtonState(newTokenValue)
+        val buttonState = determineButtonState()
         if (buttonState.isEnabled) {
-            userSelectedAmount = newTokenValue
-            startLoadSellQuoteJob()
+            restartLoadSellQuoteJob()
         } else {
-            view?.setFiatAndFeeValue(ZERO_STRING_VALUE)
+            sellQuoteJob?.cancel()
+            view?.resetFiatAndFee(feeSymbol = currentFiat.uiSymbol)
         }
         view?.setButtonState(buttonState)
     }
 
-    override fun onCurrencyAmountChanged(newValue: String) {
-        sellQuoteJob?.cancel()
-
-        val newCurrencyAmount = newValue.toBigDecimalOrZero()
-        val newTokenAmount = newCurrencyAmount.divide(tokenPrice, 2, RoundingMode.HALF_EVEN)
-        val buttonState = determineButtonState(newTokenAmount)
-        if (buttonState.isEnabled) {
-            userSelectedAmount = newTokenAmount
-            startLoadSellQuoteJob()
-        } else {
-            view?.setTokenAndFeeValue(ZERO_STRING_VALUE)
-        }
-        view?.setButtonState(buttonState)
-    }
+    // delete or use in PWN-6284
+//    override fun onCurrencyAmountChanged(newValue: String) {
+//        sellQuoteJob?.cancel()
+//
+//        val newCurrencyAmount = newValue.toBigDecimalOrZero()
+//        val newTokenAmount = newCurrencyAmount.divide(tokenPrice, 2, RoundingMode.HALF_EVEN)
+//        val buttonState = determineButtonState(newTokenAmount)
+//        if (buttonState.isEnabled) {
+//            userSelectedAmount = newTokenAmount
+//            startLoadSellQuoteJob()
+//        } else {
+//            view?.setTokenAndFeeValue(ZERO_STRING_VALUE)
+//        }
+//        view?.setButtonState(buttonState)
+//    }
 
     override fun onUserMaxClicked() {
-        view?.setTokenAmount(userSolBalance.toString())
+        view?.setTokenAmount(userSolBalance.formatTokenForMoonpay())
     }
 
-    private fun determineButtonState(selectedTokenAmount: BigDecimal): SellPayloadContract.CashOutButtonState {
+    private fun determineButtonState(): SellPayloadContract.CashOutButtonState {
         return when {
-            selectedTokenAmount.isLessThan(minSellAmount) -> {
+            userSelectedAmount.isLessThan(minTokenSellAmount) -> {
                 SellPayloadContract.CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
-                    text = resourceProvider.getString(R.string.sell_min_sol_amount, minSellAmount.toString())
+                    text = resourceProvider.getString(
+                        R.string.sell_min_sol_amount,
+                        minTokenSellAmount.formatTokenForMoonpay()
+                    )
                 )
             }
-            selectedTokenAmount.isMoreThan(maxSellAmount.orZero()) -> {
+            userSelectedAmount.isMoreThan(maxTokenSellAmount.orZero()) -> {
                 SellPayloadContract.CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
-                    text = resourceProvider.getString(R.string.sell_max_sol_amount, maxSellAmount.toString())
+                    text = resourceProvider.getString(
+                        R.string.sell_max_sol_amount,
+                        maxTokenSellAmount.orZero().formatTokenForMoonpay()
+                    )
                 )
             }
-            selectedTokenAmount.isMoreThan(userSolBalance) -> {
+            userSelectedAmount.isMoreThan(userSolBalance) -> {
                 SellPayloadContract.CashOutButtonState(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
@@ -207,7 +214,6 @@ class SellPayloadPresenter(
                 )
             }
             else -> {
-                userSelectedAmount = selectedTokenAmount
                 SellPayloadContract.CashOutButtonState(
                     isEnabled = true,
                     backgroundColor = R.color.bg_night,

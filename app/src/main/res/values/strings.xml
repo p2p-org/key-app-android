@@ -641,17 +641,17 @@
     <string name="sell_lock_usd_amount">≈ $%s</string>
     <string name="sell_payload_title">Cash out token</string>
     <string name="sell_all_sol">all %s SOL</string>
-    <string name="sell_included_fee">Included fee %s SOL</string>
+    <string name="sell_included_fee">Included fee %s %s</string>
     <string name="sell_min_sol_amount">The minimum amount is %s SOL</string>
     <string name="sell_max_sol_amount">The maximum amount is %s SOL</string>
     <string name="sell_not_enough_sol">Not enough SOL</string>
 
     <string name="error_service_ruiner_message">Our payment service was ruined.\nVisit this page later</string>
     <string name="sell_need_more_sol_title">You need a little more SOL</string>
-    <string name="sell_need_more_sol_message">The current minimum amount is %.1f SOL</string>
+    <string name="sell_need_more_sol_message">The current minimum amount is %s SOL</string>
     <string name="you_bank_account_via_moonpay">Your bank account via Moonpay</string>
     <string name="sell_process_transaction_status">SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via Moonpay help center</string>
-    <string name="sell_sol_fiat_value">1 SOL ≈ %s</string>
+    <string name="sell_sol_fiat_value">1 SOL ≈ %s %s</string>
     <string name="sell_input_fiat_symbol">≈ %s</string>
 
 

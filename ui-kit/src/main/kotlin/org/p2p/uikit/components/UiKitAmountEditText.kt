@@ -5,6 +5,7 @@ import androidx.core.view.isVisible
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
+import android.text.InputType
 import android.util.AttributeSet
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.R
@@ -20,15 +21,32 @@ open class UiKitAmountEditText @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
+    var isEditable: Boolean
+        get() = binding.editText.inputType != InputType.TYPE_NULL
+        set(value) {
+            binding.editText.inputType = if (value) InputType.TYPE_CLASS_PHONE else InputType.TYPE_NULL
+        }
+
+    val text: Editable?
+        get() = binding.editText.text
+
+    val stringText: String
+        get() = text?.toString().orEmpty()
+
+    val hint: CharSequence
+        get() = binding.editText.hint
+
+    val length: Int
+        get() = binding.editText.length()
+
     protected val binding = inflateViewBinding<WidgetUiKitAmountEditTextBinding>()
 
-    private var amountTextWatcher: AmountFractionTextWatcher? = null
-    private var tokenTextWatcher: AmountFractionTextWatcher? = null
+    private var inputTextWatcher: AmountFractionTextWatcher? = null
 
     private val bgRed = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
         cornerRadius = CORNER_RADIUS
-        setColor(context.getColor(R.color.bg_rain))
+        setColor(context.getColor(R.color.bg_snow))
         setStroke(STROKE_WIDTH, context.getColor(R.color.bg_rose))
     }
 
@@ -70,59 +88,32 @@ open class UiKitAmountEditText @JvmOverloads constructor(
         styleAttrs.recycle()
     }
 
-    fun setupText(text: String) {
-        binding.editText.setText(text)
-        val selectionIndex = if (text.isNotEmpty()) text.length else 0
-        binding.editText.setSelection(selectionIndex)
-    }
-
     fun setHint(hint: String) {
         binding.textViewHint.text = hint
     }
 
-    val text: Editable?
-        get() = binding.editText.text
-
-    val stringText: String
-        get() = text?.toString().orEmpty()
-
-    val hint: CharSequence
-        get() = binding.editText.hint
-
-    val length: Int
-        get() = binding.editText.length()
-
-    fun showError(isVisible: Boolean) = with(binding) {
-        inputViewContainer.background = if (isVisible) bgRed else bgNormal
+    fun showError(isVisible: Boolean) {
+        binding.inputViewContainer.background = if (isVisible) bgRed else bgNormal
     }
 
     fun focusAndShowKeyboard() {
         binding.editText.focusAndShowKeyboard()
     }
 
-    fun setOnTokenAmountChangeListener(onTokenAmountChange: (String) -> Unit) {
-        tokenTextWatcher = AmountFractionTextWatcher.installOn(binding.editText) {
+    fun setAmountInputTextWatcher(onAmountChange: (String) -> Unit) {
+        inputTextWatcher = AmountFractionTextWatcher.installOn(binding.editText, maxDecimalsAllowed = 2) {
             val amountWithoutSpaces = it.replace(" ", "")
-            onTokenAmountChange(amountWithoutSpaces)
+            onAmountChange(amountWithoutSpaces)
         }
     }
 
-    fun setOnCurrencyAmountChangeListener(onCurrencyAmountChange: (String) -> Unit) {
-        amountTextWatcher = AmountFractionTextWatcher.installOn(binding.editText) {
-            val amountWithoutSpaces = it.replace(" ", "")
-            onCurrencyAmountChange(amountWithoutSpaces)
-        }
+    fun setAmount(formattedAmount: String) {
+        setupText(formattedAmount)
     }
 
-    fun setTokenAmount(tokenAmount: String?) = with(binding.editText) {
-        removeTextChangedListener(tokenTextWatcher)
-        setupText(tokenAmount.orEmpty())
-        addTextChangedListener(tokenTextWatcher)
-    }
-
-    fun setCurrencyAmount(currencyAmount: String?) = with(binding.editText) {
-        removeTextChangedListener(amountTextWatcher)
-        setupText(currencyAmount.orEmpty())
-        addTextChangedListener(amountTextWatcher)
+    fun setupText(text: String) {
+        binding.editText.setText(text)
+        val selectionIndex = if (text.isNotEmpty()) text.length else 0
+        binding.editText.setSelection(selectionIndex)
     }
 }

@@ -63,6 +63,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:clickable="false"
+        android:focusable="false"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
         app:layout_constraintBottom_toTopOf="@+id/textViewRate"
         app:layout_constraintEnd_toEndOf="parent"
