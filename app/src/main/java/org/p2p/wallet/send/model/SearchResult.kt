@@ -17,10 +17,13 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     ) : SearchResult(addressState)
 
     @Parcelize
-    data class UsernameFound(override val addressState: AddressState, val username: String) : SearchResult(addressState)
+    data class EmptyBalance constructor(
+        override val addressState: AddressState,
+        val sourceToken: Token.Active? = null
+    ) : SearchResult(addressState)
 
     @Parcelize
-    data class EmptyBalance(override val addressState: AddressState) : SearchResult(addressState)
+    data class UsernameFound(override val addressState: AddressState, val username: String) : SearchResult(addressState)
 
     @Parcelize
     data class InvalidResult(

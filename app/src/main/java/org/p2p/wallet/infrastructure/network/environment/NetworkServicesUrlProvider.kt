@@ -10,6 +10,7 @@ import timber.log.Timber
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
+private const val KEY_NAME_SERVICE_BASE_URL = "KEY_NAME_SERVICE_BASE_URL"
 private const val KEY_TORUS_BASE_URL = "KEY_TORUS_BASE_URL"
 private const val KEY_TORUS_BASE_VERIFIER = "KEY_TORUS_BASE_VERIFIER"
 private const val KEY_TORUS_BASE_SUB_VERIFIER = "KEY_TORUS_BASE_SUB_VERIFIER"
@@ -31,6 +32,19 @@ class NetworkServicesUrlProvider(
 
     fun saveFeeRelayerEnvironment(newUrl: String) {
         sharedPreferences.edit { putString(KEY_FEE_RELAYER_BASE_URL, newUrl) }
+    }
+
+    fun loadNameServiceEnvironment(): NameServiceEnvironment {
+        val url = sharedPreferences.getString(
+            KEY_NAME_SERVICE_BASE_URL,
+            context.getString(R.string.registerUsernameServiceProductionUrl)
+        ).orEmpty()
+
+        return NameServiceEnvironment(url)
+    }
+
+    fun saveNameServiceEnvironment(newUrl: String) {
+        sharedPreferences.edit { putString(KEY_NAME_SERVICE_BASE_URL, newUrl) }
     }
 
     fun loadNotificationServiceEnvironment(): NotificationServiceEnvironment {

@@ -113,8 +113,10 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER)) {
+            val environmentManager = get<NetworkServicesUrlProvider>()
+            val baseUrl = environmentManager.loadNameServiceEnvironment().baseUrl
             getRetrofit(
-                baseUrl = androidContext().getString(R.string.registerUsernameServiceBaseUrl),
+                baseUrl = baseUrl,
                 tag = "RegisterUsernameService",
                 interceptor = null
             )

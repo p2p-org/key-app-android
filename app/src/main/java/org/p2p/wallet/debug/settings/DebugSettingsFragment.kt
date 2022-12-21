@@ -11,6 +11,7 @@ import org.p2p.wallet.databinding.FragmentDebugSettingsBinding
 import org.p2p.wallet.debug.featuretoggles.FeatureTogglesFragment
 import org.p2p.wallet.debug.feerelayer.DebugFeeRelayerFragment
 import org.p2p.wallet.debug.logs.CustomLogDialog
+import org.p2p.wallet.debug.nameservice.DebugNameServiceFragment
 import org.p2p.wallet.debug.publickey.DebugPublicKeyFragment
 import org.p2p.wallet.debug.pushnotifications.PushNotificationsFragment
 import org.p2p.wallet.debug.pushservice.DebugPushServiceFragment
@@ -78,6 +79,9 @@ class DebugSettingsFragment :
             }
             R.string.settings_notification_service -> {
                 replaceFragment(DebugPushServiceFragment.create())
+            }
+            R.string.settings_name_service -> {
+                replaceFragment(DebugNameServiceFragment.create())
             }
             R.string.settings_torus -> {
                 replaceFragment(DebugTorusFragment.create())
