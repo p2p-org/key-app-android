@@ -12,8 +12,8 @@ import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
 import org.p2p.wallet.utils.Base58String
 import timber.log.Timber
-import kotlinx.coroutines.withContext
 import java.math.BigDecimal
+import kotlinx.coroutines.withContext
 
 private const val TAG = "MoonpaySellRemoteRepository"
 
@@ -82,10 +82,9 @@ class MoonpaySellRemoteRepository(
         )
     }
 
-    override suspend fun getSellFiatCurrency(): MoonpaySellFiatCurrency {
-        val countryAbbreviation = cachedMoonpayIpFlags?.currentCountryAbbreviation.orEmpty()
-        return MoonpaySellFiatCurrency.getFromCountryAbbreviation(countryAbbreviation)
-    }
+    override suspend fun getSellFiatCurrency(): MoonpaySellFiatCurrency =
+        cachedMoonpayIpFlags?.currentCountryAbbreviation.orEmpty()
+            .let(MoonpaySellFiatCurrency.Companion::getFromCountryAbbreviation)
 
     @Throws(MoonpaySellError::class)
     private suspend inline fun <R> doMoonpayRequest(

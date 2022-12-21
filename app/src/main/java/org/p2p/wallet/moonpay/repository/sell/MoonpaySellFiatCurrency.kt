@@ -8,9 +8,10 @@ enum class MoonpaySellFiatCurrency(val symbol: String, val uiSymbol: String) {
     companion object {
         fun getFromCountryAbbreviation(abbreviation: String): MoonpaySellFiatCurrency {
             return when (abbreviation) {
+                "US" -> USD
                 "UK" -> GBP
                 "EU" -> EUR
-                else -> USD
+                else -> EUR // if it's not US or UK, then it's EU
             }
         }
     }
