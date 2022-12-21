@@ -4,17 +4,18 @@ import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.databinding.ItemSearchBinding
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.context
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
@@ -64,16 +65,31 @@ class SearchViewHolder(
 
     private fun renderAddressOnly(item: SearchResult.AddressOnly) {
         with(binding) {
-            if (item.addressState.networkType == NetworkType.BITCOIN) {
-                walletImageView.setImageResource(R.drawable.ic_btc)
-                walletImageView.setPadding(0, 0, 0, 0)
+            val imageIcon = item.sourceToken?.iconUrl
+            val description: String?
+            val imageObject: Any = if (imageIcon != null) {
+                walletImageView.apply {
+                    setPadding(0, 0, 0, 0)
+                }
+                description = getString(
+                    R.string.search_no_other_tokens_description,
+                    item.sourceToken.tokenSymbol
+                )
+                imageIcon
             } else {
-                walletImageView.setImageResource(R.drawable.ic_search_wallet)
-                walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                walletImageView.apply {
+                    setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                }
+                description = null
+                R.drawable.ic_search_wallet
             }
             textViewTop.text = item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
-            textViewBottom.isVisible = false
+            textViewBottom.withTextOrGone(description)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
+            Glide.with(root)
+                .load(imageObject)
+                .circleCrop()
+                .into(walletImageView)
         }
     }
 }
