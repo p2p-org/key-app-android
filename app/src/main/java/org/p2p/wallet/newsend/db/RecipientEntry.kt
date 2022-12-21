@@ -18,9 +18,9 @@ data class RecipientEntry(
     val nickname: String?,
 
     @ColumnInfo(name = COLUMN_DATE_TIMESTAMP)
-    val dateTimestamp: Long,
+    val dateTimestamp: Long
 
-    ) {
+) {
     companion object {
         const val TABLE_NAME = "recipient_table"
         const val COLUMN_ADDRESS = "address"
