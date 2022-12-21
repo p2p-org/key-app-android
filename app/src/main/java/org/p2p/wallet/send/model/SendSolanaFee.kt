@@ -113,8 +113,11 @@ data class SendSolanaFee constructor(
         feePayerToken.isSOL ->
             sourceTokenTotal >= inputAmount && feePayerTotalLamports > feeRelayerFee.totalInSol
         // assuming that source token and fee payer are same
-        else ->
+        sourceTokenSymbol == feePayerSymbol ->
             sourceTokenTotal >= inputAmount + feeRelayerFee.totalInSpl
+        // assuming that source token and fee payer are different
+        else ->
+            feePayerToken.totalInLamports >= feeRelayerFee.totalInSpl
     }
 
     fun calculateFeePayerState(

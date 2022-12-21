@@ -1,16 +1,18 @@
 package org.p2p.wallet.send.ui.search.adapter
 
-import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
 import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
@@ -52,7 +54,7 @@ class SearchViewHolder(
             walletImageView.setImageResource(imageResource)
 
             topTextView.text = item.username
-            bottomTextView withTextOrGone item.addressState.address.cutEnd()
+            bottomTextView withTextOrGone item.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
             bottomTextView.setTextColorRes(R.color.backgroundDisabled)
         }
     }
@@ -66,7 +68,7 @@ class SearchViewHolder(
                 walletImageView.setImageResource(R.drawable.ic_search_wallet)
                 walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
             }
-            topTextView.text = item.addressState.address.cutEnd()
+            topTextView.text = item.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
             bottomTextView.isVisible = false
         }
     }
@@ -74,8 +76,11 @@ class SearchViewHolder(
     private fun renderEmptyBalance(item: SearchResult.EmptyBalance) {
         with(binding) {
             topTextView.text = item.addressState.address.cutEnd()
-            bottomTextView.setText(R.string.send_caution_empty_balance)
-            bottomTextView.setTextColorRes(R.color.systemWarningMain)
+            bottomTextView.isVisible = false
+
+            // fixme: temporary not showing empty balance
+//            bottomTextView.setText(R.string.send_caution_empty_balance)
+//            bottomTextView.setTextColorRes(R.color.systemWarningMain)
         }
     }
 }

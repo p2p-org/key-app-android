@@ -1,21 +1,25 @@
 package org.p2p.wallet.newsend.model
 
-import android.content.res.Resources
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import kotlinx.parcelize.IgnoredOnParcel
+import android.content.res.Resources
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.R
 import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.SearchResult
 import java.math.BigInteger
+import kotlinx.parcelize.IgnoredOnParcel
 
-class NewSendButton(
+class NewSendButtonValidator(
     private val sourceToken: Token.Active,
     private val searchResult: SearchResult,
     private val feeRelayerState: FeeRelayerState,
@@ -50,10 +54,10 @@ class NewSendButton(
             val isEnoughToCoverExpenses = sendFee == null || sendFee.isEnoughToCoverExpenses(total, inputAmount)
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
+            val isAmountValidForSender = isAmountValidForSender(inputAmount)
 
             val inputTextColor = when {
-                !isEnoughBalance -> R.color.text_rose
-                !isEnoughToCoverExpenses -> R.color.text_rose
+                !isEnoughBalance || !isEnoughToCoverExpenses || !isAmountValidForSender -> R.color.text_rose
                 else -> R.color.text_night
             }
 
@@ -83,8 +87,22 @@ class NewSendButton(
                     State.Disabled(textContainer, inputTextColor)
                 }
                 !isAmountValidForRecipient -> {
+                    val solAmount = minRentExemption.fromLamports().scaleLong().toPlainString()
+                    val format = resources.getString(R.string.send_min_warning_text_format, solAmount, SOL_SYMBOL)
                     State.Disabled(
-                        textContainer = TextContainer.Res(R.string.send_min_required_amount_warning),
+                        textContainer = TextContainer.Raw(format),
+                        totalAmountTextColor = inputTextColor
+                    )
+                }
+                !isAmountValidForSender -> {
+                    val maxSolAmountAllowed = sourceToken.totalInLamports - minRentExemption
+                    val format = resources.getString(
+                        R.string.send_min_required_user_balance,
+                        maxSolAmountAllowed.fromLamports().scaleLong().toPlainString(),
+                        SOL_SYMBOL
+                    )
+                    State.Disabled(
+                        textContainer = TextContainer.Raw(format),
                         totalAmountTextColor = inputTextColor
                     )
                 }
@@ -100,11 +118,36 @@ class NewSendButton(
             }
         }
 
+    /**
+     * This case is only for sending SOL
+     *
+     * 1. The recipient should receive at least [minRentExemption] SOL balance if his current balance is 0
+     * 2. The recipient should have at least [minRentExemption] after the transaction
+     * */
     private fun isAmountValidForRecipient(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
         val isRecipientEmpty = searchResult is SearchResult.EmptyBalance
-        val isInputInvalid = amount < minRentExemption
-        val isInvalid = isSourceTokenSol && isRecipientEmpty && isInputInvalid
+
+        val isInputValidForRecipient = amount >= minRentExemption
+        if (!isSourceTokenSol) return true
+
+        val isInvalid = isRecipientEmpty && !isInputValidForRecipient
         return !isInvalid
+    }
+
+    /**
+     * This case is only for sending SOL
+     *
+     * 1. The sender is allowed to sent exactly the whole balance.
+     * 2. It's allowed for the sender to have a SOL balance 0 or at least [minRentExemption]
+     * */
+    private fun isAmountValidForSender(amount: BigInteger): Boolean {
+        val isSourceTokenSol = sourceToken.isSOL
+        val balanceDiff = sourceToken.totalInLamports - amount
+
+        val isValidRemainingSource = balanceDiff.isZero() || balanceDiff > minRentExemption
+        if (!isSourceTokenSol) return true
+
+        return isValidRemainingSource
     }
 }

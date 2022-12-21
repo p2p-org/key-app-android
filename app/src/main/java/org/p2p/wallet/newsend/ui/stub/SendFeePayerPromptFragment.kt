@@ -5,12 +5,12 @@ import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendNoAccountBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.send.interactor.SendInteractor
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -19,7 +19,7 @@ import org.p2p.wallet.utils.withArgs
 import kotlinx.coroutines.launch
 
 private const val ARG_TOKEN_SYMBOL = "ARG_TOKEN_SYMBOL"
-private const val ARG_HAS_ALTERNATIVE_TOKEN = "ARG_HAS_ALTERNATIVE_TOKEN"
+private const val ARG_ALTERNATIVE_TOKENS = "ARG_HAS_ALTERNATIVE_TOKEN"
 private const val ARG_APPROXIMATE_FEE = "ARG_APPROXIMATE_FEE"
 private const val ARG_REQUEST_KEY = "ARG_REQUEST_KEY"
 private const val ARG_RESULT_KEY = "ARG_RESULT_KEY"
@@ -30,14 +30,14 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
         fun create(
             tokenSymbol: String,
             approximateFeeUsd: String,
-            hasAlternativeFeePayerToken: Boolean,
+            alternativeFeePayerTokens: List<Token.Active>,
             requestKey: String,
             resultKey: String
         ): SendNoAccountFragment = SendNoAccountFragment()
             .withArgs(
                 ARG_TOKEN_SYMBOL to tokenSymbol,
                 ARG_APPROXIMATE_FEE to approximateFeeUsd,
-                ARG_HAS_ALTERNATIVE_TOKEN to hasAlternativeFeePayerToken,
+                ARG_ALTERNATIVE_TOKENS to alternativeFeePayerTokens,
                 ARG_REQUEST_KEY to requestKey,
                 ARG_RESULT_KEY to resultKey,
             )
@@ -47,12 +47,11 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     private val resultKey: String by args(ARG_RESULT_KEY)
     private val tokenSymbol: String by args(ARG_TOKEN_SYMBOL)
     private val approximateFeeUsd: String by args(ARG_APPROXIMATE_FEE)
-    private val hasAlternativeFeePayerToken: Boolean by args(ARG_HAS_ALTERNATIVE_TOKEN)
+    private val alternativeFeePayerTokens: List<Token.Active> by args(ARG_ALTERNATIVE_TOKENS)
 
     override val statusBarColor: Int get() = R.color.bg_smoke
     override val navBarColor: Int get() = R.color.bg_night
 
-    private val userInteractor: UserInteractor by inject()
     private val sendInteractor: SendInteractor by inject()
 
     private val binding: FragmentSendNoAccountBinding by viewBinding()
@@ -70,6 +69,7 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
             }
             textViewTitle.setText(R.string.send_no_account_title)
 
+            val hasAlternativeFeePayerToken = alternativeFeePayerTokens.isNotEmpty()
             containerBottom.isVisible = hasAlternativeFeePayerToken
             buttonOk.isVisible = !hasAlternativeFeePayerToken
 
@@ -78,7 +78,7 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     }
 
     private fun FragmentSendNoAccountBinding.setMessage() {
-        val messageRes = if (hasAlternativeFeePayerToken) {
+        val messageRes = if (alternativeFeePayerTokens.isNotEmpty()) {
             R.string.send_no_account_non_critical_message
         } else {
             R.string.send_no_account_critical_message
@@ -89,11 +89,10 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
 
     private fun showFeePayerSelection() {
         lifecycleScope.launch {
-            val tokens = userInteractor.getUserTokens()
             val currentFeePayerToken = sendInteractor.getFeePayerToken()
             addFragment(
                 target = NewSelectTokenFragment.create(
-                    tokens = tokens,
+                    tokens = alternativeFeePayerTokens,
                     selectedToken = currentFeePayerToken,
                     requestKey = requestKey,
                     resultKey = resultKey,

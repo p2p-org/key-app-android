@@ -7,6 +7,16 @@
     android:layout_height="wrap_content"
     android:paddingBottom="32dp">
 
+    <View
+        android:id="@+id/viewPointer"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textViewTitle"
         android:layout_width="match_parent"
@@ -15,7 +25,7 @@
         android:paddingVertical="16dp"
         android:text="@string/common_transaction_details"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/viewPointer" />
 
     <include
         android:id="@+id/layoutAddress"
@@ -98,6 +108,21 @@
         app:layout_constraintStart_toEndOf="@id/textViewTitleAccountFee"
         app:layout_constraintTop_toTopOf="@id/textViewTitleAccountFee"
         app:tint="@color/icons_night" />
+
+    <ProgressBar
+        android:id="@+id/progressBarFees"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="2dp"
+        android:indeterminateTint="@color/elements_sky"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewAccountFeeInfo"
+        app:layout_constraintEnd_toEndOf="@id/imageViewAccountFeeInfo"
+        app:layout_constraintStart_toStartOf="@id/imageViewAccountFeeInfo"
+        app:layout_constraintTop_toTopOf="@id/imageViewAccountFeeInfo" />
+
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupAccountFee"

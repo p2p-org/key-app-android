@@ -21,6 +21,7 @@ import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.TokenAccount
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
@@ -31,6 +32,9 @@ import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 
 private const val SEND_TAG = "SEND"
 
@@ -42,7 +46,8 @@ class SendInteractor(
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val transactionInteractor: TransactionInteractor,
     private val amountRepository: RpcAmountRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val dispatchers: CoroutineDispatchers
 ) {
 
     /*
@@ -115,20 +120,39 @@ class SendInteractor(
             transactionFeeInSol = fees.transaction,
             accountCreationFeeInSol = fees.accountBalances,
             transactionFeeInSpl = feeInSpl.transaction,
-            accountCreationFeeInSpl = feeInSpl.accountBalances
+            accountCreationFeeInSpl = feeInSpl.accountBalances,
+            expectedFee = expectedFee
         )
     }
 
-    fun hasAlternativeFeePayerTokens(userTokens: List<Token.Active>, fee: SendSolanaFee): Boolean {
+    /*
+    * The request is too complex
+    * Wrapped each request into deferred
+    * TODO: Create a function to find fees by multiple tokens
+    * */
+    suspend fun findAlternativeFeePayerTokens(
+        userTokens: List<Token.Active>,
+        fee: SendSolanaFee
+    ): List<Token.Active> = withContext(dispatchers.io) {
         val tokenToExclude = fee.feePayerToken.tokenSymbol
-        val tokens = userTokens.filter { token ->
+        val fees = userTokens
+            .map { token ->
+                // converting SOL fee in token lamports to verify the balance coverage
+                async { getFeesInPayingTokeNullable(token, fee) }
+            }
+            .awaitAll()
+            .filterNotNull()
+            .toMap()
+
+        userTokens.filter { token ->
             if (token.tokenSymbol == tokenToExclude) return@filter false
 
-            val totalFee = if (token.isSOL) fee.feeRelayerFee.totalInSol else fee.feeRelayerFee.totalInSpl
-            token.totalInLamports >= totalFee
-        }
+            if (token.isSOL) return@filter token.totalInLamports >= fee.feeRelayerFee.totalInSol
 
-        return tokens.isNotEmpty()
+            // assuming that all other tokens are SPL
+            val feesInSpl = fees[token.tokenSymbol] ?: return@filter false
+            token.totalInLamports >= feesInSpl.total
+        }
     }
 
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
@@ -204,6 +228,22 @@ class SendInteractor(
 
     suspend fun getUserRelayAccount(): RelayAccount =
         feeRelayerAccountInteractor.getUserRelayAccount()
+
+    private suspend fun getFeesInPayingTokeNullable(
+        token: Token.Active,
+        fee: SendSolanaFee
+    ): Pair<String, FeeAmount>? = try {
+        val feeInSpl = getFeesInPayingToken(
+            feePayerToken = token,
+            transactionFeeInSOL = fee.feeRelayerFee.transactionFeeInSol,
+            accountCreationFeeInSOL = fee.feeRelayerFee.accountCreationFeeInSol
+        )
+
+        token.tokenSymbol to feeInSpl
+    } catch (e: IllegalStateException) {
+        // ignoring tokens without fees
+        null
+    }
 
     private suspend fun getFeesInPayingToken(
         feePayerToken: Token.Active,
