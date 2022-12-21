@@ -1,8 +1,9 @@
 package org.p2p.wallet.newsend.model
 
+import android.content.res.Resources
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import android.content.res.Resources
+import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
@@ -17,7 +18,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.SearchResult
 import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
 
 class NewSendButtonValidator(
     private val sourceToken: Token.Active,
@@ -126,7 +126,7 @@ class NewSendButtonValidator(
      * */
     private fun isAmountValidForRecipient(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
-        val isRecipientEmpty = searchResult is SearchResult.EmptyBalance
+        val isRecipientEmpty = searchResult is SearchResult.AddressOnly && searchResult.isEmpty
 
         val isInputValidForRecipient = amount >= minRentExemption
         if (!isSourceTokenSol) return true

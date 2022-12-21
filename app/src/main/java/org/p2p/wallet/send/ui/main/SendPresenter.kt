@@ -161,7 +161,6 @@ class SendPresenter(
         when (validatedResult) {
             is SearchResult.UsernameFound -> handleFullResult(validatedResult)
             is SearchResult.AddressOnly -> handleAddressOnlyResult(validatedResult)
-            is SearchResult.EmptyBalance -> handleEmptyBalanceResult(validatedResult)
             is SearchResult.InvalidAddress -> handleWrongResult(validatedResult)
             else -> handleIdleTarget()
         }
@@ -394,11 +393,6 @@ class SendPresenter(
 
     private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
         view?.showAddressOnlyTarget(result.addressState.address)
-        checkAddress(result.addressState.address)
-    }
-
-    private fun handleEmptyBalanceResult(result: SearchResult.EmptyBalance) {
-        view?.showEmptyBalanceTarget(result.addressState.address.cutEnd())
         checkAddress(result.addressState.address)
     }
 

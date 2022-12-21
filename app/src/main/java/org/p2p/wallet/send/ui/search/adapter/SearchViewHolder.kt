@@ -32,7 +32,6 @@ class SearchViewHolder(
         when (item) {
             is SearchResult.UsernameFound -> renderFull(item)
             is SearchResult.AddressOnly -> renderAddressOnly(item)
-            is SearchResult.EmptyBalance -> renderEmptyBalance(item)
             // do nothing, no wrong type should be in search view
             else -> Timber.w("Received SearchResult.Wrong in unexpected place")
         }
@@ -73,13 +72,6 @@ class SearchViewHolder(
             textViewTop.text = item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
             textViewBottom.isVisible = false
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
-        }
-    }
-
-    private fun renderEmptyBalance(item: SearchResult.EmptyBalance) {
-        with(binding) {
-            textViewTop.text = item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
-            textViewBottom.isVisible = false
         }
     }
 }
