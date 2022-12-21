@@ -46,16 +46,18 @@ class SearchViewHolder(
             if (item.username.endsWith(usernameDomainFeatureToggle.value)) {
                 imageResource = R.drawable.ic_key_app_circle
                 walletImageView.setPadding(0, 0, 0, 0)
+                textViewTop.text = "@${item.username}"
+                textViewBottom.isVisible = false
             } else {
                 imageResource = R.drawable.ic_search_wallet
                 walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                textViewTop.text = item.username
+                textViewBottom.withTextOrGone(item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT))
             }
 
             walletImageView.setImageResource(imageResource)
 
-            textViewTop.text = item.username
-            textViewBottom withTextOrGone item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
-            textViewBottom.setTextColorRes(R.color.backgroundDisabled)
+            textViewBottom.setTextColorRes(R.color.bg_mountain)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
         }
     }
