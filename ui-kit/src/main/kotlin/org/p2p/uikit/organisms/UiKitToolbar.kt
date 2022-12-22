@@ -49,11 +49,11 @@ class UiKitToolbar @JvmOverloads constructor(
         }
     }
 
-    fun setOnDoneListener(callback: () -> Unit) {
+    fun setOnDoneListener(onDoneClicked: () -> Unit) {
         val searchEditText = searchView?.findViewById<EditText>(androidx.appcompat.R.id.search_src_text) ?: return
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                callback()
+                onDoneClicked()
                 return@setOnEditorActionListener true
             }
 
