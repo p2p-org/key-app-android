@@ -104,7 +104,7 @@ class NewSendPresenter(
             calculationMode.updateToken(token)
 
             val userTokens = userInteractor.getUserTokens()
-            val isTokenChangeEnabled = userTokens.size == 1 || selectedToken == null
+            val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
             val solToken = userInteractor.getUserSolToken()
@@ -128,10 +128,9 @@ class NewSendPresenter(
                 return@launch
             }
 
-            val isTokenChangeEnabled = userTokens.size == 1 || selectedToken == null
+            val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            // Get USDC or USDT or token with biggest amount
             val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
             token = initialToken
             val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
@@ -387,7 +386,8 @@ class NewSendPresenter(
     }
 
     private fun showMaxButtonIfNeeded() {
-        view?.setMaxButtonVisible(isVisible = inputAmount.isEmpty())
+        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(feeRelayerManager.getMinRentExemption())
+        view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =

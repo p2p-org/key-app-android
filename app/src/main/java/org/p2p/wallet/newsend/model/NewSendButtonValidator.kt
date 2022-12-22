@@ -3,7 +3,6 @@ package org.p2p.wallet.newsend.model
 import android.content.res.Resources
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
@@ -41,7 +40,6 @@ class NewSendButtonValidator(
         ) : State
     }
 
-    @IgnoredOnParcel
     val state: State
         get() {
             val total = sourceToken.total.toLamports(sourceToken.decimals)

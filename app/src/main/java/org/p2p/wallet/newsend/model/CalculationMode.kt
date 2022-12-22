@@ -13,11 +13,10 @@ import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.send.model.CurrencyMode
+import org.p2p.wallet.utils.divideSafe
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.math.RoundingMode
 
-private const val ROUNDING_VALUE = 6
 private const val FIAT_FRACTION_LENGTH = 2
 
 class CalculationMode {
@@ -98,6 +97,16 @@ class CalculationMode {
         updateLabels()
     }
 
+    fun isMaxButtonVisible(minRentExemption: BigInteger): Boolean {
+        return if (token.isSOL) {
+            val maxAllowedAmount = token.totalInLamports - minRentExemption
+            val amountInLamports = tokenAmount.toLamports(token.decimals)
+            inputAmount.isEmpty() || amountInLamports > maxAllowedAmount && amountInLamports < token.totalInLamports
+        } else {
+            inputAmount.isEmpty()
+        }
+    }
+
     private fun updateLabels() {
         val (switchSymbol, mainSymbol) = when (currencyMode) {
             is CurrencyMode.Token -> USD_READABLE_SYMBOL to token.tokenSymbol
@@ -118,17 +127,14 @@ class CalculationMode {
 
     private fun calculateByUsd(inputAmount: String) {
         usdAmount = inputAmount.toBigDecimalOrZero()
-        tokenAmount = if (token.usdRateOrZero.isZero()) {
-            BigDecimal.ZERO
-        } else {
-            usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
-        }
 
         val tokenAround = if (usdAmount.isZero() || token.usdRateOrZero.isZero()) {
             BigDecimal.ZERO
         } else {
-            usdAmount.divide(token.usdRateOrZero, ROUNDING_VALUE, RoundingMode.HALF_EVEN).stripTrailingZeros()
+            usdAmount.divideSafe(token.usdRateOrZero).scaleLong()
         }
+
+        tokenAmount = tokenAround
 
         onCalculationCompleted?.invoke("${tokenAround.formatToken()} ${token.tokenSymbol}")
     }
