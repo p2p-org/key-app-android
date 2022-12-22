@@ -16,10 +16,18 @@ import org.p2p.uikit.utils.inflateViewBinding
 private const val CORNER_RADIUS = 20f
 private const val STROKE_WIDTH = 1
 
+/**
+ * app:labelText - label text :)
+ * app:hintText - text on the right
+ * app:hintTextColor - color for the hint on the right
+ * android:text - main text for the input
+ * android:textAppearance - appearance BOTH for text and hint
+ */
 open class UiKitAmountEditText @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
-) : ConstraintLayout(context, attrs) {
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     var isEditable: Boolean
         get() = binding.editText.inputType != InputType.TYPE_NULL
@@ -58,30 +66,35 @@ open class UiKitAmountEditText @JvmOverloads constructor(
     }
 
     init {
-        val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitEditText, 0, 0)
-        val labelText = styleAttrs.getString(R.styleable.UiKitEditText_labelText).orEmpty()
+        val styleAttrs = context.obtainStyledAttributes(attrs, R.styleable.UiKitAmountEditText, 0, 0)
+        val labelText = styleAttrs.getString(R.styleable.UiKitAmountEditText_labelText).orEmpty()
         if (labelText.isNotEmpty()) {
             binding.textViewLabel.text = labelText
             binding.textViewLabel.isVisible = true
         }
-        val hintText = styleAttrs.getString(R.styleable.UiKitEditText_hintText).orEmpty()
+        val hintText = styleAttrs.getString(R.styleable.UiKitAmountEditText_hintText).orEmpty()
         if (hintText.isNotEmpty()) {
             binding.textViewHint.text = hintText
             binding.textViewHint.isVisible = true
         }
-        val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitEditText_android_textAppearance, -1)
+        val textAppearance = styleAttrs.getResourceId(R.styleable.UiKitAmountEditText_android_textAppearance, -1)
         if (textAppearance != -1) {
             binding.editText.setTextAppearance(textAppearance)
             binding.textViewHint.setTextAppearance(textAppearance)
         }
-        val text = styleAttrs.getText(R.styleable.UiKitEditText_android_text)
+        val text = styleAttrs.getText(R.styleable.UiKitAmountEditText_android_text)
         if (!text.isNullOrEmpty()) {
             binding.editText.setText(text)
         }
 
-        val hint = styleAttrs.getText(R.styleable.UiKitEditText_hintText)
+        val hint = styleAttrs.getText(R.styleable.UiKitAmountEditText_hintText)
         if (!hint.isNullOrEmpty()) {
             binding.textViewHint.text = hint
+        }
+
+        val hintTextColor = styleAttrs.getColor(R.styleable.UiKitAmountEditText_hintTextColor, -1)
+        if (hintTextColor != -1) {
+            binding.textViewHint.setTextColor(hintTextColor)
         }
 
         binding.inputViewContainer.background = bgNormal
