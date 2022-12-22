@@ -131,7 +131,6 @@ class NewSendPresenter(
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            // Get USDC or USDT or token with biggest amount
             val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
             token = initialToken
             val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
