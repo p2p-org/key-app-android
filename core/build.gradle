@@ -6,7 +6,7 @@ dependencies {
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.12.0'
 
-    api 'com.github.bitcoinj:bitcoinj:0.15.10'
+    api 'com.github.bitcoinj:bitcoinj:0.16.2'
 
     def koinVersion = '3.2.0'
     // https://github.com/InsertKoinIO/koin
