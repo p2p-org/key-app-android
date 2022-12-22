@@ -77,7 +77,7 @@ class MoonpaySellRemoteRepository(
             moonpayClientSideApi.getSellQuoteForToken(
                 tokenSymbol = tokenToSell.tokenSymbol.lowercase(),
                 apiKey = BuildConfig.moonpayKey,
-                fiatName = fiat.symbol,
+                fiatName = fiat.abbriviation,
                 tokenAmount = tokenAmount.toDouble()
             )
         )

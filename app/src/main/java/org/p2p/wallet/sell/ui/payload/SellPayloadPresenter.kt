@@ -142,7 +142,7 @@ class SellPayloadPresenter(
         val moonpayUrl = moonpayWidgetUrlBuilder.buildSellWidgetUrl(
             tokenSymbol = Constants.SOL_SYMBOL,
             userAddress = userAddress,
-            fiatSymbol = currentFiat.symbol,
+            fiatSymbol = currentFiat.abbriviation,
             tokenAmountToSell = userSelectedAmount.formatTokenForMoonpay(),
         )
         view?.showMoonpayWidget(url = moonpayUrl)
