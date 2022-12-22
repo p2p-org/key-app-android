@@ -160,9 +160,8 @@ class NewSendDetailsBottomSheet :
                 highlightedText = fee.approxAccountCreationFeeUsd.orEmpty(),
                 color = colorMountain
             )
-            imageViewAccountFeeInfo.setOnClickListener {
-                presenter.loadFeePayerTokens(fee)
-            }
+            imageViewAccountFeeInfo.setOnClickListener { presenter.loadFeePayerTokens(fee) }
+            textViewTitleAccountFee.setOnClickListener { presenter.loadFeePayerTokens(fee) }
         } else {
             textViewSubtitleAccountFee.setTextColor(colorMint)
             textViewSubtitleAccountFee.text = getString(R.string.send_free_fee_format, state.feeLimit.remaining)

@@ -26,15 +26,9 @@ class TokenComparator : Comparator<Token> {
         o1: Token.Active,
         o2: Token.Active
     ): Int = when {
-        o1.totalInUsd != null && o2.totalInUsd != null ->
-            if (o1.totalInUsd!!.isMoreThan(o2.totalInUsd!!)) -1 else 1
-        o1.totalInUsd == null && o2.totalInUsd == null ->
-            if (o1.total.isMoreThan(o2.total)) -1 else 1
-        o1.totalInUsd != null && o2.totalInUsd == null ->
-            -1
-        o1.totalInUsd == null && o2.totalInUsd != null ->
-            1
-        else ->
-            if (o1.total.isMoreThan(o2.total)) -1 else 1
+        o1.totalInUsd != null && o2.totalInUsd != null -> if (o1.totalInUsd!!.isMoreThan(o2.totalInUsd!!)) -1 else 1
+        o1.totalInUsd != null && o2.totalInUsd == null -> -1
+        o1.totalInUsd == null && o2.totalInUsd != null -> 1
+        else -> 0
     }
 }

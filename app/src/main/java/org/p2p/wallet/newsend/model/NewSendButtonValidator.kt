@@ -17,7 +17,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.SearchResult
 import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
 
 class NewSendButtonValidator(
     private val sourceToken: Token.Active,
@@ -41,7 +40,6 @@ class NewSendButtonValidator(
         ) : State
     }
 
-    @IgnoredOnParcel
     val state: State
         get() {
             val total = sourceToken.total.toLamports(sourceToken.decimals)

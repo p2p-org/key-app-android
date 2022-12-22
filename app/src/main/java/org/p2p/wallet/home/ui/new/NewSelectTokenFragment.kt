@@ -8,8 +8,11 @@ import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.showSoftKeyboard
 import org.p2p.wallet.R
@@ -126,6 +129,16 @@ class NewSelectTokenFragment :
             setOnQueryTextListener(this@NewSelectTokenFragment)
         }
         searchView.showSoftKeyboard()
+
+        val searchEditText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard()
+                return@setOnEditorActionListener true
+            }
+
+            return@setOnEditorActionListener false
+        }
     }
 
     private fun closeFragment() {

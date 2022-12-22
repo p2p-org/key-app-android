@@ -6,6 +6,8 @@ import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import com.google.android.material.appbar.MaterialToolbar
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.getString
@@ -44,6 +46,18 @@ class UiKitToolbar @JvmOverloads constructor(
                 showSoftKeyboard()
             }
             setOnQueryTextListener(queryTextListener)
+        }
+    }
+
+    fun setOnDoneListener(callback: () -> Unit) {
+        val searchEditText = searchView?.findViewById<EditText>(androidx.appcompat.R.id.search_src_text) ?: return
+        searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                callback()
+                return@setOnEditorActionListener true
+            }
+
+            return@setOnEditorActionListener false
         }
     }
 
