@@ -93,11 +93,8 @@ class NewSearchPresenter(
             val finalResult: SearchResult
             val preselectedToken: Token.Active?
             if (result is SearchResult.AddressOnly) {
-                finalResult = result.copyWithBalance(
-                    userInteractor.getBalance(
-                        result.addressState.address.toBase58Instance()
-                    )
-                )
+                val balance = userInteractor.getBalance(result.addressState.address.toBase58Instance())
+                finalResult = result.copyWithBalance(balance)
                 preselectedToken = result.sourceToken ?: initialToken
             } else {
                 finalResult = result
@@ -176,6 +173,8 @@ class NewSearchPresenter(
 
     private fun showEmptyState() {
         if (recentRecipients.isEmpty()) {
+            view?.showMessage(null)
+            view?.showSearchResult(emptyList())
             view?.showEmptyState(isEmpty = true)
         } else {
             setResult(recentRecipients, R.string.search_recently)

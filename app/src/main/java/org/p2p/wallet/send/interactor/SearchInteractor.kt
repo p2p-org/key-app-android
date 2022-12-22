@@ -94,7 +94,11 @@ class SearchInteractor(
                 )
                 else -> {
                     val balance = userInteractor.getBalance(address)
-                    SearchResult.AddressOnly(addressState, userToken, balance = balance)
+                    SearchResult.AddressOnly(
+                        addressState = addressState,
+                        sourceToken = userToken,
+                        balance = balance
+                    )
                 }
             }
         )

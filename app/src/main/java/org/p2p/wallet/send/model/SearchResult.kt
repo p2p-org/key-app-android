@@ -22,7 +22,7 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         val balance: Long = EMPTY_BALANCE
     ) : SearchResult(addressState) {
         @IgnoredOnParcel
-        val isEmpty = balance == EMPTY_BALANCE
+        val isEmptyBalance = balance == EMPTY_BALANCE
 
         fun copyWithBalance(balance: Long): AddressOnly {
             return AddressOnly(addressState, sourceToken, date, balance)

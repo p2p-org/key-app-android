@@ -65,21 +65,17 @@ class SearchViewHolder(
 
     private fun renderAddressOnly(item: SearchResult.AddressOnly) {
         with(binding) {
-            val imageIcon = item.sourceToken?.iconUrl
+            val imageIconUrl = item.sourceToken?.iconUrl
             val description: String?
-            val imageObject: Any = if (imageIcon != null) {
-                walletImageView.apply {
-                    setPadding(0, 0, 0, 0)
-                }
+            val imageObject: Any = if (imageIconUrl != null) {
+                walletImageView.setPadding(0, 0, 0, 0)
                 description = getString(
                     R.string.search_no_other_tokens_description,
                     item.sourceToken.tokenSymbol
                 )
-                imageIcon
+                imageIconUrl
             } else {
-                walletImageView.apply {
-                    setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
-                }
+                walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
                 description = null
                 R.drawable.ic_search_wallet
             }
