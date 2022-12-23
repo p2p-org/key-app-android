@@ -26,7 +26,7 @@ import org.p2p.wallet.common.permissions.PermissionsDialog
 import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
 import org.p2p.wallet.send.analytics.SendAnalytics
-import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.NoOp
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
@@ -190,7 +190,7 @@ class ScanQrFragment :
             setFragmentResult(requestKey, bundleOf(resultKey to address))
             popBackStack()
             showUiKitSnackBar(
-                message = getString(R.string.qr_address_found, address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)),
+                message = getString(R.string.qr_address_found, address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)),
                 actionButtonResId = android.R.string.ok,
                 actionBlock = {}
             )
