@@ -5,5 +5,5 @@ import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesPro
 class SellEnabledFeatureToggle(valuesProvider: RemoteConfigValuesProvider) : BooleanFeatureToggle(valuesProvider) {
     override val featureKey: String = "keyapp_sell_scenario_enabled"
     override val featureDescription: String = "Is Moonpay sell flow enabled"
-    override val defaultValue: Boolean = true
+    override val defaultValue: Boolean = false
 }
