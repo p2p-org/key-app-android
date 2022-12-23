@@ -51,7 +51,7 @@ class SlippageRadioView @JvmOverloads constructor(
             when (slippage) {
                 Slippage.Min -> slippageRadioGroup.check(R.id.minSlippageButton)
                 Slippage.Medium -> slippageRadioGroup.check(R.id.mediumSlippageButton)
-                Slippage.Percent -> slippageRadioGroup.check(R.id.percentSlippageButton)
+                Slippage.TopUpSlippage -> slippageRadioGroup.check(R.id.percentSlippageButton)
                 Slippage.Five -> slippageRadioGroup.check(R.id.fivePercentSlippageButton)
                 is Slippage.Custom -> checkCustomButton(slippage.doubleValue)
             }
@@ -70,7 +70,7 @@ class SlippageRadioView @JvmOverloads constructor(
         val slippage = when (checkedId) {
             R.id.minSlippageButton -> Slippage.Min
             R.id.mediumSlippageButton -> Slippage.Medium
-            R.id.percentSlippageButton -> Slippage.Percent
+            R.id.percentSlippageButton -> Slippage.TopUpSlippage
             R.id.fivePercentSlippageButton -> Slippage.Five
             else -> Slippage.Custom(customSlippage)
         }
