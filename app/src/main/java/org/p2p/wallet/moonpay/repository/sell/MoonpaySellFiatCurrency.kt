@@ -1,16 +1,17 @@
 package org.p2p.wallet.moonpay.repository.sell
 
-enum class MoonpaySellFiatCurrency(val symbol: String, val uiSymbol: String) {
-    EUR("eur", "EUR"),
-    USD("usd", "$"),
-    GBP("gbp", "GBP");
+import org.p2p.wallet.moonpay.extensions.MoonpayConstants.CountryAlpha3Code
+
+enum class MoonpaySellFiatCurrency(val abbriviation: String, val uiSymbol: String) {
+    EUR(abbriviation = "eur", uiSymbol = "EUR"),
+    USD(abbriviation = "usd", uiSymbol = "$"),
+    GBP(abbriviation = "gbp", uiSymbol = "GBP");
 
     companion object {
-        fun getFromCountryAbbreviation(abbreviation: String): MoonpaySellFiatCurrency {
-            return when (abbreviation) {
-                "US" -> USD
-                "UK" -> GBP
-                "EU" -> EUR
+        fun getFromCountryAbbreviation(countryAlpha3: String): MoonpaySellFiatCurrency {
+            return when (countryAlpha3) {
+                CountryAlpha3Code.US -> USD
+                CountryAlpha3Code.UK -> GBP
                 else -> EUR // if it's not US or UK, then it's EU
             }
         }
