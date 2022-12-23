@@ -20,6 +20,6 @@ interface RecipientsDao {
     @Query("SELECT * FROM recipient_table ORDER BY date_timestamp DESC LIMIT 10")
     suspend fun getRecipients(): List<RecipientEntity>
 
-    @Query("DELETE FROM token_table")
+    @Query("DELETE FROM recipient_table")
     suspend fun clearAll()
 }
