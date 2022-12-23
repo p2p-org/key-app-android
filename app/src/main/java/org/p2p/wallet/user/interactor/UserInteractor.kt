@@ -100,7 +100,7 @@ class UserInteractor(
         mainLocalRepository.getUserTokens()
             .sortedWith(TokenComparator())
 
-    suspend fun getNonEmptyUserTokens(): List<Token.Active> =
+    suspend fun getNonZeroUserTokens(): List<Token.Active> =
         mainLocalRepository.getUserTokens()
             .filterNot { it.isZero }
             .sortedWith(TokenComparator())
