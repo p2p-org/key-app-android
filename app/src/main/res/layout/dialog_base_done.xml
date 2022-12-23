@@ -53,9 +53,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/buttonDone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_goneMarginTop="6dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        app:layout_goneMarginTop="6dp"
         tools:layout_height="200dp" />
 
     <org.p2p.uikit.components.UiKitButton
@@ -63,8 +63,7 @@
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ui_kit_button_large_height"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginVertical="14dp"
+        android:layout_margin="16dp"
         android:backgroundTint="@color/rain"
         android:text="@string/common_done"
         android:textColor="@color/night"
