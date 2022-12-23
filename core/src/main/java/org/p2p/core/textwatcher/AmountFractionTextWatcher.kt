@@ -30,11 +30,11 @@ class AmountFractionTextWatcher(
 
         fun installOn(
             editText: EditText,
-            maxSymbolsAllowed: Int = MAX_FRACTION_LENGTH,
+            maxDecimalsAllowed: Int = MAX_FRACTION_LENGTH,
             maxIntLength: Int = MAX_INT_LENGTH,
             onValueChanged: (String) -> Unit
         ): AmountFractionTextWatcher {
-            val textWatcher = AmountFractionTextWatcher(editText, maxSymbolsAllowed, maxIntLength, onValueChanged)
+            val textWatcher = AmountFractionTextWatcher(editText, maxDecimalsAllowed, maxIntLength, onValueChanged)
             editText.addTextChangedListener(textWatcher)
             editText.setTag(R.id.length_watcher_tag_id, textWatcher)
             return textWatcher

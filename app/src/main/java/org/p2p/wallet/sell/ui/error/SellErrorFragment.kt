@@ -1,9 +1,10 @@
 package org.p2p.wallet.sell.ui.error
 
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import android.os.Bundle
+import android.view.View
+import org.p2p.core.utils.formatTokenForMoonpay
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSellErrorBinding
@@ -34,7 +35,7 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
 
     private val binding: FragmentSellErrorBinding by viewBinding()
     private val sellErrorState: SellScreenError by args(ARG_ERROR_STATE)
-    private val minAmount: BigDecimal? by args(ARG_MIN_AMOUNT)
+    private val minAmount: BigDecimal by args(ARG_MIN_AMOUNT, BigDecimal.ZERO)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,7 +47,7 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
 
             var subtitleText = getString(R.string.error_service_ruiner_message)
             if (sellErrorState == SellScreenError.NOT_ENOUGH_AMOUNT) {
-                subtitleText = getString(R.string.sell_need_more_sol_message, minAmount)
+                subtitleText = getString(R.string.sell_need_more_sol_message, minAmount.formatTokenForMoonpay())
             }
             textViewSubtitle.text = subtitleText
 

@@ -13,6 +13,7 @@ import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
 import org.p2p.wallet.utils.Base58String
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 
 private const val TAG = "MoonpaySellRemoteRepository"
@@ -76,7 +77,7 @@ class MoonpaySellRemoteRepository(
             moonpayClientSideApi.getSellQuoteForToken(
                 tokenSymbol = tokenToSell.tokenSymbol.lowercase(),
                 apiKey = BuildConfig.moonpayKey,
-                fiatName = fiat.symbol,
+                fiatName = fiat.abbriviation,
                 tokenAmount = tokenAmount.toDouble()
             )
         )
@@ -103,6 +104,8 @@ class MoonpaySellRemoteRepository(
     ): R = withContext(dispatchers.io) {
         try {
             request.invoke()
+        } catch (cancelled: CancellationException) {
+            throw cancelled
         } catch (error: Throwable) {
             Timber.tag(TAG).i(error, "Moonpay request failed")
             throw mapper.fromNetworkError(error)
