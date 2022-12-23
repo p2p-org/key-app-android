@@ -199,11 +199,7 @@ class ScanQrFragment :
             AlertDialog.Builder(requireContext())
                 .setCancelable(false)
                 .setMessage(R.string.qr_no_address)
-                .setPositiveButton(
-                    android.R.string.ok,
-                ) { _, _ ->
-                    continueAction.invoke()
-                }
+                .setPositiveButton(android.R.string.ok) { _, _ -> continueAction.invoke() }
                 .show()
         }
     }
