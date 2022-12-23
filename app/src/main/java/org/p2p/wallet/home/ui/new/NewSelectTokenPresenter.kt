@@ -25,9 +25,9 @@ class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), Ne
     override fun search(tokenNameQuery: String) {
         // restoring the list text is too short
         if (tokenNameQuery.isEmpty()) {
-            view?.showEmptyState(isVisible = false)
             view?.showTokens(mappedTokens)
             view?.showEmptyState(isVisible = mappedTokens.isEmpty())
+            view?.scrollToTop()
             return
         }
 
