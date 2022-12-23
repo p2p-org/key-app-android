@@ -105,6 +105,10 @@ class NewSelectTokenFragment :
         tokenAdapter.setItems(items)
     }
 
+    override fun scrollToTop() {
+        binding.recyclerViewTokens.layoutManager?.scrollToPosition(0)
+    }
+
     override fun clearTokens() {
         tokenAdapter.clear()
     }

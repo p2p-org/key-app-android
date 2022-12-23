@@ -32,7 +32,7 @@ import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
@@ -103,7 +103,7 @@ class NewSendPresenter(
             view.showToken(token)
             calculationMode.updateToken(token)
 
-            val userTokens = userInteractor.getUserTokens()
+            val userTokens = userInteractor.getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
@@ -121,7 +121,7 @@ class NewSendPresenter(
     private fun setupInitialToken(view: NewSendContract.View) {
         launch {
             // We should find SOL anyway because SOL is needed for Selection Mechanism
-            val userTokens = userInteractor.getUserTokens()
+            val userTokens = userInteractor.getNonZeroUserTokens()
             if (userTokens.isEmpty()) {
                 // we cannot proceed if user tokens are not loaded
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
@@ -358,7 +358,7 @@ class NewSendPresenter(
 
     private fun SearchResult.nicknameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) username
-        else addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
+        else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
     /**

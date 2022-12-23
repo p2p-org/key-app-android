@@ -4,6 +4,9 @@ sealed class MoonpaySellError(
     override val message: String? = null,
     override val cause: Throwable? = null
 ) : Throwable() {
+    class NotEnoughTokenToSell(cause: Throwable) :
+        MoonpaySellError(message = "Not enough token to sell", cause = cause)
+
     class UnauthorizedRequest(cause: Throwable) :
         MoonpaySellError(message = "Request was unauthorized", cause = cause)
 

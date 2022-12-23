@@ -10,7 +10,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.databinding.ItemSearchBinding
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
@@ -53,7 +53,7 @@ class SearchViewHolder(
                 imageResource = R.drawable.ic_search_wallet
                 walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
                 textViewTop.text = item.username
-                textViewBottom.withTextOrGone(item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT))
+                textViewBottom.withTextOrGone(item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT))
             }
 
             walletImageView.setImageResource(imageResource)
@@ -79,7 +79,7 @@ class SearchViewHolder(
                 description = null
                 R.drawable.ic_search_wallet
             }
-            textViewTop.text = item.addressState.address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)
+            textViewTop.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewBottom.withTextOrGone(description)
             textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
             Glide.with(root)

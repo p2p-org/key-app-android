@@ -1,7 +1,7 @@
 package org.p2p.wallet.moonpay.repository.sell
 
 import okio.IOException
-import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
+import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
@@ -98,12 +98,26 @@ class MoonpaySellRepositoryMapper {
     fun fromNetworkError(error: Throwable): MoonpaySellError {
         // add more errors if needed
         return when (error) {
-            is MoonpayRequestException -> {
-                val moonpayErrorType = error.errorType
-                if (moonpayErrorType == MoonpayErrorResponseType.NOT_FOUND_ERROR) {
-                    MoonpaySellError.TokenToSellNotFound(error)
-                } else {
-                    MoonpaySellError.UnknownError(error)
+            is ServerException -> {
+                val moonpayErrorType = error.jsonErrorBody
+                    ?.getAsJsonPrimitive("type")
+                    ?.asString
+
+                val moonpayErrorMessage = error.jsonErrorBody
+                    ?.getAsJsonPrimitive("message")
+                    ?.asString
+                    .orEmpty()
+                when {
+                    moonpayErrorType == MoonpayErrorResponseType.NOT_FOUND_ERROR.stringValue -> {
+                        MoonpaySellError.TokenToSellNotFound(error)
+                    }
+                    moonpayErrorType == MoonpayErrorResponseType.BAD_REQUEST_ERROR.stringValue &&
+                        moonpayErrorMessage.contains("The minimum order amount") -> {
+                        MoonpaySellError.NotEnoughTokenToSell(error)
+                    }
+                    else -> {
+                        MoonpaySellError.UnknownError(error)
+                    }
                 }
             }
             is IllegalStateException, is IOException -> {

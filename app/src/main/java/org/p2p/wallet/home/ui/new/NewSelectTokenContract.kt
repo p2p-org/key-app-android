@@ -8,9 +8,10 @@ import org.p2p.core.token.Token
 interface NewSelectTokenContract {
 
     interface View : MvpView {
-        fun clearTokens()
         fun showTokens(items: List<SelectTokenItem>)
         fun showEmptyState(isVisible: Boolean)
+        fun scrollToTop()
+        fun clearTokens()
     }
 
     interface Presenter : MvpPresenter<View> {
