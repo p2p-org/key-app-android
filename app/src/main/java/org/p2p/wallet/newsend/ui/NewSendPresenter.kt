@@ -1,8 +1,6 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
@@ -38,10 +36,13 @@ import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
+import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -67,7 +68,9 @@ class NewSendPresenter(
 
     private val calculationMode = CalculationMode()
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
+
     private var selectedToken: Token.Active? = null
+    private var initialAmount: BigDecimal? = null
 
     private var feePayerJob: Job? = null
 
@@ -76,8 +79,9 @@ class NewSendPresenter(
         initialize(view)
     }
 
-    override fun setInitialToken(selectedToken: Token.Active?) {
+    override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) {
         this.selectedToken = selectedToken
+        this.initialAmount = inputAmount
     }
 
     private fun initialize(view: NewSendContract.View) {
