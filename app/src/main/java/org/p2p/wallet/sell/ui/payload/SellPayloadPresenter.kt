@@ -58,7 +58,7 @@ class SellPayloadPresenter(
             try {
                 view.showLoading(isVisible = true)
                 // call order is important!
-//                checkForSellLock()
+                checkForSellLock()
                 userSolBalance = BigDecimal.valueOf(4.323245)
                 loadCurrencies()
                 checkForMinAmount()
