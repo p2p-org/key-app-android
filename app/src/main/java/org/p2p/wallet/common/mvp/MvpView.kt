@@ -3,6 +3,7 @@ package org.p2p.wallet.common.mvp
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
+import org.p2p.core.common.TextContainer
 
 interface MvpView {
     fun showErrorMessage(e: Throwable? = null)
@@ -69,10 +70,7 @@ interface MvpView {
         actionBlock: (() -> Unit)? = null
     )
 
-    fun showToast(
-        message: String? = null,
-        @StringRes messageResId: Int? = null
-    )
+    fun showToast(message: TextContainer)
 
     // new snackbar
     fun showUiKitSnackBar(

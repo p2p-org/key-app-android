@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.core.common.TextContainer
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.toast
@@ -158,12 +159,8 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         else -> emptyString()
     }
 
-    override fun showToast(message: String?, @StringRes messageResId: Int?) {
-        require(message != null || messageResId != null) {
-            "Toast text must be set from `message` or `messageResId` params"
-        }
-        val toastText: String = message ?: messageResId?.let(::getString)!!
-        toast(toastText)
+    override fun showToast(message: TextContainer) {
+        toast(message.getString(requireContext()))
     }
 
     override fun showUiKitSnackBar(
