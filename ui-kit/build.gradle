@@ -11,8 +11,6 @@ dependencies {
         version { strictly "1.6.1" }
     }
 
-    implementation 'com.github.RedMadRobot:input-mask-android:6.1.0'
-
     api 'com.google.android.flexbox:flexbox:3.0.0'
 
     //https://facebook.github.io/shimmer-android/

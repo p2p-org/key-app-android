@@ -1,15 +1,20 @@
 package org.p2p.wallet.send.model
 
 import android.os.Parcelable
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
+import org.p2p.wallet.utils.cutMiddle
 import java.util.Date
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 private const val EMPTY_BALANCE = 0L
 
 sealed class SearchResult(open val addressState: AddressState) : Parcelable {
+
+    val formattedAddress: String
+        get() = addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
 
     @Parcelize
     data class InvalidAddress(override val addressState: AddressState) : SearchResult(addressState)
@@ -34,7 +39,9 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         override val addressState: AddressState,
         val username: String,
         val date: Date? = null
-    ) : SearchResult(addressState)
+    ) : SearchResult(addressState) {
+        fun getFormattedUsername(): String = "@$username"
+    }
 
     @Parcelize
     data class InvalidResult(

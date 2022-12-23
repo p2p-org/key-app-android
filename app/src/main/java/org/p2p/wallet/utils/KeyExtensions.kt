@@ -4,7 +4,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.SerumSwapProgram.usdcMint
 import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
 
-const val CUT_USERNAME_SYMBOLS_COUNT = 6
+const val CUT_ADDRESS_SYMBOLS_COUNT = 6
 
 fun String.toPublicKey() = PublicKey(this)
 

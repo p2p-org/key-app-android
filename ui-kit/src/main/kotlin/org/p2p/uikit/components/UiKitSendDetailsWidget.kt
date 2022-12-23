@@ -138,7 +138,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     private fun installAmountWatcher(maxFractionLength: Int) {
         AmountFractionTextWatcher.installOn(
             editText = binding.editTextAmount,
-            maxSymbolsAllowed = maxFractionLength,
+            maxDecimalsAllowed = maxFractionLength,
             maxIntLength = Int.MAX_VALUE
         ) { amount ->
             amountListener?.invoke(amount)
