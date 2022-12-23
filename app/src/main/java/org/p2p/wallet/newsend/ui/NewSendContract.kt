@@ -7,6 +7,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.transaction.model.NewShowProgress
+import java.math.BigDecimal
 
 interface NewSendContract {
     interface View : MvpView, UiKitSendDetailsWidgetContract {
@@ -24,7 +25,7 @@ interface NewSendContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun setInitialToken(selectedToken: Token.Active?)
+        fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?)
 
         fun updateToken(newToken: Token.Active)
         fun updateInputAmount(amount: String)
