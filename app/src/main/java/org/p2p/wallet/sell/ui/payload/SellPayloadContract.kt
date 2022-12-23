@@ -16,13 +16,13 @@ interface SellPayloadContract {
     )
 
     data class ViewState(
-        val quoteAmount: String,
-        val fee: String,
-        val fiat: String,
+        val formattedFiatAmount: String,
+        val formattedSellFiatFee: String,
+        val formattedTokenPrice: String,
         val solToSell: String,
         val tokenSymbol: String,
         val fiatSymbol: String,
-        val userBalance: String
+        val formattedUserAvailableBalance: String
     )
 
     interface View : MvpView {
@@ -31,19 +31,18 @@ interface SellPayloadContract {
         fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String)
         fun showMoonpayWidget(url: String)
         fun navigateToSellLock(details: SellTransactionDetails)
-        fun showErrorScreen()
+        fun navigateToErrorScreen()
         fun showNotEnoughMoney(minAmount: BigDecimal)
         fun updateViewState(newState: ViewState)
         fun setButtonState(state: CashOutButtonState)
         fun setTokenAmount(newValue: String)
-        fun setFiatAndFeeValue(newValue: String)
         fun setTokenAndFeeValue(newValue: String)
+        fun resetFiatAndFee(feeSymbol: String)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun cashOut()
         fun onTokenAmountChanged(newValue: String)
-        fun onCurrencyAmountChanged(newValue: String)
         fun onUserMaxClicked()
     }
 }

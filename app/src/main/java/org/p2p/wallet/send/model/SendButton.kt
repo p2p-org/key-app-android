@@ -3,6 +3,7 @@ package org.p2p.wallet.send.model
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
@@ -11,7 +12,6 @@ import org.p2p.solanaj.utils.PublicKeyValidator
 import org.p2p.wallet.R
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
 
 class SendButton(
     private val sourceToken: Token.Active,
@@ -83,7 +83,7 @@ class SendButton(
 
     private fun isAmountValidForRecipient(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
-        val isRecipientEmpty = searchResult is SearchResult.EmptyBalance
+        val isRecipientEmpty = searchResult is SearchResult.AddressOnly && searchResult.isEmptyBalance
         val isInputInvalid = amount < minRentExemption
         val isInvalid = isSourceTokenSol && isRecipientEmpty && isInputInvalid
         return !isInvalid

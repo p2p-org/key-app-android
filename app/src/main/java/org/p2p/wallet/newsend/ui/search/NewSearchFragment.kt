@@ -1,16 +1,17 @@
 package org.p2p.wallet.newsend.ui.search
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -93,6 +94,7 @@ class NewSearchFragment :
                     lastQuery = lastQuery
                 )
                 setNavigationOnClickListener { popBackStack() }
+                setOnDoneListener { hideKeyboard() }
             }
 
             buttonBuy.setOnClickListener {

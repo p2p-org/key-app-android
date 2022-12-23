@@ -29,10 +29,10 @@ class DoubleTextView @JvmOverloads constructor(
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.DoubleTextView)
 
         val topText = typedArray.getText(R.styleable.DoubleTextView_topText)
-        binding.topTextView.text = topText
+        binding.textViewTop.text = topText
 
         val bottomText = typedArray.getText(R.styleable.DoubleTextView_bottomText)
-        binding.bottomTextView.text = bottomText
+        binding.textViewTop.text = bottomText
 
         val endImageResourceId = typedArray.getResourceId(R.styleable.DoubleTextView_drawableEnd, 0)
         if (endImageResourceId != 0) {
@@ -43,23 +43,23 @@ class DoubleTextView @JvmOverloads constructor(
     }
 
     fun setTopText(text: String) {
-        binding.topTextView.text = text
+        binding.textViewTop.text = text
     }
 
     fun setBottomText(text: String) {
-        binding.bottomTextView.text = text
+        binding.textViewBottom.text = text
     }
 
     fun setBottomText(@StringRes text: Int) {
-        binding.bottomTextView.setText(text)
+        binding.textViewBottom.setText(text)
     }
 
     fun setBottomTextColor(@ColorRes colorRes: Int) {
-        binding.bottomTextView.setTextColor(context.getColor(colorRes))
+        binding.textViewBottom.setTextColor(context.getColor(colorRes))
     }
 
     fun setBottomTextColorFromTheme(@AttrRes colorAttrId: Int) {
-        binding.bottomTextView.setTextColor(colorFromTheme(colorAttrId))
+        binding.textViewBottom.setTextColor(colorFromTheme(colorAttrId))
     }
 
     fun setDrawableEnd(@DrawableRes icon: Int?) {

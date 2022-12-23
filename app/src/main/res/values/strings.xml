@@ -386,7 +386,7 @@
     <string name="send_transaction_success">%s is successfully sent!</string>
     <string name="send_transaction_error">%s send didn\'t complete!</string>
     <string name="send_successfully_format">%s was sent successfully</string>
-    <string name="send_using_max_amount">Using the maximum %s amount</string>
+    <string name="send_using_max_amount">✅ Using the maximum %s amount</string>
     <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
     <string name="send_not_enough_funds">Not enough funds</string>
     <string name="send_min_required_amount_warning">You can\'t send less than %s SOL</string>
@@ -531,6 +531,7 @@
     <string name="settings_security">Security</string>
     <string name="settings_network">Network</string>
     <string name="settings_fee_relayer">Fee Relayer Environment</string>
+    <string name="settings_name_service">Name Service Environment</string>
     <string name="settings_torus">Torus Environment</string>
     <string name="settings_notification_service">Notification Service Environment</string>
     <string name="settings_stub_public_key">Public key stubbing 🗡️</string>
@@ -643,7 +644,7 @@
     <string name="sell_lock_usd_amount">≈ $%s</string>
     <string name="sell_payload_title">Cash out token</string>
     <string name="sell_all_sol">all %s SOL</string>
-    <string name="sell_included_fee">Included fee %s SOL</string>
+    <string name="sell_included_fee">Included fee %s %s</string>
     <string name="sell_min_sol_amount">The minimum amount is %s SOL</string>
     <string name="sell_max_sol_amount">The maximum amount is %s SOL</string>
     <string name="sell_not_enough_sol">Not enough SOL</string>
@@ -666,12 +667,12 @@
     <string name="sell_details_failed_title">You\'ve not sent %s SOL</string>
     <string name="sell_details_failed_body">You didn\'t finish your cash out transaction. After 7 days your transaction has been automatically declined.\n\nYou can try again, but your new transaction will be subject to the current rates.</string>
 
-
     <string name="error_service_ruiner_message">Our payment service was ruined.\nVisit this page later</string>
     <string name="sell_need_more_sol_title">You need a little more SOL</string>
-    <string name="sell_need_more_sol_message">The current minimum amount is %.1f SOL</string>
+    <string name="sell_need_more_sol_message">The current minimum amount is %s SOL</string>
     <string name="you_bank_account_via_moonpay">Your bank account via Moonpay</string>
-    <string name="sell_sol_fiat_value">1 SOL ≈ %s</string>
+    <string name="sell_process_transaction_status">SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via Moonpay help center</string>
+    <string name="sell_sol_fiat_value">1 SOL ≈ %s %s</string>
     <string name="sell_input_fiat_symbol">≈ %s</string>
 
 

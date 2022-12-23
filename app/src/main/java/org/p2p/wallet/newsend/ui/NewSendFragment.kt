@@ -24,10 +24,8 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.NewShowProgress
-import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
@@ -248,8 +246,11 @@ class NewSendFragment :
     }
 
     private fun UiKitToolbar.setupToolbar() {
-        title = (recipient as? SearchResult.UsernameFound)?.username
-            ?: recipient.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
+        val toolbarTitle = when (val recipient = recipient) {
+            is SearchResult.UsernameFound -> recipient.getFormattedUsername()
+            else -> recipient.formattedAddress
+        }
+        title = toolbarTitle
         setNavigationOnClickListener { popBackStack() }
     }
 }

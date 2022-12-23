@@ -7,7 +7,8 @@ import java.math.RoundingMode
 import kotlin.math.pow
 
 private const val POWER_VALUE = 10.0
-private const val DEFAULT_DECIMAL = 9
+const val DEFAULT_DECIMAL = 9
+const val MOONPAY_DECIMAL = 2
 
 private const val SCALE_VALUE_SHORT = 2
 private const val SCALE_VALUE_MEDIUM = 6
@@ -63,13 +64,16 @@ fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
     token.rate?.let { this.multiply(it).scaleShort() }
 
-fun BigDecimal.formatUsd(): String = this.stripTrailingZeros().run {
-    if (isZero()) this.toString() else DecimalFormatter.format(this, USD_DECIMALS)
-} // case: 1000.023000 -> 1 000.02
+// case: 1000.023000 -> 1 000.02
+fun BigDecimal.formatUsd(): String = formatWithDecimals(USD_DECIMALS)
+// case: 10000.000000007900 -> 100 000.000000008
+fun BigDecimal.formatToken(): String = formatWithDecimals(DEFAULT_DECIMAL)
+// case: 10000.000000007900 -> 100 000.00
+fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
 
-fun BigDecimal.formatToken(): String = this.stripTrailingZeros().run {
-    if (isZero()) this.toString() else DecimalFormatter.format(this, DEFAULT_DECIMAL)
-} // case: 10000.000000007900 -> 100 000.000000008
+private fun BigDecimal.formatWithDecimals(decimals: Int): String = this.stripTrailingZeros().run {
+    if (isZero()) this.toString() else DecimalFormatter.format(this, decimals)
+}
 
 fun BigDecimal?.isNullOrZero(): Boolean = this == null || this.compareTo(BigDecimal.ZERO) == 0
 fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0

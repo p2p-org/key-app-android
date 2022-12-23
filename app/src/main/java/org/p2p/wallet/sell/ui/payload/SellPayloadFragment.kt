@@ -34,18 +34,15 @@ class SellPayloadFragment :
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            buttonSend.setOnClickListener {
-                presenter.cashOut()
-            }
-            editTextTokenAmount.setOnTokenAmountChangeListener {
-                presenter.onTokenAmountChanged(it)
-            }
-            editTextFiatAmount.setOnCurrencyAmountChangeListener {
-                presenter.onCurrencyAmountChanged(it)
-            }
-            textViewAvailableAmount.setOnClickListener {
-                presenter.onUserMaxClicked()
-            }
+
+            textViewAvailableAmount.setOnClickListener { presenter.onUserMaxClicked() }
+
+            editTextTokenAmount.setAmountInputTextWatcher(presenter::onTokenAmountChanged)
+            editTextTokenAmount.focusAndShowKeyboard()
+
+            editTextFiatAmount.isEditable = false
+
+            buttonSend.setOnClickListener { presenter.cashOut() }
         }
     }
 
@@ -61,7 +58,7 @@ class SellPayloadFragment :
         replaceFragment(SellLockedFragment.create(details), addToBackStack = false)
     }
 
-    override fun showErrorScreen() {
+    override fun navigateToErrorScreen() {
         popAndReplaceFragment(
             SellErrorFragment.create(
                 errorState = SellErrorFragment.SellScreenError.SERVER_ERROR
@@ -79,13 +76,13 @@ class SellPayloadFragment :
     }
 
     override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {
-        editTextFiatAmount.setCurrencyAmount(newState.quoteAmount)
+        editTextFiatAmount.setAmount(newState.formattedFiatAmount)
         editTextFiatAmount.setHint(getString(R.string.sell_input_fiat_symbol, newState.fiatSymbol))
-        textViewFee.text = getString(R.string.sell_included_fee, newState.fee)
-        textViewRate.text = getString(R.string.sell_sol_fiat_value, newState.fiat)
+        textViewFee.text = getString(R.string.sell_included_fee, newState.formattedSellFiatFee, newState.fiatSymbol)
+        textViewRate.text = getString(R.string.sell_sol_fiat_value, newState.formattedTokenPrice, newState.fiatSymbol)
         editTextTokenAmount.setHint(newState.tokenSymbol)
-        editTextTokenAmount.setTokenAmount(newState.solToSell)
-        textViewAvailableAmount.text = getString(R.string.sell_all_sol, newState.userBalance)
+        editTextTokenAmount.setAmount(newState.solToSell)
+        textViewAvailableAmount.text = getString(R.string.sell_all_sol, newState.formattedUserAvailableBalance)
     }
 
     override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
@@ -110,16 +107,16 @@ class SellPayloadFragment :
     }
 
     override fun setTokenAmount(newValue: String) {
-        binding.editTextTokenAmount.setTokenAmount(newValue)
+        binding.editTextTokenAmount.setAmount(newValue)
     }
 
-    override fun setFiatAndFeeValue(newValue: String) {
-        binding.editTextFiatAmount.setCurrencyAmount(newValue)
-        binding.textViewFee.text = getString(R.string.sell_included_fee, newValue)
+    override fun resetFiatAndFee(feeSymbol: String) {
+        binding.editTextFiatAmount.setAmount("0")
+        binding.textViewFee.text = getString(R.string.sell_included_fee, "0", feeSymbol)
     }
 
     override fun setTokenAndFeeValue(newValue: String) {
-        binding.editTextTokenAmount.setTokenAmount(newValue)
+        binding.editTextTokenAmount.setAmount(newValue)
         binding.textViewFee.text = getString(R.string.sell_included_fee, newValue)
     }
 }

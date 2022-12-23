@@ -10,6 +10,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
+import org.p2p.core.R
 import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
@@ -88,7 +89,11 @@ class TokenViewHolder(
                 .centerCrop()
                 .into(imageView)
         } else {
-            Glide.with(imageView).load(url).into(imageView)
+            Glide
+                .with(imageView)
+                .load(url)
+                .placeholder(R.drawable.ic_placeholder_image)
+                .into(imageView)
         }
     }
 }

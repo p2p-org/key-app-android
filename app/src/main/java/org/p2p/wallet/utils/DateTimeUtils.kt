@@ -17,6 +17,7 @@ object DateTimeUtils {
     private const val PATTERN_FULL_DAY = "HH:mm"
     private const val PATTERN_AM_PM = "hh:mm a"
     private const val PATTERN_DATE = "dd.MM.yyyy"
+    private const val PATTERN_MONTH_DATE_SHORT = "MM dd"
     private const val PATTERN_CURRENT_YEAR_DATE = "d MMM"
     private const val PATTERN_CURRENT_YEAR_DATE_FULL = "d MMMM"
     private const val PATTERN_DAY_OF_WEEK_SHORT = "EE"
@@ -55,7 +56,7 @@ object DateTimeUtils {
         val currentDate = convertToMidnight(currentTime)
         val daysDiff = getDateDiff(targetDate, currentDate, TimeUnit.DAYS)
         return when {
-            datetime == 0L -> ""
+            datetime == 0L -> emptyString()
             daysDiff == 0L -> convertTo12or24Format(datetime, context)
             daysDiff == 1L -> context.getString(R.string.common_yesterday).lowercase(Locale.ENGLISH)
 
@@ -65,6 +66,20 @@ object DateTimeUtils {
 
             daysDiff < DAYS_IN_YEAR -> getFormatter(PATTERN_CURRENT_YEAR_DATE, context).format(datetime)
             else -> getFormatter(PATTERN_DATE, context).format(datetime)
+        }
+    }
+
+    fun getDateRelatedFormatted(datetime: Long, context: Context): String {
+        val currentTime = System.currentTimeMillis()
+
+        val targetDate = convertToMidnight(datetime)
+        val currentDate = convertToMidnight(currentTime)
+        val daysDiff = getDateDiff(targetDate, currentDate, TimeUnit.DAYS)
+        return when {
+            datetime == 0L -> emptyString()
+            daysDiff == 0L -> context.getString(R.string.common_today)
+            daysDiff == 1L -> context.getString(R.string.common_yesterday)
+            else -> getFormatter(PATTERN_MONTH_DATE_SHORT, context).format(datetime)
         }
     }
 

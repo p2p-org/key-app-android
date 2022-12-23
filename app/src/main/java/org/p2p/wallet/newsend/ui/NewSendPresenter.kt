@@ -1,6 +1,8 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
@@ -30,7 +32,7 @@ import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
@@ -40,8 +42,6 @@ import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -103,8 +103,8 @@ class NewSendPresenter(
             view.showToken(token)
             calculationMode.updateToken(token)
 
-            val userTokens = userInteractor.getUserTokens()
-            val isTokenChangeEnabled = userTokens.size == 1 || selectedToken == null
+            val userTokens = userInteractor.getNonZeroUserTokens()
+            val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
             val solToken = userInteractor.getUserSolToken()
@@ -121,17 +121,16 @@ class NewSendPresenter(
     private fun setupInitialToken(view: NewSendContract.View) {
         launch {
             // We should find SOL anyway because SOL is needed for Selection Mechanism
-            val userTokens = userInteractor.getUserTokens()
+            val userTokens = userInteractor.getNonZeroUserTokens()
             if (userTokens.isEmpty()) {
                 // we cannot proceed if user tokens are not loaded
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
                 return@launch
             }
 
-            val isTokenChangeEnabled = userTokens.size == 1 || selectedToken == null
+            val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            // Get USDC or USDT or token with biggest amount
             val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
             token = initialToken
             val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
@@ -333,9 +332,10 @@ class NewSendPresenter(
         )
 
         appScope.launch {
+            val transactionDate = Date()
             try {
                 val progressDetails = NewShowProgress(
-                    date = Date(),
+                    date = transactionDate,
                     tokenUrl = token.iconUrl.orEmpty(),
                     amountTokens = "${currentAmount.toPlainString()} ${token.tokenSymbol}",
                     amountUsd = currentAmountUsd.asNegativeUsdTransaction(),
@@ -346,6 +346,7 @@ class NewSendPresenter(
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
                 val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+                userInteractor.addRecipient(recipientAddress, transactionDate)
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
             } catch (e: Throwable) {
@@ -357,7 +358,7 @@ class NewSendPresenter(
 
     private fun SearchResult.nicknameOrAddress(): String {
         return if (this is SearchResult.UsernameFound) username
-        else addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
+        else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
     /**
@@ -385,7 +386,8 @@ class NewSendPresenter(
     }
 
     private fun showMaxButtonIfNeeded() {
-        view?.setMaxButtonVisible(isVisible = inputAmount.isEmpty())
+        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(feeRelayerManager.getMinRentExemption())
+        view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =

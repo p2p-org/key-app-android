@@ -15,6 +15,7 @@
     <string name="search_error_info">It is possible that the address is incorrect if you continue</string>
     <string name="search_not_found">Address not found. Try another one</string>
     <string name="search_found">Here\'s what we found</string>
+    <string name="search_recently">Recently used</string>
     <string name="search_caution_error">Caution: this address has no funds</string>
     <string name="search_no_other_tokens_description">%s token account</string>
     <string name="search_no_other_tokens_error">You cannot send funds to this address because it belongs to another token</string>
@@ -55,7 +56,7 @@
     <string name="send_slider_text_format">Send %s %s</string>
     <string name="send_max_warning_text_format">Max: %s %s</string>
     <string name="send_min_warning_text_format">Min: %s %s</string>
-    <string name="send_min_required_user_balance">Max allowed %s %s</string>
+    <string name="send_min_required_user_balance">Max allowed: %s %s</string>
 
     <string name="send_fees">Fees:</string>
     <string name="send_fees_format">Fees: %s</string>

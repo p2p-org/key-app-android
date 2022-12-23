@@ -1,56 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:orientation="horizontal">
+    android:background="?attr/selectableItemBackground">
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/walletImageView"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
         android:layout_marginVertical="12dp"
         android:layout_marginStart="16dp"
         android:background="@drawable/bg_rain_rounded_24"
         android:padding="12dp"
         android:src="@drawable/ic_search_wallet"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
-    <LinearLayout
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/textViewDate"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="16dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_mountain"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/walletImageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/walletImageView"
+        tools:text="Today"
+        tools:visibility="gone" />
 
-        <TextView
-            android:id="@+id/topTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-            tools:text="kirill.p2p.sol" />
+    <TextView
+        android:id="@+id/textViewTop"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@+id/textViewBottom"
+        app:layout_constraintEnd_toStartOf="@id/textViewDate"
+        app:layout_constraintStart_toEndOf="@id/walletImageView"
+        app:layout_constraintTop_toTopOf="@id/walletImageView"
+        tools:text="kirill.p2p.sol" />
 
-        <TextView
-            android:id="@+id/bottomTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="6dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
-            android:textColor="@color/textIconPrimary"
-            tools:text="FG4Y3yX4AAchp1HvNZ7LfzFTewF2...rdpT" />
+    <TextView
+        android:id="@+id/textViewBottom"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toBottomOf="@id/walletImageView"
+        app:layout_constraintEnd_toStartOf="@id/textViewDate"
+        app:layout_constraintStart_toEndOf="@id/walletImageView"
+        app:layout_constraintTop_toBottomOf="@id/textViewTop"
+        tools:text="FG4Y3yX4A...rdpadasT" />
 
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

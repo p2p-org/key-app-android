@@ -15,7 +15,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/topTextView"
+            android:id="@+id/textViewTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/main_max_price_slippage"
@@ -23,13 +23,13 @@
             android:textColor="@color/textIconPrimary" />
 
         <TextView
-            android:id="@+id/bottomTextView"
+            android:id="@+id/textViewBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold14"
-            app:layout_constraintStart_toStartOf="@id/topTextView"
-            app:layout_constraintTop_toBottomOf="@id/topTextView"
+            app:layout_constraintStart_toStartOf="@id/textViewTop"
+            app:layout_constraintTop_toBottomOf="@id/textViewTop"
             tools:text="0.1%" />
 
     </LinearLayout>
@@ -42,9 +42,9 @@
         android:padding="8dp"
         android:src="@drawable/ic_chevron_right"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/bottomTextView"
+        app:layout_constraintBottom_toBottomOf="@id/textViewBottom"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/topTextView"
+        app:layout_constraintTop_toTopOf="@id/textViewTop"
         tools:ignore="ContentDescription"
         tools:visibility="visible" />
 </merge>

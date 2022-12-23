@@ -79,8 +79,8 @@ class DebugSettingsAdapter(
             listener = listener
         )
 
-        private val titleTextView = binding.topTextView
-        private val subtitleTextView = binding.bottomTextView
+        private val titleTextView = binding.textViewTop
+        private val subtitleTextView = binding.textViewBottom
         private val imageView = binding.imageView
         private val bottomDivider = binding.bottomDivider
 
@@ -119,7 +119,7 @@ class DebugSettingsAdapter(
             parent.inflateViewBinding<ItemSettingsTitleBinding>(attachToRoot = false)
         )
 
-        private val textView = binding.topTextView
+        private val textView = binding.textViewTop
         private val topDivider = binding.topDivider
 
         fun bind(item: SettingsRow.Title) {

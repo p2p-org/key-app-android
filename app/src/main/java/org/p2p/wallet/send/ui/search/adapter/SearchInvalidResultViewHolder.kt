@@ -6,7 +6,7 @@ import com.bumptech.glide.Glide
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSearchInvalidResultBinding
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.utils.CUT_SEVEN_SYMBOLS
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -21,7 +21,7 @@ class SearchInvalidResultViewHolder(
 
     fun onBind(item: SearchResult.InvalidResult) {
         with(binding) {
-            textViewAddress.text = item.addressState.address.cutMiddle(CUT_SEVEN_SYMBOLS)
+            textViewAddress.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
             textViewDescription.withTextOrGone(item.description)
             textViewError.text = item.errorMessage
 

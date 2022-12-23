@@ -1,5 +1,6 @@
 package org.p2p.wallet.newsend.ui.search
 
+import androidx.annotation.StringRes
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -30,18 +31,26 @@ class NewSearchPresenter(
     private var lastQuery: String? = null
     private var searchJob: Job? = null
     private var lastResult: List<SearchResult> = emptyList()
+    private var recentRecipients: List<SearchResult> = emptyList()
 
     override fun loadInitialData() {
-        val data = lastResult.takeIf { lastResult.isNotEmpty() } ?: usernames
-        if (data.isNullOrEmpty()) {
-            // TODO PWN-6077 check latest recipients and show if exists
-            view?.showEmptyState(isEmpty = true)
-        } else {
-            val searchedItem = data.first()
-            val value = (searchedItem as? SearchResult.UsernameFound)?.username
-                ?: searchedItem.addressState.address
-            view?.showSearchValue(lastQuery ?: value)
-            setResult(data)
+        launch {
+            // TODO make it more optimized
+            val finalSearchResult = lastResult.takeIf { lastResult.isNotEmpty() } ?: usernames
+            if (finalSearchResult.isNullOrEmpty()) {
+                recentRecipients = userInteractor.getRecipients()
+                if (recentRecipients.isEmpty()) {
+                    view?.showEmptyState(isEmpty = true)
+                } else {
+                    setResult(recentRecipients, R.string.search_recently)
+                }
+            } else {
+                val searchedItem = finalSearchResult.first()
+                val value = (searchedItem as? SearchResult.UsernameFound)?.username
+                    ?: searchedItem.addressState.address
+                view?.showSearchValue(lastQuery ?: value)
+                setResult(finalSearchResult)
+            }
         }
     }
 
@@ -80,11 +89,19 @@ class NewSearchPresenter(
     }
 
     fun checkPreselectedTokenAndSubmitResult(result: SearchResult) {
-        val preselectedToken = if (result is SearchResult.AddressOnly) {
-            // in case if user inserts direct token address
-            result.sourceToken ?: initialToken
-        } else initialToken
-        view?.submitSearchResult(result, preselectedToken)
+        launch {
+            val finalResult: SearchResult
+            val preselectedToken: Token.Active?
+            if (result is SearchResult.AddressOnly) {
+                val balance = userInteractor.getBalance(result.addressState.address.toBase58Instance())
+                finalResult = result.copyWithBalance(balance)
+                preselectedToken = result.sourceToken ?: initialToken
+            } else {
+                finalResult = result
+                preselectedToken = initialToken
+            }
+            view?.submitSearchResult(finalResult, preselectedToken)
+        }
     }
 
     override fun onBuyClicked() {
@@ -140,10 +157,13 @@ class NewSearchPresenter(
         setResult(result)
     }
 
-    private fun setResult(result: List<SearchResult>) {
+    private fun setResult(
+        result: List<SearchResult>,
+        @StringRes messageRes: Int = R.string.search_found
+    ) {
         lastResult = result
         view?.apply {
-            showMessage(R.string.search_found)
+            showMessage(messageRes)
             showSearchResult(result)
             val invalidResult = result.findInstance<SearchResult.InvalidResult>()
             setBuyReceiveButtonsVisibility(invalidResult?.canReceiveAndBuy == true)
@@ -152,8 +172,13 @@ class NewSearchPresenter(
     }
 
     private fun showEmptyState() {
-        view?.showMessage(null)
-        view?.showSearchResult(emptyList())
+        if (recentRecipients.isEmpty()) {
+            view?.showMessage(null)
+            view?.showSearchResult(emptyList())
+            view?.showEmptyState(isEmpty = true)
+        } else {
+            setResult(recentRecipients, R.string.search_recently)
+        }
     }
 
     private fun showNotFound() {

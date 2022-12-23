@@ -1,17 +1,17 @@
 package org.p2p.uikit.components
 
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import android.content.Context
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.EditText
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
-import androidx.core.widget.doOnTextChanged
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetAmountsViewBinding
-import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.showSoftKeyboard
 
@@ -57,7 +57,7 @@ class UiKitAmountsView @JvmOverloads constructor(
 
         with(binding) {
             val originalTextSize = editTextTokenAmount.textSize
-            AmountFractionTextWatcher.installOn(editTextTokenAmount, maxSymbolsAllowed = 2) { amount ->
+            AmountFractionTextWatcher.installOn(editTextTokenAmount, maxDecimalsAllowed = 2) { amount ->
                 handleAmountTextChanged(editTextTokenAmount, textViewTokenAutoSizeHelper, amount, originalTextSize)
             }
             editTextCurrencyAmount.doOnTextChanged { text, _, _, _ ->
@@ -88,7 +88,7 @@ class UiKitAmountsView @JvmOverloads constructor(
     fun setOnCurrencyAmountChangeListener(onCurrencyAmountChange: (String) -> Unit) {
         currencyTextWatcher = AmountFractionTextWatcher.installOn(
             binding.editTextCurrencyAmount,
-            maxSymbolsAllowed = MAX_CURRENCY_FRACTION_LENGTH
+            maxDecimalsAllowed = MAX_CURRENCY_FRACTION_LENGTH
         ) {
             val amountWithoutSpaces = it.replace(" ", "")
             onCurrencyAmountChange(amountWithoutSpaces)
