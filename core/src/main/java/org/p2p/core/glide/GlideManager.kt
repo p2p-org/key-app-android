@@ -7,6 +7,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
+import org.p2p.core.R
 
 private const val DEFAULT_IMAGE_SIZE = 56
 
@@ -28,7 +29,11 @@ class GlideManager(context: Context) {
                 .centerCrop()
                 .into(imageView)
         } else {
-            Glide.with(imageView).load(url).into(imageView)
+            Glide
+                .with(imageView)
+                .load(url)
+                .placeholder(R.drawable.ic_placeholder_image)
+                .into(imageView)
         }
     }
 
