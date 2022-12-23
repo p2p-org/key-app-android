@@ -84,6 +84,7 @@ class HistoryPresenter(
         }
     }
 
+    // refactor and make good code in PWN-6386
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
         try {
             if (sellInteractor.isSellAvailable()) {
