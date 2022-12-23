@@ -11,6 +11,7 @@
 
     <style name="WalletTheme.BottomSheet.Rounded" parent="Theme.Design.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
+        <item name="android:navigationBarColor">@color/bg_snow</item>
 
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowLightStatusBar">@bool/isLightTheme</item>

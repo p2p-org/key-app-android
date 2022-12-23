@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.core.common.TextContainer
@@ -36,12 +37,19 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         super.onViewCreated(view, savedInstanceState)
         @Suppress("UNCHECKED_CAST")
         presenter.attach(this as V)
+        expandToFitAllContent()
     }
 
     @CallSuper
     override fun onDestroyView() {
         super.onDestroyView()
         presenter.detach()
+    }
+
+    protected fun expandToFitAllContent() {
+        BottomSheetBehavior.from(requireView().parent as View).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
     }
 
     //region ErrorMessages

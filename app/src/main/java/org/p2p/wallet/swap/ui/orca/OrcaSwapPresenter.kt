@@ -99,7 +99,7 @@ class OrcaSwapPresenter(
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
 
-    private var slippage: Slippage = Slippage.Percent
+    private var slippage: Slippage = Slippage.TopUpSlippage
     private var isMaxClicked: Boolean = false
 
     private var validationJob: Job? = null
