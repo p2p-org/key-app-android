@@ -1,17 +1,19 @@
 package org.p2p.wallet.utils.viewbinding
 
-import android.content.Context
-import android.content.res.Resources
-import android.graphics.drawable.Drawable
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.viewbinding.ViewBinding
+import android.content.Context
+import android.content.res.Resources
+import android.graphics.drawable.Drawable
+import android.text.Spanned
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import org.p2p.core.utils.getHtmlString
 import timber.log.Timber
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -28,6 +30,9 @@ fun ViewBinding.getString(@StringRes stringId: Int, vararg formatArgs: Any): Str
     } else {
         context.getString(stringId)
     }
+
+fun ViewBinding.getHtmlString(@StringRes stringId: Int, vararg formatArgs: Any): Spanned =
+    context.getHtmlString(stringId, formatArgs)
 
 @ColorInt
 fun ViewBinding.getColor(@ColorRes colorId: Int, theme: Resources.Theme? = context.theme): Int =

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.uikit.natives.showSnackbarShort
@@ -40,6 +41,12 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
     override fun onDestroyView() {
         super.onDestroyView()
         presenter.detach()
+    }
+
+    protected fun expandToFitAllContent() {
+        BottomSheetBehavior.from(requireView().parent as View).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
     }
 
     //region ErrorMessages

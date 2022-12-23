@@ -9,10 +9,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
 import org.p2p.wallet.sell.ui.error.SellErrorFragment
-import org.p2p.wallet.sell.ui.lock.SellLockedArguments
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
+import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
 import org.p2p.wallet.utils.popAndReplaceFragment
-import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showUrlInCustomTabs
@@ -58,17 +57,8 @@ class SellPayloadFragment :
         binding.textViewAvailableAmount.text = totalAmount.toString()
     }
 
-    override fun navigateToSellLock(
-        solAmount: BigDecimal,
-        usdAmount: String,
-        moonpayAddress: Base58String
-    ) {
-        val args = SellLockedArguments(
-            solAmount = solAmount,
-            amountInUsd = usdAmount,
-            moonpayAddress = moonpayAddress.base58Value
-        )
-        replaceFragment(SellLockedFragment.create(args), addToBackStack = false)
+    override fun navigateToSellLock(details: SellTransactionDetails) {
+        replaceFragment(SellLockedFragment.create(details), addToBackStack = false)
     }
 
     override fun showErrorScreen() {
