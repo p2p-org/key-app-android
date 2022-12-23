@@ -1,6 +1,9 @@
 package org.p2p.wallet.sell.interactor
 
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -11,6 +14,7 @@ import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
+import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal
@@ -32,9 +36,7 @@ class SellInteractor(
     }
 
     suspend fun isSellAvailable(): Boolean {
-        return sellEnabledFeatureToggle.isFeatureEnabled &&
-            sellRepository.isSellAllowedForUser() &&
-            isUserBalancePositive()
+        return true
     }
 
     private suspend fun isUserBalancePositive(): Boolean {
@@ -48,6 +50,18 @@ class SellInteractor(
 
     suspend fun loadUserSellTransactions(): List<MoonpaySellTransaction> {
         return sellRepository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
+    }
+
+    suspend fun loadUserSellTransactionsDetails(): List<SellTransactionDetails> {
+        return loadUserSellTransactions()
+            .map {
+                SellTransactionDetails(
+                    status = it.status,
+                    formattedSolAmount = it.amounts.tokenAmount.formatToken(),
+                    formattedUsdAmount = it.amounts.getAmountFromFiat(getMoonpaySellFiatCurrency()).formatUsd(),
+                    receiverAddress = Constants.REN_BTC_DEVNET_MINT
+                )
+            }
     }
 
     suspend fun getSellQuoteForSol(solAmount: BigDecimal, fiat: MoonpaySellFiatCurrency): MoonpaySellTokenQuote {

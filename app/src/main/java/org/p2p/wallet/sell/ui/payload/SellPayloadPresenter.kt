@@ -1,6 +1,7 @@
 package org.p2p.wallet.sell.ui.payload
 
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatTokenForMoonpay
 import org.p2p.core.utils.formatUsd
@@ -16,6 +17,7 @@ import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
@@ -55,8 +57,9 @@ class SellPayloadPresenter(
         launch {
             try {
                 view.showLoading(isVisible = true)
-                checkForSellLock()
-                userSolBalance = userInteractor.getUserSolToken()?.total.orZero()
+                // call order is important!
+//                checkForSellLock()
+                userSolBalance = BigDecimal.valueOf(4.323245)
                 loadCurrencies()
                 checkForMinAmount()
                 restartLoadSellQuoteJob()
@@ -74,17 +77,19 @@ class SellPayloadPresenter(
         if (userTransactionInProcess != null) {
             // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
             val amounts = userTransactionInProcess.amounts
-            view?.navigateToSellLock(
-                solAmount = amounts.tokenAmount,
-                usdAmount = amounts.usdAmount.toPlainString(),
-                moonpayAddress = tokenKeyProvider.publicKey.toBase58Instance()
+            val details = SellTransactionDetails(
+                status = userTransactionInProcess.status,
+                formattedSolAmount = amounts.tokenAmount.formatToken(),
+                formattedUsdAmount = userTransactionInProcess.amounts.getAmountFromFiat(currentFiat).formatUsd(),
+                receiverAddress = WRAPPED_SOL_MINT // todo replace with correct address
             )
+            view?.navigateToSellLock(details)
         }
     }
 
     private suspend fun getUserTransactionInProcess(): MoonpaySellTransaction? {
         val userTransactions = sellInteractor.loadUserSellTransactions()
-        return userTransactions.find { it.status == MoonpaySellTransaction.TransactionStatus.WAITING_FOR_DEPOSIT }
+        return userTransactions.find { it.status == MoonpaySellTransaction.SellTransactionStatus.WAITING_FOR_DEPOSIT }
     }
 
     private suspend fun loadCurrencies() {

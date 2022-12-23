@@ -28,21 +28,6 @@
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewMoonpayTransactions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:itemCount="4"
-                tools:listitem="@layout/item_history_moonpay_transaction"
-                tools:visibility="visible" />
-
-            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/historyRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
