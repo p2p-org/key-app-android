@@ -195,7 +195,7 @@ class ScanQrFragment :
                 actionBlock = {}
             )
         } catch (e: Throwable) {
-            Timber.e("No address in this scanned data: $address")
+            Timber.i(e, "No address in this scanned data: $address")
             AlertDialog.Builder(requireContext())
                 .setCancelable(false)
                 .setMessage(R.string.qr_no_address)
