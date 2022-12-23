@@ -69,6 +69,11 @@ interface MvpView {
         actionBlock: (() -> Unit)? = null
     )
 
+    fun showToast(
+        message: String? = null,
+        @StringRes messageResId: Int? = null
+    )
+
     // new snackbar
     fun showUiKitSnackBar(
         message: String? = null,

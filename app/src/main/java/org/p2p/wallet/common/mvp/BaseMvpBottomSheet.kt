@@ -1,15 +1,16 @@
 package org.p2p.wallet.common.mvp
 
-import androidx.annotation.CallSuper
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
@@ -101,6 +102,14 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
     //endregion
+
+    override fun showToast(message: String?, @StringRes messageResId: Int?) {
+        require(message != null || messageResId != null) {
+            "Toast text must be set from `message` or `messageResId` params"
+        }
+        val toastText: String = message ?: messageResId?.let(::getString)!!
+        toast(toastText)
+    }
 
     override fun showUiKitSnackBar(
         message: String?,

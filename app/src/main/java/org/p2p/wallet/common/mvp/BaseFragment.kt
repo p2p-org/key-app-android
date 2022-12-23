@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils
 import androidx.annotation.AnimRes
 import androidx.annotation.ColorRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
@@ -156,9 +158,17 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         else -> emptyString()
     }
 
+    override fun showToast(message: String?, @StringRes messageResId: Int?) {
+        require(message != null || messageResId != null) {
+            "Toast text must be set from `message` or `messageResId` params"
+        }
+        val toastText: String = message ?: messageResId?.let(::getString)!!
+        toast(toastText)
+    }
+
     override fun showUiKitSnackBar(
         message: String?,
-        messageResId: Int?,
+        @StringRes messageResId: Int?,
         onDismissed: () -> Unit,
         actionButtonResId: Int?,
         actionBlock: ((Snackbar) -> Unit)?

@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
@@ -85,6 +87,14 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
                 it.setIcon(icon)
             }
         }
+    }
+
+    override fun showToast(message: String?, @StringRes messageResId: Int?) {
+        require(message != null || messageResId != null) {
+            "Toast text must be set from `message` or `messageResId` params"
+        }
+        val toastText: String = message ?: messageResId?.let(::getString)!!
+        toast(toastText)
     }
 
     override fun showUiKitSnackBar(

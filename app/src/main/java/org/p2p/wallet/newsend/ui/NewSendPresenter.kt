@@ -275,7 +275,7 @@ class NewSendPresenter(
         showMaxButtonIfNeeded()
 
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
-        view?.showUiKitSnackBar(message)
+        view?.showToast(message)
 
         /*
         * Calculating if we can pay with current token instead of already selected fee payer token

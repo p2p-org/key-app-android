@@ -7,6 +7,10 @@ import com.google.android.material.snackbar.Snackbar
 interface BaseFragmentContract {
     fun overrideEnterAnimation(@AnimRes animation: Int)
     fun overrideExitAnimation(@AnimRes animation: Int)
+    fun showToast(
+        message: String? = null,
+        @StringRes messageResId: Int? = null
+    )
     fun showUiKitSnackBar(
         message: String? = null,
         @StringRes messageResId: Int? = null,
