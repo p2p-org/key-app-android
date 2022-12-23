@@ -86,13 +86,12 @@ class HistoryPresenter(
 
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
         try {
-            val moonpayItems = sellInteractor.loadUserSellTransactionsDetails()
-                .map { HistoryItem.MoonpayTransactionItem(it) }
-            moonpayTransactions.clear()
-            moonpayTransactions.addAll(moonpayItems)
+            if (sellInteractor.isSellAvailable()) {
+                fetchMoonpayTransactions()
+            }
             val fetchedItems = historyInteractor.loadTransactions(isRefresh)
             transactions.addAll(fetchedItems)
-            view?.showHistory(transactions, moonpayItems)
+            view?.showHistory(transactions, moonpayTransactions)
             view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {
             Timber.w(e, "Cancelled history next page load")
@@ -106,6 +105,13 @@ class HistoryPresenter(
             view?.showPagingState(PagingState.Error(e))
             Timber.e(e, "Error getting transaction history")
         }
+    }
+
+    private suspend fun fetchMoonpayTransactions() {
+        val moonpayItems = sellInteractor.loadUserSellTransactionsDetails()
+            .map { HistoryItem.MoonpayTransactionItem(it) }
+        moonpayTransactions.clear()
+        moonpayTransactions.addAll(moonpayItems)
     }
 
     override fun onItemClicked(transaction: HistoryTransaction) {
