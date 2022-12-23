@@ -5,8 +5,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.viewbinding.ViewBinding
-import android.view.View
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
@@ -49,17 +47,6 @@ class HomeActionsBottomSheet :
     override val presenter: HomeActionsContract.Presenter by inject()
 
     private val binding: DialogHomeActionsBinding by viewBinding()
-
-    override fun onStart() {
-        super.onStart()
-        expandToFitAllContent()
-    }
-
-    private fun expandToFitAllContent() {
-        BottomSheetBehavior.from(requireView().parent as View).apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
-        }
-    }
 
     override fun setupHomeActions(isSellFeatureEnabled: Boolean) {
         with(binding) {
