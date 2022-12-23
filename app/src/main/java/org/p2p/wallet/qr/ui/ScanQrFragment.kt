@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
@@ -25,8 +26,10 @@ import org.p2p.wallet.common.permissions.PermissionsDialog
 import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
 import org.p2p.wallet.send.analytics.SendAnalytics
+import org.p2p.wallet.utils.CUT_USERNAME_SYMBOLS_COUNT
 import org.p2p.wallet.utils.NoOp
 import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -186,24 +189,35 @@ class ScanQrFragment :
             PublicKey(address)
             setFragmentResult(requestKey, bundleOf(resultKey to address))
             popBackStack()
+            showUiKitSnackBar(
+                message = getString(R.string.qr_address_found, address.cutMiddle(CUT_USERNAME_SYMBOLS_COUNT)),
+                actionButtonResId = android.R.string.ok,
+                actionBlock = {}
+            )
         } catch (e: Throwable) {
             Timber.e("No address in this scanned data: $address")
-            showUiKitSnackBar(
-                messageResId = R.string.qr_no_address,
-                actionButtonResId = android.R.string.ok,
-                onDismissed = continueAction,
-                actionBlock = { continueAction.invoke() }
-            )
+            AlertDialog.Builder(requireContext())
+                .setCancelable(false)
+                .setMessage(R.string.qr_no_address)
+                .setPositiveButton(
+                    android.R.string.ok,
+                ) { _, _ ->
+                    continueAction.invoke()
+                }
+                .show()
         }
     }
 
     private fun showInvalidDataError(continueAction: () -> Unit) {
-        showUiKitSnackBar(
-            messageResId = R.string.qr_common_error,
-            actionButtonResId = android.R.string.ok,
-            onDismissed = continueAction,
-            actionBlock = { continueAction.invoke() }
-        )
+        AlertDialog.Builder(requireContext())
+            .setCancelable(false)
+            .setMessage(R.string.qr_common_error)
+            .setPositiveButton(
+                android.R.string.ok,
+            ) { _, _ ->
+                continueAction.invoke()
+            }
+            .show()
     }
 
     private fun onBackPressed() {
