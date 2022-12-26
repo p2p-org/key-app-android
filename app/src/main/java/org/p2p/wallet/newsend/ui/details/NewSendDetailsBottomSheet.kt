@@ -157,7 +157,7 @@ class NewSendDetailsBottomSheet :
             textViewSubtitleAccountFee.setTextColor(colorNight)
             textViewSubtitleAccountFee.text = SpanUtils.highlightText(
                 commonText = fee.accountCreationFeeUsd,
-                highlightedText = fee.approxAccountCreationFeeUsd.orEmpty(),
+                highlightedText = fee.getApproxAccountCreationFeeUsd().orEmpty(),
                 color = colorMountain
             )
             imageViewAccountFeeInfo.setOnClickListener { presenter.loadFeePayerTokens(fee) }

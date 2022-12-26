@@ -151,6 +151,6 @@ class NewSelectTokenFragment :
         if (popBackStackTo(target = SendNoAccountFragment::class, inclusive = true)) return
 
         // for all other flows and cases just popping current screen
-        popBackStack()
+        popBackStack(hideKeyboard = false)
     }
 }
