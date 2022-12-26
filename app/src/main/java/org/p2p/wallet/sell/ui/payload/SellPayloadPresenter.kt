@@ -7,6 +7,7 @@ import org.p2p.core.utils.formatTokenForMoonpay
 import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
@@ -15,11 +16,11 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
+import org.p2p.wallet.moonpay.repository.sell.MoonpayExternalCustomerIdProvider
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
-import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
@@ -36,7 +37,7 @@ class SellPayloadPresenter(
     private val sellInteractor: SellInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder,
-    private val userInteractor: UserInteractor,
+    private val externalCustomerIdProvider: MoonpayExternalCustomerIdProvider,
     private val resourceProvider: ResourcesProvider
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
@@ -135,7 +136,10 @@ class SellPayloadPresenter(
                     Timber.i(e)
                 } catch (e: Throwable) {
                     Timber.e(e, "Error on loading data from Moonpay $e")
-                    view?.navigateToErrorScreen()
+                    // navigate to error only if there no old values
+                    if (tokenPrice.isZero()) {
+                        view?.navigateToErrorScreen()
+                    }
                 }
             }
         }
@@ -147,6 +151,7 @@ class SellPayloadPresenter(
         val moonpayUrl = moonpayWidgetUrlBuilder.buildSellWidgetUrl(
             tokenSymbol = Constants.SOL_SYMBOL,
             userAddress = userAddress,
+            externalCustomerId = externalCustomerIdProvider.getCustomerId(),
             fiatSymbol = currentFiat.abbriviation,
             tokenAmountToSell = userSelectedAmount.formatTokenForMoonpay(),
         )

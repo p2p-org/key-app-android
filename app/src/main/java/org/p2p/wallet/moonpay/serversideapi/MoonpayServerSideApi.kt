@@ -8,7 +8,7 @@ import retrofit2.http.Query
 interface MoonpayServerSideApi {
     @GET("api/v3/sell_transactions")
     suspend fun getUserSellTransactions(
-        @Query("externalCustomerId") userAddress: String
+        @Query("externalCustomerId") externalCustomerId: String
     ): List<MoonpaySellTransactionResponse>
 
     /**
