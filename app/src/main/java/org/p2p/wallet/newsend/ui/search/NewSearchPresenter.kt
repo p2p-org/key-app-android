@@ -1,22 +1,21 @@
 package org.p2p.wallet.newsend.ui.search
 
-import androidx.annotation.StringRes
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.newsend.model.SearchState
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.findInstance
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 250L
 
@@ -28,54 +27,94 @@ class NewSearchPresenter(
     private val userInteractor: UserInteractor,
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
-    private var lastQuery: String? = null
+    private var state = SearchState()
     private var searchJob: Job? = null
-    private var lastResult: List<SearchResult> = emptyList()
-    private var recentRecipients: List<SearchResult> = emptyList()
 
-    override fun loadInitialData() {
+    override fun attach(view: NewSearchContract.View) {
+        super.attach(view)
+        if (state.recentRecipients == null) {
+            loadRecentRecipients()
+        } else {
+            renderCurrentState()
+        }
+    }
+
+    private fun loadRecentRecipients() {
         launch {
-            // TODO make it more optimized
-            val finalSearchResult = lastResult.takeIf { lastResult.isNotEmpty() } ?: usernames
-            if (finalSearchResult.isNullOrEmpty()) {
-                recentRecipients = userInteractor.getRecipients()
-                if (recentRecipients.isEmpty()) {
-                    view?.showEmptyState(isEmpty = true)
-                } else {
-                    setResult(recentRecipients, R.string.search_recently)
-                }
-            } else {
-                val searchedItem = finalSearchResult.first()
-                val value = (searchedItem as? SearchResult.UsernameFound)?.username
-                    ?: searchedItem.addressState.address
-                view?.showSearchValue(lastQuery ?: value)
-                setResult(finalSearchResult)
+            val recipients = userInteractor.getRecipients()
+            state.updateRecipients(recipients)
+
+            renderCurrentState()
+        }
+    }
+
+    private fun renderCurrentState() {
+        when (val currentState = state.state) {
+            is SearchState.State.UsersFound -> {
+                view?.showUsers(currentState.users)
+                view?.showUsersMessage(R.string.search_found)
+                view?.updateSearchInput(currentState.query, submit = false)
+                showActionsVisible(shouldShowActions = false)
+            }
+            is SearchState.State.UsersNotFound -> {
+                view?.showNotFound()
+                view?.showUsersMessage(null)
+                view?.updateSearchInput(currentState.query, submit = false)
+                showActionsVisible(shouldShowActions = false)
+            }
+            is SearchState.State.ShowInvalidAddresses -> {
+                view?.showUsers(currentState.users)
+                view?.showUsersMessage(R.string.search_found)
+                showActionsVisible(shouldShowActions = currentState.canReceiveOrBuy, isBackgroundVisible = false)
+            }
+            is SearchState.State.ShowRecipients -> {
+                view?.showUsers(currentState.recipients)
+                view?.showUsersMessage(R.string.search_recently)
+                showActionsVisible(shouldShowActions = false)
+            }
+            is SearchState.State.ShowEmptyState -> {
+                view?.showEmptyState(isEmpty = true)
+                view?.showUsersMessage(null)
+                view?.clearUsers()
+                showActionsVisible(shouldShowActions = false)
             }
         }
     }
 
     override fun search(newQuery: String) {
-        if (lastQuery != newQuery) {
-            lastQuery = newQuery
-            val target = SearchTarget(
-                value = newQuery,
-                keyAppDomainIfUsername = usernameDomainFeatureToggle.value
-            )
+        // when screen is restored, the searchView triggers the queryChange automatically
+        // we don't need to make a new request, since we already restored the state in attach
+        if (state.query == newQuery) {
+            return
+        }
 
+        if (newQuery.isBlank()) {
             searchJob?.cancel()
-            searchJob = launch {
-                try {
-                    delay(DELAY_IN_MS)
-                    view?.showLoading(isLoading = true)
-                    validateAndSearch(target)
-                } catch (e: CancellationException) {
-                    Timber.i("Cancelled search target validation: ${target.value}")
-                } catch (e: Throwable) {
-                    Timber.e(e, "Error searching target: $newQuery")
-                    validateOnlyAddress(target)
-                } finally {
-                    view?.showLoading(false)
-                }
+            state.clear()
+            renderCurrentState()
+            return
+        }
+
+        state.updateSearchResult(newQuery, emptyList())
+
+        val target = SearchTarget(
+            value = newQuery,
+            keyAppDomainIfUsername = usernameDomainFeatureToggle.value
+        )
+
+        searchJob?.cancel()
+        searchJob = launch {
+            try {
+                delay(DELAY_IN_MS)
+                view?.showLoading(isLoading = true)
+                validateAndSearch(target)
+            } catch (e: CancellationException) {
+                Timber.i("Cancelled search target validation: ${target.value}")
+            } catch (e: Throwable) {
+                Timber.e(e, "Error searching target: $newQuery")
+                validateOnlyAddress(target)
+            } finally {
+                view?.showLoading(isLoading = false)
             }
         }
     }
@@ -119,7 +158,7 @@ class NewSearchPresenter(
         when (target.validation) {
             SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
             SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
-            SearchTarget.Validation.EMPTY -> showEmptyState()
+            SearchTarget.Validation.EMPTY -> renderCurrentState()
             else -> showNotFound()
         }
     }
@@ -133,12 +172,8 @@ class NewSearchPresenter(
 
     private suspend fun searchByUsername(username: String) {
         val usernames = searchInteractor.searchByName(username)
-        if (usernames.isEmpty()) {
-            showNotFound()
-            return
-        }
-
-        setResult(usernames)
+        state.updateSearchResult(username, usernames)
+        renderCurrentState()
     }
 
     private suspend fun searchBySolAddress(address: String) {
@@ -146,44 +181,28 @@ class NewSearchPresenter(
             PublicKey(address)
         } catch (e: Throwable) {
             Timber.i(e)
-            showNotFound()
+            state.updateSearchResult(address, emptyList())
+            renderCurrentState()
             return
         }
 
-        val result = searchInteractor.searchByAddress(
+        val newAddresses = searchInteractor.searchByAddress(
             publicKey.toBase58().toBase58Instance(),
             initialToken
         )
-        setResult(result)
+
+        state.updateSearchResult(address, newAddresses)
+        renderCurrentState()
     }
 
-    private fun setResult(
-        result: List<SearchResult>,
-        @StringRes messageRes: Int = R.string.search_found
-    ) {
-        lastResult = result
-        view?.apply {
-            showMessage(messageRes)
-            showSearchResult(result)
-            val invalidResult = result.findInstance<SearchResult.InvalidResult>()
-            setBuyReceiveButtonsVisibility(invalidResult?.canReceiveAndBuy == true)
-            setListBackgroundVisibility(invalidResult == null)
-        }
-    }
-
-    private fun showEmptyState() {
-        if (recentRecipients.isEmpty()) {
-            view?.showMessage(null)
-            view?.showSearchResult(emptyList())
-            view?.showEmptyState(isEmpty = true)
-        } else {
-            setResult(recentRecipients, R.string.search_recently)
-        }
+    private fun showActionsVisible(shouldShowActions: Boolean, isBackgroundVisible: Boolean = true) {
+        view?.showBuyReceiveVisible(isVisible = shouldShowActions)
+        view?.showBackgroundVisible(isVisible = isBackgroundVisible)
     }
 
     private fun showNotFound() {
-        view?.showMessage(null)
-        view?.showSearchResult(emptyList())
+        view?.showUsersMessage(null)
+        view?.clearUsers()
         view?.showNotFound()
     }
 }

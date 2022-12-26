@@ -1,7 +1,6 @@
 package org.p2p.wallet.newsend.ui.search
 
 import androidx.activity.addCallback
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,8 +67,6 @@ class NewSearchFragment :
         )
     }
 
-    private var lastQuery: String? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -80,32 +77,16 @@ class NewSearchFragment :
         setOnResultListener()
 
         with(binding) {
-            toolbar.apply {
-                setSearchMenu(
-                    object : SearchView.OnQueryTextListener {
-                        override fun onQueryTextSubmit(query: String?): Boolean = false
-
-                        override fun onQueryTextChange(newText: String?): Boolean {
-                            onSearchQueryChanged(newText.orEmpty())
-                            return true
-                        }
-                    },
-                    searchHintRes = R.string.search_edittext_hint,
-                    lastQuery = lastQuery
-                )
+            binding.toolbar.apply {
+                setSearchMenu(searchHintRes = R.string.search_edittext_hint)
                 setNavigationOnClickListener { popBackStack() }
                 setOnDoneListener { hideKeyboard() }
+                onQueryUpdated = { presenter.search(it) }
             }
 
-            buttonBuy.setOnClickListener {
-                presenter.onBuyClicked()
-            }
-            buttonScanQr.setOnClickListener {
-                presenter.onScanClicked()
-            }
-            buttonReceive.setOnClickListener {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
-            }
+            buttonBuy.setOnClickListener { presenter.onBuyClicked() }
+            buttonScanQr.setOnClickListener { presenter.onScanClicked() }
+            buttonReceive.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
 
             recyclerViewSearchResults.apply {
                 itemAnimator = null
@@ -113,13 +94,10 @@ class NewSearchFragment :
                 attachAdapter(searchAdapter)
             }
         }
-
-        presenter.loadInitialData()
     }
 
-    private fun onSearchQueryChanged(newQuery: String) {
-        lastQuery = newQuery
-        presenter.search(newQuery)
+    override fun updateSearchInput(recentQuery: String, submit: Boolean) {
+        binding.toolbar.setQuery(recentQuery, submit)
     }
 
     override fun showLoading(isLoading: Boolean) {
@@ -147,7 +125,7 @@ class NewSearchFragment :
         textViewNotFoundTitle.isVisible = false
     }
 
-    override fun setListBackgroundVisibility(isVisible: Boolean) {
+    override fun showBackgroundVisible(isVisible: Boolean) {
         binding.recyclerViewSearchResults.apply {
             if (isVisible) {
                 setBackgroundResource(R.drawable.bg_snow_rounded_16)
@@ -157,20 +135,20 @@ class NewSearchFragment :
         }
     }
 
-    override fun setBuyReceiveButtonsVisibility(isVisible: Boolean) {
+    override fun showBuyReceiveVisible(isVisible: Boolean) {
         binding.groupReceiveBuyButtons.isVisible = isVisible
     }
 
-    override fun showSearchValue(value: String) {
-        binding.toolbar.searchView?.setQuery(value, true)
-    }
-
-    override fun showSearchResult(result: List<SearchResult>) {
+    override fun showUsers(result: List<SearchResult>) {
         searchAdapter.setItems(result)
-        showEmptyState(isEmpty = result.isEmpty())
+        showEmptyState(result.isEmpty())
     }
 
-    override fun showMessage(textRes: Int?) {
+    override fun clearUsers() {
+        searchAdapter.clearItems()
+    }
+
+    override fun showUsersMessage(textRes: Int?) {
         binding.messageTextView.withTextResOrGone(textRes)
     }
 
@@ -188,10 +166,11 @@ class NewSearchFragment :
 
     private fun setOnResultListener() {
         requireActivity().supportFragmentManager.setFragmentResultListener(
-            REQUEST_QR_KEY, viewLifecycleOwner
+            REQUEST_QR_KEY,
+            viewLifecycleOwner
         ) { _, bundle ->
             bundle.getString(RESULT_QR_KEY)?.let { address ->
-                showSearchValue(address)
+                binding.toolbar.setQuery(address, true)
             }
         }
     }

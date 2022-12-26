@@ -28,13 +28,9 @@ class SearchInteractor(
             val address = usernameDetails.ownerAddress.base58Value
             if (isOwnPublicKey(address)) {
                 SearchResult.InvalidResult(
-                    AddressState(address = address),
-                    errorMessage = resourcesProvider.getString(
-                        R.string.search_yourself_error
-                    ),
-                    description = resourcesProvider.getString(
-                        R.string.search_yourself_description
-                    ),
+                    addressState = AddressState(address = address),
+                    errorMessage = resourcesProvider.getString(R.string.search_yourself_error),
+                    description = resourcesProvider.getString(R.string.search_yourself_description),
                 )
             } else {
                 SearchResult.UsernameFound(

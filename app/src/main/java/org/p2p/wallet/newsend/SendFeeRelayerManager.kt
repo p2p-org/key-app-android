@@ -88,7 +88,8 @@ class SendFeeRelayerManager(
         sourceToken: Token.Active,
         feePayerToken: Token.Active?,
         strategy: FeePayerSelectionStrategy,
-        tokenAmount: BigDecimal
+        tokenAmount: BigDecimal,
+        useCache: Boolean
     ) {
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
 
@@ -97,7 +98,8 @@ class SendFeeRelayerManager(
             val feeRelayerFee = calculateFeeRelayerFee(
                 sourceToken = sourceToken,
                 feePayerToken = feePayer,
-                result = recipientAddress
+                result = recipientAddress,
+                useCache = useCache
             )
 
             if (feeRelayerFee == null) {
@@ -165,7 +167,8 @@ class SendFeeRelayerManager(
     private suspend fun calculateFeeRelayerFee(
         sourceToken: Token.Active,
         feePayerToken: Token.Active,
-        result: SearchResult
+        result: SearchResult,
+        useCache: Boolean = true
     ): FeeRelayerFee? {
         val recipient = result.addressState.address
 
@@ -173,7 +176,8 @@ class SendFeeRelayerManager(
             sendInteractor.calculateFeesForFeeRelayer(
                 feePayerToken = feePayerToken,
                 token = sourceToken,
-                recipient = recipient
+                recipient = recipient,
+                useCache = useCache
             )
         } catch (e: CancellationException) {
             Timber.i("Fee calculation is cancelled")

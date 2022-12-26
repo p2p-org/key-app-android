@@ -111,12 +111,6 @@ class NewSendPresenter(
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            val solToken = userInteractor.getUserSolToken()
-            if (solToken == null) {
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                return@launch
-            }
-
             val currentState = feeRelayerManager.getState()
             handleFeeRelayerStateUpdate(currentState, view)
         }
@@ -137,10 +131,12 @@ class NewSendPresenter(
 
             val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
             token = initialToken
-            val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
+
+            val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+                Timber.wtf("Couldn't find user's SOL account!")
                 return@launch
             }
 
@@ -200,7 +196,8 @@ class NewSendPresenter(
         executeSmartSelection(
             token = requireToken(),
             feePayerToken = requireToken(),
-            strategy = SELECT_FEE_PAYER
+            strategy = SELECT_FEE_PAYER,
+            useCache = false
         )
 
         view.showFeeViewLoading(isLoading = false)
@@ -226,7 +223,8 @@ class NewSendPresenter(
         executeSmartSelection(
             token = requireToken(),
             feePayerToken = requireToken(),
-            strategy = CORRECT_AMOUNT
+            strategy = CORRECT_AMOUNT,
+            useCache = false
         )
     }
 
@@ -361,22 +359,26 @@ class NewSendPresenter(
     }
 
     private fun SearchResult.nicknameOrAddress(): String {
-        return if (this is SearchResult.UsernameFound) username
+        return if (this is SearchResult.UsernameFound) getFormattedUsername()
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
     /**
-     * The smart selection of the Fee Payer token is being executed in four cases:
+     * The smart selection of the Fee Payer token is being executed in the following cases:
      * 1. When the screen initializes. It checks if we need to create an account for the recipient
      * 2. When user is typing the amount. We are checking what token we can choose for fee payment
      * 3. When user updates the fee payer token manually. We don't do anything, only updating the info
      * 4. When user clicks on MAX button. We are verifying if we need to reduce the amount for valid transaction
      * 5. When user updated the source token. We are checking for valid fee payer and if the entered amount is not much
+     *
+     * @param useCache is responsible for checking the recipient account info.
+     * We are checking if we need to create an account for a user when initially loaded
      * */
     private fun executeSmartSelection(
         token: Token.Active,
         feePayerToken: Token.Active?,
-        strategy: FeePayerSelectionStrategy
+        strategy: FeePayerSelectionStrategy,
+        useCache: Boolean = true
     ) {
         feePayerJob?.cancel()
         feePayerJob = launch {
@@ -384,7 +386,8 @@ class NewSendPresenter(
                 sourceToken = token,
                 feePayerToken = feePayerToken,
                 strategy = strategy,
-                tokenAmount = calculationMode.getCurrentAmount()
+                tokenAmount = calculationMode.getCurrentAmount(),
+                useCache = useCache
             )
         }
     }

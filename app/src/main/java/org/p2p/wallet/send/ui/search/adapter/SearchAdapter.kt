@@ -1,8 +1,9 @@
 package org.p2p.wallet.send.ui.search.adapter
 
-import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import android.annotation.SuppressLint
+import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.send.model.SearchResult
@@ -31,10 +32,13 @@ class SearchAdapter(
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
 
-            return if (oldItem is SearchResult.UsernameFound && newItem is SearchResult.UsernameFound) {
-                oldItem.username == newItem.username
-            } else {
-                true
+            return when {
+                oldItem is SearchResult.UsernameFound && newItem is SearchResult.UsernameFound ->
+                    oldItem.username == newItem.username && oldItem.date == newItem.date
+                oldItem is SearchResult.AddressOnly && newItem is SearchResult.AddressOnly ->
+                    oldItem.addressState.address == newItem.addressState.address && oldItem.date == newItem.date
+                else ->
+                    oldItem == newItem
             }
         }
     }
@@ -44,6 +48,12 @@ class SearchAdapter(
         data.clear()
         data.addAll(results)
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun clearItems() {
+        data.clear()
+        notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int = when (data[position]) {

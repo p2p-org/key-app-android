@@ -82,7 +82,8 @@ class SendInteractor(
     suspend fun calculateFeesForFeeRelayer(
         feePayerToken: Token.Active,
         token: Token.Active,
-        recipient: String
+        recipient: String,
+        useCache: Boolean = true
     ): FeeRelayerFee? {
         val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
         val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
@@ -99,7 +100,8 @@ class SendInteractor(
 
         val shouldCreateAccount = token.mintAddress != WRAPPED_SOL_MINT && addressInteractor.findSplTokenAddressData(
             mintAddress = token.mintAddress,
-            destinationAddress = recipient.toPublicKey()
+            destinationAddress = recipient.toPublicKey(),
+            useCache = useCache
         ).shouldCreateAccount
 
         val expectedFee = FeeAmount(
