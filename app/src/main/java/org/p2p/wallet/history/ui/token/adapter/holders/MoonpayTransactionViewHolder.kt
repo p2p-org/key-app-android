@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.ui.token.adapter.holders
 
+import androidx.core.view.isVisible
 import android.content.res.ColorStateList
 import android.view.ViewGroup
 import org.p2p.wallet.R
@@ -27,16 +28,28 @@ class MoonpayTransactionViewHolder(
     }
 
     private fun ItemHistoryMoonpayTransactionBinding.renderStatusIcon(item: HistoryItem.MoonpayTransactionItem) {
+        val iconRes: Int
         val backgroundRes: Int
         val iconColor: Int
-        if (item.status == MoonpaySellTransaction.SellTransactionStatus.FAILED) {
-            backgroundRes = org.p2p.uikit.R.drawable.bg_rounded_solid_rose20_24
-            iconColor = R.color.icons_rose
-        } else {
-            backgroundRes = org.p2p.uikit.R.drawable.bg_rounded_solid_rain_24
-            iconColor = R.color.icons_night
+        when (item.status) {
+            MoonpaySellTransaction.SellTransactionStatus.FAILED -> {
+                iconRes = R.drawable.ic_alert_rounded
+                backgroundRes = org.p2p.uikit.R.drawable.bg_rounded_solid_rose20_24
+                iconColor = R.color.icons_rose
+            }
+            MoonpaySellTransaction.SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+                iconRes = R.drawable.ic_alert_rounded
+                backgroundRes = org.p2p.uikit.R.drawable.bg_rounded_solid_rain_24
+                iconColor = R.color.icons_night
+            }
+            else -> {
+                iconRes = R.drawable.ic_action_schedule_filled
+                backgroundRes = org.p2p.uikit.R.drawable.bg_rounded_solid_rain_24
+                iconColor = R.color.icons_night
+            }
         }
 
+        imageViewTransactionStatusIcon.setImageResource(iconRes)
         imageViewTransactionStatusIcon.setBackgroundResource(backgroundRes)
         imageViewTransactionStatusIcon.imageTintList = ColorStateList.valueOf(getColor(iconColor))
     }
@@ -81,9 +94,6 @@ class MoonpayTransactionViewHolder(
             R.string.transaction_history_moonpay_amount_usd,
             item.amountInUsd
         )
-        binding.layoutTransactionDetails.totalTextView.text = binding.getString(
-            R.string.transaction_history_moonpay_amount_sol,
-            item.amountInSol
-        )
+        binding.layoutTransactionDetails.totalTextView.isVisible = false // hide SOL amount
     }
 }
