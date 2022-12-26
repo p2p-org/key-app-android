@@ -6,7 +6,9 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
+import org.p2p.core.common.TextContainer
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
@@ -85,6 +87,10 @@ abstract class BaseMvpActivity<V : MvpView, P : MvpPresenter<V>> : AppCompatActi
                 it.setIcon(icon)
             }
         }
+    }
+
+    override fun showToast(message: TextContainer) {
+        toast(message.getString(this))
     }
 
     override fun showUiKitSnackBar(
