@@ -20,6 +20,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonValidator
 import org.p2p.wallet.send.interactor.SendInteractor
@@ -92,8 +93,15 @@ class NewSendPresenter(
             view.setMainAmountLabel(mainSymbol)
         }
 
-        feeRelayerManager.onStateUpdated = { newState -> handleFeeRelayerStateUpdate(newState, view) }
-        feeRelayerManager.onFeeLoading = { isLoading -> view.showFeeViewLoading(isLoading = isLoading) }
+        feeRelayerManager.onStateUpdated = { newState ->
+            handleFeeRelayerStateUpdate(newState, view)
+        }
+        feeRelayerManager.onFeeLoading = { loadingState ->
+            when (loadingState) {
+                is FeeLoadingState.Instant -> view.showFeeViewLoading(isLoading = loadingState.isLoading)
+                is FeeLoadingState.Delayed -> view.showDelayedFeeViewLoading(isLoading = loadingState.isLoading)
+            }
+        }
 
         if (token != null) {
             restoreSelectedToken(view, token!!)
@@ -189,7 +197,6 @@ class NewSendPresenter(
         solToken: Token.Active
     ) {
         view.setFeeLabel(resources.getString(R.string.send_fees))
-        view.showFeeViewLoading(isLoading = true)
         view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
 
         feeRelayerManager.initialize(initialToken, solToken, recipientAddress)
@@ -200,7 +207,6 @@ class NewSendPresenter(
             useCache = false
         )
 
-        view.showFeeViewLoading(isLoading = false)
         updateButton(initialToken, feeRelayerManager.getState())
     }
 
