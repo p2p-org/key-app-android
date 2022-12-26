@@ -49,7 +49,7 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     }
 
     @Parcelize
-    data class InvalidResult(
+    data class InvalidResult constructor(
         override val addressState: AddressState,
         val errorMessage: String,
         val tokenData: TokenData? = null,

@@ -38,37 +38,40 @@ jobs:
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
 
-  android-unit-tests:
-    name: "Run unit tests"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: "Init project"
-        uses: ./.github/actions/setup-project
-        with:
-          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
-          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
-          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
-          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-
-      - name: Run unit tests
-        run: ./gradlew testDebug
+# TODO: Since lot of tests are not actual and we have lot of builds, commenting tests job
+# TODO: Will be uncommented when unit tests will reach at least 10% of all code in app module
+# TODO: For release builds unit tests are turned on
+#  android-unit-tests:
+#    name: "Run unit tests"
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - name: "Init project"
+#        uses: ./.github/actions/setup-project
+#        with:
+#          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+#          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+#          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+#          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+#          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+#          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+#          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+#          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
+#          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+#          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+#          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
+#          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
+#          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
+#          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+#          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
+#          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+#          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+#          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+#          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+#
+#      - name: Run unit tests
+#        run: ./gradlew testDebug
 
   android-build-artifacts:
     name: "Run build feature artifacts"
