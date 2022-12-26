@@ -7,7 +7,6 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.glide.GlideManager

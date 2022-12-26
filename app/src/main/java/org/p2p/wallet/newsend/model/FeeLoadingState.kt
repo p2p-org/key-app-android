@@ -13,12 +13,12 @@ sealed interface FeeLoadingState {
     data class Delayed(val isLoading: Boolean) : FeeLoadingState
     data class Instant(val isLoading: Boolean) : FeeLoadingState
 
-   companion object {
-       operator fun invoke(isLoading: Boolean, isDelayed: Boolean): FeeLoadingState =
-           if (isDelayed) {
-               Delayed(isLoading)
-           } else {
-               Instant(isLoading)
-           }
-   }
+    companion object {
+        operator fun invoke(isLoading: Boolean, isDelayed: Boolean): FeeLoadingState =
+            if (isDelayed) {
+                Delayed(isLoading)
+            } else {
+                Instant(isLoading)
+            }
+    }
 }
