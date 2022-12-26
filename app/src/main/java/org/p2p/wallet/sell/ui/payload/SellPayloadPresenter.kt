@@ -16,6 +16,7 @@ import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
@@ -74,17 +75,21 @@ class SellPayloadPresenter(
         if (userTransactionInProcess != null) {
             // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
             val amounts = userTransactionInProcess.amounts
+
             view?.navigateToSellLock(
-                solAmount = amounts.tokenAmount,
-                usdAmount = amounts.usdAmount.toPlainString(),
-                moonpayAddress = tokenKeyProvider.publicKey.toBase58Instance()
+                SellTransactionDetails(
+                    userTransactionInProcess.status,
+                    amounts.tokenAmount.formatTokenForMoonpay(),
+                    amounts.usdAmount.formatUsd(),
+                    Constants.REN_BTC_DEVNET_MINT // replace with actual address later
+                )
             )
         }
     }
 
     private suspend fun getUserTransactionInProcess(): MoonpaySellTransaction? {
         val userTransactions = sellInteractor.loadUserSellTransactions()
-        return userTransactions.find { it.status == MoonpaySellTransaction.TransactionStatus.WAITING_FOR_DEPOSIT }
+        return userTransactions.find { it.status == MoonpaySellTransaction.SellTransactionStatus.WAITING_FOR_DEPOSIT }
     }
 
     private suspend fun loadCurrencies() {
