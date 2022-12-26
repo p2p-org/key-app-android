@@ -6,5 +6,7 @@ import org.p2p.wallet.common.mvp.MvpView
 interface SellTransactionDetailsContract {
     interface View : MvpView
 
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun removeFromHistory()
+    }
 }

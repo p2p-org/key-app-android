@@ -33,7 +33,7 @@ class MoonpaySellRepositoryMapper {
                     transactionId = transactionId,
                     createdAt = createdAt,
                     updatedAt = updatedAt,
-                    status = MoonpaySellTransaction.TransactionStatus.fromString(status),
+                    status = MoonpaySellTransaction.SellTransactionStatus.fromString(status),
                     amounts = amounts,
                     accountId = accountId,
                     customerId = customerId,

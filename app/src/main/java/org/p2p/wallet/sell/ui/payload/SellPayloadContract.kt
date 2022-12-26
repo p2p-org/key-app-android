@@ -3,7 +3,7 @@ package org.p2p.wallet.sell.ui.payload
 import androidx.annotation.ColorRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
 import java.math.BigDecimal
 
 interface SellPayloadContract {
@@ -30,7 +30,7 @@ interface SellPayloadContract {
         fun showAvailableSolToSell(totalAmount: BigDecimal)
         fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String)
         fun showMoonpayWidget(url: String)
-        fun navigateToSellLock(solAmount: BigDecimal, usdAmount: String, moonpayAddress: Base58String)
+        fun navigateToSellLock(details: SellTransactionDetails)
         fun navigateToErrorScreen()
         fun showNotEnoughMoney(minAmount: BigDecimal)
         fun updateViewState(newState: ViewState)

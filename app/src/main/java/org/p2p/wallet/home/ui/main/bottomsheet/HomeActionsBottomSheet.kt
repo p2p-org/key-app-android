@@ -48,6 +48,11 @@ class HomeActionsBottomSheet :
 
     private val binding: DialogHomeActionsBinding by viewBinding()
 
+    override fun onStart() {
+        super.onStart()
+        expandToFitAllContent()
+    }
+
     override fun setupHomeActions(isSellFeatureEnabled: Boolean) {
         with(binding) {
             if (isSellFeatureEnabled) {
