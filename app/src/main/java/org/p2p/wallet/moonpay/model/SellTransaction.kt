@@ -1,0 +1,67 @@
+package org.p2p.wallet.moonpay.model
+
+import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
+import org.p2p.wallet.utils.Base58String
+import java.math.BigDecimal
+
+sealed class SellTransaction(
+    val status: SellTransactionStatus
+) {
+    data class SellTransactionMetadata(
+        val createdAt: String,
+        val updatedAt: String,
+        val accountId: String,
+        val customerId: String,
+        val bankAccountId: String,
+        val externalTransactionId: String?,
+        val externalCustomerId: String?,
+        val countryAbbreviation: String,
+        val stateAbbreviation: String?
+    )
+
+    abstract val metadata: SellTransactionMetadata
+    abstract val transactionId: String
+    abstract val amounts: SellTransactionAmounts
+    abstract val userAddress: Base58String
+    abstract val selectedFiat: SellTransactionFiatCurrency
+
+    fun getFiatAmount(): BigDecimal = when (selectedFiat) {
+        SellTransactionFiatCurrency.EUR -> amounts.eurAmount
+        SellTransactionFiatCurrency.USD -> amounts.usdAmount
+        SellTransactionFiatCurrency.GBP -> amounts.gbpAmount
+    }
+
+    data class WaitingForDepositTransaction(
+        override val metadata: SellTransactionMetadata,
+        override val transactionId: String,
+        override val amounts: SellTransactionAmounts,
+        override val userAddress: Base58String,
+        override val selectedFiat: SellTransactionFiatCurrency,
+        val moonpayDepositWalletAddress: Base58String
+    ) : SellTransaction(SellTransactionStatus.WAITING_FOR_DEPOSIT)
+
+    data class PendingTransaction(
+        override val metadata: SellTransactionMetadata,
+        override val transactionId: String,
+        override val amounts: SellTransactionAmounts,
+        override val selectedFiat: SellTransactionFiatCurrency,
+        override val userAddress: Base58String,
+    ) : SellTransaction(SellTransactionStatus.PENDING)
+
+    data class CompletedTransaction(
+        override val metadata: SellTransactionMetadata,
+        override val transactionId: String,
+        override val amounts: SellTransactionAmounts,
+        override val selectedFiat: SellTransactionFiatCurrency,
+        override val userAddress: Base58String,
+    ) : SellTransaction(SellTransactionStatus.COMPLETED)
+
+    data class FailedTransaction(
+        override val metadata: SellTransactionMetadata,
+        override val transactionId: String,
+        override val amounts: SellTransactionAmounts,
+        override val selectedFiat: SellTransactionFiatCurrency,
+        override val userAddress: Base58String,
+    ) : SellTransaction(SellTransactionStatus.FAILED)
+}

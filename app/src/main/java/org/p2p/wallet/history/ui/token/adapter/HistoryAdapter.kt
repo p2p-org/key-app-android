@@ -22,7 +22,7 @@ import org.p2p.wallet.history.ui.token.adapter.holders.MoonpayTransactionViewHol
 import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
-import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val HISTORY_EMPTY_VIEW_TYPE = 2
@@ -35,7 +35,7 @@ private const val TRANSACTION_MOONPAY_VIEW_TYPE = 7
 class HistoryAdapter(
     private val glideManager: GlideManager,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
-    private val onMoonpayTransactionClicked: (SellTransactionDetails) -> Unit,
+    private val onMoonpayTransactionClicked: (SellTransactionViewDetails) -> Unit,
     private val onRetryClicked: () -> Unit
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
 

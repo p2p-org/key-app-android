@@ -1,6 +1,7 @@
 package org.p2p.wallet.history
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -40,18 +41,7 @@ object HistoryModule : InjectionModule {
                 dispatchers = get()
             )
         }
-        factory {
-            HistoryInteractor(
-                rpcAccountRepository = get(),
-                transactionsLocalRepository = get(),
-                tokenKeyProvider = get(),
-                historyTransactionMapper = get(),
-                userInteractor = get(),
-                transactionsRemoteRepository = get(),
-                rpcSignatureRepository = get(),
-                serviceScope = get()
-            )
-        }
+        factoryOf(::HistoryInteractor)
 
         factory { (token: Token.Active) ->
             TokenHistoryPresenter(
@@ -63,7 +53,7 @@ object HistoryModule : InjectionModule {
                 sendAnalytics = get(),
                 renBtcInteractor = get(),
                 tokenInteractor = get(),
-                sellInteractor = get()
+                sellTransactionsMapper = get()
             )
         } bind TokenHistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
@@ -97,17 +87,6 @@ object HistoryModule : InjectionModule {
             )
         } bind TransactionDetailsRemoteRepository::class
 
-        factory {
-            HistoryPresenter(
-                historyInteractor = get(),
-                renBtcInteractor = get(),
-                receiveAnalytics = get(),
-                swapAnalytics = get(),
-                analyticsInteractor = get(),
-                environmentManager = get(),
-                sendAnalytics = get(),
-                sellInteractor = get()
-            )
-        } bind HistoryContract.Presenter::class
+        factoryOf(::HistoryPresenter) bind HistoryContract.Presenter::class
     }
 }

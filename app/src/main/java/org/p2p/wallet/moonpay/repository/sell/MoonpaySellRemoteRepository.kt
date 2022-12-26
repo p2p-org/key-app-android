@@ -7,9 +7,12 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTransactionDepositWalletResponse
 import org.p2p.wallet.moonpay.model.MoonpaySellError
-import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
+import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
+import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.utils.Base58String
 import timber.log.Timber
 import java.math.BigDecimal
@@ -23,6 +26,7 @@ class MoonpaySellRemoteRepository(
     private val moonpayServerSideApi: MoonpayServerSideApi,
     private val crashLogger: CrashLogger,
     private val mapper: MoonpaySellRepositoryMapper,
+    private val errorMapper: MoonpaySellRepositoryErrorMapper,
     private val dispatchers: CoroutineDispatchers,
 ) : MoonpaySellRepository {
 
@@ -60,18 +64,36 @@ class MoonpaySellRemoteRepository(
     @Throws(MoonpaySellError::class)
     override suspend fun getUserSellTransactions(
         userAddress: Base58String
-    ): List<MoonpaySellTransaction> = doMoonpayRequest {
+    ): List<SellTransaction> = doMoonpayRequest {
+        val response = moonpayServerSideApi.getUserSellTransactions(userAddress.base58Value)
+        val depositWallets = getDepositWalletsForTransactions(response)
+
         mapper.fromNetwork(
-            response = moonpayServerSideApi.getUserSellTransactions(userAddress.base58Value),
-            transactionOwnerAddress = userAddress
+            response = response,
+            depositWallets = depositWallets,
+            selectedFiat = getSellFiatCurrency(),
+            transactionOwnerAddress = userAddress,
         )
     }
+
+    private suspend fun getDepositWalletsForTransactions(
+        transactions: List<MoonpaySellTransactionShortResponse>
+    ): List<MoonpaySellTransactionDepositWalletResponse> =
+        transactions.filter { it.status == SellTransactionStatus.WAITING_FOR_DEPOSIT }
+            .mapNotNull {
+                kotlin.runCatching {
+                    moonpayClientSideApi.getSellTransactionDepositWalletById(
+                        transactionId = it.transactionId,
+                        apiKey = BuildConfig.moonpayKey
+                    )
+                }.getOrNull() // skip if couldn't fetch
+            }
 
     @Throws(MoonpaySellError::class)
     override suspend fun getSellQuoteForToken(
         tokenToSell: Token.Active,
         tokenAmount: BigDecimal,
-        fiat: MoonpaySellFiatCurrency
+        fiat: SellTransactionFiatCurrency
     ): MoonpaySellTokenQuote = doMoonpayRequest {
         mapper.fromNetwork(
             moonpayClientSideApi.getSellQuoteForToken(
@@ -83,9 +105,9 @@ class MoonpaySellRemoteRepository(
         )
     }
 
-    override suspend fun getSellFiatCurrency(): MoonpaySellFiatCurrency =
+    override suspend fun getSellFiatCurrency(): SellTransactionFiatCurrency =
         cachedMoonpayIpFlags?.currentCountryAbbreviation.orEmpty()
-            .let(MoonpaySellFiatCurrency.Companion::getFromCountryAbbreviation)
+            .let(SellTransactionFiatCurrency.Companion::getFromCountryAbbreviation)
 
     override suspend fun cancelSellTransaction(
         transactionId: String
@@ -108,7 +130,7 @@ class MoonpaySellRemoteRepository(
             throw cancelled
         } catch (error: Throwable) {
             Timber.tag(TAG).i(error, "Moonpay request failed")
-            throw mapper.fromNetworkError(error)
+            throw errorMapper.fromNetworkError(error)
         }
     }
 }

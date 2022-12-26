@@ -1,51 +1,96 @@
 package org.p2p.wallet.moonpay.repository.sell
 
-import okio.IOException
-import org.p2p.wallet.infrastructure.network.data.ServerException
-import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellPaymentMethod
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellQuoteResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
-import org.p2p.wallet.moonpay.model.MoonpaySellError
-import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTransactionDepositWalletResponse
+import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.model.SellTransactionAmounts
-import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionResponse
+import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.utils.Base58String
 
 class MoonpaySellRepositoryMapper {
     fun fromNetwork(
-        response: List<MoonpaySellTransactionResponse>,
-        transactionOwnerAddress: Base58String
-    ): List<MoonpaySellTransaction> {
-        return response.map { transactionResponse ->
-            transactionResponse.run {
-                val amounts = SellTransactionAmounts(
-                    tokenAmount = tokenAmount.toBigDecimal(),
-                    feeAmount = (feeAmount ?: 0.0).toBigDecimal(),
-                    usdAmount = usdRate.toBigDecimal(),
-                    eurAmount = eurRate.toBigDecimal(),
-                    gbpAmount = gbpRate.toBigDecimal()
-                )
+        response: List<MoonpaySellTransactionShortResponse>,
+        depositWallets: List<MoonpaySellTransactionDepositWalletResponse>,
+        selectedFiat: SellTransactionFiatCurrency,
+        transactionOwnerAddress: Base58String,
+    ): List<SellTransaction> = response.mapNotNull { transaction ->
+        val amounts = transaction.createAmounts()
+        val metadata = transaction.createMetadata()
 
-                MoonpaySellTransaction(
-                    transactionId = transactionId,
-                    createdAt = createdAt,
-                    updatedAt = updatedAt,
-                    status = MoonpaySellTransaction.SellTransactionStatus.fromString(status),
+        when (transaction.status) {
+            SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+                val moonpayDepositWalletAddress =
+                    depositWallets.firstOrNull { it.transactionId == transaction.transactionId }
+                        ?.depositWallet
+                        ?.walletAddress
+                        ?: return@mapNotNull null // skip those that we can't fetch
+
+                SellTransaction.WaitingForDepositTransaction(
+                    metadata = metadata,
+                    transactionId = transaction.transactionId,
                     amounts = amounts,
-                    accountId = accountId,
-                    customerId = customerId,
-                    bankAccountId = bankAccountId,
-                    externalTransactionId = externalTransactionId,
-                    externalCustomerId = externalTransactionId,
-                    countryAbbreviation = countryAbbreviation,
-                    stateAbbreviation = stateAbbreviation,
-                    userAddress = transactionOwnerAddress
+                    userAddress = transactionOwnerAddress,
+                    selectedFiat = selectedFiat,
+                    moonpayDepositWalletAddress = moonpayDepositWalletAddress
+                )
+            }
+            SellTransactionStatus.PENDING -> {
+                SellTransaction.PendingTransaction(
+                    metadata = metadata,
+                    transactionId = transaction.transactionId,
+                    amounts = amounts,
+                    selectedFiat = selectedFiat,
+                    userAddress = transactionOwnerAddress,
+                )
+            }
+            SellTransactionStatus.COMPLETED -> {
+                SellTransaction.CompletedTransaction(
+                    metadata = metadata,
+                    transactionId = transaction.transactionId,
+                    amounts = amounts,
+                    selectedFiat = selectedFiat,
+                    userAddress = transactionOwnerAddress,
+                )
+            }
+            SellTransactionStatus.FAILED -> {
+                SellTransaction.FailedTransaction(
+                    metadata = metadata,
+                    transactionId = transaction.transactionId,
+                    amounts = amounts,
+                    selectedFiat = selectedFiat,
+                    userAddress = transactionOwnerAddress,
                 )
             }
         }
+    }
+
+    private fun MoonpaySellTransactionShortResponse.createAmounts(): SellTransactionAmounts {
+        return SellTransactionAmounts(
+            tokenAmount = tokenAmount.toBigDecimal(),
+            feeAmount = (feeAmount ?: 0.0).toBigDecimal(),
+            usdAmount = usdRate.toBigDecimal(),
+            eurAmount = eurRate.toBigDecimal(),
+            gbpAmount = gbpRate.toBigDecimal()
+        )
+    }
+
+    private fun MoonpaySellTransactionShortResponse.createMetadata(): SellTransaction.SellTransactionMetadata {
+        return SellTransaction.SellTransactionMetadata(
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+            accountId = accountId,
+            customerId = customerId,
+            bankAccountId = bankAccountId,
+            externalTransactionId = externalTransactionId,
+            externalCustomerId = externalCustomerId,
+            countryAbbreviation = countryAbbreviation,
+            stateAbbreviation = stateAbbreviation
+        )
     }
 
     fun fromNetwork(
@@ -92,40 +137,6 @@ class MoonpaySellRepositoryMapper {
                 feeAmount = feeAmount.toBigDecimal(),
                 fiatEarning = fiatEarning.toBigDecimal()
             )
-        }
-    }
-
-    fun fromNetworkError(error: Throwable): MoonpaySellError {
-        // add more errors if needed
-        return when (error) {
-            is ServerException -> {
-                val moonpayErrorType = error.jsonErrorBody
-                    ?.getAsJsonPrimitive("type")
-                    ?.asString
-
-                val moonpayErrorMessage = error.jsonErrorBody
-                    ?.getAsJsonPrimitive("message")
-                    ?.asString
-                    .orEmpty()
-                when {
-                    moonpayErrorType == MoonpayErrorResponseType.NOT_FOUND_ERROR.stringValue -> {
-                        MoonpaySellError.TokenToSellNotFound(error)
-                    }
-                    moonpayErrorType == MoonpayErrorResponseType.BAD_REQUEST_ERROR.stringValue &&
-                        moonpayErrorMessage.contains("The minimum order amount") -> {
-                        MoonpaySellError.NotEnoughTokenToSell(error)
-                    }
-                    else -> {
-                        MoonpaySellError.UnknownError(error)
-                    }
-                }
-            }
-            is IllegalStateException, is IOException -> {
-                MoonpaySellError.UnknownError(error)
-            }
-            else -> {
-                MoonpaySellError.UnauthorizedRequest(error)
-            }
         }
     }
 }

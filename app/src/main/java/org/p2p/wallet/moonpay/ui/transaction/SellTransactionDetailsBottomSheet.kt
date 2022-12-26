@@ -13,9 +13,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSendTransactionDetailsBinding
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
-import org.p2p.wallet.moonpay.model.MoonpaySellTransaction.SellTransactionStatus
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.newsend.ui.NewSendFragment
-import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
@@ -28,7 +28,6 @@ import org.p2p.wallet.utils.viewbinding.getHtmlString
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
 
 private const val ARG_DETAILS = "ARG_DETAILS"
 
@@ -39,7 +38,7 @@ class SellTransactionDetailsBottomSheet :
     SellTransactionDetailsContract.View {
 
     companion object {
-        fun show(fm: FragmentManager, details: SellTransactionDetails) {
+        fun show(fm: FragmentManager, details: SellTransactionViewDetails) {
             SellTransactionDetailsBottomSheet()
                 .withArgs(ARG_DETAILS to details)
                 .show(fm, SelectTokenBottomSheet::javaClass.name)
@@ -49,7 +48,7 @@ class SellTransactionDetailsBottomSheet :
     override val presenter: SellTransactionDetailsContract.Presenter = SellTransactionDetailsPresenter()
     private val binding: DialogSendTransactionDetailsBinding by viewBinding()
 
-    private val details: SellTransactionDetails by args(ARG_DETAILS)
+    private val details: SellTransactionViewDetails by args(ARG_DETAILS)
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
@@ -123,10 +122,6 @@ class SellTransactionDetailsBottomSheet :
                 bodyIconTint = R.color.icons_rose
                 buttonTitle = getString(R.string.common_try_again)
                 action = SellTransactionDetailsButtonAction.TRY_AGAIN
-            }
-            SellTransactionStatus.UNKNOWN -> {
-                Timber.e(IllegalArgumentException("Can't render unknown transaction"))
-                return
             }
         }
 

@@ -11,6 +11,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.sell.interactor.SellTransactionViewDetailsMapper
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 class HistoryPresenter(
     private val historyInteractor: HistoryInteractor,
     private val sellInteractor: SellInteractor,
+    private val sellTransactionsMapper: SellTransactionViewDetailsMapper,
     private val renBtcInteractor: RenBtcInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
@@ -109,7 +111,7 @@ class HistoryPresenter(
     }
 
     private suspend fun fetchMoonpayTransactions() {
-        val moonpayItems = sellInteractor.loadUserSellTransactionsDetails()
+        val moonpayItems = sellTransactionsMapper.fromDomain(sellInteractor.loadUserSellTransactions())
             .map { HistoryItem.MoonpayTransactionItem(it) }
         moonpayTransactions.clear()
         moonpayTransactions.addAll(moonpayItems)
