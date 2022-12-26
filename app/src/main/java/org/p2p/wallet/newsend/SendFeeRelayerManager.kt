@@ -11,6 +11,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.FeeRelayerState.Failure
 import org.p2p.wallet.newsend.model.FeeRelayerState.ReduceAmount
@@ -34,7 +35,7 @@ class SendFeeRelayerManager(
 ) {
 
     var onStateUpdated: ((FeeRelayerState) -> Unit)? = null
-    var onFeeLoading: ((isLoading: Boolean) -> Unit)? = null
+    var onFeeLoading: ((FeeLoadingState) -> Unit)? = null
 
     private var currentState: FeeRelayerState by Delegates.observable(FeeRelayerState.Idle) { _, oldState, newState ->
         onStateUpdated?.invoke(newState)
@@ -54,9 +55,13 @@ class SendFeeRelayerManager(
         this.recipientAddress = recipientAddress
         this.solToken = solToken
 
+        onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = true))
+
         minRentExemption = sendInteractor.getMinRelayRentExemption()
         feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
         sendInteractor.initialize(initialToken)
+
+        onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
     }
 
     fun getMinRentExemption(): BigInteger = minRentExemption.orZero()
@@ -94,7 +99,7 @@ class SendFeeRelayerManager(
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
 
         try {
-            onFeeLoading?.invoke(true)
+            onFeeLoading?.invoke(FeeLoadingState(isLoading = true, isDelayed = useCache))
             val feeRelayerFee = calculateFeeRelayerFee(
                 sourceToken = sourceToken,
                 feePayerToken = feePayer,
@@ -118,7 +123,7 @@ class SendFeeRelayerManager(
         } catch (e: Throwable) {
             Timber.e(e, "Error during FeeRelayer fee calculation")
         } finally {
-            onFeeLoading?.invoke(false)
+            onFeeLoading?.invoke(FeeLoadingState(isLoading = false, isDelayed = useCache))
         }
     }
 
