@@ -1,23 +1,28 @@
 package org.p2p.wallet.history.ui.token.adapter
 
-import android.annotation.SuppressLint
-import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import android.annotation.SuppressLint
+import android.view.ViewGroup
 import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.common.date.isSameAs
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.model.HistoryItem
+import org.p2p.wallet.history.model.HistoryItem.DateItem
+import org.p2p.wallet.history.model.HistoryItem.Empty
+import org.p2p.wallet.history.model.HistoryItem.MoonpayTransactionItem
+import org.p2p.wallet.history.model.HistoryItem.TransactionItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.EmptyViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.MoonpayTransactionViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
-import org.p2p.wallet.utils.NoOp
+import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val HISTORY_EMPTY_VIEW_TYPE = 2
@@ -25,10 +30,12 @@ private const val HISTORY_DATE_VIEW_TYPE = 3
 private const val PROGRESS_VIEW_TYPE = 4
 private const val ERROR_VIEW_TYPE = 5
 private const val TRANSACTION_SWAP_VIEW_TYPE = 6
+private const val TRANSACTION_MOONPAY_VIEW_TYPE = 7
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
+    private val onMoonpayTransactionClicked: (SellTransactionDetails) -> Unit,
     private val onRetryClicked: () -> Unit
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
 
@@ -36,16 +43,21 @@ class HistoryAdapter(
     private val pagingController = HistoryAdapterPagingController(this)
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setTransactions(newTransactions: List<HistoryTransaction>) {
+    fun setTransactions(
+        newTransactions: List<HistoryTransaction>,
+        newMoonpayTransactions: List<MoonpayTransactionItem>
+    ) {
         // force notifyDataSetChanged on first load
         // to fix jumping into the middle because of DiffUtil
         if (currentItems.isEmpty()) {
+            currentItems += newMoonpayTransactions // goes first
             currentItems += newTransactions.mapToItems()
             notifyDataSetChanged()
         } else {
             val oldItems = ArrayList(currentItems)
             currentItems.clear()
-            currentItems.addAll(newTransactions.mapToItems())
+            currentItems += newMoonpayTransactions // goes first
+            currentItems += newTransactions.mapToItems()
 
             DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
                 .dispatchUpdatesTo(this)
@@ -59,25 +71,28 @@ class HistoryAdapter(
             HISTORY_EMPTY_VIEW_TYPE -> EmptyViewHolder(parent)
             HISTORY_DATE_VIEW_TYPE -> DateViewHolder(parent)
             PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)
+            TRANSACTION_MOONPAY_VIEW_TYPE -> MoonpayTransactionViewHolder(parent, onMoonpayTransactionClicked)
             else -> ErrorViewHolder(parent)
         }
     }
 
     override fun onBindViewHolder(holder: HistoryTransactionViewHolder, position: Int) {
         when (holder) {
-            is TransactionViewHolder -> holder.onBind(currentItems[position] as HistoryItem.TransactionItem)
-            is TransactionSwapViewHolder -> holder.onBind(currentItems[position] as HistoryItem.TransactionItem)
-            is DateViewHolder -> holder.onBind(currentItems[position] as HistoryItem.DateItem)
+            is TransactionViewHolder -> holder.onBind(currentItems[position] as TransactionItem)
+            is TransactionSwapViewHolder -> holder.onBind(currentItems[position] as TransactionItem)
+            is DateViewHolder -> holder.onBind(currentItems[position] as DateItem)
             is ErrorViewHolder -> holder.onBind(pagingController.currentPagingState, onRetryClicked)
-            else -> NoOp
+            is MoonpayTransactionViewHolder -> holder.onBind(currentItems[position] as MoonpayTransactionItem)
+            is EmptyViewHolder -> Unit
+            is ProgressViewHolder -> Unit
         }
     }
 
     override fun getItemId(position: Int): Long {
         return when (val item = currentItems.getOrNull(position)) {
-            is HistoryItem.TransactionItem -> item.transaction.signature.hashCode().toLong()
-            is HistoryItem.DateItem -> item.date.hashCode().toLong()
-            is HistoryItem.Empty -> position.hashCode().toLong()
+            is TransactionItem -> item.transaction.signature.hashCode().toLong()
+            is DateItem -> item.date.hashCode().toLong()
+            is Empty -> position.hashCode().toLong()
             else -> RecyclerView.NO_ID
         }
     }
@@ -85,9 +100,6 @@ class HistoryAdapter(
     override fun getItemViewType(position: Int): Int {
         val preLastItemPosition = itemCount - 1
 
-        // todo: refactor to AdapterDelegate
-        //  and create item list with progress item inside instead of implicitly adding it here
-        //  DISCUSS ON ANDROID MEETING
         val isTransactionItemViewType =
             !pagingController.isPagingRequiresLoadingItem() || position < preLastItemPosition
         val isLoadingItemViewType =
@@ -106,13 +118,14 @@ class HistoryAdapter(
 
     private fun getHistoryItemViewType(position: Int): Int {
         return when (val item = currentItems[position]) {
-            is HistoryItem.DateItem -> HISTORY_DATE_VIEW_TYPE
-            is HistoryItem.TransactionItem -> getTransactionItemViewType(item)
-            is HistoryItem.Empty -> HISTORY_EMPTY_VIEW_TYPE
+            is DateItem -> HISTORY_DATE_VIEW_TYPE
+            is TransactionItem -> getTransactionItemViewType(item)
+            is Empty -> HISTORY_EMPTY_VIEW_TYPE
+            is MoonpayTransactionItem -> TRANSACTION_MOONPAY_VIEW_TYPE
         }
     }
 
-    private fun getTransactionItemViewType(item: HistoryItem.TransactionItem): Int {
+    private fun getTransactionItemViewType(item: TransactionItem): Int {
         return when (item.transaction) {
             is HistoryTransaction.Swap -> TRANSACTION_SWAP_VIEW_TYPE
             else -> TRANSACTION_VIEW_TYPE
@@ -122,12 +135,12 @@ class HistoryAdapter(
     private fun List<HistoryTransaction>.mapToItems(): List<HistoryItem> = flatMapIndexed { i, transaction ->
         val isCurrentAndPreviousTransactionOnSameDay = i > 0 && get(i - 1).date.isSameDayAs(transaction.date)
         if (isCurrentAndPreviousTransactionOnSameDay) {
-            listOf(HistoryItem.TransactionItem(transaction))
+            listOf(TransactionItem(transaction))
         } else {
             listOf(
-                HistoryItem.DateItem(transaction.date),
+                DateItem(transaction.date),
                 // todo map items according to state
-                HistoryItem.TransactionItem(transaction)
+                TransactionItem(transaction)
             )
         }
     }
@@ -141,9 +154,9 @@ class HistoryAdapter(
             val oldItem = oldList[oldItemPosition]
             val newItem = newList[newItemPosition]
             return when {
-                oldItem is HistoryItem.TransactionItem && newItem is HistoryItem.TransactionItem ->
+                oldItem is TransactionItem && newItem is TransactionItem ->
                     oldItem.transaction.signature == newItem.transaction.signature
-                oldItem is HistoryItem.DateItem && newItem is HistoryItem.DateItem ->
+                oldItem is DateItem && newItem is DateItem ->
                     oldItem.date.isSameAs(newItem.date)
                 else ->
                     oldItem == newItem

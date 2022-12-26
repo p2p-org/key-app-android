@@ -1,24 +1,27 @@
 package org.p2p.wallet.history.ui.history
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class HistoryPresenter(
     private val historyInteractor: HistoryInteractor,
+    private val sellInteractor: SellInteractor,
     private val renBtcInteractor: RenBtcInteractor,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
@@ -33,6 +36,7 @@ class HistoryPresenter(
 
     private var lastTransactionSignature: String? = null
     private var transactions = mutableListOf<HistoryTransaction>()
+    private val moonpayTransactions = mutableListOf<HistoryItem.MoonpayTransactionItem>()
 
     override fun attach(view: HistoryContract.View) {
         super.attach(view)
@@ -46,6 +50,7 @@ class HistoryPresenter(
         lastTransactionSignature = null
         refreshJob?.cancel()
         transactions.clear()
+        moonpayTransactions.clear()
         pagingJob?.cancel()
 
         refreshJob = launch {
@@ -69,8 +74,8 @@ class HistoryPresenter(
     }
 
     override fun loadHistory() {
-        if (transactions.isNotEmpty()) {
-            view?.showHistory(transactions)
+        if (transactions.isNotEmpty() || moonpayTransactions.isNotEmpty()) {
+            view?.showHistory(transactions, moonpayTransactions)
             return
         }
         launch {
@@ -79,17 +84,21 @@ class HistoryPresenter(
         }
     }
 
+    // refactor and make good code in PWN-6386
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
         try {
+            if (sellInteractor.isSellAvailable()) {
+                fetchMoonpayTransactions()
+            }
             val fetchedItems = historyInteractor.loadTransactions(isRefresh)
             transactions.addAll(fetchedItems)
-            view?.showHistory(transactions)
+            view?.showHistory(transactions, moonpayTransactions)
             view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {
             Timber.w(e, "Cancelled history next page load")
         } catch (e: EmptyDataException) {
             if (transactions.isEmpty()) {
-                view?.showHistory(emptyList())
+                view?.showHistory(emptyList(), moonpayTransactions)
                 isPagingEnded = true
             }
             view?.showPagingState(PagingState.Idle)
@@ -97,6 +106,13 @@ class HistoryPresenter(
             view?.showPagingState(PagingState.Error(e))
             Timber.e(e, "Error getting transaction history")
         }
+    }
+
+    private suspend fun fetchMoonpayTransactions() {
+        val moonpayItems = sellInteractor.loadUserSellTransactionsDetails()
+            .map { HistoryItem.MoonpayTransactionItem(it) }
+        moonpayTransactions.clear()
+        moonpayTransactions.addAll(moonpayItems)
     }
 
     override fun onItemClicked(transaction: HistoryTransaction) {

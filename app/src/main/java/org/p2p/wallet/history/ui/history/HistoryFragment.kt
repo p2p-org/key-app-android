@@ -12,11 +12,12 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentHistoryBinding
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
-import org.p2p.wallet.history.ui.token.adapter.HistoryMoonpayAdapter
+import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -37,15 +38,8 @@ class HistoryFragment :
         HistoryAdapter(
             glideManager = glideManager,
             onTransactionClicked = presenter::onItemClicked,
+            onMoonpayTransactionClicked = { SellTransactionDetailsBottomSheet.show(childFragmentManager, it) },
             onRetryClicked = {}
-        )
-    }
-
-    private val historyMoonpayAdapter: HistoryMoonpayAdapter by unsafeLazy {
-        HistoryMoonpayAdapter(
-            onTransactionClicked = {
-                // todo: navigation https://p2pvalidator.atlassian.net/browse/PWN-6386
-            }
         )
     }
 
@@ -63,8 +57,6 @@ class HistoryFragment :
 
             historyRecyclerView.addOnScrollListener(scrollListener)
             historyRecyclerView.attachAdapter(adapter)
-
-            recyclerViewMoonpayTransactions.attachAdapter(historyMoonpayAdapter)
 
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
@@ -89,10 +81,10 @@ class HistoryFragment :
         }
     }
 
-    override fun showHistory(items: List<HistoryTransaction>) {
-        adapter.setTransactions(items)
+    override fun showHistory(items: List<HistoryTransaction>, moonpayItems: List<HistoryItem.MoonpayTransactionItem>) {
+        adapter.setTransactions(items, moonpayItems)
 
-        val isHistoryEmpty = items.isEmpty()
+        val isHistoryEmpty = adapter.isEmpty()
         binding.emptyStateLayout.isVisible = isHistoryEmpty
         binding.historyRecyclerView.isVisible = !isHistoryEmpty
     }
@@ -109,7 +101,7 @@ class HistoryFragment :
                 )
             }
             else -> {
-                Timber.e("Unsupported transaction type: $transaction")
+                Timber.e(IllegalArgumentException("Unsupported transaction type: $transaction"))
             }
         }
     }

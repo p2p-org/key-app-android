@@ -22,12 +22,14 @@ import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
@@ -63,7 +65,8 @@ class TokenHistoryFragment :
         HistoryAdapter(
             glideManager = glideManager,
             onTransactionClicked = presenter::onItemClicked,
-            onRetryClicked = presenter::loadNextHistoryPage
+            onRetryClicked = presenter::loadNextHistoryPage,
+            onMoonpayTransactionClicked = { SellTransactionDetailsBottomSheet.show(childFragmentManager, it) }
         )
     }
 
@@ -168,10 +171,13 @@ class TokenHistoryFragment :
         binding.refreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showHistory(transactions: List<HistoryTransaction>) {
-        historyAdapter.setTransactions(transactions)
+    override fun showHistory(
+        transactions: List<HistoryTransaction>,
+        moonpayTransactionItem: List<HistoryItem.MoonpayTransactionItem>
+    ) {
+        historyAdapter.setTransactions(transactions, moonpayTransactionItem)
 
-        val isEmpty = transactions.isEmpty()
+        val isEmpty = historyAdapter.isEmpty()
         binding.emptyStateLayout.isVisible = isEmpty
         binding.refreshLayout.isVisible = !isEmpty
     }

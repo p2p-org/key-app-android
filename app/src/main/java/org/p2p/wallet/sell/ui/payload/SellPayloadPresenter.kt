@@ -1,6 +1,7 @@
 package org.p2p.wallet.sell.ui.payload
 
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatTokenForMoonpay
 import org.p2p.core.utils.formatUsd
@@ -56,8 +57,9 @@ class SellPayloadPresenter(
         launch {
             try {
                 view.showLoading(isVisible = true)
+                // call order is important!
                 checkForSellLock()
-                userSolBalance = userInteractor.getUserSolToken()?.total.orZero()
+                userSolBalance = BigDecimal.valueOf(4.323245)
                 loadCurrencies()
                 checkForMinAmount()
                 restartLoadSellQuoteJob()
@@ -75,15 +77,13 @@ class SellPayloadPresenter(
         if (userTransactionInProcess != null) {
             // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
             val amounts = userTransactionInProcess.amounts
-
-            view?.navigateToSellLock(
-                SellTransactionDetails(
-                    userTransactionInProcess.status,
-                    amounts.tokenAmount.formatTokenForMoonpay(),
-                    amounts.usdAmount.formatUsd(),
-                    Constants.REN_BTC_DEVNET_MINT // replace with actual address later
-                )
+            val details = SellTransactionDetails(
+                status = userTransactionInProcess.status,
+                formattedSolAmount = amounts.tokenAmount.formatToken(),
+                formattedUsdAmount = userTransactionInProcess.amounts.getAmountFromFiat(currentFiat).formatUsd(),
+                receiverAddress = WRAPPED_SOL_MINT // todo replace with correct address
             )
+            view?.navigateToSellLock(details)
         }
     }
 

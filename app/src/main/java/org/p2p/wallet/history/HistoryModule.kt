@@ -5,6 +5,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
@@ -17,13 +18,12 @@ import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteReposito
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
-import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetPresenter
+import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
-import org.p2p.core.token.Token
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import retrofit2.Retrofit
@@ -62,7 +62,8 @@ object HistoryModule : InjectionModule {
                 analyticsInteractor = get(),
                 sendAnalytics = get(),
                 renBtcInteractor = get(),
-                tokenInteractor = get()
+                tokenInteractor = get(),
+                sellInteractor = get()
             )
         } bind TokenHistoryContract.Presenter::class
         factory { (state: TransactionDetailsLaunchState) ->
@@ -104,7 +105,8 @@ object HistoryModule : InjectionModule {
                 swapAnalytics = get(),
                 analyticsInteractor = get(),
                 environmentManager = get(),
-                sendAnalytics = get()
+                sendAnalytics = get(),
+                sellInteractor = get()
             )
         } bind HistoryContract.Presenter::class
     }
