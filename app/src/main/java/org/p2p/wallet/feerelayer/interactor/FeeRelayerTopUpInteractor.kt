@@ -285,7 +285,7 @@ class FeeRelayerTopUpInteractor(
             pools = topUpPools,
             inputAmount = null,
             minAmountOut = targetAmount,
-            slippage = Slippage.Percent.doubleValue,
+            slippage = Slippage.TopUpSlippage.doubleValue,
             transitTokenMintPubkey = transitTokenMintPubKey,
             userAuthorityAddress = userAuthorityAddress,
         )

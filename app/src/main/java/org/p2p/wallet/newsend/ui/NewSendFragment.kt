@@ -32,9 +32,11 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
+import java.math.BigDecimal
 
 private const val ARG_RECIPIENT = "ARG_RECIPIENT"
 private const val ARG_INITIAL_TOKEN = "ARG_INITIAL_TOKEN"
+private const val ARG_INPUT_AMOUNT = "ARG_INPUT_AMOUNT"
 
 private const val KEY_RESULT_FEE = "KEY_RESULT_FEE"
 private const val KEY_RESULT_FEE_PAYER_TOKENS = "KEY_RESULT_FEE_PAYER_TOKENS"
@@ -47,16 +49,22 @@ class NewSendFragment :
     NewSendContract.View {
 
     companion object {
-        fun create(recipient: SearchResult, initialToken: Token.Active? = null) =
+        fun create(
+            recipient: SearchResult,
+            initialToken: Token.Active? = null,
+            inputAmount: BigDecimal? = null
+        ) =
             NewSendFragment()
                 .withArgs(
                     ARG_RECIPIENT to recipient,
-                    ARG_INITIAL_TOKEN to initialToken
+                    ARG_INITIAL_TOKEN to initialToken,
+                    ARG_INPUT_AMOUNT to inputAmount,
                 )
     }
 
     private val recipient: SearchResult by args(ARG_RECIPIENT)
     private val initialToken: Token.Active? by args(ARG_INITIAL_TOKEN)
+    private val inputAmount: BigDecimal? by args(ARG_INPUT_AMOUNT)
 
     private val binding: FragmentSendNewBinding by viewBinding()
 
@@ -75,7 +83,7 @@ class NewSendFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter.setInitialToken(initialToken)
+        presenter.setInitialData(initialToken, inputAmount)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -156,6 +164,10 @@ class NewSendFragment :
 
     override fun setMaxButtonVisible(isVisible: Boolean) {
         binding.widgetSendDetails.setMaxButtonVisible(isVisible)
+    }
+
+    override fun setInputEnabled(isEnabled: Boolean) {
+        binding.widgetSendDetails.setInputEnabled(isEnabled)
     }
 
     override fun setBottomButtonText(text: TextContainer?) {

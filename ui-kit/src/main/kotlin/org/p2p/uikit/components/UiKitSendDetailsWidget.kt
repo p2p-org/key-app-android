@@ -2,6 +2,7 @@ package org.p2p.uikit.components
 
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
@@ -96,11 +97,15 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun showFeeLoading(isLoading: Boolean) {
         binding.progressBarFees.isVisible = isLoading
-        binding.imageViewFeesInfo.isVisible = !isLoading
+        binding.imageViewFeesInfo.isInvisible = isLoading
     }
 
     fun setAroundValue(aroundValue: String) {
         binding.textViewSecondAmount.text = aroundValue
+    }
+
+    fun setInputEnabled(isEnabled: Boolean) {
+        binding.editTextAmount.isEnabled = isEnabled
     }
 
     fun setMaxButtonVisible(isVisible: Boolean) {
@@ -150,15 +155,15 @@ interface UiKitSendDetailsWidgetContract {
     fun showToken(token: Token.Active)
     fun showAroundValue(value: String)
     fun showSliderCompleteAnimation()
+    fun showFeeViewLoading(isLoading: Boolean)
 
     fun setSwitchLabel(symbol: String)
     fun setInputColor(@ColorRes colorRes: Int)
     fun setMainAmountLabel(symbol: String)
     fun setMaxButtonVisible(isVisible: Boolean)
-
-    fun showFeeViewLoading(isLoading: Boolean)
     fun setFeeLabel(text: String?)
     fun setTokenContainerEnabled(isEnabled: Boolean)
+    fun setInputEnabled(isEnabled: Boolean)
 
     fun restoreSlider()
 }

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="32dp">
+    android:paddingBottom="16dp">
 
     <View
         android:id="@+id/viewPointer"
@@ -24,7 +24,7 @@
         android:gravity="center"
         android:paddingVertical="16dp"
         android:text="@string/common_transaction_details"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
         app:layout_constraintTop_toBottomOf="@id/viewPointer" />
 
     <include
@@ -64,7 +64,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/bg_rain_circle"
-        android:padding="12dp"
+        android:padding="16dp"
         app:cornerRadius="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutTransactionFee"
@@ -138,7 +138,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/bg_rain_circle"
-        android:padding="12dp"
+        android:padding="16dp"
         app:cornerRadius="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -178,8 +178,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_night"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/imageViewIconTotal"
         app:layout_constraintTop_toBottomOf="@id/textViewSubtitleFirstTotal"
@@ -189,6 +192,6 @@
         android:id="@+id/groupTotal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="imageViewIconTotal, textViewTitleTotal, textViewSubtitleFirstTotal, textViewSubtitleSecondTotal" />
+        app:constraint_referenced_ids="imageViewIconTotal, textViewTitleTotal, textViewSubtitleFirstTotal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

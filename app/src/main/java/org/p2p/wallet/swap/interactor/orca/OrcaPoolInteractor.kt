@@ -115,8 +115,8 @@ class OrcaPoolInteractor(
             val inputAmount2 = pair2.getInputAmount(estimatedAmount) ?: BigInteger.ZERO
 
             when {
-                inputAmount1 < inputAmount2 -> 1
-                inputAmount1 > inputAmount2 -> -1
+                inputAmount1 < inputAmount2 -> -1
+                inputAmount1 > inputAmount2 -> 1
                 else -> 0
             }
         }
