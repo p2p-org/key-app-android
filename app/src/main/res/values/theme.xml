@@ -17,7 +17,6 @@
         <item name="windowSplashScreenBackground">@color/lime</item>
         <item name="android:windowBackground">@color/bg_snow</item>
 
-
         <item name="colorAccent">@color/lime</item>
         <item name="colorControlActivated">@color/night</item>
         <item name="colorControlNormal">@color/night</item>
@@ -28,8 +27,8 @@
         <item name="android:windowAnimationStyle">@null</item>
         <!-- fix blue text for come Lollipop devices -->
         <!-- https://stackoverflow.com/questions/45196244/android-textcolor-ignored-in-androidtextappearance-of-the-edittext -->
-        <item name="android:editTextColor">@color/night</item>
-        <item name="android:textColor">@color/night</item>
+        <item name="android:editTextColor">@color/text_night</item>
+        <item name="android:textColor">@color/text_night</item>
         <item name="android:actionMenuTextColor">?colorSecondary</item>
 
         <item name="snackbarStyle">@style/UiKit.Native.Snackbar</item>
