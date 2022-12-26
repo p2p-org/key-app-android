@@ -12,6 +12,7 @@ plugins {
 apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
 apply from: "$project.rootDir/scripts/config.gradle"
+apply from: "$project.rootDir/scripts/signing.gradle"
 
 android {
     compileSdkVersion sdkCompileVersion
@@ -46,24 +47,6 @@ android {
     }
 
     def torusProperties = getTorusProperties()
-
-    signingConfigs {
-
-        debug {
-            storeFile file("p2pwallet_debug.keystore")
-            storePassword "Test2RAMzxGb"
-            keyAlias "p2pwallet"
-            keyPassword "Test2RAMzxGb"
-        }
-
-        release {
-            def signingProperties = getSigningProperties()
-            storeFile rootProject.file('p2pwallet.jks')
-            storePassword signingProperties['keystorePassword']
-            keyAlias signingProperties['keyAlias']
-            keyPassword signingProperties['keyPassword']
-        }
-    }
 
     buildTypes {
         debug {

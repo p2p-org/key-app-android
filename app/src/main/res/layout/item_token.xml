@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    app:dragEdge="right"
     android:layout_height="72dp"
+    app:dragEdge="right"
     app:mode="same_level">
 
     <FrameLayout
@@ -13,17 +13,14 @@
         android:layout_width="88dp"
         android:layout_height="match_parent"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="16dp"
-        android:foreground="?selectableItemBackgroundBorderless">
+        android:layout_marginEnd="16dp">
 
         <ImageView
             android:id="@+id/imageViewHideToken"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
-            android:background="@drawable/bg_circle"
-            android:backgroundTint="@color/bg_night"
-            android:foreground="?attr/selectableItemBackground"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:padding="12dp"
             android:src="@drawable/ic_hide"
             tools:ignore="ContentDescription" />
@@ -110,14 +107,14 @@
                 tools:text="$2,130.78" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <View
             android:id="@+id/viewAlpha"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bg_snow"
-            android:alpha="0"/>
+            android:alpha="0"
+            android:background="@color/bg_snow" />
     </androidx.cardview.widget.CardView>
-
 
 
 </org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout>
