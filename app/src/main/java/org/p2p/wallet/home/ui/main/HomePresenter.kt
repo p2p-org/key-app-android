@@ -267,6 +267,9 @@ class HomePresenter(
                 mintAddress = token.mintAddress,
                 visibility = newVisibility.stringValue
             )
+
+            val updatedTokens = userInteractor.getUserTokens()
+            handleUserTokensLoaded(updatedTokens)
         }
     }
 

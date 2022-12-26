@@ -39,7 +39,6 @@ class UserInteractor(
 
     fun getUserTokensFlow(): Flow<List<Token.Active>> =
         mainLocalRepository.getTokensFlow()
-            .map { it.sortedWith(TokenComparator()) }
 
     suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKENS_VALID_FOR_BUY): Token? =
         getTokensForBuy(availableTokensSymbols).firstOrNull()
@@ -88,22 +87,22 @@ class UserInteractor(
     }
 
     private suspend fun updateLocalTokens(cachedTokens: List<Token.Active>, newTokens: List<Token.Active>) {
-        val newTokensToCache = newTokens.map { newToken ->
-            val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
-            newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
-        }
+        val newTokensToCache = newTokens
+            .map { newToken ->
+                val oldToken = cachedTokens.find { oldToken -> oldToken.publicKey == newToken.publicKey }
+                newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
+            }
+            .sortedWith(TokenComparator())
         mainLocalRepository.clear()
         mainLocalRepository.updateTokens(newTokensToCache)
     }
 
     suspend fun getUserTokens(): List<Token.Active> =
         mainLocalRepository.getUserTokens()
-            .sortedWith(TokenComparator())
 
     suspend fun getNonZeroUserTokens(): List<Token.Active> =
         mainLocalRepository.getUserTokens()
             .filterNot { it.isZero }
-            .sortedWith(TokenComparator())
 
     suspend fun getUserSolToken(): Token.Active? =
         mainLocalRepository.getUserTokens().find { it.isSOL }

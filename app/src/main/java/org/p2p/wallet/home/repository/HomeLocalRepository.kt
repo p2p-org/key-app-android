@@ -5,7 +5,6 @@ import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
 
 interface HomeLocalRepository {
-    suspend fun setTokens(tokens: List<Token.Active>)
     suspend fun updateTokens(tokens: List<Token.Active>)
     suspend fun removeIfExists(publicKey: String, symbol: String)
     fun getTokensFlow(): Flow<List<Token.Active>>
