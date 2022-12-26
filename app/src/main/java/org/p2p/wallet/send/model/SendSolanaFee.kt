@@ -64,7 +64,7 @@ data class SendSolanaFee constructor(
 
     @IgnoredOnParcel
     val accountCreationFeeUsd: String
-        get() = "$accountCreationFeeDecimals $feePayerSymbol ${approxAccountCreationFeeUsd.orEmpty()}"
+        get() = "$accountCreationFeeDecimals $feePayerSymbol ${getApproxAccountCreationFeeUsd().orEmpty()}"
 
     @IgnoredOnParcel
     val summedFeeDecimalsFormatted: String
@@ -74,9 +74,10 @@ data class SendSolanaFee constructor(
     val summedFeeDecimalsUsd: String?
         get() = totalFeeDecimals.toUsd(feePayerToken)?.let { ("(~$$it)") }
 
-    @IgnoredOnParcel
-    val approxAccountCreationFeeUsd: String?
-        get() = accountCreationFeeDecimals.toUsd(feePayerToken)?.let { "(~$$it)" }
+    fun getApproxAccountCreationFeeUsd(withBraces: Boolean = true): String? =
+        accountCreationFeeDecimals.toUsd(feePayerToken)?.let {
+            if (withBraces) "(~$$it)" else "~$$it"
+        }
 
     @IgnoredOnParcel
     val accountCreationFeeDecimals: BigDecimal =

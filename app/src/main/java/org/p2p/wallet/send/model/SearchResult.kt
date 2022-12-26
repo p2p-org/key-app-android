@@ -10,6 +10,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 private const val EMPTY_BALANCE = 0L
+private const val USERNAME_KEY_APP_DOMAIN = ".key"
 
 sealed class SearchResult(open val addressState: AddressState) : Parcelable {
 
@@ -35,12 +36,16 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     }
 
     @Parcelize
-    data class UsernameFound(
+    data class UsernameFound constructor(
         override val addressState: AddressState,
         val username: String,
         val date: Date? = null
     ) : SearchResult(addressState) {
-        fun getFormattedUsername(): String = "@$username"
+        fun getFormattedUsername(): String = if (username.endsWith(USERNAME_KEY_APP_DOMAIN)) {
+            "@$username"
+        } else {
+            username
+        }
     }
 
     @Parcelize

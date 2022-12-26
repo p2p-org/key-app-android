@@ -95,7 +95,6 @@ class NewSendFragment :
             maxButtonClickListener = presenter::onMaxButtonClicked
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
-            focusAndShowKeyboard()
         }
         binding.sliderSend.onSlideCompleteListener = { presenter.checkInternetConnection() }
         binding.sliderSend.onSlideCollapseCompleted = { presenter.send() }
@@ -249,7 +248,7 @@ class NewSendFragment :
     ) {
         val target = SendNoAccountFragment.create(
             tokenSymbol = fee.feePayerSymbol,
-            approximateFeeUsd = fee.approxAccountCreationFeeUsd.orEmpty(),
+            approximateFeeUsd = fee.getApproxAccountCreationFeeUsd(withBraces = false).orEmpty(),
             alternativeFeePayerTokens = alternativeFeePayerTokens,
             requestKey = KEY_REQUEST_SEND,
             resultKey = KEY_RESULT_NEW_FEE_PAYER
