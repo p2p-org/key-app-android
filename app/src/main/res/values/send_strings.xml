@@ -25,8 +25,9 @@
     <string name="search_your_token_description">Your %s address</string>
 
     <!--QrCode-->
-    <string name="qr_no_address">❌ There\'s no address in this QR code. Try another one</string>
-    <string name="qr_common_error">❌ This QR code is not recognized. Try again</string>
+    <string name="qr_address_found">✅ The address %s is recognized</string>
+    <string name="qr_no_address">There\'s no address in this QR code. Try another one</string>
+    <string name="qr_common_error">This QR code is not recognized. Try again</string>
 
     <string name="send_pick_token_title">Pick a token</string>
     <string name="send_pick_token_search_hint">Token name</string>
