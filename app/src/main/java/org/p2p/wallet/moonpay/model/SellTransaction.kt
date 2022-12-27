@@ -8,18 +8,6 @@ import java.math.BigDecimal
 sealed class SellTransaction(
     val status: SellTransactionStatus
 ) {
-    data class SellTransactionMetadata(
-        val createdAt: String,
-        val updatedAt: String,
-        val accountId: String,
-        val customerId: String,
-        val bankAccountId: String,
-        val externalTransactionId: String?,
-        val externalCustomerId: String?,
-        val countryAbbreviation: String,
-        val stateAbbreviation: String?
-    )
-
     abstract val metadata: SellTransactionMetadata
     abstract val transactionId: String
     abstract val amounts: SellTransactionAmounts

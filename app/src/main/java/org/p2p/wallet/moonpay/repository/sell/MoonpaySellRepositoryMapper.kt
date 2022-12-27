@@ -8,6 +8,7 @@ import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTransactionDepositWalletResponse
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.model.SellTransactionAmounts
+import org.p2p.wallet.moonpay.model.SellTransactionMetadata
 import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.utils.Base58String
@@ -79,8 +80,8 @@ class MoonpaySellRepositoryMapper {
         )
     }
 
-    private fun MoonpaySellTransactionShortResponse.createMetadata(): SellTransaction.SellTransactionMetadata {
-        return SellTransaction.SellTransactionMetadata(
+    private fun MoonpaySellTransactionShortResponse.createMetadata(): SellTransactionMetadata {
+        return SellTransactionMetadata(
             createdAt = createdAt,
             updatedAt = updatedAt,
             accountId = accountId,

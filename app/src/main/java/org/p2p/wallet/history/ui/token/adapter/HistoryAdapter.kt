@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.common.date.isSameAs
-import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryItem.DateItem
@@ -22,6 +21,8 @@ import org.p2p.wallet.history.ui.token.adapter.holders.MoonpayTransactionViewHol
 import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
+import org.p2p.wallet.moonpay.model.SellTransaction
+import org.p2p.wallet.sell.interactor.HistoryItemMapper
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 private const val TRANSACTION_VIEW_TYPE = 1
@@ -34,9 +35,10 @@ private const val TRANSACTION_MOONPAY_VIEW_TYPE = 7
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
+    private val historyItemMapper: HistoryItemMapper,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
     private val onMoonpayTransactionClicked: (SellTransactionViewDetails) -> Unit,
-    private val onRetryClicked: () -> Unit
+    private val onRetryClicked: () -> Unit,
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
 
     private val currentItems = mutableListOf<HistoryItem>()
@@ -45,19 +47,19 @@ class HistoryAdapter(
     @SuppressLint("NotifyDataSetChanged")
     fun setTransactions(
         newTransactions: List<HistoryTransaction>,
-        newMoonpayTransactions: List<MoonpayTransactionItem>
+        newMoonpayTransactions: List<SellTransaction>
     ) {
         // force notifyDataSetChanged on first load
         // to fix jumping into the middle because of DiffUtil
         if (currentItems.isEmpty()) {
-            currentItems += newMoonpayTransactions // goes first
-            currentItems += newTransactions.mapToItems()
+            currentItems += historyItemMapper.fromDomainSell(newMoonpayTransactions) // goes first
+            currentItems += historyItemMapper.fromDomainBlockchain(newTransactions)
             notifyDataSetChanged()
         } else {
             val oldItems = ArrayList(currentItems)
             currentItems.clear()
-            currentItems += newMoonpayTransactions // goes first
-            currentItems += newTransactions.mapToItems()
+            currentItems += historyItemMapper.fromDomainSell(newMoonpayTransactions) // goes first
+            currentItems += historyItemMapper.fromDomainBlockchain(newTransactions)
 
             DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
                 .dispatchUpdatesTo(this)
@@ -129,19 +131,6 @@ class HistoryAdapter(
         return when (item.transaction) {
             is HistoryTransaction.Swap -> TRANSACTION_SWAP_VIEW_TYPE
             else -> TRANSACTION_VIEW_TYPE
-        }
-    }
-
-    private fun List<HistoryTransaction>.mapToItems(): List<HistoryItem> = flatMapIndexed { i, transaction ->
-        val isCurrentAndPreviousTransactionOnSameDay = i > 0 && get(i - 1).date.isSameDayAs(transaction.date)
-        if (isCurrentAndPreviousTransactionOnSameDay) {
-            listOf(TransactionItem(transaction))
-        } else {
-            listOf(
-                DateItem(transaction.date),
-                // todo map items according to state
-                TransactionItem(transaction)
-            )
         }
     }
 

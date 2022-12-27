@@ -6,13 +6,12 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
+import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
-import org.p2p.wallet.sell.interactor.SellTransactionViewDetailsMapper
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import timber.log.Timber
@@ -30,11 +29,10 @@ class TokenHistoryPresenter(
     private val sendAnalytics: SendAnalytics,
     private val renBtcInteractor: RenBtcInteractor,
     private val tokenInteractor: TokenInteractor,
-    private val sellTransactionsMapper: SellTransactionViewDetailsMapper
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     private val transactions = mutableListOf<HistoryTransaction>()
-    private val moonpayTransactions = mutableListOf<HistoryItem.MoonpayTransactionItem>()
+    private val moonpayTransactions = mutableListOf<SellTransaction>()
 
     override fun attach(view: TokenHistoryContract.View) {
         super.attach(view)
@@ -91,9 +89,8 @@ class TokenHistoryPresenter(
             }
             val fetchedItems = historyInteractor.loadTransactions(token.publicKey, isRefresh)
             if (token.isSOL) {
+                val sellTransactions = historyInteractor.loadSellTransactions()
                 moonpayTransactions.clear()
-                val sellTransactions = sellTransactionsMapper.fromDomain(historyInteractor.loadSellTransactions())
-                    .map(HistoryItem::MoonpayTransactionItem)
                 moonpayTransactions.addAll(sellTransactions)
             }
             transactions.addAll(fetchedItems)

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.glide.GlideManager
@@ -22,11 +23,11 @@ import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
 import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
+import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -64,6 +65,7 @@ class TokenHistoryFragment :
     private val historyAdapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             glideManager = glideManager,
+            historyItemMapper = get(),
             onTransactionClicked = presenter::onItemClicked,
             onRetryClicked = presenter::loadNextHistoryPage,
             onMoonpayTransactionClicked = { SellTransactionDetailsBottomSheet.show(childFragmentManager, it) }
@@ -171,11 +173,8 @@ class TokenHistoryFragment :
         binding.refreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showHistory(
-        transactions: List<HistoryTransaction>,
-        moonpayTransactionItem: List<HistoryItem.MoonpayTransactionItem>
-    ) {
-        historyAdapter.setTransactions(transactions, moonpayTransactionItem)
+    override fun showHistory(transactions: List<HistoryTransaction>, sellTransactions: List<SellTransaction>) {
+        historyAdapter.setTransactions(transactions, sellTransactions)
 
         val isEmpty = historyAdapter.isEmpty()
         binding.emptyStateLayout.isVisible = isEmpty
