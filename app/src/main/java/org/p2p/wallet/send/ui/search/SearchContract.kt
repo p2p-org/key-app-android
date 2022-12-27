@@ -5,6 +5,7 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.send.model.SearchResult
 
+@Deprecated("Will be removed, old design flow")
 interface SearchContract {
 
     interface View : MvpView {

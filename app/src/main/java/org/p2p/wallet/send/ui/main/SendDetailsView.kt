@@ -18,7 +18,7 @@ import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.withTextOrGone
 
-// TODO: Make it simpler
+@Deprecated("Will be removed, old design flow")
 class SendDetailsView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

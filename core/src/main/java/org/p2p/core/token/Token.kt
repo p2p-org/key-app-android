@@ -102,7 +102,7 @@ sealed class Token constructor(
     }
 
     @Parcelize
-    data class Other(
+    data class Other constructor(
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -130,6 +130,10 @@ sealed class Token constructor(
     @IgnoredOnParcel
     val isSOL: Boolean
         get() = mintAddress == WRAPPED_SOL_MINT
+
+    @IgnoredOnParcel
+    val isSpl: Boolean
+        get() = mintAddress != WRAPPED_SOL_MINT
 
     @IgnoredOnParcel
     val isRenBTC: Boolean

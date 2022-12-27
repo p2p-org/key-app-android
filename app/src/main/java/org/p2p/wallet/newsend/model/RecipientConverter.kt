@@ -12,7 +12,7 @@ object RecipientConverter {
     fun fromDatabase(
         entity: RecipientEntity
     ): SearchResult {
-        return if (entity.username.isNullOrEmpty()) SearchResult.AddressOnly(
+        return if (entity.username.isNullOrEmpty()) SearchResult.AddressFound(
             addressState = AddressState(entity.address),
             date = Date(entity.dateTimestamp)
         ) else SearchResult.UsernameFound(
@@ -30,7 +30,7 @@ object RecipientConverter {
                 nickname = searchResult.username
                 dateTimestamp = newDate.time
             }
-            is SearchResult.AddressOnly -> {
+            is SearchResult.AddressFound -> {
                 nickname = null
                 dateTimestamp = newDate.time
             }

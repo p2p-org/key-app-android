@@ -1,8 +1,5 @@
 package org.p2p.wallet.send.ui.main
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.formatToken
@@ -43,7 +40,6 @@ import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.FeePayerState
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
 import org.p2p.wallet.send.model.SendButton
@@ -60,7 +56,6 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toPublicKey
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
@@ -70,7 +65,11 @@ import java.math.RoundingMode
 import java.util.Locale
 import java.util.UUID
 import kotlin.properties.Delegates
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
+@Deprecated("Will be removed, old design flow")
 class SendPresenter(
     private val sendInteractor: SendInteractor,
     private val addressInteractor: TransactionAddressInteractor,
@@ -160,8 +159,7 @@ class SendPresenter(
     private fun handleTargetResult(validatedResult: SearchResult?) {
         when (validatedResult) {
             is SearchResult.UsernameFound -> handleFullResult(validatedResult)
-            is SearchResult.AddressOnly -> handleAddressOnlyResult(validatedResult)
-            is SearchResult.InvalidAddress -> handleWrongResult(validatedResult)
+            is SearchResult.AddressFound -> handleAddressOnlyResult(validatedResult)
             else -> handleIdleTarget()
         }
     }
@@ -175,7 +173,7 @@ class SendPresenter(
         return if (isValid) {
             result
         } else {
-            SearchResult.InvalidAddress(AddressState(address))
+            null
         }
     }
 
@@ -194,7 +192,7 @@ class SendPresenter(
                     SearchTarget.Validation.BTC_ADDRESS -> {
                         setBitcoinTargetResult(target.value)
                     }
-                    SearchTarget.Validation.SOL_ADDRESS -> {
+                    SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> {
                         searchBySolAddress(target.value)
                     }
                     SearchTarget.Validation.EMPTY -> {
@@ -391,15 +389,15 @@ class SendPresenter(
         checkAddress(result.addressState.address)
     }
 
-    private fun handleAddressOnlyResult(result: SearchResult.AddressOnly) {
+    private fun handleAddressOnlyResult(result: SearchResult.AddressFound) {
         view?.showAddressOnlyTarget(result.addressState.address)
         checkAddress(result.addressState.address)
     }
 
-    private fun handleWrongResult(result: SearchResult.InvalidAddress) {
-        view?.showWrongAddressTarget(result.addressState.address.cutEnd())
-        view?.hideAccountFeeView()
-    }
+//    private fun handleWrongResult(result: SearchResult.InvalidAddress) {
+//        view?.showWrongAddressTarget(result.addressState.address.cutEnd())
+//        view?.hideAccountFeeView()
+//    }
 
     private fun handleIdleTarget() {
         view?.showIdleTarget()
@@ -799,8 +797,8 @@ class SendPresenter(
 
     private fun setBitcoinTargetResult(address: String) {
         if (token.isRenBTC) {
-            val addressState = AddressState(address, NetworkType.BITCOIN)
-            val result = SearchResult.AddressOnly(addressState)
+            val addressState = AddressState(address)
+            val result = SearchResult.AddressFound(addressState)
             setTargetResult(result)
         } else {
             view?.showWrongAddressTarget(address)
@@ -814,11 +812,8 @@ class SendPresenter(
             return
         }
 
-        val results = searchInteractor.searchByAddress(address.toBase58Instance())
-        if (results.isEmpty()) return
-
-        val first = results.first()
-        setTargetResult(first)
+        val result = searchInteractor.searchByAddress(address)
+        setTargetResult(result)
         sendAnalytics.isSendTargetUsername = false
     }
 

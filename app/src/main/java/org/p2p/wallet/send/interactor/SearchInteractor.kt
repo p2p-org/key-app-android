@@ -1,37 +1,26 @@
 package org.p2p.wallet.send.interactor
 
 import org.p2p.core.token.Token
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.username.repository.UsernameRepository
-import org.p2p.wallet.common.ResourcesProvider
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
-import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.Base58String
 
 class SearchInteractor(
     private val usernameRepository: UsernameRepository,
     private val userInteractor: UserInteractor,
     private val transactionAddressInteractor: TransactionAddressInteractor,
-    private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val tokenKeyProvider: TokenKeyProvider,
-    private val resourcesProvider: ResourcesProvider
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     suspend fun searchByName(username: String): List<SearchResult> {
         val usernames = usernameRepository.findUsernameDetailsByUsername(username)
         return usernames.map { usernameDetails ->
             val address = usernameDetails.ownerAddress.base58Value
-            if (isOwnPublicKey(address)) {
-                SearchResult.InvalidResult(
-                    addressState = AddressState(address = address),
-                    errorMessage = resourcesProvider.getString(R.string.search_yourself_error),
-                    description = resourcesProvider.getString(R.string.search_yourself_description),
-                )
+            if (isOwnAddress(address)) {
+                SearchResult.OwnAddressError(address)
             } else {
                 SearchResult.UsernameFound(
                     addressState = AddressState(address = address),
@@ -41,70 +30,31 @@ class SearchInteractor(
         }
     }
 
-    // todo: refactor this method. too complex
-    suspend fun searchByAddress(address: Base58String, sourceToken: Token.Active? = null): List<SearchResult> {
-        val tokenData = transactionAddressInteractor.getTokenDataIfDirect(address)
-        val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
-        val hasNoTokensToSend = tokenData != null && userToken == null
-        val relayInfo = feeRelayerAccountInteractor.getRelayInfo()
-        val userTokens = userInteractor.getUserTokens()
-        val hasNotEnoughFunds = !userTokens.any { it.hasFundsForSend(relayInfo) }
-        val isOwnAddress = isOwnPublicKey(address.base58Value)
-        val isOwnToken = userToken?.publicKey == address.base58Value
-        val addressState = AddressState(address.base58Value)
-        val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
+    suspend fun searchByAddress(
+        address: String,
+        sourceToken: Token.Active? = null
+    ): SearchResult {
+        if (isOwnAddress(address)) {
+            return SearchResult.OwnAddressError(address)
+        }
 
-        return listOf(
-            when {
-                isOwnAddress || isOwnToken -> SearchResult.InvalidResult(
-                    addressState = addressState,
-                    errorMessage = resourcesProvider.getString(
-                        R.string.search_yourself_error
-                    ),
-                    tokenData = tokenData,
-                    description = if (isOwnAddress) resourcesProvider.getString(
-                        R.string.search_yourself_description
-                    ) else resourcesProvider.getString(
-                        R.string.search_your_token_description,
-                        tokenData?.symbol.orEmpty()
-                    ),
-                )
-                hasNoTokensToSend || sendToOtherDirectToken -> SearchResult.InvalidResult(
-                    addressState = addressState,
-                    errorMessage = resourcesProvider.getString(
-                        R.string.search_no_other_tokens_error
-                    ),
-                    tokenData = tokenData,
-                    description = resourcesProvider.getString(
-                        R.string.search_no_other_tokens_description,
-                        tokenData?.symbol.orEmpty()
-                    ),
-                )
-                hasNotEnoughFunds -> SearchResult.InvalidResult(
-                    addressState = addressState,
-                    errorMessage = resourcesProvider.getString(
-                        R.string.search_no_founds_error,
-                        tokenData?.symbol.orEmpty()
-                    ),
-                    canReceiveAndBuy = true
-                )
-                else -> {
-                    val balance = userInteractor.getBalance(address)
-                    SearchResult.AddressOnly(
-                        addressState = addressState,
-                        sourceToken = userToken,
-                        balance = balance
-                    )
-                }
-            }
+        // assuming we are sending direct token and verify the recipient address is valid direct or SOL address
+        val tokenData = transactionAddressInteractor.getDirectTokenData(address)
+        if (sourceToken != null && tokenData != null && sourceToken.mintAddress != tokenData.mintAddress) {
+            return SearchResult.InvalidDirectAddress(address, tokenData)
+        }
+
+        val balance = userInteractor.getBalance(address)
+        return SearchResult.AddressFound(
+            addressState = AddressState(address),
+            sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
+            balance = balance
         )
     }
 
-    fun isOwnPublicKey(publicKey: String) = publicKey == tokenKeyProvider.publicKey
-
-    private fun Token.Active.hasFundsForSend(relayInfo: RelayInfo): Boolean {
-        // TODO modify logic according to business needs
-        return totalInLamports > relayInfo.minimumTokenAccountRent +
-            (relayInfo.minimumRelayAccountRent * 2.toBigInteger())
+    suspend fun isOwnAddress(publicKey: String): Boolean {
+        val isOwnSolAddress = publicKey == tokenKeyProvider.publicKey
+        val isOwnSplAddress = userInteractor.hasAccount(publicKey)
+        return isOwnSolAddress || isOwnSplAddress
     }
 }

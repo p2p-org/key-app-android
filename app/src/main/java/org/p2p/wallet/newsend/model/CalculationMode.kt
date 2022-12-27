@@ -6,7 +6,6 @@ import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -128,12 +127,7 @@ class CalculationMode {
     private fun calculateByUsd(inputAmount: String) {
         usdAmount = inputAmount.toBigDecimalOrZero()
 
-        val tokenAround = if (usdAmount.isZero() || token.usdRateOrZero.isZero()) {
-            BigDecimal.ZERO
-        } else {
-            usdAmount.divideSafe(token.usdRateOrZero).scaleLong()
-        }
-
+        val tokenAround = usdAmount.divideSafe(token.usdRateOrZero)
         tokenAmount = tokenAround
 
         onCalculationCompleted?.invoke("${tokenAround.formatToken()} ${token.tokenSymbol}")

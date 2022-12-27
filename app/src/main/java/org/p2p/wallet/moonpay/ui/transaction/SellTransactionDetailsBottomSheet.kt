@@ -17,7 +17,6 @@ import org.p2p.wallet.moonpay.model.MoonpaySellTransaction.SellTransactionStatus
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
 import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -62,7 +61,7 @@ class SellTransactionDetailsBottomSheet :
     private fun onActionButtonClicked(action: SellTransactionDetailsButtonAction) {
         when (action) {
             SellTransactionDetailsButtonAction.SEND -> {
-                val recipient = SearchResult.AddressOnly(AddressState(details.receiverAddress, NetworkType.SOLANA))
+                val recipient = SearchResult.AddressFound(AddressState(details.receiverAddress))
                 replaceFragment(NewSendFragment.create(recipient = recipient))
             }
             SellTransactionDetailsButtonAction.CLOSE -> {

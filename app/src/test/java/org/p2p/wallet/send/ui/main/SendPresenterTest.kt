@@ -169,7 +169,7 @@ class SendPresenterTest {
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
         val strategy = SELECT_FEE_PAYER
-        val result = SearchResult.AddressOnly(AddressState("Some address"))
+        val result = SearchResult.AddressFound(AddressState("Some address"))
         val fee: FeeRelayerFee = mockk()
         every { dispatchers.ui } returns testDispatcher
         every { fee.totalInSol } returns BigInteger.TEN
@@ -199,7 +199,7 @@ class SendPresenterTest {
         // given
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
-        val result = SearchResult.AddressOnly(AddressState("Some address"))
+        val result = SearchResult.AddressFound(AddressState("Some address"))
         every { dispatchers.ui } returns testDispatcher
         coEvery {
             sendInteractor.calculateFeesForFeeRelayer(

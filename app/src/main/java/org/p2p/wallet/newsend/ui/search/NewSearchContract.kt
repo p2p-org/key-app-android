@@ -18,16 +18,13 @@ interface NewSearchContract {
         fun showEmptyState(isEmpty: Boolean)
         fun showErrorState()
         fun showBackgroundVisible(isVisible: Boolean)
-        fun showBuyReceiveVisible(isVisible: Boolean)
         fun submitSearchResult(searchResult: SearchResult, initialToken: Token.Active?)
         fun showScanner()
-        fun showBuyScreen(token: Token)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun search(newQuery: String)
         fun onSearchResultClick(result: SearchResult)
         fun onScanClicked()
-        fun onBuyClicked()
     }
 }

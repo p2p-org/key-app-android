@@ -124,7 +124,7 @@ class NewSendButtonValidator(
      * */
     private fun isAmountValidForRecipient(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
-        val isRecipientEmpty = searchResult is SearchResult.AddressOnly && searchResult.isEmptyBalance
+        val isRecipientEmpty = searchResult is SearchResult.AddressFound && searchResult.isEmptyBalance
 
         val isInputValidForRecipient = amount >= minRentExemption
         if (!isSourceTokenSol) return true

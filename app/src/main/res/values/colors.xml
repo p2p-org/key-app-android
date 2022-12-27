@@ -31,7 +31,7 @@
     <color name="textIconSecondary">#8E8E93</color>
     <color name="textIconTertiary">#D2D4E5</color>
     <color name="textIconButtonPrimary">#FFFFFF</color>
-    <color name="textIconPrimary">#202020</color>
+    <color name="textIconPrimary">@color/text_night</color>
     <color name="textIconLink">#82A5FF</color>
     <color name="textIconActive">#5887FF</color>
 

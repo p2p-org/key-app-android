@@ -1,9 +1,7 @@
 package org.p2p.wallet.user.interactor
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import android.content.SharedPreferences
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
@@ -15,9 +13,9 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
-import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
 import java.util.Date
+import kotlinx.coroutines.flow.Flow
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
@@ -55,7 +53,7 @@ class UserInteractor(
         return allTokens
     }
 
-    suspend fun getBalance(address: Base58String): Long = rpcRepository.getBalance(address.base58Value)
+    suspend fun getBalance(address: String): Long = rpcRepository.getBalance(address)
 
     suspend fun loadAllTokensData() {
         val data = userRepository.loadAllTokens()
@@ -112,6 +110,11 @@ class UserInteractor(
 
     suspend fun setTokenHidden(mintAddress: String, visibility: String) =
         mainLocalRepository.setTokenHidden(mintAddress, visibility)
+
+    suspend fun hasAccount(address: String): Boolean {
+        val userTokens = mainLocalRepository.getUserTokens()
+        return userTokens.any { it.publicKey == address }
+    }
 
     fun findMultipleTokenData(tokenSymbols: List<String>): List<Token> =
         tokenSymbols.mapNotNull { findTokenDataBySymbol(it) }

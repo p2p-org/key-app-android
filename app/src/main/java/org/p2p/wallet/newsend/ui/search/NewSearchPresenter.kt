@@ -10,7 +10,6 @@ import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -20,7 +19,6 @@ import kotlinx.coroutines.launch
 private const val DELAY_IN_MS = 250L
 
 class NewSearchPresenter(
-    private val usernames: List<SearchResult>?,
     private val initialToken: Token.Active?,
     private val searchInteractor: SearchInteractor,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
@@ -54,29 +52,29 @@ class NewSearchPresenter(
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
                 view?.updateSearchInput(currentState.query, submit = false)
-                showActionsVisible(shouldShowActions = false)
+                view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.UsersNotFound -> {
                 view?.showNotFound()
                 view?.showUsersMessage(null)
                 view?.updateSearchInput(currentState.query, submit = false)
-                showActionsVisible(shouldShowActions = false)
+                view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.ShowInvalidAddresses -> {
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
-                showActionsVisible(shouldShowActions = currentState.canReceiveOrBuy, isBackgroundVisible = false)
+                view?.showBackgroundVisible(isVisible = false)
             }
             is SearchState.State.ShowRecipients -> {
                 view?.showUsers(currentState.recipients)
                 view?.showUsersMessage(R.string.search_recently)
-                showActionsVisible(shouldShowActions = false)
+                view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.ShowEmptyState -> {
                 view?.showEmptyState(isEmpty = true)
                 view?.showUsersMessage(null)
                 view?.clearUsers()
-                showActionsVisible(shouldShowActions = false)
+                view?.showBackgroundVisible(isVisible = true)
             }
         }
     }
@@ -131,8 +129,8 @@ class NewSearchPresenter(
         launch {
             val finalResult: SearchResult
             val preselectedToken: Token.Active?
-            if (result is SearchResult.AddressOnly) {
-                val balance = userInteractor.getBalance(result.addressState.address.toBase58Instance())
+            if (result is SearchResult.AddressFound) {
+                val balance = userInteractor.getBalance(result.addressState.address)
                 finalResult = result.copyWithBalance(balance)
                 preselectedToken = result.sourceToken ?: initialToken
             } else {
@@ -143,21 +141,10 @@ class NewSearchPresenter(
         }
     }
 
-    override fun onBuyClicked() {
-        launch {
-            val tokenForBuying = userInteractor.getTokensForBuy().firstOrNull()
-            if (tokenForBuying == null) {
-                Timber.e("Unable to find a token for buying")
-                return@launch
-            }
-            view?.showBuyScreen(tokenForBuying)
-        }
-    }
-
     private suspend fun validateAndSearch(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-            SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> searchBySolAddress(target.value)
             SearchTarget.Validation.EMPTY -> renderCurrentState()
             else -> showNotFound()
         }
@@ -165,7 +152,7 @@ class NewSearchPresenter(
 
     private suspend fun validateOnlyAddress(target: SearchTarget) {
         when (target.validation) {
-            SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> searchBySolAddress(target.value)
             else -> view?.showErrorState()
         }
     }
@@ -186,18 +173,9 @@ class NewSearchPresenter(
             return
         }
 
-        val newAddresses = searchInteractor.searchByAddress(
-            publicKey.toBase58().toBase58Instance(),
-            initialToken
-        )
-
-        state.updateSearchResult(address, newAddresses)
+        val newAddresses = searchInteractor.searchByAddress(publicKey.toBase58(), initialToken)
+        state.updateSearchResult(address, listOf(newAddresses))
         renderCurrentState()
-    }
-
-    private fun showActionsVisible(shouldShowActions: Boolean, isBackgroundVisible: Boolean = true) {
-        view?.showBuyReceiveVisible(isVisible = shouldShowActions)
-        view?.showBackgroundVisible(isVisible = isBackgroundVisible)
     }
 
     private fun showNotFound() {

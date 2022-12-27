@@ -16,6 +16,7 @@ import org.p2p.core.utils.asApproximateUsd
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
 
+@Deprecated("Will be removed, old design flow")
 class AccountFeeView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
