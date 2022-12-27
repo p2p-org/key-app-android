@@ -1,6 +1,5 @@
 package org.p2p.wallet.send.ui.main
 
-import org.bitcoinj.core.Base58
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.formatToken
