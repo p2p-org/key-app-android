@@ -55,13 +55,15 @@ class AmountFractionTextWatcher(
     private var cursorPosition: Int = 0
 
     init {
-        valueText = amountFractionFormatter.formatAmountFraction(
-            value = editText.text.toString(),
-            before = 0,
-            start = 0
-        )
-        editText.setText(valueText)
-        editText.setSelection(valueText.length)
+        field.get()?.apply {
+            val valueText = amountFractionFormatter.formatAmountFraction(
+                value = text.toString(),
+                before = 0,
+                start = 0
+            )
+            setText(valueText)
+            setSelection(valueText.length)
+        }
     }
 
     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) = Unit

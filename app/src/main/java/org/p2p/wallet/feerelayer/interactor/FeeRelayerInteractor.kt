@@ -34,7 +34,7 @@ class FeeRelayerInteractor(
 ) {
 
     companion object {
-        private val MIN_TOP_UP_AMOUNT = BigInteger.valueOf(1000L)
+        private val MIN_TOP_UP_AMOUNT = BigInteger.valueOf(10000L)
     }
 
     /**

@@ -1,24 +1,21 @@
 package org.p2p.wallet.newsend.model
 
-import android.content.res.Resources
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import android.content.res.Resources
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
-import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleLong
-import org.p2p.core.utils.toLamports
 import org.p2p.wallet.R
-import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.SearchResult
 import java.math.BigInteger
 
-class NewSendButtonValidator(
+class NewSendButtonState(
     private val sourceToken: Token.Active,
     private val searchResult: SearchResult,
     private val feeRelayerState: FeeRelayerState,
@@ -40,57 +37,53 @@ class NewSendButtonValidator(
         ) : State
     }
 
-    val state: State
+    val currentState: State
         get() {
-            val total = sourceToken.total.toLamports(sourceToken.decimals)
+            val totalInLamports = sourceToken.totalInLamports
             val inputAmount = calculationMode.getCurrentAmountLamports()
 
-            val isEnoughBalance = !total.isLessThan(inputAmount)
+            val isEnoughBalance = !totalInLamports.isLessThan(inputAmount)
             val isFeeCalculationValid = feeRelayerState.isValidState()
 
             val sendFee = (feeRelayerState as? FeeRelayerState.UpdateFee)?.solanaFee
-            val isEnoughToCoverExpenses = sendFee == null || sendFee.isEnoughToCoverExpenses(total, inputAmount)
+            val isEnoughToCoverExpenses =
+                sendFee == null || sendFee.isEnoughToCoverExpenses(totalInLamports, inputAmount)
             val isAmountNotZero = inputAmount.isNotZero()
             val isAmountValidForRecipient = isAmountValidForRecipient(inputAmount)
             val isAmountValidForSender = isAmountValidForSender(inputAmount)
-
-            val inputTextColor = when {
-                !isEnoughBalance || !isEnoughToCoverExpenses || !isAmountValidForSender -> R.color.text_rose
-                else -> R.color.text_night
-            }
+            val isMinRequiredBalanceLeft = isMinRequiredBalanceLeft()
 
             return when {
                 !isAmountNotZero -> {
                     val textContainer = TextContainer.Res(R.string.main_enter_the_amount)
-                    State.Disabled(textContainer, inputTextColor)
+                    State.Disabled(textContainer, R.color.text_night)
                 }
                 !isFeeCalculationValid -> {
                     val textContainer = TextContainer.Res(R.string.send_cant_calculate_fees_error)
-                    State.Disabled(textContainer, inputTextColor)
+                    State.Disabled(textContainer, R.color.text_night)
                 }
                 !isEnoughBalance -> {
                     val tokenSymbol = sourceToken.tokenSymbol
                     val textResFormat = R.string.send_max_warning_text_format
-                    val currentMode = calculationMode.getCurrentMode()
-                    val text = if (currentMode is CurrencyMode.Usd && sourceToken.totalInUsd != null) {
-                        resources.getString(textResFormat, sourceToken.totalInUsd, USD_READABLE_SYMBOL)
-                    } else {
-                        resources.getString(textResFormat, sourceToken.total.toPlainString(), tokenSymbol)
-                    }
+                    val text = resources.getString(textResFormat, sourceToken.total.toPlainString(), tokenSymbol)
                     val textContainer = TextContainer.Raw(text)
-                    State.Disabled(textContainer, inputTextColor)
+                    State.Disabled(textContainer, R.color.text_rose)
                 }
                 !isEnoughToCoverExpenses -> {
                     val textContainer = TextContainer.Res(R.string.send_insufficient_funds)
-                    State.Disabled(textContainer, inputTextColor)
+                    State.Disabled(textContainer, R.color.text_rose)
                 }
                 !isAmountValidForRecipient -> {
                     val solAmount = minRentExemption.fromLamports().scaleLong().toPlainString()
                     val format = resources.getString(R.string.send_min_warning_text_format, solAmount, SOL_SYMBOL)
                     State.Disabled(
                         textContainer = TextContainer.Raw(format),
-                        totalAmountTextColor = inputTextColor
+                        totalAmountTextColor = R.color.text_rose
                     )
+                }
+                !isMinRequiredBalanceLeft -> {
+                    val textContainer = TextContainer.Res(R.string.error_insufficient_funds)
+                    State.Disabled(textContainer, R.color.text_rose)
                 }
                 !isAmountValidForSender -> {
                     val maxSolAmountAllowed = sourceToken.totalInLamports - minRentExemption
@@ -101,16 +94,14 @@ class NewSendButtonValidator(
                     )
                     State.Disabled(
                         textContainer = TextContainer.Raw(format),
-                        totalAmountTextColor = inputTextColor
+                        totalAmountTextColor = R.color.text_rose
                     )
                 }
                 else -> {
-                    val valueText = calculationMode.getValueByMode().toPlainString()
-                    val symbol = calculationMode.getSymbolByMode()
                     State.Enabled(
                         textResId = R.string.send_format,
-                        value = "$valueText $symbol",
-                        totalAmountTextColor = inputTextColor
+                        value = "${calculationMode.getCurrentAmount()} ${sourceToken.tokenSymbol}",
+                        totalAmountTextColor = R.color.text_night
                     )
                 }
             }
@@ -143,9 +134,29 @@ class NewSendButtonValidator(
         val isSourceTokenSol = sourceToken.isSOL
         val balanceDiff = sourceToken.totalInLamports - amount
 
-        val isValidRemainingSource = balanceDiff.isZero() || balanceDiff > minRentExemption
+        val isValidRemainingSource = balanceDiff.isZero() || balanceDiff >= minRentExemption
         if (!isSourceTokenSol) return true
 
         return isValidRemainingSource
+    }
+
+    /**
+     * Validating only SOL -> SOL operations here
+     * The empty recipient is required
+     * Checking if the sender should leave at least [minRentExemption] SOL balance
+     * */
+    private fun isMinRequiredBalanceLeft(): Boolean {
+        if (!sourceToken.isSOL) return true
+
+        val isRecipientEmpty = searchResult is SearchResult.AddressFound && searchResult.isEmptyBalance
+        if (!isRecipientEmpty) return true
+
+        val sourceTotalLamports = sourceToken.totalInLamports
+        val minRequiredBalance = minRentExemption
+
+        val inputAmountInLamports = calculationMode.getCurrentAmountLamports()
+        val diff = sourceTotalLamports - inputAmountInLamports
+
+        return diff >= minRequiredBalance
     }
 }

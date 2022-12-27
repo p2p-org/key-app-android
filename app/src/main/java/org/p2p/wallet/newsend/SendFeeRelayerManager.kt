@@ -148,7 +148,12 @@ class SendFeeRelayerManager(
                 appendLine()
                 append("Expected total fee in Token: 0 (T)")
             } else {
-                val expectedFee = solanaFee.feeRelayerFee.expectedFee.accountBalances
+                val accountBalances = solanaFee.feeRelayerFee.expectedFee.accountBalances
+                val expectedFee = if (!relayAccount.isCreated) {
+                    accountBalances + relayInfo.minimumRelayAccountRent
+                } else {
+                    accountBalances
+                }
                 append("Expected total fee in SOL: $expectedFee (E)")
                 appendLine()
 
