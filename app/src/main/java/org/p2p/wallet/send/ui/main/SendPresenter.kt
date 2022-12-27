@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.ui.main
 
+import org.bitcoinj.core.Base58
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.formatToken
@@ -53,9 +54,11 @@ import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.toPublicKey
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
@@ -193,7 +196,7 @@ class SendPresenter(
                         setBitcoinTargetResult(target.value)
                     }
                     SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> {
-                        searchBySolAddress(target.value)
+                        searchBySolAddress(target.value.toBase58Instance())
                     }
                     SearchTarget.Validation.EMPTY -> {
                         view?.showIdleTarget()
@@ -806,9 +809,9 @@ class SendPresenter(
         sendAnalytics.isSendTargetUsername = false
     }
 
-    private suspend fun searchBySolAddress(address: String) {
-        if (!PublicKeyValidator.isValid(address)) {
-            view?.showWrongAddressTarget(address.cutEnd())
+    private suspend fun searchBySolAddress(address: Base58String) {
+        if (!PublicKeyValidator.isValid(address.base58Value)) {
+            view?.showWrongAddressTarget(address.base58Value.cutEnd())
             return
         }
 

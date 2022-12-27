@@ -9,6 +9,7 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import timber.log.Timber
 
@@ -17,7 +18,7 @@ class SearchErrorViewHolder(
     private val binding: ItemSearchInvalidResultBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    val iconPadding = 12.toPx()
+    private val iconPadding = 12.toPx()
 
     fun onBind(item: SearchResult) {
         with(binding) {
@@ -30,7 +31,7 @@ class SearchErrorViewHolder(
                     showWalletIcon()
                 }
                 is SearchResult.InvalidDirectAddress -> {
-                    val description = itemView.context.getString(
+                    val description = getString(
                         R.string.search_no_other_tokens_description,
                         item.directToken.symbol
                     )
@@ -55,15 +56,14 @@ class SearchErrorViewHolder(
     }
 
     private fun loadTokenIcon(iconUrl: String?) {
-        with(binding) {
-            imageViewWallet.apply {
-                setPadding(0, 0, 0, 0)
-                alpha = 1f
-            }
-            Glide.with(imageViewWallet)
+        with(binding.imageViewWallet) {
+            setPadding(0, 0, 0, 0)
+            alpha = 1f
+
+            Glide.with(this)
                 .load(iconUrl)
                 .circleCrop()
-                .into(imageViewWallet)
+                .into(this)
         }
     }
 }

@@ -8,6 +8,7 @@ import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
+import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -109,7 +110,7 @@ class SearchPresenter(
             return
         }
 
-        val result = searchInteractor.searchByAddress(publicKey.toBase58())
+        val result = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance())
         view?.showMessage(R.string.send_account_found)
         view?.showSearchResult(listOf(result))
     }

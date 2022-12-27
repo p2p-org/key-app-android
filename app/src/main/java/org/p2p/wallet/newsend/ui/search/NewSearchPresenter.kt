@@ -10,6 +10,7 @@ import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -130,7 +131,7 @@ class NewSearchPresenter(
             val finalResult: SearchResult
             val preselectedToken: Token.Active?
             if (result is SearchResult.AddressFound) {
-                val balance = userInteractor.getBalance(result.addressState.address)
+                val balance = userInteractor.getBalance(result.addressState.address.toBase58Instance())
                 finalResult = result.copyWithBalance(balance)
                 preselectedToken = result.sourceToken ?: initialToken
             } else {
@@ -173,7 +174,7 @@ class NewSearchPresenter(
             return
         }
 
-        val newAddresses = searchInteractor.searchByAddress(publicKey.toBase58(), initialToken)
+        val newAddresses = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
         state.updateSearchResult(address, listOf(newAddresses))
         renderCurrentState()
     }

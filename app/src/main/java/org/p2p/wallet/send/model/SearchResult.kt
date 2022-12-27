@@ -17,7 +17,7 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     val formattedAddress: String
         get() = addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
 
-    fun isInvalidResult(): Boolean =
+    fun isInvalid(): Boolean =
         this is InvalidDirectAddress || this is OwnAddressError
 
     @Parcelize

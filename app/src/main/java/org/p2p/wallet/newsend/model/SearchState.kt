@@ -20,7 +20,7 @@ data class SearchState(
     val state: State
         get() {
             return when {
-                foundResult.any { it.isInvalidResult() } ->
+                foundResult.any { it.isInvalid() } ->
                     State.ShowInvalidAddresses(foundResult)
                 foundResult.isNotEmpty() ->
                     State.UsersFound(query, foundResult)

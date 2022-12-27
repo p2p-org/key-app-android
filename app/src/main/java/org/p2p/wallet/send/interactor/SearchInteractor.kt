@@ -7,6 +7,8 @@ import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.toBase58Instance
 
 class SearchInteractor(
     private val usernameRepository: UsernameRepository,
@@ -31,9 +33,10 @@ class SearchInteractor(
     }
 
     suspend fun searchByAddress(
-        address: String,
+        wrappedAddress: Base58String,
         sourceToken: Token.Active? = null
     ): SearchResult {
+        val address = wrappedAddress.base58Value
         if (isOwnAddress(address)) {
             return SearchResult.OwnAddressError(address)
         }
@@ -44,7 +47,7 @@ class SearchInteractor(
             return SearchResult.InvalidDirectAddress(address, tokenData)
         }
 
-        val balance = userInteractor.getBalance(address)
+        val balance = userInteractor.getBalance(address.toBase58Instance())
         return SearchResult.AddressFound(
             addressState = AddressState(address),
             sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
