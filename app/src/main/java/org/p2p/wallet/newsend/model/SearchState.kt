@@ -2,7 +2,6 @@ package org.p2p.wallet.newsend.model
 
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.findInstance
 
 data class SearchState(
     var query: String = emptyString(),
@@ -13,18 +12,16 @@ data class SearchState(
     sealed interface State {
         class UsersFound(val query: String, val users: List<SearchResult>) : State
         class UsersNotFound(val query: String) : State
-        class ShowInvalidAddresses(val users: List<SearchResult>, val canReceiveOrBuy: Boolean) : State
+        class ShowInvalidAddresses(val users: List<SearchResult>) : State
         class ShowRecipients(val recipients: List<SearchResult>) : State
         object ShowEmptyState : State
     }
 
     val state: State
         get() {
-            val invalidResult = foundResult.findInstance<SearchResult.InvalidResult>()
-
             return when {
-                invalidResult != null ->
-                    State.ShowInvalidAddresses(foundResult, invalidResult.canReceiveAndBuy)
+                foundResult.any { it.isInvalid() } ->
+                    State.ShowInvalidAddresses(foundResult)
                 foundResult.isNotEmpty() ->
                     State.UsersFound(query, foundResult)
                 query.isNotEmpty() && foundResult.isEmpty() ->

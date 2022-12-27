@@ -15,10 +15,8 @@ import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
-import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
@@ -32,7 +30,6 @@ import org.p2p.wallet.utils.withTextResOrGone
 private const val REQUEST_QR_KEY = "REQUEST_QR_KEY"
 private const val RESULT_QR_KEY = "RESULT_QR_KEY"
 
-private const val EXTRA_USERNAMES = "EXTRA_USERNAMES"
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
 class NewSearchFragment :
@@ -40,20 +37,17 @@ class NewSearchFragment :
     NewSearchContract.View {
 
     companion object {
-        fun create(preselectedRecipients: List<SearchResult>? = null): NewSearchFragment =
-            NewSearchFragment()
-                .withArgs(EXTRA_USERNAMES to preselectedRecipients)
+        fun create(): NewSearchFragment = NewSearchFragment()
 
         fun create(selectedToken: Token.Active): NewSearchFragment =
             NewSearchFragment()
                 .withArgs(EXTRA_TOKEN to selectedToken)
     }
 
-    private val usernames: List<SearchResult>? by args(EXTRA_USERNAMES)
     private val selectedToken: Token.Active? by args(EXTRA_TOKEN)
 
     override val presenter: NewSearchContract.Presenter by inject {
-        parametersOf(usernames, selectedToken)
+        parametersOf(selectedToken)
     }
     private val binding: FragmentNewSearchBinding by viewBinding()
 
@@ -84,9 +78,7 @@ class NewSearchFragment :
                 onQueryUpdated = { presenter.search(it) }
             }
 
-            buttonBuy.setOnClickListener { presenter.onBuyClicked() }
             buttonScanQr.setOnClickListener { presenter.onScanClicked() }
-            buttonReceive.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
 
             recyclerViewSearchResults.apply {
                 itemAnimator = null
@@ -135,10 +127,6 @@ class NewSearchFragment :
         }
     }
 
-    override fun showBuyReceiveVisible(isVisible: Boolean) {
-        binding.groupReceiveBuyButtons.isVisible = isVisible
-    }
-
     override fun showUsers(result: List<SearchResult>) {
         searchAdapter.setItems(result)
         showEmptyState(result.isEmpty())
@@ -158,10 +146,6 @@ class NewSearchFragment :
 
     override fun showScanner() {
         replaceFragment(ScanQrFragment.create(REQUEST_QR_KEY, RESULT_QR_KEY))
-    }
-
-    override fun showBuyScreen(token: Token) {
-        replaceFragment(NewBuyFragment.create(token = token))
     }
 
     private fun setOnResultListener() {

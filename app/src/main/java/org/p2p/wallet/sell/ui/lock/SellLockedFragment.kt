@@ -14,7 +14,6 @@ import org.p2p.wallet.databinding.FragmentSellLockBinding
 import org.p2p.wallet.moonpay.model.MoonpaySellTransaction.SellTransactionStatus
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -100,8 +99,8 @@ class SellLockedFragment :
     private fun setupButtons(buttonTitle: String) = with(binding.layoutDetails) {
         buttonAction.text = buttonTitle
         buttonAction.setOnClickListener {
-            val recipient = SearchResult.AddressOnly(
-                AddressState(details.receiverAddress, NetworkType.SOLANA)
+            val recipient = SearchResult.AddressFound(
+                AddressState(details.receiverAddress)
             )
             replaceFragment(NewSendFragment.create(recipient = recipient))
         }

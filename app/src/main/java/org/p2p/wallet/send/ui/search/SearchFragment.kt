@@ -29,6 +29,7 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
+@Deprecated("Will be removed, old design flow")
 class SearchFragment :
     BaseMvpFragment<SearchContract.View, SearchContract.Presenter>(R.layout.fragment_search),
     SearchContract.View {
