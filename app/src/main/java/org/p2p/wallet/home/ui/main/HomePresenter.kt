@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
@@ -59,6 +60,7 @@ class HomePresenter(
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
     private val sellInteractor: SellInteractor,
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
@@ -103,7 +105,12 @@ class HomePresenter(
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
 
         launch {
-            view?.setSellActionButtonIsVisible(isVisible = sellInteractor.isSellAvailable())
+            view?.setSellActionButtonIsVisible(
+                isVisible = sellInteractor.isSellAvailable()
+            )
+            view?.setSwapActionButtonIsVisible(
+                isVisible = !sellEnabledFeatureToggle.isFeatureEnabled
+            )
         }
     }
 

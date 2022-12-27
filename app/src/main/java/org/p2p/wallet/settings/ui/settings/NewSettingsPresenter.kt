@@ -56,7 +56,7 @@ class NewSettingsPresenter(
             )
             view?.showSettings(settings)
         } catch (error: Throwable) {
-            Timber.e(error)
+            Timber.e(error, "Error loading settings screen")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
     }
