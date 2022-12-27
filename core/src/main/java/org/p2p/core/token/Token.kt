@@ -34,7 +34,7 @@ sealed class Token constructor(
 ) : Parcelable {
 
     @Parcelize
-    data class Active(
+    data class Active constructor(
         override val publicKey: String,
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,

@@ -22,7 +22,7 @@ import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
-import org.p2p.wallet.newsend.model.NewSendButtonValidator
+import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendSolanaFee
@@ -276,9 +276,8 @@ class NewSendPresenter(
 
     override fun onMaxButtonClicked() {
         val token = token ?: return
-        val totalAvailable = calculationMode.getTotalAvailable() ?: return
+        val totalAvailable = calculationMode.getMaxAvailableAmount() ?: return
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
-        inputAmount = totalAvailable.toString()
 
         showMaxButtonIfNeeded()
 
@@ -419,7 +418,7 @@ class NewSendPresenter(
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
-        val sendButton = NewSendButtonValidator(
+        val sendButton = NewSendButtonState(
             sourceToken = sourceToken,
             searchResult = recipientAddress,
             calculationMode = calculationMode,
@@ -428,13 +427,13 @@ class NewSendPresenter(
             resources = resources
         )
 
-        when (val state = sendButton.state) {
-            is NewSendButtonValidator.State.Disabled -> {
+        when (val state = sendButton.currentState) {
+            is NewSendButtonState.State.Disabled -> {
                 view?.setBottomButtonText(state.textContainer)
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
-            is NewSendButtonValidator.State.Enabled -> {
+            is NewSendButtonState.State.Enabled -> {
                 view?.setSliderText(resources.getString(state.textResId, state.value))
                 view?.setBottomButtonText(null)
                 view?.setInputColor(state.totalAmountTextColor)

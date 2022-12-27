@@ -65,25 +65,24 @@ class CalculationMode {
 
     fun getCurrentAmountUsd(): BigDecimal = usdAmount
 
-    fun getValueByMode(): BigDecimal = if (currencyMode is CurrencyMode.Token) {
-        tokenAmount
-    } else {
-        usdAmount
-    }
+    fun getMaxAvailableAmount(): BigDecimal? {
+        tokenAmount = token.total
+        usdAmount = token.totalInUsd.orZero()
 
-    fun getSymbolByMode(): String = if (currencyMode is CurrencyMode.Token) {
-        token.tokenSymbol
-    } else {
-        USD_READABLE_SYMBOL
-    }
-
-    fun getCurrentMode(): CurrencyMode = currencyMode
-
-    fun getTotalAvailable(): BigDecimal? {
-        return when (currencyMode) {
-            is CurrencyMode.Usd -> token.totalInUsd
-            is CurrencyMode.Token -> token.total.scaleLong()
+        val maxAmount = when (currencyMode) {
+            is CurrencyMode.Usd -> {
+                handleCalculationUpdate(tokenAmount.formatToken(token.decimals), token.tokenSymbol)
+                token.totalInUsd
+            }
+            is CurrencyMode.Token -> {
+                handleCalculationUpdate(usdAmount.formatUsd(), USD_READABLE_SYMBOL)
+                token.total.scaleLong()
+            }
         }
+
+        inputAmount = maxAmount?.toString().orEmpty()
+
+        return maxAmount
     }
 
     fun switchMode() {
@@ -127,10 +126,10 @@ class CalculationMode {
     private fun calculateByUsd(inputAmount: String) {
         usdAmount = inputAmount.toBigDecimalOrZero()
 
-        val tokenAround = usdAmount.divideSafe(token.usdRateOrZero)
+        val tokenAround = usdAmount.divideSafe(token.usdRateOrZero, token.decimals)
         tokenAmount = tokenAround
 
-        onCalculationCompleted?.invoke("${tokenAround.formatToken()} ${token.tokenSymbol}")
+        handleCalculationUpdate(tokenAround.formatToken(), token.tokenSymbol)
     }
 
     private fun calculateByToken(inputAmount: String) {
@@ -138,7 +137,7 @@ class CalculationMode {
         usdAmount = tokenAmount.multiply(token.usdRateOrZero)
 
         val usdAround = tokenAmount.times(token.usdRateOrZero)
-        onCalculationCompleted?.invoke("${usdAround.formatUsd()} $USD_READABLE_SYMBOL")
+        handleCalculationUpdate(usdAround.formatUsd(), USD_READABLE_SYMBOL)
     }
 
     private fun handleFractionUpdate(mode: CurrencyMode) {
@@ -148,5 +147,9 @@ class CalculationMode {
         }
 
         onInputFractionUpdated?.invoke(newInputFractionLength)
+    }
+
+    private fun handleCalculationUpdate(value: String, symbol: String) {
+        onCalculationCompleted?.invoke("$value $symbol")
     }
 }
