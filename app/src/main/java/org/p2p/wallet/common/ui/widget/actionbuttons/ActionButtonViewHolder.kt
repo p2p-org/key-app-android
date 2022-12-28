@@ -4,7 +4,6 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemHomeButtonBinding
-import org.p2p.wallet.databinding.ItemSettingsInfoBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class ActionButtonViewHolder(
