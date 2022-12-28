@@ -99,7 +99,7 @@ sealed class HistoryTransaction(
             resources.getString(R.string.details_transfer_format, destination.cutMiddle(), tokenData.symbol)
         }
 
-        fun getAddress(): String = if (isSend) "to ${cutAddress(destination)}" else "from ${cutAddress(senderAddress)}"
+        fun getAddress(): String = if (isSend) "To ${cutAddress(destination)}" else "From ${cutAddress(senderAddress)}"
 
         fun getValue(): String? = totalInUsd?.let {
             "${getSymbol(isSend)} ${it.scaleShortOrFirstNotZero().asUsd()}"

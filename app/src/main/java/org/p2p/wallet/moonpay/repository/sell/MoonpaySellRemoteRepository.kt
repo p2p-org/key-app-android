@@ -26,6 +26,7 @@ class MoonpaySellRemoteRepository(
     private val moonpayServerSideApi: MoonpayServerSideApi,
     private val crashLogger: CrashLogger,
     private val mapper: MoonpaySellRepositoryMapper,
+    private val externalCustomerIdProvider: MoonpayExternalCustomerIdProvider,
     private val errorMapper: MoonpaySellRepositoryErrorMapper,
     private val dispatchers: CoroutineDispatchers,
 ) : MoonpaySellRepository {
@@ -34,6 +35,9 @@ class MoonpaySellRemoteRepository(
 
     // todo: maybe extract caching flags to a separate repository to reuse
     private var cachedMoonpayIpFlags: MoonpayIpAddressResponse? = null
+
+    private val externalCustomerId: String
+        get() = externalCustomerIdProvider.getCustomerId().base58Value
 
     override suspend fun loadMoonpayFlags() {
         withContext(dispatchers.io) {
@@ -69,7 +73,7 @@ class MoonpaySellRemoteRepository(
         val depositWallets = getDepositWalletsForTransactions(response)
 
         mapper.fromNetwork(
-            response = response,
+            response = moonpayServerSideApi.getUserSellTransactions(externalCustomerId),
             depositWallets = depositWallets,
             selectedFiat = getSellFiatCurrency(),
             transactionOwnerAddress = userAddress,

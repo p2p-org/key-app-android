@@ -1,9 +1,5 @@
 package org.p2p.wallet.auth.repository
 
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -11,6 +7,10 @@ import org.p2p.wallet.utils.mnemoticgenerator.English
 import org.p2p.wallet.utils.mnemoticgenerator.MnemonicGenerator
 import org.p2p.wallet.utils.mnemoticgenerator.Words
 import java.security.SecureRandom
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 
 private const val ACCOUNTS_QUANTITY_TO_CREATE = 5
 
@@ -23,9 +23,8 @@ class AuthRemoteRepository(
         keys: List<String>
     ): Account = withContext(dispatchers.io) {
         when (path) {
-            DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(keys, 0)
-            DerivationPath.BIP44 -> Account.fromBip44Mnemonic(keys, 0)
-            DerivationPath.BIP44CHANGE -> Account.fromBip44MnemonicWithChange(keys, 0)
+            DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(words = keys, walletIndex = 0)
+            else -> Account.fromBip44Mnemonic(words = keys, walletIndex = 0, derivationPath = path)
         }
     }
 
@@ -45,9 +44,8 @@ class AuthRemoteRepository(
 
     private fun createAccountWithIndex(path: DerivationPath, walletIndex: Int, seedPhrase: List<String>): Account =
         when (path) {
-            DerivationPath.BIP44 -> Account.fromBip44Mnemonic(seedPhrase, walletIndex)
-            DerivationPath.BIP44CHANGE -> Account.fromBip44MnemonicWithChange(seedPhrase, walletIndex)
             DerivationPath.BIP32DEPRECATED -> Account.fromBip32Mnemonic(seedPhrase, walletIndex)
+            else -> Account.fromBip44Mnemonic(seedPhrase, walletIndex, path)
         }
 
     override suspend fun generatePhrase(): List<String> = withContext(dispatchers.computation) {
