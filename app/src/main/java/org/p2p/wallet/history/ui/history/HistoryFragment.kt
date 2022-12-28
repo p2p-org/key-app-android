@@ -4,6 +4,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.attachAdapter
@@ -12,11 +13,11 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentHistoryBinding
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
+import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -37,6 +38,7 @@ class HistoryFragment :
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             glideManager = glideManager,
+            historyItemMapper = get(),
             onTransactionClicked = presenter::onItemClicked,
             onMoonpayTransactionClicked = { SellTransactionDetailsBottomSheet.show(childFragmentManager, it) },
             onRetryClicked = {}
@@ -81,8 +83,8 @@ class HistoryFragment :
         }
     }
 
-    override fun showHistory(items: List<HistoryTransaction>, moonpayItems: List<HistoryItem.MoonpayTransactionItem>) {
-        adapter.setTransactions(items, moonpayItems)
+    override fun showHistory(items: List<HistoryTransaction>, sellTransactions: List<SellTransaction>) {
+        adapter.setTransactions(items, sellTransactions)
 
         val isHistoryEmpty = adapter.isEmpty()
         binding.emptyStateLayout.isVisible = isHistoryEmpty

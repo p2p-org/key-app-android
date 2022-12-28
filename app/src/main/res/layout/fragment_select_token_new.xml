@@ -15,6 +15,7 @@
         app:menu="@menu/menu_search"
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/send_pick_token_title"
+        app:titleTextColor="@color/text_night"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
     <androidx.recyclerview.widget.RecyclerView

@@ -2,6 +2,7 @@ package org.p2p.uikit.components
 
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.postDelayed
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import android.content.Context
@@ -20,6 +21,7 @@ import org.p2p.uikit.utils.withTextOrGone
 import java.util.concurrent.atomic.AtomicInteger
 
 private const val MAX_FRACTION_LENGTH = 9
+private const val PROGRESS_DELAY_IN_MS = 200L
 
 class UiKitSendDetailsWidget @JvmOverloads constructor(
     context: Context,
@@ -100,6 +102,19 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.imageViewFeesInfo.isInvisible = isLoading
     }
 
+    fun showDelayedFeeViewLoading(isLoading: Boolean) {
+        if (!isLoading) {
+            handler.removeCallbacksAndMessages(null)
+            showFeeLoading(isLoading = false)
+            return
+        }
+
+        handler.postDelayed(PROGRESS_DELAY_IN_MS) {
+            binding.progressBarFees.isVisible = true
+            binding.imageViewFeesInfo.isInvisible = true
+        }
+    }
+
     fun setAroundValue(aroundValue: String) {
         binding.textViewSecondAmount.text = aroundValue
     }
@@ -156,6 +171,7 @@ interface UiKitSendDetailsWidgetContract {
     fun showAroundValue(value: String)
     fun showSliderCompleteAnimation()
     fun showFeeViewLoading(isLoading: Boolean)
+    fun showDelayedFeeViewLoading(isLoading: Boolean)
 
     fun setSwitchLabel(symbol: String)
     fun setInputColor(@ColorRes colorRes: Int)

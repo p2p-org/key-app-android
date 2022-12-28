@@ -96,7 +96,7 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
                     selectedToken = currentFeePayerToken,
                     requestKey = requestKey,
                     resultKey = resultKey,
-                    title = getString(R.string.send_pick_fee_token_format, approximateFeeUsd)
+                    title = getString(R.string.send_pick_fee_token_title)
                 ),
                 enter = R.anim.slide_up,
                 exit = 0,

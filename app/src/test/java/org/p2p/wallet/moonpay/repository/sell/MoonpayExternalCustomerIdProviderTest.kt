@@ -16,14 +16,14 @@ class MoonpayExternalCustomerIdProviderTest {
         )
     }
 
-    private val seedPhrase24Provider = mockk<SeedPhraseProvider>(){
+    private val seedPhrase24Provider = mockk<SeedPhraseProvider>() {
         every { getUserSeedPhrase() }.returns(
             UserSeedPhraseDetails(English.INSTANCE.words.take(24), SeedPhraseSource.MANUAL)
         )
     }
 
     @Test
-    fun `GIVEN 12 words seed phrase WHEN every call THEN return same customer id`(){
+    fun `GIVEN 12 words seed phrase WHEN every call THEN return same customer id`() {
         // given
         val customerIdProvider = MoonpayExternalCustomerIdProvider(seedPhrase12Provider)
         // when
@@ -35,7 +35,7 @@ class MoonpayExternalCustomerIdProviderTest {
     }
 
     @Test
-    fun `GIVEN 24 words seed phrase WHEN every call THEN return same customer id`(){
+    fun `GIVEN 24 words seed phrase WHEN every call THEN return same customer id`() {
         // given
         val customerIdProvider = MoonpayExternalCustomerIdProvider(seedPhrase24Provider)
         // when

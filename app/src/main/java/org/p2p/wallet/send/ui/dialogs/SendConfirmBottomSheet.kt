@@ -25,6 +25,7 @@ import timber.log.Timber
 
 private const val EXTRA_DATA = "EXTRA_DATA"
 
+@Deprecated("Will be removed, old design flow")
 class SendConfirmBottomSheet(
     private val onConfirmed: () -> Unit
 ) : NonDraggableBottomSheetDialogFragment() {

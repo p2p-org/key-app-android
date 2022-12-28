@@ -37,6 +37,7 @@ import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
@@ -169,6 +170,7 @@ class CheckModulesTest : KoinTest {
                         subtitle = "Test"
                     )
                 }
+                withInstance(TransactionDetailsLaunchState.Id("-", "-"))
             }
         )
     }

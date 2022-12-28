@@ -4,6 +4,7 @@ import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellQuoteResponse
+import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTransactionDepositWalletResponse
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayTokenCurrencyResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -47,4 +48,10 @@ interface MoonpayClientSideApi {
         @Query("quoteCurrencyCode") fiatName: String,
         @Query("baseCurrencyAmount") tokenAmount: Double
     ): MoonpaySellQuoteResponse
+
+    @GET("v3/sell_transactions/{sellTransactionId}")
+    suspend fun getSellTransactionDepositWalletById(
+        @Path("sellTransactionId") transactionId: String,
+        @Query("apiKey") apiKey: String,
+    ): MoonpaySellTransactionDepositWalletResponse
 }

@@ -10,7 +10,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
 import org.p2p.wallet.sell.ui.error.SellErrorFragment
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
-import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -54,7 +54,7 @@ class SellPayloadFragment :
         binding.textViewAvailableAmount.text = totalAmount.toString()
     }
 
-    override fun navigateToSellLock(details: SellTransactionDetails) {
+    override fun navigateToSellLock(details: SellTransactionViewDetails) {
         replaceFragment(SellLockedFragment.create(details), addToBackStack = false)
     }
 

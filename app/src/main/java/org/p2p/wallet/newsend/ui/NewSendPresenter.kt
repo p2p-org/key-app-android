@@ -20,8 +20,9 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
-import org.p2p.wallet.newsend.model.NewSendButtonValidator
+import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendSolanaFee
@@ -92,8 +93,15 @@ class NewSendPresenter(
             view.setMainAmountLabel(mainSymbol)
         }
 
-        feeRelayerManager.onStateUpdated = { newState -> handleFeeRelayerStateUpdate(newState, view) }
-        feeRelayerManager.onFeeLoading = { isLoading -> view.showFeeViewLoading(isLoading = isLoading) }
+        feeRelayerManager.onStateUpdated = { newState ->
+            handleFeeRelayerStateUpdate(newState, view)
+        }
+        feeRelayerManager.onFeeLoading = { loadingState ->
+            when (loadingState) {
+                is FeeLoadingState.Instant -> view.showFeeViewLoading(isLoading = loadingState.isLoading)
+                is FeeLoadingState.Delayed -> view.showDelayedFeeViewLoading(isLoading = loadingState.isLoading)
+            }
+        }
 
         if (token != null) {
             restoreSelectedToken(view, token!!)
@@ -110,12 +118,6 @@ class NewSendPresenter(
             val userTokens = userInteractor.getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-
-            val solToken = userInteractor.getUserSolToken()
-            if (solToken == null) {
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                return@launch
-            }
 
             val currentState = feeRelayerManager.getState()
             handleFeeRelayerStateUpdate(currentState, view)
@@ -137,10 +139,12 @@ class NewSendPresenter(
 
             val initialToken = if (selectedToken != null) selectedToken!! else userTokens.first()
             token = initialToken
-            val solToken = if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
+
+            val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+                Timber.wtf("Couldn't find user's SOL account!")
                 return@launch
             }
 
@@ -193,17 +197,16 @@ class NewSendPresenter(
         solToken: Token.Active
     ) {
         view.setFeeLabel(resources.getString(R.string.send_fees))
-        view.showFeeViewLoading(isLoading = true)
         view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
 
         feeRelayerManager.initialize(initialToken, solToken, recipientAddress)
         executeSmartSelection(
             token = requireToken(),
             feePayerToken = requireToken(),
-            strategy = SELECT_FEE_PAYER
+            strategy = SELECT_FEE_PAYER,
+            useCache = false
         )
 
-        view.showFeeViewLoading(isLoading = false)
         updateButton(initialToken, feeRelayerManager.getState())
     }
 
@@ -226,7 +229,8 @@ class NewSendPresenter(
         executeSmartSelection(
             token = requireToken(),
             feePayerToken = requireToken(),
-            strategy = CORRECT_AMOUNT
+            strategy = CORRECT_AMOUNT,
+            useCache = false
         )
     }
 
@@ -272,9 +276,8 @@ class NewSendPresenter(
 
     override fun onMaxButtonClicked() {
         val token = token ?: return
-        val totalAvailable = calculationMode.getTotalAvailable() ?: return
+        val totalAvailable = calculationMode.getMaxAvailableAmount() ?: return
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
-        inputAmount = totalAvailable.toString()
 
         showMaxButtonIfNeeded()
 
@@ -361,22 +364,26 @@ class NewSendPresenter(
     }
 
     private fun SearchResult.nicknameOrAddress(): String {
-        return if (this is SearchResult.UsernameFound) username
+        return if (this is SearchResult.UsernameFound) getFormattedUsername()
         else addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
     /**
-     * The smart selection of the Fee Payer token is being executed in four cases:
+     * The smart selection of the Fee Payer token is being executed in the following cases:
      * 1. When the screen initializes. It checks if we need to create an account for the recipient
      * 2. When user is typing the amount. We are checking what token we can choose for fee payment
      * 3. When user updates the fee payer token manually. We don't do anything, only updating the info
      * 4. When user clicks on MAX button. We are verifying if we need to reduce the amount for valid transaction
      * 5. When user updated the source token. We are checking for valid fee payer and if the entered amount is not much
+     *
+     * @param useCache is responsible for checking the recipient account info.
+     * We are checking if we need to create an account for a user when initially loaded
      * */
     private fun executeSmartSelection(
         token: Token.Active,
         feePayerToken: Token.Active?,
-        strategy: FeePayerSelectionStrategy
+        strategy: FeePayerSelectionStrategy,
+        useCache: Boolean = true
     ) {
         feePayerJob?.cancel()
         feePayerJob = launch {
@@ -384,7 +391,8 @@ class NewSendPresenter(
                 sourceToken = token,
                 feePayerToken = feePayerToken,
                 strategy = strategy,
-                tokenAmount = calculationMode.getCurrentAmount()
+                tokenAmount = calculationMode.getCurrentAmount(),
+                useCache = useCache
             )
         }
     }
@@ -410,7 +418,7 @@ class NewSendPresenter(
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
-        val sendButton = NewSendButtonValidator(
+        val sendButton = NewSendButtonState(
             sourceToken = sourceToken,
             searchResult = recipientAddress,
             calculationMode = calculationMode,
@@ -419,13 +427,13 @@ class NewSendPresenter(
             resources = resources
         )
 
-        when (val state = sendButton.state) {
-            is NewSendButtonValidator.State.Disabled -> {
+        when (val state = sendButton.currentState) {
+            is NewSendButtonState.State.Disabled -> {
                 view?.setBottomButtonText(state.textContainer)
                 view?.setSliderText(null)
                 view?.setInputColor(state.totalAmountTextColor)
             }
-            is NewSendButtonValidator.State.Enabled -> {
+            is NewSendButtonState.State.Enabled -> {
                 view?.setSliderText(resources.getString(state.textResId, state.value))
                 view?.setBottomButtonText(null)
                 view?.setInputColor(state.totalAmountTextColor)

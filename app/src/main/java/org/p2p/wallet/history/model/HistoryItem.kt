@@ -1,7 +1,7 @@
 package org.p2p.wallet.history.model
 
-import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
-import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.threeten.bp.ZonedDateTime
 
 sealed class HistoryItem {
@@ -9,8 +9,8 @@ sealed class HistoryItem {
     object Empty : HistoryItem()
     data class DateItem(val date: ZonedDateTime) : HistoryItem()
 
-    data class MoonpayTransactionItem(val transactionDetails: SellTransactionDetails) : HistoryItem() {
-        val status: MoonpaySellTransaction.SellTransactionStatus = transactionDetails.status
+    data class MoonpayTransactionItem(val transactionDetails: SellTransactionViewDetails) : HistoryItem() {
+        val status: SellTransactionStatus = transactionDetails.status
         val amountInSol: String = transactionDetails.formattedSolAmount
         val amountInUsd: String = transactionDetails.formattedUsdAmount
     }

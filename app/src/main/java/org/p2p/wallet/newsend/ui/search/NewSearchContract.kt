@@ -9,25 +9,22 @@ import org.p2p.wallet.send.model.SearchResult
 interface NewSearchContract {
 
     interface View : MvpView {
-        fun showSearchValue(value: String)
-        fun showSearchResult(result: List<SearchResult>)
-        fun showMessage(@StringRes textRes: Int?)
+        fun updateSearchInput(recentQuery: String, submit: Boolean)
+        fun showUsers(result: List<SearchResult>)
+        fun clearUsers()
+        fun showUsersMessage(@StringRes textRes: Int?)
         fun showLoading(isLoading: Boolean)
         fun showNotFound()
         fun showEmptyState(isEmpty: Boolean)
         fun showErrorState()
-        fun setListBackgroundVisibility(isVisible: Boolean)
-        fun setBuyReceiveButtonsVisibility(isVisible: Boolean)
+        fun showBackgroundVisible(isVisible: Boolean)
         fun submitSearchResult(searchResult: SearchResult, initialToken: Token.Active?)
         fun showScanner()
-        fun showBuyScreen(token: Token)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun search(newQuery: String)
-        fun loadInitialData()
         fun onSearchResultClick(result: SearchResult)
         fun onScanClicked()
-        fun onBuyClicked()
     }
 }

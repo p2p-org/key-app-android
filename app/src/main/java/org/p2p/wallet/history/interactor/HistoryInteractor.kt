@@ -14,8 +14,10 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
+import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 
 private const val DAY_IN_MILLISECONDS = (60 * 60 * 24)
@@ -29,6 +31,7 @@ class HistoryInteractor(
     private val historyTransactionMapper: HistoryTransactionMapper,
     private val rpcSignatureRepository: RpcSignatureRepository,
     private val userInteractor: UserInteractor,
+    private val sellInteractor: SellInteractor,
     private val serviceScope: ServiceScope
 ) {
     private val allSignatures = mutableListOf<String>()
@@ -157,6 +160,10 @@ class HistoryInteractor(
         transactionsLocalRepository.getTransactions(listOf(transactionId))
             .mapToHistoryTransactions()
             .first()
+
+    suspend fun loadSellTransactions(): List<SellTransaction> {
+        return sellInteractor.loadUserSellTransactions()
+    }
 
     private suspend fun loadTransactions(signatures: List<HistoryStreamItem>): List<HistoryTransaction> {
         val transactionDetails = transactionsRemoteRepository.getTransactions(tokenKeyProvider.publicKey, signatures)

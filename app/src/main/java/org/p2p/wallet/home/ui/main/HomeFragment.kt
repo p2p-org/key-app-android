@@ -13,6 +13,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.ActionButtonsView
 import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
@@ -77,6 +78,7 @@ class HomeFragment :
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -176,7 +178,8 @@ class HomeFragment :
         showActionButtons(
             ActionButton.BUY_BUTTON,
             ActionButton.RECEIVE_BUTTON,
-            ActionButton.SEND_BUTTON
+            ActionButton.SEND_BUTTON,
+            ActionButton.SWAP_BUTTON
         )
 
         listener = ActionButtonsViewClickListener {
@@ -193,13 +196,19 @@ class HomeFragment :
                 ActionButton.SELL_BUTTON -> {
                     replaceFragment(SellPayloadFragment.create())
                 }
-                else -> Unit
+                ActionButton.SWAP_BUTTON -> {
+                    replaceFragment(OrcaSwapFragment.create())
+                }
             }
         }
     }
 
     override fun setSellActionButtonIsVisible(isVisible: Boolean) {
         binding.viewActionButtons.setActionButtonIsVisible(ActionButton.SELL_BUTTON, isVisible)
+    }
+
+    override fun setSwapActionButtonIsVisible(isVisible: Boolean) {
+        binding.viewActionButtons.setActionButtonIsVisible(ActionButton.SWAP_BUTTON, isVisible)
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {

@@ -170,14 +170,15 @@ class OrcaPoolInteractor(
     private suspend fun mapTokensForDestination(orcaTokens: List<OrcaToken>): List<Token> {
         val userTokens = userInteractor.getUserTokens()
         val publicKey = tokenKeyProvider.publicKey
-        val allTokens = orcaTokens.mapNotNull { orcaToken ->
-            val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
-            if (userToken != null) {
-                userToken.takeUnless { userToken.isSOL && userToken.publicKey != publicKey }
-            } else {
-                userInteractor.findTokenData(orcaToken.mint)
+        val allTokens = orcaTokens
+            .mapNotNull { orcaToken ->
+                val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
+                if (userToken != null) {
+                    userToken.takeUnless { userToken.isSOL && userToken.publicKey != publicKey }
+                } else {
+                    userInteractor.findTokenData(orcaToken.mint)
+                }
             }
-        }
             .sortedWith(TokenComparator())
 
         return allTokens

@@ -11,7 +11,6 @@ import org.p2p.wallet.swap.model.orca.TransactionAddressData
 import org.p2p.core.token.TokenData
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 
@@ -101,8 +100,8 @@ class TransactionAddressInteractor(
         throw IllegalStateException("Wallet address is not valid")
     }
 
-    suspend fun getTokenDataIfDirect(address: Base58String, useCache: Boolean = true): TokenData? {
-        val accountInfo = userAccountRepository.getAccountInfo(address.base58Value, useCache)
+    suspend fun getDirectTokenData(address: String, useCache: Boolean = true): TokenData? {
+        val accountInfo = userAccountRepository.getAccountInfo(address, useCache)
 
         // detect if it is a direct token address
         val info = TokenTransaction.decodeAccountInfo(accountInfo) ?: return null

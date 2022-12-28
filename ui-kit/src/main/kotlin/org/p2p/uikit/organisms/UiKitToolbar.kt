@@ -1,11 +1,10 @@
 package org.p2p.uikit.organisms
 
-import android.content.Context
-import android.util.AttributeSet
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
+import android.content.Context
+import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import com.google.android.material.appbar.MaterialToolbar
@@ -17,36 +16,41 @@ class UiKitToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.toolbarStyle
-) : MaterialToolbar(context, attrs, defStyleAttr) {
+) : MaterialToolbar(context, attrs, defStyleAttr), SearchView.OnQueryTextListener {
 
-    var searchView: SearchView? = null
+    var onQueryUpdated: ((String) -> Unit)? = null
+
+    private var searchView: SearchView? = null
 
     init {
         minimumHeight = resources.getDimension(R.dimen.toolbar_height).toInt()
     }
 
     fun setSearchMenu(
-        queryTextListener: SearchView.OnQueryTextListener,
         @MenuRes menuRes: Int = R.menu.menu_ui_kit_toolbar_search,
-        @StringRes searchHintRes: Int = R.string.common_search,
-        isMenuVisible: Boolean = true,
-        lastQuery: String? = null
+        @StringRes searchHintRes: Int = R.string.common_search
     ) {
         inflateMenu(menuRes)
 
         val search = menu.findItem(R.id.menuItemSearch)
         searchView = search.actionView as SearchView
-        searchView?.apply {
-            // need to set old query and call onActionViewExpanded() because setText="" called in it!
-            setQuery(lastQuery, false)
+        searchView!!.apply {
             queryHint = getString(searchHintRes)
-            isVisible = isMenuVisible
-            if (isMenuVisible) {
-                onActionViewExpanded()
-                showSoftKeyboard()
-            }
-            setOnQueryTextListener(queryTextListener)
+            onActionViewExpanded()
+            showSoftKeyboard()
+            setOnQueryTextListener(this@UiKitToolbar)
         }
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        onQueryUpdated?.invoke(newText.orEmpty())
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean = false
+
+    fun setQuery(query: String, submit: Boolean) {
+        searchView?.setQuery(query, submit)
     }
 
     fun setOnDoneListener(onDoneClicked: () -> Unit) {
@@ -59,22 +63,5 @@ class UiKitToolbar @JvmOverloads constructor(
 
             return@setOnEditorActionListener false
         }
-    }
-
-    fun toggleSearchView() {
-        searchView?.apply {
-            if (isShown) {
-                isVisible = false
-                onActionViewCollapsed()
-            } else {
-                isVisible = true
-                onActionViewExpanded()
-                showSoftKeyboard()
-            }
-        }
-    }
-
-    fun setSearchMenuItemVisibility(isVisible: Boolean) {
-        menu?.findItem(R.id.menuItemSearch)?.isVisible = isVisible
     }
 }

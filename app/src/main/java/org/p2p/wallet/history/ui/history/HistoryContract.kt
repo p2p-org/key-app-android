@@ -3,8 +3,8 @@ package org.p2p.wallet.history.ui.history
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.recycler.PagingState
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.moonpay.model.SellTransaction
 
 interface HistoryContract {
     interface View : MvpView {
@@ -12,7 +12,7 @@ interface HistoryContract {
         fun openTransactionDetailsScreen(transaction: HistoryTransaction)
         fun showRefreshing(isRefreshing: Boolean)
         fun scrollToTop()
-        fun showHistory(items: List<HistoryTransaction>, moonpayItems: List<HistoryItem.MoonpayTransactionItem>)
+        fun showHistory(blockchainTransactions: List<HistoryTransaction>, sellTransactions: List<SellTransaction>)
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -19,6 +19,7 @@ import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpayExternalCustomerIdProvider
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRemoteRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
+import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepositoryErrorMapper
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepositoryMapper
 import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
 import retrofit2.Retrofit
@@ -41,6 +42,7 @@ object MoonpayModule : InjectionModule {
 
         singleOf(::MoonpayExternalCustomerIdProvider)
         factoryOf(::MoonpaySellRepositoryMapper)
+        factoryOf(::MoonpaySellRepositoryErrorMapper)
         singleOf(::MoonpaySellRemoteRepository) bind MoonpaySellRepository::class
 
         singleOf(::MoonpayCurrenciesRemoteRepository) bind MoonpayCurrenciesRepository::class

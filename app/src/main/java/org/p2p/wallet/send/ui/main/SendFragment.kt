@@ -75,6 +75,7 @@ private const val RESULT_QR_KEY = "RESULT_QR_KEY"
 
 const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
+@Deprecated("Will be removed, old design flow")
 class SendFragment :
     BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send),
     SendContract.View {

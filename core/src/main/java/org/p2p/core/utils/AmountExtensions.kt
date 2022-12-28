@@ -67,7 +67,7 @@ fun BigDecimal.toUsd(token: Token): BigDecimal? =
 // case: 1000.023000 -> 1 000.02
 fun BigDecimal.formatUsd(): String = formatWithDecimals(USD_DECIMALS)
 // case: 10000.000000007900 -> 100 000.000000008
-fun BigDecimal.formatToken(): String = formatWithDecimals(DEFAULT_DECIMAL)
+fun BigDecimal.formatToken(decimals: Int = DEFAULT_DECIMAL): String = formatWithDecimals(decimals)
 // case: 10000.000000007900 -> 100 000.00
 fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
 

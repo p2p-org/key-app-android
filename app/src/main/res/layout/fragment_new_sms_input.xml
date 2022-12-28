@@ -15,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/menu_onboarding_help"
         app:navigationIcon="@drawable/ic_back"
-        app:navigationIconTint="@color/black"
+        app:navigationIconTint="@color/icons_night"
         app:title="Step 2 of 3"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:titleTextColor="@color/text_night" />
