@@ -128,7 +128,7 @@ class NewSendDetailsBottomSheet :
 
     private fun DialogNewSendDetailsBinding.setTransactionFee() {
         with(layoutTransactionFee) {
-            imageViewIcon.setImageResource(R.drawable.ic_lightling)
+            imageViewIcon.setImageResource(R.drawable.ic_lightning)
             textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
             textViewSubtitle.apply {
                 val fee = state.sendFee

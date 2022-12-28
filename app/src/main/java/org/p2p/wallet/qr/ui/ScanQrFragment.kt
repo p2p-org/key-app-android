@@ -1,17 +1,17 @@
 package org.p2p.wallet.qr.ui
 
-import android.Manifest
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
+import android.Manifest
+import android.content.DialogInterface
+import android.content.DialogInterface.OnCancelListener
+import android.os.Bundle
+import android.view.View
 import com.google.zxing.BarcodeFormat
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.android.ext.android.inject
 import org.p2p.solanaj.core.PublicKey
@@ -34,13 +34,16 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import timber.log.Timber
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val EXTRA_KEY = "EXTRA_KEY"
 private const val EXTRA_RESULT = "EXTRA_RESULT"
 
 class ScanQrFragment :
     BaseMvpFragment<ScanQrContract.View, NoOpPresenter<ScanQrContract.View>>(R.layout.fragment_scan_qr),
-    PermissionsDialog.Callback {
+    PermissionsDialog.Callback,
+    OnCancelListener {
 
     companion object {
         fun create(
@@ -68,6 +71,8 @@ class ScanQrFragment :
 
     override val presenter = NoOpPresenter<ScanQrContract.View>()
 
+    private var errorDialog: AlertDialog? = null
+
     private val qrDecodeStartTimeout by lazy {
         requireContext().resources
             .getInteger(android.R.integer.config_mediumAnimTime)
@@ -76,10 +81,9 @@ class ScanQrFragment :
 
     private val barcodeCallback: ZXingScannerView.ResultHandler =
         ZXingScannerView.ResultHandler { rawResult ->
-            val continueAction: () -> Unit = { startCameraPreview() }
             rawResult?.text?.let { address ->
-                validateAddress(address, continueAction)
-            } ?: showInvalidDataError(continueAction)
+                validateAddress(address)
+            } ?: showInvalidDataError()
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -122,6 +126,7 @@ class ScanQrFragment :
 
     override fun onStop() {
         super.onStop()
+        errorDialog?.dismiss()
         isCameraStarted = false
         binding.barcodeView.stopCamera()
     }
@@ -184,7 +189,7 @@ class ScanQrFragment :
         }
     }
 
-    private fun validateAddress(address: String, continueAction: () -> Unit) {
+    private fun validateAddress(address: String) {
         try {
             PublicKey(address)
             setFragmentResult(requestKey, bundleOf(resultKey to address))
@@ -197,23 +202,27 @@ class ScanQrFragment :
         } catch (e: Throwable) {
             Timber.i(e, "No address in this scanned data: $address")
             AlertDialog.Builder(requireContext())
-                .setCancelable(false)
+                .setCancelable(true)
                 .setMessage(R.string.qr_no_address)
-                .setPositiveButton(android.R.string.ok) { _, _ -> continueAction.invoke() }
+                .setPositiveButton(android.R.string.ok) { _, _ -> startCameraPreview() }
+                .setOnCancelListener(this)
                 .show()
+                .also { errorDialog = it }
         }
     }
 
-    private fun showInvalidDataError(continueAction: () -> Unit) {
+    private fun showInvalidDataError() {
         AlertDialog.Builder(requireContext())
-            .setCancelable(false)
+            .setCancelable(true)
             .setMessage(R.string.qr_common_error)
-            .setPositiveButton(
-                android.R.string.ok,
-            ) { _, _ ->
-                continueAction.invoke()
-            }
+            .setPositiveButton(android.R.string.ok) { _, _ -> startCameraPreview() }
+            .setOnCancelListener(this)
             .show()
+            .also { errorDialog = it }
+    }
+
+    override fun onCancel(dialog: DialogInterface?) {
+        startCameraPreview()
     }
 
     private fun onBackPressed() {
