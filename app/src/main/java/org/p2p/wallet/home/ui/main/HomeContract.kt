@@ -3,6 +3,7 @@ package org.p2p.wallet.home.ui.main
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.model.HomeElementItem
 import org.p2p.wallet.home.ui.main.adapter.OnHomeItemsClickListener
 import java.math.BigDecimal
@@ -20,6 +21,7 @@ interface HomeContract {
         fun showEmptyState(isEmpty: Boolean)
         fun showUserAddress(ellipsizedAddress: String)
         fun showNewSendScreen()
+        fun showActionButtons(buttons: List<ActionButton>)
 
         fun navigateToProfile()
         fun navigateToReserveUsername()
@@ -27,8 +29,6 @@ interface HomeContract {
         fun showBuyInfoScreen(token: Token)
 
         fun showSendNoTokens(fallbackToken: Token)
-        fun setSellActionButtonIsVisible(isVisible: Boolean)
-        fun setSwapActionButtonIsVisible(isVisible: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

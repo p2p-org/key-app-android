@@ -57,7 +57,8 @@ object SendModule : InjectionModule {
                 initialToken = initialToken,
                 searchInteractor = get(),
                 usernameDomainFeatureToggle = get(),
-                userInteractor = get()
+                userInteractor = get(),
+                newSendAnalytics = get()
             )
         }
         factoryOf(::NewSelectTokenPresenter) bind NewSelectTokenContract.Presenter::class

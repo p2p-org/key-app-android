@@ -46,13 +46,8 @@ class SolanaNetworkObserver(
     fun getStateFlow(): Flow<SolanaNetworkState> = state
 
     fun start() {
-        if (!observationFeatureToggle.isFeatureEnabled) {
-            Timber.tag(TAG).i("Solana network observation is disabled by feature toggle. Skipping the launch")
-            return
-        }
-
         observeJob = appScope.launch {
-            while (isActive) {
+            while (isActive && observationFeatureToggle.isFeatureEnabled) {
                 try {
                     val samples = rpcSolanaRepository.getRecentPerformanceSamples(SAMPLE_COUNT)
                     handleSamples(samples)

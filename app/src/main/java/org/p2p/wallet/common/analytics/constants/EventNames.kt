@@ -95,6 +95,15 @@ object EventNames {
     const val SEND_ACTION_BUTTON_CLICKED = "Action_Button_Send"
     const val SEND_IS_USERNAME = "Send_Username"
 
+    // new send
+    const val NEW_SEND_RECIPIENT_VIEWED = "Sendnew_Recipient_Screen"
+    const val NEW_SEND_RECIPIENT_ADD = "Sendnew_Recipient_Add"
+    const val NEW_SEND_VIEWED = "Sendnew_Input_Screen"
+    const val NEW_SEND_FREE_TRANSACTIONS_CLICK = "Sendnew_Free_Transaction_Click"
+    const val NEW_SEND_TOKEN_SELECTION_CLICK = "Sendnew_Token_Input_Click"
+    const val NEW_SEND_SWITCH_CURRENCY_MODE_CLICK = "Sendnew_Fiat_Input_Click"
+    const val NEW_SEND_CONFIRM_BUTTON_CLICK = "Sendnew_Confirm_Button_Click"
+
     const val SWAP_VIEWED = "Swap_Viewed"
     const val SWAP_CHANGING_TOKEN_A = "Swap_Changing_Token_A"
     const val SWAP_CHANGING_TOKEN_B = "Swap_Changing_Token_B"

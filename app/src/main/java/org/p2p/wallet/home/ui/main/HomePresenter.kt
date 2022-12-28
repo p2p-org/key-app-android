@@ -17,6 +17,7 @@ import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
@@ -104,13 +105,28 @@ class HomePresenter(
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
 
+        initializeActionButtons()
+    }
+
+    private fun initializeActionButtons() {
         launch {
-            view?.setSellActionButtonIsVisible(
-                isVisible = sellInteractor.isSellAvailable()
+            val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
+            val isSellAvailable = sellInteractor.isSellAvailable()
+
+            val buttons = mutableListOf(
+                ActionButton.RECEIVE_BUTTON,
+                ActionButton.SEND_BUTTON
             )
-            view?.setSwapActionButtonIsVisible(
-                isVisible = !sellEnabledFeatureToggle.isFeatureEnabled
-            )
+
+            if (!isSellFeatureToggleEnabled) {
+                buttons += ActionButton.SWAP_BUTTON
+            }
+
+            if (isSellAvailable) {
+                buttons += ActionButton.SELL_BUTTON
+            }
+
+            view?.showActionButtons(buttons)
         }
     }
 

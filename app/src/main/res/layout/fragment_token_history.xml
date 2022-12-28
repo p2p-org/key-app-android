@@ -49,11 +49,12 @@
             app:layout_constraintTop_toBottomOf="@+id/totalTextView"
             tools:text="$12,380.00" />
 
-        <org.p2p.wallet.common.ui.widget.ActionButtonsView
+        <org.p2p.wallet.common.ui.widget.actionbuttons.ActionButtonsView
             android:id="@+id/view_action_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/bg_smoke"
+            android:paddingHorizontal="16dp"
             android:paddingTop="30dp"
             android:paddingBottom="24dp"
             app:layout_constraintEnd_toEndOf="parent"
