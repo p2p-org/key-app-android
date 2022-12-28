@@ -4,39 +4,41 @@ import okio.IOException
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import org.p2p.wallet.moonpay.model.MoonpaySellError
+import java.net.UnknownHostException
 
 class MoonpaySellRepositoryErrorMapper {
-    fun fromNetworkError(error: Throwable): MoonpaySellError {
-        // add more errors if needed
-        return when (error) {
-            is ServerException -> {
-                val moonpayErrorType = error.jsonErrorBody
-                    ?.getAsJsonPrimitive("type")
-                    ?.asString
+    // add more errors if needed
+    fun fromNetworkError(error: Throwable): MoonpaySellError = when (error) {
+        is UnknownHostException -> {
+            MoonpaySellError.NoInternetForRequest(error)
+        }
+        is ServerException -> {
+            val moonpayErrorType = error.jsonErrorBody
+                ?.getAsJsonPrimitive("type")
+                ?.asString
 
-                val moonpayErrorMessage = error.jsonErrorBody
-                    ?.getAsJsonPrimitive("message")
-                    ?.asString
-                    .orEmpty()
-                when {
-                    moonpayErrorType == MoonpayErrorResponseType.NOT_FOUND_ERROR.stringValue -> {
-                        MoonpaySellError.TokenToSellNotFound(error)
-                    }
-                    moonpayErrorType == MoonpayErrorResponseType.BAD_REQUEST_ERROR.stringValue &&
-                        moonpayErrorMessage.contains("The minimum order amount") -> {
-                        MoonpaySellError.NotEnoughTokenToSell(error)
-                    }
-                    else -> {
-                        MoonpaySellError.UnknownError(error)
-                    }
+            val moonpayErrorMessage = error.jsonErrorBody
+                ?.getAsJsonPrimitive("message")
+                ?.asString
+                .orEmpty()
+            when {
+                moonpayErrorType == MoonpayErrorResponseType.NOT_FOUND_ERROR.stringValue -> {
+                    MoonpaySellError.TokenToSellNotFound(error)
+                }
+                moonpayErrorType == MoonpayErrorResponseType.BAD_REQUEST_ERROR.stringValue &&
+                    moonpayErrorMessage.contains("The minimum order amount") -> {
+                    MoonpaySellError.NotEnoughTokenToSell(error)
+                }
+                else -> {
+                    MoonpaySellError.UnknownError(error)
                 }
             }
-            is IllegalStateException, is IOException -> {
-                MoonpaySellError.UnknownError(error)
-            }
-            else -> {
-                MoonpaySellError.UnauthorizedRequest(error)
-            }
+        }
+        is IllegalStateException, is IOException -> {
+            MoonpaySellError.UnknownError(error)
+        }
+        else -> {
+            MoonpaySellError.UnauthorizedRequest(error)
         }
     }
 }

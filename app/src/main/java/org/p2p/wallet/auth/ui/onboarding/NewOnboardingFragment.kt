@@ -1,11 +1,11 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import android.os.Bundle
-import android.text.method.LinkMovementMethod
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.BuildConfig
@@ -165,7 +165,7 @@ class NewOnboardingFragment :
 
     override fun onConnectionError() {
         setButtonLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(messageResId = R.string.onboarding_offline_error)
+        showUiKitSnackBar(messageResId = R.string.common_offline_error)
     }
 
     override fun onCommonError() {

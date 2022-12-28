@@ -642,12 +642,15 @@
     <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
     <string name="sell_lock_button_cancel">Remove from history</string>
     <string name="sell_lock_usd_amount">≈ $%s</string>
+
+    <string name="sell_payload_fiat_value">1 SOL ≈ %s %s</string>
+    <string name="sell_payload_fiat_symbol">≈ %s</string>
     <string name="sell_payload_title">Cash out token</string>
-    <string name="sell_all_sol">all %s SOL</string>
-    <string name="sell_included_fee">Included fee %s %s</string>
-    <string name="sell_min_sol_amount">The minimum amount is %s SOL</string>
-    <string name="sell_max_sol_amount">The maximum amount is %s SOL</string>
-    <string name="sell_not_enough_sol">Not enough SOL</string>
+    <string name="sell_payload_all_sol">all %s SOL</string>
+    <string name="sell_payload_included_fee">Included fee %s %s</string>
+    <string name="sell_payload_min_sol_amount">The minimum amount is %s SOL</string>
+    <string name="sell_payload_max_sol_amount">The maximum amount is %s SOL</string>
+    <string name="sell_payload_not_enough_sol">Not enough SOL</string>
 
     <string name="sell_details_waiting_deposit_title">You need to send %s SOL</string>
     <string name="sell_details_waiting_deposit_body">
@@ -666,14 +669,11 @@
     </string>
     <string name="sell_details_failed_title">You\'ve not sent %s SOL</string>
     <string name="sell_details_failed_body">You didn\'t finish your cash out transaction. After 7 days your transaction has been automatically declined.\n\nYou can try again, but your new transaction will be subject to the current rates.</string>
+    <string name="sell_details_receiver_moonpay_bank">Your bank account via Moonpay</string>
 
-    <string name="error_service_ruiner_message">Our payment service was ruined.\nVisit this page later</string>
-    <string name="sell_need_more_sol_title">You need a little more SOL</string>
-    <string name="sell_need_more_sol_message">The current minimum amount is %s SOL</string>
-    <string name="you_bank_account_via_moonpay">Your bank account via Moonpay</string>
-    <string name="sell_process_transaction_status">SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via Moonpay help center</string>
-    <string name="sell_sol_fiat_value">1 SOL ≈ %s %s</string>
-    <string name="sell_input_fiat_symbol">≈ %s</string>
+    <string name="sell_error_body_message">Our payment service was ruined.\nVisit this page later</string>
+    <string name="sell_error_min_amount_title">You need a little more SOL</string>
+    <string name="sell_error_min_amount_subtitle">The current minimum amount is %s SOL</string>
 
 
 </resources>

@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.ui.generalerror
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.components.UiKitButton
@@ -177,7 +177,7 @@ class OnboardingGeneralErrorFragment :
 
     override fun onConnectionError() {
         setRestoreByGoogleLoadingState(isLoading = false)
-        showUiKitSnackBar(messageResId = R.string.onboarding_offline_error)
+        showUiKitSnackBar(messageResId = R.string.common_offline_error)
     }
 
     override fun onCommonError() {
