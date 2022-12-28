@@ -32,7 +32,7 @@ class SearchViewHolder(
     fun onBind(item: SearchResult) {
         when (item) {
             is SearchResult.UsernameFound -> renderFull(item)
-            is SearchResult.AddressOnly -> renderAddressOnly(item)
+            is SearchResult.AddressFound -> renderAddressOnly(item)
             // do nothing, no wrong type should be in search view
             else -> Timber.w("Received SearchResult.Wrong in unexpected place")
         }
@@ -47,7 +47,7 @@ class SearchViewHolder(
             if (item.username.endsWith(usernameDomainFeatureToggle.value)) {
                 imageResource = R.drawable.ic_key_app_circle
                 walletImageView.setPadding(0, 0, 0, 0)
-                textViewTop.text = "@${item.username}"
+                textViewTop.text = item.getFormattedUsername()
                 textViewBottom.isVisible = false
             } else {
                 imageResource = R.drawable.ic_search_wallet
@@ -63,7 +63,7 @@ class SearchViewHolder(
         }
     }
 
-    private fun renderAddressOnly(item: SearchResult.AddressOnly) {
+    private fun renderAddressOnly(item: SearchResult.AddressFound) {
         with(binding) {
             val imageIconUrl = item.sourceToken?.iconUrl
             val description: String?

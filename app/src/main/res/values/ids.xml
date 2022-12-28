@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="edgetoedge" type="id" />
     <item name="prefix_watcher_tag_id" type="id" />
 
     <!--feature toggle ids-->

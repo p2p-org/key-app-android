@@ -15,6 +15,7 @@ import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.transaction.model.ShowProgress
 import java.math.BigDecimal
 
+@Deprecated("Will be removed, old design flow")
 interface SendContract {
 
     interface View : MvpView {

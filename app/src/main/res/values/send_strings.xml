@@ -35,7 +35,7 @@
     <string name="send_pick_token_other">Other tokens</string>
     <string name="send_pick_token_search_result_text">Here\'s what we found</string>
     <string name="send_pick_token_search_not_found">Token not found. Try another one</string>
-    <string name="send_pick_fee_token_format">Pay the %s fee with</string>
+    <string name="send_pick_fee_token_title">Pay the fee with</string>
 
     <!--Free Transactions Dialog-->
     <string name="free_transactions_title">Enjoy free transactions!</string>

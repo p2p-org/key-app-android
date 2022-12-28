@@ -6,7 +6,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
 import org.p2p.wallet.utils.toBase58Instance
@@ -18,6 +17,7 @@ import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 250L
 
+@Deprecated("Will be removed, old design flow")
 class SearchPresenter(
     private val usernames: List<SearchResult>?,
     private val searchInteractor: SearchInteractor,
@@ -65,17 +65,19 @@ class SearchPresenter(
     }
 
     override fun onSearchResultClick(result: SearchResult) {
-        if (searchInteractor.isOwnPublicKey(result.addressState.address)) {
-            view?.showMessage(R.string.main_send_to_yourself_error)
-        } else {
-            view?.submitSearchResult(result)
+        launch {
+            if (searchInteractor.isOwnAddress(result.addressState.address)) {
+                view?.showMessage(R.string.main_send_to_yourself_error)
+            } else {
+                view?.submitSearchResult(result)
+            }
         }
     }
 
     private suspend fun validateAndSearch(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.USERNAME -> searchByUsername(target.trimmedUsername)
-            SearchTarget.Validation.SOL_ADDRESS -> searchBySolAddress(target.value)
+            SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> searchBySolAddress(target.value)
             SearchTarget.Validation.BTC_ADDRESS -> showBtcAddress(target.value)
             SearchTarget.Validation.EMPTY -> showEmptyState()
             SearchTarget.Validation.INVALID -> showNotFound()
@@ -110,11 +112,11 @@ class SearchPresenter(
 
         val result = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance())
         view?.showMessage(R.string.send_account_found)
-        view?.showSearchResult(result)
+        view?.showSearchResult(listOf(result))
     }
 
     private fun showBtcAddress(address: String) {
-        val searchResult = SearchResult.AddressOnly(AddressState(address, NetworkType.BITCOIN))
+        val searchResult = SearchResult.AddressFound(AddressState(address))
         val resultList = listOf(searchResult)
         view?.showMessage(null)
         view?.showSearchResult(resultList)

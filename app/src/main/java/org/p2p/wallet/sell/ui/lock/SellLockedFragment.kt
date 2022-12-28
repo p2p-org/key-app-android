@@ -11,10 +11,9 @@ import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellLockBinding
-import org.p2p.wallet.moonpay.model.MoonpaySellTransaction.SellTransactionStatus
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -33,7 +32,7 @@ class SellLockedFragment :
     SellLockedContract.View {
 
     companion object {
-        fun create(details: SellTransactionDetails): SellLockedFragment {
+        fun create(details: SellTransactionViewDetails): SellLockedFragment {
             require(details.status == SellTransactionStatus.WAITING_FOR_DEPOSIT) {
                 "This fragment is used only if status == waiting for deposit"
             }
@@ -45,7 +44,7 @@ class SellLockedFragment :
     override val presenter: SellLockedContract.Presenter by inject()
 
     private val binding: FragmentSellLockBinding by viewBinding()
-    private val details: SellTransactionDetails by args(ARG_SELL_LOCKED)
+    private val details: SellTransactionViewDetails by args(ARG_SELL_LOCKED)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -100,8 +99,8 @@ class SellLockedFragment :
     private fun setupButtons(buttonTitle: String) = with(binding.layoutDetails) {
         buttonAction.text = buttonTitle
         buttonAction.setOnClickListener {
-            val recipient = SearchResult.AddressOnly(
-                AddressState(details.receiverAddress, NetworkType.SOLANA)
+            val recipient = SearchResult.AddressFound(
+                AddressState(details.receiverAddress)
             )
             replaceFragment(NewSendFragment.create(recipient = recipient))
         }

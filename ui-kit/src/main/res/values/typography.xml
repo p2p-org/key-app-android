@@ -8,7 +8,7 @@
     </style>
 
     <!--region TextAppearance.Regular-->
-    <style name="UiKit.TextAppearance.Regular">
+    <style name="UiKit.TextAppearance.Regular" parent="UiKit.TextAppearance">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
     </style>
@@ -65,7 +65,7 @@
     <!--endregion-->
 
     <!--region TextAppearance.SemiBold-->
-    <style name="UiKit.TextAppearance.SemiBold">
+    <style name="UiKit.TextAppearance.SemiBold" parent="UiKit.TextAppearance">
         <item name="fontFamily">@font/inter_semi_bold</item>
         <item name="android:textStyle">bold</item>
     </style>

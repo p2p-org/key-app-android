@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.recycler.PagingState
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.moonpay.model.SellTransaction
 
 interface TokenHistoryContract {
 
@@ -18,7 +18,7 @@ interface TokenHistoryContract {
         fun hideBuyActionButton()
         fun showHistory(
             transactions: List<HistoryTransaction>,
-            moonpayTransactionItem: List<HistoryItem.MoonpayTransactionItem>
+            sellTransactions: List<SellTransaction>
         )
     }
 

@@ -17,11 +17,20 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     val formattedAddress: String
         get() = addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
 
-    @Parcelize
-    data class InvalidAddress(override val addressState: AddressState) : SearchResult(addressState)
+    fun isInvalid(): Boolean =
+        this is InvalidDirectAddress || this is OwnAddressError
 
     @Parcelize
-    data class AddressOnly constructor(
+    data class InvalidDirectAddress(
+        val address: String,
+        val directToken: TokenData
+    ) : SearchResult(AddressState(address))
+
+    @Parcelize
+    data class OwnAddressError(val address: String) : SearchResult(AddressState(address))
+
+    @Parcelize
+    data class AddressFound(
         override val addressState: AddressState,
         val sourceToken: Token.Active? = null,
         val date: Date? = null,
@@ -30,8 +39,8 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
         @IgnoredOnParcel
         val isEmptyBalance = balance == EMPTY_BALANCE
 
-        fun copyWithBalance(balance: Long): AddressOnly {
-            return AddressOnly(addressState, sourceToken, date, balance)
+        fun copyWithBalance(balance: Long): AddressFound {
+            return AddressFound(addressState, sourceToken, date, balance)
         }
     }
 
@@ -47,13 +56,4 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
             username
         }
     }
-
-    @Parcelize
-    data class InvalidResult(
-        override val addressState: AddressState,
-        val errorMessage: String,
-        val tokenData: TokenData? = null,
-        val description: String? = null,
-        val canReceiveAndBuy: Boolean = false
-    ) : SearchResult(addressState)
 }

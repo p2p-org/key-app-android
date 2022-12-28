@@ -11,6 +11,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.FeeRelayerState.Failure
 import org.p2p.wallet.newsend.model.FeeRelayerState.ReduceAmount
@@ -34,7 +35,7 @@ class SendFeeRelayerManager(
 ) {
 
     var onStateUpdated: ((FeeRelayerState) -> Unit)? = null
-    var onFeeLoading: ((isLoading: Boolean) -> Unit)? = null
+    var onFeeLoading: ((FeeLoadingState) -> Unit)? = null
 
     private var currentState: FeeRelayerState by Delegates.observable(FeeRelayerState.Idle) { _, oldState, newState ->
         onStateUpdated?.invoke(newState)
@@ -54,9 +55,13 @@ class SendFeeRelayerManager(
         this.recipientAddress = recipientAddress
         this.solToken = solToken
 
+        onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = true))
+
         minRentExemption = sendInteractor.getMinRelayRentExemption()
         feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
         sendInteractor.initialize(initialToken)
+
+        onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
     }
 
     fun getMinRentExemption(): BigInteger = minRentExemption.orZero()
@@ -88,16 +93,18 @@ class SendFeeRelayerManager(
         sourceToken: Token.Active,
         feePayerToken: Token.Active?,
         strategy: FeePayerSelectionStrategy,
-        tokenAmount: BigDecimal
+        tokenAmount: BigDecimal,
+        useCache: Boolean
     ) {
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
 
         try {
-            onFeeLoading?.invoke(true)
+            onFeeLoading?.invoke(FeeLoadingState(isLoading = true, isDelayed = useCache))
             val feeRelayerFee = calculateFeeRelayerFee(
                 sourceToken = sourceToken,
                 feePayerToken = feePayer,
-                result = recipientAddress
+                result = recipientAddress,
+                useCache = useCache
             )
 
             if (feeRelayerFee == null) {
@@ -116,7 +123,7 @@ class SendFeeRelayerManager(
         } catch (e: Throwable) {
             Timber.e(e, "Error during FeeRelayer fee calculation")
         } finally {
-            onFeeLoading?.invoke(false)
+            onFeeLoading?.invoke(FeeLoadingState(isLoading = false, isDelayed = useCache))
         }
     }
 
@@ -141,7 +148,12 @@ class SendFeeRelayerManager(
                 appendLine()
                 append("Expected total fee in Token: 0 (T)")
             } else {
-                val expectedFee = solanaFee.feeRelayerFee.expectedFee.accountBalances
+                val accountBalances = solanaFee.feeRelayerFee.expectedFee.accountBalances
+                val expectedFee = if (!relayAccount.isCreated) {
+                    accountBalances + relayInfo.minimumRelayAccountRent
+                } else {
+                    accountBalances
+                }
                 append("Expected total fee in SOL: $expectedFee (E)")
                 appendLine()
 
@@ -165,7 +177,8 @@ class SendFeeRelayerManager(
     private suspend fun calculateFeeRelayerFee(
         sourceToken: Token.Active,
         feePayerToken: Token.Active,
-        result: SearchResult
+        result: SearchResult,
+        useCache: Boolean = true
     ): FeeRelayerFee? {
         val recipient = result.addressState.address
 
@@ -173,7 +186,8 @@ class SendFeeRelayerManager(
             sendInteractor.calculateFeesForFeeRelayer(
                 feePayerToken = feePayerToken,
                 token = sourceToken,
-                recipient = recipient
+                recipient = recipient,
+                useCache = useCache
             )
         } catch (e: CancellationException) {
             Timber.i("Fee calculation is cancelled")

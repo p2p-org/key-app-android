@@ -39,6 +39,10 @@ data class SendSolanaFee constructor(
         get() = feeRelayerFee.transactionFeeInSol.isZeroOrLess()
 
     @IgnoredOnParcel
+    val isAccountCreationFree: Boolean
+        get() = feeRelayerFee.accountCreationFeeInSol.isZeroOrLess()
+
+    @IgnoredOnParcel
     val accountCreationFormattedFee: String
         get() = "${accountCreationFeeDecimals.formatToken()} ${feePayerToken.tokenSymbol}"
 

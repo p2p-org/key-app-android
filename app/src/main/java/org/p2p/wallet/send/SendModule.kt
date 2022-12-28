@@ -52,9 +52,8 @@ object SendModule : InjectionModule {
             )
         }
 
-        factory<NewSearchContract.Presenter> { (usernames: List<SearchResult>?, initialToken: Token.Active?) ->
+        factory<NewSearchContract.Presenter> { (initialToken: Token.Active?) ->
             NewSearchPresenter(
-                usernames = usernames,
                 initialToken = initialToken,
                 searchInteractor = get(),
                 usernameDomainFeatureToggle = get(),

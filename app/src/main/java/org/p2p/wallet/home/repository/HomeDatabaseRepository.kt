@@ -26,11 +26,6 @@ class HomeDatabaseRepository(
             .fold(BigDecimal.ZERO, BigDecimal::add)
             .scaleShort()
 
-    override suspend fun setTokens(tokens: List<Token.Active>) {
-        val entities = tokens.map { TokenConverter.toDatabase(it) }
-        tokenDao.insertOrReplace(entities)
-    }
-
     override suspend fun updateTokens(tokens: List<Token.Active>) {
         val entities = tokens.map { TokenConverter.toDatabase(it) }
         tokenDao.insertOrUpdate(entities)

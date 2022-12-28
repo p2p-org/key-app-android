@@ -2,6 +2,7 @@ package org.p2p.core.utils
 
 import android.icu.text.DecimalFormat
 import android.icu.text.DecimalFormatSymbols
+import java.math.RoundingMode
 import java.util.Locale
 
 private const val DECIMAL_FORMAT = "###,###."
@@ -16,6 +17,8 @@ object DecimalFormatter {
             groupingSeparator = ' '
         }
 
-        return DecimalFormat(format, formatSymbols).format(value)
+        val decimalFormat = DecimalFormat(format, formatSymbols)
+        decimalFormat.roundingMode = RoundingMode.DOWN.ordinal
+        return decimalFormat.format(value)
     }
 }
