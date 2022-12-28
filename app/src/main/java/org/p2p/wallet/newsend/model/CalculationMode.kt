@@ -51,12 +51,16 @@ class CalculationMode {
     }
 
     fun reduceAmount(newInputAmount: BigInteger): BigDecimal {
-        val newAmount = newInputAmount.fromLamports(token.decimals)
-        return if (currencyMode is CurrencyMode.Usd) {
-            newAmount.toUsd(token).orZero()
+        val newTokenAmount = newInputAmount.fromLamports(token.decimals)
+        val newAmount = if (currencyMode is CurrencyMode.Usd) {
+            newTokenAmount.toUsd(token).orZero()
         } else {
-            newAmount
+            newTokenAmount
         }
+
+        updateInputAmount(newAmount.toPlainString())
+
+        return newAmount
     }
 
     fun getCurrentAmountLamports(): BigInteger = tokenAmount.toLamports(token.decimals)
@@ -64,6 +68,8 @@ class CalculationMode {
     fun getCurrentAmount(): BigDecimal = tokenAmount
 
     fun getCurrentAmountUsd(): BigDecimal = usdAmount
+
+    fun isCurrentInputEmpty(): Boolean = inputAmount.isEmpty()
 
     fun getMaxAvailableAmount(): BigDecimal? {
         tokenAmount = token.total

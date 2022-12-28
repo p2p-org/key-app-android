@@ -4,7 +4,6 @@ import android.content.res.Resources
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
-import org.p2p.core.utils.emptyString
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
@@ -63,10 +62,6 @@ class NewSendPresenter(
             view?.showToken(newToken)
             calculationMode.updateToken(newToken)
         }
-    }
-
-    private var inputAmount: String by Delegates.observable(emptyString()) { _, _, newInput ->
-        calculationMode.updateInputAmount(newInput)
     }
 
     private val calculationMode = CalculationMode()
@@ -166,7 +161,7 @@ class NewSendPresenter(
             calculationMode = calculationMode
         )
 
-        val feesLabel = total.getFeesInToken(inputAmount.isEmpty()).format(resources)
+        val feesLabel = total.getFeesInToken(calculationMode.isCurrentInputEmpty()).format(resources)
         view.setFeeLabel(feesLabel)
         updateButton(sourceToken, feeRelayerState)
 
@@ -183,7 +178,7 @@ class NewSendPresenter(
                 handleUpdateFee(newState, view)
             }
             is FeeRelayerState.ReduceAmount -> {
-                inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
+                val inputAmount = calculationMode.reduceAmount(newState.newInputAmount).toPlainString()
                 view.updateInputValue(inputAmount, forced = true)
                 view.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
             }
@@ -253,7 +248,7 @@ class NewSendPresenter(
     }
 
     override fun updateInputAmount(amount: String) {
-        inputAmount = amount
+        calculationMode.updateInputAmount(amount)
         showMaxButtonIfNeeded()
         updateButton(requireToken(), feeRelayerManager.getState())
 
@@ -309,7 +304,7 @@ class NewSendPresenter(
         if (currentState !is FeeRelayerState.UpdateFee) return
 
         val solanaFee = currentState.solanaFee
-        if (inputAmount.isEmpty() && solanaFee == null) {
+        if (calculationMode.isCurrentInputEmpty() && solanaFee == null) {
             newSendAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
@@ -471,7 +466,7 @@ class NewSendPresenter(
         val solanaFee = (feeRelayerManager.getState() as? FeeRelayerState.UpdateFee)?.solanaFee
         newSendAnalytics.logSendConfirmButtonClicked(
             tokenName = token.tokenName,
-            amountInToken = inputAmount,
+            amountInToken = calculationMode.getCurrentAmount().toPlainString(),
             amountInUsd = calculationMode.getCurrentAmountUsd().toString(),
             isFeeFree = solanaFee?.isTransactionFree ?: false,
             mode = calculationMode.getCurrencyMode()
