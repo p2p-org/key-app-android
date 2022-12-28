@@ -8,7 +8,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/textViewTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -21,7 +21,7 @@
         tools:text="Receive" />
 
     <TextView
-        android:id="@+id/subtitleTextView"
+        android:id="@+id/textViewSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/containerAmounts"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
         tools:text="From ....S39N" />
 
     <LinearLayout
@@ -47,7 +47,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/valueTextView"
+            android:id="@+id/textViewValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -57,7 +57,7 @@
             tools:text="- 10.00 $" />
 
         <TextView
-            android:id="@+id/totalTextView"
+            android:id="@+id/textViewTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"

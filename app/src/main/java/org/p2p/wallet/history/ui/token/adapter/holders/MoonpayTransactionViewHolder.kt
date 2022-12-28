@@ -85,15 +85,15 @@ class MoonpayTransactionViewHolder(
             }
         }
 
-        layoutTransactionDetails.titleTextView.text = title
-        layoutTransactionDetails.subtitleTextView.text = subtitle
+        layoutTransactionDetails.textViewTitle.text = title
+        layoutTransactionDetails.textViewSubtitle.text = subtitle
     }
 
     private fun renderAmounts(item: HistoryItem.MoonpayTransactionItem) {
-        binding.layoutTransactionDetails.valueTextView.text = binding.getString(
+        binding.layoutTransactionDetails.textViewValue.text = binding.getString(
             R.string.transaction_history_moonpay_amount_usd,
             item.amountInUsd
         )
-        binding.layoutTransactionDetails.totalTextView.isVisible = false // hide SOL amount
+        binding.layoutTransactionDetails.textViewTotal.isVisible = false // hide SOL amount
     }
 }
