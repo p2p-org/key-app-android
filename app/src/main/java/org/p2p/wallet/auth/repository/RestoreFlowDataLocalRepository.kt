@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.repository
 
 import com.google.gson.JsonObject
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
@@ -81,10 +82,11 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
     }
 
     fun generateActualAccount(userSeedPhrase: List<String>) {
-        this.userActualAccount = Account.fromBip44MnemonicWithChange(
+        this.userActualAccount = Account.fromBip44Mnemonic(
             words = userSeedPhrase,
             walletIndex = 0,
-            passphrase = emptyString()
+            passphrase = emptyString(),
+            derivationPath = DerivationPath.BIP44CHANGE
         )
     }
 

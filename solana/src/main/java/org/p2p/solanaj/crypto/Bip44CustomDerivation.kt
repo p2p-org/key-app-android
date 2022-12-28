@@ -13,6 +13,16 @@ class Bip44CustomDerivation(
     private val isHardened: Boolean
 ) {
 
+    companion object {
+        val BIP_44_501_101_0: Bip44CustomDerivation = Bip44CustomDerivation(
+            purpose = 44,
+            type = 501,
+            account = 101,
+            change = 0,
+            isHardened = true
+        )
+    }
+
     private val hdKeyGenerator = HdKeyGenerator()
 
     private val solanaCoin: SolanaCoin = SolanaCoin()

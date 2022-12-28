@@ -2,6 +2,7 @@ package org.p2p.solanaj.crypto;
 
 /**
  * Utility class for Solana BIP-44 paths
+ * m/purpose/coin_type/account/change/index
  */
 public class SolanaBip44 {
     private final HdKeyGenerator hdKeyGenerator = new HdKeyGenerator();

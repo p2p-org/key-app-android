@@ -48,6 +48,7 @@ class MoonpayWidgetUrlBuilder(
     fun buildSellWidgetUrl(
         tokenSymbol: String,
         userAddress: Base58String,
+        externalCustomerId: Base58String,
         fiatSymbol: String,
         tokenAmountToSell: String,
     ): String {
@@ -64,7 +65,7 @@ class MoonpayWidgetUrlBuilder(
             .appendQueryParameter(QUERY_REFUND_WALLET_ADDRESS, userAddress.base58Value)
             .appendQueryParameter(QUERY_QUOTE_CURRENCY_CODE, fiatSymbol)
             .appendQueryParameter(QUERY_BASE_CURRENCY_AMOUNT, tokenAmountToSell)
-            .appendQueryParameter(QUERY_EXTERNAL_CUSTOMER_ID, userAddress.base58Value)
+            .appendQueryParameter(QUERY_EXTERNAL_CUSTOMER_ID, externalCustomerId.base58Value)
             .build()
             .toString()
     }
