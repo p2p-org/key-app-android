@@ -2,7 +2,7 @@ package org.p2p.wallet.moonpay.serversideapi.response
 
 import com.google.gson.annotations.SerializedName
 
-data class MoonpaySellTransactionResponse(
+data class MoonpaySellTransactionShortResponse(
     @SerializedName("id")
     val transactionId: String,
     // "2020-09-24T07:18:27.469Z"
@@ -11,7 +11,7 @@ data class MoonpaySellTransactionResponse(
     @SerializedName("updatedAt")
     val updatedAt: String,
     @SerializedName("status")
-    val status: String,
+    val status: SellTransactionStatus,
     @SerializedName("baseCurrencyAmount")
     val tokenAmount: Double,
     @SerializedName("feeAmount")

@@ -4,10 +4,10 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.sell.interactor.SellInteractor
@@ -36,7 +36,7 @@ class HistoryPresenter(
 
     private var lastTransactionSignature: String? = null
     private var transactions = mutableListOf<HistoryTransaction>()
-    private val moonpayTransactions = mutableListOf<HistoryItem.MoonpayTransactionItem>()
+    private val moonpayTransactions = mutableListOf<SellTransaction>()
 
     override fun attach(view: HistoryContract.View) {
         super.attach(view)
@@ -109,10 +109,9 @@ class HistoryPresenter(
     }
 
     private suspend fun fetchMoonpayTransactions() {
-        val moonpayItems = sellInteractor.loadUserSellTransactionsDetails()
-            .map { HistoryItem.MoonpayTransactionItem(it) }
+        val transactions = sellInteractor.loadUserSellTransactions()
         moonpayTransactions.clear()
-        moonpayTransactions.addAll(moonpayItems)
+        moonpayTransactions.addAll(transactions)
     }
 
     override fun onItemClicked(transaction: HistoryTransaction) {

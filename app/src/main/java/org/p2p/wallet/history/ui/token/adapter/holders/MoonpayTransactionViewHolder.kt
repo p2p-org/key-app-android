@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemHistoryMoonpayTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
-import org.p2p.wallet.moonpay.model.MoonpaySellTransaction
-import org.p2p.wallet.sell.ui.lock.SellTransactionDetails
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
@@ -14,7 +14,7 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class MoonpayTransactionViewHolder(
     parent: ViewGroup,
-    private val onItemClicked: (SellTransactionDetails) -> Unit,
+    private val onItemClicked: (SellTransactionViewDetails) -> Unit,
     private val binding: ItemHistoryMoonpayTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
     fun onBind(item: HistoryItem.MoonpayTransactionItem) {
@@ -29,7 +29,7 @@ class MoonpayTransactionViewHolder(
     private fun ItemHistoryMoonpayTransactionBinding.renderStatusIcon(item: HistoryItem.MoonpayTransactionItem) {
         val backgroundRes: Int
         val iconColor: Int
-        if (item.status == MoonpaySellTransaction.SellTransactionStatus.FAILED) {
+        if (item.status == SellTransactionStatus.FAILED) {
             backgroundRes = org.p2p.uikit.R.drawable.bg_rounded_solid_rose20_24
             iconColor = R.color.icons_rose
         } else {
@@ -42,38 +42,35 @@ class MoonpayTransactionViewHolder(
     }
 
     private fun ItemHistoryMoonpayTransactionBinding.renderTitleAndSubtitle(item: HistoryItem.MoonpayTransactionItem) {
-        val title: String
-        val subtitle: String
+        val titleStatus: String
+        val subtitleReceiver: String
         when (item.status) {
-            MoonpaySellTransaction.SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
-                title = getString(
+            SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+                titleStatus = getString(
                     R.string.transaction_history_moonpay_waiting_for_deposit_title,
                     item.amountInSol
                 )
-                subtitle = getString(
+                subtitleReceiver = getString(
                     R.string.transaction_history_moonpay_waiting_for_deposit_subtitle,
                     item.transactionDetails.receiverAddress.cutMiddle()
                 )
             }
-            MoonpaySellTransaction.SellTransactionStatus.PENDING -> {
-                title = getString(R.string.transaction_history_moonpay_pending_title)
-                subtitle = getString(R.string.transaction_history_moonpay_completed_subtitle)
+            SellTransactionStatus.PENDING -> {
+                titleStatus = getString(R.string.transaction_history_moonpay_pending_title)
+                subtitleReceiver = item.transactionDetails.receiverAddress
             }
-            MoonpaySellTransaction.SellTransactionStatus.COMPLETED -> {
-                title = getString(R.string.transaction_history_moonpay_completed_title)
-                subtitle = getString(R.string.transaction_history_moonpay_completed_subtitle)
+            SellTransactionStatus.COMPLETED -> {
+                titleStatus = getString(R.string.transaction_history_moonpay_completed_title)
+                subtitleReceiver = item.transactionDetails.receiverAddress
             }
-            MoonpaySellTransaction.SellTransactionStatus.FAILED -> {
-                title = getString(R.string.transaction_history_moonpay_failed_title)
-                subtitle = getString(R.string.transaction_history_moonpay_failed_subtitle)
-            }
-            else -> {
-                return
+            SellTransactionStatus.FAILED -> {
+                titleStatus = getString(R.string.transaction_history_moonpay_failed_title)
+                subtitleReceiver = getString(R.string.transaction_history_moonpay_failed_subtitle)
             }
         }
 
-        layoutTransactionDetails.titleTextView.text = title
-        layoutTransactionDetails.subtitleTextView.text = subtitle
+        layoutTransactionDetails.titleTextView.text = titleStatus
+        layoutTransactionDetails.subtitleTextView.text = subtitleReceiver
     }
 
     private fun renderAmounts(item: HistoryItem.MoonpayTransactionItem) {
