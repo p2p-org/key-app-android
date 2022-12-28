@@ -18,13 +18,11 @@ class MoonpayTransactionViewHolder(
     private val onItemClicked: (SellTransactionViewDetails) -> Unit,
     private val binding: ItemHistoryMoonpayTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
-    fun onBind(item: HistoryItem.MoonpayTransactionItem) {
-        with(binding) {
-            root.setOnClickListener { onItemClicked.invoke(item.transactionDetails) }
-            renderStatusIcon(item)
-            renderTitleAndSubtitle(item)
-            renderAmounts(item)
-        }
+    fun onBind(item: HistoryItem.MoonpayTransactionItem) = with(binding) {
+        root.setOnClickListener { onItemClicked.invoke(item.transactionDetails) }
+        renderStatusIcon(item)
+        renderTitleAndSubtitle(item)
+        renderAmounts(item)
     }
 
     private fun ItemHistoryMoonpayTransactionBinding.renderStatusIcon(item: HistoryItem.MoonpayTransactionItem) {
@@ -32,12 +30,12 @@ class MoonpayTransactionViewHolder(
         val backgroundRes: Int
         val iconColor: Int
         when (item.status) {
-            MoonpaySellTransaction.SellTransactionStatus.FAILED -> {
+            SellTransactionStatus.FAILED -> {
                 iconRes = R.drawable.ic_alert_rounded
                 backgroundRes = org.p2p.uikit.R.drawable.bg_rounded_solid_rose20_24
                 iconColor = R.color.icons_rose
             }
-            MoonpaySellTransaction.SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+            SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
                 iconRes = R.drawable.ic_alert_rounded
                 backgroundRes = org.p2p.uikit.R.drawable.bg_rounded_solid_rain_24
                 iconColor = R.color.icons_night
