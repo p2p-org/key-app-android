@@ -100,7 +100,7 @@ class NewSendButtonState(
                 else -> {
                     State.Enabled(
                         textResId = R.string.send_format,
-                        value = "${calculationMode.getCurrentAmount()} ${sourceToken.tokenSymbol}",
+                        value = "${calculationMode.getCurrentAmount().toPlainString()} ${sourceToken.tokenSymbol}",
                         totalAmountTextColor = R.color.text_night
                     )
                 }
