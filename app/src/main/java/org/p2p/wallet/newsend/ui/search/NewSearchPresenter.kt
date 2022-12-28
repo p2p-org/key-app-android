@@ -5,6 +5,7 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.SearchState
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.model.SearchResult
@@ -24,6 +25,7 @@ class NewSearchPresenter(
     private val searchInteractor: SearchInteractor,
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle,
     private val userInteractor: UserInteractor,
+    private val newSendAnalytics: NewSendAnalytics
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
     private var state = SearchState()
@@ -31,6 +33,8 @@ class NewSearchPresenter(
 
     override fun attach(view: NewSearchContract.View) {
         super.attach(view)
+        newSendAnalytics.logNewSearchScreenOpened()
+
         if (state.recentRecipients == null) {
             loadRecentRecipients()
         } else {
@@ -138,6 +142,9 @@ class NewSearchPresenter(
                 finalResult = result
                 preselectedToken = initialToken
             }
+
+            logRecipientSelected(finalResult)
+
             view?.submitSearchResult(finalResult, preselectedToken)
         }
     }
@@ -183,5 +190,9 @@ class NewSearchPresenter(
         view?.showUsersMessage(null)
         view?.clearUsers()
         view?.showNotFound()
+    }
+
+    private fun logRecipientSelected(recipient: SearchResult) {
+        newSendAnalytics.logRecipientSelected(recipient, state.foundResult)
     }
 }

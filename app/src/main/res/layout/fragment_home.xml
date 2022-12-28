@@ -27,8 +27,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/home_toolbar_height"
-                android:orientation="vertical"
                 android:background="@color/bg_smoke"
+                android:orientation="vertical"
                 app:layout_collapseMode="none">
 
                 <include
@@ -37,13 +37,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <org.p2p.wallet.common.ui.widget.ActionButtonsView
+                <org.p2p.wallet.common.ui.widget.actionbuttons.ActionButtonsView
                     android:id="@+id/viewActionButtons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="24dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginBottom="30dp" />
 
             </LinearLayout>

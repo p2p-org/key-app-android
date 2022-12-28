@@ -85,7 +85,7 @@ class CalculationMode {
         return maxAmount
     }
 
-    fun switchMode() {
+    fun switchMode(): CurrencyMode {
         currencyMode = when (currencyMode) {
             is CurrencyMode.Token -> CurrencyMode.Usd
             is CurrencyMode.Usd -> CurrencyMode.Token(token)
@@ -93,7 +93,11 @@ class CalculationMode {
 
         handleFractionUpdate(currencyMode)
         updateLabels()
+
+        return currencyMode
     }
+
+    fun getCurrencyMode(): CurrencyMode = currencyMode
 
     fun isMaxButtonVisible(minRentExemption: BigInteger): Boolean {
         return if (token.isSOL) {

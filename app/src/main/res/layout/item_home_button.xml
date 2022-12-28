@@ -6,11 +6,12 @@
     android:id="@+id/viewContainer"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
     android:gravity="center"
     android:orientation="vertical">
 
     <ImageButton
-        android:id="@+id/image_button_button_icon"
+        android:id="@+id/imageButtonAction"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:background="@drawable/bg_circle_button"
@@ -19,7 +20,7 @@
         android:src="@drawable/ic_plus" />
 
     <TextView
-        android:id="@+id/text_view_button_title"
+        android:id="@+id/textViewTitle"
         style="@style/UiKit.TextAppearance.SemiBold.Text4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

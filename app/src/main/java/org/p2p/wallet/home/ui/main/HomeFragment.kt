@@ -13,11 +13,8 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.widget.ActionButtonsView
-import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
-import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
+import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
@@ -78,7 +75,6 @@ class HomeFragment :
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -139,20 +135,19 @@ class HomeFragment :
         )
     }
 
+    override fun showActionButtons(buttons: List<ActionButton>) {
+        binding.viewActionButtons.showActionButtons(buttons)
+    }
+
     private fun FragmentHomeBinding.setupView() {
         layoutToolbar.setupToolbar()
 
         homeRecyclerView.adapter = contentAdapter
-
-        viewActionButtons.setupActionButtons()
-
-        swipeRefreshLayout.setOnRefreshListener {
-            presenter.refreshTokens()
-        }
+        swipeRefreshLayout.setOnRefreshListener { presenter.refreshTokens() }
+        viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
 
         // hidden. temporary. PWN-4381
         viewBuyTokenBanner.root.isVisible = false
-        viewActionButtons.isVisible = false
 
         if (BuildConfig.DEBUG) {
             with(layoutToolbar) {
@@ -174,41 +169,24 @@ class HomeFragment :
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
-    private fun ActionButtonsView.setupActionButtons() {
-        showActionButtons(
-            ActionButton.BUY_BUTTON,
-            ActionButton.RECEIVE_BUTTON,
-            ActionButton.SEND_BUTTON,
-            ActionButton.SWAP_BUTTON
-        )
-
-        listener = ActionButtonsViewClickListener {
-            when (it) {
-                ActionButton.BUY_BUTTON -> {
-                    presenter.onBuyClicked()
-                }
-                ActionButton.RECEIVE_BUTTON -> {
-                    replaceFragment(ReceiveSolanaFragment.create(token = null))
-                }
-                ActionButton.SEND_BUTTON -> {
-                    presenter.onSendClicked()
-                }
-                ActionButton.SELL_BUTTON -> {
-                    replaceFragment(SellPayloadFragment.create())
-                }
-                ActionButton.SWAP_BUTTON -> {
-                    replaceFragment(OrcaSwapFragment.create())
-                }
+    private fun onActionButtonClicked(clickedButton: ActionButton) {
+        when (clickedButton) {
+            ActionButton.BUY_BUTTON -> {
+                presenter.onBuyClicked()
+            }
+            ActionButton.RECEIVE_BUTTON -> {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
+            }
+            ActionButton.SEND_BUTTON -> {
+                presenter.onSendClicked()
+            }
+            ActionButton.SELL_BUTTON -> {
+                replaceFragment(SellPayloadFragment.create())
+            }
+            ActionButton.SWAP_BUTTON -> {
+                replaceFragment(OrcaSwapFragment.create())
             }
         }
-    }
-
-    override fun setSellActionButtonIsVisible(isVisible: Boolean) {
-        binding.viewActionButtons.setActionButtonIsVisible(ActionButton.SELL_BUTTON, isVisible)
-    }
-
-    override fun setSwapActionButtonIsVisible(isVisible: Boolean) {
-        binding.viewActionButtons.setActionButtonIsVisible(ActionButton.SWAP_BUTTON, isVisible)
     }
 
     private fun onFragmentResult(requestKey: String, result: Bundle) {
@@ -227,21 +205,11 @@ class HomeFragment :
 
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
-            HomeAction.SELL -> {
-                replaceFragment(SellPayloadFragment.create())
-            }
-            HomeAction.BUY -> {
-                presenter.onBuyClicked()
-            }
-            HomeAction.RECEIVE -> {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
-            }
-            HomeAction.SWAP -> {
-                replaceFragment(OrcaSwapFragment.create())
-            }
-            HomeAction.SEND -> {
-                presenter.onSendClicked()
-            }
+            HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
+            HomeAction.BUY -> presenter.onBuyClicked()
+            HomeAction.RECEIVE -> replaceFragment(ReceiveSolanaFragment.create(token = null))
+            HomeAction.SWAP -> replaceFragment(OrcaSwapFragment.create())
+            HomeAction.SEND -> presenter.onSendClicked()
         }
     }
 

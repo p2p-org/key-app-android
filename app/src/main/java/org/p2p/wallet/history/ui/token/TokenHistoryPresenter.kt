@@ -5,6 +5,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
+import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
@@ -34,17 +35,29 @@ class TokenHistoryPresenter(
     private val transactions = mutableListOf<HistoryTransaction>()
     private val moonpayTransactions = mutableListOf<SellTransaction>()
 
+    private var pagingJob: Job? = null
+
+    private var refreshJob: Job? = null
+    private var paginationEnded: Boolean = false
+
     override fun attach(view: TokenHistoryContract.View) {
         super.attach(view)
-        if (!token.isSOL && !token.isUSDC) {
-            view.hideBuyActionButton()
-        }
+        initialize()
     }
 
-    private var pagingJob: Job? = null
-    private var refreshJob: Job? = null
+    private fun initialize() {
+        val actionButtons = mutableListOf(
+            ActionButton.RECEIVE_BUTTON,
+            ActionButton.SEND_BUTTON,
+            ActionButton.SWAP_BUTTON
+        )
 
-    private var paginationEnded: Boolean = false
+        if (token.isSOL || token.isUSDC) {
+            actionButtons.add(0, ActionButton.BUY_BUTTON)
+        }
+
+        view?.showActionButtons(actionButtons)
+    }
 
     override fun loadNextHistoryPage() {
         if (paginationEnded) return
@@ -165,7 +178,7 @@ class TokenHistoryPresenter(
                 }
             }
 
-            view?.openTransactionDetailsScreen(transaction)
+            view?.showDetailsScreen(transaction)
         }
     }
 

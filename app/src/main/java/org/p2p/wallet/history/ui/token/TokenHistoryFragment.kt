@@ -19,9 +19,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
-import org.p2p.wallet.common.ui.widget.ActionButtonsView
-import org.p2p.wallet.common.ui.widget.ActionButtonsView.ActionButton
-import org.p2p.wallet.common.ui.widget.ActionButtonsViewClickListener
+import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -34,6 +32,7 @@ import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -89,16 +88,10 @@ class TokenHistoryFragment :
 
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
-
         refreshLayout.setOnRefreshListener { presenter.retryLoad() }
-
-        viewActionButtons.setupListener()
-
+        retryButton.setOnClickListener { presenter.retryLoad() }
         historyRecyclerView.setupHistoryList()
-
-        retryButton.setOnClickListener {
-            presenter.retryLoad()
-        }
+        viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
     }
 
     private fun Toolbar.setupToolbar() {
@@ -118,36 +111,29 @@ class TokenHistoryFragment :
         }
     }
 
-    private fun ActionButtonsView.setupListener() {
-        showActionButtons(
-            ActionButton.BUY_BUTTON,
-            ActionButton.RECEIVE_BUTTON,
-            ActionButton.SEND_BUTTON,
-            ActionButton.SWAP_BUTTON
-        )
-
-        listener = ActionButtonsViewClickListener { actionButton ->
-            when (actionButton) {
-                ActionButton.BUY_BUTTON -> {
-                    replaceFragment(
-                        if (newBuyFeatureToggle.value) {
-                            NewBuyFragment.create(tokenForHistory)
-                        } else {
-                            BuySolanaFragment.create(tokenForHistory)
-                        }
-                    )
-                }
-                ActionButton.RECEIVE_BUTTON -> {
-                    receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)
-                    replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
-                }
-                ActionButton.SEND_BUTTON -> {
-                    replaceFragment(NewSearchFragment.create(tokenForHistory))
-                }
-                ActionButton.SWAP_BUTTON -> {
-                    replaceFragment(OrcaSwapFragment.create(tokenForHistory))
-                }
-                else -> Unit
+    private fun onActionButtonClicked(clickedButton: ActionButton) {
+        when (clickedButton) {
+            ActionButton.BUY_BUTTON -> {
+                replaceFragment(
+                    if (newBuyFeatureToggle.value) {
+                        NewBuyFragment.create(tokenForHistory)
+                    } else {
+                        BuySolanaFragment.create(tokenForHistory)
+                    }
+                )
+            }
+            ActionButton.RECEIVE_BUTTON -> {
+                receiveAnalytics.logTokenReceiveViewed(tokenForHistory.tokenName)
+                replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
+            }
+            ActionButton.SEND_BUTTON -> {
+                replaceFragment(NewSearchFragment.create(tokenForHistory))
+            }
+            ActionButton.SWAP_BUTTON -> {
+                replaceFragment(OrcaSwapFragment.create(tokenForHistory))
+            }
+            ActionButton.SELL_BUTTON -> {
+                replaceFragment(SellPayloadFragment.create())
             }
         }
     }
@@ -181,8 +167,8 @@ class TokenHistoryFragment :
         binding.refreshLayout.isVisible = !isEmpty
     }
 
-    override fun hideBuyActionButton() {
-        binding.viewActionButtons.setActionButtonIsVisible(ActionButton.BUY_BUTTON, isVisible = false)
+    override fun showActionButtons(actionButtons: List<ActionButton>) {
+        binding.viewActionButtons.showActionButtons(actionButtons)
     }
 
     override fun showPagingState(newState: PagingState) {
@@ -197,15 +183,13 @@ class TokenHistoryFragment :
         }
     }
 
-    override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {
+    override fun showDetailsScreen(transaction: HistoryTransaction) {
         when (transaction) {
             is HistoryTransaction.Swap,
             is HistoryTransaction.Transfer,
             is HistoryTransaction.BurnOrMint -> {
                 val state = TransactionDetailsLaunchState.History(transaction)
-                HistoryTransactionDetailsBottomSheetFragment.show(
-                    parentFragmentManager, state
-                )
+                HistoryTransactionDetailsBottomSheetFragment.show(parentFragmentManager, state)
             }
             else -> Timber.e("Unsupported transactionType: $transaction")
         }

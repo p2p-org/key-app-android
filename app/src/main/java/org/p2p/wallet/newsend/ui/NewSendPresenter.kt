@@ -19,6 +19,7 @@ import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
@@ -53,6 +54,7 @@ class NewSendPresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val transactionManager: TransactionManager,
     private val connectionStateProvider: ConnectionStateProvider,
+    private val newSendAnalytics: NewSendAnalytics,
     private val appScope: AppScope
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
@@ -77,6 +79,8 @@ class NewSendPresenter(
 
     override fun attach(view: NewSendContract.View) {
         super.attach(view)
+        newSendAnalytics.logNewSendScreenOpened()
+
         initialize(view)
     }
 
@@ -211,6 +215,7 @@ class NewSendPresenter(
     }
 
     override fun onTokenClicked() {
+        newSendAnalytics.logTokenSelectionClicked()
         launch {
             val tokens = userInteractor.getUserTokens()
             val result = tokens.filter { token -> !token.isZero }
@@ -235,7 +240,8 @@ class NewSendPresenter(
     }
 
     override fun switchCurrencyMode() {
-        calculationMode.switchMode()
+        val newMode = calculationMode.switchMode()
+        newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
         /*
          * Trigger recalculation for USD input
          * */
@@ -250,6 +256,8 @@ class NewSendPresenter(
         inputAmount = amount
         showMaxButtonIfNeeded()
         updateButton(requireToken(), feeRelayerManager.getState())
+
+        newSendAnalytics.setMaxButtonClicked(isClicked = false)
 
         /*
          * Calculating if we can pay with current token instead of already selected fee payer token
@@ -281,6 +289,8 @@ class NewSendPresenter(
 
         showMaxButtonIfNeeded()
 
+        newSendAnalytics.setMaxButtonClicked(isClicked = true)
+
         val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
         view?.showToast(TextContainer.Raw(message))
 
@@ -300,6 +310,7 @@ class NewSendPresenter(
 
         val solanaFee = currentState.solanaFee
         if (inputAmount.isEmpty() && solanaFee == null) {
+            newSendAnalytics.logFreeTransactionsClicked()
             view?.showFreeTransactionsInfo()
         } else {
             val total = feeRelayerManager.buildTotalFee(
@@ -325,6 +336,8 @@ class NewSendPresenter(
 
     override fun send() {
         val token = token ?: error("Token cannot be null!")
+        logSendClicked(token)
+
         val address = recipientAddress.addressState.address
         val currentAmount = calculationMode.getCurrentAmount()
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
@@ -453,4 +466,15 @@ class NewSendPresenter(
 
     private fun requireToken(): Token.Active =
         token ?: error("Source token cannot be empty!")
+
+    private fun logSendClicked(token: Token.Active) {
+        val solanaFee = (feeRelayerManager.getState() as? FeeRelayerState.UpdateFee)?.solanaFee
+        newSendAnalytics.logSendConfirmButtonClicked(
+            tokenName = token.tokenName,
+            amountInToken = inputAmount,
+            amountInUsd = calculationMode.getCurrentAmountUsd().toString(),
+            isFeeFree = solanaFee?.isTransactionFree ?: false,
+            mode = calculationMode.getCurrencyMode()
+        )
+    }
 }
