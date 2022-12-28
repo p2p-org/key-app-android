@@ -40,11 +40,11 @@ class TransactionSwapViewHolder(
             )
 
             with(transactionData) {
-                valueTextView.withTextOrGone(transaction.getReceivedUsdAmount())
-                valueTextView.setTextColor(getColor(R.color.color_green))
-                totalTextView.text = "${transaction.amountB} ${transaction.destinationSymbol}"
-                titleTextView.text = getString(R.string.transaction_history_swap)
-                subtitleTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
+                textViewValue.withTextOrGone(transaction.getReceivedUsdAmount())
+                textViewValue.setTextColor(getColor(R.color.color_green))
+                textViewTotal.text = "${transaction.amountB} ${transaction.destinationSymbol}"
+                textViewTitle.text = getString(R.string.transaction_history_swap)
+                textViewSubtitle.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
             }
         }
         setStatus(transaction)
