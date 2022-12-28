@@ -1,14 +1,16 @@
 package org.p2p.wallet.newsend.analytics
 
 import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.common.analytics.constants.EventNames.NEW_SEND_CONFIRM_BUTTON_CLICK
-import org.p2p.wallet.common.analytics.constants.EventNames.NEW_SEND_FREE_TRANSACTIONS_CLICK
-import org.p2p.wallet.common.analytics.constants.EventNames.NEW_SEND_RECIPIENT_ADD
-import org.p2p.wallet.common.analytics.constants.EventNames.NEW_SEND_RECIPIENT_VIEWED
-import org.p2p.wallet.common.analytics.constants.EventNames.NEW_SEND_SWITCH_CURRENCY_MODE_CLICK
-import org.p2p.wallet.common.analytics.constants.EventNames.NEW_SEND_TOKEN_SELECTION_CLICK
-import org.p2p.wallet.common.analytics.constants.EventNames.NEW_SEND_VIEWED
 import org.p2p.wallet.send.model.CurrencyMode
+import org.p2p.wallet.send.model.SearchResult
+
+const val NEW_SEND_RECIPIENT_VIEWED = "Sendnew_Recipient_Screen"
+const val NEW_SEND_RECIPIENT_ADD = "Sendnew_Recipient_Add"
+const val NEW_SEND_VIEWED = "Sendnew_Input_Screen"
+const val NEW_SEND_FREE_TRANSACTIONS_CLICK = "Sendnew_Free_Transaction_Click"
+const val NEW_SEND_TOKEN_SELECTION_CLICK = "Sendnew_Token_Input_Click"
+const val NEW_SEND_SWITCH_CURRENCY_MODE_CLICK = "Sendnew_Fiat_Input_Click"
+const val NEW_SEND_CONFIRM_BUTTON_CLICK = "Sendnew_Confirm_Button_Click"
 
 class NewSendAnalytics(
     private val analytics: Analytics
@@ -61,11 +63,22 @@ class NewSendAnalytics(
         analytics.logEvent(event = NEW_SEND_RECIPIENT_VIEWED)
     }
 
-    fun logRecipientSelected(recipient: String, type: RecipientSelectionType) {
+    fun logRecipientSelected(recipient: SearchResult, foundResult: List<SearchResult>) {
+        val address = when (recipient) {
+            is SearchResult.UsernameFound -> recipient.username
+            is SearchResult.AddressFound -> recipient.addressState.address
+            else -> return
+        }
+
+        val type = if (foundResult.any { it == recipient }) {
+            RecipientSelectionType.SEARCH
+        } else {
+            RecipientSelectionType.RECENT
+        }
         analytics.logEvent(
             event = NEW_SEND_RECIPIENT_ADD,
             params = mapOf(
-                "Recipient_With" to recipient,
+                "Recipient_With" to address,
                 "Added_By" to type.type
             )
         )

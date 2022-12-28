@@ -193,18 +193,6 @@ class NewSearchPresenter(
     }
 
     private fun logRecipientSelected(recipient: SearchResult) {
-        val address = when (recipient) {
-            is SearchResult.UsernameFound -> recipient.username
-            is SearchResult.AddressFound -> recipient.addressState.address
-            else -> return
-        }
-
-        val type = if (state.foundResult.any { it == recipient }) {
-            NewSendAnalytics.RecipientSelectionType.SEARCH
-        } else {
-            NewSendAnalytics.RecipientSelectionType.RECENT
-        }
-
-        newSendAnalytics.logRecipientSelected(address, type)
+        newSendAnalytics.logRecipientSelected(recipient, state.foundResult)
     }
 }

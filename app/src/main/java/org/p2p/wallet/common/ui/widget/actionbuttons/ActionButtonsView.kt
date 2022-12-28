@@ -8,6 +8,7 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.databinding.LayoutActionButtonsBinding
+import org.p2p.wallet.utils.unsafeLazy
 
 class ActionButtonsView @JvmOverloads constructor(
     context: Context,
@@ -19,7 +20,7 @@ class ActionButtonsView @JvmOverloads constructor(
 
     private val binding: LayoutActionButtonsBinding = inflateViewBinding()
 
-    private val buttonsAdapter: ActionButtonsAdapter by lazy {
+    private val buttonsAdapter: ActionButtonsAdapter by unsafeLazy {
         ActionButtonsAdapter { onButtonClicked?.invoke(it) }
     }
 

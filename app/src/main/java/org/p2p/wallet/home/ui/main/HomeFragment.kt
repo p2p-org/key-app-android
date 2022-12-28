@@ -205,21 +205,11 @@ class HomeFragment :
 
     private fun openScreenByHomeAction(action: HomeAction) {
         when (action) {
-            HomeAction.SELL -> {
-                replaceFragment(SellPayloadFragment.create())
-            }
-            HomeAction.BUY -> {
-                presenter.onBuyClicked()
-            }
-            HomeAction.RECEIVE -> {
-                replaceFragment(ReceiveSolanaFragment.create(token = null))
-            }
-            HomeAction.SWAP -> {
-                replaceFragment(OrcaSwapFragment.create())
-            }
-            HomeAction.SEND -> {
-                presenter.onSendClicked()
-            }
+            HomeAction.SELL -> replaceFragment(SellPayloadFragment.create())
+            HomeAction.BUY -> presenter.onBuyClicked()
+            HomeAction.RECEIVE -> replaceFragment(ReceiveSolanaFragment.create(token = null))
+            HomeAction.SWAP -> replaceFragment(OrcaSwapFragment.create())
+            HomeAction.SEND -> presenter.onSendClicked()
         }
     }
 

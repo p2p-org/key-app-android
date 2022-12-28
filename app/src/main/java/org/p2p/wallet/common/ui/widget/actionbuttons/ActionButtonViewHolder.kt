@@ -7,13 +7,10 @@ import org.p2p.wallet.databinding.ItemHomeButtonBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class ActionButtonViewHolder(
-    private val binding: ItemHomeButtonBinding,
-    private val onButtonClicked: (ActionButton) -> Unit
+    private val parent: ViewGroup,
+    private val onButtonClicked: (ActionButton) -> Unit,
+    private val binding: ItemHomeButtonBinding = parent.inflateViewBinding(attachToRoot = false)
 ) : RecyclerView.ViewHolder(binding.root) {
-
-    constructor(parent: ViewGroup, onButtonClicked: (ActionButton) -> Unit) : this(
-        parent.inflateViewBinding<ItemHomeButtonBinding>(attachToRoot = false), onButtonClicked
-    )
 
     fun onBind(actionButton: ActionButton) {
         when (actionButton) {
