@@ -4,39 +4,36 @@ package org.p2p.wallet.common.crashlogging.impl
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import io.sentry.SentryLevel
+import io.sentry.protocol.User
 import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
 
-/**
- * Disable mechanism is located in build.gradle
- * see build.gradle sentry { ... } block
- */
 private const val BREADCRUMB_CATEGORY = "SentryFacade"
 
 class SentryFacade : CrashLoggingFacade {
 
+    private fun createBreadcrumb(
+        message: String,
+        level: SentryLevel = SentryLevel.INFO
+    ): Breadcrumb = Breadcrumb(message).apply {
+        this.category = BREADCRUMB_CATEGORY
+        this.level = level
+    }
+
     override fun logInformation(information: String) {
-        Sentry.addBreadcrumb(
-            Breadcrumb(information).apply {
-                category = BREADCRUMB_CATEGORY
-                level = SentryLevel.INFO
-            }
-        )
+        Sentry.addBreadcrumb(createBreadcrumb(information))
     }
 
     override fun logThrowable(error: Throwable, message: String?) {
         if (message != null) {
             Sentry.addBreadcrumb(
-                Breadcrumb("${error.javaClass.name}: $message").apply {
-                    category = BREADCRUMB_CATEGORY
-                    level = SentryLevel.ERROR
-                }
+                createBreadcrumb("${error.javaClass.name}: $message", SentryLevel.ERROR)
             )
         }
         Sentry.captureException(error)
     }
 
     override fun setUserId(userId: String) {
-        Sentry.setUser(io.sentry.protocol.User().apply { id = userId })
+        Sentry.setUser(User().apply { id = userId })
     }
 
     override fun clearUserId() {

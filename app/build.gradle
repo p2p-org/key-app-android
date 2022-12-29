@@ -32,6 +32,7 @@ android {
         initSentry(it)
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+        buildConfigField("boolean", "SENTRY_ENABLED", "false")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("boolean", "SSL_PINNING_ENABLED", "false")
@@ -162,10 +163,8 @@ android {
 
     sentry {
         // List the build types that should be ignored
-        ignoredBuildTypes = ["debug"]
-        autoInstallation {
-            enabled = false
-        }
+        ignoredBuildTypes = ["debug", "feature"]
+        autoInstallation { enabled = false }
     }
 }
 dependencies {
