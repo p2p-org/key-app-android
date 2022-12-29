@@ -88,7 +88,7 @@ class NewSendButtonState(
                 !isAmountValidForSender -> {
                     val maxSolAmountAllowed = sourceToken.totalInLamports - minRentExemption
                     val format = resources.getString(
-                        R.string.send_min_required_user_balance,
+                        R.string.send_max_warning_text_format,
                         maxSolAmountAllowed.fromLamports().scaleLong().toPlainString(),
                         SOL_SYMBOL
                     )

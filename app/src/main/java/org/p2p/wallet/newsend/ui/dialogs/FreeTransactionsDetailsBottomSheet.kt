@@ -32,7 +32,7 @@ class FreeTransactionsDetailsBottomSheet : BaseDoneBottomSheet() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding.layoutFreeTransactions) {
-            imageViewIcon.setImageResource(R.drawable.ic_lightling)
+            imageViewIcon.setImageResource(R.drawable.ic_lightning)
             textViewTitle.setText(R.string.free_transactions_title)
             textViewSubtitle.text = getString(R.string.free_transactions_subtitle)
         }

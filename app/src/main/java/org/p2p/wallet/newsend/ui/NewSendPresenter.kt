@@ -331,12 +331,13 @@ class NewSendPresenter(
 
     override fun send() {
         val token = token ?: error("Token cannot be null!")
-        logSendClicked(token)
 
         val address = recipientAddress.addressState.address
         val currentAmount = calculationMode.getCurrentAmount()
         val currentAmountUsd = calculationMode.getCurrentAmountUsd()
         val lamports = calculationMode.getCurrentAmountLamports()
+
+        logSendClicked(token, currentAmount.toPlainString(), currentAmountUsd.toPlainString())
 
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
@@ -462,12 +463,12 @@ class NewSendPresenter(
     private fun requireToken(): Token.Active =
         token ?: error("Source token cannot be empty!")
 
-    private fun logSendClicked(token: Token.Active) {
+    private fun logSendClicked(token: Token.Active, amountInToken: String, amountInUsd: String) {
         val solanaFee = (feeRelayerManager.getState() as? FeeRelayerState.UpdateFee)?.solanaFee
         newSendAnalytics.logSendConfirmButtonClicked(
             tokenName = token.tokenName,
-            amountInToken = calculationMode.getCurrentAmount().toPlainString(),
-            amountInUsd = calculationMode.getCurrentAmountUsd().toString(),
+            amountInToken = amountInToken,
+            amountInUsd = amountInUsd,
             isFeeFree = solanaFee?.isTransactionFree ?: false,
             mode = calculationMode.getCurrencyMode()
         )
