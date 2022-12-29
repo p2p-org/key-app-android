@@ -54,7 +54,7 @@ class NewSendAnalytics(
                 "Amount_Token" to amountInToken,
                 "Amount_USD" to amountInUsd,
                 "Fee" to isFeeFree,
-                "Fiat_Input" to (mode is CurrencyMode.Token)
+                "Fiat_Input" to (mode is CurrencyMode.Usd)
             )
         )
     }
