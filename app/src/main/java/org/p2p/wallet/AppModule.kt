@@ -10,6 +10,7 @@ import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
 import org.p2p.wallet.common.crashlogging.impl.FirebaseCrashlyticsFacade
 import org.p2p.wallet.common.crashlogging.impl.SentryFacade
 import org.p2p.wallet.common.di.AppScope
@@ -23,8 +24,8 @@ import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
-import org.p2p.wallet.moonpay.ui.BuyModule
 import org.p2p.wallet.moonpay.MoonpayModule
+import org.p2p.wallet.moonpay.ui.BuyModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.renbtc.RenBtcModule
@@ -51,10 +52,7 @@ object AppModule {
         single { AppRestarter { restartAction.invoke() } }
         single {
             CrashLogger(
-                crashLoggingFacades = listOf(
-                    FirebaseCrashlyticsFacade(isFacadeEnabled = BuildConfig.CRASHLYTICS_ENABLED),
-                    SentryFacade()
-                ),
+                crashLoggingFacades = getActiveCrashLoggingFacades(),
                 tokenKeyProvider = get()
             )
         }
@@ -95,5 +93,14 @@ object AppModule {
                 SellModule.create()
             )
         )
+    }
+
+    private fun getActiveCrashLoggingFacades(): List<CrashLoggingFacade> = buildList {
+        if (BuildConfig.CRASHLYTICS_ENABLED) {
+            add(FirebaseCrashlyticsFacade(BuildConfig.CRASHLYTICS_ENABLED))
+        }
+        if (BuildConfig.SENTRY_ENABLED) {
+            add(SentryFacade())
+        }
     }
 }
