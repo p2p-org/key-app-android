@@ -64,9 +64,9 @@ class NewSendAnalytics(
     }
 
     fun logRecipientSelected(recipient: SearchResult, foundResult: List<SearchResult>) {
-        val address = when (recipient) {
-            is SearchResult.UsernameFound -> recipient.username
-            is SearchResult.AddressFound -> recipient.addressState.address
+        val recipientType = when (recipient) {
+            is SearchResult.UsernameFound -> "Username"
+            is SearchResult.AddressFound -> "Address"
             else -> return
         }
 
@@ -78,7 +78,7 @@ class NewSendAnalytics(
         analytics.logEvent(
             event = NEW_SEND_RECIPIENT_ADD,
             params = mapOf(
-                "Recipient_With" to address,
+                "Recipient_With" to recipientType,
                 "Added_By" to type.type
             )
         )
