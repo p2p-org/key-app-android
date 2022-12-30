@@ -80,6 +80,7 @@ class SellPayloadPresenter(
 
             view?.navigateToSellLock(
                 SellTransactionViewDetails(
+                    transactionId = userTransactionInProcess.transactionId,
                     status = userTransactionInProcess.status,
                     formattedSolAmount = amounts.tokenAmount.formatTokenForMoonpay(),
                     formattedUsdAmount = amounts.usdAmount.formatUsd(),

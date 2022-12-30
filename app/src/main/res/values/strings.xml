@@ -642,6 +642,11 @@
     <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
     <string name="sell_lock_button_cancel">Remove from history</string>
     <string name="sell_lock_usd_amount">≈ $%s</string>
+    <string name="sell_lock_warning_dialog_title">Are you sure?</string>
+    <string name="sell_lock_warning_dialog_body">Are you sure you want to interrupt cash out process? Your transaction won\'t be finished.</string>
+    <string name="sell_lock_warning_dialog_negative">INTERRUPT</string>
+    <string name="sell_lock_warning_dialog_positive">CONTINUE TRANSACTION</string>
+
     <string name="sell_payload_title">Cash out token</string>
     <string name="sell_all_sol">all %s SOL</string>
     <string name="sell_included_fee">Included fee %s %s</string>
@@ -666,6 +671,8 @@
     </string>
     <string name="sell_details_failed_title">You\'ve not sent %s SOL</string>
     <string name="sell_details_failed_body">You didn\'t finish your cash out transaction. After 7 days your transaction has been automatically declined.\n\nYou can try again, but your new transaction will be subject to the current rates.</string>
+    <string name="sell_details_button_remove">Remove from history</string>
+    <string name="sell_details_cancel_failed">😢 Error with deleting. Try again</string>
 
     <string name="error_service_ruiner_message">Our payment service was ruined.\nVisit this page later</string>
     <string name="sell_need_more_sol_title">You need a little more SOL</string>
