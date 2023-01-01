@@ -1,15 +1,14 @@
 package org.p2p.wallet.root
 
+import androidx.activity.addCallback
+import androidx.lifecycle.lifecycleScope
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import androidx.activity.addCallback
-import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.toast
@@ -27,9 +26,9 @@ import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
-import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
+import kotlinx.coroutines.flow.collectLatest
 
 class RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
@@ -102,10 +101,6 @@ class RootActivity :
 
     override fun showToast(message: String) {
         toast(message)
-    }
-
-    override fun onBackPressed() {
-        popBackStack()
     }
 
     override fun showTransactionProgress(internalTransactionId: String, data: NewShowProgress) {
