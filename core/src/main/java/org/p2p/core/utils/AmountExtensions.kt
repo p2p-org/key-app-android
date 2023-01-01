@@ -47,13 +47,14 @@ fun BigDecimal.scaleMedium(): BigDecimal =
     if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.HALF_EVEN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
-fun BigDecimal.scaleLong(): BigDecimal =
-    if (this.isZero()) this else this.setScale(SCALE_VALUE_LONG, RoundingMode.HALF_EVEN)
+fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
+    if (this.isZero()) this else this.setScale(decimals, RoundingMode.HALF_EVEN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
     BigDecimal(this.toDouble() / (POWER_VALUE.pow(decimals)))
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
+        .scaleLong(decimals)
 
 fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()
@@ -66,8 +67,10 @@ fun BigDecimal.toUsd(token: Token): BigDecimal? =
 
 // case: 1000.023000 -> 1 000.02
 fun BigDecimal.formatUsd(): String = formatWithDecimals(USD_DECIMALS)
+
 // case: 10000.000000007900 -> 100 000.000000008
 fun BigDecimal.formatToken(decimals: Int = DEFAULT_DECIMAL): String = formatWithDecimals(decimals)
+
 // case: 10000.000000007900 -> 100 000.00
 fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
 

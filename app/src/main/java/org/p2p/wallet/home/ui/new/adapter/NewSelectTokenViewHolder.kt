@@ -53,8 +53,8 @@ class NewSelectTokenViewHolder(
             if (!iconUrl.isNullOrEmpty()) loadImage(imageViewToken, iconUrl)
 
             imageViewWrapped.isVisible = token.isWrapped
-            startAmountView.title = token.tokenName
-            startAmountView.subtitle = token.getFormattedTotal(includeSymbol = true)
+            textViewTokenName.text = token.tokenName
+            textViewAmount.text = token.getFormattedTotal(includeSymbol = true)
             endAmountView.usdAmount = token.getFormattedUsdTotal()
 
             root.setOnClickListener { onItemClicked(token) }

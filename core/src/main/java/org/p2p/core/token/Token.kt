@@ -12,6 +12,7 @@ import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
+import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toPowerValue
 import java.math.BigDecimal
@@ -181,7 +182,7 @@ sealed class Token constructor(
                 tokenName = SOL_NAME,
                 iconUrl = tokenData.iconUrl,
                 totalInUsd = exchangeRate?.let { total.multiply(it) },
-                total = total,
+                total = total.scaleLong(tokenData.decimals),
                 rate = exchangeRate,
                 visibility = TokenVisibility.DEFAULT,
                 serumV3Usdc = tokenData.serumV3Usdc,
