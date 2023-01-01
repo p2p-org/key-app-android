@@ -96,6 +96,7 @@ class HomePresenter(
         if (state.tokens.isEmpty()) {
             initialLoadTokens()
         } else {
+            initializeActionButtons()
             handleUserTokensLoaded(state.tokens)
         }
         startPollingForTokens()
@@ -104,8 +105,6 @@ class HomePresenter(
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
-
-        initializeActionButtons()
     }
 
     private fun initializeActionButtons() {
@@ -114,6 +113,7 @@ class HomePresenter(
             val isSellAvailable = sellInteractor.isSellAvailable()
 
             val buttons = mutableListOf(
+                ActionButton.BUY_BUTTON,
                 ActionButton.RECEIVE_BUTTON,
                 ActionButton.SEND_BUTTON
             )
@@ -338,6 +338,7 @@ class HomePresenter(
 
                 val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true)
                 handleUserTokensLoaded(loadedTokens)
+                initializeActionButtons()
             } catch (cancelled: CancellationException) {
                 Timber.i("Cancelled initial tokens remote update")
             } catch (error: Throwable) {
