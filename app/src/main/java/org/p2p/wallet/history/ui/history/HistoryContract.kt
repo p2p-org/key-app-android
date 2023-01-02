@@ -12,7 +12,10 @@ interface HistoryContract {
         fun openTransactionDetailsScreen(transaction: HistoryTransaction)
         fun showRefreshing(isRefreshing: Boolean)
         fun scrollToTop()
-        fun showHistory(blockchainTransactions: List<HistoryTransaction>, sellTransactions: List<SellTransaction>)
+        fun showHistory(
+            transactions: List<HistoryTransaction>,
+            moonpayTransactions: List<SellTransaction>
+        )
     }
 
     interface Presenter : MvpPresenter<View> {

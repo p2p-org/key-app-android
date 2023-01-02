@@ -161,8 +161,10 @@ class HistoryInteractor(
             .mapToHistoryTransactions()
             .first()
 
-    suspend fun loadSellTransactions(): List<SellTransaction> {
-        return sellInteractor.loadUserSellTransactions()
+    suspend fun getSellTransactions(): List<SellTransaction> = if (sellInteractor.isSellAvailable()) {
+        sellInteractor.loadUserSellTransactions()
+    } else {
+        emptyList()
     }
 
     private suspend fun loadTransactions(signatures: List<HistoryStreamItem>): List<HistoryTransaction> {
