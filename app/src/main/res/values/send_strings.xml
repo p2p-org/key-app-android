@@ -83,7 +83,7 @@
     <string name="transaction_description_progress">It usually takes 5–20 seconds for a transaction to complete</string>
     <string name="transaction_description_succeeded">The transaction has been successfully completed 🤟</string>
     <string name="transaction_description_failed">The transaction was rejected by the Solana blockchain</string>
-    <string name="transaction_date_format">Today @ %s</string>
+    <string name="transaction_date_format">%s @ %s</string>
     <string name="transaction_send_to_title">Sent to</string>
     <string name="transaction_transaction_fee_title">Transaction fee</string>
     <string name="transaction_transaction_fee_free_value">Free (Paid by Key App)</string>
