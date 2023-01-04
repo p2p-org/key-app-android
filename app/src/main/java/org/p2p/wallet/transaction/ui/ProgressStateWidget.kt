@@ -50,7 +50,7 @@ class ProgressStateWidget @JvmOverloads constructor(
         imageViewProgressIcon.setImageResource(R.drawable.ic_lightning)
         startChangeIconColorAnimation(R.color.icons_night, R.color.icons_grass) {
             startChangeBackGroundColorAnimation(binding.imageViewProgressIcon, R.color.bg_rain, R.color.light_grass)
-            startChangeBackGroundColorAnimation(binding.containerWidget, R.color.bg_cloud, R.color.grass_30)
+            startChangeBackGroundColorAnimation(binding.containerWidget, R.color.bg_cloud, R.color.light_grass_30)
         }
     }
 

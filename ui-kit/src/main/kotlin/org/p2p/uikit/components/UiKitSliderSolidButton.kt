@@ -64,17 +64,10 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
         binding.containerOval.outlineProvider = ViewOutlineProvider.BACKGROUND
         binding.containerOval.clipToOutline = true
 
-        binding.shimmerView.startShimmer()
-
         initializeTouchListener()
         post {
             updateGradient(horizontalMargin, horizontalMargin.toInt())
         }
-    }
-
-    override fun onDetachedFromWindow() {
-        binding.shimmerView.stopShimmer()
-        super.onDetachedFromWindow()
     }
 
     fun setupSlider(
@@ -122,7 +115,6 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     fun showCompleteAnimation() = with(binding) {
-        shimmerView.stopShimmer()
         shimmerView.setOnTouchListener { _, _ -> true }
         setGradientVisible(isVisible = false)
         textViewAction.isVisible = false
@@ -181,7 +173,6 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
                     if (animationPosition == initialPosition) {
                         setGradientVisible(isVisible = false)
                         updateTextsAlpha(START_TEXT_ALPHA)
-                        binding.shimmerView.showShimmer(true)
                     }
                 }
                 start()
@@ -210,7 +201,6 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
 
     private fun onActionDown(): Boolean {
         setGradientVisible(isVisible = true)
-        binding.shimmerView.hideShimmer()
         return true
     }
 

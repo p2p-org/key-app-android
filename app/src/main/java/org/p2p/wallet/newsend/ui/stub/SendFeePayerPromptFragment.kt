@@ -1,9 +1,10 @@
 package org.p2p.wallet.newsend.ui.stub
 
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
@@ -11,12 +12,11 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendNoAccountBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.send.interactor.SendInteractor
-import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import kotlinx.coroutines.launch
 
 private const val ARG_TOKEN_SYMBOL = "ARG_TOKEN_SYMBOL"
 private const val ARG_ALTERNATIVE_TOKENS = "ARG_HAS_ALTERNATIVE_TOKEN"
@@ -50,7 +50,7 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     private val alternativeFeePayerTokens: List<Token.Active> by args(ARG_ALTERNATIVE_TOKENS)
 
     override val statusBarColor: Int get() = R.color.bg_smoke
-    override val navBarColor: Int get() = R.color.bg_night
+    override val navBarColor: Int get() = if (hasAlternativeFeePayerToken()) R.color.bg_night else R.color.bg_smoke
 
     private val sendInteractor: SendInteractor by inject()
 
@@ -69,13 +69,15 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
             }
             textViewTitle.setText(R.string.send_no_account_title)
 
-            val hasAlternativeFeePayerToken = alternativeFeePayerTokens.isNotEmpty()
+            val hasAlternativeFeePayerToken = hasAlternativeFeePayerToken()
             containerBottom.isVisible = hasAlternativeFeePayerToken
             buttonOk.isVisible = !hasAlternativeFeePayerToken
 
             setMessage()
         }
     }
+
+    private fun hasAlternativeFeePayerToken(): Boolean = alternativeFeePayerTokens.isNotEmpty()
 
     private fun FragmentSendNoAccountBinding.setMessage() {
         val messageRes = if (alternativeFeePayerTokens.isNotEmpty()) {
@@ -90,7 +92,7 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     private fun showFeePayerSelection() {
         lifecycleScope.launch {
             val currentFeePayerToken = sendInteractor.getFeePayerToken()
-            addFragment(
+            replaceFragment(
                 target = NewSelectTokenFragment.create(
                     tokens = alternativeFeePayerTokens,
                     selectedToken = currentFeePayerToken,
