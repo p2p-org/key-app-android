@@ -16,21 +16,19 @@ infix fun TextView.withTextOrGone(text: CharSequence?) {
 }
 
 infix fun TextView.withTextResOrGone(@StringRes text: Int?) {
-    if (text == null) {
-        isVisible = false
-        this.text = emptyString()
-    } else {
-        isVisible = true
-        this.setText(text)
-    }
+    withTextOrGone(text?.let { context.getText(it) })
 }
 
 infix fun TextView.withTextOrInvisible(text: CharSequence?) {
-    if (text.isNullOrEmpty()) {
+    if (text.isNullOrEmpty() || text.contains("null")) {
         isInvisible = true
         this.text = emptyString()
     } else {
         isInvisible = false
         this.text = text
     }
+}
+
+infix fun TextView.withTextOrInvisible(@StringRes text: Int?) {
+    withTextOrInvisible(text?.let { context.getText(it) })
 }

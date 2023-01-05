@@ -25,7 +25,7 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import org.p2p.wallet.utils.withTextResOrGone
+import org.p2p.wallet.utils.withTextOrInvisible
 
 private const val REQUEST_QR_KEY = "REQUEST_QR_KEY"
 private const val RESULT_QR_KEY = "RESULT_QR_KEY"
@@ -141,7 +141,7 @@ class NewSearchFragment :
     }
 
     override fun showUsersMessage(textRes: Int?) {
-        binding.messageTextView.withTextResOrGone(textRes)
+        binding.messageTextView.withTextOrInvisible(textRes)
     }
 
     override fun submitSearchResult(searchResult: SearchResult, initialToken: Token.Active?) {
