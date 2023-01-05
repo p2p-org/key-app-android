@@ -13,7 +13,7 @@ interface NewSearchContract {
         fun showUsers(result: List<SearchResult>)
         fun clearUsers()
         fun showUsersMessage(@StringRes textRes: Int?)
-        fun showLoading(isLoading: Boolean)
+        fun showLoading()
         fun showNotFound()
         fun showEmptyState(isEmpty: Boolean)
         fun showErrorState()

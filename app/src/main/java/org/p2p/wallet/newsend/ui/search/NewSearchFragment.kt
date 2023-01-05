@@ -1,7 +1,6 @@
 package org.p2p.wallet.newsend.ui.search
 
 import androidx.activity.addCallback
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
@@ -11,6 +10,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
 import org.p2p.core.utils.hideKeyboard
+import org.p2p.uikit.atoms.skeleton.UiKitSkeletonLineViewModel
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -92,8 +92,12 @@ class NewSearchFragment :
         binding.toolbar.setQuery(recentQuery, submit)
     }
 
-    override fun showLoading(isLoading: Boolean) {
-        binding.progressBar.isInvisible = !isLoading
+    override fun showLoading() = with(binding) {
+        textViewNotFoundTitle.isVisible = false
+        textViewErrorTitle.isVisible = false
+        groupEmptyView.isVisible = false
+        recyclerViewSearchResults.isVisible = true
+        searchAdapter.setItems(listOf(UiKitSkeletonLineViewModel()))
     }
 
     override fun showNotFound() = with(binding) {

@@ -43,6 +43,10 @@
     <dimen name="ui_kit_skeleton_circle_48">48dp</dimen>
     <dimen name="ui_kit_skeleton_circle_52">52dp</dimen>
 
+    <!-- Skeleton text values -->
+    <dimen name="ui_kit_skeleton_text_12">12dp</dimen>
+    <dimen name="ui_kit_skeleton_text_120">120dp</dimen>
+
     <!-- Pin Code -->
 
     <dimen name="ui_kit_number_keyboard_button_corner_radius">24dp</dimen>

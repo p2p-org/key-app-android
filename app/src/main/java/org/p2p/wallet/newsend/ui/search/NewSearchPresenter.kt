@@ -16,6 +16,8 @@ import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 250L
@@ -28,14 +30,14 @@ class NewSearchPresenter(
     private val newSendAnalytics: NewSendAnalytics
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
-    private var state = SearchState()
+    private var state = MutableStateFlow(SearchState())
     private var searchJob: Job? = null
 
     override fun attach(view: NewSearchContract.View) {
         super.attach(view)
         newSendAnalytics.logNewSearchScreenOpened()
 
-        if (state.recentRecipients == null) {
+        if (state.value.recentRecipients == null) {
             loadRecentRecipients()
         } else {
             renderCurrentState()
@@ -45,14 +47,14 @@ class NewSearchPresenter(
     private fun loadRecentRecipients() {
         launch {
             val recipients = userInteractor.getRecipients()
-            state.updateRecipients(recipients)
+            state.update { it.updateRecipients(recipients) }
 
             renderCurrentState()
         }
     }
 
     private fun renderCurrentState() {
-        when (val currentState = state.state) {
+        when (val currentState = state.value.state) {
             is SearchState.State.UsersFound -> {
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
@@ -79,7 +81,14 @@ class NewSearchPresenter(
                 view?.showEmptyState(isEmpty = true)
                 view?.showUsersMessage(null)
                 view?.clearUsers()
+                view?.updateSearchInput("", submit = false)
                 view?.showBackgroundVisible(isVisible = true)
+            }
+            is SearchState.State.ShowLoadingState -> {
+                view?.showUsersMessage(null)
+                view?.updateSearchInput(currentState.query, submit = false)
+                view?.showBackgroundVisible(isVisible = true)
+                view?.showLoading()
             }
         }
     }
@@ -87,18 +96,18 @@ class NewSearchPresenter(
     override fun search(newQuery: String) {
         // when screen is restored, the searchView triggers the queryChange automatically
         // we don't need to make a new request, since we already restored the state in attach
-        if (state.query == newQuery) {
+        if (state.value.query == newQuery) {
             return
         }
 
         if (newQuery.isBlank()) {
             searchJob?.cancel()
-            state.clear()
+            state.update { it.clear() }
             renderCurrentState()
             return
         }
 
-        state.updateSearchResult(newQuery, emptyList())
+        state.update { it.updateSearchResult(newQuery, it.foundResult) }
 
         val target = SearchTarget(
             value = newQuery,
@@ -108,8 +117,9 @@ class NewSearchPresenter(
         searchJob?.cancel()
         searchJob = launch {
             try {
+                showSkeleton(true)
+                state.update { it.updateSearchResult(newQuery, emptyList()) }
                 delay(DELAY_IN_MS)
-                view?.showLoading(isLoading = true)
                 validateAndSearch(target)
             } catch (e: CancellationException) {
                 Timber.i("Cancelled search target validation: ${target.value}")
@@ -117,7 +127,7 @@ class NewSearchPresenter(
                 Timber.e(e, "Error searching target: $newQuery")
                 validateOnlyAddress(target)
             } finally {
-                view?.showLoading(isLoading = false)
+                showSkeleton(false)
             }
         }
     }
@@ -167,7 +177,7 @@ class NewSearchPresenter(
 
     private suspend fun searchByUsername(username: String) {
         val usernames = searchInteractor.searchByName(username)
-        state.updateSearchResult(username, usernames)
+        state.update { it.updateSearchResult(username, usernames) }
         renderCurrentState()
     }
 
@@ -176,13 +186,13 @@ class NewSearchPresenter(
             PublicKey(address)
         } catch (e: Throwable) {
             Timber.i(e)
-            state.updateSearchResult(address, emptyList())
+            state.update { it.updateSearchResult(address, emptyList()) }
             renderCurrentState()
             return
         }
 
         val newAddresses = searchInteractor.searchByAddress(publicKey.toBase58().toBase58Instance(), initialToken)
-        state.updateSearchResult(address, listOf(newAddresses))
+        state.update { it.updateSearchResult(address, listOf(newAddresses)) }
         renderCurrentState()
     }
 
@@ -192,7 +202,12 @@ class NewSearchPresenter(
         view?.showNotFound()
     }
 
+    private fun showSkeleton(show: Boolean) {
+        state.update { it.updateLoading(show) }
+        renderCurrentState()
+    }
+
     private fun logRecipientSelected(recipient: SearchResult) {
-        newSendAnalytics.logRecipientSelected(recipient, state.foundResult)
+        newSendAnalytics.logRecipientSelected(recipient, state.value.foundResult)
     }
 }

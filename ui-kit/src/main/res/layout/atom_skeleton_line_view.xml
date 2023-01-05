@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:background="@color/black"
+    tools:parentTag="com.facebook.shimmer.ShimmerFrameLayout">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:paddingHorizontal="16dp">
+
+        <View
+            android:id="@+id/skeletonLineImage"
+            android:layout_width="@dimen/ui_kit_skeleton_circle_48"
+            android:layout_height="@dimen/ui_kit_skeleton_circle_48"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/bg_skeleton_circle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/skeletonLineBarrier"
+            app:layout_constraintHorizontal_bias="0.01"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/skeletonLineBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="skeletonLineImage" />
+
+        <View
+            android:id="@+id/skeletonLineFirstText"
+            android:layout_width="@dimen/ui_kit_skeleton_text_120"
+            android:layout_height="@dimen/ui_kit_skeleton_text_12"
+            android:layout_marginVertical="4dp"
+            android:background="@drawable/bg_skeleton_rectangle_rounded_4"
+            app:layout_constraintBottom_toTopOf="@+id/skeletonLineSecondText"
+            app:layout_constraintStart_toEndOf="@+id/skeletonLineBarrier"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <View
+            android:id="@+id/skeletonLineSecondText"
+            android:layout_width="@dimen/ui_kit_skeleton_text_120"
+            android:layout_height="@dimen/ui_kit_skeleton_text_12"
+            android:layout_marginVertical="4dp"
+            android:background="@drawable/bg_skeleton_rectangle_rounded_4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/skeletonLineBarrier"
+            app:layout_constraintTop_toBottomOf="@+id/skeletonLineFirstText" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>
