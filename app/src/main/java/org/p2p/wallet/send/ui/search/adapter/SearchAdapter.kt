@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import org.p2p.uikit.atoms.skeleton.UiKitSkeletonLineViewModel
+import org.p2p.uikit.atoms.skeleton.UiKitSkeletonLineModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.send.model.SearchResult
@@ -32,7 +32,7 @@ class SearchAdapter(
             return when {
                 oldItem is SearchResult && newItem is SearchResult ->
                     oldItem.addressState == newItem.addressState
-                oldItem is UiKitSkeletonLineViewModel && newItem is UiKitSkeletonLineViewModel ->
+                oldItem is UiKitSkeletonLineModel && newItem is UiKitSkeletonLineModel ->
                     oldItem.hashCode() == newItem.hashCode()
                 else -> false
             }
@@ -47,7 +47,7 @@ class SearchAdapter(
                     oldItem.username == newItem.username && oldItem.date == newItem.date
                 oldItem is SearchResult.AddressFound && newItem is SearchResult.AddressFound ->
                     oldItem.addressState.address == newItem.addressState.address && oldItem.date == newItem.date
-                oldItem is UiKitSkeletonLineViewModel && newItem is UiKitSkeletonLineViewModel ->
+                oldItem is UiKitSkeletonLineModel && newItem is UiKitSkeletonLineModel ->
                     oldItem == newItem
                 else ->
                     oldItem == newItem
@@ -73,7 +73,7 @@ class SearchAdapter(
         is SearchResult.OwnAddressError -> R.layout.item_search_invalid_result
         is SearchResult.AddressFound,
         is SearchResult.UsernameFound -> R.layout.item_search
-        is UiKitSkeletonLineViewModel -> R.layout.item_atom_skeleton_line_view
+        is UiKitSkeletonLineModel -> R.layout.item_atom_skeleton_line_view
         else -> super.getItemViewType(position)
     }
 
@@ -99,7 +99,7 @@ class SearchAdapter(
         when (holder) {
             is SearchViewHolder -> holder.onBind(data[position] as SearchResult)
             is SearchErrorViewHolder -> holder.onBind(data[position] as SearchResult)
-            is SearchSkeletonViewHolder -> holder.onBind(data[position] as UiKitSkeletonLineViewModel)
+            is SearchSkeletonViewHolder -> holder.onBind(data[position] as UiKitSkeletonLineModel)
         }
     }
 }

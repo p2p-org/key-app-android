@@ -10,7 +10,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
 import org.p2p.core.utils.hideKeyboard
-import org.p2p.uikit.atoms.skeleton.UiKitSkeletonLineViewModel
+import org.p2p.uikit.atoms.skeleton.UiKitSkeletonLineModel
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -97,7 +97,7 @@ class NewSearchFragment :
         textViewErrorTitle.isVisible = false
         groupEmptyView.isVisible = false
         recyclerViewSearchResults.isVisible = true
-        searchAdapter.setItems(listOf(UiKitSkeletonLineViewModel()))
+        searchAdapter.setItems(listOf(UiKitSkeletonLineModel()))
     }
 
     override fun showNotFound() = with(binding) {

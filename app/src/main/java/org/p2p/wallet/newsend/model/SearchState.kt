@@ -7,7 +7,7 @@ data class SearchState(
     val query: String = emptyString(),
     val foundResult: List<SearchResult> = listOf(),
     val recentRecipients: List<SearchResult>? = null,
-    val loading: Boolean = false,
+    val isLoading: Boolean = false,
 ) {
 
     sealed interface State {
@@ -26,7 +26,7 @@ data class SearchState(
                     State.ShowInvalidAddresses(foundResult)
                 foundResult.isNotEmpty() ->
                     State.UsersFound(query, foundResult)
-                loading && query.isNotEmpty() && foundResult.isEmpty() ->
+                isLoading && query.isNotEmpty() && foundResult.isEmpty() ->
                     State.ShowLoadingState(query)
                 query.isNotEmpty() && foundResult.isEmpty() ->
                     State.UsersNotFound(query)
@@ -37,29 +37,27 @@ data class SearchState(
             }
         }
 
-    fun updateLoading(loading: Boolean): SearchState {
-        return copy(loading = loading)
-    }
+    fun updateLoading(isLoading: Boolean): SearchState = copy(isLoading = isLoading)
 
     fun updateSearchResult(newQuery: String, newResult: List<SearchResult>): SearchState {
         return SearchState(
             query = newQuery,
             foundResult = newResult,
             recentRecipients = recentRecipients,
-            loading = false
+            isLoading = false
         )
     }
 
     fun updateRecipients(newRecipients: List<SearchResult>): SearchState {
-        return this.copy(recentRecipients = newRecipients, loading = false)
+        return this.copy(recentRecipients = newRecipients, isLoading = false)
     }
 
-    fun clear(): SearchState {
+    fun reset(): SearchState {
         return SearchState(
             query = emptyString(),
             foundResult = listOf(),
             recentRecipients = recentRecipients,
-            loading = false
+            isLoading = false
         )
     }
 }

@@ -79,14 +79,14 @@ class NewSearchPresenter(
             }
             is SearchState.State.ShowEmptyState -> {
                 view?.showEmptyState(isEmpty = true)
-                view?.showUsersMessage(null)
+                view?.showUsersMessage(textRes = null)
                 view?.clearUsers()
-                view?.updateSearchInput("", submit = false)
+                view?.updateSearchInput(recentQuery = "", submit = false)
                 view?.showBackgroundVisible(isVisible = true)
             }
             is SearchState.State.ShowLoadingState -> {
-                view?.showUsersMessage(null)
-                view?.updateSearchInput(currentState.query, submit = false)
+                view?.showUsersMessage(textRes = null)
+                view?.updateSearchInput(recentQuery = currentState.query, submit = false)
                 view?.showBackgroundVisible(isVisible = true)
                 view?.showLoading()
             }
@@ -102,7 +102,7 @@ class NewSearchPresenter(
 
         if (newQuery.isBlank()) {
             searchJob?.cancel()
-            state.update { it.clear() }
+            state.update { it.reset() }
             renderCurrentState()
             return
         }
@@ -117,8 +117,8 @@ class NewSearchPresenter(
         searchJob?.cancel()
         searchJob = launch {
             try {
-                showSkeleton(true)
-                state.update { it.updateSearchResult(newQuery, emptyList()) }
+                showLoading(isLoading = true)
+                state.update { it.updateSearchResult(newQuery = newQuery, newResult = emptyList()) }
                 delay(DELAY_IN_MS)
                 validateAndSearch(target)
             } catch (e: CancellationException) {
@@ -127,7 +127,7 @@ class NewSearchPresenter(
                 Timber.e(e, "Error searching target: $newQuery")
                 validateOnlyAddress(target)
             } finally {
-                showSkeleton(false)
+                showLoading(isLoading = false)
             }
         }
     }
@@ -202,8 +202,8 @@ class NewSearchPresenter(
         view?.showNotFound()
     }
 
-    private fun showSkeleton(show: Boolean) {
-        state.update { it.updateLoading(show) }
+    private fun showLoading(isLoading: Boolean) {
+        state.update { it.updateLoading(isLoading) }
         renderCurrentState()
     }
 
