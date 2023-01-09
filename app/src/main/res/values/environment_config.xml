@@ -24,9 +24,9 @@
 
     <string name="blockstreamUrl">https://blockstream.info/</string>
 
-    <string name="orcaApiBaseUrl">https://orca.wallet.p2p.org/</string>
+    <string name="orcaApiBaseUrl">https://orca.key.app/</string>
 
-    <string name="notificationServiceBaseUrl">https://push-service.wallet.p2p.org/</string>
+    <string name="notificationServiceBaseUrl">https://push-service.key.app/</string>
     <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/notifier/</string>
 
     <string name="web3AuthServiceBaseUrl">https://web3-auth.keyapp.org/</string>
