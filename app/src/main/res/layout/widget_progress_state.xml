@@ -46,8 +46,8 @@
             app:layout_constraintEnd_toEndOf="@id/imageViewProgressIcon"
             app:layout_constraintStart_toStartOf="@id/imageViewProgressIcon"
             app:layout_constraintTop_toTopOf="@id/imageViewProgressIcon"
-            app:trackCornerRadius="5dp"
-            app:trackThickness="4dp" />
+            app:trackCornerRadius="4dp"
+            app:trackThickness="2dp" />
 
         <TextView
             android:id="@+id/textViewDescription"
@@ -57,6 +57,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="20dp"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_night"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewProgressIcon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewProgressIcon"

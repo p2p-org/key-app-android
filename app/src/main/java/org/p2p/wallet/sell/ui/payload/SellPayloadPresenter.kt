@@ -1,5 +1,6 @@
 package org.p2p.wallet.sell.ui.payload
 
+import android.content.res.Resources
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatTokenForMoonpay
@@ -10,9 +11,9 @@ import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.repository.sell.MoonpayExternalCustomerIdProvider
@@ -37,7 +38,7 @@ class SellPayloadPresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder,
     private val externalCustomerIdProvider: MoonpayExternalCustomerIdProvider,
-    private val resourceProvider: ResourcesProvider
+    private val resources: Resources,
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
 
@@ -63,11 +64,13 @@ class SellPayloadPresenter(
                 loadCurrencies()
                 checkForMinAmount()
                 restartLoadSellQuoteJob()
+                view.showLoading(isVisible = false)
+            } catch (noInternet: MoonpaySellError.NoInternetForRequest) {
+                Timber.i(noInternet)
+                view.showUiKitSnackBar(messageResId = R.string.common_offline_error)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading data from Moonpay")
                 view.navigateToErrorScreen()
-            } finally {
-                view.showLoading(isVisible = false)
             }
         }
     }
@@ -135,6 +138,8 @@ class SellPayloadPresenter(
 
                     view?.updateViewState(viewState)
                     delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
+                } catch (noInternet: MoonpaySellError.NoInternetForRequest) {
+                    view?.showUiKitSnackBar(messageResId = R.string.common_offline_error)
                 } catch (e: CancellationException) {
                     Timber.i(e)
                 } catch (e: Throwable) {
@@ -201,8 +206,8 @@ class SellPayloadPresenter(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
-                    text = resourceProvider.getString(
-                        R.string.sell_min_sol_amount,
+                    text = resources.getString(
+                        R.string.sell_payload_min_sol_amount,
                         minTokenSellAmount.formatTokenForMoonpay()
                     )
                 )
@@ -212,8 +217,8 @@ class SellPayloadPresenter(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
-                    text = resourceProvider.getString(
-                        R.string.sell_max_sol_amount,
+                    text = resources.getString(
+                        R.string.sell_payload_max_sol_amount,
                         maxTokenSellAmount.orZero().formatTokenForMoonpay()
                     )
                 )
@@ -223,7 +228,7 @@ class SellPayloadPresenter(
                     isEnabled = false,
                     backgroundColor = R.color.bg_rain,
                     textColor = R.color.text_mountain,
-                    text = resourceProvider.getString(R.string.sell_not_enough_sol)
+                    text = resources.getString(R.string.sell_payload_not_enough_sol)
                 )
             }
             else -> {
@@ -231,7 +236,7 @@ class SellPayloadPresenter(
                     isEnabled = true,
                     backgroundColor = R.color.bg_night,
                     textColor = R.color.text_snow,
-                    text = resourceProvider.getString(R.string.common_cash_out)
+                    text = resources.getString(R.string.common_cash_out)
                 )
             }
         }

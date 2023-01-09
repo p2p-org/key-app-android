@@ -1,5 +1,9 @@
 package org.p2p.wallet.moonpay.ui.new
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.USD_SYMBOL
@@ -32,10 +36,6 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import java.math.BigDecimal
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 500L
 
@@ -88,7 +88,7 @@ class NewBuyPresenter(
 
     private fun loadTokensToBuy() {
         launch {
-            val tokensToBuy = userInteractor.getTokensForBuy()
+            tokensToBuy = userInteractor.getTokensForBuy()
             if (tokensToBuy.isEmpty()) {
                 // cannot be empty, buy we are handling
                 Timber.i("Tokens to buy return an empty list, closing buy screen")

@@ -155,7 +155,7 @@
     <string name="reserve_username_create_username_success">🎉 Name was booked</string>
 
     <!--Common Errors-->
-    <string name="onboarding_offline_error">☕ You\'re offline. Keep calm</string>
+    <string name="common_offline_error">☕ You\'re offline. Keep calm</string>
     <string name="onboarding_google_services_error">❌ There is a problem with Google Services. Try again</string>
     <string name="onboarding_with_email">%s</string>
     <string name="onboarding_if_you_want_continue_with_email">If you want to continue with %s</string>

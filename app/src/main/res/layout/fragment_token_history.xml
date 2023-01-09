@@ -54,7 +54,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/bg_smoke"
-            android:paddingHorizontal="16dp"
             android:paddingTop="30dp"
             android:paddingBottom="24dp"
             app:layout_constraintEnd_toEndOf="parent"

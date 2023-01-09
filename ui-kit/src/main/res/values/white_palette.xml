@@ -42,6 +42,7 @@
     <color name="light_silver">#E0E0E7</color>
     <color name="light_sea">#BBE7FF</color>
     <color name="light_grass">#CDF6CD</color>
+    <color name="light_grass_30">#4DCDF6CD</color>
     <color name="light_electric">#E0DBFF</color>
 
     <color name="button_snow">@color/snow</color>
