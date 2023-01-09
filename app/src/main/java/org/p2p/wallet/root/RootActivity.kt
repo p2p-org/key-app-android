@@ -105,7 +105,11 @@ class RootActivity :
     }
 
     override fun onBackPressed() {
-        popBackStack()
+        if (onBackPressedDispatcher.hasEnabledCallbacks()) {
+            super.onBackPressed()
+        } else {
+            popBackStack()
+        }
     }
 
     override fun showTransactionProgress(internalTransactionId: String, data: NewShowProgress) {

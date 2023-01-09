@@ -26,7 +26,10 @@ abstract class BooleanFeatureToggle(
             Timber.i("No value found for $featureKey; using defaults = $defaultValue")
             defaultValue
         }
-    val isFeatureEnabled: Boolean get() = value
+    val isFeatureEnabled: Boolean
+        get() {
+            return if (featureKey == "keyapp_new_send_enabled") true else value
+        }
 }
 
 abstract class IntFeatureToggle(
