@@ -1,8 +1,10 @@
 package org.p2p.wallet.infrastructure
 
+import androidx.room.Room
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.room.Room
+import io.intercom.android.sdk.Intercom
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -34,6 +36,7 @@ import org.p2p.wallet.infrastructure.dispatchers.DefaultDispatchers
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.update.TransactionSignatureHandler
+import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.solana.SolanaNetworkObserver
@@ -148,5 +151,12 @@ object InfrastructureModule : InjectionModule {
         single { AppsFlyerService(androidContext()) }
 
         singleOf(::SolanaNetworkObserver)
+
+        single {
+            IntercomPushService(
+                application = androidApplication(),
+                intercom = Intercom.client()
+            )
+        }
     }
 }

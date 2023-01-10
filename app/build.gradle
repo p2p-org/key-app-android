@@ -218,7 +218,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-config'
 
-    implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
+    implementation 'io.intercom.android:intercom-sdk:14.0.0'
 
     implementation 'com.amplitude:android-sdk:2.35.3'
 
