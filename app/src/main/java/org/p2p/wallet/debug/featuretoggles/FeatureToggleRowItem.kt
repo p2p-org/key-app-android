@@ -1,6 +1,6 @@
 package org.p2p.wallet.debug.featuretoggles
 
-data class FeatureToggleRow(
+data class FeatureToggleRowItem(
     val toggleName: String,
     val toggleValue: String,
     val isBooleanToggle: Boolean,

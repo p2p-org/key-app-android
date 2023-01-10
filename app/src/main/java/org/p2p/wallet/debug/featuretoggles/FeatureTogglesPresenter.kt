@@ -20,7 +20,7 @@ class FeatureTogglesPresenter(
         )
     }
 
-    override fun onToggleChanged(toggle: FeatureToggleRow, newValue: String) {
+    override fun onToggleChanged(toggle: FeatureToggleRowItem, newValue: String) {
         val featureFlagToChange = inAppFeatureFlags.findFeatureFlagByName(toggle.toggleName)
         if (featureFlagToChange != null) {
             featureFlagToChange.featureValue = newValue.toBoolean()
@@ -35,9 +35,9 @@ class FeatureTogglesPresenter(
         load()
     }
 
-    private fun buildFeatureToggleRows(): List<FeatureToggleRow> =
+    private fun buildFeatureToggleRows(): List<FeatureToggleRowItem> =
         remoteFeatureToggles.map {
-            FeatureToggleRow(
+            FeatureToggleRowItem(
                 toggleName = it.featureKey,
                 toggleValue = it.value.toString(),
                 isBooleanToggle = it is BooleanFeatureToggle,
@@ -47,7 +47,7 @@ class FeatureTogglesPresenter(
         } + inAppFeatureFlags.allInAppFeatureFlags
             .filter { it !is DebugTogglesFeatureFlag }
             .map {
-                FeatureToggleRow(
+                FeatureToggleRowItem(
                     toggleName = it.featureName,
                     toggleValue = it.featureValue.toString(),
                     isBooleanToggle = true,

@@ -7,12 +7,12 @@ import org.p2p.wallet.common.mvp.MvpView
 interface FeatureTogglesContract {
 
     interface View : MvpView {
-        fun showFeatureToggles(debugToggle: DebugTogglesFeatureFlag, toggleRows: List<FeatureToggleRow>)
+        fun showFeatureToggles(debugToggle: DebugTogglesFeatureFlag, toggleRows: List<FeatureToggleRowItem>)
     }
 
     interface Presenter : MvpPresenter<View> {
         fun load()
-        fun onToggleChanged(toggle: FeatureToggleRow, newValue: String)
+        fun onToggleChanged(toggle: FeatureToggleRowItem, newValue: String)
         fun switchDebugRemoteConfig(isDebugEnabled: Boolean)
     }
 }
