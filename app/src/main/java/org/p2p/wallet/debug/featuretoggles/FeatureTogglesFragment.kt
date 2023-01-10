@@ -5,6 +5,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.DebugTogglesFeatureFlag
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentFeatureTogglesBinding
 import org.p2p.wallet.utils.popBackStack
@@ -28,6 +29,12 @@ class FeatureTogglesFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             featureTogglesRecyclerView.attachAdapter(adapter)
+            buttonEnableLocal.setOnClickListener {
+                presenter.switchDebugRemoteConfig(isDebugEnabled = true)
+            }
+            buttonEnableRemote.setOnClickListener {
+                presenter.switchDebugRemoteConfig(isDebugEnabled = false)
+            }
         }
     }
 
@@ -36,7 +43,20 @@ class FeatureTogglesFragment :
         presenter.load()
     }
 
-    override fun showFeatureToggles(toggleRows: List<FeatureToggleRow>) {
+    override fun showFeatureToggles(
+        debugToggle: DebugTogglesFeatureFlag, toggleRows: List<FeatureToggleRow>
+    ) {
+        binding.buttonEnableLocal.isEnabled = !debugToggle.featureValue
+        binding.buttonEnableRemote.isEnabled = debugToggle.featureValue
+
+        if (debugToggle.featureValue) {
+            binding.buttonEnableLocal.text = "Using local"
+            binding.buttonEnableRemote.text = "Switch to remote"
+        } else {
+            binding.buttonEnableLocal.text = "Switch to local"
+            binding.buttonEnableRemote.text = "Using remote"
+        }
+
         adapter.setToggleRows(toggleRows)
     }
 }

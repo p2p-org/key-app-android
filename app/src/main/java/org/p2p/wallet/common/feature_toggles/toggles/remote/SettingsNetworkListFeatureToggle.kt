@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import org.p2p.wallet.common.feature_toggles.remote_config.RemoteConfigValuesProvider
 import org.p2p.wallet.utils.fromJsonReified
 
-class SettingsNetworkValue(
+data class SettingsNetworkValue(
     @SerializedName("urlString")
     val url: String,
     @SerializedName("network")
