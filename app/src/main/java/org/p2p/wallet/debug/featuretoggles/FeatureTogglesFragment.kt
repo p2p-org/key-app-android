@@ -44,7 +44,8 @@ class FeatureTogglesFragment :
     }
 
     override fun showFeatureToggles(
-        debugToggle: DebugTogglesFeatureFlag, toggleRows: List<FeatureToggleRow>
+        debugToggle: DebugTogglesFeatureFlag,
+        toggleRows: List<FeatureToggleRow>
     ) {
         binding.buttonEnableLocal.isEnabled = !debugToggle.featureValue
         binding.buttonEnableRemote.isEnabled = debugToggle.featureValue

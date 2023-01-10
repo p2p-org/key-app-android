@@ -88,7 +88,6 @@ class FeatureTogglesAdapter(
                     imageViewDetails.setOnClickListener { showDetailsDialog(itemToBind) }
                     switchToggleValue.setOnCheckedChangeListener(null)
                 }
-
             }
         }
 
