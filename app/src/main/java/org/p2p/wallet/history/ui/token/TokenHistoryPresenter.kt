@@ -10,6 +10,7 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.moonpay.model.SellTransaction
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionFailureReason
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
@@ -103,6 +104,13 @@ class TokenHistoryPresenter(
             val fetchedItems = historyInteractor.loadTransactions(token.publicKey, isRefresh)
             if (token.isSOL) {
                 val sellTransactions = historyInteractor.loadSellTransactions()
+                    .filter { transaction ->
+                        if (transaction is SellTransaction.FailedTransaction) {
+                            transaction.failureReason != SellTransactionFailureReason.CANCELLED
+                        } else {
+                            true
+                        }
+                    }
                 moonpayTransactions.clear()
                 moonpayTransactions.addAll(sellTransactions)
             }
