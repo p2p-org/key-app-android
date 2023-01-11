@@ -43,10 +43,10 @@ class SearchInteractor(
         }
 
         // assuming we are sending direct token and verify the recipient address is valid direct or SOL address
-        val tokenData = transactionAddressInteractor.getDirectTokenData(address)?.also {
-            if (isInvalidAddress(it, sourceToken)) {
-                return SearchResult.InvalidDirectAddress(address, it)
-            }
+        val tokenData = transactionAddressInteractor.getDirectTokenData(address)
+
+        if (tokenData != null && isInvalidAddress(tokenData, sourceToken)) {
+            return SearchResult.InvalidDirectAddress(address, tokenData)
         }
 
         val balance = userInteractor.getBalance(address.toBase58Instance())
