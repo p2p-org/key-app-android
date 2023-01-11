@@ -22,6 +22,7 @@ class AppFirebaseMessagingService : FirebaseMessagingService(), KoinComponent {
 
     override fun onNewToken(token: String) {
         appsFlyerService.onNewToken(token)
+        intercomPushService.registerForPush(token)
         super.onNewToken(token)
     }
 
