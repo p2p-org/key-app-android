@@ -4,9 +4,13 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
 interface SellTransactionDetailsContract {
-    interface View : MvpView
+    interface View : MvpView {
+        fun close()
+        fun showLoading(isLoading: Boolean)
+    }
 
     interface Presenter : MvpPresenter<View> {
-        fun removeFromHistory()
+        fun onRemoveFromHistoryClicked()
+        fun onCancelTransactionClicked()
     }
 }
