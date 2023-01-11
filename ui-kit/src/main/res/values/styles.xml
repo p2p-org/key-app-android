@@ -36,4 +36,21 @@
         <item name="thumbTint">@color/selector_ui_kit_switch_thumb_color</item>
     </style>
 
+    <style name="UiKit.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/UiKit.MaterialAlertDialog.PositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/UiKit.MaterialAlertDialog.NegativeButton</item>
+    </style>
+
+    <style name="UiKit.MaterialAlertDialog.NegativeButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/text_rose</item>
+        <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Label1</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="UiKit.MaterialAlertDialog.PositiveButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/text_sky</item>
+        <item name="android:textAppearance">@style/UiKit.TextAppearance.SemiBold.Label1</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>

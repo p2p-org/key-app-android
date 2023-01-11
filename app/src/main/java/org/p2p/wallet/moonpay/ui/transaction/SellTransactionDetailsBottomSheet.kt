@@ -6,6 +6,8 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.removeLinksUnderline
 import org.p2p.uikit.utils.setTextColorRes
@@ -21,6 +23,7 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getHtmlString
@@ -44,7 +47,7 @@ class SellTransactionDetailsBottomSheet :
         }
     }
 
-    override val presenter: SellTransactionDetailsContract.Presenter = SellTransactionDetailsPresenter()
+    override val presenter: SellTransactionDetailsContract.Presenter by inject { parametersOf(details) }
     private val binding: DialogSendTransactionDetailsBinding by viewBinding()
 
     private val details: SellTransactionViewDetails by args(ARG_DETAILS)
@@ -54,7 +57,6 @@ class SellTransactionDetailsBottomSheet :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViews()
-        expandToFitAllContent()
     }
 
     private fun onActionButtonClicked(action: SellTransactionDetailsButtonAction) {
@@ -64,7 +66,7 @@ class SellTransactionDetailsBottomSheet :
                 replaceFragment(NewSendFragment.create(recipient = recipient))
             }
             SellTransactionDetailsButtonAction.CLOSE -> {
-                dismissAllowingStateLoss()
+                close()
             }
             SellTransactionDetailsButtonAction.TRY_AGAIN -> {
                 // todo should be a task somewhere to implement try again feature
@@ -84,6 +86,7 @@ class SellTransactionDetailsBottomSheet :
         val bodyIconRes: Int
         val bodyIconTint: Int
         val buttonTitle: String
+        val buttonRemoveOrCancelTitle: String
         val action: SellTransactionDetailsButtonAction
         when (details.status) {
             SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
@@ -93,6 +96,7 @@ class SellTransactionDetailsBottomSheet :
                 bodyIconRes = R.drawable.ic_alert_rounded
                 bodyIconTint = R.color.icons_sun
                 buttonTitle = getString(R.string.common_send)
+                buttonRemoveOrCancelTitle = getString(R.string.common_cancel)
                 action = SellTransactionDetailsButtonAction.SEND
             }
             SellTransactionStatus.PENDING -> {
@@ -102,6 +106,7 @@ class SellTransactionDetailsBottomSheet :
                 bodyIconRes = R.drawable.ic_info_rounded
                 bodyIconTint = R.color.icons_silver
                 buttonTitle = getString(R.string.common_close)
+                buttonRemoveOrCancelTitle = emptyString()
                 action = SellTransactionDetailsButtonAction.CLOSE
             }
             SellTransactionStatus.COMPLETED -> {
@@ -111,6 +116,7 @@ class SellTransactionDetailsBottomSheet :
                 bodyIconRes = R.drawable.ic_info_rounded
                 bodyIconTint = R.color.icons_silver
                 buttonTitle = getString(R.string.common_close)
+                buttonRemoveOrCancelTitle = emptyString()
                 action = SellTransactionDetailsButtonAction.CLOSE
             }
             SellTransactionStatus.FAILED -> {
@@ -120,6 +126,7 @@ class SellTransactionDetailsBottomSheet :
                 bodyIconRes = R.drawable.ic_alert_rounded
                 bodyIconTint = R.color.icons_rose
                 buttonTitle = getString(R.string.common_try_again)
+                buttonRemoveOrCancelTitle = getString(R.string.sell_details_button_remove)
                 action = SellTransactionDetailsButtonAction.TRY_AGAIN
             }
         }
@@ -135,7 +142,8 @@ class SellTransactionDetailsBottomSheet :
 
         setupButtons(
             action = action,
-            buttonTitle = buttonTitle
+            buttonTitle = buttonTitle,
+            buttonRemoveOrCancelTitle = buttonRemoveOrCancelTitle
         )
     }
 
@@ -161,13 +169,22 @@ class SellTransactionDetailsBottomSheet :
     private fun setupButtons(
         action: SellTransactionDetailsButtonAction,
         buttonTitle: String,
+        buttonRemoveOrCancelTitle: String
     ) = with(binding.layoutDetails) {
         buttonAction.text = buttonTitle
         buttonAction.setOnClickListener { onActionButtonClicked(action) }
-        buttonRemove.isVisible =
+
+        buttonRemoveOrCancel.text = buttonRemoveOrCancelTitle
+        buttonRemoveOrCancel.isVisible =
             details.status == SellTransactionStatus.WAITING_FOR_DEPOSIT ||
             details.status == SellTransactionStatus.FAILED
-        buttonRemove.setOnClickListener { presenter.removeFromHistory() }
+        buttonRemoveOrCancel.setOnClickListener {
+            when (details.status) {
+                SellTransactionStatus.WAITING_FOR_DEPOSIT -> presenter.onCancelTransactionClicked()
+                SellTransactionStatus.FAILED -> presenter.onRemoveFromHistoryClicked()
+                else -> Unit
+            }
+        }
     }
 
     private fun renderAmounts() = with(binding.layoutDetails) {
@@ -187,5 +204,13 @@ class SellTransactionDetailsBottomSheet :
             requireContext().copyToClipBoard(details.receiverAddress)
             showUiKitSnackBar(messageResId = R.string.common_copied)
         }
+    }
+
+    override fun showLoading(isLoading: Boolean) {
+        binding.layoutDetails.buttonRemoveOrCancel.isLoadingState = isLoading
+    }
+
+    override fun close() {
+        dismissAllowingStateLoss()
     }
 }
