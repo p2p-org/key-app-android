@@ -62,16 +62,18 @@ class UserRemoteRepository(
             if (fetchPrices) {
                 loadAndSaveUserTokens(tokenSymbols)
             } else {
-                checkIsHaveNewToken(tokenSymbols)
+                checkForNewTokens(tokenSymbols)
             }
 
             // Map accounts to List<Token.Active>
             mapAccountsToTokens(publicKey, accounts)
         }
 
-    private suspend fun checkIsHaveNewToken(tokenSymbols: List<String>) {
+    private suspend fun checkForNewTokens(tokenSymbols: List<String>) {
         val localPrices = userLocalRepository.getTokenPrices()
-            .firstOrNull()?.map { it.tokenSymbol } ?: listOf()
+            .firstOrNull()
+            ?.map { it.tokenSymbol }
+            .orEmpty()
         val userTokensDiff = tokenSymbols.minus(localPrices.toSet())
         if (userTokensDiff.isNotEmpty()) {
             loadAndSaveUserTokens(tokenSymbols)
