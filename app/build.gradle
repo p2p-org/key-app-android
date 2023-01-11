@@ -34,6 +34,8 @@ android {
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "SENTRY_ENABLED", "false")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
+        buildConfigField("boolean","APPSFLYER_ENABLED","false")
+        buildConfigField("boolean","FIREBASE_ANALYTICS_ENABLED","false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("boolean", "SSL_PINNING_ENABLED", "false")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
@@ -67,12 +69,14 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled true
             shrinkResources true
-            versionNameSuffix ".${getVersionBuild()}-feature"
+            versionNameSuffix ".${getVersionBuild() }-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_FEATURE']
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
+            buildConfigField("boolean","FIREBASE_ANALYTICS_ENABLED","true")
             manifestPlaceholders = [SENTRY_ENV: "feature"]
             matchingFallbacks = ['release']
 

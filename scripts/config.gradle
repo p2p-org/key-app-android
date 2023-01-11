@@ -6,6 +6,8 @@ ext.initReleaseType = { buildType ->
     buildType.buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
     buildType.buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
     buildType.buildConfigField("boolean", "SENTRY_ENABLED", "true")
+    buildType.buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
+    buildType.buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "true")
     buildType.manifestPlaceholders = [SENTRY_ENV: "release"]
 
 }
