@@ -163,11 +163,13 @@ class HistoryInteractor(
             .mapToHistoryTransactions()
             .first()
 
-    suspend fun getSellTransactions(): List<SellTransaction> = if (sellInteractor.isSellAvailable()) {
-        sellInteractor.loadUserSellTransactions()
-            .filterNot { hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId) }
-    } else {
-        emptyList()
+    suspend fun getSellTransactions(): List<SellTransaction> {
+        return if (sellInteractor.isSellAvailable()) {
+            sellInteractor.loadUserSellTransactions()
+                .filterNot { hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId) }
+        } else {
+            emptyList()
+        }
     }
 
     private suspend fun loadTransactions(signatures: List<HistoryStreamItem>): List<HistoryTransaction> {

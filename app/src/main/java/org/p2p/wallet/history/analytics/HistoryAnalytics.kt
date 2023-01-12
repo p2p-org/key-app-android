@@ -1,11 +1,11 @@
 package org.p2p.wallet.history.analytics
 
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
-import java.math.BigDecimal
 
 class HistoryAnalytics(
     private val sendAnalytics: SendAnalytics,
@@ -21,7 +21,7 @@ class HistoryAnalytics(
             tokenAName = transaction.sourceSymbol,
             tokenBName = transaction.destinationSymbol,
             swapSum = transaction.amountA,
-            swapUSD = transaction.amountSentInUsd ?: BigDecimal.ZERO,
+            swapUSD = transaction.amountSentInUsd.orZero(),
             feesSource = SwapAnalytics.FeeSource.UNKNOWN
         )
     }
@@ -42,7 +42,7 @@ class HistoryAnalytics(
                 tokenName = transaction.tokenData.symbol,
                 sendNetwork = sendNetwork,
                 sendSum = transaction.total,
-                sendUSD = transaction.totalInUsd ?: BigDecimal.ZERO
+                sendUSD = transaction.totalInUsd.orZero()
             )
         } else {
             val receiveNetwork = if (isRenBtcSessionActive) {
@@ -52,7 +52,7 @@ class HistoryAnalytics(
             }
             receiveAnalytics.logReceiveShowingDetails(
                 receiveSum = transaction.total,
-                receiveUSD = transaction.totalInUsd ?: BigDecimal.ZERO,
+                receiveUSD = transaction.totalInUsd.orZero(),
                 tokenName = transaction.tokenData.symbol,
                 receiveNetwork = receiveNetwork
             )
