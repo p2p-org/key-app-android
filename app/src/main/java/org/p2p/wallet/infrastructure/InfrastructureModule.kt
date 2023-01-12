@@ -16,6 +16,7 @@ import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.history.repository.local.db.dao.CloseAccountTransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.CreateAccountTransactionsDao
@@ -123,6 +124,13 @@ object InfrastructureModule : InjectionModule {
                 gson = get()
             )
         } bind AccountStorageContract::class
+
+        single {
+            val prefs = "${androidContext().packageName}.toggle_prefs".let {
+                androidContext().getSharedPreferences(it, Context.MODE_PRIVATE)
+            }
+            LocalFeatureToggleStorage(prefs)
+        }
 
         single { GlideManager(get()) }
 

@@ -9,6 +9,7 @@ import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
+import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.utils.toBase58Instance
@@ -61,5 +62,9 @@ class SellInteractor(
 
     suspend fun getMoonpaySellFiatCurrency(): SellTransactionFiatCurrency {
         return sellRepository.getSellFiatCurrency()
+    }
+
+    suspend fun cancelTransaction(transactionId: String): MoonpaySellCancelResult {
+        return sellRepository.cancelSellTransaction(transactionId)
     }
 }

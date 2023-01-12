@@ -9,6 +9,7 @@
     android:background="@color/backgroundPrimary"
     android:orientation="vertical">
 
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -18,10 +19,34 @@
         app:title="@string/feature_toggles_title"
         app:titleTextAppearance="@style/WalletTheme.TextAppearance.SemiBold18" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonEnableLocal"
+            style="@style/UiKit.Components.Button.Medium"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:text="Using local" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonEnableRemote"
+            style="@style/UiKit.Components.Button.Medium"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Using remote" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/featureTogglesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="12dp"
         android:background="@color/backgroundPrimary"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
