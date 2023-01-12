@@ -27,7 +27,7 @@ class SearchErrorViewHolder(
 
             when (item) {
                 is SearchResult.OwnAddressError -> {
-                    val description = if(item.directToken != null) {
+                    val description = if (item.directToken != null) {
                         loadTokenIcon(item.directToken.iconUrl)
                         getString(
                             R.string.search_no_other_tokens_description,
