@@ -28,7 +28,7 @@ class HistoryPresenter(
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val environmentManager: NetworkEnvironmentManager,
     private val sendAnalytics: SendAnalytics,
-    private val moonpayTransactionsMapper: HistoryMoonpayTransactionsMapper,
+    private val sellTransactionsMapper: HistorySellTransactionMapper,
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private var isPagingEnded = false
@@ -111,7 +111,7 @@ class HistoryPresenter(
     private suspend fun fetchMoonpayTransactions() {
         val transactions = sellInteractor.loadUserSellTransactions()
         moonpayTransactions.clear()
-        moonpayTransactions.addAll(moonpayTransactionsMapper.map(transactions))
+        moonpayTransactions.addAll(sellTransactionsMapper.map(transactions))
     }
 
     override fun onItemClicked(transaction: HistoryTransaction) {

@@ -8,7 +8,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.ui.history.HistoryMoonpayTransactionsMapper
+import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
@@ -31,7 +31,7 @@ class TokenHistoryPresenter(
     private val sendAnalytics: SendAnalytics,
     private val renBtcInteractor: RenBtcInteractor,
     private val tokenInteractor: TokenInteractor,
-    private val moonpayTransactionsMapper: HistoryMoonpayTransactionsMapper,
+    private val sellTransactionsMapper: HistorySellTransactionMapper,
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     private val transactions = mutableListOf<HistoryTransaction>()
@@ -106,7 +106,7 @@ class TokenHistoryPresenter(
             if (token.isSOL) {
                 val sellTransactions = historyInteractor.loadSellTransactions()
                 moonpayTransactions.clear()
-                moonpayTransactions.addAll(moonpayTransactionsMapper.map(sellTransactions))
+                moonpayTransactions.addAll(sellTransactionsMapper.map(sellTransactions))
             }
             transactions.addAll(fetchedItems)
             view?.showHistory(transactions, moonpayTransactions)

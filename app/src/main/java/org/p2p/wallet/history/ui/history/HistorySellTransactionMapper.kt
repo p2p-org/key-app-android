@@ -6,14 +6,12 @@ import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 
-class HistoryMoonpayTransactionsMapper {
+class HistorySellTransactionMapper {
 
     fun map(transaction: List<SellTransaction>): List<SellTransaction> {
         val now = ZonedDateTime.now()
         return transaction
-            .filter {
-                it.status == SellTransactionStatus.WAITING_FOR_DEPOSIT || it.isNotExpired(now)
-            }
+            .filter { it.status == SellTransactionStatus.WAITING_FOR_DEPOSIT || it.isNotExpired(now) }
             .sortedBy { it.metadata.createdAt.toZonedDateTime() }
     }
 
