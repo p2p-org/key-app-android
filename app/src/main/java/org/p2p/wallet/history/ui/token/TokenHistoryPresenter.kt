@@ -103,6 +103,7 @@ class TokenHistoryPresenter(
             val fetchedItems = historyInteractor.loadTransactions(token.publicKey, isRefresh)
             if (token.isSOL) {
                 val sellTransactions = historyInteractor.loadSellTransactions()
+                    .filter { transaction -> !transaction.isCancelled() }
                 moonpayTransactions.clear()
                 moonpayTransactions.addAll(sellTransactions)
             }
