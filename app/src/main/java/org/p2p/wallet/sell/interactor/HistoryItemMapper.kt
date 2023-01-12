@@ -33,7 +33,7 @@ class HistoryItemMapper(private val resources: Resources) {
         val receiverAddress = if (it is SellTransaction.WaitingForDepositTransaction) {
             it.moonpayDepositWalletAddress.base58Value
         } else {
-            resources.getString(R.string.you_bank_account_via_moonpay)
+            resources.getString(R.string.sell_details_receiver_moonpay_bank)
         }
         SellTransactionViewDetails(
             transactionId = it.transactionId,

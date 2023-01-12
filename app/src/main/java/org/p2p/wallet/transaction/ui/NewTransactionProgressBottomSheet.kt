@@ -33,6 +33,7 @@ private const val EXTRA_DATA = "EXTRA_DATA"
 private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
 
 private const val IMAGE_SIZE = 64
+private const val DATE_FORMAT = "MMMM dd, yyyy"
 private const val TIME_FORMAT = "HH:mm"
 
 class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
@@ -65,7 +66,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private val data: NewShowProgress by args(EXTRA_DATA)
     private val transactionId: String by args(EXTRA_TRANSACTION_ID)
 
-    private val dateFormat by unsafeLazy { SimpleDateFormat(TIME_FORMAT, Locale.getDefault()) }
+    private val dateFormat by unsafeLazy { SimpleDateFormat(DATE_FORMAT, Locale.getDefault()) }
+    private val timeFormat by unsafeLazy { SimpleDateFormat(TIME_FORMAT, Locale.getDefault()) }
 
     private lateinit var progressStateFormat: String
 
@@ -80,7 +82,11 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         progressStateFormat = getString(R.string.transaction_progress_title)
         with(binding) {
-            textViewSubtitle.text = getString(R.string.transaction_date_format, dateFormat.format(data.date))
+            textViewSubtitle.text = getString(
+                R.string.transaction_date_format,
+                dateFormat.format(data.date),
+                timeFormat.format(data.date)
+            )
             glideManager.load(imageViewToken, data.tokenUrl, IMAGE_SIZE)
             textViewAmountUsd.text = data.amountUsd
             textViewAmountTokens.text = data.amountTokens

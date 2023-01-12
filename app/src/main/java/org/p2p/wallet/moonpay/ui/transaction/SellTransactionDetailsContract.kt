@@ -10,7 +10,7 @@ interface SellTransactionDetailsContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onCancelTransactionClicked()
         fun onRemoveFromHistoryClicked()
+        fun onCancelTransactionClicked()
     }
 }

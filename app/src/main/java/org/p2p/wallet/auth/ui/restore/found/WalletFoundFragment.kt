@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.ui.restore.found
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
@@ -117,7 +117,7 @@ class WalletFoundFragment :
 
     override fun onConnectionError() {
         setLoadingState(isScreenLoading = false)
-        showUiKitSnackBar(getString(R.string.onboarding_offline_error))
+        showUiKitSnackBar(getString(R.string.common_offline_error))
     }
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {

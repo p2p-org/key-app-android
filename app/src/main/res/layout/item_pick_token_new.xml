@@ -33,17 +33,30 @@
         tools:ignore="ContentDescription"
         tools:visibility="visible" />
 
-    <org.p2p.uikit.atoms.UiKitStartAmountView
-        android:id="@+id/startAmountView"
+    <TextView
+        android:id="@+id/textViewTokenName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+        app:layout_constraintBottom_toTopOf="@id/textViewAmount"
         app:layout_constraintEnd_toStartOf="@+id/endAmountView"
         app:layout_constraintStart_toEndOf="@id/imageViewToken"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:subtitle="4.12871625 SOL"
-        tools:title="Solana" />
+        app:layout_constraintTop_toTopOf="@id/imageViewToken"
+        tools:text="Wrapped Bitcoin" />
+
+    <TextView
+        android:id="@+id/textViewAmount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewToken"
+        app:layout_constraintEnd_toStartOf="@+id/endAmountView"
+        app:layout_constraintStart_toEndOf="@id/imageViewToken"
+        app:layout_constraintTop_toBottomOf="@id/textViewTokenName"
+        tools:text="4.12871625 SOL" />
 
     <org.p2p.uikit.atoms.UiKitEndAmountView
         android:id="@+id/endAmountView"

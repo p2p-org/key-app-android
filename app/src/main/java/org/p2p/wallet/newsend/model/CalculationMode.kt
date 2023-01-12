@@ -50,15 +50,20 @@ class CalculationMode {
         recalculate(inputAmount)
     }
 
-    fun reduceAmount(newInputAmount: BigInteger): BigDecimal {
-        val newTokenAmount = newInputAmount.fromLamports(token.decimals)
-        val newAmount = if (currencyMode is CurrencyMode.Usd) {
-            newTokenAmount.toUsd(token).orZero()
-        } else {
-            newTokenAmount
-        }
+    fun reduceAmount(newInputAmountInToken: BigInteger): BigDecimal {
+        val newTokenAmount = newInputAmountInToken.fromLamports(token.decimals)
+        val newUsdAmount = newTokenAmount.toUsd(token).orZero()
+        val newAmount = if (currencyMode is CurrencyMode.Usd) newUsdAmount else newTokenAmount
 
-        updateInputAmount(newAmount.toPlainString())
+        usdAmount = newUsdAmount
+        tokenAmount = newTokenAmount
+        inputAmount = newAmount.toString()
+
+        if (currencyMode is CurrencyMode.Usd) {
+            handleCalculationUpdate(newTokenAmount.toString(), token.tokenSymbol)
+        } else {
+            handleCalculationUpdate(newUsdAmount.toString(), USD_READABLE_SYMBOL)
+        }
 
         return newAmount
     }
