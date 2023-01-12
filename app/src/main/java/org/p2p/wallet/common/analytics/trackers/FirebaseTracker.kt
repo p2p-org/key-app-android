@@ -1,15 +1,12 @@
 package org.p2p.wallet.common.analytics.trackers
 
-import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import org.koin.core.parameter.parametersOf
 
 class FirebaseTracker(
-    private val context: Context
+    private val firebaseAnalytics: FirebaseAnalytics
 ) : AnalyticsTracker {
-
-    private val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
     override fun logEvent(eventName: String, params: Map<String, Any>) {
         firebaseAnalytics.logEvent(eventName) {
