@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_smoke">
+
+    <org.p2p.uikit.organisms.UiKitToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_toolbar_back"
+        app:title="@string/send_buy_or_receive_crypto"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night"/>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_send_no_token_placeholder"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="wrap"
+        app:layout_constraintHeight_min="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintVertical_chainStyle="packed"/>
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="@string/send_no_token_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toTopOf="@id/textViewFirstDescription"
+        app:layout_constraintTop_toBottomOf="@id/imageView"/>
+
+    <TextView
+        android:id="@+id/textViewFirstDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/send_no_token_message_1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewTopLeft"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewTopLeft"
+        app:layout_constraintTop_toTopOf="@id/imageViewTopLeft"/>
+
+    <ImageView
+        android:id="@+id/imageViewTopLeft"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="28dp"
+        android:padding="12dp"
+        app:tint="@color/icons_mountain"
+        android:background="@drawable/bg_circle"
+        android:backgroundTint="@color/bg_rain"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_lightning"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"/>
+
+    <TextView
+        android:id="@+id/textViewSecondDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="32dp"
+        android:text="@string/send_no_token_message_2"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewBottomLeft"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewBottomLeft"
+        app:layout_constraintTop_toTopOf="@id/imageViewBottomLeft"/>
+
+    <ImageView
+        android:id="@+id/imageViewBottomLeft"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/bg_circle"
+        android:backgroundTint="@color/bg_rain"
+        android:importantForAccessibility="no"
+        android:padding="12dp"
+        android:src="@drawable/ic_user"
+        app:layout_constraintBottom_toTopOf="@id/containerBottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewTopLeft"
+        app:tint="@color/icons_mountain"/>
+
+    <LinearLayout
+        android:id="@+id/containerBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_night_top_rounded"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonBuy"
+            style="@style/UiKit.Components.Button.Large.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:backgroundTint="@color/bg_snow"
+            android:text="@string/send_buy_crypto"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+            android:textColor="@color/text_night"
+            app:icon="@drawable/ic_send_buy"
+            app:iconGravity="textStart"
+            app:iconSize="24dp"
+            app:iconTint="@color/icons_night"/>
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonReceive"
+            style="@style/UiKit.Components.Button.Large.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/bg_snow"
+            android:text="@string/send_receive_title"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+            android:textColor="@color/text_night"
+            app:icon="@drawable/ic_send_receive"
+            app:iconGravity="textStart"
+            app:iconSize="24dp"
+            app:iconTint="@color/icons_night"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

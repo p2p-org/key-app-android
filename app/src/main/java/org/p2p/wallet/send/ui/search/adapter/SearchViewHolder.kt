@@ -4,14 +4,18 @@ import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.databinding.ItemSearchBinding
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.utils.cutEnd
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
+import org.p2p.wallet.utils.DateTimeUtils
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
+import org.p2p.wallet.utils.viewbinding.context
+import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
@@ -28,8 +32,7 @@ class SearchViewHolder(
     fun onBind(item: SearchResult) {
         when (item) {
             is SearchResult.UsernameFound -> renderFull(item)
-            is SearchResult.AddressOnly -> renderAddressOnly(item)
-            is SearchResult.EmptyBalance -> renderEmptyBalance(item)
+            is SearchResult.AddressFound -> renderAddressOnly(item)
             // do nothing, no wrong type should be in search view
             else -> Timber.w("Received SearchResult.Wrong in unexpected place")
         }
@@ -44,38 +47,47 @@ class SearchViewHolder(
             if (item.username.endsWith(usernameDomainFeatureToggle.value)) {
                 imageResource = R.drawable.ic_key_app_circle
                 walletImageView.setPadding(0, 0, 0, 0)
+                textViewTop.text = item.getFormattedUsername()
+                textViewBottom.isVisible = false
             } else {
                 imageResource = R.drawable.ic_search_wallet
                 walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                textViewTop.text = item.username
+                textViewBottom.withTextOrGone(item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT))
             }
 
             walletImageView.setImageResource(imageResource)
 
-            topTextView.text = item.username
-            bottomTextView withTextOrGone item.addressState.address.cutEnd()
-            bottomTextView.setTextColorRes(R.color.backgroundDisabled)
+            textViewBottom.setTextColorRes(R.color.bg_mountain)
+            textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
         }
     }
 
-    private fun renderAddressOnly(item: SearchResult.AddressOnly) {
+    private fun renderAddressOnly(item: SearchResult.AddressFound) {
         with(binding) {
-            if (item.addressState.networkType == NetworkType.BITCOIN) {
-                walletImageView.setImageResource(R.drawable.ic_btc)
+            val imageIconUrl = item.sourceToken?.iconUrl
+            val description: String?
+            val imageObject: Any = if (imageIconUrl != null) {
                 walletImageView.setPadding(0, 0, 0, 0)
+                description = getString(
+                    R.string.search_no_other_tokens_description,
+                    item.sourceToken.tokenSymbol
+                )
+                imageIconUrl
             } else {
-                walletImageView.setImageResource(R.drawable.ic_search_wallet)
                 walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                description = null
+                R.drawable.ic_search_wallet
             }
-            topTextView.text = item.addressState.address.cutEnd()
-            bottomTextView.isVisible = false
-        }
-    }
-
-    private fun renderEmptyBalance(item: SearchResult.EmptyBalance) {
-        with(binding) {
-            topTextView.text = item.addressState.address.cutEnd()
-            bottomTextView.setText(R.string.send_caution_empty_balance)
-            bottomTextView.setTextColorRes(R.color.systemWarningMain)
+            textViewTop.text = item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+            textViewBottom.withTextOrGone(description)
+            textViewDate.withTextOrGone(item.date?.time?.let { DateTimeUtils.getDateRelatedFormatted(it, context) })
+            Glide.with(root)
+                .load(imageObject)
+                .circleCrop()
+                .error(R.drawable.ic_placeholder_image)
+                .placeholder(R.drawable.ic_placeholder_image)
+                .into(walletImageView)
         }
     }
 }

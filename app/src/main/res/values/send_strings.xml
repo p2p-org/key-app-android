@@ -15,15 +15,19 @@
     <string name="search_error_info">It is possible that the address is incorrect if you continue</string>
     <string name="search_not_found">Address not found. Try another one</string>
     <string name="search_found">Here\'s what we found</string>
+    <string name="search_recently">Recently used</string>
     <string name="search_caution_error">Caution: this address has no funds</string>
     <string name="search_no_other_tokens_description">%s token account</string>
-    <string name="search_no_other_tokens_error">You cannot send SOL to this address because it belongs to another token (%s)</string>
+    <string name="search_no_other_tokens_error">You cannot send funds to this address because it belongs to another token</string>
+    <string name="search_no_founds_error">Account creation for this address is not possible due to insufficient funds</string>
     <string name="search_yourself_error">You cannot send tokens to yourself</string>
     <string name="search_yourself_description">Your address</string>
+    <string name="search_your_token_description">Your %s address</string>
 
     <!--QrCode-->
-    <string name="qr_no_address">❌ There\'s no address in this QR code. Try another one</string>
-    <string name="qr_common_error">❌ This QR code is not recognized. Try again</string>
+    <string name="qr_address_found">✅ The address %s is recognized</string>
+    <string name="qr_no_address">There\'s no address in this QR code. Try another one</string>
+    <string name="qr_common_error">This QR code is not recognized. Try again</string>
 
     <string name="send_pick_token_title">Pick a token</string>
     <string name="send_pick_token_search_hint">Token name</string>
@@ -31,6 +35,7 @@
     <string name="send_pick_token_other">Other tokens</string>
     <string name="send_pick_token_search_result_text">Here\'s what we found</string>
     <string name="send_pick_token_search_not_found">Token not found. Try another one</string>
+    <string name="send_pick_fee_token_title">Pay the fee with</string>
 
     <!--Free Transactions Dialog-->
     <string name="free_transactions_title">Enjoy free transactions!</string>
@@ -44,5 +49,43 @@
     <string name="send_transactions_details_transaction_fee">Transaction fee</string>
     <string name="send_transactions_details_account_fee">Account creation fee</string>
     <string name="send_transactions_details_total">Total</string>
+
+    <!--Send-->
+    <string name="send_switch_to_token">Tap to switch to %s</string>
+    <string name="send_enter_amount">Enter Amount</string>
+
+    <string name="send_slider_text_format">Send %s %s</string>
+    <string name="send_max_warning_text_format">Max: %s %s</string>
+    <string name="send_min_warning_text_format">Min: %s %s</string>
+
+    <string name="send_fees">Fees:</string>
+    <string name="send_fees_format">Fees: %s</string>
+    <string name="send_fees_zero">Fees: 0</string>
+    <string name="send_fees_free">Enjoy free transactions</string>
+    <string name="send_calculating_fees">Calculating the fees</string>
+    <string name="send_free_fee_format">Free (%d left for today)</string>
+
+    <string name="send_cant_calculate_fees_error">Cannot calculate fees. Try again</string>
+    <string name="send_reduced_amount_calculation_message">✅ Calculated by subtracting the account creation fee from your balance</string>
+
+    <string name="send_no_account_title">This address doesn\'t have an account for this token</string>
+    <string name="send_no_account_critical_message">You will have to pay a one-time fee %s to create an account for this address</string>
+    <string name="send_no_account_critical_button_text">@android:string/ok</string>
+    <string name="send_no_account_non_critical_message">You will have to pay a one-time fee %s to create an account for this address. You can choose in which currency to pay with below.</string>
+    <string name="send_no_account_non_critical_continue">Continue with %s</string>
+    <string name="send_no_account_non_critical_switch">Switch to another token</string>
+
+    <!--Transactions Progress BottomSheet-->
+    <string name="transaction_progress_title">Transaction %s</string>
+    <string name="transaction_progress_submitted">submitted</string>
+    <string name="transaction_progress_succeeded">succeeded</string>
+    <string name="transaction_progress_failed">failed</string>
+    <string name="transaction_description_progress">It usually takes 5–20 seconds for a transaction to complete</string>
+    <string name="transaction_description_succeeded">The transaction has been successfully completed 🤟</string>
+    <string name="transaction_description_failed">The transaction was rejected by the Solana blockchain</string>
+    <string name="transaction_date_format">%s @ %s</string>
+    <string name="transaction_send_to_title">Sent to</string>
+    <string name="transaction_transaction_fee_title">Transaction fee</string>
+    <string name="transaction_transaction_fee_free_value">Free (Paid by Key App)</string>
 
 </resources>

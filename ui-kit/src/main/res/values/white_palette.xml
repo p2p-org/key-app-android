@@ -31,14 +31,18 @@
     <color name="sun">#FFB404</color>
     <color name="electric">#644AFF</color>
     <color name="grass">#04D004</color>
+    <color name="grass_30">#4D04D004</color>
     <color name="sea">#1DAEFF</color>
     <color name="silver">#9799AF</color>
+    <color name="silver_10">#E0E0E7</color>
     <color name="light_sun">#FFF0CD</color>
     <color name="light_lime">#F1FDAA</color>
     <color name="light_rose">#FFDCE9</color>
+    <color name="light_rose_30">#4DFFDCE9</color>
     <color name="light_silver">#E0E0E7</color>
     <color name="light_sea">#BBE7FF</color>
     <color name="light_grass">#CDF6CD</color>
+    <color name="light_grass_30">#4DCDF6CD</color>
     <color name="light_electric">#E0DBFF</color>
 
     <color name="button_snow">@color/snow</color>

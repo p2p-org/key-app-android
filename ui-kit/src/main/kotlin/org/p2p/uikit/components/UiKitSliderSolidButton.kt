@@ -38,6 +38,7 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     var onSlideCompleteListener: (() -> Unit)? = null
+    var onSlideCollapseCompleted: (() -> Unit)? = null
 
     private val binding = inflateViewBinding<WidgetSliderSolidButtonBinding>()
 
@@ -63,17 +64,10 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
         binding.containerOval.outlineProvider = ViewOutlineProvider.BACKGROUND
         binding.containerOval.clipToOutline = true
 
-        binding.shimmerView.startShimmer()
-
         initializeTouchListener()
         post {
             updateGradient(horizontalMargin, horizontalMargin.toInt())
         }
-    }
-
-    override fun onDetachedFromWindow() {
-        binding.shimmerView.stopShimmer()
-        super.onDetachedFromWindow()
     }
 
     fun setupSlider(
@@ -87,6 +81,16 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
             imageViewAction.setImageResource(actionIconRes)
             setLightStyle(isLight)
         }
+    }
+
+    fun setActionText(@StringRes actionTextRes: Int) = with(binding) {
+        textViewAction.setText(actionTextRes)
+        textViewActionTop.setText(actionTextRes)
+    }
+
+    fun setActionText(actionText: String) = with(binding) {
+        textViewAction.text = actionText
+        textViewActionTop.text = actionText
     }
 
     fun setLightStyle(isLight: Boolean) {
@@ -107,6 +111,32 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
                 textViewAction.setTextColor(whiteColor)
             }
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun showCompleteAnimation() = with(binding) {
+        shimmerView.setOnTouchListener { _, _ -> true }
+        setGradientVisible(isVisible = false)
+        textViewAction.isVisible = false
+        textViewActionTop.isVisible = false
+        imageViewAction.setImageDrawable(null)
+        TransitionManager.beginDelayedTransition(
+            root.parent as ViewGroup,
+            depositButtonsAnimation
+        )
+        val params = root.layoutParams
+        params.width = completedWidth
+        root.layoutParams = params
+        shimmerView.x = horizontalMargin
+        imageViewAction.postDelayed(
+            { animateTick() },
+            ANIMATION_SLIDE_BACK_DURATION
+        )
+    }
+
+    fun restoreSlider() {
+        updateGradient(horizontalMargin, horizontalMargin.toInt())
+        binding.shimmerView.x = horizontalMargin
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -143,14 +173,13 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
                     if (animationPosition == initialPosition) {
                         setGradientVisible(isVisible = false)
                         updateTextsAlpha(START_TEXT_ALPHA)
-                        binding.shimmerView.showShimmer(true)
                     }
                 }
                 start()
             }
         } else {
             updateTextsAlpha(END_TEXT_ALPHA)
-            showCompleteAnimation(view, initialPosition)
+            onSlideCompleteListener?.invoke()
         }
         return true
     }
@@ -172,7 +201,6 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
 
     private fun onActionDown(): Boolean {
         setGradientVisible(isVisible = true)
-        binding.shimmerView.hideShimmer()
         return true
     }
 
@@ -201,33 +229,11 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
         binding.viewGradient.isVisible = isVisible
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private fun showCompleteAnimation(view: View, initialPosition: Float) = with(binding) {
-        shimmerView.stopShimmer()
-        shimmerView.setOnTouchListener { _, _ -> true }
-        setGradientVisible(isVisible = false)
-        textViewAction.isVisible = false
-        textViewActionTop.isVisible = false
-        imageViewAction.setImageDrawable(null)
-        TransitionManager.beginDelayedTransition(
-            root.parent as ViewGroup,
-            depositButtonsAnimation
-        )
-        val params = root.layoutParams
-        params.width = completedWidth
-        root.layoutParams = params
-        view.x = initialPosition
-        imageViewAction.postDelayed(
-            { animateTick() },
-            ANIMATION_SLIDE_BACK_DURATION
-        )
-    }
-
     private fun animateTick() = with(binding) {
         imageViewAction.setImageResource(R.drawable.ic_check_animated)
         (imageViewAction.drawable as? Animatable)?.start()
         imageViewAction.postDelayed(
-            { onSlideCompleteListener?.invoke() },
+            { onSlideCollapseCompleted?.invoke() },
             ANIMATION_SLIDE_BACK_DURATION
         )
     }

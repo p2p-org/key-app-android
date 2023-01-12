@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/sell_lock_title"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+        app:layout_constraintBottom_toTopOf="@+id/containerAmounts"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <LinearLayout
+        android:id="@+id/containerAmounts"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/containerMessage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle">
+
+        <ImageView
+            android:id="@+id/imageViewToken"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_sol"
+            app:layout_constraintBottom_toTopOf="@+id/textViewAmount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
+
+        <TextView
+            android:id="@+id/textViewAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+            app:layout_constraintBottom_toTopOf="@+id/textViewUsdValue"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewToken"
+            tools:text="6 SOL" />
+
+        <TextView
+            android:id="@+id/textViewUsdValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toTopOf="@+id/containerMessage"
+            app:layout_constraintEnd_toEndOf="@id/textViewAmount"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/textViewAmount"
+            app:layout_constraintTop_toBottomOf="@+id/textViewAmount"
+            tools:text="≈ $1930" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/containerMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_rounded_solid_rain_12"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/containerReceiver"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerAmounts">
+
+        <ImageView
+            android:id="@+id/imageViewMessageIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+            tools:srcCompat="@drawable/ic_info_rounded" />
+
+        <TextView
+            android:id="@+id/textViewMessageBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:gravity="start"
+            android:text="@string/sell_details_pending_body"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            app:layout_constraintTop_toBottomOf="@id/imageViewToken" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerReceiver"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_rounded_transparent_12"
+        android:backgroundTint="@color/bg_snow"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonAction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerMessage">
+
+        <TextView
+            android:id="@+id/textViewReceiverTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_send_to"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewReceiverAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="8dp"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
+            android:textColor="@color/text_night"
+            app:layout_constraintBottom_toBottomOf="@+id/imageViewCopy"
+            app:layout_constraintEnd_toStartOf="@id/imageViewCopy"
+            app:layout_constraintTop_toTopOf="@+id/imageViewCopy"
+            tools:text="FfRB...BeJEr" />
+
+        <ImageView
+            android:id="@+id/imageViewCopy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_copy_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/icons_mountain" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonAction"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/common_send"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRemoveOrCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonRemoveOrCancel"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/sell_lock_button_cancel"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+        android:textColor="@color/text_night"
+        android:visibility="gone"
+        app:backgroundTint="@color/bg_smoke"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

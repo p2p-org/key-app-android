@@ -39,7 +39,7 @@
                 android:paddingVertical="8dp">
 
                 <TextView
-                    android:id="@+id/dateTextView"
+                    android:id="@+id/textViewDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/WalletTheme.TextAppearance.Medium16"
@@ -62,9 +62,9 @@
                     android:orientation="horizontal"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="4dp"
-                    app:layout_constraintBottom_toBottomOf="@id/dateTextView"
+                    app:layout_constraintBottom_toBottomOf="@id/textViewDate"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/dateTextView">
+                    app:layout_constraintTop_toTopOf="@id/textViewDate">
 
                     <View
                         android:id="@+id/statusColorView"

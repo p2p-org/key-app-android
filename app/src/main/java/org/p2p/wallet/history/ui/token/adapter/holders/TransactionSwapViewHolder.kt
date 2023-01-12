@@ -2,7 +2,7 @@ package org.p2p.wallet.history.ui.token.adapter.holders
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTransactionSwapBinding
 import org.p2p.wallet.history.model.HistoryItem
@@ -25,7 +25,7 @@ class TransactionSwapViewHolder(
         if (item.transaction is HistoryTransaction.Swap) {
             showSwapTransaction(item.transaction)
         } else {
-            Timber.e("Unsupported transaction type for this ViewHolder: $item")
+            Timber.e(IllegalArgumentException("Unsupported transaction type for this ViewHolder: $item"))
         }
         itemView.setOnClickListener { onTransactionClicked(item.transaction) }
     }
@@ -40,11 +40,11 @@ class TransactionSwapViewHolder(
             )
 
             with(transactionData) {
-                valueTextView.withTextOrGone(transaction.getReceivedUsdAmount())
-                valueTextView.setTextColor(getColor(R.color.color_green))
-                totalTextView.text = "${transaction.amountB} ${transaction.destinationSymbol}"
-                titleTextView.text = getString(R.string.transaction_history_swap)
-                subtitleTextView.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
+                textViewValue.withTextOrGone(transaction.getReceivedUsdAmount())
+                textViewValue.setTextColor(getColor(R.color.color_green))
+                textViewTotal.text = "${transaction.amountB} ${transaction.destinationSymbol}"
+                textViewTitle.text = getString(R.string.transaction_history_swap)
+                textViewSubtitle.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
             }
         }
         setStatus(transaction)

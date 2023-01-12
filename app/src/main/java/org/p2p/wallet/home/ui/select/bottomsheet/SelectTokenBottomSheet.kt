@@ -15,7 +15,7 @@ import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.DialogSelectTokenBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.ui.select.SelectTokenAdapter
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.utils.args

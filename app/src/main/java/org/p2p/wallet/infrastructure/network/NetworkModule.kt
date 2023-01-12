@@ -5,6 +5,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
@@ -18,7 +19,6 @@ import org.p2p.wallet.auth.gateway.GatewayServiceModule.FACADE_SERVICE_RETROFIT_
 import org.p2p.wallet.auth.username.di.RegisterUsernameServiceModule.REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.common.crashlogging.helpers.CrashHttpLoggingInterceptor
 import org.p2p.wallet.common.di.InjectionModule
-import org.p2p.wallet.home.HomeModule.MOONPAY_QUALIFIER
 import org.p2p.wallet.home.model.Base58TypeAdapter
 import org.p2p.wallet.home.model.Base64TypeAdapter
 import org.p2p.wallet.home.model.BigDecimalTypeAdapter
@@ -27,7 +27,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvi
 import org.p2p.wallet.infrastructure.network.interceptor.ContentTypeInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.DebugHttpLoggingLogger
 import org.p2p.wallet.infrastructure.network.interceptor.GatewayServiceInterceptor
-import org.p2p.wallet.infrastructure.network.interceptor.MoonpayErrorInterceptor
+import org.p2p.wallet.infrastructure.network.interceptor.MoonpayInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcInterceptor
 import org.p2p.wallet.infrastructure.network.interceptor.RpcSolanaInterceptor
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
@@ -47,6 +47,11 @@ object NetworkModule : InjectionModule {
 
     const val DEFAULT_CONNECT_TIMEOUT_SECONDS = 30L
     const val DEFAULT_READ_TIMEOUT_SECONDS = 30L
+
+    enum class MoonpayRetrofitQualifier {
+        CLIENT_SIDE_MOONPAY,
+        SERVER_SIDE_PROXY
+    }
 
     override fun create() = module {
         single { NetworkServicesUrlProvider(get(), get()) }
@@ -69,14 +74,7 @@ object NetworkModule : InjectionModule {
 
         single { ConnectionStateProvider(get()) }
 
-        single(named(MOONPAY_QUALIFIER)) {
-            val moonPayApiUrl = androidContext().getString(R.string.moonpayBaseUrl)
-            getRetrofit(
-                baseUrl = moonPayApiUrl,
-                tag = "Moonpay",
-                interceptor = MoonpayErrorInterceptor(get())
-            )
-        }
+        createMoonpayNetworkModule()
 
         single(named(RPC_RETROFIT_QUALIFIER)) {
             val environment = get<NetworkEnvironmentManager>().loadCurrentEnvironment()
@@ -115,8 +113,10 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(REGISTER_USERNAME_SERVICE_RETROFIT_QUALIFIER)) {
+            val environmentManager = get<NetworkServicesUrlProvider>()
+            val baseUrl = environmentManager.loadNameServiceEnvironment().baseUrl
             getRetrofit(
-                baseUrl = androidContext().getString(R.string.registerUsernameServiceBaseUrl),
+                baseUrl = baseUrl,
                 tag = "RegisterUsernameService",
                 interceptor = null
             )
@@ -161,5 +161,26 @@ object NetworkModule : InjectionModule {
             }
             .addNetworkInterceptor(ContentTypeInterceptor())
             .build()
+    }
+
+    private fun Module.createMoonpayNetworkModule() {
+        singleOf(::MoonpayInterceptor)
+        single(named(MoonpayRetrofitQualifier.CLIENT_SIDE_MOONPAY)) {
+            val url = get<NetworkServicesUrlProvider>().loadMoonpayEnvironment().baseClientSideUrl
+            getRetrofit(
+                baseUrl = url,
+                tag = "MoonpayClientSide",
+                interceptor = get<MoonpayInterceptor>()
+            )
+        }
+
+        single(named(MoonpayRetrofitQualifier.SERVER_SIDE_PROXY)) {
+            val url = get<NetworkServicesUrlProvider>().loadMoonpayEnvironment().baseServerSideUrl
+            getRetrofit(
+                baseUrl = url,
+                tag = "MoonpayServerSide",
+                interceptor = get<MoonpayInterceptor>()
+            )
+        }
     }
 }

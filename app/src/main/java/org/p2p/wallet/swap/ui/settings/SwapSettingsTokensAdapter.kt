@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemFeePaymentTokenBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 
 class SwapSettingsTokensAdapter(
     private val selectedToken: Token.Active,

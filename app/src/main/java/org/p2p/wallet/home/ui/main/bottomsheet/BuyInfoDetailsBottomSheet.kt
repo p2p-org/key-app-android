@@ -11,7 +11,7 @@ import org.p2p.uikit.utils.getColorStateList
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogBuyInfoDetailsPartBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.withArgs
 

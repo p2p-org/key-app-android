@@ -15,8 +15,8 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.renbtc.model.RenBtcSession
 import org.p2p.wallet.renbtc.service.RenVMService
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.scaleMedium
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.scaleMedium
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.CancellationException

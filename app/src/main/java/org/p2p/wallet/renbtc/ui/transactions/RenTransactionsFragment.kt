@@ -40,7 +40,7 @@ class RenTransactionsFragment :
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.BITCOIN_STATUSES)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
-            dateTextView.isVisible = false
+            textViewDate.isVisible = false
 
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             recyclerView.attachAdapter(adapter)

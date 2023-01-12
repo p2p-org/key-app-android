@@ -23,7 +23,7 @@ import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.TransactionAddressData
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 

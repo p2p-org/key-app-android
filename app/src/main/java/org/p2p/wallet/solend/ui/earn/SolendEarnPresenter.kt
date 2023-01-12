@@ -13,8 +13,8 @@ import org.p2p.wallet.solend.interactor.SolendDepositInteractor
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.getErrorMessage
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import timber.log.Timber
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit

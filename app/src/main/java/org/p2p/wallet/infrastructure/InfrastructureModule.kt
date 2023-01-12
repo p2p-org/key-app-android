@@ -1,21 +1,22 @@
 package org.p2p.wallet.infrastructure
 
-import androidx.room.Room
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.p2p.core.glide.GlideManager
 import org.p2p.solanaj.utils.crypto.Pbkdf2HashGenerator
-import org.p2p.uikit.glide.GlideManager
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.history.repository.local.db.dao.CloseAccountTransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.CreateAccountTransactionsDao
@@ -43,6 +44,7 @@ import org.p2p.wallet.updates.UpdatesManager
 import timber.log.Timber
 import java.security.KeyStore
 import java.util.concurrent.Executors
+
 private const val TAG = "InfrastructureModule"
 
 object InfrastructureModule : InjectionModule {
@@ -66,6 +68,7 @@ object InfrastructureModule : InjectionModule {
         single { get<WalletDatabase>().transferTransactionsDao() }
         single { get<WalletDatabase>().renBtcBurnOrMintTransactionsDao() }
         single { get<WalletDatabase>().unknownTransactionsDao() }
+        single { get<WalletDatabase>().recipientsDao() }
 
         single {
             val allTransactionDaos: List<TransactionsDao<*>> = listOf(
@@ -121,6 +124,13 @@ object InfrastructureModule : InjectionModule {
                 gson = get()
             )
         } bind AccountStorageContract::class
+
+        single {
+            val prefs = "${androidContext().packageName}.toggle_prefs".let {
+                androidContext().getSharedPreferences(it, Context.MODE_PRIVATE)
+            }
+            LocalFeatureToggleStorage(prefs)
+        }
 
         single { GlideManager(get()) }
 

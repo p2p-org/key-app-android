@@ -9,9 +9,7 @@ import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.NOT_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.TOP_ROUNDED
-import org.p2p.wallet.home.model.Token
-
-private const val QUERY_MIN_LENGTH = 2
+import org.p2p.core.token.Token
 
 class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), NewSelectTokenContract.Presenter {
 
@@ -26,10 +24,10 @@ class NewSelectTokenPresenter : BasePresenter<NewSelectTokenContract.View>(), Ne
 
     override fun search(tokenNameQuery: String) {
         // restoring the list text is too short
-        if (tokenNameQuery.length < QUERY_MIN_LENGTH) {
-            view?.showEmptyState(isVisible = false)
+        if (tokenNameQuery.isEmpty()) {
             view?.showTokens(mappedTokens)
             view?.showEmptyState(isVisible = mappedTokens.isEmpty())
+            view?.scrollToTop()
             return
         }
 

@@ -16,6 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentMainBinding
@@ -29,6 +30,8 @@ import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
+import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
+import org.p2p.wallet.swap.ui.orca.OrcaSwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -44,6 +47,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     private val generalAnalytics: GeneralAnalytics by inject()
     private val deeplinksManager: AppDeeplinksManager by inject()
     private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle by inject()
 
     private var lastSelectedItemId = R.id.homeItem
 
@@ -116,6 +120,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
                 is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
+                is OrcaSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
             }
         }
         binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
@@ -146,7 +151,8 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
-                else -> error("No tab found for $clickedTab")
+                ScreenTab.SWAP_SCREEN -> OrcaSwapFragment.create(OrcaSwapOpenedFrom.MAIN_SCREEN)
+                else -> error("Can't create fragment for $clickedTab")
             }
             tabCachedFragments[itemId] = fragment
         }
@@ -206,13 +212,13 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     private fun inflateBottomNavigation() {
         binding.bottomNavigation.menu.clear()
 
-        val menuRes = if (solendFeatureToggle.isFeatureEnabled) {
-            R.menu.menu_ui_kit_bottom_navigation_earn
-        } else {
-            R.menu.menu_ui_kit_bottom_navigation
+        val menuRes = when {
+            solendFeatureToggle.isFeatureEnabled -> R.menu.menu_ui_kit_bottom_navigation_earn
+            sellEnabledFeatureToggle.isFeatureEnabled -> R.menu.menu_ui_kit_bottom_navigation_sell
+            else -> R.menu.menu_ui_kit_bottom_navigation
         }
         binding.bottomNavigation.inflateMenu(menuRes)
-        binding.bottomNavigation.menu.findItem(R.id.feedbackItem).isCheckable = false
+        binding.bottomNavigation.menu.findItem(R.id.feedbackItem)?.isCheckable = false
     }
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {

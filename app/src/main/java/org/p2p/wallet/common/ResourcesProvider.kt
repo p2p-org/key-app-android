@@ -6,6 +6,10 @@ import androidx.annotation.StringRes
 import android.content.Context
 import android.content.res.Resources
 
+@Deprecated(
+    message = "This class is redundant",
+    replaceWith = ReplaceWith("private val resources: Resources")
+)
 class ResourcesProvider(private val context: Context) {
 
     val resources: Resources = context.resources
@@ -14,8 +18,14 @@ class ResourcesProvider(private val context: Context) {
 
     fun getString(@StringRes stringRes: Int) = context.getString(stringRes)
 
-    fun getString(@StringRes stringRes: Int, vararg formatArgs: Any) = if (formatArgs.isNotEmpty()) {
+    fun getString(@StringRes stringRes: Int, vararg formatArgs: String) = if (formatArgs.isNotEmpty()) {
         context.getString(stringRes, *formatArgs)
+    } else {
+        getString(stringRes)
+    }
+
+    fun getString(@StringRes stringRes: Int, vararg formatArgs: Int) = if (formatArgs.isNotEmpty()) {
+        context.getString(stringRes, formatArgs)
     } else {
         getString(stringRes)
     }

@@ -1,5 +1,7 @@
 package org.p2p.wallet.swap.koin
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.core.content.getSystemService
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
@@ -7,8 +9,6 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.webkit.WebView
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.content.getSystemService
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -16,11 +16,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -33,6 +28,8 @@ import org.koin.test.KoinTest
 import org.koin.test.check.checkKoinModules
 import org.koin.test.mock.MockProviderRule
 import org.mockito.Mockito
+import org.p2p.core.token.Token
+import org.p2p.core.token.TokenVisibility
 import org.p2p.wallet.AppModule
 import org.p2p.wallet.auth.model.GatewayHandledState
 import org.p2p.wallet.auth.model.RestoreFailureState
@@ -40,20 +37,27 @@ import org.p2p.wallet.auth.ui.generalerror.OnboardingGeneralErrorPresenter
 import org.p2p.wallet.auth.ui.generalerror.timer.GeneralErrorTimerScreenError
 import org.p2p.wallet.auth.ui.generalerror.timer.OnboardingGeneralErrorTimerPresenter
 import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenPresenter
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.TokenVisibility
+import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.security.SecureStorage
 import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
+import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
+import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.robolectric.fakes.RoboWebSettings
 import java.io.File
 import java.math.BigDecimal
 import java.security.KeyStore
 import javax.crypto.Cipher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 
 @ExperimentalCoroutinesApi
 class CheckModulesTest : KoinTest {
@@ -71,8 +75,12 @@ class CheckModulesTest : KoinTest {
         every { getString(eq("KEY_BASE_URL"), any()) }.returns(NetworkEnvironment.RPC_POOL.endpoint)
         every { getString(eq("KEY_FEE_RELAYER_BASE_URL"), any()) }
             .returns("https://test-solana-fee-relayer.wallet.p2p.org/")
+        every { getString(eq("KEY_NAME_SERVICE_BASE_URL"), any()) }
+            .returns("https://name-register.key.app/")
         every { getString(eq("KEY_NOTIFICATION_SERVICE_BASE_URL"), any()) }
             .returns("http://35.234.120.240:9090/")
+        every { getString(eq("KEY_MOONPAY_SERVER_SIDE_BASE_URL"), any()) }
+            .returns("http://example.com")
         every { getString(eq("KEY_DEPOSIT_TICKER_BALANCE"), any()) }
             .returns("0")
     }
@@ -141,6 +149,10 @@ class CheckModulesTest : KoinTest {
                 withInstance(createEmptySolendDepositToken())
                 withInstance(mockk<SecureStorage>())
                 withInstance(mockk<TransactionWorker>())
+                withParameter<NewSendPresenter> {
+                    val addressState = AddressState("3UxBMjZtMJVN4eub6a6hNvVe9bThxVg2s4zjNx2UML3b")
+                    SearchResult.UsernameFound(addressState, "chingiz.key")
+                }
                 withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
                 withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
                 withParameter<OnboardingGeneralErrorPresenter> { GatewayHandledState.ToastError("Test message") }
@@ -158,6 +170,7 @@ class CheckModulesTest : KoinTest {
                         subtitle = "Test"
                     )
                 }
+                withInstance(TransactionDetailsLaunchState.Id("-", "-"))
             }
         )
     }

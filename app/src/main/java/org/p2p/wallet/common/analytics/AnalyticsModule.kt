@@ -20,6 +20,7 @@ import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
@@ -49,7 +50,7 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::RenBtcAnalytics)
         factoryOf(::CreateWalletAnalytics)
         factoryOf(::RestoreWalletAnalytics)
-
+        factoryOf(::NewSendAnalytics)
         singleOf(::AnalyticsInMemoryRepository) bind AnalyticsLocalRepository::class
     }
 }

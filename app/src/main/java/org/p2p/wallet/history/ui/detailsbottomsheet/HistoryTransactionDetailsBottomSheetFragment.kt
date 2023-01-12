@@ -1,15 +1,15 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
-import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
@@ -92,7 +92,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showDate(date: String) {
-        binding.dateTextView.text = date
+        binding.textViewDate.text = date
     }
 
     override fun showStatus(status: TransactionStatus) {

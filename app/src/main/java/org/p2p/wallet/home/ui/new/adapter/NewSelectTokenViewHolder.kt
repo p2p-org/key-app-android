@@ -11,17 +11,17 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.glide.SvgSoftwareLayerSetter
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.dip
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemPickTokenNewBinding
 import org.p2p.wallet.home.model.SelectTokenItem
+import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.NOT_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.ROUNDED
-import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.TOP_ROUNDED
-import org.p2p.wallet.home.model.Token
 
 private const val CORNER_RADIUS_DP = 12
 private const val IMAGE_SIZE = 48
@@ -49,11 +49,12 @@ class NewSelectTokenViewHolder(
         val token = item.token
 
         with(binding) {
-            if (!token.iconUrl.isNullOrEmpty()) loadImage(imageViewToken, token.iconUrl)
+            val iconUrl = token.iconUrl
+            if (!iconUrl.isNullOrEmpty()) loadImage(imageViewToken, iconUrl)
 
             imageViewWrapped.isVisible = token.isWrapped
-            startAmountView.title = token.tokenName
-            startAmountView.subtitle = token.getFormattedTotal(includeSymbol = true)
+            textViewTokenName.text = token.tokenName
+            textViewAmount.text = token.getFormattedTotal(includeSymbol = true)
             endAmountView.usdAmount = token.getFormattedUsdTotal()
 
             root.setOnClickListener { onItemClicked(token) }
@@ -101,7 +102,11 @@ class NewSelectTokenViewHolder(
                 .centerCrop()
                 .into(imageView)
         } else {
-            Glide.with(imageView).load(url).into(imageView)
+            Glide
+                .with(imageView)
+                .load(url)
+                .placeholder(R.drawable.ic_placeholder_image)
+                .into(imageView)
         }
     }
 }

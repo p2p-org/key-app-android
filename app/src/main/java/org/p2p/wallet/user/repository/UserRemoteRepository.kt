@@ -2,7 +2,7 @@ package org.p2p.wallet.user.repository
 
 import kotlinx.coroutines.withContext
 import org.p2p.solanaj.model.types.Account
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.ui.main.POPULAR_TOKENS
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -11,14 +11,14 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.core.token.TokenData
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
-import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT
-import org.p2p.wallet.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
-import org.p2p.wallet.utils.Constants.REN_BTC_SYMBOL
-import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT
+import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
+import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,

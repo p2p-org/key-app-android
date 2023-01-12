@@ -1,41 +1,38 @@
 package org.p2p.wallet.send.ui.main
 
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
-import androidx.core.text.buildSpannedString
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.graphics.Typeface.BOLD
 import android.os.Bundle
-import android.text.Spannable
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.glide.GlideManager
-import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.glide.GlideManager
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
-import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
-import org.p2p.wallet.common.ui.bottomsheet.TextContainer
+import org.p2p.core.common.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.details.TransactionDetailsFragment
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
@@ -43,25 +40,21 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
-import org.p2p.wallet.send.model.SendFee
-import org.p2p.wallet.send.model.SendTotal
+import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
-import org.p2p.wallet.send.ui.network.EXTRA_NETWORK
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
 import org.p2p.wallet.send.ui.search.SearchFragment.Companion.EXTRA_SEARCH_RESULT
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.ui.EXTRA_RESULT_KEY_DISMISS
 import org.p2p.wallet.transaction.ui.ProgressBottomSheet
-import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
 import org.p2p.wallet.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getClipboardText
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -82,6 +75,7 @@ private const val RESULT_QR_KEY = "RESULT_QR_KEY"
 
 const val KEY_REQUEST_SEND = "KEY_REQUEST_SEND"
 
+@Deprecated("Will be removed, old design flow")
 class SendFragment :
     BaseMvpFragment<SendContract.View, SendContract.Presenter>(R.layout.fragment_send),
     SendContract.View {
@@ -102,7 +96,6 @@ class SendFragment :
 
     override val presenter: SendContract.Presenter by inject()
     private val glideManager: GlideManager by inject()
-    private val newSendEnabledFeatureToggle: NewSendEnabledFeatureToggle by inject()
 
     private val binding: FragmentSendBinding by viewBinding()
 
@@ -160,10 +153,6 @@ class SendFragment :
                 val searchResult = result.getParcelable<SearchResult>(EXTRA_SEARCH_RESULT)
                 if (searchResult != null) presenter.setTargetResult(searchResult)
             }
-            result.containsKey(EXTRA_NETWORK) -> {
-                val ordinal = result.getInt(EXTRA_NETWORK, 0)
-                presenter.setNetworkDestination(NetworkType.values()[ordinal])
-            }
         }
     }
 
@@ -203,8 +192,6 @@ class SendFragment :
             val originalTextSize = amountEditText.textSize
             // Use invisible auto size textView to handle editText text size
             amountEditText.doOnTextChanged { text, _, _, _ -> handleAmountTextChanged(text, originalTextSize) }
-
-            networkView.setOnClickListener { presenter.loadCurrentNetwork() }
 
             sourceImageView.setOnClickListener { presenter.loadTokensForSelection() }
             sourceTextView.setOnClickListener { presenter.loadTokensForSelection() }
@@ -278,11 +265,12 @@ class SendFragment :
     override fun navigateToTokenSelection(tokens: List<Token.Active>, selectedToken: Token.Active?) {
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Send.FEE_CURRENCY)
 
-        val fragment = if (newSendEnabledFeatureToggle.isFeatureEnabled) {
-            NewSelectTokenFragment.create(tokens, selectedToken, KEY_REQUEST_SEND, EXTRA_TOKEN)
-        } else {
-            SelectTokenFragment.create(tokens, KEY_REQUEST_SEND, EXTRA_TOKEN)
-        }
+        val fragment = NewSelectTokenFragment.create(
+            tokens = tokens,
+            selectedToken = selectedToken,
+            requestKey = KEY_REQUEST_SEND,
+            resultKey = EXTRA_TOKEN
+        )
         addFragment(
             target = fragment,
             enter = R.anim.slide_up,
@@ -374,7 +362,7 @@ class SendFragment :
         }
     }
 
-    override fun showAccountFeeView(fee: SendFee) {
+    override fun showAccountFeeView(fee: SendSolanaFee) {
         with(binding) {
             val tokenSymbol = fee.sourceTokenSymbol
             accountInfoTextView.text = getString(R.string.send_account_creation_info, tokenSymbol, tokenSymbol)
@@ -427,51 +415,6 @@ class SendFragment :
         popAndReplaceFragment(TransactionDetailsFragment.create(state))
     }
 
-    override fun showNetworkDestination(type: NetworkType) {
-        when (type) {
-            NetworkType.SOLANA -> {
-                binding.networkImageView.setImageResource(R.drawable.ic_sol)
-                binding.networkNameTextView.setText(R.string.send_solana_network_title)
-
-                val transactionFee = getString(R.string.send_transaction_fee)
-                val zeroUsd = getString(R.string.send_zero_usd)
-                val commonText = "$transactionFee: $zeroUsd"
-
-                val startIndex = commonText.indexOf(zeroUsd)
-                val color = requireContext().getColor(R.color.systemSuccess)
-                val highlightText = buildSpannedString {
-                    append(commonText)
-
-                    setSpan(
-                        ForegroundColorSpan(color),
-                        startIndex,
-                        startIndex + zeroUsd.length,
-                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-                    )
-
-                    setSpan(
-                        StyleSpan(BOLD),
-                        startIndex,
-                        startIndex + zeroUsd.length,
-                        Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-                    )
-                }
-
-                binding.networkFeeTextView.withTextOrGone(highlightText)
-            }
-            NetworkType.BITCOIN -> {
-                binding.networkImageView.setImageResource(R.drawable.ic_btc_rounded)
-                binding.networkNameTextView.setText(R.string.send_bitcoin_network_title)
-                // TODO: add renBTC fee
-                binding.networkFeeTextView.withTextOrGone(text = null)
-            }
-        }
-    }
-
-    override fun showNetworkSelectionView(isVisible: Boolean) {
-        binding.networkView.isVisible = isVisible
-    }
-
     override fun showSourceToken(token: Token.Active) {
         with(binding) {
             glideManager.load(sourceImageView, token.iconUrl)
@@ -480,7 +423,7 @@ class SendFragment :
         }
     }
 
-    override fun showTotal(data: SendTotal?) {
+    override fun showTotal(data: SendFeeTotal?) {
         binding.sendDetailsView.showTotal(data)
     }
 

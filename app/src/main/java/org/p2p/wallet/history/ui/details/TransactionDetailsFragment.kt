@@ -1,10 +1,10 @@
 package org.p2p.wallet.history.ui.details
 
-import androidx.annotation.StringRes
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.text.SpannableString
 import android.view.View
+import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.uikit.utils.getColor
@@ -68,7 +68,7 @@ class TransactionDetailsFragment :
     }
 
     override fun showDate(date: String) {
-        binding.dateTextView.text = date
+        binding.textViewDate.text = date
     }
 
     override fun showStatus(status: TransactionStatus) {

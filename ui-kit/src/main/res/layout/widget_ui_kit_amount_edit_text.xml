@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textViewLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Title" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/inputViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <org.p2p.uikit.components.HintEditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:digits="0123456789.,"
+            android:gravity="center_vertical"
+            android:imeOptions="actionDone"
+            android:inputType="phone"
+            android:paddingVertical="12dp"
+            android:saveEnabled="true"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textCursorDrawable="@drawable/ic_text_cursor"
+            android:textIsSelectable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="553 43 43 33" />
+
+        <TextView
+            android:id="@+id/textViewHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+            android:textColor="@color/text_night_30"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="EUR" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textViewPlaceholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/editText"
+        app:layout_constraintTop_toBottomOf="@id/editText"
+        tools:text="PlaceholderText" />
+
+    <TextView
+        android:id="@+id/textViewError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_rose"
+        android:visibility="gone"
+        tools:text="Sorry, we don’t know a such country " />
+</LinearLayout>

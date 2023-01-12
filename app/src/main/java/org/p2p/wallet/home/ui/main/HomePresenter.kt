@@ -1,34 +1,37 @@
 package org.p2p.wallet.home.ui.main
 
+import org.p2p.core.token.Token
+import org.p2p.core.token.TokenVisibility
+import org.p2p.core.utils.Constants.BTC_SYMBOL
+import org.p2p.core.utils.Constants.ETH_SYMBOL
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.Constants.USDC_SYMBOL
+import org.p2p.core.utils.Constants.USDT_SYMBOL
+import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.home.model.Banner
 import org.p2p.wallet.home.model.HomeBannerItem
-import org.p2p.wallet.home.model.Token
-import org.p2p.wallet.home.model.TokenVisibility
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.updates.UpdatesManager
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.Constants.BTC_SYMBOL
-import org.p2p.wallet.utils.Constants.ETH_SYMBOL
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
-import org.p2p.wallet.utils.Constants.USDC_SYMBOL
-import org.p2p.wallet.utils.Constants.USDT_SYMBOL
 import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.ellipsizeAddress
-import org.p2p.wallet.utils.isMoreThan
-import org.p2p.wallet.utils.scaleShort
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlin.time.DurationUnit
@@ -40,8 +43,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
+val TOKENS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
-private val TOKENS_VALID_FOR_BUY = setOf(SOL_SYMBOL, USDC_SYMBOL)
 private val LOAD_TOKENS_DELAY_MS = 1.toDuration(DurationUnit.SECONDS).inWholeMilliseconds
 
 class HomePresenter(
@@ -57,17 +60,17 @@ class HomePresenter(
     private val tokensPolling: UserTokensPolling,
     private val newBuyFeatureToggle: NewBuyFeatureToggle,
     private val networkObserver: SolanaNetworkObserver,
+    private val sellInteractor: SellInteractor,
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val metadataInteractor: MetadataInteractor
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
-    private var fallbackUsdcTokenForBuy: Token? = null
     private var username: Username? = null
 
     init {
         // TODO maybe we can find better place to start this service
         launch {
             awaitAll(
-                async { fallbackUsdcTokenForBuy = userInteractor.getTokensForBuy(listOf(USDC_SYMBOL)).firstOrNull() },
                 async { networkObserver.start() },
                 async { metadataInteractor.tryLoadAndSaveMetadata() }
             )
@@ -93,6 +96,7 @@ class HomePresenter(
         if (state.tokens.isEmpty()) {
             initialLoadTokens()
         } else {
+            initializeActionButtons()
             handleUserTokensLoaded(state.tokens)
         }
         startPollingForTokens()
@@ -101,6 +105,29 @@ class HomePresenter(
         IntercomService.signIn(userId)
 
         environmentManager.addEnvironmentListener(this::class) { refreshTokens() }
+    }
+
+    private fun initializeActionButtons() {
+        launch {
+            val isSellFeatureToggleEnabled = sellEnabledFeatureToggle.isFeatureEnabled
+            val isSellAvailable = sellInteractor.isSellAvailable()
+
+            val buttons = mutableListOf(
+                ActionButton.BUY_BUTTON,
+                ActionButton.RECEIVE_BUTTON,
+                ActionButton.SEND_BUTTON
+            )
+
+            if (!isSellFeatureToggleEnabled) {
+                buttons += ActionButton.SWAP_BUTTON
+            }
+
+            if (isSellAvailable) {
+                buttons += ActionButton.SELL_BUTTON
+            }
+
+            view?.showActionButtons(buttons)
+        }
     }
 
     private fun showUserAddressAndUsername() {
@@ -127,8 +154,15 @@ class HomePresenter(
 
     override fun onBuyClicked() {
         launch {
-            val tokensForBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
-            view?.showTokensForBuy(tokensForBuy, newBuyFeatureToggle.value)
+            val tokensForBuy = userInteractor.getTokensForBuy()
+            if (tokensForBuy.isEmpty()) return@launch
+
+            if (newBuyFeatureToggle.isFeatureEnabled) {
+                // this cannot be empty
+                view?.showNewBuyScreen(tokensForBuy.first())
+            } else {
+                view?.showTokensForBuy(tokensForBuy)
+            }
         }
     }
 
@@ -145,21 +179,31 @@ class HomePresenter(
     }
 
     private fun onBuyToken(token: Token) {
-        val tokenToBuy: Token? = if (token.tokenSymbol !in TOKENS_VALID_FOR_BUY) {
-            fallbackUsdcTokenForBuy
-        } else {
-            token
-        }
-        if (tokenToBuy == null) {
-            Timber.i("Token to buy: token=$token")
-            Timber.e(IllegalArgumentException("No fallback USDC token to buy found"))
-            return
-        }
+        launch {
+            val tokenToBuy = if (token.isSOL || token.isUSDC) {
+                token
+            } else {
+                userInteractor.getSingleTokenForBuy() ?: return@launch
+            }
 
-        if (newBuyFeatureToggle.value) {
-            view?.showNewBuyScreen(tokenToBuy)
-        } else {
-            view?.showOldBuyScreen(tokenToBuy)
+            if (newBuyFeatureToggle.isFeatureEnabled) {
+                view?.showNewBuyScreen(tokenToBuy)
+            } else {
+                view?.showOldBuyScreen(tokenToBuy)
+            }
+        }
+    }
+
+    override fun onSendClicked() {
+        launch {
+            val isEmptyAccount = state.tokens.all { it.isZero }
+            if (isEmptyAccount) {
+                // this cannot be empty
+                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
+                view?.showSendNoTokens(validTokenToBuy)
+            } else {
+                view?.showNewSendScreen()
+            }
         }
     }
 
@@ -188,9 +232,8 @@ class HomePresenter(
         launch {
             view?.showEmptyState(isEmpty = true)
 
-            val tokensForBuy =
-                userInteractor.getTokensForBuy(POPULAR_TOKENS.toList())
-                    .sortedBy { tokenToBuy -> POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol) }
+            val tokensForBuy = userInteractor.findMultipleTokenData(POPULAR_TOKENS.toList())
+                .sortedBy { tokenToBuy -> POPULAR_TOKENS.indexOf(tokenToBuy.tokenSymbol) }
             val homeBannerItem = HomeBannerItem(
                 id = R.id.home_banner_top_up,
                 titleTextId = R.string.main_banner_title,
@@ -247,6 +290,9 @@ class HomePresenter(
                 mintAddress = token.mintAddress,
                 visibility = newVisibility.stringValue
             )
+
+            val updatedTokens = userInteractor.getUserTokens()
+            handleUserTokensLoaded(updatedTokens)
         }
     }
 
@@ -292,6 +338,7 @@ class HomePresenter(
 
                 val loadedTokens = userInteractor.loadUserTokensAndUpdateLocal(fetchPrices = true)
                 handleUserTokensLoaded(loadedTokens)
+                initializeActionButtons()
             } catch (cancelled: CancellationException) {
                 Timber.i("Cancelled initial tokens remote update")
             } catch (error: Throwable) {

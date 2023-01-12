@@ -16,9 +16,9 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFe
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SettingsNetworkListFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
@@ -32,19 +32,18 @@ object FeatureTogglesModule : InjectionModule {
         singleOf(::FeatureTogglesValuesSource) bind RemoteConfigValuesProvider::class
 
         factory {
-            listOf(
+            setOf(
                 get<SslPinningFeatureToggle>(),
                 get<NewBuyFeatureToggle>(),
                 get<BuyWithTransferFeatureToggle>(),
                 get<SettingsNetworkListFeatureToggle>(),
                 get<NetworkObservationFeatureToggle>(),
                 get<SolendEnabledFeatureToggle>(),
-                get<NewSendEnabledFeatureToggle>(),
-                get<UsernameDomainFeatureToggle>(),
                 get<UsernameDomainFeatureToggle>(),
                 get<RegisterUsernameEnabledFeatureToggle>(),
                 get<RegisterUsernameSkipEnabledFeatureToggle>(),
-            )
+                get<SellEnabledFeatureToggle>()
+            ).toList()
         }
 
         factoryOf(::SslPinningFeatureToggle)
@@ -52,7 +51,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::BuyWithTransferFeatureToggle)
         factoryOf(::SettingsNetworkListFeatureToggle)
         factoryOf(::SolendEnabledFeatureToggle)
-        factoryOf(::NewSendEnabledFeatureToggle)
         factoryOf(::NetworkObservationFeatureToggle)
         factoryOf(::NetworkObservationPercentFeatureToggle)
         factoryOf(::NetworkObservationFrequencyFeatureToggle)
@@ -60,5 +58,6 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::UsernameDomainFeatureToggle)
         factoryOf(::RegisterUsernameEnabledFeatureToggle)
         factoryOf(::RegisterUsernameSkipEnabledFeatureToggle)
+        factoryOf(::SellEnabledFeatureToggle)
     }
 }

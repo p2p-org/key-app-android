@@ -1,20 +1,20 @@
 package org.p2p.uikit.components
 
+import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.doOnTextChanged
 import android.content.Context
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.TextView
-import androidx.annotation.StringRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.widget.doOnTextChanged
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetDoubleInputViewBinding
-import org.p2p.uikit.utils.emptyString
+import org.p2p.core.utils.emptyString
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.vibrate
+import org.p2p.core.utils.vibrate
 import java.math.BigDecimal
 import java.math.RoundingMode
 

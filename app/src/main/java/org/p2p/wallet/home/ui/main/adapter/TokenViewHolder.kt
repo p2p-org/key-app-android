@@ -1,16 +1,18 @@
 package org.p2p.wallet.home.ui.main.adapter
 
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.R
+import org.p2p.core.glide.SvgSoftwareLayerSetter
+import org.p2p.core.token.Token
 import org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.home.model.HomeElementItem
@@ -22,6 +24,11 @@ class TokenViewHolder(
     private val binding: ItemTokenBinding,
     private val listener: OnHomeItemsClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
+
+    private lateinit var renderItem: HomeElementItem.Shown
+
+    private val token: Token.Active
+        get() = renderItem.token
 
     private val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(binding.root.context)
         .`as`(PictureDrawable::class.java)
@@ -40,18 +47,17 @@ class TokenViewHolder(
     )
 
     fun onBind(item: HomeElementItem.Shown, isZerosHidden: Boolean) = with(binding) {
-        val token = item.token
+        bindBalance(item)
 
         layoutHide.clipToOutline = false
         layoutHide.clipToPadding = false
 
-        if (!token.iconUrl.isNullOrEmpty()) {
-            loadImage(tokenImageView, token.iconUrl)
+        val iconUrl = token.iconUrl
+        if (!iconUrl.isNullOrEmpty()) {
+            loadImage(tokenImageView, iconUrl)
         }
         wrappedImageView.isVisible = token.isWrapped
         nameTextView.text = token.tokenName
-
-        bindBalance(item)
 
         imageViewHideToken.setImageResource(item.token.getVisibilityIcon(isZerosHidden))
         imageViewHideToken.setOnClickListener { listener.onHideClicked(token) }
@@ -74,7 +80,7 @@ class TokenViewHolder(
     }
 
     fun bindBalance(item: HomeElementItem.Shown) {
-        val token = item.token
+        renderItem = item
         binding.valueTextView withTextOrGone token.getFormattedUsdTotal()
         binding.totalTextView.text = token.getTotal(includeSymbol = true)
     }
@@ -87,7 +93,11 @@ class TokenViewHolder(
                 .centerCrop()
                 .into(imageView)
         } else {
-            Glide.with(imageView).load(url).into(imageView)
+            Glide
+                .with(imageView)
+                .load(url)
+                .placeholder(R.drawable.ic_placeholder_image)
+                .into(imageView)
         }
     }
 }

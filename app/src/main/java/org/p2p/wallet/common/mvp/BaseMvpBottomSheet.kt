@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import org.p2p.core.common.TextContainer
 import org.p2p.uikit.natives.showSnackbarShort
+import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
@@ -34,12 +37,19 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         super.onViewCreated(view, savedInstanceState)
         @Suppress("UNCHECKED_CAST")
         presenter.attach(this as V)
+        expandToFitAllContent()
     }
 
     @CallSuper
     override fun onDestroyView() {
         super.onDestroyView()
         presenter.detach()
+    }
+
+    protected fun expandToFitAllContent() {
+        BottomSheetBehavior.from(requireView().parent as View).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
     }
 
     //region ErrorMessages
@@ -101,6 +111,10 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
     //endregion
+
+    override fun showToast(message: TextContainer) {
+        toast(message.getString(requireContext()))
+    }
 
     override fun showUiKitSnackBar(
         message: String?,

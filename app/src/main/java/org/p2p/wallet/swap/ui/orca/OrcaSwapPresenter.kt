@@ -12,7 +12,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.send.model.FeePayerState
@@ -36,19 +36,19 @@ import org.p2p.wallet.transaction.interactor.TransactionBuilderInteractor
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.asUsd
+import org.p2p.core.utils.asUsd
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.isMoreThan
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.orZero
-import org.p2p.wallet.utils.scaleLong
-import org.p2p.wallet.utils.scaleMedium
-import org.p2p.wallet.utils.toBigDecimalOrZero
-import org.p2p.wallet.utils.toLamports
-import org.p2p.wallet.utils.toUsd
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
+import org.p2p.core.utils.scaleLong
+import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.core.utils.toLamports
+import org.p2p.core.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -99,7 +99,7 @@ class OrcaSwapPresenter(
     private var sourceAmount: String = "0"
     private var destinationAmount: String = "0"
 
-    private var slippage: Slippage = Slippage.Percent
+    private var slippage: Slippage = Slippage.TopUpSlippage
     private var isMaxClicked: Boolean = false
 
     private var validationJob: Job? = null

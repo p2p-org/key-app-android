@@ -10,6 +10,7 @@ import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.analytics.AnalyticsModule
 import org.p2p.wallet.common.crashlogging.CrashLogger
+import org.p2p.wallet.common.crashlogging.CrashLoggingFacade
 import org.p2p.wallet.common.crashlogging.impl.FirebaseCrashlyticsFacade
 import org.p2p.wallet.common.crashlogging.impl.SentryFacade
 import org.p2p.wallet.common.di.AppScope
@@ -23,7 +24,8 @@ import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
-import org.p2p.wallet.moonpay.BuyModule
+import org.p2p.wallet.moonpay.MoonpayModule
+import org.p2p.wallet.moonpay.ui.BuyModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.renbtc.RenBtcModule
@@ -31,6 +33,7 @@ import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.sdk.di.AppSdkModule
+import org.p2p.wallet.sell.SellModule
 import org.p2p.wallet.send.SendModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.solend.SolendModule
@@ -49,10 +52,7 @@ object AppModule {
         single { AppRestarter { restartAction.invoke() } }
         single {
             CrashLogger(
-                crashLoggingFacades = listOf(
-                    FirebaseCrashlyticsFacade(isFacadeEnabled = BuildConfig.CRASHLYTICS_ENABLED),
-                    SentryFacade()
-                ),
+                crashLoggingFacades = getActiveCrashLoggingFacades(),
                 tokenKeyProvider = get()
             )
         }
@@ -69,6 +69,7 @@ object AppModule {
                 AnalyticsModule.create(),
                 FeatureTogglesModule.create(),
                 AppSdkModule.create(),
+                MoonpayModule.create(),
 
                 // feature screens
                 AuthModule.create(),
@@ -88,8 +89,18 @@ object AppModule {
                 SendModule.create(),
                 HistoryStrategyModule.create(),
                 TransactionManagerModule.create(),
-                SolendModule.create()
+                SolendModule.create(),
+                SellModule.create()
             )
         )
+    }
+
+    private fun getActiveCrashLoggingFacades(): List<CrashLoggingFacade> = buildList {
+        if (BuildConfig.CRASHLYTICS_ENABLED) {
+            add(FirebaseCrashlyticsFacade(BuildConfig.CRASHLYTICS_ENABLED))
+        }
+        if (BuildConfig.SENTRY_ENABLED) {
+            add(SentryFacade())
+        }
     }
 }

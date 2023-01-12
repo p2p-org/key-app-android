@@ -8,10 +8,11 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
-import org.p2p.uikit.glide.SvgSoftwareLayerSetter
+import org.p2p.core.R
+import org.p2p.core.glide.SvgSoftwareLayerSetter
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSelectionViewHolder
 import org.p2p.wallet.databinding.ItemNewTokenSimpleBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
 import java.util.Locale
@@ -55,7 +56,11 @@ class NewSelectTokenViewHolder(
                 .centerCrop()
                 .into(imageView)
         } else {
-            Glide.with(imageView).load(url).into(imageView)
+            Glide
+                .with(imageView)
+                .load(url)
+                .placeholder(R.drawable.ic_placeholder_image)
+                .into(imageView)
         }
     }
 }

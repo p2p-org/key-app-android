@@ -4,6 +4,15 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.USD_SYMBOL
+import org.p2p.core.utils.asCurrency
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
@@ -11,12 +20,11 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BuyWithTransferFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.BANK_TRANSFER_UK_CODE
-import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor
-import org.p2p.wallet.moonpay.interactor.MoonpayBuyInteractor.Companion.DEFAULT_MIN_BUY_CURRENCY_AMOUNT
+import org.p2p.wallet.moonpay.interactor.BuyInteractor
+import org.p2p.wallet.moonpay.interactor.BuyInteractor.Companion.DEFAULT_MIN_BUY_CURRENCY_AMOUNT
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
@@ -25,21 +33,11 @@ import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.Constants
-import org.p2p.wallet.utils.Constants.USD_SYMBOL
-import org.p2p.wallet.utils.asCurrency
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.formatUsd
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.scaleShort
-import org.p2p.wallet.utils.toBigDecimalOrZero
 import timber.log.Timber
 import java.math.BigDecimal
 
 private const val DELAY_IN_MS = 500L
-
-private val TOKENS_VALID_FOR_BUY = setOf(Constants.SOL_SYMBOL, Constants.USDC_SYMBOL)
 
 class NewBuyPresenter(
     tokenToBuy: Token,
@@ -47,7 +45,7 @@ class NewBuyPresenter(
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
     private val resourcesProvider: ResourcesProvider,
-    private val moonpayBuyInteractor: MoonpayBuyInteractor,
+    private val buyInteractor: BuyInteractor,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     bankTransferFeatureToggle: BuyWithTransferFeatureToggle,
 ) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
@@ -90,7 +88,13 @@ class NewBuyPresenter(
 
     private fun loadTokensToBuy() {
         launch {
-            tokensToBuy = userInteractor.getTokensForBuy(TOKENS_VALID_FOR_BUY.toList())
+            tokensToBuy = userInteractor.getTokensForBuy()
+            if (tokensToBuy.isEmpty()) {
+                // cannot be empty, buy we are handling
+                Timber.i("Tokens to buy return an empty list, closing buy screen")
+                view?.close()
+                return@launch
+            }
             loadMoonpayBuyQuotes()
         }
     }
@@ -118,7 +122,7 @@ class NewBuyPresenter(
     private fun loadMoonpayBuyQuotes() {
         launch {
             val currencyCodes = currenciesToSelect.map { it.code }
-            moonpayBuyInteractor.loadQuotes(currencyCodes, tokensToBuy)
+            buyInteractor.loadQuotes(currencyCodes, tokensToBuy)
         }
     }
 
@@ -160,7 +164,7 @@ class NewBuyPresenter(
     }
 
     override fun onSelectTokenClicked() {
-        moonpayBuyInteractor.getQuotesByCurrency(selectedCurrency.code).forEach { quote ->
+        buyInteractor.getQuotesByCurrency(selectedCurrency.code).forEach { quote ->
             tokensToBuy.find { it.tokenSymbol == quote.token.tokenSymbol }?.let {
                 it.rate = quote.price
                 it.currency = quote.currency
@@ -273,7 +277,7 @@ class NewBuyPresenter(
             val baseCurrencyCode = selectedCurrency.code.lowercase()
             val paymentMethod = selectedPaymentMethod?.paymentType ?: return@launch
 
-            val result = moonpayBuyInteractor.getMoonpayBuyResult(
+            val result = buyInteractor.getMoonpayBuyResult(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = selectedToken,

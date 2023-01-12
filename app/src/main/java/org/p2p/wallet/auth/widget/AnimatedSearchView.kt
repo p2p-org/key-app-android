@@ -10,8 +10,8 @@ import android.widget.RelativeLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
-import org.p2p.uikit.utils.hideKeyboard
-import org.p2p.uikit.utils.showKeyboard
+import org.p2p.core.utils.hideKeyboard
+import org.p2p.core.utils.showKeyboard
 import org.p2p.wallet.databinding.WidgetSearchViewBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 

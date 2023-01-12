@@ -1,21 +1,40 @@
 package org.p2p.wallet.splash
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.user.interactor.UserInteractor
+import timber.log.Timber
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val MINIMUM_SPLASH_SHOWING_TIME_MS = 2000L
 
 class SplashPresenter(
     private val authInteractor: AuthInteractor,
+    private val sellInteractor: SellInteractor,
+    private val userInteractor: UserInteractor
 ) : BasePresenter<SplashContract.View>(), SplashContract.Presenter {
 
     override fun attach(view: SplashContract.View) {
         super.attach(view)
         launch {
+            sellInteractor.loadSellAvailability()
             delay(MINIMUM_SPLASH_SHOWING_TIME_MS)
-            openRootScreen()
+
+            loadPricesAndBids()
+        }
+    }
+
+    private fun loadPricesAndBids() {
+        launch {
+            try {
+                userInteractor.loadAllTokensData()
+            } catch (e: Throwable) {
+                Timber.e(e, "Error loading initial tokens data")
+            } finally {
+                openRootScreen()
+            }
         }
     }
 

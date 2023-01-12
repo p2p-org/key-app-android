@@ -15,6 +15,7 @@
         app:menu="@menu/menu_search"
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/send_pick_token_title"
+        app:titleTextColor="@color/text_night"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -30,14 +31,15 @@
         android:id="@+id/textViewEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
         android:gravity="center"
         android:text="@string/send_pick_token_search_not_found"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
         android:visibility="gone"
         app:drawableTopCompat="@drawable/ic_not_found"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintVertical_bias="0.1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

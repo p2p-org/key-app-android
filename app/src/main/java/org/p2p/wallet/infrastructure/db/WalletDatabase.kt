@@ -18,6 +18,8 @@ import org.p2p.wallet.history.repository.local.db.entities.UnknownTransactionEnt
 import org.p2p.wallet.home.db.TokenDao
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_VERSION
+import org.p2p.wallet.newsend.db.RecipientEntity
+import org.p2p.wallet.newsend.db.RecipientsDao
 import org.p2p.wallet.renbtc.db.SessionDao
 import org.p2p.wallet.renbtc.db.SessionEntity
 
@@ -31,7 +33,9 @@ import org.p2p.wallet.renbtc.db.SessionEntity
         SwapTransactionEntity::class,
         TransferTransactionEntity::class,
         RenBtcBurnOrMintTransactionEntity::class,
-        UnknownTransactionEntity::class
+        UnknownTransactionEntity::class,
+
+        RecipientEntity::class
     ],
     version = DATABASE_VERSION,
     exportSchema = false
@@ -40,7 +44,7 @@ import org.p2p.wallet.renbtc.db.SessionEntity
 abstract class WalletDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 6
+        const val DATABASE_VERSION = 7
         const val DATABASE_NAME = "p2p.wallet"
     }
 
@@ -53,4 +57,6 @@ abstract class WalletDatabase : RoomDatabase() {
     abstract fun transferTransactionsDao(): TransferTransactionsDao
     abstract fun renBtcBurnOrMintTransactionsDao(): RenBtcBurnOrMintTransactionsDao
     abstract fun unknownTransactionsDao(): UnknownTransactionsDao
+
+    abstract fun recipientsDao(): RecipientsDao
 }

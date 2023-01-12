@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerWidget"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_rounded_solid_cloud_12"
+        android:foreground="@drawable/ripple_button_large"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageViewProgressIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginVertical="12dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/bg_circle"
+            android:backgroundTint="@color/bg_rain"
+            android:importantForAccessibility="no"
+            android:padding="12dp"
+            android:src="@drawable/ic_lightning"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/bg_night" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:progress="10"
+            app:indicatorColor="@color/bg_grass"
+            app:indicatorSize="48dp"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewProgressIcon"
+            app:layout_constraintEnd_toEndOf="@id/imageViewProgressIcon"
+            app:layout_constraintStart_toStartOf="@id/imageViewProgressIcon"
+            app:layout_constraintTop_toTopOf="@id/imageViewProgressIcon"
+            app:trackCornerRadius="4dp"
+            app:trackThickness="2dp" />
+
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="20dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_night"
+            app:layout_constraintBottom_toBottomOf="@+id/imageViewProgressIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageViewProgressIcon"
+            app:layout_constraintTop_toTopOf="@+id/imageViewProgressIcon"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="It usually takes 5-20 seconds for a transaction to complete" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>

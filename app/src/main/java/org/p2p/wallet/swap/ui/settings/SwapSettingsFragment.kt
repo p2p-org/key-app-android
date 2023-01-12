@@ -18,7 +18,7 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSwapSettingsBinding
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.model.MAX_ALLOWED_SLIPPAGE
 import org.p2p.wallet.swap.model.Slippage
@@ -80,7 +80,7 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
 
             minRadioButton.text = Slippage.Min.percentValue
             mediumRadioButton.text = Slippage.Medium.percentValue
-            percentRadioButton.text = Slippage.Percent.percentValue
+            percentRadioButton.text = Slippage.TopUpSlippage.percentValue
             fiveRadioButton.text = Slippage.Five.percentValue
 
             checkSlippage()
@@ -113,7 +113,7 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
                     currentSlippage = when (checkedId) {
                         R.id.minRadioButton -> Slippage.Min
                         R.id.mediumRadioButton -> Slippage.Medium
-                        R.id.percentRadioButton -> Slippage.Percent
+                        R.id.percentRadioButton -> Slippage.TopUpSlippage
                         R.id.fiveRadioButton -> Slippage.Five
                         else -> currentSlippage
                     }
@@ -146,7 +146,7 @@ class SwapSettingsFragment : BaseFragment(R.layout.fragment_swap_settings) {
         when (currentSlippage) {
             Slippage.Min -> binding.slippageRadioGroup.check(R.id.minRadioButton)
             Slippage.Medium -> binding.slippageRadioGroup.check(R.id.mediumRadioButton)
-            Slippage.Percent -> binding.slippageRadioGroup.check(R.id.percentRadioButton)
+            Slippage.TopUpSlippage -> binding.slippageRadioGroup.check(R.id.percentRadioButton)
             Slippage.Five -> binding.slippageRadioGroup.check(R.id.fiveRadioButton)
             else -> with(binding) {
                 slippageRadioGroup.check(R.id.customRadioButton)

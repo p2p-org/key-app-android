@@ -9,6 +9,7 @@
     <string name="common_yes">Yes</string>
     <string name="common_no">No</string>
     <string name="common_done">Done</string>
+    <string name="common_close">Close</string>
     <string name="common_great">Great!</string>
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
@@ -36,6 +37,11 @@
     <string name="common_hide">Hide</string>
     <string name="common_show">Show</string>
     <string name="common_skip">Skip</string>
+    <string name="common_cash_out">Cash out</string>
+    <string name="common_cash_out_token">Cash out token</string>
+    <string name="common_go_to_swap">Go to swap</string>
+    <string name="common_sell_all">Sell all</string>
+    <string name="common_sorry">Sorry</string>
     <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
@@ -50,6 +56,7 @@
     <string name="error_general_message">❌ Something went wrong. Please, try again</string>
     <string name="error_network_title">Connection error</string>
     <string name="error_network_message">Your connection to the Internet has been interrupted.</string>
+    <string name="error_no_internet_message">🥺 You have no internet connection</string>
     <string name="error_invalid_transaction">Invalid transaction, please try again</string>
     <string name="error_amount">Amount error. Please enter valid amount</string>
     <string name="error_fetching_data_about_token">Couldn\'t fetch information for %s</string>
@@ -259,6 +266,7 @@
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>
+    <string name="home_sell">Cash out</string>
     <string name="home_debug">Debug Settings</string>
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
     <string name="home_tokens">Tokens</string>
@@ -345,7 +353,6 @@
     <string name="send_free_transaction">Free</string>
     <string name="send_transaction_fee">Transaction fee</string>
     <string name="send_transaction_fees">Transaction fees:</string>
-    <string name="send_fees_format">Fees: %s</string>
     <string name="send_paste">Paste</string>
     <string name="send_multiple_accounts">Multiple accounts were found</string>
     <string name="send_no_tokens">The token not found. Try to change name</string>
@@ -382,8 +389,10 @@
     <string name="send_using_max_amount">Using the maximum %s amount</string>
     <string name="send_insufficient_funds">Insufficient funds to cover fees</string>
     <string name="send_not_enough_funds">Not enough funds</string>
-    <string name="send_min_required_amount_warning">You can\'t send less than 0.0009 SOL</string>
+    <string name="send_min_required_amount_warning">You can\'t send less than %s SOL</string>
     <string name="send_cannot_send_token">Cannot send the selected token</string>
+    <string name="send_no_token_message_1">Send crypto in the Solana network instantly and without fees</string>
+    <string name="send_no_token_message_2">Effortlessly send tokens with usernames instead of long addresses</string>
 
     <!-- swap -->
     <string name="swap_liquidity_provider_fees">Liquidity provider fees</string>
@@ -498,6 +507,16 @@
     <string name="transaction_history_create">Create</string>
     <string name="transaction_history_closed">Closed</string>
 
+    <string name="transaction_history_moonpay_failed_title">You\'ve not sent</string>
+    <string name="transaction_history_moonpay_failed_subtitle">SOL to Moonpay</string>
+    <string name="transaction_history_moonpay_waiting_for_deposit_title">You need to send %s SOL</string>
+    <string name="transaction_history_moonpay_waiting_for_deposit_subtitle">To %s</string>
+    <string name="transaction_history_moonpay_pending_title">Processing</string>
+    <string name="transaction_history_moonpay_completed_title">Funds were sent</string>
+    <string name="transaction_history_moonpay_completed_subtitle">To your bank account</string>
+    <string name="transaction_history_moonpay_amount_usd">$%s</string>
+    <string name="transaction_history_moonpay_amount_sol">%s SOL</string>
+
     <!-- qr -->
     <string name="qr_failed_to_acquire_camera_permission">Key App cannot scan QR codes without access to your camera. Grant permission to continue</string>
     <string name="qr_scan_hint">Scan QR</string>
@@ -512,9 +531,11 @@
     <string name="settings_security">Security</string>
     <string name="settings_network">Network</string>
     <string name="settings_fee_relayer">Fee Relayer Environment</string>
+    <string name="settings_name_service">Name Service Environment</string>
     <string name="settings_torus">Torus Environment</string>
     <string name="settings_notification_service">Notification Service Environment</string>
     <string name="settings_stub_public_key">Public key stubbing 🗡️</string>
+    <string name="settings_moonpay_sandbox">Moonpay sandbox</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_language">Language</string>
     <string name="settings_security_face_id">FaceID</string>
@@ -613,6 +634,53 @@
     <string name="recovery_kit_seed_phrase_must_never_share">Your seed phrase must never be shared</string>
     <string name="recovery_kit_logout_title"> Do you want to see your seed phrase?</string>
     <string name="recovery_kit_logout_message">You have to log out and log in again.</string>
+    <string name="send_no_token_title">Sending tokens has\nnever been EASIER</string>
+    <string name="send_buy_crypto">Buy crypto</string>
+
+    <!-- Sell screen -->
+    <string name="sell_lock_title">Please, send crypto to\nMoonPay address</string>
+    <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
+    <string name="sell_lock_button_cancel">Remove from history</string>
+    <string name="sell_lock_usd_amount">≈ $%s</string>
+
+    <string name="sell_payload_fiat_value">1 SOL ≈ %s %s</string>
+    <string name="sell_payload_fiat_symbol">≈ %s</string>
+    <string name="sell_lock_warning_dialog_title">Are you sure?</string>
+    <string name="sell_lock_warning_dialog_body">Are you sure you want to interrupt cash out process? Your transaction won\'t be finished.</string>
+    <string name="sell_lock_warning_dialog_negative">INTERRUPT</string>
+    <string name="sell_lock_warning_dialog_positive">CONTINUE TRANSACTION</string>
+
+    <string name="sell_payload_title">Cash out token</string>
+    <string name="sell_payload_all_sol">all %s SOL</string>
+    <string name="sell_payload_included_fee">Included fee %s %s</string>
+    <string name="sell_payload_min_sol_amount">The minimum amount is %s SOL</string>
+    <string name="sell_payload_max_sol_amount">The maximum amount is %s SOL</string>
+    <string name="sell_payload_not_enough_sol">Not enough SOL</string>
+
+    <string name="sell_details_waiting_deposit_title">You need to send %s SOL</string>
+    <string name="sell_details_waiting_deposit_body">
+        To finish processing your request you need to send SOL to the address in the description.
+        After 7 days this transaction will be automatically declined.
+    </string>
+    <string name="sell_details_pending_title">Processing</string>
+    <string name="sell_details_pending_body">
+        SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via
+        <![CDATA[<a href="https://support.moonpay.com/hc/en-gb/categories/360001595097-Customer-Support-Help-Center">Moonpay help center</a>]]>
+    </string>
+    <string name="sell_details_completed_title">The funds were sent to your bank account</string>
+    <string name="sell_details_completed_body">
+        It usually takes up to 3 business days.Any questions regarding your transaction can be answered via
+        <![CDATA[<a href="https://support.moonpay.com/hc/en-gb/categories/360001595097-Customer-Support-Help-Center">Moonpay help center</a>]]>
+    </string>
+    <string name="sell_details_failed_title">You\'ve not sent %s SOL</string>
+    <string name="sell_details_failed_body">You didn\'t finish your cash out transaction. After 7 days your transaction has been automatically declined.\n\nYou can try again, but your new transaction will be subject to the current rates.</string>
+    <string name="sell_details_receiver_moonpay_bank">Your bank account via Moonpay</string>
+    <string name="sell_details_button_remove">Remove from history</string>
+    <string name="sell_details_cancel_failed">😢 Error with deleting. Try again</string>
+
+    <string name="sell_error_body_message">Our payment service was ruined.\nVisit this page later</string>
+    <string name="sell_error_min_amount_title">You need a little more SOL</string>
+    <string name="sell_error_min_amount_subtitle">The current minimum amount is %s SOL</string>
 
 
 </resources>

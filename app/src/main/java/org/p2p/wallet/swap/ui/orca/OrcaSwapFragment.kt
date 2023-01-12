@@ -13,7 +13,9 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import org.p2p.uikit.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.token.Token
+import org.p2p.core.utils.formatUsd
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -21,7 +23,6 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSwapOrcaBinding
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.SelectTokenFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.model.Slippage
@@ -37,7 +38,6 @@ import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.formatUsd
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showInfoDialog
@@ -51,20 +51,32 @@ private const val EXTRA_DESTINATION_TOKEN = "EXTRA_DESTINATION_TOKEN"
 private const val EXTRA_SETTINGS = "EXTRA_SETTINGS"
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
+private const val EXTRA_OPENED_FROM = "EXTRA_SOURCE"
+
+enum class OrcaSwapOpenedFrom {
+    MAIN_SCREEN,
+    OTHER
+}
 
 class OrcaSwapFragment :
     BaseMvpFragment<OrcaSwapContract.View, OrcaSwapContract.Presenter>(R.layout.fragment_swap_orca),
     OrcaSwapContract.View {
 
     companion object {
-        fun create() = OrcaSwapFragment()
+        fun create(source: OrcaSwapOpenedFrom = OrcaSwapOpenedFrom.OTHER): OrcaSwapFragment =
+            OrcaSwapFragment()
+                .withArgs(EXTRA_OPENED_FROM to source)
 
-        fun create(token: Token) = OrcaSwapFragment().withArgs(
-            EXTRA_TOKEN to token
-        )
+        fun create(token: Token, source: OrcaSwapOpenedFrom = OrcaSwapOpenedFrom.OTHER): OrcaSwapFragment =
+            OrcaSwapFragment()
+                .withArgs(
+                    EXTRA_TOKEN to token,
+                    EXTRA_OPENED_FROM to source
+                )
     }
 
     private val token: Token? by args(EXTRA_TOKEN)
+    private val openedFrom: OrcaSwapOpenedFrom by args(EXTRA_OPENED_FROM)
 
     override val presenter: OrcaSwapContract.Presenter by inject {
         parametersOf(token)
@@ -75,9 +87,6 @@ class OrcaSwapFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            presenter.onBackPressed()
-        }
 
         setupViews()
 
@@ -110,6 +119,18 @@ class OrcaSwapFragment :
     }
 
     private fun setupViews() = with(binding) {
+        // in case of MainFragment, back is handled by MainFragment
+        when (openedFrom) {
+            OrcaSwapOpenedFrom.OTHER -> {
+                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                    presenter.onBackPressed()
+                }
+            }
+            OrcaSwapOpenedFrom.MAIN_SCREEN -> {
+                toolbar.navigationIcon = null
+            }
+        }
+
         toolbar.setNavigationOnClickListener { presenter.onBackPressed() }
         toolbar.setOnMenuItemClickListener { menu ->
             if (menu.itemId == R.id.settingsMenuItem) {
@@ -133,15 +154,9 @@ class OrcaSwapFragment :
         setupAmountFractionListener()
 
         exchangeImageView.setOnClickListener { presenter.reverseTokens() }
-        swapDetails.setOnSlippageClickListener {
-            presenter.loadDataForSettings()
-        }
-        swapDetails.setOnPayFeeClickListener {
-            presenter.loadDataForSettings()
-        }
-        swapDetails.setOnTransactionFeeClickListener {
-            presenter.onFeeLimitsClicked()
-        }
+        swapDetails.setOnSlippageClickListener { presenter.loadDataForSettings() }
+        swapDetails.setOnPayFeeClickListener { presenter.loadDataForSettings() }
+        swapDetails.setOnTransactionFeeClickListener { presenter.onFeeLimitsClicked() }
         swapButton.setOnClickListener { presenter.swapOrConfirm() }
         amountEditText.focusAndShowKeyboard()
 
@@ -240,7 +255,7 @@ class OrcaSwapFragment :
     }
 
     override fun showNewSourceAmount(amount: String) {
-        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
         binding.amountEditText.setText(amount)
         binding.amountEditText.setSelection(amount.length)
         setupAmountFractionListener()
@@ -345,6 +360,6 @@ class OrcaSwapFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
-        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
     }
 }

@@ -18,7 +18,7 @@ data class SearchTarget(
         EMPTY,
         INVALID,
         USERNAME,
-        SOL_ADDRESS,
+        SOLANA_TYPE_ADDRESS,
         BTC_ADDRESS
     }
 
@@ -58,7 +58,7 @@ data class SearchTarget(
         get() {
             return when {
                 trimmedUsername.length in 1..USERNAME_MAX_LENGTH -> Validation.USERNAME
-                PublicKeyValidator.isValid(value) -> Validation.SOL_ADDRESS
+                PublicKeyValidator.isValid(value) -> Validation.SOLANA_TYPE_ADDRESS
                 BitcoinAddressValidator.isValid(value) -> Validation.BTC_ADDRESS
                 value.isEmpty() -> Validation.EMPTY
                 else -> Validation.INVALID

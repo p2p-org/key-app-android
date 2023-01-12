@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.SwapConfirmData
 import org.p2p.wallet.swap.model.orca.OrcaSettingsResult

@@ -1,11 +1,11 @@
 package org.p2p.wallet.solend.model
 
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.sdk.facade.model.solend.SolendMarketInformationResponse
 import org.p2p.wallet.sdk.facade.model.solend.SolendUserDepositResponse
-import org.p2p.wallet.user.model.TokenData
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.token.TokenData
+import org.p2p.core.utils.orZero
 
 class SolendDepositMapper {
 

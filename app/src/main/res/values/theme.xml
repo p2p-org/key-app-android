@@ -11,16 +11,15 @@
         <item name="android:statusBarColor">@color/statusBarColor</item>
         <item name="android:navigationBarColor">@color/navigationBarColor</item>
         <item name="colorPrimary">@color/night</item>
-        <item name="colorPrimaryDark">@color/backgroundPrimary</item>
-        <item name="colorSecondary">@color/backgroundDisabled</item>
-        <item name="colorControlHighlight">@color/backgroundDisabled</item>
+        <item name="colorPrimaryDark">@color/night_30</item>
+        <item name="colorSecondary">@color/mountain</item>
+        <item name="colorControlHighlight">@color/mountain</item>
         <item name="windowSplashScreenBackground">@color/lime</item>
         <item name="android:windowBackground">@color/bg_snow</item>
 
-
-        <item name="colorAccent">@color/night</item>
+        <item name="colorAccent">@color/lime</item>
         <item name="colorControlActivated">@color/night</item>
-        <item name="colorControlNormal">@color/textIconPrimary</item>
+        <item name="colorControlNormal">@color/night</item>
         <item name="alertDialogTheme">@style/WalletTheme.AlertDialog</item>
 
         <item name="windowActionModeOverlay">true</item>
@@ -28,11 +27,13 @@
         <item name="android:windowAnimationStyle">@null</item>
         <!-- fix blue text for come Lollipop devices -->
         <!-- https://stackoverflow.com/questions/45196244/android-textcolor-ignored-in-androidtextappearance-of-the-edittext -->
-        <item name="android:editTextColor">@color/textIconPrimary</item>
-        <item name="android:textColor">@color/textIconPrimary</item>
+        <item name="android:editTextColor">@color/text_night</item>
+        <item name="android:textColor">@color/text_night</item>
         <item name="android:actionMenuTextColor">?colorSecondary</item>
 
         <item name="snackbarStyle">@style/UiKit.Native.Snackbar</item>
         <item name="snackbarButtonStyle">@style/UiKit.Native.SnackbarButton</item>
+
+        <item name="materialAlertDialogTheme">@style/UiKit.MaterialAlertDialog</item>
     </style>
 </resources>

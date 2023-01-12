@@ -1,15 +1,15 @@
 package org.p2p.wallet.swap.interactor.serum
 
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor.Companion.BASE_TAKER_FEE_BPS
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor.Companion.FEE_MULTIPLIER
 import org.p2p.wallet.swap.model.serum.SerumFeeType
 import org.p2p.wallet.swap.model.serum.SerumSwapFee
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.fromLamports
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.toLamports
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.toLamports
 import java.math.BigDecimal
 import java.math.BigInteger
 

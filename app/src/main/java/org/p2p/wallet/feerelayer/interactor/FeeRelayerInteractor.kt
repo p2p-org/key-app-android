@@ -14,11 +14,11 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.wallet.utils.isLessThan
-import org.p2p.wallet.utils.isNotZero
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.orZero
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.isLessThan
+import org.p2p.core.utils.isNotZero
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.utils.retryRequest
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
@@ -34,7 +34,7 @@ class FeeRelayerInteractor(
 ) {
 
     companion object {
-        private val MIN_TOP_UP_AMOUNT = BigInteger.valueOf(1000L)
+        private val MIN_TOP_UP_AMOUNT = BigInteger.valueOf(10000L)
     }
 
     /**
@@ -76,11 +76,11 @@ class FeeRelayerInteractor(
 
         val transactionFee = topUpPools.getInputAmount(
             minimumAmountOut = feeInSOL.transaction,
-            slippage = Slippage.Percent.doubleValue
+            slippage = Slippage.TopUpSlippage.doubleValue
         )
         val accountCreationFee = topUpPools.getInputAmount(
             minimumAmountOut = feeInSOL.accountBalances,
-            slippage = Slippage.Percent.doubleValue
+            slippage = Slippage.TopUpSlippage.doubleValue
         )
 
         return FeeAmount(transactionFee.orZero(), accountCreationFee.orZero())

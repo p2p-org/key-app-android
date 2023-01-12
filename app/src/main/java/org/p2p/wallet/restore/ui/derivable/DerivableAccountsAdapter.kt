@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.RecyclerView
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenSimpleBinding
 import org.p2p.wallet.restore.model.DerivableAccount
-import org.p2p.wallet.utils.Constants.SOL_SYMBOL
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.scaleShort
+import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.scaleShort
 
 private const val FULL_ALPHA = 1.0f
 private const val HALF_ALPHA = 0.5f

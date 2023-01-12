@@ -3,121 +3,143 @@
 
     <style name="UiKit" />
 
-    <style name="UiKit.TextAppearance">
-        <item name="android:textColor">@color/night</item>
-    </style>
+    <style name="UiKit.TextAppearance" />
 
     <!--region TextAppearance.Regular-->
-    <style name="UiKit.TextAppearance.Regular">
+    <style name="UiKit.TextAppearance.Regular" parent="UiKit.TextAppearance">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Label2" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Label1" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Caps" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">12sp</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Text4" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Text3" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Text2" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Text1" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Title3" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">20sp</item>
         <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Title2" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">22sp</item>
         <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.Title1" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">28sp</item>
         <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.Regular.LargeTitle" parent="UiKit.TextAppearance.Regular">
         <item name="android:textSize">34sp</item>
         <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
     <!--endregion-->
 
     <!--region TextAppearance.SemiBold-->
-    <style name="UiKit.TextAppearance.SemiBold">
+    <style name="UiKit.TextAppearance.SemiBold" parent="UiKit.TextAppearance">
         <item name="fontFamily">@font/inter_semi_bold</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Label2" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">11sp</item>
         <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Label1" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Caps" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">12sp</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Text4" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Text3" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Text2" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Text1" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Title3" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">20sp</item>
         <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Title2" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">22sp</item>
         <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.Title1" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">28sp</item>
         <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
 
     <style name="UiKit.TextAppearance.SemiBold.LargeTitle" parent="UiKit.TextAppearance.SemiBold">
         <item name="android:textSize">34sp</item>
         <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/text_night</item>
     </style>
     <!--endregion-->
 

@@ -1,19 +1,30 @@
 package org.p2p.wallet.home.repository
 
+import org.p2p.core.token.Token
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.home.db.TokenDao
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.model.TokenConverter
+import timber.log.Timber
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 class HomeDatabaseRepository(
     private val tokenDao: TokenDao
 ) : HomeLocalRepository {
 
-    override suspend fun setTokens(tokens: List<Token.Active>) {
-        val entities = tokens.map { TokenConverter.toDatabase(it) }
-        tokenDao.insertOrReplace(entities)
-    }
+    override fun observeUserBalance(): Flow<BigDecimal> =
+        getTokensFlow()
+            .map(::calculateUserBalance)
+            .catch { Timber.i(it) }
+
+    override suspend fun getUserBalance(): BigDecimal = calculateUserBalance(getUserTokens())
+
+    private fun calculateUserBalance(tokens: List<Token.Active>): BigDecimal =
+        tokens.mapNotNull(Token.Active::totalInUsd)
+            .fold(BigDecimal.ZERO, BigDecimal::add)
+            .scaleShort()
 
     override suspend fun updateTokens(tokens: List<Token.Active>) {
         val entities = tokens.map { TokenConverter.toDatabase(it) }
@@ -37,5 +48,13 @@ class HomeDatabaseRepository(
 
     override suspend fun clear() {
         tokenDao.clearAll()
+    }
+
+    override suspend fun getUserSolanaToken(): Token.Active? {
+        val userTokens = getUserTokens()
+        val initialToken = userTokens.find { it.isUSDC && !it.isZero }
+            ?: userTokens.minBy { it.totalInLamports }
+
+        return if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
     }
 }

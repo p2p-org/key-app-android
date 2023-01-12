@@ -25,7 +25,7 @@ sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parce
     object Medium : Slippage(0.005, "0.5%")
 
     @Parcelize
-    object Percent : Slippage(0.01, "1%")
+    object TopUpSlippage : Slippage(0.03, "3%")
 
     @Parcelize
     object Five : Slippage(0.05, "5%")
@@ -38,7 +38,7 @@ sealed class Slippage(val doubleValue: Double, val percentValue: String) : Parce
             when (slippage) {
                 Min.doubleValue -> Min
                 Medium.doubleValue -> Medium
-                Percent.doubleValue -> Percent
+                TopUpSlippage.doubleValue -> TopUpSlippage
                 Five.doubleValue -> Five
                 else -> if (slippage == 0.0) Min else Custom(slippage)
             }

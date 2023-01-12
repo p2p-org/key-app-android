@@ -29,4 +29,12 @@ sealed class SettingsRow(open val isDivider: Boolean = false) {
         override val isDivider: Boolean = false,
         val subtitle: String? = null,
     ) : SettingsRow(isDivider)
+
+    data class Switcher(
+        override val titleResId: Int,
+        override val isDivider: Boolean,
+        @DrawableRes val iconRes: Int,
+        val subtitle: String? = null,
+        val isSelected: Boolean = false
+    ) : SettingsRow(isDivider)
 }

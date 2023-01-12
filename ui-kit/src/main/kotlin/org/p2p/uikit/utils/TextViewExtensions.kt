@@ -1,9 +1,10 @@
 package org.p2p.uikit.utils
 
-import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import android.widget.TextView
+import org.p2p.core.utils.emptyString
 
 infix fun TextView.withTextOrGone(text: CharSequence?) {
     if (text.isNullOrEmpty()) {

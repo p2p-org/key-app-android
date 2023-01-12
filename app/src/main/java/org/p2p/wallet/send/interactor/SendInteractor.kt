@@ -1,5 +1,8 @@
 package org.p2p.wallet.send.interactor
 
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.isZero
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
@@ -12,22 +15,26 @@ import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_L
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
+import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
+import org.p2p.wallet.feerelayer.model.RelayAccount
+import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.TokenAccount
-import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
-import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
+import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.wallet.utils.isZero
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 
 private const val SEND_TAG = "SEND"
 
@@ -39,7 +46,8 @@ class SendInteractor(
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val transactionInteractor: TransactionInteractor,
     private val amountRepository: RpcAmountRepository,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val dispatchers: CoroutineDispatchers
 ) {
 
     /*
@@ -51,8 +59,8 @@ class SendInteractor(
     /*
     * Initialize fee payer token
     * */
-    suspend fun initialize(sol: Token.Active) {
-        feePayerToken = sol
+    suspend fun initialize(token: Token.Active) {
+        feePayerToken = token
         feeRelayerInteractor.load()
         orcaInfoInteractor.load()
     }
@@ -74,7 +82,8 @@ class SendInteractor(
     suspend fun calculateFeesForFeeRelayer(
         feePayerToken: Token.Active,
         token: Token.Active,
-        recipient: String
+        recipient: String,
+        useCache: Boolean = true
     ): FeeRelayerFee? {
         val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
         val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
@@ -91,7 +100,8 @@ class SendInteractor(
 
         val shouldCreateAccount = token.mintAddress != WRAPPED_SOL_MINT && addressInteractor.findSplTokenAddressData(
             mintAddress = token.mintAddress,
-            destinationAddress = recipient.toPublicKey()
+            destinationAddress = recipient.toPublicKey(),
+            useCache = useCache
         ).shouldCreateAccount
 
         val expectedFee = FeeAmount(
@@ -103,10 +113,48 @@ class SendInteractor(
 
         if (fees.total.isZero()) return null
 
-        return FeeRelayerFee(
-            feeInSol = fees.total,
-            feeInPayingToken = getFeesInPayingToken(feePayerToken, fees.total)
+        val feeInSpl = getFeesInPayingToken(
+            feePayerToken = feePayerToken,
+            transactionFeeInSOL = fees.transaction,
+            accountCreationFeeInSOL = fees.accountBalances
         )
+        return FeeRelayerFee(
+            transactionFeeInSol = fees.transaction,
+            accountCreationFeeInSol = fees.accountBalances,
+            transactionFeeInSpl = feeInSpl.transaction,
+            accountCreationFeeInSpl = feeInSpl.accountBalances,
+            expectedFee = expectedFee
+        )
+    }
+
+    /*
+    * The request is too complex
+    * Wrapped each request into deferred
+    * TODO: Create a function to find fees by multiple tokens
+    * */
+    suspend fun findAlternativeFeePayerTokens(
+        userTokens: List<Token.Active>,
+        fee: SendSolanaFee
+    ): List<Token.Active> = withContext(dispatchers.io) {
+        val tokenToExclude = fee.feePayerToken.tokenSymbol
+        val fees = userTokens
+            .map { token ->
+                // converting SOL fee in token lamports to verify the balance coverage
+                async { getFeesInPayingTokeNullable(token, fee) }
+            }
+            .awaitAll()
+            .filterNotNull()
+            .toMap()
+
+        userTokens.filter { token ->
+            if (token.tokenSymbol == tokenToExclude) return@filter false
+
+            if (token.isSOL) return@filter token.totalInLamports >= fee.feeRelayerFee.totalInSol
+
+            // assuming that all other tokens are SPL
+            val feesInSpl = fees[token.tokenSymbol] ?: return@filter false
+            token.totalInLamports >= feesInSpl.total
+        }
     }
 
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
@@ -177,17 +225,43 @@ class SendInteractor(
     suspend fun getMinRelayRentExemption(): BigInteger =
         feeRelayerAccountInteractor.getRelayInfo().minimumRelayAccountRent
 
+    suspend fun getRelayInfo(): RelayInfo =
+        feeRelayerAccountInteractor.getRelayInfo()
+
+    suspend fun getUserRelayAccount(): RelayAccount =
+        feeRelayerAccountInteractor.getUserRelayAccount()
+
+    private suspend fun getFeesInPayingTokeNullable(
+        token: Token.Active,
+        fee: SendSolanaFee
+    ): Pair<String, FeeAmount>? = try {
+        val feeInSpl = getFeesInPayingToken(
+            feePayerToken = token,
+            transactionFeeInSOL = fee.feeRelayerFee.transactionFeeInSol,
+            accountCreationFeeInSOL = fee.feeRelayerFee.accountCreationFeeInSol
+        )
+
+        token.tokenSymbol to feeInSpl
+    } catch (e: IllegalStateException) {
+        // ignoring tokens without fees
+        null
+    }
+
     private suspend fun getFeesInPayingToken(
         feePayerToken: Token.Active,
-        feeInSOL: BigInteger
-    ): BigInteger {
-        if (feePayerToken.isSOL) return feeInSOL
+        transactionFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
+    ): FeeAmount {
+        if (feePayerToken.isSOL)
+            return FeeAmount(
+                transaction = transactionFeeInSOL,
+                accountBalances = accountCreationFeeInSOL
+            )
 
-        val feeInPayingToken = feeRelayerInteractor.calculateFeeInPayingToken(
-            feeInSOL = FeeAmount(accountBalances = feeInSOL),
+        return feeRelayerInteractor.calculateFeeInPayingToken(
+            feeInSOL = FeeAmount(transaction = transactionFeeInSOL, accountBalances = accountCreationFeeInSOL),
             payingFeeTokenMint = feePayerToken.mintAddress
         )
-        return feeInPayingToken.total
     }
 
     private suspend fun prepareForSending(

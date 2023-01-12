@@ -7,15 +7,16 @@ import android.content.Context
 import android.util.AttributeSet
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetAccountFeeViewBinding
-import org.p2p.wallet.send.model.SendFee
-import org.p2p.wallet.utils.asApproximateUsd
+import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.core.utils.asApproximateUsd
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
 
+@Deprecated("Will be removed, old design flow")
 class AccountFeeView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -26,12 +27,12 @@ class AccountFeeView @JvmOverloads constructor(
 
     private val glideManager: GlideManager by inject()
 
-    fun showFee(fee: SendFee) {
+    fun showFee(fee: SendSolanaFee) {
         with(binding) {
             fillUsdFee(fee.feeUsd)
 
             accountImageView.background = null
-            accountFeeValueTextView.text = fee.formattedFee
+            accountFeeValueTextView.text = fee.accountCreationFormattedFee
             accountFeeValueTextView.setTextColor(getColor(R.color.textIconPrimary))
             glideManager.load(accountImageView, fee.feePayerToken.iconUrl)
         }

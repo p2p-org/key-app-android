@@ -1,11 +1,13 @@
 package org.p2p.wallet.send.ui.main
 
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
@@ -19,7 +21,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -29,12 +31,11 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.user.model.TokenData
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.token.TokenData
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
 import java.math.BigInteger
@@ -111,12 +112,11 @@ class SendPresenterTest {
         // then
         coVerifyOrder {
             view.showFullScreenLoading(isLoading = true)
-            view.showNetworkDestination(NetworkType.SOLANA)
             userInteractor.getUserSolToken()
             sendInteractor.initialize(token)
             view.showSourceToken(token) // observable delegate
             sendInteractor.getMinRelayRentExemption()
-            testObject.calculateTotal(sendFee = null)
+            testObject.calculateTotal(sendFeeRelayerFee = null)
             view.showFullScreenLoading(isLoading = false)
         }
     }
@@ -132,12 +132,8 @@ class SendPresenterTest {
 
         // then
         verify { view.showDetailsError(null) }
-        verify(exactly = 0) { view.showNetworkSelectionView(isVisible = true) } // this is called for renBTC only
-        verify { view.showNetworkDestination(NetworkType.SOLANA) }
-        verify { view.showNetworkSelectionView(isVisible = false) }
 
         coVerifyOrder {
-            testObject.calculateRenBtcFeeIfNeeded()
             testObject.calculateByMode(token)
             testObject.updateMaxButtonVisibility(token)
             sendAnalytics.logSendChangingToken(token.tokenSymbol)
@@ -151,11 +147,11 @@ class SendPresenterTest {
         // given
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
-        val feeInSol = BigInteger.valueOf(5000L)
-        val feeInPayingToken = BigInteger.valueOf(10000L)
+        val fee: FeeRelayerFee = mockk()
         every { dispatchers.ui } returns testDispatcher
         every { sendInteractor.getFeePayerToken() } returns splToken
-        coEvery { testObject.calculateFeeRelayerFee(splToken, feePayerToken, any()) } returns (feeInSol to feeInPayingToken)
+        coEvery { testObject.calculateFeeRelayerFee(splToken, feePayerToken, any()) } returns fee
+        coEvery { testObject.showFeeDetails(splToken, fee, feePayerToken, NO_ACTION) } just Runs
 
         // when
         testObject.findValidFeePayer(splToken, feePayerToken, NO_ACTION)
@@ -163,7 +159,7 @@ class SendPresenterTest {
         // then
         verify { view.showAccountFeeViewLoading(isLoading = true) }
         coVerify { testObject.calculateFeeRelayerFee(splToken, feePayerToken, any()) }
-        coVerify { testObject.showFeeDetails(splToken, feeInSol, feeInPayingToken, feePayerToken, NO_ACTION) }
+        coVerify { testObject.showFeeDetails(splToken, fee, feePayerToken, NO_ACTION) }
         verify { view.showAccountFeeViewLoading(isLoading = false) }
     }
 
@@ -173,9 +169,11 @@ class SendPresenterTest {
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
         val strategy = SELECT_FEE_PAYER
-        val result = SearchResult.AddressOnly(AddressState("Some address"))
+        val result = SearchResult.AddressFound(AddressState("Some address"))
         val fee: FeeRelayerFee = mockk()
         every { dispatchers.ui } returns testDispatcher
+        every { fee.totalInSol } returns BigInteger.TEN
+        every { fee.totalInSpl } returns BigInteger.TEN
         coEvery {
             sendInteractor.calculateFeesForFeeRelayer(
                 feePayerToken = feePayerToken,
@@ -183,8 +181,6 @@ class SendPresenterTest {
                 recipient = result.addressState.address
             )
         } returns fee
-        every { fee.feeInPayingToken } returns BigInteger.valueOf(25000L)
-        every { fee.feeInSol } returns BigInteger.valueOf(15000L)
 
         // when
         testObject.calculateFeeRelayerFee(splToken, feePayerToken, result)
@@ -203,7 +199,7 @@ class SendPresenterTest {
         // given
         val splToken: Token.Active = generateSplToken()
         val feePayerToken = splToken
-        val result = SearchResult.AddressOnly(AddressState("Some address"))
+        val result = SearchResult.AddressFound(AddressState("Some address"))
         every { dispatchers.ui } returns testDispatcher
         coEvery {
             sendInteractor.calculateFeesForFeeRelayer(

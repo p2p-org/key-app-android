@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
+
+    <View
+        android:id="@+id/viewPointer"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        android:text="@string/common_transaction_details"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        app:layout_constraintTop_toBottomOf="@id/viewPointer" />
+
+    <include
+        android:id="@+id/layoutAddress"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
+
+    <include
+        android:id="@+id/layoutReceiveAmount"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutAddress" />
+
+    <include
+        android:id="@+id/layoutTransactionFee"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutReceiveAmount" />
+
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewIconAccountFee"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_smoke_circle"
+        android:padding="16dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutTransactionFee"
+        app:tint="@color/icons_mountain"
+        tools:src="@drawable/ic_lightning" />
+
+    <TextView
+        android:id="@+id/textViewTitleAccountFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        android:textColor="@color/text_night"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconAccountFee"
+        app:layout_constraintTop_toTopOf="@id/imageViewIconAccountFee"
+        tools:text="Account creation fee!" />
+
+    <TextView
+        android:id="@+id/textViewSubtitleAccountFee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewIconAccountFee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconAccountFee"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitleAccountFee"
+        tools:text="0.027635 USDT (~$0.03)" />
+
+    <ImageView
+        android:id="@+id/imageViewAccountFeeInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/details_info"
+        android:padding="6dp"
+        android:src="@drawable/ic_info_solid"
+        app:layout_constraintBottom_toBottomOf="@id/textViewTitleAccountFee"
+        app:layout_constraintStart_toEndOf="@id/textViewTitleAccountFee"
+        app:layout_constraintTop_toTopOf="@id/textViewTitleAccountFee"
+        app:tint="@color/icons_night" />
+
+    <ProgressBar
+        android:id="@+id/progressBarFees"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="2dp"
+        android:indeterminateTint="@color/elements_sky"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewAccountFeeInfo"
+        app:layout_constraintEnd_toEndOf="@id/imageViewAccountFeeInfo"
+        app:layout_constraintStart_toStartOf="@id/imageViewAccountFeeInfo"
+        app:layout_constraintTop_toTopOf="@id/imageViewAccountFeeInfo" />
+
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupAccountFee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="imageViewIconAccountFee,imageViewAccountFeeInfo,textViewTitleAccountFee, textViewSubtitleAccountFee" />
+
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewIconTotal"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_smoke_circle"
+        android:padding="16dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewIconAccountFee"
+        app:layout_constraintVertical_bias="0"
+        app:layout_goneMarginTop="16dp"
+        app:tint="@color/icons_mountain"
+        tools:src="@drawable/ic_lightning" />
+
+    <TextView
+        android:id="@+id/textViewTitleTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
+        android:textColor="@color/text_night"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconTotal"
+        app:layout_constraintTop_toTopOf="@id/imageViewIconTotal"
+        tools:text="Total" />
+
+    <TextView
+        android:id="@+id/textViewSubtitleFirstTotal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewIconTotal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconTotal"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitleTotal"
+        tools:text="0.622681417 SOL ($10.01)" />
+
+    <TextView
+        android:id="@+id/textViewSubtitleSecondTotal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_night"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imageViewIconTotal"
+        app:layout_constraintTop_toBottomOf="@id/textViewSubtitleFirstTotal"
+        tools:text="0.007123 USDC (Less than $0.01)" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="imageViewIconTotal, textViewTitleTotal, textViewSubtitleFirstTotal" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

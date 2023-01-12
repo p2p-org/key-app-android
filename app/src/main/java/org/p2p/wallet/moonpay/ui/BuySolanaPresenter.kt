@@ -1,41 +1,43 @@
 package org.p2p.wallet.moonpay.ui
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.Constants.USD_SYMBOL
+import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
+import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.core.utils.toUsd
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.model.Token
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.CREDIT_DEBIT_CARD
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
-import org.p2p.wallet.moonpay.repository.MoonpayRepository
-import org.p2p.wallet.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.wallet.utils.Constants.USD_SYMBOL
-import org.p2p.wallet.utils.asUsd
-import org.p2p.wallet.utils.formatToken
-import org.p2p.wallet.utils.formatUsd
-import org.p2p.wallet.utils.isZero
-import org.p2p.wallet.utils.orZero
-import org.p2p.wallet.utils.scaleShort
-import org.p2p.wallet.utils.toBigDecimalOrZero
-import org.p2p.wallet.utils.toUsd
+import org.p2p.wallet.moonpay.repository.buy.MoonpayBuyRepository
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 500L
 
 class BuySolanaPresenter(
     private val tokenToBuy: Token,
-    private val moonpayRepository: MoonpayRepository,
+    private val moonpayBuyRepository: MoonpayBuyRepository,
     private val minBuyErrorFormat: String,
     private val maxBuyErrorFormat: String,
+    private val networkServicesUrlProvider: NetworkServicesUrlProvider,
     private val buyAnalytics: BuyAnalytics,
-    private val analyticsInteractor: ScreensAnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
 ) : BasePresenter<BuySolanaContract.View>(), BuySolanaContract.Presenter {
 
     private var calculationJob: Job? = null
@@ -52,7 +54,7 @@ class BuySolanaPresenter(
         launch {
             try {
                 view?.showLoading(isLoading = true)
-                val price = moonpayRepository.getCurrencyAskPrice(tokenToBuy).scaleShort()
+                val price = moonpayBuyRepository.getCurrencyAskPrice(tokenToBuy).scaleShort()
                 view?.showTokenPrice("$USD_SYMBOL$price")
                 if (isSwappedToToken) {
                     updateViewWithData()
@@ -76,7 +78,6 @@ class BuySolanaPresenter(
     override fun onContinueClicked() {
         currentBuyViewData?.let {
             view?.navigateToMoonpay(amount = it.total.toString())
-            // TODO resolve [buyProvider]
             buyAnalytics.logBuyContinuing(
                 buyCurrency = it.tokenSymbol,
                 buySum = it.price,
@@ -142,7 +143,7 @@ class BuySolanaPresenter(
             view?.showLoading(isLoading = true)
 
             val baseCurrencyCode = USD_READABLE_SYMBOL.lowercase()
-            val result = moonpayRepository.getBuyCurrencyData(
+            val result = moonpayBuyRepository.getBuyCurrencyData(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = tokenToBuy,

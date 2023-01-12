@@ -1,7 +1,7 @@
 package org.p2p.wallet.home.ui.main
 
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import kotlin.time.DurationUnit

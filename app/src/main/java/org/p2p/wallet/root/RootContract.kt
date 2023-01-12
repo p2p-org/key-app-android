@@ -11,7 +11,5 @@ interface RootContract {
         fun showToast(message: String)
     }
 
-    interface Presenter : MvpPresenter<View> {
-        fun loadPricesAndBids()
-    }
+    interface Presenter : MvpPresenter<View>
 }

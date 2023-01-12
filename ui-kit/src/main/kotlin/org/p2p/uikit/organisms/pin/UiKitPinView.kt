@@ -11,7 +11,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetUiKitPinViewBinding
-import org.p2p.uikit.utils.emptyString
+import org.p2p.core.utils.emptyString
 import org.p2p.uikit.utils.inflateViewBinding
 
 private const val PIN_CODE_LENGTH = 6

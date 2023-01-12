@@ -1,10 +1,10 @@
 package org.p2p.wallet.history.ui.token.adapter.holders
 
+import androidx.core.view.isVisible
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemTransactionBinding
+import org.p2p.wallet.databinding.ItemHistoryTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.utils.cutMiddle
@@ -18,7 +18,7 @@ import timber.log.Timber
 class TransactionViewHolder(
     parent: ViewGroup,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
-    private val binding: ItemTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
+    private val binding: ItemHistoryTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
 
     fun onBind(item: HistoryItem.TransactionItem) {
@@ -38,10 +38,10 @@ class TransactionViewHolder(
         with(binding) {
             transactionTokenImageView.setTransactionIcon(transaction.getIcon())
             with(transactionData) {
-                titleTextView.setText(transaction.getTitle())
-                subtitleTextView.text = transaction.signature.cutMiddle()
-                totalTextView.text = transaction.getTotal()
-                valueTextView.withTextOrGone(transaction.getValue())
+                textViewTitle.setText(transaction.getTitle())
+                textViewSubtitle.text = transaction.signature.cutMiddle()
+                textViewTotal.text = transaction.getTotal()
+                textViewValue.withTextOrGone(transaction.getValue())
             }
         }
     }
@@ -50,11 +50,11 @@ class TransactionViewHolder(
         with(binding) {
             transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_unknown)
             with(transactionData) {
-                valueTextView.isVisible = false
-                totalTextView.isVisible = false
+                textViewValue.isVisible = false
+                textViewTotal.isVisible = false
 
-                titleTextView.setText(R.string.transaction_history_unknown)
-                subtitleTextView.text = transaction.signature.cutMiddle()
+                textViewTitle.setText(R.string.transaction_history_unknown)
+                textViewSubtitle.text = transaction.signature.cutMiddle()
             }
         }
     }
@@ -62,12 +62,12 @@ class TransactionViewHolder(
     private fun showCreateAccountTransaction(transaction: HistoryTransaction.CreateAccount) {
         with(binding) {
             with(transactionData) {
-                valueTextView.isVisible = false
-                totalTextView.isVisible = false
+                textViewValue.isVisible = false
+                textViewTotal.isVisible = false
 
                 transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_create)
-                titleTextView.text = transaction.getInfo(getString(R.string.transaction_history_create))
-                subtitleTextView.text = transaction.signature.cutMiddle()
+                textViewTitle.text = transaction.getInfo(getString(R.string.transaction_history_create))
+                textViewSubtitle.text = transaction.signature.cutMiddle()
             }
         }
     }
@@ -77,11 +77,11 @@ class TransactionViewHolder(
         with(binding) {
             transactionTokenImageView.setTransactionIcon(R.drawable.ic_transaction_closed)
             with(transactionData) {
-                valueTextView.isVisible = false
-                totalTextView.isVisible = false
+                textViewValue.isVisible = false
+                textViewTotal.isVisible = false
 
-                titleTextView.text = transaction.getInfo(getString(R.string.transaction_history_closed))
-                subtitleTextView.text = transaction.signature.cutMiddle()
+                textViewTitle.text = transaction.getInfo(getString(R.string.transaction_history_closed))
+                textViewSubtitle.text = transaction.signature.cutMiddle()
             }
         }
     }
@@ -90,14 +90,14 @@ class TransactionViewHolder(
         with(binding) {
             transactionTokenImageView.setTransactionIcon(transaction.getIcon())
             with(transactionData) {
-                valueTextView.isVisible = true
-                totalTextView.isVisible = true
+                textViewValue.isVisible = true
+                textViewTotal.isVisible = true
 
-                titleTextView.setText(transaction.getTypeName())
-                subtitleTextView.text = transaction.getAddress()
-                totalTextView.text = transaction.getTotal()
-                valueTextView.setTextColor(getColor(transaction.getTextColor()))
-                valueTextView.withTextOrGone(transaction.getValue())
+                textViewTitle.setText(transaction.getTypeName())
+                textViewSubtitle.text = transaction.getAddress()
+                textViewTotal.text = transaction.getTotal()
+                textViewValue.setTextColor(getColor(transaction.getTextColor()))
+                textViewValue.withTextOrGone(transaction.getValue())
             }
         }
     }

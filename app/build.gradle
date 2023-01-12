@@ -12,6 +12,7 @@ plugins {
 apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
 apply from: "$project.rootDir/scripts/config.gradle"
+apply from: "$project.rootDir/scripts/signing.gradle"
 
 android {
     compileSdkVersion sdkCompileVersion
@@ -31,6 +32,7 @@ android {
         initSentry(it)
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+        buildConfigField("boolean", "SENTRY_ENABLED", "false")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("boolean", "SSL_PINNING_ENABLED", "false")
@@ -46,24 +48,6 @@ android {
     }
 
     def torusProperties = getTorusProperties()
-
-    signingConfigs {
-
-        debug {
-            storeFile file("p2pwallet_debug.keystore")
-            storePassword "Test2RAMzxGb"
-            keyAlias "p2pwallet"
-            keyPassword "Test2RAMzxGb"
-        }
-
-        release {
-            def signingProperties = getSigningProperties()
-            storeFile rootProject.file('p2pwallet.jks')
-            storePassword signingProperties['keystorePassword']
-            keyAlias signingProperties['keyAlias']
-            keyPassword signingProperties['keyPassword']
-        }
-    }
 
     buildTypes {
         debug {
@@ -179,15 +163,14 @@ android {
 
     sentry {
         // List the build types that should be ignored
-        ignoredBuildTypes = ["debug"]
-        autoInstallation {
-            enabled = false
-        }
+        ignoredBuildTypes = ["debug", "feature"]
+        autoInstallation { enabled = false }
     }
 }
 dependencies {
-    implementation project(':solanaj')
+    implementation project(':solana')
     implementation project(':ui-kit')
+    implementation project(':core')
     implementation files('libs/borshj-0.0.0.jar')
 
     implementation "androidx.appcompat:appcompat:1.5.1"
@@ -196,7 +179,6 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation 'androidx.activity:activity-ktx:1.6.1'
     implementation 'androidx.fragment:fragment-ktx:1.5.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation("com.google.android.material:material") {
         version { strictly "1.6.1" }
@@ -257,14 +239,6 @@ dependencies {
     implementation "androidx.room:room-ktx:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
 
-    // seed value
-    implementation 'com.github.bitcoinj:bitcoinj:0.15.10'
-
-    def koinVersion = '3.2.0'
-    // https://github.com/InsertKoinIO/koin
-    implementation "io.insert-koin:koin-android:$koinVersion"
-    implementation "io.insert-koin:koin-androidx-workmanager:$koinVersion"
-
     // Lottie
     def lottieVersion = '4.0.0'
     implementation "com.airbnb.android:lottie:$lottieVersion"
@@ -291,6 +265,7 @@ dependencies {
     implementation 'com.robinhood.ticker:ticker:2.0.4'
     implementation 'androidx.core:core-splashscreen:1.0.0'
 
+    implementation 'io.michaelrocks:libphonenumber-android:8.12.52'
 
     // core
     testImplementation 'androidx.test:core-ktx:1.4.0'
@@ -304,9 +279,10 @@ dependencies {
     testImplementation "org.robolectric:robolectric:4.5.1"
     // Coroutines support
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+
     // Koin Test features
+    def koinVersion = '3.2.0'
     testImplementation "io.insert-koin:koin-test:$koinVersion"
-    // Koin for JUnit 4
     testImplementation "io.insert-koin:koin-test-junit4:$koinVersion"
 
     testImplementation "org.assertj:assertj-core:3.22.0"
@@ -314,9 +290,6 @@ dependencies {
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
     testImplementation "org.assertj:assertj-core:3.22.0"
-
-    implementation 'com.github.RedMadRobot:input-mask-android:6.1.0'
-    implementation 'io.michaelrocks:libphonenumber-android:8.12.52'
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.8.2") {
         because 'This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.'

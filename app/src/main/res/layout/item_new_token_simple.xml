@@ -42,6 +42,7 @@
         android:layout_marginHorizontal="12dp"
         android:ellipsize="end"
         android:maxLines="1"
+        android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@+id/textViewUsdValue"
         app:layout_constraintEnd_toStartOf="@id/imageViewCheck"
         app:layout_constraintStart_toEndOf="@id/tokenImageView"

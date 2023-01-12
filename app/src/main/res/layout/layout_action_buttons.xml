@@ -1,45 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:parentTag="android.widget.FrameLayout">
 
-    <include
-        android:id="@+id/view_action_buy"
-        layout="@layout/item_home_button"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewActionButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/view_action_receive"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:overScrollMode="never"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="1"
+        tools:listitem="@layout/item_home_button" />
 
-    <include
-        android:id="@+id/view_action_receive"
-        layout="@layout/item_home_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/view_action_send"
-        app:layout_constraintStart_toEndOf="@+id/view_action_buy" />
-
-    <include
-        android:id="@+id/view_action_send"
-        layout="@layout/item_home_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/view_action_swap"
-        app:layout_constraintStart_toEndOf="@+id/view_action_receive" />
-
-    <include
-        android:id="@+id/view_action_swap"
-        layout="@layout/item_home_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/view_action_send" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

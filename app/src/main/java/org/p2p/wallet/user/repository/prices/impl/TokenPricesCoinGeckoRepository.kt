@@ -10,7 +10,7 @@ import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
-import org.p2p.wallet.utils.scaleMedium
+import org.p2p.core.utils.scaleMedium
 import timber.log.Timber
 
 private const val COIN_GECKO_TOKENS_FILE_NAME = "coin_gecko_tokens.json"

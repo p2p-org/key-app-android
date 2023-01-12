@@ -10,9 +10,11 @@ import timber.log.Timber
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
+private const val KEY_NAME_SERVICE_BASE_URL = "KEY_NAME_SERVICE_BASE_URL"
 private const val KEY_TORUS_BASE_URL = "KEY_TORUS_BASE_URL"
 private const val KEY_TORUS_BASE_VERIFIER = "KEY_TORUS_BASE_VERIFIER"
 private const val KEY_TORUS_BASE_SUB_VERIFIER = "KEY_TORUS_BASE_SUB_VERIFIER"
+private const val KEY_MOONPAY_SERVER_SIDE_BASE_URL = "KEY_MOONPAY_SERVER_SIDE_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
@@ -30,6 +32,29 @@ class NetworkServicesUrlProvider(
 
     fun saveFeeRelayerEnvironment(newUrl: String) {
         sharedPreferences.edit { putString(KEY_FEE_RELAYER_BASE_URL, newUrl) }
+    }
+
+    fun loadNameServiceEnvironment(): NameServiceEnvironment {
+        val url = sharedPreferences.getString(
+            KEY_NAME_SERVICE_BASE_URL,
+            context.getString(R.string.registerUsernameServiceProductionUrl)
+        ).orEmpty()
+
+        val isProductionSelected = url == context.getString(R.string.registerUsernameServiceProductionUrl)
+
+        return NameServiceEnvironment(url, isProductionSelected)
+    }
+
+    fun toggleNameServiceEnvironment(isProdSelected: Boolean) {
+        if (isProdSelected) {
+            saveNameServiceEnvironment(context.getString(R.string.registerUsernameServiceProductionUrl))
+        } else {
+            saveNameServiceEnvironment(context.getString(R.string.registerUsernameServiceTestUrl))
+        }
+    }
+
+    private fun saveNameServiceEnvironment(newUrl: String) {
+        sharedPreferences.edit { putString(KEY_NAME_SERVICE_BASE_URL, newUrl) }
     }
 
     fun loadNotificationServiceEnvironment(): NotificationServiceEnvironment {
@@ -85,5 +110,39 @@ class NetworkServicesUrlProvider(
             }
         }
         Timber.i("Torus environment changed and saved: $newUrl;$newVerifier;$newSubVerifier")
+    }
+
+    fun loadMoonpayEnvironment(): MoonpayEnvironment {
+        val defaultUrl = if (BuildConfig.DEBUG) {
+            context.getString(R.string.moonpayServerSideProxySandboxUrl)
+        } else {
+            context.getString(R.string.moonpayServerSideProxyUrl)
+        }
+        val serverSideBaseUrl = sharedPreferences.getString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, defaultUrl).orEmpty()
+        val clientSideBaseUrl = context.getString(R.string.moonpayClientSideBaseUrl)
+        val isSandboxEnabled = serverSideBaseUrl == context.getString(R.string.moonpayServerSideProxySandboxUrl)
+
+        return MoonpayEnvironment(
+            baseServerSideUrl = serverSideBaseUrl,
+            baseClientSideUrl = clientSideBaseUrl,
+            isSandboxEnabled = isSandboxEnabled,
+            moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpaySandboxKey else BuildConfig.moonpayKey
+        )
+    }
+
+    fun toggleMoonpayEnvironment(isSandboxSelected: Boolean) {
+        if (isSandboxSelected) {
+            saveMoonpayEnvironment(context.getString(R.string.moonpayServerSideProxySandboxUrl))
+        } else {
+            saveMoonpayEnvironment(context.getString(R.string.moonpayServerSideProxyUrl))
+        }
+    }
+
+    private fun saveMoonpayEnvironment(newServerSideUrl: String) {
+        sharedPreferences.edit { putString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, newServerSideUrl) }
+    }
+
+    fun resetMoonpayEnvironment() {
+        sharedPreferences.edit { remove(KEY_MOONPAY_SERVER_SIDE_BASE_URL) }
     }
 }

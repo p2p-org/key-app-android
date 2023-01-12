@@ -4,6 +4,8 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.programs.SerumSwapProgram.usdcMint
 import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
 
+const val CUT_ADDRESS_SYMBOLS_COUNT = 6
+
 fun String.toPublicKey() = PublicKey(this)
 
 fun PublicKey.isUsdx(): Boolean {

@@ -4,8 +4,8 @@ import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.getColor
-import org.p2p.uikit.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics

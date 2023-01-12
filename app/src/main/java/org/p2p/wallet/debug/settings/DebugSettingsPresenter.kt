@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.DisplayMetrics
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.repository.HomeLocalRepository
@@ -24,7 +25,8 @@ class DebugSettingsPresenter(
     private val context: Context,
     private val resourcesProvider: ResourcesProvider,
     private val tokenKeyProvider: TokenKeyProvider,
-    networkServicesUrlProvider: NetworkServicesUrlProvider
+    private val networkServicesUrlProvider: NetworkServicesUrlProvider,
+    private val appRestarter: AppRestarter
 ) : BasePresenter<DebugSettingsContract.View>(), DebugSettingsContract.Presenter {
 
     private var networkName = environmentManager.loadCurrentEnvironment().name
@@ -51,6 +53,16 @@ class DebugSettingsPresenter(
         }
 
         loadData()
+    }
+
+    override fun switchMoonpayUrl(isSandboxSelected: Boolean) {
+        networkServicesUrlProvider.toggleMoonpayEnvironment(isSandboxSelected)
+        loadData()
+    }
+
+    override fun switchNameServiceUrl(isProdSelected: Boolean) {
+        networkServicesUrlProvider.toggleNameServiceEnvironment(isProdSelected)
+        appRestarter.restartApp()
     }
 
     private fun getMainSettings(): List<SettingsRow> {
@@ -92,6 +104,20 @@ class DebugSettingsPresenter(
                 subtitle = tokenKeyProvider.publicKey,
                 iconRes = R.drawable.ic_key
             ).takeIf { tokenKeyProvider.publicKey.isNotBlank() },
+            SettingsRow.Switcher(
+                titleResId = R.string.settings_name_service,
+                iconRes = R.drawable.ic_network,
+                isDivider = false,
+                subtitle = networkServicesUrlProvider.loadNameServiceEnvironment().baseUrl,
+                isSelected = networkServicesUrlProvider.loadNameServiceEnvironment().isProductionSelected
+            ),
+            SettingsRow.Switcher(
+                titleResId = R.string.settings_moonpay_sandbox,
+                iconRes = R.drawable.ic_network,
+                isDivider = false,
+                subtitle = networkServicesUrlProvider.loadMoonpayEnvironment().baseServerSideUrl,
+                isSelected = networkServicesUrlProvider.loadMoonpayEnvironment().isSandboxEnabled
+            ),
             SettingsRow.Section(
                 titleResId = R.string.debug_settings_logs_title,
                 subtitle = resourcesProvider.getString(R.string.debug_settings_logs_subtitle),
@@ -136,6 +162,7 @@ class DebugSettingsPresenter(
             createApiKeyRecord("intercomApiKey", BuildConfig.intercomApiKey)
             createApiKeyRecord("intercomAppId", BuildConfig.intercomAppId)
             createApiKeyRecord("moonpayKey", BuildConfig.moonpayKey)
+            createApiKeyRecord("moonpaySanbdoxKey", BuildConfig.moonpaySandboxKey)
             createApiKeyRecord("rpcPoolApiKey", BuildConfig.rpcPoolApiKey)
 
             appendBreakLine()

@@ -3,7 +3,7 @@ package org.p2p.wallet.infrastructure.network.feerelayer
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
 import org.p2p.wallet.infrastructure.network.data.INVALID_TRANSACTION_ERROR_CODE
 import org.p2p.wallet.infrastructure.network.data.TRANSACTION_SIMULATION_FAILED_ERROR_CODE
-import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorType
+import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 
 object ErrorTypeConverter {
 
@@ -24,11 +24,10 @@ object ErrorTypeConverter {
         }
     }
 
-    fun fromMoonpay(errorType: MoonpayErrorType): ErrorCode {
-        // TODO: Add implementation
-        return when (errorType) {
-            MoonpayErrorType.BAD_REQUEST_ERROR -> ErrorCode.BAD_REQUEST
-            else -> ErrorCode.SERVER_ERROR
+    fun fromMoonpay(errorType: MoonpayErrorResponseType): ErrorCode =
+        if (errorType == MoonpayErrorResponseType.BAD_REQUEST_ERROR) {
+            ErrorCode.BAD_REQUEST
+        } else {
+            ErrorCode.SERVER_ERROR
         }
-    }
 }

@@ -9,7 +9,7 @@ import org.p2p.wallet.renbtc.model.MintStatus
 import org.p2p.wallet.renbtc.model.RenTransaction
 import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.renbtc.model.RenTransactionStatus.WaitingDepositConfirm
-import org.p2p.wallet.utils.fromLamports
+import org.p2p.core.utils.fromLamports
 import timber.log.Timber
 import kotlinx.coroutines.delay
 

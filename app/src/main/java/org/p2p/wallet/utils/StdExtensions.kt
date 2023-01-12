@@ -39,8 +39,8 @@ fun Result<*>.invokeAndForget() {
 fun ByteArray.toUIntArray(): String = map(Byte::toUByte).joinToString(prefix = "[", postfix = "]")
 
 fun Gson.toJsonObject(obj: Any): JsonObject {
-    val objectAsJsonStr = toJson(obj)
-    return fromJsonReified<JsonObject>(objectAsJsonStr)
+    val objectAsJsonStr = toJson(obj).takeIf { obj !is String }
+    return fromJsonReified<JsonObject>(objectAsJsonStr ?: obj.toString())
         ?: error("Failed to convert object $objectAsJsonStr ($obj) to JsonObject")
 }
 

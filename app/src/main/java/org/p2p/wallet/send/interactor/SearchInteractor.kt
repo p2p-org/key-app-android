@@ -1,39 +1,29 @@
 package org.p2p.wallet.send.interactor
 
-import org.p2p.wallet.R
+import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
 import org.p2p.wallet.auth.username.repository.UsernameRepository
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Base58String
-
-private const val ZERO_BALANCE = 0L
+import org.p2p.wallet.utils.toBase58Instance
 
 class SearchInteractor(
     private val usernameRepository: UsernameRepository,
     private val userInteractor: UserInteractor,
     private val transactionAddressInteractor: TransactionAddressInteractor,
-    private val tokenKeyProvider: TokenKeyProvider,
-    private val resourcesProvider: ResourcesProvider
+    private val tokenKeyProvider: TokenKeyProvider
 ) {
 
     suspend fun searchByName(username: String): List<SearchResult> {
         val usernames = usernameRepository.findUsernameDetailsByUsername(username)
         return usernames.map { usernameDetails ->
             val address = usernameDetails.ownerAddress.base58Value
-            if (isOwnPublicKey(address)) {
-                SearchResult.InvalidResult(
-                    AddressState(address = address),
-                    errorMessage = resourcesProvider.getString(
-                        R.string.search_yourself_error
-                    ),
-                    description = resourcesProvider.getString(
-                        R.string.search_yourself_description
-                    ),
-                )
+            if (isOwnAddress(address)) {
+                SearchResult.OwnAddressError(address)
             } else {
                 SearchResult.UsernameFound(
                     addressState = AddressState(address = address),
@@ -43,42 +33,40 @@ class SearchInteractor(
         }
     }
 
-    suspend fun searchByAddress(address: Base58String): List<SearchResult> {
-        val balance = userInteractor.getBalance(address)
-        val tokenData = transactionAddressInteractor.getTokenDataIfDirect(address)
-        val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
-        val hasNoTokensToSend = tokenData != null && userToken == null
-        val isOwnAddress = isOwnPublicKey(address.base58Value)
-        val addressState = AddressState(address.base58Value)
-        val hasEmptyBalance = balance == ZERO_BALANCE
-        return listOf(
-            when {
-                isOwnAddress -> SearchResult.InvalidResult(
-                    addressState = addressState,
-                    errorMessage = resourcesProvider.getString(
-                        R.string.search_yourself_error
-                    ),
-                    description = resourcesProvider.getString(
-                        R.string.search_yourself_description
-                    ),
-                )
-                hasNoTokensToSend -> SearchResult.InvalidResult(
-                    addressState = addressState,
-                    errorMessage = resourcesProvider.getString(
-                        R.string.search_no_other_tokens_error,
-                        tokenData?.symbol.orEmpty()
-                    ),
-                    tokenData = tokenData,
-                    description = resourcesProvider.getString(
-                        R.string.search_no_other_tokens_description,
-                        tokenData?.symbol.orEmpty()
-                    ),
-                )
-                hasEmptyBalance -> SearchResult.EmptyBalance(addressState)
-                else -> SearchResult.AddressOnly(addressState)
-            }
+    suspend fun searchByAddress(
+        wrappedAddress: Base58String,
+        sourceToken: Token.Active? = null
+    ): SearchResult {
+        val address = wrappedAddress.base58Value
+        if (isOwnAddress(address)) {
+            return SearchResult.OwnAddressError(address)
+        }
+
+        // assuming we are sending direct token and verify the recipient address is valid direct or SOL address
+        val tokenData = transactionAddressInteractor.getDirectTokenData(address)
+
+        if (tokenData != null && isInvalidAddress(tokenData, sourceToken)) {
+            return SearchResult.InvalidDirectAddress(address, tokenData)
+        }
+
+        val balance = userInteractor.getBalance(address.toBase58Instance())
+        return SearchResult.AddressFound(
+            addressState = AddressState(address),
+            sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
+            balance = balance
         )
     }
 
-    fun isOwnPublicKey(publicKey: String) = publicKey == tokenKeyProvider.publicKey
+    suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
+        val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
+        val hasNoTokensToSend = tokenData != null && userToken == null
+        val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
+        return hasNoTokensToSend || sendToOtherDirectToken
+    }
+
+    suspend fun isOwnAddress(publicKey: String): Boolean {
+        val isOwnSolAddress = publicKey == tokenKeyProvider.publicKey
+        val isOwnSplAddress = userInteractor.hasAccount(publicKey)
+        return isOwnSolAddress || isOwnSplAddress
+    }
 }

@@ -1,31 +1,30 @@
 package org.p2p.wallet.moonpay.ui.new
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.uikit.components.FocusField
 import org.p2p.uikit.utils.getColor
-import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewBuyBinding
-import org.p2p.wallet.home.model.Token
 import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.moonpay.api.MoonpayUrlBuilder
 import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
+import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.bottomsheet.BuyDetailsBottomSheet
-import org.p2p.wallet.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.popBackStack
@@ -64,6 +63,7 @@ class NewBuyFragment :
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val tokenKeyProvider: TokenKeyProvider by inject()
+    private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -236,9 +236,7 @@ class NewBuyFragment :
         val solSymbol = Constants.SOL_SYMBOL.lowercase()
         val selectedTokenSymbol = selectedToken.tokenSymbol.lowercase()
         val tokenSymbol = if (selectedToken.isSOL) solSymbol else "${selectedTokenSymbol}_$solSymbol"
-        val url = MoonpayUrlBuilder.build(
-            moonpayWalletDomain = requireContext().getString(R.string.moonpayWalletDomain),
-            moonpayApiKey = BuildConfig.moonpayKey,
+        val url = moonpayWidgetUrlBuilder.buildBuyWidgetUrl(
             amount = amount,
             walletAddress = tokenKeyProvider.publicKey,
             tokenSymbol = tokenSymbol,

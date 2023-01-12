@@ -1,6 +1,6 @@
 package org.p2p.wallet.swap.interactor.orca
 
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
@@ -115,8 +115,8 @@ class OrcaPoolInteractor(
             val inputAmount2 = pair2.getInputAmount(estimatedAmount) ?: BigInteger.ZERO
 
             when {
-                inputAmount1 < inputAmount2 -> 1
-                inputAmount1 > inputAmount2 -> -1
+                inputAmount1 < inputAmount2 -> -1
+                inputAmount1 > inputAmount2 -> 1
                 else -> 0
             }
         }
@@ -170,14 +170,15 @@ class OrcaPoolInteractor(
     private suspend fun mapTokensForDestination(orcaTokens: List<OrcaToken>): List<Token> {
         val userTokens = userInteractor.getUserTokens()
         val publicKey = tokenKeyProvider.publicKey
-        val allTokens = orcaTokens.mapNotNull { orcaToken ->
-            val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
-            if (userToken != null) {
-                userToken.takeUnless { userToken.isSOL && userToken.publicKey != publicKey }
-            } else {
-                userInteractor.findTokenData(orcaToken.mint)
+        val allTokens = orcaTokens
+            .mapNotNull { orcaToken ->
+                val userToken = userTokens.find { it.mintAddress == orcaToken.mint }
+                if (userToken != null) {
+                    userToken.takeUnless { userToken.isSOL && userToken.publicKey != publicKey }
+                } else {
+                    userInteractor.findTokenData(orcaToken.mint)
+                }
             }
-        }
             .sortedWith(TokenComparator())
 
         return allTokens

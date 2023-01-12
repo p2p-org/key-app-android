@@ -7,7 +7,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.home.model.SelectTokenItem
 import org.p2p.wallet.home.model.SelectTokenItem.CategoryTitle
 import org.p2p.wallet.home.model.SelectTokenItem.SelectableToken
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 
 class NewSelectTokenAdapter(
     private val onItemClicked: (Token) -> Unit

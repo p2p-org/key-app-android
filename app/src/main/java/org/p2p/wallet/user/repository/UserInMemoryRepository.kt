@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.receive.list.TokenListData
-import org.p2p.wallet.user.model.TokenData
+import org.p2p.core.token.TokenData
 import timber.log.Timber
 
 private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"

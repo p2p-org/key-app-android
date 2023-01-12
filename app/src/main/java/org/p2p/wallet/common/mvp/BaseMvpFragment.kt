@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import org.p2p.uikit.utils.hideKeyboard
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.keyboardIsVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getErrorMessage

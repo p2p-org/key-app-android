@@ -23,8 +23,8 @@ import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
-import org.p2p.wallet.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.wallet.utils.isZero
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.core.utils.isZero
 import org.p2p.wallet.utils.toPublicKey
 import java.math.BigInteger
 
@@ -138,7 +138,7 @@ class FeeRelayerTopUpInteractor(
     suspend fun calculateNeededTopUpAmount(expectedFee: FeeAmount): FeeAmount {
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val neededAmount = expectedFee
+        val neededAmount = FeeAmount(expectedFee.transaction, expectedFee.accountBalances)
 
         // expected fees
         val expectedTopUpNetworkFee = BigInteger.valueOf(2L) * info.lamportsPerSignature
@@ -285,7 +285,7 @@ class FeeRelayerTopUpInteractor(
             pools = topUpPools,
             inputAmount = null,
             minAmountOut = targetAmount,
-            slippage = Slippage.Percent.doubleValue,
+            slippage = Slippage.TopUpSlippage.doubleValue,
             transitTokenMintPubkey = transitTokenMintPubKey,
             userAuthorityAddress = userAuthorityAddress,
         )

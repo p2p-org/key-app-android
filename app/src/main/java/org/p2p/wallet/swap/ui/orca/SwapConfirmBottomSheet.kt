@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
-import org.p2p.uikit.glide.GlideManager
+import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R

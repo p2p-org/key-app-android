@@ -33,7 +33,7 @@
         android:background="@drawable/bg_circle"
         android:scaleType="center"
         app:backgroundTint="@color/bg_lime"
-        app:icon="@drawable/ic_lightling"
+        app:icon="@drawable/ic_lightning"
         app:iconGravity="textTop"
         app:iconPadding="0dp"
         app:iconTint="@color/icons_night"

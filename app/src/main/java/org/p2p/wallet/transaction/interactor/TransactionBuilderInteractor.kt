@@ -1,10 +1,10 @@
 package org.p2p.wallet.transaction.interactor
 
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.home.model.Token
+import org.p2p.core.token.Token
 import org.p2p.wallet.transaction.model.TransactionStatus
-import org.p2p.wallet.utils.toBigDecimalOrZero
-import org.p2p.wallet.utils.toUsd
+import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.core.utils.toUsd
 import org.threeten.bp.ZonedDateTime
 import java.math.BigInteger
 

@@ -1,9 +1,9 @@
 package org.p2p.wallet.settings.model
 
+import android.content.res.Resources
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.settings.model.SettingsItem.ComplexSettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.SettingsGroupTitleItem
 import org.p2p.wallet.settings.model.SettingsItem.SettingsSpaceSeparatorItem
@@ -12,7 +12,7 @@ import org.p2p.wallet.settings.model.SettingsItem.SwitchSettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.TextSettingsItem
 
 class SettingsItemMapper(
-    private val resourcesProvider: ResourcesProvider
+    private val resources: Resources
 ) {
     fun createItems(
         username: Username?,
@@ -21,7 +21,10 @@ class SettingsItemMapper(
         isZeroBalanceTokenHidden: Boolean,
         isBiometricLoginAvailable: Boolean,
     ): List<SettingsItem> = buildList {
-        this += profileBlock(username, isUsernameItemVisible)
+        this += profileBlock(
+            username = username,
+            isUsernameItemVisible = isUsernameItemVisible
+        )
         this += securityBlock(
             isBiometricLoginEnabled = isBiometricLoginEnabled,
             isBiometricLoginAvailable = isBiometricLoginAvailable
@@ -39,6 +42,13 @@ class SettingsItemMapper(
         if (isUsernameItemVisible) {
             addUsernameItem(username)
         }
+        add(
+            ComplexSettingsItem(
+                nameRes = R.string.settings_item_title_support,
+                iconRes = R.drawable.ic_settings_support,
+                hasSeparator = false
+            )
+        )
         add(SignOutButtonItem)
         add(SettingsSpaceSeparatorItem)
     }
@@ -49,8 +59,8 @@ class SettingsItemMapper(
                 nameRes = R.string.settings_item_title_username,
                 iconRes = R.drawable.ic_settings_user,
                 additionalText = username?.fullUsername
-                    ?: resourcesProvider.getString(R.string.settings_item_username_not_reserved),
-                hasSeparator = false
+                    ?: resources.getString(R.string.settings_item_username_not_reserved),
+                hasSeparator = true
             )
         )
     }

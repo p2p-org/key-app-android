@@ -1,28 +1,59 @@
 package org.p2p.wallet.send.model
 
 import android.os.Parcelable
+import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
+import org.p2p.wallet.utils.cutMiddle
+import java.util.Date
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.user.model.TokenData
+
+private const val EMPTY_BALANCE = 0L
+private const val USERNAME_KEY_APP_DOMAIN = ".key"
 
 sealed class SearchResult(open val addressState: AddressState) : Parcelable {
 
-    @Parcelize
-    data class InvalidAddress(override val addressState: AddressState) : SearchResult(addressState)
+    val formattedAddress: String
+        get() = addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT)
+
+    fun isInvalid(): Boolean =
+        this is InvalidDirectAddress || this is OwnAddressError
 
     @Parcelize
-    data class AddressOnly(override val addressState: AddressState) : SearchResult(addressState)
+    data class InvalidDirectAddress(
+        val address: String,
+        val directToken: TokenData
+    ) : SearchResult(AddressState(address))
 
     @Parcelize
-    data class UsernameFound(override val addressState: AddressState, val username: String) : SearchResult(addressState)
+    data class OwnAddressError(val address: String) : SearchResult(AddressState(address))
 
     @Parcelize
-    data class EmptyBalance(override val addressState: AddressState) : SearchResult(addressState)
-
-    @Parcelize
-    data class InvalidResult(
+    data class AddressFound(
         override val addressState: AddressState,
-        val errorMessage: String,
-        val tokenData: TokenData? = null,
-        val description: String? = null
-    ) : SearchResult(addressState)
+        val sourceToken: Token.Active? = null,
+        val date: Date? = null,
+        val balance: Long = EMPTY_BALANCE
+    ) : SearchResult(addressState) {
+        @IgnoredOnParcel
+        val isEmptyBalance = balance == EMPTY_BALANCE
+
+        fun copyWithBalance(balance: Long): AddressFound {
+            return AddressFound(addressState, sourceToken, date, balance)
+        }
+    }
+
+    @Parcelize
+    data class UsernameFound constructor(
+        override val addressState: AddressState,
+        val username: String,
+        val date: Date? = null
+    ) : SearchResult(addressState) {
+        fun getFormattedUsername(): String = if (username.endsWith(USERNAME_KEY_APP_DOMAIN)) {
+            "@$username"
+        } else {
+            username
+        }
+    }
 }
