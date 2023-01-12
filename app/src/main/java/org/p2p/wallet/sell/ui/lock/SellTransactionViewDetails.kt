@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SellTransactionViewDetails(
+    val transactionId: String,
     val status: SellTransactionStatus,
     val formattedSolAmount: String,
     val formattedUsdAmount: String,

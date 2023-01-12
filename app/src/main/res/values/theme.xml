@@ -33,5 +33,7 @@
 
         <item name="snackbarStyle">@style/UiKit.Native.Snackbar</item>
         <item name="snackbarButtonStyle">@style/UiKit.Native.SnackbarButton</item>
+
+        <item name="materialAlertDialogTheme">@style/UiKit.MaterialAlertDialog</item>
     </style>
 </resources>

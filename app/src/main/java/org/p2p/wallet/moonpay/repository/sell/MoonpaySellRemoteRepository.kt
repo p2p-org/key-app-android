@@ -118,9 +118,9 @@ class MoonpaySellRemoteRepository(
     ): MoonpaySellCancelResult = withContext(dispatchers.io) {
         try {
             moonpayServerSideApi.cancelSellTransaction(transactionId)
-            MoonpaySellCancelResult.TransactionCancelled
+            MoonpaySellCancelResult.CancelSuccess
         } catch (error: Throwable) {
-            MoonpaySellCancelResult.CancelFailed(error)
+            MoonpaySellCancelResult.CancelFailed(MoonpaySellError.UnknownError(error))
         }
     }
 

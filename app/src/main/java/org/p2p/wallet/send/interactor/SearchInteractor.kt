@@ -1,6 +1,7 @@
 package org.p2p.wallet.send.interactor
 
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -43,7 +44,8 @@ class SearchInteractor(
 
         // assuming we are sending direct token and verify the recipient address is valid direct or SOL address
         val tokenData = transactionAddressInteractor.getDirectTokenData(address)
-        if (sourceToken != null && tokenData != null && sourceToken.mintAddress != tokenData.mintAddress) {
+
+        if (tokenData != null && isInvalidAddress(tokenData, sourceToken)) {
             return SearchResult.InvalidDirectAddress(address, tokenData)
         }
 
@@ -53,6 +55,13 @@ class SearchInteractor(
             sourceToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) },
             balance = balance
         )
+    }
+
+    suspend fun isInvalidAddress(tokenData: TokenData?, sourceToken: Token.Active?): Boolean {
+        val userToken = tokenData?.let { userInteractor.findUserToken(it.mintAddress) }
+        val hasNoTokensToSend = tokenData != null && userToken == null
+        val sendToOtherDirectToken = sourceToken != null && sourceToken.mintAddress != userToken?.mintAddress
+        return hasNoTokensToSend || sendToOtherDirectToken
     }
 
     suspend fun isOwnAddress(publicKey: String): Boolean {

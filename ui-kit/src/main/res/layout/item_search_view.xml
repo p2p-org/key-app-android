@@ -89,7 +89,8 @@
                 android:ellipsize="end"
                 android:imeOptions="actionSearch"
                 android:inputType="text|textNoSuggestions"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3" />
 
             <ImageView
                 android:id="@+id/search_close_btn"

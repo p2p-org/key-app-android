@@ -5,12 +5,12 @@ import org.p2p.wallet.common.mvp.MvpView
 
 interface SellLockedContract {
 
-    interface View : MvpView
+    interface View : MvpView {
+        fun navigateBack()
+        fun navigateBackToMain()
+    }
 
     interface Presenter : MvpPresenter<View> {
-        fun removeFromHistory()
-        fun onSendClicked()
-        fun onRecipientClicked()
-        fun onCopyClicked()
+        fun onCancelTransactionClicked()
     }
 }
