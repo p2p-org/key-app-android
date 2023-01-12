@@ -1,7 +1,8 @@
 package org.p2p.wallet.send.model
 
-import androidx.annotation.ColorInt
 import android.os.Parcelable
+import androidx.annotation.ColorInt
+import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.orZero
@@ -9,7 +10,6 @@ import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import java.math.BigDecimal
-import kotlinx.parcelize.Parcelize
 
 /**
  * [SendSolanaFee] can be null only if total fees is Zero. (transaction fee and account creation fee)
@@ -49,14 +49,14 @@ class SendFeeTotal constructor(
     fun getTotalCombined(@ColorInt colorMountain: Int): CharSequence {
         if (sendFee == null || sendFee.feePayerSymbol != sourceSymbol) {
             val usdText = currentAmountUsd?.asApproximateUsd().orEmpty()
-            val totalText = "$currentAmount $sourceSymbol $usdText"
+            val totalText = "${currentAmount.toPlainString()} $sourceSymbol $usdText"
             return SpanUtils.highlightText(totalText, usdText, colorMountain)
         }
 
         // if fee and source token is the same, we'll have only one field for fees
         val totalAmount = currentAmount + sendFee.totalFeeDecimals
         val totalAmountUsd = (currentAmountUsd.orZero() + sendFee.totalFeeDecimalsUsd.orZero()).asApproximateUsd()
-        val totalText = "$totalAmount $sourceSymbol $totalAmountUsd"
+        val totalText = "${totalAmount.toPlainString()} $sourceSymbol $totalAmountUsd"
         return SpanUtils.highlightText(totalText, totalAmountUsd, colorMountain)
     }
 
