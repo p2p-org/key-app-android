@@ -36,6 +36,7 @@ class HistoryItemMapper(private val resources: Resources) {
             resources.getString(R.string.sell_details_receiver_moonpay_bank)
         }
         SellTransactionViewDetails(
+            transactionId = it.transactionId,
             status = it.status,
             formattedSolAmount = it.amounts.tokenAmount.formatToken(),
             formattedUsdAmount = it.getFiatAmount().formatUsd(),
