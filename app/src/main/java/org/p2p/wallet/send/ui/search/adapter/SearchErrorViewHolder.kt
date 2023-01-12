@@ -1,7 +1,7 @@
 package org.p2p.wallet.send.ui.search.adapter
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSearchInvalidResultBinding
@@ -11,6 +11,7 @@ import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
+import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
 
 class SearchErrorViewHolder(
@@ -26,16 +27,22 @@ class SearchErrorViewHolder(
 
             when (item) {
                 is SearchResult.OwnAddressError -> {
-                    textViewDescription.setText(R.string.search_yourself_description)
+                    val description = if (item.directToken != null) {
+                        loadTokenIcon(item.directToken.iconUrl)
+                        getString(R.string.search_no_other_tokens_description, item.directToken.symbol)
+                    } else {
+                        showWalletIcon()
+                        getString(R.string.search_yourself_description)
+                    }
+                    textViewDescription.withTextOrGone(description)
                     textViewError.setText(R.string.search_yourself_error)
-                    showWalletIcon()
                 }
                 is SearchResult.InvalidDirectAddress -> {
                     val description = getString(
                         R.string.search_no_other_tokens_description,
                         item.directToken.symbol
                     )
-                    textViewDescription.text = description
+                    textViewDescription.withTextOrGone(description)
                     textViewError.setText(R.string.search_no_other_tokens_error)
                     loadTokenIcon(item.directToken.iconUrl)
                 }
@@ -63,6 +70,8 @@ class SearchErrorViewHolder(
             Glide.with(this)
                 .load(iconUrl)
                 .circleCrop()
+                .error(R.drawable.ic_placeholder_image)
+                .placeholder(R.drawable.ic_placeholder_image)
                 .into(this)
         }
     }

@@ -110,6 +110,7 @@ class HistoryPresenter(
 
     private suspend fun fetchMoonpayTransactions() {
         val transactions = sellInteractor.loadUserSellTransactions()
+            .filter { transaction -> !transaction.isCancelled() }
         moonpayTransactions.clear()
         moonpayTransactions.addAll(sellTransactionsMapper.map(transactions))
     }

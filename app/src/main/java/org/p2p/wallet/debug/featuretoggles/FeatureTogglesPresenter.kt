@@ -1,9 +1,10 @@
 package org.p2p.wallet.debug.featuretoggles
 
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.DebugTogglesFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.remote.BooleanFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RemoteFeatureToggle
-import org.p2p.wallet.common.feature_toggles.remote_config.LocalFirebaseRemoteConfig
 import org.p2p.wallet.common.mvp.BasePresenter
 
 class FeatureTogglesPresenter(
@@ -13,31 +14,45 @@ class FeatureTogglesPresenter(
 ) : BasePresenter<FeatureTogglesContract.View>(), FeatureTogglesContract.Presenter {
 
     override fun load() {
-        view?.showFeatureToggles(buildFeatureToggleRows())
+        view?.showFeatureToggles(
+            debugToggle = inAppFeatureFlags.isDebugRemoteConfigEnabled,
+            toggleRows = buildFeatureToggleRows()
+        )
     }
 
-    override fun onToggleChanged(toggle: FeatureToggleRow, newValue: String) {
-        inAppFeatureFlags.findFeatureFlagByName(toggle.toggleName)
-            ?.let { inAppFlag -> inAppFlag.featureValue = newValue.toBoolean() }
-            ?: debugRemoteConfigValuesSource.changeFeatureToggle(toggle.toggleName, newValue)
+    override fun onToggleChanged(toggle: FeatureToggleRowItem, newValue: String) {
+        val featureFlagToChange = inAppFeatureFlags.findFeatureFlagByName(toggle.toggleName)
+        if (featureFlagToChange != null) {
+            featureFlagToChange.featureValue = newValue.toBoolean()
+        } else {
+            debugRemoteConfigValuesSource.changeFeatureToggle(toggle.toggleName, newValue)
+        }
         load()
     }
 
-    private fun buildFeatureToggleRows(): List<FeatureToggleRow> {
-        return remoteFeatureToggles.map {
-            FeatureToggleRow(
+    override fun switchDebugRemoteConfig(isDebugEnabled: Boolean) {
+        inAppFeatureFlags.isDebugRemoteConfigEnabled.featureValue = isDebugEnabled
+        load()
+    }
+
+    private fun buildFeatureToggleRows(): List<FeatureToggleRowItem> =
+        remoteFeatureToggles.map {
+            FeatureToggleRowItem(
                 toggleName = it.featureKey,
                 toggleValue = it.value.toString(),
-                isCheckable = it is BooleanFeatureToggle,
-                canBeChanged = inAppFeatureFlags.isDebugRemoteConfigEnabled.featureValue
+                isBooleanToggle = it is BooleanFeatureToggle,
+                canBeChanged = inAppFeatureFlags.isDebugRemoteConfigEnabled.featureValue,
+                isInAppFlag = false
             )
-        } + inAppFeatureFlags.allInAppFeatureFlags.map {
-            FeatureToggleRow(
-                toggleName = it.featureName,
-                toggleValue = it.featureValue.toString(),
-                isCheckable = true,
-                canBeChanged = true
-            )
-        }
-    }
+        } + inAppFeatureFlags.allInAppFeatureFlags
+            .filter { it !is DebugTogglesFeatureFlag }
+            .map {
+                FeatureToggleRowItem(
+                    toggleName = it.featureName,
+                    toggleValue = it.featureValue.toString(),
+                    isBooleanToggle = true,
+                    canBeChanged = true,
+                    isInAppFlag = true
+                )
+            }
 }
