@@ -21,6 +21,14 @@ sealed class SellTransaction(
         SellTransactionFiatCurrency.GBP -> amounts.gbpAmount
     }
 
+    fun isCancelled(): Boolean {
+        return if (this is FailedTransaction) {
+            this.failureReason != SellTransactionFailureReason.CANCELLED
+        } else {
+            true
+        }
+    }
+
     data class WaitingForDepositTransaction(
         override val metadata: SellTransactionMetadata,
         override val transactionId: String,
@@ -54,12 +62,4 @@ sealed class SellTransaction(
         override val userAddress: Base58String,
         val failureReason: SellTransactionFailureReason?,
     ) : SellTransaction(SellTransactionStatus.FAILED)
-}
-
-fun SellTransaction.isCancelled(): Boolean {
-    return if (this is SellTransaction.FailedTransaction) {
-        this.failureReason != SellTransactionFailureReason.CANCELLED
-    } else {
-        true
-    }
 }
