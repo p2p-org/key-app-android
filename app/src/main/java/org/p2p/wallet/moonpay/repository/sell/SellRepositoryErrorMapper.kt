@@ -5,7 +5,7 @@ import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 
-class MoonpaySellRepositoryErrorMapper {
+class SellRepositoryErrorMapper {
     fun fromNetworkError(error: Throwable): MoonpaySellError {
         // add more errors if needed
         return when (error) {
@@ -35,7 +35,7 @@ class MoonpaySellRepositoryErrorMapper {
                 MoonpaySellError.UnknownError(error)
             }
             else -> {
-                MoonpaySellError.UnauthorizedRequest(error)
+                MoonpaySellError.UnknownError(error)
             }
         }
     }

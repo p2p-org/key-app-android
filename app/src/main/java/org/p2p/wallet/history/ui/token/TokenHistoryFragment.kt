@@ -80,7 +80,14 @@ class TokenHistoryFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.setupView()
+        listenForSellTransactionDialogDismiss()
         presenter.loadHistory()
+    }
+
+    private fun listenForSellTransactionDialogDismiss() {
+        childFragmentManager.setFragmentResultListener(
+            SellTransactionDetailsBottomSheet.REQUEST_KEY_DISMISSED, this
+        ) { _, _ -> presenter.loadHistory() }
     }
 
     private fun FragmentTokenHistoryBinding.setupView() {

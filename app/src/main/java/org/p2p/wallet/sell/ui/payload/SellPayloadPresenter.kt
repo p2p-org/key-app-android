@@ -20,6 +20,7 @@ import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
+import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
@@ -37,6 +38,7 @@ class SellPayloadPresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder,
     private val externalCustomerIdProvider: MoonpayExternalCustomerIdProvider,
+    private val userInteractor: UserInteractor,
     private val resourceProvider: ResourcesProvider
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
@@ -59,7 +61,7 @@ class SellPayloadPresenter(
                 view.showLoading(isVisible = true)
                 // call order is important!
                 checkForSellLock()
-                userSolBalance = BigDecimal.valueOf(4.323245)
+                userSolBalance = userInteractor.getUserSolToken()?.total.orZero()
                 loadCurrencies()
                 checkForMinAmount()
                 restartLoadSellQuoteJob()

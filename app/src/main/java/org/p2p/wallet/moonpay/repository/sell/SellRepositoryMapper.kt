@@ -13,7 +13,7 @@ import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShort
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.utils.Base58String
 
-class MoonpaySellRepositoryMapper {
+class SellRepositoryMapper {
     fun fromNetwork(
         response: List<MoonpaySellTransactionShortResponse>,
         depositWallets: List<MoonpaySellTransactionDepositWalletResponse>,

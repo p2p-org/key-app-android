@@ -13,8 +13,8 @@ interface HistoryContract {
         fun showRefreshing(isRefreshing: Boolean)
         fun scrollToTop()
         fun showHistory(
-            transactions: List<HistoryTransaction>,
-            moonpayTransactions: List<SellTransaction>
+            blockChainTransactions: List<HistoryTransaction>,
+            sellTransactions: List<SellTransaction>
         )
     }
 
@@ -23,5 +23,6 @@ interface HistoryContract {
         fun refreshHistory()
         fun loadNextHistoryPage()
         fun onItemClicked(transaction: HistoryTransaction)
+        fun onResume()
     }
 }

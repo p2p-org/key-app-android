@@ -68,7 +68,20 @@ class HistoryFragment :
                 presenter.refreshHistory()
             }
         }
+
+        listenForSellTransactionDialogDismiss()
         presenter.loadHistory()
+    }
+
+    private fun listenForSellTransactionDialogDismiss() {
+        childFragmentManager.setFragmentResultListener(
+            SellTransactionDetailsBottomSheet.REQUEST_KEY_DISMISSED, this
+        ) { _, _ -> presenter.loadHistory() }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.onResume()
     }
 
     override fun showPagingState(state: PagingState) {
@@ -83,8 +96,11 @@ class HistoryFragment :
         }
     }
 
-    override fun showHistory(items: List<HistoryTransaction>, sellTransactions: List<SellTransaction>) {
-        adapter.setTransactions(items, sellTransactions)
+    override fun showHistory(
+        blockChainTransactions: List<HistoryTransaction>,
+        sellTransactions: List<SellTransaction>
+    ) {
+        adapter.setTransactions(blockChainTransactions, sellTransactions)
 
         val isHistoryEmpty = adapter.isEmpty()
         binding.emptyStateLayout.isVisible = isHistoryEmpty
