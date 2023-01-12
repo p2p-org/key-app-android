@@ -38,12 +38,12 @@ class SearchInteractor(
         sourceToken: Token.Active? = null
     ): SearchResult {
         val address = wrappedAddress.base58Value
-        if (isOwnAddress(address)) {
-            return SearchResult.OwnAddressError(address)
-        }
-
         // assuming we are sending direct token and verify the recipient address is valid direct or SOL address
         val tokenData = transactionAddressInteractor.getDirectTokenData(address)
+
+        if (isOwnAddress(address)) {
+            return SearchResult.OwnAddressError(address, tokenData)
+        }
 
         if (tokenData != null && isInvalidAddress(tokenData, sourceToken)) {
             return SearchResult.InvalidDirectAddress(address, tokenData)
