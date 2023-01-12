@@ -55,3 +55,11 @@ sealed class SellTransaction(
         val failureReason: SellTransactionFailureReason?,
     ) : SellTransaction(SellTransactionStatus.FAILED)
 }
+
+fun SellTransaction.isCancelled(): Boolean {
+    return if (this is SellTransaction.FailedTransaction) {
+        this.failureReason != SellTransactionFailureReason.CANCELLED
+    } else {
+        true
+    }
+}
