@@ -51,5 +51,10 @@ fun Long.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(
     ZoneId.systemDefault()
 )
 
+fun String.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(
+    Instant.parse(this),
+    ZoneId.systemDefault()
+)
+
 private fun DateTimeFormatter.formatWithLocale(temporal: TemporalAccessor) =
     withLocale(Locale.ENGLISH).format(temporal)

@@ -22,6 +22,7 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBot
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
+import org.p2p.wallet.history.ui.history.HistoryMoonpayTransactionsMapper
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.rpc.RpcModule
@@ -38,6 +39,7 @@ object HistoryModule : InjectionModule {
         factoryOf(::HistoryTransactionMapper)
         factoryOf(::HistoryInteractor)
         factoryOf(::HistoryItemMapper)
+        factoryOf(::HistoryMoonpayTransactionsMapper)
 
         factoryOf(::HistoryPresenter) bind HistoryContract.Presenter::class
         factoryOf(::TokenHistoryPresenter) bind TokenHistoryContract.Presenter::class

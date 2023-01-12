@@ -27,7 +27,8 @@ class HistoryPresenter(
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val environmentManager: NetworkEnvironmentManager,
-    private val sendAnalytics: SendAnalytics
+    private val sendAnalytics: SendAnalytics,
+    private val moonpayTransactionsMapper: HistoryMoonpayTransactionsMapper,
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private var isPagingEnded = false
@@ -87,10 +88,9 @@ class HistoryPresenter(
     // refactor and make good code in PWN-6386
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
         try {
-            if (sellInteractor.isSellAvailable()) {
-                fetchMoonpayTransactions()
-            }
+            val fetchMoonpayJob = if (sellInteractor.isSellAvailable()) launch { fetchMoonpayTransactions() } else null
             val fetchedItems = historyInteractor.loadTransactions(isRefresh)
+            fetchMoonpayJob?.join()
             transactions.addAll(fetchedItems)
             view?.showHistory(transactions, moonpayTransactions)
             view?.showPagingState(PagingState.Idle)
@@ -111,7 +111,7 @@ class HistoryPresenter(
     private suspend fun fetchMoonpayTransactions() {
         val transactions = sellInteractor.loadUserSellTransactions()
         moonpayTransactions.clear()
-        moonpayTransactions.addAll(transactions)
+        moonpayTransactions.addAll(moonpayTransactionsMapper.map(transactions))
     }
 
     override fun onItemClicked(transaction: HistoryTransaction) {
@@ -128,6 +128,7 @@ class HistoryPresenter(
                         feesSource = SwapAnalytics.FeeSource.UNKNOWN
                     )
                 }
+
                 is HistoryTransaction.Transfer -> {
                     val renBtcSession = renBtcInteractor.findActiveSession()
                     val isRenBtcSessionActive = renBtcSession != null && renBtcSession.isValid
@@ -162,6 +163,7 @@ class HistoryPresenter(
                         )
                     }
                 }
+
                 else -> {
                     // TODO: Add support for other transaction types
                     // do nothing yet
