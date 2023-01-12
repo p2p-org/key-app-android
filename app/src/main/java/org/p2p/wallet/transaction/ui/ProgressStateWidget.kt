@@ -36,7 +36,7 @@ class ProgressStateWidget @JvmOverloads constructor(
         ).let { rotate ->
             rotate.duration = TimeUnit.SECONDS.toMillis(1)
             rotate.repeatCount = Animation.INFINITE
-            //binding.progressIndicator.startAnimation(rotate)
+            binding.progressIndicator.startAnimation(rotate)
         }
     }
 
