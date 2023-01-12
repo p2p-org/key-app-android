@@ -8,7 +8,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.moonpay.model.SellTransaction
-import org.p2p.wallet.moonpay.model.isCancelled
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.sell.interactor.SellInteractor
@@ -111,7 +110,7 @@ class HistoryPresenter(
 
     private suspend fun fetchMoonpayTransactions() {
         val transactions = sellInteractor.loadUserSellTransactions()
-            .filter { transaction -> transaction.isCancelled() }
+            .filter { transaction -> !transaction.isCancelled() }
         moonpayTransactions.clear()
         moonpayTransactions.addAll(transactions)
     }

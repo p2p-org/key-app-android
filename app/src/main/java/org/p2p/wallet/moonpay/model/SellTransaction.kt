@@ -22,11 +22,7 @@ sealed class SellTransaction(
     }
 
     fun isCancelled(): Boolean {
-        return if (this is FailedTransaction) {
-            this.failureReason != SellTransactionFailureReason.CANCELLED
-        } else {
-            true
-        }
+        return this is FailedTransaction && failureReason == SellTransactionFailureReason.CANCELLED
     }
 
     data class WaitingForDepositTransaction(
