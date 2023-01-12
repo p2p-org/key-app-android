@@ -1,6 +1,7 @@
 package org.p2p.wallet.common.analytics
 
 import android.app.Application
+import com.google.firebase.analytics.FirebaseAnalytics
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.analytics.trackers.AmplitudeTracker
 import org.p2p.wallet.common.analytics.trackers.AnalyticsTracker
@@ -18,7 +19,7 @@ object TrackersFactory {
             add(AppsFlyerTracker(app))
         }
         if (BuildConfig.FIREBASE_ANALYTICS_ENABLED) {
-            add(FirebaseTracker(app))
+            add(FirebaseTracker(FirebaseAnalytics.getInstance(app)))
         }
         if (BuildConfig.DEBUG) {
             add(TimberTracker())
