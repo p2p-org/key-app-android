@@ -3,9 +3,6 @@ package org.p2p.wallet.common.ui.widget.actionbuttons
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.databinding.LayoutActionButtonsBinding
 import org.p2p.wallet.utils.unsafeLazy
@@ -25,9 +22,6 @@ class ActionButtonsView @JvmOverloads constructor(
     }
 
     init {
-        val flexboxLayoutManager = FlexboxLayoutManager(context, FlexDirection.ROW)
-        flexboxLayoutManager.justifyContent = JustifyContent.CENTER
-        binding.recyclerViewActionButtons.layoutManager = flexboxLayoutManager
         binding.recyclerViewActionButtons.adapter = buttonsAdapter
     }
 
