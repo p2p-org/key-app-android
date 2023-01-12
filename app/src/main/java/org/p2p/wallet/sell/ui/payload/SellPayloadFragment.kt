@@ -51,12 +51,8 @@ class SellPayloadFragment :
         binding.shimmerView.isVisible = isVisible
     }
 
-    override fun showAvailableSolToSell(totalAmount: BigDecimal) {
-        binding.textViewAvailableAmount.text = totalAmount.toString()
-    }
-
     override fun navigateToSellLock(details: SellTransactionViewDetails) {
-        replaceFragment(SellLockedFragment.create(details), addToBackStack = false)
+        replaceFragment(SellLockedFragment.create(details))
     }
 
     override fun navigateToErrorScreen() {
@@ -123,10 +119,5 @@ class SellPayloadFragment :
     override fun resetFiatAndFee(feeSymbol: String) {
         binding.editTextFiatAmount.setAmount("0")
         binding.textViewFee.text = getString(R.string.sell_payload_included_fee, "0", feeSymbol)
-    }
-
-    override fun setTokenAndFeeValue(newValue: String) {
-        binding.editTextTokenAmount.setAmount(newValue)
-        binding.textViewFee.text = getString(R.string.sell_payload_included_fee, newValue)
     }
 }

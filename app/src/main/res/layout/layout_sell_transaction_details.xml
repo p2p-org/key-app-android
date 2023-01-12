@@ -175,12 +175,12 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/common_send"
-        app:layout_constraintBottom_toTopOf="@+id/buttonRemove"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRemoveOrCancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonRemove"
+        android:id="@+id/buttonRemoveOrCancel"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

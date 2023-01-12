@@ -1,4 +1,4 @@
-# p2p-wallet-android
+# Key App (Android)
 
 ![](https://cdn.discordapp.com/attachments/737610668726812763/777332771600990259/wallets_android2x.png)
 

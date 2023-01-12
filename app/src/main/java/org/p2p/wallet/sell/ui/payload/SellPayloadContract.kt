@@ -27,7 +27,6 @@ interface SellPayloadContract {
 
     interface View : MvpView {
         fun showLoading(isVisible: Boolean)
-        fun showAvailableSolToSell(totalAmount: BigDecimal)
         fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String)
         fun showMoonpayWidget(url: String)
         fun navigateToSellLock(details: SellTransactionViewDetails)
@@ -36,7 +35,6 @@ interface SellPayloadContract {
         fun updateViewState(newState: ViewState)
         fun setButtonState(state: CashOutButtonState)
         fun setTokenAmount(newValue: String)
-        fun setTokenAndFeeValue(newValue: String)
         fun resetFiatAndFee(feeSymbol: String)
     }
 
