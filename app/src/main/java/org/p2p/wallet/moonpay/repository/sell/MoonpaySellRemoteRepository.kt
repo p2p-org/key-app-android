@@ -17,6 +17,8 @@ import org.p2p.wallet.utils.Base58String
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
 private const val TAG = "MoonpaySellRemoteRepository"
@@ -69,11 +71,12 @@ class MoonpaySellRemoteRepository(
     override suspend fun getUserSellTransactions(
         userAddress: Base58String,
     ): List<SellTransaction> = doMoonpayRequest {
-        val response = moonpayServerSideApi.getUserSellTransactions(userAddress.base58Value)
-        val depositWallets = getDepositWalletsForTransactions(response)
+        val userIdResponse = async { moonpayServerSideApi.getUserSellTransactions(userAddress.base58Value) }
+        val externalIdResponse = async { moonpayServerSideApi.getUserSellTransactions(externalCustomerId) }
+        val depositWallets = getDepositWalletsForTransactions(userIdResponse.await())
 
         mapper.fromNetwork(
-            response = moonpayServerSideApi.getUserSellTransactions(externalCustomerId),
+            response = externalIdResponse.await(),
             depositWallets = depositWallets,
             selectedFiat = getSellFiatCurrency(),
             transactionOwnerAddress = userAddress,
@@ -126,10 +129,10 @@ class MoonpaySellRemoteRepository(
 
     @Throws(MoonpaySellError::class)
     private suspend inline fun <R> doMoonpayRequest(
-        crossinline request: suspend () -> R
+        crossinline request: suspend CoroutineScope.() -> R
     ): R = withContext(dispatchers.io) {
         try {
-            request.invoke()
+            request.invoke(this)
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (error: Throwable) {

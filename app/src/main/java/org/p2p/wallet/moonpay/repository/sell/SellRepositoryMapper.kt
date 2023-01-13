@@ -65,6 +65,7 @@ class SellRepositoryMapper {
                     amounts = amounts,
                     selectedFiat = selectedFiat,
                     userAddress = transactionOwnerAddress,
+                    failureReason = transaction.failureReason,
                 )
             }
         }

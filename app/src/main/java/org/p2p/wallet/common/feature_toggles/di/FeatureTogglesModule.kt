@@ -32,7 +32,7 @@ object FeatureTogglesModule : InjectionModule {
         singleOf(::FeatureTogglesValuesSource) bind RemoteConfigValuesProvider::class
 
         factory {
-            listOf(
+            setOf(
                 get<SslPinningFeatureToggle>(),
                 get<NewBuyFeatureToggle>(),
                 get<BuyWithTransferFeatureToggle>(),
@@ -40,11 +40,10 @@ object FeatureTogglesModule : InjectionModule {
                 get<NetworkObservationFeatureToggle>(),
                 get<SolendEnabledFeatureToggle>(),
                 get<UsernameDomainFeatureToggle>(),
-                get<UsernameDomainFeatureToggle>(),
                 get<RegisterUsernameEnabledFeatureToggle>(),
                 get<RegisterUsernameSkipEnabledFeatureToggle>(),
                 get<SellEnabledFeatureToggle>()
-            )
+            ).toList()
         }
 
         factoryOf(::SslPinningFeatureToggle)

@@ -146,7 +146,10 @@ class HistoryPresenter(
         historyInteractor.getSellTransactions()
             .toMutableList()
             .let(::FetchListResult)
-            .withContentFilter { !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId) }
+            .withContentFilter {
+                !it.isCancelled() &&
+                    !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
+            }
     } catch (error: Throwable) {
         Timber.e(error, "Error while loading Moonpay sell transactions on history")
         FetchListResult(isFailed = true)
