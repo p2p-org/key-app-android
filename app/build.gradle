@@ -259,6 +259,7 @@ dependencies {
 
     //AppsFlyer
     implementation 'com.appsflyer:af-android-sdk:6.9.0'
+    implementation 'androidx.ads:ads-identifier:1.0.0-alpha04'
     implementation "com.android.installreferrer:installreferrer:2.2"
 
     // TickerView

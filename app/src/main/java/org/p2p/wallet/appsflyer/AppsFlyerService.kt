@@ -14,18 +14,18 @@ private const val TAG = "AppsFlyerService"
 class AppsFlyerService(private val context: Context) {
 
     private val listener: AppsFlyerConversionListener = AppsFlyerConversionListenerImpl()
+    private val appsFlyer: AppsFlyerLib
+        get() = AppsFlyerLib.getInstance()
 
     fun install(application: Application, devKey: String) {
-        val appsFlyer = AppsFlyerLib.getInstance()
-        kotlin.runCatching {
+        try {
             appsFlyer.setDebugLog(false) // turn to true if needed
             appsFlyer.init(devKey, listener, application)
             appsFlyer.start(application)
             setupListeners()
-        }.onSuccess {
             Timber.tag(TAG).i("AppsFlyer service is initialized")
-        }.onFailure {
-            Timber.tag(TAG).i("AppsFlyer service, error on init  = $it")
+        } catch (initError: Throwable) {
+            Timber.tag(TAG).e(initError, "AppsFlyer service, error on init")
         }
     }
 
@@ -37,15 +37,12 @@ class AppsFlyerService(private val context: Context) {
     }
 
     fun isUninstallTrackingMessage(message: RemoteMessage): Boolean {
-        val data = message.data
-        return data.containsKey(UNINSTALL_APP_KEY)
+        return message.data.containsKey(UNINSTALL_APP_KEY)
     }
 
     private fun setupListeners() {
-        val appsFlyerInstance = AppsFlyerLib.getInstance()
-        appsFlyerInstance.subscribeForDeepLink { result ->
-            val status = result.status
-            when (status) {
+        appsFlyer.subscribeForDeepLink { result ->
+            when (result.status) {
                 DeepLinkResult.Status.FOUND -> {
                     val deeplink = result.deepLink
                     Timber.tag(TAG).i("Deeplink found = ${deeplink.values}")
