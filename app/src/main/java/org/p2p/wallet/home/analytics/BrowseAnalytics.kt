@@ -71,14 +71,18 @@ class BrowseAnalytics(
         )
     }
 
-    fun logScreenOpened(screenName: String, lastScreen: String) {
+    fun logScreenOpened(
+        screenName: String,
+        lastScreen: String,
+        isSellEnabled: Boolean
+    ) {
         appScope.launch {
             tracker.logEvent(
                 event = BROWSE_SCREEN_OPENED,
                 params = mapOf(
                     "Screen_Name" to screenName,
                     "Last_Screen" to lastScreen,
-                    "isSellEnabled" to sellInteractor.isSellAvailable()
+                    "isSellEnabled" to isSellEnabled
                 )
             )
         }

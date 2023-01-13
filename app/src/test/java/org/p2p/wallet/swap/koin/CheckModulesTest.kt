@@ -76,7 +76,7 @@ class CheckModulesTest : KoinTest {
         mockkClass(clazz)
     }
 
-    private val logger: Logger = object: Logger() {
+    private val logger: Logger = object : Logger() {
         override fun log(level: Level, msg: MESSAGE) {
             println("KOIN (${level.name}): $msg")
         }
@@ -210,7 +210,7 @@ class CheckModulesTest : KoinTest {
     private fun ParametersBinding.initInstances() {
         withInstance(sharedPrefsMock)
         withInstance(mockk<Token.Active>())
-        withInstance(mockk <SolendDepositToken.Active>())
+        withInstance(mockk<SolendDepositToken.Active>())
         withInstance(mockk<SecureStorage>())
         withInstance(mockk<TransactionWorker>())
         withInstance(mockk<TransactionDetailsLaunchState.Id>())
