@@ -17,6 +17,7 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.analytics.repository.AnalyticsInMemoryRepository
 import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.analytics.HomeAnalytics
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
@@ -51,6 +52,7 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::CreateWalletAnalytics)
         factoryOf(::RestoreWalletAnalytics)
         factoryOf(::NewSendAnalytics)
+        factoryOf(::HistoryAnalytics)
         singleOf(::AnalyticsInMemoryRepository) bind AnalyticsLocalRepository::class
     }
 }
