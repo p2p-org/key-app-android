@@ -158,6 +158,13 @@ class TokenHistoryFragment :
         addOnScrollListener(scrollListener)
     }
 
+    override fun onResume() {
+        super.onResume()
+        // dirty duck-tape to remove hidden transactions from the list
+        // when the bottom sheet is closed
+        presenter.updateSellTransactions()
+    }
+
     override fun showError(@StringRes resId: Int, argument: String) {
         showErrorDialog(getString(resId, argument))
     }

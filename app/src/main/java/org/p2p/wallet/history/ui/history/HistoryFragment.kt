@@ -81,7 +81,9 @@ class HistoryFragment :
 
     override fun onResume() {
         super.onResume()
-        presenter.onResume()
+        // dirty duck-tape to remove hidden transactions from the list
+        // when the bottom sheet is closed
+        presenter.updateSellTransactions()
     }
 
     override fun showPagingState(state: PagingState) {

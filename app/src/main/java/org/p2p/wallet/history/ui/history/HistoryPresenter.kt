@@ -99,17 +99,11 @@ class HistoryPresenter(
         }
     }
 
-    override fun onResume() {
-        launch {
-            val updatedSellTransactions = fetchSellTransactions()
-            if (!updatedSellTransactions.isFailed) {
-                moonpayTransactionsList = updatedSellTransactions
-            }
-            view?.showHistory(
-                blockChainTransactions = blockChainTransactionsList.content,
-                sellTransactions = moonpayTransactionsList.content
-            )
-        }
+    override fun updateSellTransactions() {
+        view?.showHistory(
+            blockChainTransactions = blockChainTransactionsList.content,
+            sellTransactions = moonpayTransactionsList.content
+        )
     }
 
     private suspend fun fetchHistory(isRefresh: Boolean = false) {

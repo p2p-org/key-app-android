@@ -112,6 +112,13 @@ class TokenHistoryPresenter(
         }
     }
 
+    override fun updateSellTransactions() {
+        view?.showHistory(
+            transactions = blockChainTransactionsList.content,
+            sellTransactions = sellTransactionsList.content
+        )
+    }
+
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
         try {
             if (isRefresh) {

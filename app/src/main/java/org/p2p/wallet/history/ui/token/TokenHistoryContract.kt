@@ -29,5 +29,6 @@ interface TokenHistoryContract {
         fun closeAccount()
         fun loadNextHistoryPage()
         fun retryLoad()
+        fun updateSellTransactions()
     }
 }

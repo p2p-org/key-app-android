@@ -23,6 +23,6 @@ interface HistoryContract {
         fun refreshHistory()
         fun loadNextHistoryPage()
         fun onItemClicked(transaction: HistoryTransaction)
-        fun onResume()
+        fun updateSellTransactions()
     }
 }
