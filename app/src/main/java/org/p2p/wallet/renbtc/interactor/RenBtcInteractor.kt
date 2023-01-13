@@ -1,12 +1,5 @@
 package org.p2p.wallet.renbtc.interactor
 
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flattenMerge
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import org.p2p.solanaj.kits.renBridge.LockAndMint
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -17,6 +10,13 @@ import org.p2p.wallet.renbtc.model.RenTransactionStatus
 import org.p2p.wallet.renbtc.repository.RenLoaclRepository
 import org.p2p.wallet.renbtc.repository.RenRepository
 import org.p2p.wallet.renbtc.repository.RenStateLocalRepository
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flattenMerge
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 class RenBtcInteractor(
     private val repository: RenRepository,
@@ -48,6 +48,8 @@ class RenBtcInteractor(
         val signer = tokenKeyProvider.publicKey
         return databaseRepository.findSession(signer)
     }
+
+    suspend fun isUserHasActiveSession(): Boolean = findActiveSession().let { it != null && it.isValid }
 
     suspend fun clearSession() {
         databaseRepository.clearSessionData()

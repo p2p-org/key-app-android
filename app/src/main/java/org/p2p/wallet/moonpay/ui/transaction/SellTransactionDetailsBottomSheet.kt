@@ -1,7 +1,9 @@
 package org.p2p.wallet.moonpay.ui.transaction
 
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -40,6 +42,8 @@ class SellTransactionDetailsBottomSheet :
     SellTransactionDetailsContract.View {
 
     companion object {
+        const val REQUEST_KEY_DISMISSED = "REQUEST_KEY_DISMISSED"
+
         fun show(fm: FragmentManager, details: SellTransactionViewDetails) {
             SellTransactionDetailsBottomSheet()
                 .withArgs(ARG_DETAILS to details)
@@ -211,6 +215,7 @@ class SellTransactionDetailsBottomSheet :
     }
 
     override fun close() {
+        setFragmentResult(REQUEST_KEY_DISMISSED, bundleOf())
         dismissAllowingStateLoss()
     }
 }

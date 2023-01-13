@@ -27,11 +27,11 @@ class MoonpaySellRemoteRepository(
     private val moonpayClientSideApi: MoonpayClientSideApi,
     private val moonpayServerSideApi: MoonpayServerSideApi,
     private val crashLogger: CrashLogger,
-    private val mapper: MoonpaySellRepositoryMapper,
+    private val mapper: SellRepositoryMapper,
     private val externalCustomerIdProvider: MoonpayExternalCustomerIdProvider,
-    private val errorMapper: MoonpaySellRepositoryErrorMapper,
+    private val errorMapper: SellRepositoryErrorMapper,
     private val dispatchers: CoroutineDispatchers,
-) : MoonpaySellRepository {
+) : SellRepository {
 
     private class MoonpayRepositoryInternalError(override val cause: Throwable) : Throwable(cause.message)
 
@@ -69,7 +69,7 @@ class MoonpaySellRemoteRepository(
 
     @Throws(MoonpaySellError::class)
     override suspend fun getUserSellTransactions(
-        userAddress: Base58String
+        userAddress: Base58String,
     ): List<SellTransaction> = doMoonpayRequest {
         val userIdResponse = async { moonpayServerSideApi.getUserSellTransactions(userAddress.base58Value) }
         val externalIdResponse = async { moonpayServerSideApi.getUserSellTransactions(externalCustomerId) }
