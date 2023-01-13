@@ -10,7 +10,6 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
-import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
