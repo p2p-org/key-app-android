@@ -10,6 +10,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHomeActionsBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.utils.args
@@ -43,6 +44,7 @@ class HomeActionsBottomSheet :
     private val sendAnalytics: SendAnalytics by inject()
     private val swapAnalytics: SwapAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
+    private val sellAnalytics: SellAnalytics by inject()
 
     override val presenter: HomeActionsContract.Presenter by inject()
 
@@ -108,6 +110,7 @@ class HomeActionsBottomSheet :
             HomeAction.RECEIVE -> receiveAnalytics.logReceiveActionButtonClicked()
             HomeAction.SWAP -> swapAnalytics.logSwapActionButtonClicked()
             HomeAction.SEND -> sendAnalytics.logSendActionButtonClicked()
+            HomeAction.SELL -> sellAnalytics.logCashOutClicked(SellAnalytics.AnalyticsCashOutSource.ACTION_BUTTON)
             else -> Unit
         }
     }

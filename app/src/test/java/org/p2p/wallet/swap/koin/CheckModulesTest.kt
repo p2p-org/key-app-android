@@ -14,6 +14,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkClass
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import org.junit.After
@@ -21,13 +22,16 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.logger.Level
+import org.koin.core.logger.Logger
+import org.koin.core.logger.MESSAGE
 import org.koin.core.module.Module
 import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.module
 import org.koin.test.KoinTest
+import org.koin.test.check.ParametersBinding
 import org.koin.test.check.checkKoinModules
 import org.koin.test.mock.MockProviderRule
-import org.mockito.Mockito
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.wallet.AppModule
@@ -44,6 +48,7 @@ import org.p2p.wallet.infrastructure.transactionmanager.impl.TransactionWorker
 import org.p2p.wallet.newsend.ui.NewSendPresenter
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeContract
 import org.p2p.wallet.receive.network.ReceiveNetworkTypePresenter
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
@@ -68,7 +73,13 @@ class CheckModulesTest : KoinTest {
     @get:Rule
     val mockProvider = MockProviderRule.create { clazz ->
         println("MOCKING $clazz")
-        Mockito.mock(clazz.java)
+        mockkClass(clazz)
+    }
+
+    private val logger: Logger = object: Logger() {
+        override fun log(level: Level, msg: MESSAGE) {
+            println("KOIN (${level.name}): $msg")
+        }
     }
 
     private val sharedPrefsMock: SharedPreferences = mockk(relaxed = true) {
@@ -115,7 +126,9 @@ class CheckModulesTest : KoinTest {
     private val javaxDefaultModule: Module = module {
         // no AndroidKeyStore found in unit tests, so override with default
         single<KeyStore> {
-            mockk(relaxed = true) { every { getKey(any(), any()) }.returns(mockk()) }
+            mockk(relaxed = true) {
+                every { getKey(any(), any()) }.returns(mockk())
+            }
         }
     }
 
@@ -140,37 +153,13 @@ class CheckModulesTest : KoinTest {
             appDeclaration = {
                 allowOverride(override = true)
 
+                logger(logger)
                 androidContext(applicationMock)
                 androidContext(contextMock)
             },
             parameters = {
-                withInstance(sharedPrefsMock)
-                withInstance(createEmptyActiveToken())
-                withInstance(createEmptySolendDepositToken())
-                withInstance(mockk<SecureStorage>())
-                withInstance(mockk<TransactionWorker>())
-                withParameter<NewSendPresenter> {
-                    val addressState = AddressState("3UxBMjZtMJVN4eub6a6hNvVe9bThxVg2s4zjNx2UML3b")
-                    SearchResult.UsernameFound(addressState, "chingiz.key")
-                }
-                withParameter<ReceiveNetworkTypePresenter> { NetworkType.BITCOIN }
-                withParameter<ReceiveNetworkTypeContract.Presenter> { NetworkType.BITCOIN }
-                withParameter<OnboardingGeneralErrorPresenter> { GatewayHandledState.ToastError("Test message") }
-                withParameters<OnboardingGeneralErrorTimerPresenter> {
-                    ParametersHolder(
-                        mutableListOf(
-                            GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER,
-                            10
-                        )
-                    )
-                }
-                withParameter<RestoreErrorScreenPresenter> {
-                    RestoreFailureState.TitleSubtitleError(
-                        title = "Test",
-                        subtitle = "Test"
-                    )
-                }
-                withInstance(TransactionDetailsLaunchState.Id("-", "-"))
+                initParameters()
+                initInstances()
             }
         )
     }
@@ -189,6 +178,43 @@ class CheckModulesTest : KoinTest {
         mockkStatic(System::class)
         // mock native .so libs loading
         every { System.loadLibrary(any()) } returns mockk(relaxed = true)
+    }
+
+    private fun ParametersBinding.initParameters() {
+        withParameter<NewSendPresenter> {
+            SearchResult.UsernameFound(
+                addressState = AddressState("3UxBMjZtMJVN4eub6a6hNvVe9bThxVg2s4zjNx2UML3b"),
+                username = "chingiz.key"
+            )
+        }
+        withParameter<ReceiveNetworkTypePresenter> {
+            NetworkType.BITCOIN
+        }
+        withParameter<ReceiveNetworkTypeContract.Presenter> {
+            NetworkType.BITCOIN
+        }
+        withParameter<OnboardingGeneralErrorPresenter> {
+            GatewayHandledState.ToastError("Test message")
+        }
+        withParameters<OnboardingGeneralErrorTimerPresenter> {
+            ParametersHolder(mutableListOf(GeneralErrorTimerScreenError.BLOCK_PHONE_NUMBER_ENTER, 10))
+        }
+        withParameter<RestoreErrorScreenPresenter> {
+            RestoreFailureState.TitleSubtitleError(
+                title = "Test",
+                subtitle = "Test"
+            )
+        }
+    }
+
+    private fun ParametersBinding.initInstances() {
+        withInstance(sharedPrefsMock)
+        withInstance(mockk<Token.Active>())
+        withInstance(mockk <SolendDepositToken.Active>())
+        withInstance(mockk<SecureStorage>())
+        withInstance(mockk<TransactionWorker>())
+        withInstance(mockk<TransactionDetailsLaunchState.Id>())
+        withInstance(mockk<SellTransactionViewDetails>())
     }
 
     @After

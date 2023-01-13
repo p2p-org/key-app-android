@@ -102,14 +102,14 @@
         android:padding="16dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
-        app:layout_constraintBottom_toTopOf="@+id/buttonSend"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCashOut"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewRate"
         tools:text="Included fee 0.6 SOL" />
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonSend"
+        android:id="@+id/buttonCashOut"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

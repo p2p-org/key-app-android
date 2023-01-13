@@ -5,6 +5,7 @@ import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.moonpay.model.SellTransaction
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 interface HistoryContract {
     interface View : MvpView {
@@ -16,6 +17,8 @@ interface HistoryContract {
             blockChainTransactions: List<HistoryTransaction>,
             sellTransactions: List<SellTransaction>
         )
+
+        fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -24,5 +27,6 @@ interface HistoryContract {
         fun loadNextHistoryPage()
         fun onItemClicked(transaction: HistoryTransaction)
         fun updateSellTransactions()
+        fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails)
     }
 }
