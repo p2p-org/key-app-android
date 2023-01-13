@@ -64,7 +64,6 @@ android {
         }
 
         feature {
-            applicationIdSuffix ".feature"
             debuggable true
             signingConfig signingConfigs.debug
             minifyEnabled true
