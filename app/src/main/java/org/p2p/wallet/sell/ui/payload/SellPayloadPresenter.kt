@@ -111,7 +111,7 @@ class SellPayloadPresenter(
 
     private fun checkForMinAmount() {
         if (userSolBalance < minTokenSellAmount) {
-            view?.showNotEnoughMoney(minTokenSellAmount)
+            view?.navigateNotEnoughTokensErrorScreen(minTokenSellAmount)
         }
     }
 
