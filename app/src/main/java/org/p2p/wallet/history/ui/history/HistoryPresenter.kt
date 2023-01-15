@@ -155,11 +155,6 @@ class HistoryPresenter(
         view?.openTransactionDetailsScreen(transaction)
     }
 
-    override fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails) {
-        historyAnalytics.logSellTransactionClicked(sellTransaction)
-        view?.openSellTransactionDetails(sellTransaction)
-    }
-
     private fun logTransactionClicked(transaction: HistoryTransaction) {
         when (transaction) {
             is HistoryTransaction.Swap -> {
@@ -173,7 +168,12 @@ class HistoryPresenter(
                     )
                 }
             }
-            else -> Unit // log other types later
+            else -> Unit
         }
+    }
+
+    override fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails) {
+        historyAnalytics.logSellTransactionClicked(sellTransaction)
+        view?.openSellTransactionDetails(sellTransaction)
     }
 }
