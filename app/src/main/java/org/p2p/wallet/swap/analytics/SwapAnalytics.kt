@@ -28,7 +28,13 @@ import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VERIFICATION_IN
 import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VIEWED
 import java.math.BigDecimal
 
+private const val SWAP_MAIN_SWAP = "MAIN_SWAP"
+
 class SwapAnalytics(private val tracker: Analytics) {
+
+    fun logSwapOpenedFromMain() {
+        tracker.logEvent(SWAP_MAIN_SWAP)
+    }
 
     fun logSwapViewed(lastScreenName: String) {
         tracker.logEvent(

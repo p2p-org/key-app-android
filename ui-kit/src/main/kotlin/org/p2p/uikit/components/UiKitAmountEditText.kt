@@ -47,6 +47,12 @@ open class UiKitAmountEditText @JvmOverloads constructor(
     val length: Int
         get() = binding.editText.length()
 
+    var onFieldFocusChangeListener: OnFocusChangeListener? = null
+        set(value) {
+            binding.editText.onFocusChangeListener = value
+            field = value
+        }
+
     protected val binding = inflateViewBinding<WidgetUiKitAmountEditTextBinding>()
 
     private var inputTextWatcher: AmountFractionTextWatcher? = null

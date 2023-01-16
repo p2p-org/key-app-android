@@ -29,7 +29,7 @@ class SearchErrorViewHolder(
                 is SearchResult.OwnAddressError -> {
                     val description = if (item.directToken != null) {
                         loadTokenIcon(item.directToken.iconUrl)
-                        getString(R.string.search_no_other_tokens_description, item.directToken.symbol)
+                        getString(R.string.search_your_token_description, item.directToken.symbol)
                     } else {
                         showWalletIcon()
                         getString(R.string.search_yourself_description)

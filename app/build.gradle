@@ -34,6 +34,8 @@ android {
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "SENTRY_ENABLED", "false")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
+        buildConfigField("boolean", "APPSFLYER_ENABLED","false")
+        buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED","false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("boolean", "SSL_PINNING_ENABLED", "false")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
@@ -73,6 +75,8 @@ android {
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_FEATURE']
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED","true")
             manifestPlaceholders = [SENTRY_ENV: "feature"]
             matchingFallbacks = ['release']
 
@@ -218,7 +222,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-config'
 
-    implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
+    implementation 'io.intercom.android:intercom-sdk:14.0.0'
 
     implementation 'com.amplitude:android-sdk:2.35.3'
 
@@ -259,6 +263,7 @@ dependencies {
 
     //AppsFlyer
     implementation 'com.appsflyer:af-android-sdk:6.9.0'
+    implementation 'androidx.ads:ads-identifier:1.0.0-alpha04'
     implementation "com.android.installreferrer:installreferrer:2.2"
 
     // TickerView

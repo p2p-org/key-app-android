@@ -29,5 +29,7 @@ class SellTransactionDetailsPresenter(
     }
 
     override fun onRemoveFromHistoryClicked() {
+        sellInteractor.hideTransactionFromHistory(currentTransaction.transactionId)
+        view?.close()
     }
 }

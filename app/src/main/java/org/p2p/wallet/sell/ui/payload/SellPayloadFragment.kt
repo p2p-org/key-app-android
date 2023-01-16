@@ -3,12 +3,14 @@ package org.p2p.wallet.sell.ui.payload
 import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
+import android.view.View.OnFocusChangeListener
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.formatTokenForMoonpay
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
+import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.ui.error.SellErrorFragment
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
@@ -30,6 +32,7 @@ class SellPayloadFragment :
 
     override val presenter: SellPayloadContract.Presenter by inject()
     private val binding: FragmentSellPayloadBinding by viewBinding()
+    private val sellAnalytics: SellAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,11 +42,17 @@ class SellPayloadFragment :
             textViewAvailableAmount.setOnClickListener { presenter.onUserMaxClicked() }
 
             editTextTokenAmount.setAmountInputTextWatcher(presenter::onTokenAmountChanged)
+            editTextTokenAmount.onFieldFocusChangeListener = OnFocusChangeListener { _, isFocused ->
+                if (isFocused) sellAnalytics.logSellTokenAmountFocused()
+            }
             editTextTokenAmount.focusAndShowKeyboard()
 
             editTextFiatAmount.isEditable = false
 
-            buttonSend.setOnClickListener { presenter.cashOut() }
+            buttonCashOut.setOnClickListener {
+                sellAnalytics.logSellSubmitClicked()
+                presenter.cashOut()
+            }
         }
     }
 
@@ -63,12 +72,12 @@ class SellPayloadFragment :
         )
     }
 
-    override fun showNotEnoughMoney(minAmount: BigDecimal) {
+    override fun navigateNotEnoughTokensErrorScreen(minAmount: BigDecimal) {
         popAndReplaceFragment(
             SellErrorFragment.create(
                 errorState = SellErrorFragment.SellScreenError.NotEnoughAmount(
                     formattedMinTokenAmount = minAmount.formatTokenForMoonpay()
-                ),
+                )
             )
         )
     }
@@ -97,16 +106,17 @@ class SellPayloadFragment :
     }
 
     override fun showMoonpayWidget(url: String) {
-        Timber.i("Opening Moonpay Sell widget: $url")
+        sellAnalytics.logSellMoonpayOpened()
+        Timber.i("Sell: Opening Moonpay Sell widget: $url")
         requireContext().showUrlInCustomTabs(url)
     }
 
     override fun setButtonState(state: SellPayloadContract.CashOutButtonState) {
         with(binding) {
-            buttonSend.isEnabled = state.isEnabled
-            buttonSend.setBackgroundColor(getColor(state.backgroundColor))
-            buttonSend.setTextColor(getColor(state.textColor))
-            buttonSend.text = state.text
+            buttonCashOut.isEnabled = state.isEnabled
+            buttonCashOut.setBackgroundColor(getColor(state.backgroundColor))
+            buttonCashOut.setTextColor(getColor(state.textColor))
+            buttonCashOut.text = state.text
 
             editTextTokenAmount.showError(isVisible = !state.isEnabled)
         }

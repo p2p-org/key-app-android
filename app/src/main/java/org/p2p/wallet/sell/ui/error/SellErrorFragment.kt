@@ -4,10 +4,12 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSellErrorBinding
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStackTo
@@ -28,27 +30,39 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
 
     private val binding: FragmentSellErrorBinding by viewBinding()
     private val sellErrorState: SellScreenError by args(ARG_ERROR_STATE)
+    private val sellAnalytics: SellAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStackTo(MainFragment::class) }
-            textViewTitle.setText(sellErrorState.titleResId)
-            imageView.setImageResource(sellErrorState.iconResId)
-            buttonAction.setText(sellErrorState.buttonTextResId)
+        setupView()
+        logScreenOpened()
+    }
 
-            textViewSubtitle.text = sellErrorState.getSubtitle(resources)
+    private fun setupView() = with(binding) {
+        toolbar.setNavigationOnClickListener { popBackStackTo(MainFragment::class) }
+        textViewTitle.setText(sellErrorState.titleResId)
+        imageView.setImageResource(sellErrorState.iconResId)
+        buttonAction.setText(sellErrorState.buttonTextResId)
 
-            buttonAction.setOnClickListener {
-                when (sellErrorState) {
-                    is SellScreenError.ServerError -> {
-                        popBackStackTo(MainFragment::class)
-                    }
-                    is SellScreenError.NotEnoughAmount -> {
-                        replaceFragment(OrcaSwapFragment.create())
-                    }
+        textViewSubtitle.text = sellErrorState.getSubtitle(resources)
+
+        buttonAction.setOnClickListener {
+            when (sellErrorState) {
+                is SellScreenError.ServerError -> {
+                    popBackStackTo(MainFragment::class)
+                }
+                is SellScreenError.NotEnoughAmount -> {
+                    sellAnalytics.logSellErrorMinAmountSwapClicked()
+                    replaceFragment(OrcaSwapFragment.create())
                 }
             }
+        }
+    }
+
+    private fun logScreenOpened() {
+        when (sellErrorState) {
+            is SellScreenError.ServerError -> sellAnalytics.logSellServerErrorOpened()
+            is SellScreenError.NotEnoughAmount -> sellAnalytics.logSellErrorMinAmountOpened()
         }
     }
 
