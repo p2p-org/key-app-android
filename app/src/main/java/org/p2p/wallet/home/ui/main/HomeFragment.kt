@@ -28,6 +28,7 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
+import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -65,13 +66,11 @@ class HomeFragment :
 
     private lateinit var binding: FragmentHomeBinding
 
-    private val contentAdapter: TokenAdapter by unsafeLazy {
-        TokenAdapter(this)
-    }
+    private val contentAdapter: TokenAdapter by unsafeLazy { TokenAdapter(this) }
 
-    private val emptyAdapter: EmptyViewAdapter by unsafeLazy {
-        EmptyViewAdapter(this)
-    }
+    private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
+
+    private val intercomPushService: IntercomPushService by inject()
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
@@ -115,6 +114,8 @@ class HomeFragment :
         )
 
         presenter.load()
+
+        intercomPushService.showPushContentIfExists()
     }
 
     override fun showAddressCopied(addressAndUsername: String) {

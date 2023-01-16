@@ -31,7 +31,7 @@ interface SellPayloadContract {
         fun showMoonpayWidget(url: String)
         fun navigateToSellLock(details: SellTransactionViewDetails)
         fun navigateToErrorScreen()
-        fun showNotEnoughMoney(minAmount: BigDecimal)
+        fun navigateNotEnoughTokensErrorScreen(minAmount: BigDecimal)
         fun updateViewState(newState: ViewState)
         fun setButtonState(state: CashOutButtonState)
         fun setTokenAmount(newValue: String)

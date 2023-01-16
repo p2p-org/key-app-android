@@ -19,6 +19,7 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBot
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -40,7 +41,7 @@ class HistoryFragment :
             glideManager = glideManager,
             historyItemMapper = get(),
             onTransactionClicked = presenter::onItemClicked,
-            onMoonpayTransactionClicked = { SellTransactionDetailsBottomSheet.show(childFragmentManager, it) },
+            onMoonpayTransactionClicked = presenter::onSellTransactionClicked,
             onRetryClicked = {}
         )
     }
@@ -68,7 +69,22 @@ class HistoryFragment :
                 presenter.refreshHistory()
             }
         }
+
+        listenForSellTransactionDialogDismiss()
         presenter.loadHistory()
+    }
+
+    private fun listenForSellTransactionDialogDismiss() {
+        childFragmentManager.setFragmentResultListener(
+            SellTransactionDetailsBottomSheet.REQUEST_KEY_DISMISSED, this
+        ) { _, _ -> presenter.loadHistory() }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // dirty duck-tape to remove hidden transactions from the list
+        // when the bottom sheet is closed
+        presenter.updateSellTransactions()
     }
 
     override fun showPagingState(state: PagingState) {
@@ -83,8 +99,11 @@ class HistoryFragment :
         }
     }
 
-    override fun showHistory(items: List<HistoryTransaction>, sellTransactions: List<SellTransaction>) {
-        adapter.setTransactions(items, sellTransactions)
+    override fun showHistory(
+        blockChainTransactions: List<HistoryTransaction>,
+        sellTransactions: List<SellTransaction>
+    ) {
+        adapter.setTransactions(blockChainTransactions, sellTransactions)
 
         val isHistoryEmpty = adapter.isEmpty()
         binding.emptyStateLayout.isVisible = isHistoryEmpty
@@ -115,5 +134,9 @@ class HistoryFragment :
 
     override fun scrollToTop() {
         binding.historyRecyclerView.smoothScrollToPosition(0)
+    }
+
+    override fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails) {
+        SellTransactionDetailsBottomSheet.show(childFragmentManager, sellTransaction)
     }
 }

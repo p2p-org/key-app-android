@@ -7,7 +7,7 @@ import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.utils.Base58String
 import java.math.BigDecimal
 
-interface MoonpaySellRepository {
+interface SellRepository {
     fun isSellAllowedForUser(): Boolean
 
     suspend fun loadMoonpayFlags()
