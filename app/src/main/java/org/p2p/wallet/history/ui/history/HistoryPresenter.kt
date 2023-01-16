@@ -22,6 +22,7 @@ class HistoryPresenter(
     private val historyAnalytics: HistoryAnalytics,
     private val renBtcInteractor: RenBtcInteractor,
     private val environmentManager: NetworkEnvironmentManager,
+    private val sellTransactionsMapper: HistorySellTransactionMapper,
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private class FetchListResult<T>(
@@ -138,7 +139,7 @@ class HistoryPresenter(
     }
 
     private suspend fun fetchSellTransactions(): FetchListResult<SellTransaction> = try {
-        historyInteractor.getSellTransactions()
+        sellTransactionsMapper.map(historyInteractor.getSellTransactions())
             .toMutableList()
             .let(::FetchListResult)
             .withContentFilter {

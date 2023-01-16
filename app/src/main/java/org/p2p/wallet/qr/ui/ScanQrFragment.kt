@@ -27,7 +27,6 @@ import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
-import org.p2p.wallet.utils.NoOp
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStack
@@ -79,12 +78,9 @@ class ScanQrFragment :
             .toLong()
     }
 
-    private val barcodeCallback: ZXingScannerView.ResultHandler =
-        ZXingScannerView.ResultHandler { rawResult ->
-            rawResult?.text?.let { address ->
-                validateAddress(address)
-            } ?: showInvalidDataError()
-        }
+    private val barcodeCallback = ZXingScannerView.ResultHandler { rawAddressResult ->
+        rawAddressResult?.text?.let(::validateAddress) ?: showInvalidDataError()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -99,11 +95,7 @@ class ScanQrFragment :
             imageViewFlash.setOnClickListener {
                 barcodeView.toggleFlash()
                 imageViewFlash.setImageResource(
-                    if (barcodeView.flash) {
-                        R.drawable.ic_flash_off
-                    } else {
-                        R.drawable.ic_flash_on
-                    }
+                    if (barcodeView.flash) R.drawable.ic_flash_off else R.drawable.ic_flash_on
                 )
             }
         }
@@ -141,15 +133,15 @@ class ScanQrFragment :
             PermissionState.DENIED -> showCameraNotAvailablePlaceholder {
                 PermissionsDialog.requestPermissions(this, listOf(Manifest.permission.CAMERA))
             }
-            PermissionState.PERMANENTLY_DENIED -> showCameraNotAvailablePlaceholder {
+            PermissionState.PERMANENTLY_DENIED -> showCameraNotAvailablePlaceholder(onRetryListener = {
                 PermissionDeniedDialog.show(
                     fragment = this,
                     permission = Manifest.permission.CAMERA,
                     title = getString(R.string.camera_permission_alert_title),
                     message = getString(R.string.camera_permission_alert_message)
                 )
-            }
-            else -> NoOp
+            })
+            else -> Unit
         }
     }
 

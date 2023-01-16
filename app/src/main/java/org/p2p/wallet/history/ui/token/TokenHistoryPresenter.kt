@@ -9,6 +9,7 @@ import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
+import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
@@ -24,6 +25,7 @@ class TokenHistoryPresenter(
     private val historyAnalytics: HistoryAnalytics,
     private val renBtcInteractor: RenBtcInteractor,
     private val tokenInteractor: TokenInteractor,
+    private val sellTransactionsMapper: HistorySellTransactionMapper,
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     private class FetchListResult<T>(
@@ -151,7 +153,7 @@ class TokenHistoryPresenter(
     }
 
     private suspend fun fetchSellTransactions(): FetchListResult<SellTransaction> = try {
-        historyInteractor.getSellTransactions()
+        sellTransactionsMapper.map(historyInteractor.getSellTransactions())
             .toMutableList()
             .let(::FetchListResult)
             .withContentFilter {
