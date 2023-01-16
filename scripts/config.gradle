@@ -14,7 +14,6 @@ ext.initReleaseType = { buildType ->
 
 ext.initApiKeys = { defaultConfig ->
     def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
-    def emptyString = "\"\""
 
     defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrThrow('rpcPoolApiKey')}")
     defaultConfig.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrThrow('moonpayKey')}")

@@ -46,7 +46,7 @@ android {
             }
         }
 
-        setProperty("archivesBaseName", getBuildAppFileName())
+        setProperty("archivesBaseName", generateAppName())
     }
 
     def torusProperties = getTorusProperties()
@@ -149,7 +149,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = getBuildAppFileName() + "_${variant.buildType.name}" + ".apk"
+            outputFileName = generateAppName() + "-${variant.buildType.name}" + ".apk"
         }
     }
 
