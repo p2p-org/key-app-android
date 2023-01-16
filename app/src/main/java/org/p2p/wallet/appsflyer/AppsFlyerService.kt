@@ -2,6 +2,7 @@ package org.p2p.wallet.appsflyer
 
 import android.app.Application
 import android.content.Context
+import com.appsflyer.AFLogger
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.appsflyer.deeplink.DeepLinkResult
