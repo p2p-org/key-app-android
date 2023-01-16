@@ -78,10 +78,9 @@ class ScanQrFragment :
             .toLong()
     }
 
-    private val barcodeCallback: ZXingScannerView.ResultHandler =
-        ZXingScannerView.ResultHandler { rawResult ->
-            rawResult?.text?.let { address -> validateAddress(address) } ?: showInvalidDataError()
-        }
+    private val barcodeCallback = ZXingScannerView.ResultHandler { rawAddressResult ->
+        rawAddressResult?.text?.let(::validateAddress) ?: showInvalidDataError()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -96,11 +95,7 @@ class ScanQrFragment :
             imageViewFlash.setOnClickListener {
                 barcodeView.toggleFlash()
                 imageViewFlash.setImageResource(
-                    if (barcodeView.flash) {
-                        R.drawable.ic_flash_off
-                    } else {
-                        R.drawable.ic_flash_on
-                    }
+                    if (barcodeView.flash) R.drawable.ic_flash_off else R.drawable.ic_flash_on
                 )
             }
         }

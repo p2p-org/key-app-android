@@ -21,7 +21,7 @@ import kotlinx.coroutines.withTimeout
 
 private const val DELAY_MS = 5000L
 
-private const val TAG = "SOCKET"
+private const val TAG = "SocketUpdatesManager"
 
 class SocketUpdatesManager private constructor(
     appScope: AppScope,
