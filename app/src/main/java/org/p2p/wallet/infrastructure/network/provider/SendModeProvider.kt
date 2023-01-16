@@ -16,7 +16,7 @@ class SendModeProvider(
     private val secureStorage: SecureStorageContract
 ) {
 
-    var sendMode: CurrencyMode = EMPTY_TOKEN
+    var sendMode: CurrencyMode = CurrencyMode.Usd
         get() = getSendModeFromStorage()
         set(value) {
             field = value
@@ -43,7 +43,7 @@ class SendModeProvider(
     }
 
     fun clear() {
-        sendMode = EMPTY_TOKEN
+        sendMode = CurrencyMode.Usd
     }
 
     data class SendMode(
