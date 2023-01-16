@@ -1,12 +1,12 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
     id 'com.google.firebase.crashlytics'
     id "io.sentry.android.gradle" version "3.2.0"
+    id 'kotlin-kapt'
 }
 
 apply from: "$project.rootDir/scripts/ktlint.gradle"
