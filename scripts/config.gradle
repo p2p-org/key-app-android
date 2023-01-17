@@ -9,7 +9,6 @@ ext.initReleaseType = { buildType ->
     buildType.buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
     buildType.buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "true")
     buildType.manifestPlaceholders = [SENTRY_ENV: "release"]
-
 }
 
 ext.initApiKeys = { defaultConfig ->
