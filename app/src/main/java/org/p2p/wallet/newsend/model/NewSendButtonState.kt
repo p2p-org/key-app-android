@@ -58,6 +58,10 @@ class NewSendButtonState(
                     val textContainer = TextContainer.Res(R.string.send_cant_calculate_fees_error)
                     State.Disabled(textContainer, R.color.text_night)
                 }
+                !isAmountNotZero -> {
+                    val textContainer = TextContainer.Res(R.string.main_enter_the_amount)
+                    State.Disabled(textContainer, R.color.text_night)
+                }
                 !isEnoughBalance -> {
                     val tokenSymbol = sourceToken.tokenSymbol
                     val textResFormat = R.string.send_max_warning_text_format
@@ -92,10 +96,6 @@ class NewSendButtonState(
                         textContainer = TextContainer.Raw(format),
                         totalAmountTextColor = R.color.text_rose
                     )
-                }
-                !isAmountNotZero -> {
-                    val textContainer = TextContainer.Res(R.string.main_enter_the_amount)
-                    State.Disabled(textContainer, R.color.text_night)
                 }
                 else -> {
                     State.Enabled(
