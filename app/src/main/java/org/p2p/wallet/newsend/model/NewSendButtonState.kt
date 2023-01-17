@@ -54,10 +54,6 @@ class NewSendButtonState(
             val isMinRequiredBalanceLeft = isMinRequiredBalanceLeft()
 
             return when {
-                !isAmountNotZero -> {
-                    val textContainer = TextContainer.Res(R.string.main_enter_the_amount)
-                    State.Disabled(textContainer, R.color.text_night)
-                }
                 !isFeeCalculationValid -> {
                     val textContainer = TextContainer.Res(R.string.send_cant_calculate_fees_error)
                     State.Disabled(textContainer, R.color.text_night)
@@ -96,6 +92,10 @@ class NewSendButtonState(
                         textContainer = TextContainer.Raw(format),
                         totalAmountTextColor = R.color.text_rose
                     )
+                }
+                !isAmountNotZero -> {
+                    val textContainer = TextContainer.Res(R.string.main_enter_the_amount)
+                    State.Disabled(textContainer, R.color.text_night)
                 }
                 else -> {
                     State.Enabled(
