@@ -13,7 +13,7 @@
         android:layout_marginVertical="16dp"
         android:layout_marginStart="16dp"
         android:background="@drawable/bg_smoke_circle"
-        android:padding="16dp"
+        android:scaleType="center"
         app:cornerRadius="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
