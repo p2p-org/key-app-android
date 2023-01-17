@@ -70,7 +70,7 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
       - name: Run unit tests
-        run: ./gradlew testRelease
+        run: ./gradlew testDebug
 
   android-build-local-firebase-release:
     name: "Run build AAB for Firebase"
