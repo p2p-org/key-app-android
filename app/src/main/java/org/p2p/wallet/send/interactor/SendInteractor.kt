@@ -1,5 +1,8 @@
 package org.p2p.wallet.send.interactor
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isZero
@@ -32,9 +35,6 @@ import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.withContext
 
 private const val SEND_TAG = "SEND"
 
@@ -74,8 +74,8 @@ class SendInteractor(
 
     fun getFeePayerToken(): Token.Active = feePayerToken
 
-    fun switchFeePayerToSol(solToken: Token.Active?) {
-        solToken?.let { setFeePayerToken(it) }
+    fun switchFeePayerToToken(token: Token.Active?) {
+        token?.let { setFeePayerToken(it) }
     }
 
     // Fees calculator

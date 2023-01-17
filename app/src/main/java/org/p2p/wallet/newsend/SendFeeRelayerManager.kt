@@ -1,5 +1,6 @@
 package org.p2p.wallet.newsend
 
+import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -24,14 +25,15 @@ import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
 
 class SendFeeRelayerManager(
-    private val sendInteractor: SendInteractor
+    private val sendInteractor: SendInteractor,
+    private val userInteractor: UserInteractor
 ) {
 
     var onStateUpdated: ((FeeRelayerState) -> Unit)? = null
@@ -47,6 +49,8 @@ class SendFeeRelayerManager(
 
     private var minRentExemption: BigInteger? = null
 
+    private var availableTokensToSwitch: List<Token.Active> = emptyList()
+
     suspend fun initialize(
         initialToken: Token.Active,
         solToken: Token.Active,
@@ -59,6 +63,7 @@ class SendFeeRelayerManager(
 
         minRentExemption = sendInteractor.getMinRelayRentExemption()
         feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
+        availableTokensToSwitch = userInteractor.getUserTokens()
         sendInteractor.initialize(initialToken)
 
         onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
@@ -236,7 +241,8 @@ class SendFeeRelayerManager(
             feePayerToken = newFeePayer,
             sourceTokenSymbol = source.tokenSymbol,
             solToken = solToken,
-            feeRelayerFee = feeRelayerFee
+            feeRelayerFee = feeRelayerFee,
+            availableTokens = availableTokensToSwitch
         )
 
     private suspend fun validateAndSelectFeePayer(
@@ -259,8 +265,11 @@ class SendFeeRelayerManager(
             is FeePayerState.UpdateFeePayer -> {
                 sendInteractor.setFeePayerToken(sourceToken)
             }
+            is FeePayerState.SwitchToSpl -> {
+                sendInteractor.switchFeePayerToToken(state.tokenToSwitch)
+            }
             is FeePayerState.SwitchToSol -> {
-                sendInteractor.switchFeePayerToSol(this.solToken)
+                sendInteractor.switchFeePayerToToken(this.solToken)
             }
             is FeePayerState.ReduceInputAmount -> {
                 sendInteractor.setFeePayerToken(sourceToken)

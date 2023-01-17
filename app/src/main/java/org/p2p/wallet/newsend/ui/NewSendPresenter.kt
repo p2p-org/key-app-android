@@ -67,7 +67,7 @@ class NewSendPresenter(
     }
 
     private val calculationMode = CalculationMode(sendModeProvider)
-    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
+    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
     private var selectedToken: Token.Active? = null
     private var initialAmount: BigDecimal? = null
