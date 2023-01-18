@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.lifecycle.LifecycleOwner
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants.BTC_SYMBOL
@@ -41,6 +42,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.wallet.intercom.IntercomDeeplinkManager
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
 val TOKENS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
@@ -62,7 +64,8 @@ class HomePresenter(
     private val networkObserver: SolanaNetworkObserver,
     private val sellInteractor: SellInteractor,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
-    private val metadataInteractor: MetadataInteractor
+    private val metadataInteractor: MetadataInteractor,
+    private val intercomDeeplinkManager: IntercomDeeplinkManager
 ) : BasePresenter<HomeContract.View>(), HomeContract.Presenter {
 
     private var username: Username? = null
@@ -87,6 +90,11 @@ class HomePresenter(
     private var state = ViewState(
         areZerosHidden = settingsInteractor.areZerosHidden()
     )
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        intercomDeeplinkManager.proceedDeeplinkIfExists()
+    }
 
     override fun load() {
         showUserAddressAndUsername()

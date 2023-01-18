@@ -9,21 +9,19 @@ ext.initReleaseType = { buildType ->
     buildType.buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
     buildType.buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "true")
     buildType.manifestPlaceholders = [SENTRY_ENV: "release"]
-
 }
 
 ext.initApiKeys = { defaultConfig ->
     def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
-    def emptyString = "\"\""
 
-    defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrDefault('rpcPoolApiKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrDefault('moonpayKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "moonpaySandboxKey", "${apiKeysProperties.getOrDefault('moonpaySandboxKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrDefault('comparePublicKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrDefault('intercomApiKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrDefault('intercomAppId', emptyString)}")
-    defaultConfig.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrDefault('amplitudeKey', emptyString)}")
-    defaultConfig.buildConfigField("String", "appsFlyerKey", "${apiKeysProperties.getOrDefault('appsFlyerKey', emptyString)}")
+    defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrThrow('rpcPoolApiKey')}")
+    defaultConfig.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrThrow('moonpayKey')}")
+    defaultConfig.buildConfigField("String", "moonpaySandboxKey", "${apiKeysProperties.getOrThrow('moonpaySandboxKey')}")
+    defaultConfig.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrThrow('comparePublicKey')}")
+    defaultConfig.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrThrow('intercomApiKey')}")
+    defaultConfig.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrThrow('intercomAppId')}")
+    defaultConfig.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrThrow('amplitudeKey')}")
+    defaultConfig.buildConfigField("String", "appsFlyerKey", "${apiKeysProperties.getOrThrow('appsFlyerKey')}")
 }
 
 ext.initSentry = { defaultConfig ->

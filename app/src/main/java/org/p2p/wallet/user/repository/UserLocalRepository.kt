@@ -7,6 +7,7 @@ import org.p2p.wallet.receive.list.TokenListData
 
 interface UserLocalRepository {
     fun setTokenPrices(prices: List<TokenPrice>)
+    fun getTokenPrices(): Flow<List<TokenPrice>>
     fun getPriceByToken(symbol: String): TokenPrice?
 
     fun setTokenData(data: List<TokenData>)
