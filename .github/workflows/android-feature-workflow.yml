@@ -7,7 +7,7 @@ jobs:
     name: "Authorize in Jira"
     runs-on: ubuntu-latest
     steps:
-      - name: "Login"
+     - name: "Login"
         uses: atlassian/gajira-login@v3
         env:
           JIRA_BASE_URL: https://p2pvalidator.atlassian.net
