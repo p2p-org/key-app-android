@@ -4,7 +4,6 @@ on:
       - release/*
   push:
     branches:
-      - main
       - release/*
 jobs:
   android-lint:
@@ -47,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: "Init project"
+      - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
