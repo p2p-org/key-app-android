@@ -11,6 +11,7 @@ import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
+import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.utils.divideSafe
 import java.math.BigDecimal
@@ -18,13 +19,17 @@ import java.math.BigInteger
 
 private const val FIAT_FRACTION_LENGTH = 2
 
-class CalculationMode {
+class CalculationMode(private val sendModeProvider: SendModeProvider) {
 
     var onCalculationCompleted: ((aroundValue: String) -> Unit)? = null
     var onInputFractionUpdated: ((Int) -> Unit)? = null
     var onLabelsUpdated: ((switchSymbol: String, mainSymbol: String) -> Unit)? = null
 
-    private var currencyMode: CurrencyMode = CurrencyMode.Usd
+    private var currencyMode: CurrencyMode = sendModeProvider.sendMode
+        set(value) {
+            sendModeProvider.sendMode = value
+            field = value
+        }
 
     private lateinit var token: Token.Active
 

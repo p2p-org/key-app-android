@@ -73,7 +73,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: "Create Firebase google_services.json"
+    - name: "Create Firebase google-services.json"
       uses: ./.github/actions/setup-firebase
       with:
         firebase-secret: ${{ inputs.firebase-secret }}
