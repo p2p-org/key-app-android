@@ -12,6 +12,7 @@ import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.dispatchers.DefaultDispatchers
 import org.p2p.wallet.infrastructure.update.TransactionSignatureHandler
+import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
@@ -47,6 +48,7 @@ object InfrastructureModule : InjectionModule {
         singleOf(::SolanaNetworkObserver)
 
         singleOf(::IntercomPushService)
+        singleOf(::IntercomDeeplinkManager)
 
         includes(StorageModule.create(), RoomModule.create())
     }
