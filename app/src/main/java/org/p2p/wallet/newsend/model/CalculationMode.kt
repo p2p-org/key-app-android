@@ -6,6 +6,7 @@ import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.lessThenMinValue
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -19,7 +20,10 @@ import java.math.BigInteger
 
 private const val FIAT_FRACTION_LENGTH = 2
 
-class CalculationMode(private val sendModeProvider: SendModeProvider) {
+class CalculationMode(
+    private val sendModeProvider: SendModeProvider,
+    private val lessThenMinString: String
+) {
 
     var onCalculationCompleted: ((aroundValue: String) -> Unit)? = null
     var onInputFractionUpdated: ((Int) -> Unit)? = null
@@ -65,9 +69,9 @@ class CalculationMode(private val sendModeProvider: SendModeProvider) {
         inputAmount = newAmount.toString()
 
         if (currencyMode is CurrencyMode.Usd) {
-            handleCalculationUpdate(newTokenAmount.toString(), token.tokenSymbol)
+            handleCalculateTokenAmountUpdate()
         } else {
-            handleCalculationUpdate(newUsdAmount.toString(), USD_READABLE_SYMBOL)
+            handleCalculateUsdAmountUpdate()
         }
 
         return newAmount
@@ -87,11 +91,11 @@ class CalculationMode(private val sendModeProvider: SendModeProvider) {
 
         val maxAmount = when (currencyMode) {
             is CurrencyMode.Usd -> {
-                handleCalculationUpdate(tokenAmount.formatToken(token.decimals), token.tokenSymbol)
+                handleCalculateTokenAmountUpdate()
                 token.totalInUsd
             }
             is CurrencyMode.Token -> {
-                handleCalculationUpdate(usdAmount.formatUsd(), USD_READABLE_SYMBOL)
+                handleCalculateUsdAmountUpdate()
                 token.total.scaleLong()
             }
         }
@@ -149,15 +153,36 @@ class CalculationMode(private val sendModeProvider: SendModeProvider) {
         val tokenAround = usdAmount.divideSafe(token.usdRateOrZero, token.decimals)
         tokenAmount = tokenAround
 
-        handleCalculationUpdate(tokenAround.formatToken(), token.tokenSymbol)
+        handleCalculateTokenAmountUpdate()
     }
 
     private fun calculateByToken(inputAmount: String) {
         tokenAmount = inputAmount.toBigDecimalOrZero()
         usdAmount = tokenAmount.multiply(token.usdRateOrZero)
 
-        val usdAround = tokenAmount.times(token.usdRateOrZero)
-        handleCalculationUpdate(usdAround.formatUsd(), USD_READABLE_SYMBOL)
+        handleCalculateUsdAmountUpdate()
+    }
+
+    private fun handleCalculateTokenAmountUpdate() {
+        handleCalculationUpdate(
+            if (tokenAmount.lessThenMinValue()) {
+                lessThenMinString
+            } else {
+                tokenAmount.formatToken(token.decimals)
+            },
+            token.tokenSymbol
+        )
+    }
+
+    private fun handleCalculateUsdAmountUpdate() {
+        handleCalculationUpdate(
+            if (usdAmount.lessThenMinValue()) {
+                lessThenMinString
+            } else {
+                usdAmount.formatUsd()
+            },
+            USD_READABLE_SYMBOL
+        )
     }
 
     private fun handleFractionUpdate(mode: CurrencyMode) {
