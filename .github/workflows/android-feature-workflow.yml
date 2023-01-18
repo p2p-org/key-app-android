@@ -6,6 +6,7 @@ jobs:
   update-jira-status:
     name: "Authorize in Jira"
     runs-on: ubuntu-latest
+    environment: develop
     steps:
       - name: "Login"
         uses: atlassian/gajira-login@v3
