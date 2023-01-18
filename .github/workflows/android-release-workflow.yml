@@ -1,3 +1,4 @@
+# The workflow triggers for release branch changes only
 on:
   pull_request:
     branches:
