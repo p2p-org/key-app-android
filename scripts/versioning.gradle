@@ -23,7 +23,7 @@ ext.getVersionBuild = { ->
     def buildNumberFromCi = System.getenv("CIRCLE_BUILD_NUM")
 
     if (buildNumberFromCi != null) {
-        return VERSION_BUILD as Integer + buildNumberFromCi.toInteger()
+        return buildNumberFromCi.toInteger()
     } else {
         return VERSION_BUILD
     }
