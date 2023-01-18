@@ -59,7 +59,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="www.key.app"
+                    android:host="key.app"
                     android:path="/intercom"
                     android:scheme="https" />
 
