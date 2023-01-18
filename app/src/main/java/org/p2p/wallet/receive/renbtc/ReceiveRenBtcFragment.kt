@@ -48,7 +48,7 @@ class ReceiveRenBtcFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setLightStatusBar(false)
+        setLightSystemBar(false)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.BITCOIN)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
@@ -99,7 +99,7 @@ class ReceiveRenBtcFragment :
 
     override fun onStop() {
         super.onStop()
-        setLightStatusBar(true)
+        setLightSystemBar(true)
     }
 
     override fun onDestroyView() {

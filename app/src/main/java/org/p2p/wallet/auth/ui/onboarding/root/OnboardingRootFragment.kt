@@ -1,8 +1,10 @@
 package org.p2p.wallet.auth.ui.onboarding.root
 
 import androidx.fragment.app.Fragment
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
@@ -39,6 +41,10 @@ class OnboardingRootFragment :
 
     override fun navigateToCreatePin() {
         popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ -> insets }
     }
 
     private fun navigateTo(fragment: Fragment) = replaceFragment(

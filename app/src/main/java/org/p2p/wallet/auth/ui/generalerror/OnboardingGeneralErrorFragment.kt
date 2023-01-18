@@ -2,11 +2,15 @@ package org.p2p.wallet.auth.ui.generalerror
 
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.components.UiKitButton
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
@@ -67,6 +71,15 @@ class OnboardingGeneralErrorFragment :
                 IntercomService.showMessenger()
             }
             return@setOnMenuItemClickListener true
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            rootView.updatePadding(top = systemAndIme.top)
+            binding.containerBottomButtons.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 

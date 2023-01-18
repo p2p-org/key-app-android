@@ -8,8 +8,6 @@
     <style name="WalletTheme" parent="WalletBase.v21" />
 
     <style name="WalletBase.v21" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/statusBarColor</item>
-        <item name="android:navigationBarColor">@color/navigationBarColor</item>
         <item name="colorPrimary">@color/night</item>
         <item name="colorPrimaryDark">@color/night_30</item>
         <item name="colorSecondary">@color/mountain</item>

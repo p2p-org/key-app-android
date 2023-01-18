@@ -57,7 +57,6 @@ class ScanQrFragment :
 
     override val statusBarColor: Int = R.color.bg_night
     override val navBarColor: Int = R.color.bg_night
-    override val systemIconsStyle: SystemIconsStyle = SystemIconsStyle.WHITE
 
     private val requestKey: String by args(EXTRA_KEY)
     private val resultKey: String by args(EXTRA_RESULT)
@@ -99,6 +98,10 @@ class ScanQrFragment :
                 )
             }
         }
+    }
+
+    override fun setSystemBarsStyle() {
+        setLightSystemBar(false)
     }
 
     override fun onResume() {

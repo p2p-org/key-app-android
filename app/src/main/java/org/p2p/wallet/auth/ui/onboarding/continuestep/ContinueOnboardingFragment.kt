@@ -3,8 +3,12 @@ package org.p2p.wallet.auth.ui.onboarding.continuestep
 import android.os.Bundle
 import android.view.View
 import androidx.activity.addCallback
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
@@ -48,6 +52,15 @@ class ContinueOnboardingFragment :
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popBackStack()
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            rootView.updatePadding(top = systemAndIme.top)
+            binding.containerBottomContinueOnboarding.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 

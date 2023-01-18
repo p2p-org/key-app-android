@@ -23,13 +23,13 @@ class SeedInfoFragment : BaseFragment(R.layout.fragment_reset_seed_info) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setLightStatusBar(isLight = false)
+        setLightSystemBar(darkIcons = false)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.OnBoarding.SEED_INFO)
         binding.toolbar.setNavigationOnClickListener { popBackStack() }
     }
 
     override fun onStop() {
         super.onStop()
-        setLightStatusBar(isLight = true)
+        setLightSystemBar(darkIcons = true)
     }
 }

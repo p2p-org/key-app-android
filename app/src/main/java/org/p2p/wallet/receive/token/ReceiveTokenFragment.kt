@@ -1,6 +1,8 @@
 package org.p2p.wallet.receive.token
 
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResultListener
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -15,6 +17,8 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentReceiveTokenBinding
 import org.p2p.core.token.Token
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
@@ -58,7 +62,7 @@ class ReceiveTokenFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setLightStatusBar(isLight = false)
+        setLightStatusBar(darkIcons = false)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getString(R.string.receive_token_name, token.tokenName)
@@ -104,9 +108,18 @@ class ReceiveTokenFragment :
         receiveAnalytics.logStartScreen(analyticsInteractor.getPreviousScreenName())
     }
 
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            binding.toolbar.updatePadding(top = systemAndIme.top)
+            rootView.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+    }
+
     override fun onStop() {
         super.onStop()
-        setLightStatusBar(isLight = true)
+        setLightSystemBar(darkIcons = true)
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {

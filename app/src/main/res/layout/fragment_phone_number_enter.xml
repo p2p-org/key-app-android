@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_snow"
-    android:fitsSystemWindows="true">
+    android:background="@color/bg_snow">
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"

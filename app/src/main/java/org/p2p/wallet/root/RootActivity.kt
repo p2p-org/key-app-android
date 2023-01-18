@@ -52,6 +52,7 @@ class RootActivity :
     private val crashLogger: CrashLogger by inject()
 
     private val networkObserver: SolanaNetworkObserver by inject()
+    private val decorSystemBarsDelegate = DecorSystemBarsDelegate(this)
 
     private lateinit var binding: ActivityRootBinding
 
@@ -139,6 +140,14 @@ class RootActivity :
         deeplinksManager.mainFragmentManager = null
         super.onDestroy()
     }
+
+    fun setDefaultSystemBarStyle() = decorSystemBarsDelegate.setDefaultSystemBarStyle()
+
+    fun setSystemBarStyle(style: SystemIconsStyle) = decorSystemBarsDelegate.setSystemBarStyle(style)
+
+    fun setStatusBarStyle(style: SystemIconsStyle) = decorSystemBarsDelegate.setStatusBarStyle(style)
+
+    fun setNavigationBarStyle(style: SystemIconsStyle) = decorSystemBarsDelegate.setNavigationBarStyle(style)
 
     private fun handleDeeplink(newIntent: Intent? = null) {
         val intentToHandle = newIntent ?: intent
