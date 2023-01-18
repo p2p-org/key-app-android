@@ -5,26 +5,26 @@ on:
 jobs:
   update-jira-status:
     name: "Authorize in Jira"
-      runs-on: ubuntu-latest
-      steps:
-        - name: "Login"
-          uses: atlassian/gajira-login@v3
-          env:
-            JIRA_BASE_URL: https://p2pvalidator.atlassian.net
-            JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-            JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Login"
+        uses: atlassian/gajira-login@v3
+        env:
+          JIRA_BASE_URL: https://p2pvalidator.atlassian.net
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
-        - name: "Find ticket number in git history"
-          id: review
-          uses: atlassian/gajira-find-issue-key@v3
-          with:
-            from: commits
+     - name: "Find ticket number in git history"
+        id: review
+        uses: atlassian/gajira-find-issue-key@v3
+        with:
+          from: commits
 
-        - name: "Jira Ticket Transition"
-          uses: atlassian/gajira-transition@v3
-          with:
-            issue: ${{ steps.review.outputs.issue }}
-            transition: "REVIEW"
+     - name: "Jira Ticket Transition"
+        uses: atlassian/gajira-transition@v3
+        with:
+          issue: ${{ steps.review.outputs.issue }}
+          transition: "REVIEW"
 
   android-lint:
     name: "Run ktlint check"
