@@ -74,8 +74,8 @@ class SendInteractor(
 
     fun getFeePayerToken(): Token.Active = feePayerToken
 
-    fun switchFeePayerToToken(token: Token.Active?) {
-        token?.let { setFeePayerToken(it) }
+    fun switchFeePayerToSol(solToken: Token.Active?) {
+        solToken?.let { setFeePayerToken(it) }
     }
 
     // Fees calculator

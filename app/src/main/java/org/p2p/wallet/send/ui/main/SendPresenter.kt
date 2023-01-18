@@ -121,7 +121,7 @@ class SendPresenter(
 
                 sendInteractor.initialize(initialToken).also { token = initialToken }
                 state.minRentExemption = sendInteractor.getMinRelayRentExemption()
-                availableTokensToSwitch = userInteractor.getUserTokens()
+                availableTokensToSwitch = userInteractor.getNonZeroUserTokens()
 
                 calculateTotal(sendFeeRelayerFee = null)
             } catch (e: Throwable) {
@@ -733,7 +733,7 @@ class SendPresenter(
             sourceTokenSymbol = source.tokenSymbol,
             feeRelayerFee = feeRelayerFee,
             solToken = state.solToken,
-            availableTokens = availableTokensToSwitch
+            alternativeFeePayerTokens = availableTokensToSwitch
         ).also { state.sendFeeRelayerFee = it }
     }
 
@@ -778,7 +778,7 @@ class SendPresenter(
                 recalculate(tokenToSwitch)
             }
             is FeePayerState.SwitchToSol -> {
-                sendInteractor.switchFeePayerToToken(this.state.solToken)
+                sendInteractor.switchFeePayerToSol(this.state.solToken)
                 recalculate(sourceToken)
             }
             is FeePayerState.ReduceInputAmount -> {

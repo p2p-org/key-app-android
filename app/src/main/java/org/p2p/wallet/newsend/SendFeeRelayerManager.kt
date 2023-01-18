@@ -49,7 +49,7 @@ class SendFeeRelayerManager(
 
     private var minRentExemption: BigInteger? = null
 
-    private var availableTokensToSwitch: List<Token.Active> = emptyList()
+    private var alternativeFeePayerTokens: List<Token.Active> = emptyList()
 
     suspend fun initialize(
         initialToken: Token.Active,
@@ -63,7 +63,7 @@ class SendFeeRelayerManager(
 
         minRentExemption = sendInteractor.getMinRelayRentExemption()
         feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
-        availableTokensToSwitch = userInteractor.getUserTokens()
+        alternativeFeePayerTokens = userInteractor.getNonZeroUserTokens()
         sendInteractor.initialize(initialToken)
 
         onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
@@ -242,7 +242,7 @@ class SendFeeRelayerManager(
             sourceTokenSymbol = source.tokenSymbol,
             solToken = solToken,
             feeRelayerFee = feeRelayerFee,
-            availableTokens = availableTokensToSwitch
+            alternativeFeePayerTokens = alternativeFeePayerTokens
         )
 
     private suspend fun validateAndSelectFeePayer(
@@ -266,10 +266,10 @@ class SendFeeRelayerManager(
                 sendInteractor.setFeePayerToken(sourceToken)
             }
             is FeePayerState.SwitchToSpl -> {
-                sendInteractor.switchFeePayerToToken(state.tokenToSwitch)
+                sendInteractor.setFeePayerToken(state.tokenToSwitch)
             }
             is FeePayerState.SwitchToSol -> {
-                sendInteractor.switchFeePayerToToken(this.solToken)
+                sendInteractor.switchFeePayerToSol(this.solToken)
             }
             is FeePayerState.ReduceInputAmount -> {
                 sendInteractor.setFeePayerToken(sourceToken)

@@ -32,7 +32,7 @@ data class SendSolanaFee constructor(
     val sourceTokenSymbol: String,
     val feeRelayerFee: FeeRelayerFee,
     private val solToken: Token.Active?,
-    private val availableTokens: List<Token.Active>?
+    private val alternativeFeePayerTokens: List<Token.Active>
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -136,7 +136,13 @@ data class SendSolanaFee constructor(
         val totalNeeded = feeRelayerFee.totalInSpl + inputAmount
         val isEnoughSolBalance = solToken?.let { !it.totalInLamports.isLessThan(feeRelayerFee.totalInSol) } ?: false
         val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
-        val hasAnotherTokens = !availableTokens.isNullOrEmpty()
+        val hasAlternativeFeePayerTokens = alternativeFeePayerTokens
+            .filterNot {
+                val isSelectedFeePayer = it.tokenSymbol == feePayerToken.tokenSymbol
+                val isNotEnoughBalance = it.totalInLamports.isLessThan(totalNeeded)
+                isSelectedFeePayer || isNotEnoughBalance
+            }
+            .isNotEmpty()
         return when {
             // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount
             shouldTryReduceAmount && sourceTokenTotal.isLessThan(totalNeeded) -> {
@@ -146,10 +152,10 @@ data class SendSolanaFee constructor(
             }
             // if there is enough SPL token balance to cover amount and fee
             !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) -> UpdateFeePayer
-            hasAnotherTokens -> {
-                availableTokens?.firstOrNull { it.totalInLamports.isMoreThan(totalNeeded) }?.let { token ->
-                    FeePayerState.SwitchToSpl(token)
-                } ?: SwitchToSol
+            hasAlternativeFeePayerTokens -> {
+                alternativeFeePayerTokens.firstOrNull { it.totalInLamports.isMoreThan(totalNeeded) }
+                    ?.let { token -> FeePayerState.SwitchToSpl(token) }
+                    ?: SwitchToSol
             }
             else -> SwitchToSol
         }
