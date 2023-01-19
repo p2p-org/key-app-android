@@ -9,6 +9,7 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -168,7 +169,12 @@ class HistoryPresenter(
                     )
                 }
             }
-            else -> Unit // log other types later
+            else -> Unit
         }
+    }
+
+    override fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails) {
+        historyAnalytics.logSellTransactionClicked(sellTransaction)
+        view?.openSellTransactionDetails(sellTransaction)
     }
 }

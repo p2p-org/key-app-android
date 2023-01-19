@@ -4,8 +4,8 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.USD_SYMBOL
 import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -209,7 +209,7 @@ class BuySolanaPresenter(
     private fun handleEnteredAmountValid(buyCurrencyInfo: BuyCurrency) {
         val receiveSymbol = if (isSwappedToToken) USD_SYMBOL else tokenToBuy.tokenSymbol
         val amount = if (isSwappedToToken) {
-            buyCurrencyInfo.totalAmount.formatUsd()
+            buyCurrencyInfo.totalAmount.formatFiat()
         } else {
             buyCurrencyInfo.receiveAmount.toBigDecimal().formatToken()
         }

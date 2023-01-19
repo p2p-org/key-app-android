@@ -13,6 +13,7 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.AnalyticsRestoreWay
 import org.p2p.wallet.auth.model.GatewayHandledState
@@ -71,6 +72,7 @@ class CommonRestoreFragment :
     )
 
     private val restoreWalletAnalytics: RestoreWalletAnalytics by inject()
+    private val onboardingAnalytics: OnboardingAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -94,17 +96,20 @@ class CommonRestoreFragment :
             }
             buttonRestoreByGoogle.setOnClickListener {
                 restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.GOOGLE)
+                onboardingAnalytics.logOnboardingMerged()
                 presenter.useGoogleAccount()
             }
 
             buttonPhone.setOnClickListener {
                 restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.PHONE)
+                onboardingAnalytics.logOnboardingMerged()
                 presenter.useCustomShare()
             }
 
             buttonBottom.setOnClickListener {
                 presenter.useSeedPhrase()
                 restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.SEED)
+                onboardingAnalytics.logOnboardingMerged()
                 replaceFragment(SeedPhraseFragment.create())
             }
             if (BuildConfig.DEBUG) {

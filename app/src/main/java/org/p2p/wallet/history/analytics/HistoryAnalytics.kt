@@ -1,13 +1,19 @@
 package org.p2p.wallet.history.analytics
 
 import org.p2p.core.utils.orZero
+import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
+private const val HISTORY_SEND_CLICKED = "History_Send_Clicked"
+
 class HistoryAnalytics(
+    private val tracker: Analytics,
     private val sendAnalytics: SendAnalytics,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
@@ -57,5 +63,19 @@ class HistoryAnalytics(
                 receiveNetwork = receiveNetwork
             )
         }
+    }
+
+    fun logSellTransactionClicked(transaction: SellTransactionViewDetails) {
+        tracker.logEvent(
+            event = HISTORY_SEND_CLICKED,
+            params = mapOf("Status" to transaction.status.toAnalyticsValue())
+        )
+    }
+
+    private fun SellTransactionStatus.toAnalyticsValue(): String = when (this) {
+        SellTransactionStatus.WAITING_FOR_DEPOSIT -> "waiting_for_deposit"
+        SellTransactionStatus.PENDING -> "processing"
+        SellTransactionStatus.FAILED -> "expired"
+        SellTransactionStatus.COMPLETED -> "sent"
     }
 }

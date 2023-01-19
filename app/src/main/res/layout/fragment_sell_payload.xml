@@ -18,98 +18,19 @@
         app:navigationIcon="@drawable/ic_toolbar_back"
         app:title="@string/sell_payload_title" />
 
-    <TextView
-        android:id="@+id/textViewSell"
-        android:layout_width="wrap_content"
+    <org.p2p.uikit.components.UiKitSellDetailsWidget
+        android:id="@+id/widgetSendDetails"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/common_cash_out"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-        android:textColor="@color/text_mountain"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTokenAmount"
-        app:layout_constraintStart_toStartOf="@id/editTextTokenAmount"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCashOut"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintVertical_bias="0.2"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <TextView
-        android:id="@+id/textViewAvailableAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-        android:textColor="@color/text_sky"
-        app:layout_constraintBaseline_toBaselineOf="@+id/textViewSell"
-        app:layout_constraintStart_toEndOf="@id/textViewSell"
-        tools:text="all 4.53 SOL" />
-
-    <org.p2p.uikit.components.UiKitAmountEditText
-        android:id="@+id/editTextTokenAmount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:hintTextColor="@color/text_mountain"
-        app:layout_constraintBottom_toTopOf="@+id/editTextFiatAmount"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSell" />
-
-    <org.p2p.uikit.components.UiKitAmountEditText
-        android:id="@+id/editTextFiatAmount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1"
-        app:hintTextColor="@color/text_mountain"
-        app:layout_constraintBottom_toTopOf="@+id/textViewRate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTokenAmount" />
-
-    <TextView
-        android:id="@+id/textViewRate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_rounded_solid_snow_top_12"
-        android:padding="16dp"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-        android:textColor="@color/text_mountain"
-        app:layout_constraintBottom_toTopOf="@+id/textViewFee"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextFiatAmount"
-        tools:text="1 SOL ≈ 34.65 EUR" />
-
-    <TextView
-        android:id="@+id/textViewFee"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_rounded_solid_snow_bottom_12"
-        android:padding="16dp"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-        android:textColor="@color/text_mountain"
-        app:layout_constraintBottom_toTopOf="@+id/buttonSend"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewRate"
-        tools:text="Included fee 0.6 SOL" />
+        app:layout_constraintVertical_chainStyle="spread_inside" />
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonSend"
+        android:id="@+id/buttonCashOut"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -119,7 +40,9 @@
         android:text="@string/common_cash_out"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/widgetSendDetails" />
 
     <FrameLayout
         android:id="@+id/shimmerView"

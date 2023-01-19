@@ -8,6 +8,7 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.moonpay.model.SellTransaction
@@ -115,10 +116,12 @@ class TokenHistoryPresenter(
     }
 
     override fun updateSellTransactions() {
-        view?.showHistory(
-            transactions = blockChainTransactionsList.content,
-            sellTransactions = sellTransactionsList.content
-        )
+        if (sellTransactionsList.hasItems()) {
+            view?.showHistory(
+                transactions = blockChainTransactionsList.content,
+                sellTransactions = sellTransactionsList.content
+            )
+        }
     }
 
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
