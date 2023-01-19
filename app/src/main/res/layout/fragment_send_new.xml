@@ -16,6 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back_night"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:titleTextColor="@color/text_night"
         tools:title="\@kirill.key" />
 
     <org.p2p.uikit.components.UiKitSendDetailsWidget

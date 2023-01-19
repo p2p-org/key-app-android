@@ -15,7 +15,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
-import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.formatFiat
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -122,6 +122,7 @@ class OrcaSwapFragment :
         // in case of MainFragment, back is handled by MainFragment
         when (openedFrom) {
             OrcaSwapOpenedFrom.OTHER -> {
+                amountEditText.focusAndShowKeyboard()
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                     presenter.onBackPressed()
                 }
@@ -158,7 +159,6 @@ class OrcaSwapFragment :
         swapDetails.setOnPayFeeClickListener { presenter.loadDataForSettings() }
         swapDetails.setOnTransactionFeeClickListener { presenter.onFeeLimitsClicked() }
         swapButton.setOnClickListener { presenter.swapOrConfirm() }
-        amountEditText.focusAndShowKeyboard()
 
         val originalTextSize = amountEditText.textSize
 
@@ -277,7 +277,7 @@ class OrcaSwapFragment :
     override fun showAroundValue(aroundValue: BigDecimal) {
         binding.aroundTextView.text = getString(
             R.string.main_send_around_in_usd,
-            aroundValue.formatUsd()
+            aroundValue.formatFiat()
         )
     }
 

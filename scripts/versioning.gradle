@@ -15,16 +15,15 @@ task setVersionBuild(group: 'versioning', description: 'Sets build version') {
     }
 }
 
-ext.getBuildAppFileName = { ->
-    def taskNumberWithoutSlash = taskNumber().replace("/", "-")
-    "p2p_wallet_${getVersionBuild()}_${VERSION_NAME}_${taskNumberWithoutSlash}"
+ext.generateAppName = { ->
+    "key-app-${VERSION_NAME}.${getVersionBuild()}"
 }
 
 ext.getVersionBuild = { ->
     def buildNumberFromCi = System.getenv("CIRCLE_BUILD_NUM")
 
     if (buildNumberFromCi != null) {
-        return VERSION_BUILD as Integer + buildNumberFromCi.toInteger()
+        return buildNumberFromCi.toInteger()
     } else {
         return VERSION_BUILD
     }

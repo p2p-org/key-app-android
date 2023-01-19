@@ -19,6 +19,7 @@ import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import kotlinx.coroutines.flow.firstOrNull
 
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
@@ -59,16 +60,33 @@ class UserRemoteRepository(
 
             // Load and save user tokens prices
             if (fetchPrices) {
-                val prices = tokenPricesRepository.getTokenPricesBySymbols(
-                    tokenSymbols.map { TokenSymbol(it) },
-                    USD_READABLE_SYMBOL
-                )
-                userLocalRepository.setTokenPrices(prices)
+                loadAndSaveUserTokens(tokenSymbols)
+            } else {
+                checkForNewTokens(tokenSymbols)
             }
 
             // Map accounts to List<Token.Active>
             mapAccountsToTokens(publicKey, accounts)
         }
+
+    private suspend fun checkForNewTokens(tokenSymbols: List<String>) {
+        val localPrices = userLocalRepository.getTokenPrices()
+            .firstOrNull()
+            ?.map { it.tokenSymbol }
+            .orEmpty()
+        val userTokensDiff = tokenSymbols.minus(localPrices.toSet())
+        if (userTokensDiff.isNotEmpty()) {
+            loadAndSaveUserTokens(tokenSymbols)
+        }
+    }
+
+    private suspend fun loadAndSaveUserTokens(tokenSymbols: List<String>) {
+        val prices = tokenPricesRepository.getTokenPricesBySymbols(
+            tokenSymbols.map { TokenSymbol(it) },
+            USD_READABLE_SYMBOL
+        )
+        userLocalRepository.setTokenPrices(prices)
+    }
 
     private suspend fun mapAccountsToTokens(publicKey: String, accounts: List<Account>): List<Token.Active> {
         val tokens = accounts.mapNotNull {

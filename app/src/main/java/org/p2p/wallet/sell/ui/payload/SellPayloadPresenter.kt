@@ -2,9 +2,9 @@ package org.p2p.wallet.sell.ui.payload
 
 import android.content.res.Resources
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatTokenForMoonpay
-import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.isZero
@@ -88,7 +88,7 @@ class SellPayloadPresenter(
                     transactionId = userTransactionInProcess.transactionId,
                     status = userTransactionInProcess.status,
                     formattedSolAmount = amounts.tokenAmount.formatTokenForMoonpay(),
-                    formattedUsdAmount = amounts.usdAmount.formatUsd(),
+                    formattedUsdAmount = amounts.usdAmount.formatFiat(),
                     receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value
                 )
             )
@@ -126,14 +126,14 @@ class SellPayloadPresenter(
                     tokenPrice = sellQuote.tokenPrice
 
                     val fiatUiSymbol = currentFiat.uiSymbol
-                    val moonpayFee = sellQuote.feeAmount.formatUsd()
+                    val moonpayFee = sellQuote.feeAmount.formatFiat()
 
                     val viewState = ViewState(
                         formattedUserAvailableBalance = userSolBalance.formatTokenForMoonpay(),
                         solToSell = rawUserSelectedAmount,
-                        formattedFiatAmount = sellQuote.fiatEarning.formatUsd(),
+                        formattedFiatAmount = sellQuote.fiatEarning.formatFiat(),
                         formattedSellFiatFee = moonpayFee,
-                        formattedTokenPrice = tokenPrice.formatUsd(),
+                        formattedTokenPrice = tokenPrice.formatFiat(),
                         fiatSymbol = fiatUiSymbol,
                         tokenSymbol = Constants.SOL_SYMBOL,
                     )
