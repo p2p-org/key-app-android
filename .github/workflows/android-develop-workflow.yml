@@ -143,4 +143,4 @@ jobs:
         with:
           jira-base-url: ${{ vars.JIRA_BASE_URL }}
           jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
-          jira-api-token: ${{ vars.JIRA_API_TOKEN }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
