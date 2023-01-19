@@ -42,7 +42,7 @@ interface SellPayloadContract {
         fun cashOut()
         fun onTokenAmountChanged(newValue: String)
         fun onUserMaxClicked()
-        fun onStart()
-        fun onStop()
+        fun checkSellLock()
+        fun setNeedCheckForSellLock()
     }
 }

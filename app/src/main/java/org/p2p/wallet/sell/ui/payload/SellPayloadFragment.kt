@@ -58,12 +58,12 @@ class SellPayloadFragment :
 
     override fun onStart() {
         super.onStart()
-        presenter.onStart()
+        presenter.checkSellLock()
     }
 
     override fun onStop() {
         super.onStop()
-        presenter.onStop()
+        presenter.setNeedCheckForSellLock()
     }
 
     override fun showLoading(isVisible: Boolean) {

@@ -54,7 +54,7 @@ class SellPayloadPresenter(
     private var tokenPrice: BigDecimal = BigDecimal.ZERO
 
     private var sellQuoteJob: Job? = null
-    private var needCheckForSellLock: Boolean = false
+    private var needCheckForSellLock: Boolean = true
 
     override fun attach(view: SellPayloadContract.View) {
         super.attach(view)
@@ -79,6 +79,7 @@ class SellPayloadPresenter(
     }
 
     private suspend fun checkForSellLock() {
+        if (!needCheckForSellLock) return
         needCheckForSellLock = false
         val userTransactionInProcess = getUserTransactionInProcess()
         if (userTransactionInProcess != null) {
@@ -97,11 +98,11 @@ class SellPayloadPresenter(
         }
     }
 
-    override fun onStart() {
-        launch { if (needCheckForSellLock) checkForSellLock() }
+    override fun checkSellLock() {
+        launch { checkForSellLock() }
     }
 
-    override fun onStop() {
+    override fun setNeedCheckForSellLock() {
         needCheckForSellLock = true
     }
 
