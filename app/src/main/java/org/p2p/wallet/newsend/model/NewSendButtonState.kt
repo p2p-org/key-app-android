@@ -69,11 +69,7 @@ class NewSendButtonState(
                     val textContainer = TextContainer.Raw(text)
                     State.Disabled(textContainer, R.color.text_rose)
                 }
-                !isMinRequiredBalanceLeft -> {
-                    val textContainer = TextContainer.Res(R.string.error_insufficient_funds)
-                    State.Disabled(textContainer, R.color.text_rose)
-                }
-                !isAmountValidForSender -> {
+                !isAmountValidForSender && isMinRequiredBalanceLeft -> {
                     val maxSolAmountAllowed = sourceToken.totalInLamports - minRentExemption
                     val format = resources.getString(
                         R.string.send_max_warning_text_format,
@@ -84,6 +80,10 @@ class NewSendButtonState(
                         textContainer = TextContainer.Raw(format),
                         totalAmountTextColor = R.color.text_rose
                     )
+                }
+                !isMinRequiredBalanceLeft -> {
+                    val textContainer = TextContainer.Res(R.string.error_insufficient_funds)
+                    State.Disabled(textContainer, R.color.text_rose)
                 }
                 !isEnoughToCoverExpenses -> {
                     val textContainer = TextContainer.Res(R.string.send_insufficient_funds)
