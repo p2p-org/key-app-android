@@ -49,14 +49,14 @@
             app:layout_constraintTop_toBottomOf="@+id/textViewSwitchCurrency"
             tools:text="USD" />
 
-        <androidx.appcompat.widget.AppCompatEditText
+        <EditText
             android:id="@+id/editTextAmount"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
-            android:digits="0123456789.,"
+            android:digits="0123456789."
             android:gravity="center_vertical|end"
             android:hint="@string/amounts_view_zero_hint"
             android:imeOptions="actionDone"
@@ -115,7 +115,7 @@
             android:ellipsize="middle"
             android:gravity="center_vertical|start"
             android:maxLines="1"
-            android:text="Switch to USD"
+            tools:text="Switch to USD"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
             android:textColor="@color/text_sky"
             app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountTitle"
@@ -129,7 +129,7 @@
             android:layout_marginEnd="4dp"
             android:gravity="center_vertical|end"
             android:maxLines="1"
-            android:text="All"
+            android:text="@string/common_all"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
             android:textColor="@color/text_mountain"
             app:layout_constraintBottom_toBottomOf="@+id/textViewSwitchCurrency"
@@ -164,7 +164,7 @@
         android:ellipsize="middle"
         android:gravity="start"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-        android:textColor="@color/text_mountain"
+        android:textColor="@color/text_night"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
