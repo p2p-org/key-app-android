@@ -4,7 +4,7 @@ on:
       - feature/*
 jobs:
   update-jira-status:
-    name: "Jira manipulations"
+    name: "Move Jira Ticket to Review"
     runs-on: ubuntu-latest
     environment: develop
     steps:
@@ -15,7 +15,6 @@ jobs:
           jira-base-url: ${{ vars.JIRA_BASE_URL }}
           jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
           jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
-
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
@@ -46,3 +45,84 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
+  android-build-artifacts:
+    name: "Run build feature artifacts"
+    needs:
+      - android-lint
+
+    runs-on: ubuntu-latest
+    environment: feature
+    steps:
+      - name: "Checkout to the current commit hash"
+        uses: actions/checkout@v3
+      - name: "Send start deploy message to slack"
+        run: |
+          git fetch
+          cd bash_scripts
+          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          cd ..
+
+      - name: "Initialize project keys"
+        uses: ./.github/actions/setup-project
+        with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
+          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
+          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+      - name: "Build feature APK"
+        run: ./gradlew assembleFeature
+      - name: "Upload APK to Firebase"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: ./gradlew assembleFeature appDistributionUploadFeature
+      - name: "Upload feature APK to Slack"
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "feature"
+          artifact-type: "apk"
+      - name: "Upload changelog, and Jira ticket to slack channel"
+        run: |
+          cd bash_scripts
+          value=`cat timestamp.txt`
+          bash slack_deploy_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          cd ..
+
+      - name: "Send finish deploy message to slack"
+        run: |
+          cd bash_scripts
+          value=`cat timestamp.txt`
+          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+
+  update-jira-status-rft:
+    name: "Move Jira Ticket to Ready For Testing"
+    needs:
+      - android-build-artifacts
+    runs-on: ubuntu-latest
+    environment: feature
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Find a Jira ticket and move it to READY FOR TESTING"
+        uses: ./.github/actions/setup-jira-rft
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
