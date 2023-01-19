@@ -127,6 +127,7 @@ class SendFeeRelayerManager(
             )
         } catch (e: Throwable) {
             Timber.e(e, "Error during FeeRelayer fee calculation")
+            handleError(FeesCalculationError)
         } finally {
             onFeeLoading?.invoke(FeeLoadingState(isLoading = false, isDelayed = useCache))
         }
