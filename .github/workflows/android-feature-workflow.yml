@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: develop
     steps:
+      - uses: actions/checkout@v3
       - name: "Find a Jira ticket and move it to REVIEW"
         uses: ./.github/actions/setup-jira-review
         with:
@@ -18,7 +19,6 @@ jobs:
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
