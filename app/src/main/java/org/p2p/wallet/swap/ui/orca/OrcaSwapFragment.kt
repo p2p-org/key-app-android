@@ -122,6 +122,7 @@ class OrcaSwapFragment :
         // in case of MainFragment, back is handled by MainFragment
         when (openedFrom) {
             OrcaSwapOpenedFrom.OTHER -> {
+                amountEditText.focusAndShowKeyboard()
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                     presenter.onBackPressed()
                 }
@@ -158,7 +159,6 @@ class OrcaSwapFragment :
         swapDetails.setOnPayFeeClickListener { presenter.loadDataForSettings() }
         swapDetails.setOnTransactionFeeClickListener { presenter.onFeeLimitsClicked() }
         swapButton.setOnClickListener { presenter.swapOrConfirm() }
-        amountEditText.focusAndShowKeyboard()
 
         val originalTextSize = amountEditText.textSize
 
