@@ -1,9 +1,9 @@
 package org.p2p.wallet.infrastructure.network.provider
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
+import android.content.SharedPreferences
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 
@@ -16,7 +16,7 @@ class SendModeProvider(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    var sendMode: CurrencyMode = CurrencyMode.Usd
+    var sendMode: CurrencyMode = CurrencyMode.Fiat.Usd
         get() = getSendModeFromStorage()
         set(value) {
             field = value
@@ -28,7 +28,7 @@ class SendModeProvider(
             val sendMode: String = sharedPreferences.getString(KEY_SEND_MODE, USD_READABLE_SYMBOL)
                 ?: USD_READABLE_SYMBOL
             if (sendMode == USD_READABLE_SYMBOL) {
-                CurrencyMode.Usd
+                CurrencyMode.Fiat.Usd
             } else {
                 EMPTY_TOKEN
             }
@@ -41,7 +41,7 @@ class SendModeProvider(
         sharedPreferences.edit {
             putString(
                 KEY_SEND_MODE,
-                if (value == CurrencyMode.Usd) {
+                if (value == CurrencyMode.Fiat.Usd) {
                     USD_READABLE_SYMBOL
                 } else {
                     emptyString()
@@ -51,6 +51,6 @@ class SendModeProvider(
     }
 
     fun clear() {
-        sendMode = CurrencyMode.Usd
+        sendMode = CurrencyMode.Fiat.Usd
     }
 }
