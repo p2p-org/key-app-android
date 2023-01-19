@@ -18,8 +18,6 @@ import org.p2p.wallet.utils.divideSafe
 import java.math.BigDecimal
 import java.math.BigInteger
 
-private const val FIAT_FRACTION_LENGTH = 2
-
 class CalculationMode(
     private val sendModeProvider: SendModeProvider,
     private val lessThenMinString: String
@@ -168,7 +166,7 @@ class CalculationMode(
     }
 
     private fun handleCalculateUsdAmountUpdate() {
-        val formattedUsdAmount = if (usdAmount.lessThenMinValue()) lessThenMinString else usdAmount.formatUsd()
+        val formattedUsdAmount = if (usdAmount.lessThenMinValue()) lessThenMinString else usdAmount.formatFiat()
         handleCalculationUpdate(formattedUsdAmount, USD_READABLE_SYMBOL)
     }
 
