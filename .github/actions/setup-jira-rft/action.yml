@@ -32,4 +32,4 @@ runs:
       uses: atlassian/gajira-transition@v3
       with:
         issue: ${{ steps.rft.outputs.issue }}
-        transition: "READY FOR TESTING"
+        transition: "QA"
