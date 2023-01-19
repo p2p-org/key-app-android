@@ -8,6 +8,7 @@ import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.intercom.IntercomService
@@ -25,6 +26,7 @@ class AuthLogoutInteractor(
     private val renBtcInteractor: RenBtcInteractor,
     private val sharedPreferences: SharedPreferences,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val sendModeProvider: SendModeProvider,
     private val mainLocalRepository: HomeLocalRepository,
     private val recipientsLocalRepository: RecipientsLocalRepository,
     private val updatesManager: UpdatesManager,
@@ -45,6 +47,7 @@ class AuthLogoutInteractor(
             updatesManager.stop()
             sharedPreferences.edit { clear() }
             tokenKeyProvider.clear()
+            sendModeProvider.clear()
             secureStorage.clear()
             transactionManager.stop()
             mainLocalRepository.clear()

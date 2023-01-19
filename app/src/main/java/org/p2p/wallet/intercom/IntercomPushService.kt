@@ -7,8 +7,10 @@ import io.intercom.android.sdk.push.IntercomPushClient
 
 class IntercomPushService(
     private val application: Application,
-    private val intercom: Intercom
 ) {
+
+    private val intercomClient: Intercom
+        get() = Intercom.client()
 
     private val pushClient: IntercomPushClient = IntercomPushClient()
 
@@ -23,6 +25,6 @@ class IntercomPushService(
     }
 
     fun showPushContentIfExists() {
-        intercom.handlePushMessage()
+        intercomClient.handlePushMessage()
     }
 }
