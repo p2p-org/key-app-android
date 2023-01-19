@@ -1,8 +1,8 @@
 package org.p2p.wallet.sell.interactor
 
 import android.content.res.Resources
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.formatUsd
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.history.model.HistoryItem
@@ -39,7 +39,7 @@ class HistoryItemMapper(private val resources: Resources) {
             transactionId = it.transactionId,
             status = it.status,
             formattedSolAmount = it.amounts.tokenAmount.formatToken(),
-            formattedUsdAmount = it.getFiatAmount().formatUsd(),
+            formattedUsdAmount = it.getFiatAmount().formatFiat(),
             receiverAddress = receiverAddress
         )
             .let(HistoryItem::MoonpayTransactionItem)

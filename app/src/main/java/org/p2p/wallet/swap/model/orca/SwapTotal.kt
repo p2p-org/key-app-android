@@ -1,8 +1,8 @@
 package org.p2p.wallet.swap.model.orca
 
 import org.p2p.core.token.Token
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.formatUsd
 import java.math.BigDecimal
 
 class SwapTotal(
@@ -49,7 +49,7 @@ class SwapTotal(
     val receiveAtLeastUsd: String?
         get() {
             val receiveAtLeastUsd = destination.rate?.let { receiveAtLeastDecimals.multiply(it) }
-            return receiveAtLeastUsd?.formatUsd()
+            return receiveAtLeastUsd?.formatFiat()
         }
 
     val inputAmountUsd: BigDecimal?

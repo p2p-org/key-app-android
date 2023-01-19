@@ -9,6 +9,7 @@ class MoonpaySellTokenQuote(
     val fiatDetails: MoonpayCurrency.Fiat,
     val paymentMethod: MoonpaySellPaymentMethod,
     val extraFeeAmount: Int,
-    val feeAmount: BigDecimal,
+    val feeAmountInToken: BigDecimal,
+    val feeAmountInFiat: BigDecimal,
     val fiatEarning: BigDecimal,
 )
