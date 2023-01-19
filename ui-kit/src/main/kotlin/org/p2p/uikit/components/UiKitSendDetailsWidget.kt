@@ -145,6 +145,14 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
     }
 
+    fun disableInputs() {
+        binding.imageViewSwitchTo.isVisible = false
+        binding.viewSwitchToClickArea.isInvisible = true
+        binding.textViewMax.isVisible = false
+        binding.editTextAmount.isEnabled = false
+        binding.textViewAmountTypeSwitchLabel.isVisible = false
+    }
+
     fun setInputTextColor(@ColorRes colorRes: Int) {
         binding.editTextAmount.setTextColor(getColor(colorRes))
     }

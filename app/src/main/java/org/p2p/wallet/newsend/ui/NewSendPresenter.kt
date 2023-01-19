@@ -4,6 +4,7 @@ import android.content.res.Resources
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.wallet.BuildConfig
@@ -150,6 +151,14 @@ class NewSendPresenter(
             }
 
             initializeFeeRelayer(view, initialToken, solToken)
+            initialAmount?.let { inputAmount ->
+                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                    switchCurrencyMode()
+                }
+                calculationMode.updateInputAmount(inputAmount.toPlainString())
+                view.updateInputValue(inputAmount.toPlainString(), forced = true)
+                view.disableInputs()
+            }
         }
     }
 

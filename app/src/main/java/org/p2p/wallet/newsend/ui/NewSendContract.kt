@@ -22,6 +22,7 @@ interface NewSendContract {
 
         fun setBottomButtonText(text: TextContainer?)
         fun setSliderText(text: String?)
+        fun disableInputs()
     }
 
     interface Presenter : MvpPresenter<View> {

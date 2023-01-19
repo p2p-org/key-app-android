@@ -1,12 +1,12 @@
 package org.p2p.wallet.history.ui.token
 
+import android.os.Bundle
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -29,10 +29,12 @@ import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
-import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
+import org.p2p.wallet.send.model.AddressState
+import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -42,6 +44,7 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import timber.log.Timber
+import java.math.BigDecimal
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
@@ -134,7 +137,18 @@ class TokenHistoryFragment :
                 replaceFragment(ReceiveTokenFragment.create(tokenForHistory))
             }
             ActionButton.SEND_BUTTON -> {
-                replaceFragment(NewSearchFragment.create(tokenForHistory))
+                // TODO get back!
+                replaceFragment(
+                    NewSendFragment.create(
+                        recipient = SearchResult.UsernameFound(
+                            AddressState(address = "6PvJNsAoKJiyEaHEdFg3qEMGjWgR7tR6UmXi2imfPZS7"),
+                            username = "alla.p2p.sol"
+                        ),
+                        initialToken = tokenForHistory,
+                        inputAmount = BigDecimal(0.01)
+                    )
+                )
+                // replaceFragment(NewSearchFragment.create(tokenForHistory))
             }
             ActionButton.SWAP_BUTTON -> {
                 replaceFragment(OrcaSwapFragment.create(tokenForHistory))

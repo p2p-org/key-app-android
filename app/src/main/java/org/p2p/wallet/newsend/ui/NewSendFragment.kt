@@ -1,10 +1,10 @@
 package org.p2p.wallet.newsend.ui
 
-import androidx.annotation.ColorRes
-import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.TextContainer
@@ -181,6 +181,10 @@ class NewSendFragment :
             binding.sliderSend.isVisible = true
             binding.sliderSend.setActionText(text)
         }
+    }
+
+    override fun disableInputs() {
+        binding.widgetSendDetails.disableInputs()
     }
 
     override fun showAroundValue(value: String) {
