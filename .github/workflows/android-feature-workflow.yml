@@ -3,10 +3,21 @@ on:
     branches:
       - feature/*
 jobs:
+  update-jira-status:
+    name: "Jira manipulations"
+    runs-on: ubuntu-latest
+    environment: develop
+    steps:
+      - name: "Find a Jira ticket and move it to REVIEW"
+        uses: ./.github/actions/setup-jira-review
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
+
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
-    environment: develop
 
     steps:
       - uses: actions/checkout@v3
@@ -35,10 +46,3 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
-
-      - name: "Find a Jira ticket and move it to REVIEW"
-        uses: ./.github/actions/setup-jira-review
-        with:
-          jira-base-url: ${{ vars.JIRA_BASE_URL }}
-          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
-          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
