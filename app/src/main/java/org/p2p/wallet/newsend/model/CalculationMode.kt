@@ -13,7 +13,6 @@ import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
-import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.utils.divideSafe
 import java.math.BigDecimal
 import java.math.BigInteger
