@@ -11,8 +11,8 @@ jobs:
       - name: "Login"
         uses: atlassian/gajira-login@v3
         env:
-          JIRA_BASE_URL: $JIRA_BASE_URL
-          JIRA_USER_EMAIL: $JIRA_USER_EMAIL
+          JIRA_BASE_URL: ${{ env.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ env.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
       - name: "Find ticket number in git history"
