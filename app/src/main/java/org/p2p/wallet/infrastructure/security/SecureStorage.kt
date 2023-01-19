@@ -13,6 +13,7 @@ import timber.log.Timber
 import kotlin.reflect.KClass
 
 private const val TAG = "SecureStorage"
+
 class SecureStorage(
     private val keyStoreWrapper: KeyStoreWrapper,
     private val sharedPreferences: SharedPreferences,
@@ -91,6 +92,19 @@ class SecureStorage(
             encodedData
                 ?.let { keyStoreWrapper.decode(key.prefsValue, it) }
                 ?.let { Hex.decode(it) }
+        }
+    }
+
+    override fun putBoolean(key: Key, value: Boolean) {
+        tryWithLog(key) {
+            // no need to encode boolean values
+            sharedPreferences.edit { putBoolean(key.prefsValue, value) }
+        }
+    }
+
+    override fun getBoolean(key: Key, defaultValue: Boolean): Boolean {
+        return tryWithLog(key) {
+            sharedPreferences.getBoolean(key.prefsValue, defaultValue)
         }
     }
 

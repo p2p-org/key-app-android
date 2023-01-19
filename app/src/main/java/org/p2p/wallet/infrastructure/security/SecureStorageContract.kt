@@ -15,7 +15,8 @@ interface SecureStorageContract {
         KEY_USE_STUB_PUBLIC_KEY("KEY_USE_STUB_PUBLIC_KEY"),
         KEY_ONBOARDING_METADATA("KEY_ONBOARDING_METADATA"),
         KEY_SEED_PHRASE("KEY_SEED_PHRASE"),
-        KEY_SEED_PHRASE_PROVIDER("KEY_SEED_PHRASE_PROVIDER")
+        KEY_SEED_PHRASE_PROVIDER("KEY_SEED_PHRASE_PROVIDER"),
+        KEY_IS_SELL_WARNING_SHOWED("KEY_IS_SELL_WARNING_SHOWED")
     }
 
     fun saveString(key: Key, data: String)
@@ -26,6 +27,9 @@ interface SecureStorageContract {
 
     fun getString(key: Key): String?
     fun getString(key: Key, cipher: DecodeCipher): String?
+
+    fun putBoolean(key: Key, value: Boolean)
+    fun getBoolean(key: Key, defaultValue: Boolean): Boolean
 
     fun <T : Any> getObject(key: Key, type: KClass<T>): T?
     fun <T : Any> getObjectList(key: Key): List<T>

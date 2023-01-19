@@ -13,6 +13,8 @@ import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.model.SellTransaction
@@ -40,6 +42,7 @@ class SellPayloadPresenter(
     private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder,
     private val externalCustomerIdProvider: MoonpayExternalCustomerIdProvider,
     private val userInteractor: UserInteractor,
+    private val secureStorage: SecureStorageContract,
     private val resources: Resources,
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
@@ -64,9 +67,12 @@ class SellPayloadPresenter(
                 checkForSellLock()
                 userSolBalance = userInteractor.getUserSolToken()?.total.orZero()
                 loadCurrencies()
-                checkForMinAmount()
                 restartLoadSellQuoteJob()
                 view.showLoading(isVisible = false)
+
+                if (!secureStorage.getBoolean(Key.KEY_IS_SELL_WARNING_SHOWED, false)) {
+                    view.showOnlySolWarning()
+                }
             } catch (noInternet: MoonpaySellError.NoInternetForRequest) {
                 Timber.i(noInternet)
                 view.showUiKitSnackBar(messageResId = R.string.common_offline_error)
@@ -107,12 +113,6 @@ class SellPayloadPresenter(
         maxTokenSellAmount = solCurrency.amounts.maxSellAmount
         rawUserSelectedAmount = minTokenSellAmount.formatToken()
         currentFiat = sellInteractor.getMoonpaySellFiatCurrency()
-    }
-
-    private fun checkForMinAmount() {
-        if (userSolBalance < minTokenSellAmount) {
-            view?.navigateNotEnoughTokensErrorScreen(minTokenSellAmount)
-        }
     }
 
     private fun restartLoadSellQuoteJob() {

@@ -31,11 +31,11 @@ interface SellPayloadContract {
         fun showMoonpayWidget(url: String)
         fun navigateToSellLock(details: SellTransactionViewDetails)
         fun navigateToErrorScreen()
-        fun navigateNotEnoughTokensErrorScreen(minAmount: BigDecimal)
         fun updateViewState(newState: ViewState)
         fun setButtonState(state: CashOutButtonState)
         fun setTokenAmount(newValue: String)
         fun resetFiatAndFee(feeSymbol: String)
+        fun showOnlySolWarning()
     }
 
     interface Presenter : MvpPresenter<View> {
