@@ -89,7 +89,6 @@ class SellPayloadPresenter(
                 }
 
                 loadCurrencies()
-                checkForMinAmount()
                 initialLoadSellQuote()
                 startLoadSellQuoteJob()
                 view.showLoading(isVisible = false)

@@ -20,7 +20,6 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
-import java.math.BigDecimal
 
 class SellPayloadFragment :
     BaseMvpFragment<SellPayloadContract.View, SellPayloadContract.Presenter>(R.layout.fragment_sell_payload),
