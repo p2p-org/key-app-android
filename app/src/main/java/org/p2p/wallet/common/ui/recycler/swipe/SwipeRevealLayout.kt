@@ -23,26 +23,24 @@
  */
 package org.p2p.wallet.common.ui.recycler.swipe
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.view.ViewGroup
-import org.p2p.wallet.common.ui.recycler.swipe.SwipeRevealLayout.DragStateChangeListener
-import android.view.View.MeasureSpec
-import android.graphics.Rect
-import android.util.AttributeSet
-import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
-import android.util.DisplayMetrics
-import android.view.MotionEvent
-import android.view.View
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Rect
+import android.util.AttributeSet
+import android.util.DisplayMetrics
+import android.view.GestureDetector
+import android.view.GestureDetector.SimpleOnGestureListener
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import org.p2p.wallet.R
 import java.lang.Math.min
-import java.lang.RuntimeException
 import kotlin.math.abs
 
+@Suppress("REDUNDANT_MODIFIER_IN_GETTER")
 @SuppressLint("RtlHardcoded")
 class SwipeRevealLayout : ViewGroup {
     /**
