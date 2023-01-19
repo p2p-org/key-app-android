@@ -5,6 +5,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import kotlin.reflect.KClass
 
 interface SecureStorageContract {
+
     enum class Key(val prefsValue: String) {
         KEY_PIN_CODE_HASH("KEY_PIN_CODE_HASH"),
         KEY_PIN_CODE_BIOMETRIC_HASH("KEY_PIN_CODE_BIOMETRIC_HASH"),
