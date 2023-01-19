@@ -12,7 +12,7 @@ enum class SellTransactionFailureReason {
     @SerializedName("timeout_kyc_verification")
     TIMEOUT_KYC_VERIFICATION,
 
-    @SerializedName("cancelled")
+    @SerializedName("Cancelled")
     CANCELLED,
 
     @SerializedName("rejected_kyc")
