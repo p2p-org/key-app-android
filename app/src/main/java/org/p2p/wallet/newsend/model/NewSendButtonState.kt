@@ -69,21 +69,9 @@ class NewSendButtonState(
                     val textContainer = TextContainer.Raw(text)
                     State.Disabled(textContainer, R.color.text_rose)
                 }
-                !isEnoughToCoverExpenses -> {
-                    val textContainer = TextContainer.Res(R.string.send_insufficient_funds)
-                    State.Disabled(textContainer, R.color.text_rose)
-                }
                 !isMinRequiredBalanceLeft -> {
                     val textContainer = TextContainer.Res(R.string.error_insufficient_funds)
                     State.Disabled(textContainer, R.color.text_rose)
-                }
-                !isAmountValidForRecipient -> {
-                    val solAmount = minRentExemption.fromLamports().scaleLong().toPlainString()
-                    val format = resources.getString(R.string.send_min_warning_text_format, solAmount, SOL_SYMBOL)
-                    State.Disabled(
-                        textContainer = TextContainer.Raw(format),
-                        totalAmountTextColor = R.color.text_rose
-                    )
                 }
                 !isAmountValidForSender -> {
                     val maxSolAmountAllowed = sourceToken.totalInLamports - minRentExemption
@@ -92,6 +80,18 @@ class NewSendButtonState(
                         maxSolAmountAllowed.fromLamports().scaleLong().toPlainString(),
                         SOL_SYMBOL
                     )
+                    State.Disabled(
+                        textContainer = TextContainer.Raw(format),
+                        totalAmountTextColor = R.color.text_rose
+                    )
+                }
+                !isEnoughToCoverExpenses -> {
+                    val textContainer = TextContainer.Res(R.string.send_insufficient_funds)
+                    State.Disabled(textContainer, R.color.text_rose)
+                }
+                !isAmountValidForRecipient -> {
+                    val solAmount = minRentExemption.fromLamports().scaleLong().toPlainString()
+                    val format = resources.getString(R.string.send_min_warning_text_format, solAmount, SOL_SYMBOL)
                     State.Disabled(
                         textContainer = TextContainer.Raw(format),
                         totalAmountTextColor = R.color.text_rose
@@ -157,6 +157,6 @@ class NewSendButtonState(
         val inputAmountInLamports = calculationMode.getCurrentAmountLamports()
         val diff = sourceTotalLamports - inputAmountInLamports
 
-        return diff == BigInteger.ZERO || diff >= minRequiredBalance
+        return diff.isZero() || diff >= minRequiredBalance
     }
 }
