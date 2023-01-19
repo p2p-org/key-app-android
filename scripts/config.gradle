@@ -8,20 +8,27 @@ ext.initReleaseType = { buildType ->
     buildType.buildConfigField("boolean", "SENTRY_ENABLED", "true")
     buildType.buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
     buildType.buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "true")
-    buildType.manifestPlaceholders = [SENTRY_ENV: "release"]
+    buildType.manifestPlaceholders = [BUILD_TYPE: "release"]
+
 }
 
-ext.initApiKeys = { defaultConfig ->
-    def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
+ext.initApiKeys = { buildType ->
+    def buildTypeName = buildType.manifestPlaceholders["BUILD_TYPE"]
+    buildType.manifestPlaceholders = [SENTRY_ENV: "$buildTypeName"]
 
-    defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrThrow('rpcPoolApiKey')}")
-    defaultConfig.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrThrow('moonpayKey')}")
-    defaultConfig.buildConfigField("String", "moonpaySandboxKey", "${apiKeysProperties.getOrThrow('moonpaySandboxKey')}")
-    defaultConfig.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrThrow('comparePublicKey')}")
-    defaultConfig.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrThrow('intercomApiKey')}")
-    defaultConfig.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrThrow('intercomAppId')}")
-    defaultConfig.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrThrow('amplitudeKey')}")
-    defaultConfig.buildConfigField("String", "appsFlyerKey", "${apiKeysProperties.getOrThrow('appsFlyerKey')}")
+    def apiKeysProperties = new PropertiesFile(rootProject.file("keys/${buildTypeName}_apikey.properties"), logger)
+    if(apiKeysProperties.isFileExists) {
+        buildType.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrThrow('rpcPoolApiKey')}")
+        buildType.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrThrow('moonpayKey')}")
+        buildType.buildConfigField("String", "moonpaySandboxKey", "${apiKeysProperties.getOrThrow('moonpaySandboxKey')}")
+        buildType.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrThrow('comparePublicKey')}")
+        buildType.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrThrow('intercomApiKey')}")
+        buildType.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrThrow('intercomAppId')}")
+        buildType.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrThrow('amplitudeKey')}")
+        buildType.buildConfigField("String", "appsFlyerKey", "${apiKeysProperties.getOrThrow('appsFlyerKey')}")
+    } else {
+        logger.quiet "(APIKEYS): init build without apikeys"
+    }
 }
 
 ext.initSentry = { defaultConfig ->

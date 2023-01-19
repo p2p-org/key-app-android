@@ -28,14 +28,13 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
 
-        initApiKeys(config)
         initSentry(config)
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "SENTRY_ENABLED", "false")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
-        buildConfigField("boolean", "APPSFLYER_ENABLED","false")
-        buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED","false")
+        buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
+        buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("boolean", "SSL_PINNING_ENABLED", "false")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
@@ -52,19 +51,20 @@ android {
     def torusProperties = getTorusProperties()
 
     buildTypes {
-        debug {
+        debug { buildType ->
             applicationIdSuffix ".debug"
             signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
             versionNameSuffix ".${getVersionBuild()}-debug"
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
-            manifestPlaceholders = [SENTRY_ENV: "debug"]
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_DEBUG']
+            manifestPlaceholders = [BUILD_TYPE: "debug"]
+            initApiKeys(buildType)
         }
 
-        feature {
+        feature { buildType ->
             applicationIdSuffix ".feature"
             debuggable true
             signingConfig signingConfigs.debug
@@ -74,11 +74,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_FEATURE']
+            manifestPlaceholders = [BUILD_TYPE: "feature"]
+            initApiKeys(buildType)
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
-            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED","true")
-            manifestPlaceholders = [SENTRY_ENV: "feature"]
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "true")
             matchingFallbacks = ['release']
 
             firebaseAppDistribution {
@@ -96,6 +97,7 @@ android {
         releaseFirebase { buildType ->
             signingConfig signingConfigs.release
             initReleaseType(buildType)
+            initApiKeys(buildType)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
@@ -113,6 +115,8 @@ android {
         releaseLocal { buildType ->
             signingConfig signingConfigs.release
             initReleaseType(buildType)
+            initApiKeys(buildType)
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
@@ -124,6 +128,8 @@ android {
         release { buildType ->
             signingConfig signingConfigs.release
             initReleaseType(buildType)
+            initApiKeys(buildType)
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
