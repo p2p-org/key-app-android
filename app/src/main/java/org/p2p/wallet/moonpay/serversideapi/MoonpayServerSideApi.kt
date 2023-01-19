@@ -1,9 +1,10 @@
 package org.p2p.wallet.moonpay.serversideapi
 
+import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
-import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
 
 interface MoonpayServerSideApi {
     @GET("api/v3/sell_transactions")
@@ -18,6 +19,6 @@ interface MoonpayServerSideApi {
      */
     @DELETE("v3/sell_transactions/{transactionId}")
     suspend fun cancelSellTransaction(
-        @Query("transactionId") sellTransactionId: String
+        @Path("transactionId") sellTransactionId: String
     )
 }
