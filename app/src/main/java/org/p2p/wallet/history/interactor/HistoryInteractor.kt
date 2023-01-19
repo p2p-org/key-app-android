@@ -16,7 +16,6 @@ import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
-import org.p2p.wallet.moonpay.extensions.SellStubs
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
