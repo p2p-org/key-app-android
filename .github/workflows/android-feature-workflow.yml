@@ -13,7 +13,7 @@ jobs:
         env:
           JIRA_BASE_URL: https://p2pvalidator.atlassian.net
           JIRA_USER_EMAIL: $JIRA_USER_EMAIL
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_API_TOKEN: $JIRA_API_TOKEN
 
       - name: "Find ticket number in git history"
         id: review
