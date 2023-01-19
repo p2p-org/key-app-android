@@ -164,25 +164,12 @@ class CalculationMode(
     }
 
     private fun handleCalculateTokenAmountUpdate() {
-        handleCalculationUpdate(
-            if (tokenAmount.lessThenMinValue()) {
-                lessThenMinString
-            } else {
-                tokenAmount.formatToken(token.decimals)
-            },
-            token.tokenSymbol
-        )
+        handleCalculationUpdate(tokenAmount.formatToken(token.decimals), token.tokenSymbol)
     }
 
     private fun handleCalculateUsdAmountUpdate() {
-        handleCalculationUpdate(
-            if (usdAmount.lessThenMinValue()) {
-                lessThenMinString
-            } else {
-                usdAmount.formatUsd()
-            },
-            USD_READABLE_SYMBOL
-        )
+        val formattedUsdAmount = if (usdAmount.lessThenMinValue()) lessThenMinString else usdAmount.formatUsd()
+        handleCalculationUpdate(formattedUsdAmount, USD_READABLE_SYMBOL)
     }
 
     private fun handleFractionUpdate(mode: CurrencyMode) {
