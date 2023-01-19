@@ -3,33 +3,11 @@ on:
     branches:
       - feature/*
 jobs:
-  update-jira-status:
-    name: "Authorize in Jira"
-    runs-on: ubuntu-latest
-    environment: develop
-    steps:
-      - name: "Login"
-        uses: atlassian/gajira-login@v3
-        env:
-          JIRA_BASE_URL: ${{ vars.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ vars.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-
-      - name: "Find ticket number in git history"
-        id: review
-        uses: atlassian/gajira-find-issue-key@v3
-        with:
-          from: commits
-
-      - name: "Jira Ticket Transition"
-        uses: atlassian/gajira-transition@v3
-        with:
-          issue: ${{ steps.review.outputs.issue }}
-          transition: "REVIEW"
-
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
+    environment: develop
+
     steps:
       - uses: actions/checkout@v3
 
@@ -57,3 +35,10 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
+
+      - name: "Find a Jira ticket and move it to REVIEW"
+        uses: ./.github/actions/setup-jira-review
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
