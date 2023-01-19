@@ -138,13 +138,9 @@ jobs:
           cd bash_scripts
           value=`cat timestamp.txt`
           bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-      - name: "Jira manipulations"
-        runs-on: ubuntu-latest
-        environment: develop
-        steps:
-          - name: "Find a Jira ticket and move it to READY FOR TESTING"
-            uses: ./.github/actions/setup-jira-rft
-            with:
-              jira-base-url: ${{ vars.JIRA_BASE_URL }}
-              jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
-              jira-api-token: ${{ vars.JIRA_API_TOKEN }}
+      - name: "Find a Jira ticket and move it to READY FOR TESTING"
+        uses: ./.github/actions/setup-jira-rft
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ vars.JIRA_API_TOKEN }}
