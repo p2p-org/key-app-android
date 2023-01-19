@@ -15,7 +15,7 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
-import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.formatFiat
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
@@ -277,7 +277,7 @@ class OrcaSwapFragment :
     override fun showAroundValue(aroundValue: BigDecimal) {
         binding.aroundTextView.text = getString(
             R.string.main_send_around_in_usd,
-            aroundValue.formatUsd()
+            aroundValue.formatFiat()
         )
     }
 

@@ -1,10 +1,11 @@
 package org.p2p.wallet.newsend.model
 
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.emptyString
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.lessThenMinValue
 import org.p2p.core.utils.orZero
@@ -13,7 +14,6 @@ import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
-import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.utils.divideSafe
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -62,13 +62,13 @@ class CalculationMode(
     fun reduceAmount(newInputAmountInToken: BigInteger): BigDecimal {
         val newTokenAmount = newInputAmountInToken.fromLamports(token.decimals)
         val newUsdAmount = newTokenAmount.toUsd(token).orZero()
-        val newAmount = if (currencyMode is CurrencyMode.Usd) newUsdAmount else newTokenAmount
+        val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
 
         usdAmount = newUsdAmount
         tokenAmount = newTokenAmount
         inputAmount = newAmount.toString()
 
-        if (currencyMode is CurrencyMode.Usd) {
+        if (currencyMode is CurrencyMode.Fiat) {
             handleCalculateTokenAmountUpdate()
         } else {
             handleCalculateUsdAmountUpdate()
@@ -90,7 +90,7 @@ class CalculationMode(
         usdAmount = token.totalInUsd.orZero()
 
         val maxAmount = when (currencyMode) {
-            is CurrencyMode.Usd -> {
+            is CurrencyMode.Fiat -> {
                 handleCalculateTokenAmountUpdate()
                 token.totalInUsd
             }
@@ -107,8 +107,8 @@ class CalculationMode(
 
     fun switchMode(): CurrencyMode {
         currencyMode = when (currencyMode) {
-            is CurrencyMode.Token -> CurrencyMode.Usd
-            is CurrencyMode.Usd -> CurrencyMode.Token(token)
+            is CurrencyMode.Token -> CurrencyMode.Fiat.Usd // only support USD
+            is CurrencyMode.Fiat -> CurrencyMode.Token(token)
         }
 
         handleFractionUpdate(currencyMode)
@@ -130,9 +130,9 @@ class CalculationMode(
     }
 
     private fun updateLabels() {
-        val (switchSymbol, mainSymbol) = when (currencyMode) {
+        val (switchSymbol, mainSymbol) = when (val mode = currencyMode) {
             is CurrencyMode.Token -> USD_READABLE_SYMBOL to token.tokenSymbol
-            is CurrencyMode.Usd -> token.tokenSymbol to USD_READABLE_SYMBOL
+            is CurrencyMode.Fiat -> token.tokenSymbol to mode.fiatAbbreviation
         }
 
         onLabelsUpdated?.invoke(switchSymbol, mainSymbol)
@@ -143,7 +143,7 @@ class CalculationMode(
     private fun recalculate(inputAmount: String) {
         when (currencyMode) {
             is CurrencyMode.Token -> calculateByToken(inputAmount)
-            is CurrencyMode.Usd -> calculateByUsd(inputAmount)
+            is CurrencyMode.Fiat -> calculateByUsd(inputAmount)
         }
     }
 
@@ -175,7 +175,7 @@ class CalculationMode(
     private fun handleFractionUpdate(mode: CurrencyMode) {
         val newInputFractionLength = when (mode) {
             is CurrencyMode.Token -> mode.fractionLength
-            is CurrencyMode.Usd -> FIAT_FRACTION_LENGTH
+            is CurrencyMode.Fiat -> mode.fractionLength
         }
 
         onInputFractionUpdated?.invoke(newInputFractionLength)

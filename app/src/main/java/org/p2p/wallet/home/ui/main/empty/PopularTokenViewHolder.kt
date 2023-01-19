@@ -1,19 +1,19 @@
 package org.p2p.wallet.home.ui.main.empty
 
+import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.core.glide.SvgSoftwareLayerSetter
-import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemPopularTokenBinding
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.formatFiat
+import org.p2p.wallet.R
+import org.p2p.wallet.databinding.ItemPopularTokenBinding
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
@@ -42,7 +42,7 @@ class PopularTokenViewHolder(
         textViewName.text = token.mapTokenToPopularName()
         textViewValue.text = getString(R.string.main_popular_token_action_buy_button)
 
-        textViewTotal.withTextOrGone("$ ${token.usdRateOrZero.formatUsd()}")
+        textViewTotal.withTextOrGone("$ ${token.usdRateOrZero.formatFiat()}")
 
         contentView.setOnClickListener { onPopularTokenClicked(token) }
         textViewValue.setOnClickListener { onPopularTokenClicked(token) }
