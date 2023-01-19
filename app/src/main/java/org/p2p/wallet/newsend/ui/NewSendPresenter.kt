@@ -52,11 +52,11 @@ class NewSendPresenter(
     private val sendInteractor: SendInteractor,
     private val resources: Resources,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val sendModeProvider: SendModeProvider,
     private val transactionManager: TransactionManager,
     private val connectionStateProvider: ConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
-    private val appScope: AppScope
+    private val appScope: AppScope,
+    sendModeProvider: SendModeProvider
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
@@ -66,7 +66,10 @@ class NewSendPresenter(
         }
     }
 
-    private val calculationMode = CalculationMode(sendModeProvider)
+    private val calculationMode = CalculationMode(
+        sendModeProvider,
+        resources.getString(R.string.common_less_then_minimum)
+    )
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
 
     private var selectedToken: Token.Active? = null

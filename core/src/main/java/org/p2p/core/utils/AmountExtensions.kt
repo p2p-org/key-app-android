@@ -112,4 +112,4 @@ private fun BigDecimal.asUsdTransaction(
 fun Int?.orZero(): Int = this ?: 0
 
 // value is in (0..0.01)
-private fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())
+fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())
