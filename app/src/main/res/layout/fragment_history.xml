@@ -32,6 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
+                android:clipToPadding="false"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"

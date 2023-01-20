@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.interactor.stream
 
+import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.wallet.history.model.RpcTransactionSignature
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
@@ -33,7 +34,7 @@ class AccountStreamSource(
             return null
         } catch (e: EmptyDataException) {
             isPagingEnded = true
-            Timber.tag(TAG).e(e)
+            Timber.tag(TAG).i(e)
             return null
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e)
@@ -62,20 +63,27 @@ class AccountStreamSource(
             if (isPagingEnded) return
 
             val signatures = signatureRepository.getConfirmedSignaturesForAddress(
-                account.toPublicKey(),
-                lastFetchedSignature,
-                batchSize
-            ).map {
-                val error = it.transactionFailure
-                RpcTransactionSignature(it.signature, it.confirmationStatus, it.blockTime, error)
-            }
+                userAccountAddress = account.toPublicKey(),
+                before = lastFetchedSignature,
+                limit = batchSize
+            )
+                .map { it.toRpcSignature() }
             lastFetchedSignature = signatures.lastOrNull()?.signature
             buffer.addAll(signatures)
         } catch (e: EmptyDataException) {
-            Timber.tag(TAG).e(e, "Failed to get next HistoryStreamItem because it is empty")
+            Timber.tag(TAG).i(e, "Failed to get next HistoryStreamItem because it is empty")
             isPagingEnded = true
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e)
         }
+    }
+
+    private fun SignatureInformationResponse.toRpcSignature(): RpcTransactionSignature = run {
+        RpcTransactionSignature(
+            signature = signature,
+            status = confirmationStatus,
+            blockTime = blockTime,
+            error = transactionFailure
+        )
     }
 }
