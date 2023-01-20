@@ -16,11 +16,18 @@ class MetadataInteractor(
 ) {
 
     suspend fun tryLoadAndSaveMetadata() {
-        val userAccount = Account(tokenKeyProvider.keyPair)
-        val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
-        val ethereumPublicKey =
-            signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey.orEmpty()
-        return tryLoadAndSaveMetadataWithAccount(userAccount, userSeedPhrase.seedPhrase, ethereumPublicKey)
+        val web3SignUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails
+        if (web3SignUpDetails != null) {
+            val userAccount = Account(tokenKeyProvider.keyPair)
+            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
+            tryLoadAndSaveMetadataWithAccount(
+                userAccount = userAccount,
+                mnemonicPhraseWords = userSeedPhrase.seedPhrase,
+                ethereumPublicKey = web3SignUpDetails.ethereumPublicKey
+            )
+        } else {
+            Timber.i("User doesn't have any Web3Auth sign up data, skipping metadata fetch")
+        }
     }
 
     private suspend fun tryLoadAndSaveMetadataWithAccount(
