@@ -1,0 +1,59 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/imageViewError"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/bg_circle_stroke_icon_secondary"
+        app:srcCompat="@drawable/ic_history_error_placeholder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2"
+        tools:ignore="contentDescription" />
+
+    <TextView
+        android:id="@+id/textViewError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:text="@string/common_error"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title3"
+        app:layout_constraintTop_toBottomOf="@id/imageViewError" />
+
+    <TextView
+        android:id="@+id/errorMessageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/error_history_message"
+        android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
+        android:textColor="@color/textIconSecondary"
+        app:layout_constraintTop_toBottomOf="@id/textViewError" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonRetry"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ui_kit_button_large_height"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/bg_night"
+        android:text="@string/common_try_again"
+        android:textColor="@color/lime"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
