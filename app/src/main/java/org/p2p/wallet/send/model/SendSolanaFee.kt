@@ -19,7 +19,6 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
 import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
-import org.p2p.wallet.send.model.FeePayerState.UpdateFeePayer
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -29,11 +28,15 @@ import java.math.BigInteger
 @Parcelize
 data class SendSolanaFee constructor(
     val feePayerToken: Token.Active,
-    val sourceTokenSymbol: String,
     val feeRelayerFee: FeeRelayerFee,
+    private val sourceToken: Token.Active,
     private val solToken: Token.Active?,
     private val alternativeFeePayerTokens: List<Token.Active>
 ) : Parcelable {
+
+    @IgnoredOnParcel
+    val sourceTokenSymbol: String
+        get() = sourceToken.tokenSymbol
 
     @IgnoredOnParcel
     val isTransactionFree: Boolean
@@ -151,12 +154,8 @@ data class SendSolanaFee constructor(
                 if (desiredAmount != null) ReduceInputAmount(desiredAmount) else SwitchToSol
             }
             // if there is enough SPL token balance to cover amount and fee
-            !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) -> UpdateFeePayer
-            hasAlternativeFeePayerTokens -> {
-                alternativeFeePayerTokens.firstOrNull { it.totalInLamports.isMoreThan(totalNeeded) }
-                    ?.let { token -> FeePayerState.SwitchToSpl(token) }
-                    ?: SwitchToSol
-            }
+            !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) -> FeePayerState.SwitchToSpl(sourceToken)
+            hasAlternativeFeePayerTokens -> FeePayerState.SwitchToSpl(alternativeFeePayerTokens.first())
             else -> SwitchToSol
         }
     }

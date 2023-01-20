@@ -730,7 +730,7 @@ class SendPresenter(
 
         return SendSolanaFee(
             feePayerToken = newFeePayer,
-            sourceTokenSymbol = source.tokenSymbol,
+            sourceToken = source,
             feeRelayerFee = feeRelayerFee,
             solToken = state.solToken,
             alternativeFeePayerTokens = availableTokensToSwitch
@@ -768,10 +768,6 @@ class SendPresenter(
          * - In other cases, switching to SOL
          * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
-            is FeePayerState.UpdateFeePayer -> {
-                sendInteractor.setFeePayerToken(sourceToken)
-                recalculate(sourceToken)
-            }
             is FeePayerState.SwitchToSpl -> {
                 val tokenToSwitch = state.tokenToSwitch
                 sendInteractor.setFeePayerToken(tokenToSwitch)

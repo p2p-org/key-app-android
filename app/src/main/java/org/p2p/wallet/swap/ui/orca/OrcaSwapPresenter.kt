@@ -527,10 +527,6 @@ class OrcaSwapPresenter(
        * - In other cases, switching to SOL
        * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
-            is FeePayerState.UpdateFeePayer -> {
-                swapInteractor.setFeePayerToken(sourceToken)
-                recalculate(destination)
-            }
             is FeePayerState.SwitchToSol -> {
                 swapInteractor.switchFeePayerToSol(solToken)
                 recalculate(destination)

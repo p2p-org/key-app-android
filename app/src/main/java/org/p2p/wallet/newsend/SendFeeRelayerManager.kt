@@ -240,10 +240,10 @@ class SendFeeRelayerManager(
     ): SendSolanaFee =
         SendSolanaFee(
             feePayerToken = newFeePayer,
-            sourceTokenSymbol = source.tokenSymbol,
             solToken = solToken,
             feeRelayerFee = feeRelayerFee,
-            alternativeFeePayerTokens = alternativeFeePayerTokens
+            alternativeFeePayerTokens = alternativeFeePayerTokens,
+            sourceToken = source
         )
 
     private suspend fun validateAndSelectFeePayer(
@@ -263,9 +263,6 @@ class SendFeeRelayerManager(
          * - In other cases, switching to SOL
          * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
-            is FeePayerState.UpdateFeePayer -> {
-                sendInteractor.setFeePayerToken(sourceToken)
-            }
             is FeePayerState.SwitchToSpl -> {
                 sendInteractor.setFeePayerToken(state.tokenToSwitch)
             }
