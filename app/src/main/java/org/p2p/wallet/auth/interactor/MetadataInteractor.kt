@@ -7,6 +7,7 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
+import kotlinx.coroutines.CancellationException
 
 class MetadataInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
@@ -36,16 +37,24 @@ class MetadataInteractor(
         ethereumPublicKey: String
     ) {
         try {
-            requireNotNull(userAccount) { "loadAndSaveOnboarding: User account can't be null" }
-            require(mnemonicPhraseWords.isNotEmpty()) { "loadAndSaveOnboarding: seed phrase can't be null or empty" }
+            if (userAccount == null) {
+                throw GetOnboardingMetadataFailed.GetOnboardingMetadataNoAccount()
+            }
+            if (mnemonicPhraseWords.isEmpty()) {
+                throw GetOnboardingMetadataFailed.GetOnboardingMetadataNoSeedPhrase()
+            }
             gatewayServiceRepository.loadAndSaveOnboardingMetadata(
                 solanaPublicKey = userAccount.publicKey.toBase58Instance(),
                 solanaPrivateKey = userAccount.keypair.toBase58Instance(),
                 userSeedPhrase = mnemonicPhraseWords,
                 etheriumAddress = ethereumPublicKey
             )
+        } catch (cancelled: CancellationException) {
+            Timber.i(cancelled)
+        } catch (validationError: GetOnboardingMetadataFailed) {
+            Timber.e(validationError)
         } catch (error: Throwable) {
-            Timber.e(GetOnboardingMetadataFailed(error))
+            Timber.e(GetOnboardingMetadataFailed.OnboardingMetadataRequestFailure(error))
         }
     }
 }

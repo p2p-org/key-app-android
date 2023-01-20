@@ -49,7 +49,7 @@ class CrashHttpLoggingInterceptor : Interceptor {
     private fun createResponseLog(response: Response) = buildString {
         append("NETWORK ${response.request.url} | ")
         if (rpcMethodName != null) {
-           append(rpcMethodName)
+            append(rpcMethodName)
             rpcMethodName = null
         }
 
