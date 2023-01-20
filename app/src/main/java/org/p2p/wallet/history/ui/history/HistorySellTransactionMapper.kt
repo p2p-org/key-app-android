@@ -12,7 +12,7 @@ class HistorySellTransactionMapper {
         val now = ZonedDateTime.now()
         return transaction
             .filter { it.status == SellTransactionStatus.WAITING_FOR_DEPOSIT || it.isNotExpired(now) }
-            .sortedBy { it.metadata.createdAt.toZonedDateTime() }
+            .sortedByDescending { it.metadata.createdAt.toZonedDateTime() }
     }
 
     private fun SellTransaction.isNotExpired(now: ZonedDateTime): Boolean {
