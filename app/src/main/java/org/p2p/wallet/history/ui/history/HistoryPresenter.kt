@@ -3,6 +3,7 @@ package org.p2p.wallet.history.ui.history
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.analytics.HistoryAnalytics
+import org.p2p.wallet.history.interactor.HistoryFetchListResult
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
@@ -25,28 +26,6 @@ class HistoryPresenter(
     private val sellTransactionsMapper: HistorySellTransactionMapper,
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
-    private class FetchListResult<T>(
-        content: MutableList<T> = mutableListOf(),
-        val isFailed: Boolean = false,
-    ) {
-        private val innerContent = content
-
-        private var contentFilter: ((T) -> Boolean)? = null
-
-        val content: List<T>
-            get() = contentFilter?.let(innerContent::filter) ?: innerContent
-
-        fun withContentFilter(filter: (T) -> Boolean): FetchListResult<T> = apply {
-            contentFilter = filter
-        }
-
-        fun hasFetchedItems(): Boolean = content.isNotEmpty()
-
-        fun clearContent() {
-            innerContent.clear()
-        }
-    }
-
     private object HistoryFetchFailure : Throwable(message = "Both transactions were not fetch due to errors")
 
     private var isPagingEnded = false
@@ -54,8 +33,8 @@ class HistoryPresenter(
     private var pagingJob: Job? = null
 
     private var lastTransactionSignature: String? = null
-    private var blockChainTransactionsList = FetchListResult<HistoryTransaction>()
-    private var moonpayTransactionsList = FetchListResult<SellTransaction>()
+    private var blockChainTransactionsList = HistoryFetchListResult<HistoryTransaction>()
+    private var moonpayTransactionsList = HistoryFetchListResult<SellTransaction>()
 
     override fun attach(view: HistoryContract.View) {
         super.attach(view)
@@ -113,7 +92,7 @@ class HistoryPresenter(
             val deferredSellTransactions = async { fetchSellTransactions() }
             val deferredBlockChainTransactions = async { fetchBlockChainTransactions(isRefresh) }
             moonpayTransactionsList = deferredSellTransactions.await()
-            blockChainTransactionsList = deferredBlockChainTransactions.await()
+            blockChainTransactionsList += deferredBlockChainTransactions.await()
             if (moonpayTransactionsList.isFailed && blockChainTransactionsList.isFailed) {
                 view?.showPagingState(PagingState.Error(HistoryFetchFailure))
                 Timber.e(HistoryFetchFailure, "Error getting transaction whole history")
@@ -129,27 +108,29 @@ class HistoryPresenter(
         }
     }
 
-    private suspend fun fetchBlockChainTransactions(isRefresh: Boolean): FetchListResult<HistoryTransaction> = try {
-        historyInteractor.loadTransactions(isRefresh)
-            .toMutableList()
-            .let(::FetchListResult)
-    } catch (error: Throwable) {
-        Timber.e(error, "Error while loading blockchain transactions on history")
-        FetchListResult(isFailed = true)
-    }
+    private suspend fun fetchBlockChainTransactions(isRefresh: Boolean): HistoryFetchListResult<HistoryTransaction> =
+        try {
+            historyInteractor.loadTransactions(isRefresh)
+                .toMutableList()
+                .let(::HistoryFetchListResult)
+        } catch (error: Throwable) {
+            Timber.e(error, "Error while loading blockchain transactions on history")
+            HistoryFetchListResult(isFailed = true)
+        }
 
-    private suspend fun fetchSellTransactions(): FetchListResult<SellTransaction> = try {
-        sellTransactionsMapper.map(historyInteractor.getSellTransactions())
-            .toMutableList()
-            .let(::FetchListResult)
-            .withContentFilter {
-                !it.isCancelled() &&
-                    !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
-            }
-    } catch (error: Throwable) {
-        Timber.e(error, "Error while loading Moonpay sell transactions on history")
-        FetchListResult(isFailed = true)
-    }
+    private suspend fun fetchSellTransactions(): HistoryFetchListResult<SellTransaction> =
+        try {
+            sellTransactionsMapper.map(historyInteractor.getSellTransactions())
+                .toMutableList()
+                .let(::HistoryFetchListResult)
+                .withContentFilter {
+                    !it.isCancelled() &&
+                        !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
+                }
+        } catch (error: Throwable) {
+            Timber.e(error, "Error while loading Moonpay sell transactions on history")
+            HistoryFetchListResult(isFailed = true)
+        }
 
     override fun onItemClicked(transaction: HistoryTransaction) {
         logTransactionClicked(transaction)
