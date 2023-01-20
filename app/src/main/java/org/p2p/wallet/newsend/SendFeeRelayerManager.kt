@@ -60,13 +60,17 @@ class SendFeeRelayerManager(
         this.solToken = solToken
 
         onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = true))
-
-        minRentExemption = sendInteractor.getMinRelayRentExemption()
-        feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
-        alternativeFeePayerTokens = userInteractor.getNonZeroUserTokens()
-        sendInteractor.initialize(initialToken)
-
-        onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
+        try {
+            minRentExemption = sendInteractor.getMinRelayRentExemption()
+            feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
+            alternativeFeePayerTokens = userInteractor.getNonZeroUserTokens()
+            sendInteractor.initialize(initialToken)
+            sendInteractor.initialize(initialToken)
+        } catch (e: Throwable) {
+            currentState = Failure(FeesCalculationError)
+        } finally {
+            onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
+        }
     }
 
     fun getMinRentExemption(): BigInteger = minRentExemption.orZero()

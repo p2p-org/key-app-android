@@ -14,6 +14,8 @@ import org.p2p.uikit.components.SellWidgetViewState
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
@@ -40,6 +42,7 @@ class SellPayloadPresenter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val moonpayWidgetUrlBuilder: MoonpayWidgetUrlBuilder,
     private val externalCustomerIdProvider: MoonpayExternalCustomerIdProvider,
+    private val secureStorage: SecureStorageContract,
     private val resources: Resources,
 ) : BasePresenter<SellPayloadContract.View>(),
     SellPayloadContract.Presenter {
@@ -64,6 +67,7 @@ class SellPayloadPresenter(
     private lateinit var viewState: ViewState
 
     private var sellQuoteJob: Job? = null
+    private var needCheckForSellLock: Boolean = true
 
     override fun attach(view: SellPayloadContract.View) {
         super.attach(view)
@@ -86,10 +90,13 @@ class SellPayloadPresenter(
                 }
 
                 loadCurrencies()
-                checkForMinAmount()
                 initialLoadSellQuote()
                 startLoadSellQuoteJob()
                 view.showLoading(isVisible = false)
+
+                if (!secureStorage.getBoolean(Key.KEY_IS_SELL_WARNING_SHOWED, false)) {
+                    view.showOnlySolWarning()
+                }
             } catch (error: Throwable) {
                 handleError(error)
             }
@@ -97,6 +104,8 @@ class SellPayloadPresenter(
     }
 
     private suspend fun checkForSellLock() {
+        if (!needCheckForSellLock) return
+        needCheckForSellLock = false
         val userTransactionInProcess = getUserTransactionInProcess()
         if (userTransactionInProcess != null) {
             // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
@@ -114,6 +123,14 @@ class SellPayloadPresenter(
         }
     }
 
+    override fun checkSellLock() {
+        launch { checkForSellLock() }
+    }
+
+    override fun setNeedCheckForSellLock() {
+        needCheckForSellLock = true
+    }
+
     private suspend fun getUserTransactionInProcess(): SellTransaction.WaitingForDepositTransaction? {
         val userTransactions = sellInteractor.loadUserSellTransactions()
         return userTransactions.filterIsInstance<SellTransaction.WaitingForDepositTransaction>()
@@ -126,12 +143,6 @@ class SellPayloadPresenter(
         maxTokenSellAmount = solCurrency.amounts.maxSellAmount
         rawUserSelectedAmount = minTokenSellAmount.formatTokenForMoonpay()
         fiatCurrencyMode = sellInteractor.getMoonpaySellFiatCurrency().toCurrencyMode()
-    }
-
-    private fun checkForMinAmount() {
-        if (userSolBalance < minTokenSellAmount) {
-            view?.navigateNotEnoughTokensErrorScreen(minTokenSellAmount)
-        }
     }
 
     private suspend fun initialLoadSellQuote() {
@@ -260,12 +271,15 @@ class SellPayloadPresenter(
             userSelectedAmount.isLessThan(minTokenSellAmount) -> {
                 stateBuilder.minAmountErrorState(minTokenSellAmount)
             }
+
             userSelectedAmount.isMoreThan(maxTokenSellAmount.orZero()) -> {
                 stateBuilder.maxAmountErrorState(maxTokenSellAmount.orZero())
             }
+
             userSelectedAmount.isMoreThan(userSolBalance) -> {
                 stateBuilder.notEnoughTokenErrorState()
             }
+
             else -> {
                 stateBuilder.cashOutAvailableState()
             }
