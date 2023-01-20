@@ -135,7 +135,12 @@ object AuthModule {
         singleOf(::GoogleSignInHelper)
         singleOf(::UserSignUpDetailsStorage)
         singleOf(::Web3AuthClientMapper)
-        factoryOf(::Web3AuthDurationTracker)
+        factory {
+            Web3AuthDurationTracker(
+                analytics = get(),
+                torusNetwork = get<NetworkServicesUrlProvider>().loadTorusEnvironment(),
+            )
+        }
         single<Web3AuthApi> {
             Web3AuthApiClient(
                 context = androidContext(),

@@ -24,12 +24,12 @@ class UserSignUpInteractor(
 
     suspend fun trySignUpNewUser(socialShareUserId: String): SignUpResult {
         return try {
-            Timber.i("--> Start trySignUpNewUser")
+            Timber.tag("UserSignUpInteractor").i("--> Start trySignUpNewUser")
             val signUpResponse: Web3AuthSignUpResponse = generateDeviceAndThirdShare()
             signUpFlowDataRepository.generateUserAccount(userMnemonicPhrase = signUpResponse.mnemonicPhraseWords)
             userSignUpDetailsStorage.save(signUpResponse, socialShareUserId)
 
-            Timber.i("<-- Finish trySignUpNewUser")
+            Timber.tag("UserSignUpInteractor").i("<-- Finish trySignUpNewUser")
             SignUpResult.SignUpSuccessful
         } catch (web3AuthError: Web3AuthErrorResponse) {
             if (web3AuthError.errorType == ErrorType.CANNOT_RECONSTRUCT) {
