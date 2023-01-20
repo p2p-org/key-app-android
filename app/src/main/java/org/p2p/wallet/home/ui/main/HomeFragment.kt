@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
-import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.formatFiat
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -243,7 +243,7 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal) {
-        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatUsd())
+        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatFiat())
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

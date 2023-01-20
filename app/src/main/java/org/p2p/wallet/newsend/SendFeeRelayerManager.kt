@@ -1,5 +1,6 @@
 package org.p2p.wallet.newsend
 
+import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -28,7 +29,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
 
 class SendFeeRelayerManager(
     private val sendInteractor: SendInteractor
@@ -122,6 +122,7 @@ class SendFeeRelayerManager(
             )
         } catch (e: Throwable) {
             Timber.e(e, "Error during FeeRelayer fee calculation")
+            handleError(FeesCalculationError)
         } finally {
             onFeeLoading?.invoke(FeeLoadingState(isLoading = false, isDelayed = useCache))
         }

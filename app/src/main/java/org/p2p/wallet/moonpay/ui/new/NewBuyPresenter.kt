@@ -1,15 +1,11 @@
 package org.p2p.wallet.moonpay.ui.new
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.USD_SYMBOL
 import org.p2p.core.utils.asCurrency
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -36,6 +32,10 @@ import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MS = 500L
 
@@ -320,7 +320,7 @@ class NewBuyPresenter(
         view?.apply {
             setContinueButtonEnabled(false)
             val symbol = selectedCurrency.code.symbolFromCode()
-            val minAmountWithSymbol = "$symbol ${minAmount.formatUsd()}"
+            val minAmountWithSymbol = "$symbol ${minAmount.formatFiat()}"
             buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
             showMessage(
                 resourcesProvider.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
@@ -333,7 +333,7 @@ class NewBuyPresenter(
         view?.apply {
             setContinueButtonEnabled(false)
             val symbol = selectedCurrency.code.symbolFromCode()
-            val minAmountWithSymbol = "$symbol ${maxAmount.formatUsd()}"
+            val minAmountWithSymbol = "$symbol ${maxAmount.formatFiat()}"
             buyDetailsState = BuyDetailsState.MaxAmountError(minAmountWithSymbol)
             showMessage(
                 resourcesProvider.getString(R.string.buy_max_transaction_format).format(minAmountWithSymbol)
@@ -368,7 +368,7 @@ class NewBuyPresenter(
 
     private fun handleEnteredAmountValid(buyCurrencyInfo: BuyCurrency) {
         val amount = if (isSwappedToToken) {
-            buyCurrencyInfo.totalAmount.formatUsd()
+            buyCurrencyInfo.totalAmount.formatFiat()
         } else {
             buyCurrencyInfo.receiveAmount.toBigDecimal().formatToken()
         }
@@ -411,7 +411,7 @@ class NewBuyPresenter(
         } else {
             maxAmountMessage
         }
-        buyDetailsState = BuyDetailsState.MinAmountError("$symbol ${minAmount.formatUsd()}")
+        buyDetailsState = BuyDetailsState.MinAmountError("$symbol ${minAmount.formatFiat()}")
         view?.apply {
             setContinueButtonEnabled(false)
             showMessage(message)
@@ -441,8 +441,8 @@ class NewBuyPresenter(
         currentBuyViewData?.let {
             val paymentType = getValidPaymentType()
             buyAnalytics.logBuyButtonPressed(
-                buySumCurrency = it.total.formatUsd(),
-                buySumCoin = it.receiveAmount.toBigDecimal().formatUsd(),
+                buySumCurrency = it.total.formatFiat(),
+                buySumCoin = it.receiveAmount.toBigDecimal().formatFiat(),
                 buyCurrency = selectedCurrency.code,
                 buyCoin = it.tokenSymbol,
                 methodPayment = selectedPaymentMethod

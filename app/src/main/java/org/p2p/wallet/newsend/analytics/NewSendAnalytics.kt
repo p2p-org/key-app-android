@@ -1,7 +1,7 @@
 package org.p2p.wallet.newsend.analytics
 
+import org.p2p.core.model.CurrencyMode
 import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.SearchResult
 
 const val NEW_SEND_RECIPIENT_VIEWED = "Sendnew_Recipient_Screen"
@@ -54,7 +54,7 @@ class NewSendAnalytics(
                 "Amount_Token" to amountInToken,
                 "Amount_USD" to amountInUsd,
                 "Fee" to isFeeFree,
-                "Fiat_Input" to (mode is CurrencyMode.Usd)
+                "Fiat_Input" to (mode is CurrencyMode.Fiat)
             )
         )
     }

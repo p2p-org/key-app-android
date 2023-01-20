@@ -3,7 +3,6 @@ package org.p2p.wallet.sell.ui.payload
 import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
-import android.view.View.OnFocusChangeListener
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.formatTokenForMoonpay
 import org.p2p.uikit.utils.getColor
@@ -39,15 +38,13 @@ class SellPayloadFragment :
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            textViewAvailableAmount.setOnClickListener { presenter.onUserMaxClicked() }
-
-            editTextTokenAmount.setAmountInputTextWatcher(presenter::onTokenAmountChanged)
-            editTextTokenAmount.onFieldFocusChangeListener = OnFocusChangeListener { _, isFocused ->
+            widgetSendDetails.onMaxAmountButtonClicked = presenter::onUserMaxClicked
+            widgetSendDetails.onAmountChanged = presenter::onTokenAmountChanged
+            widgetSendDetails.onCurrencyModeSwitchClicked = presenter::switchCurrencyMode
+            widgetSendDetails.onInputFocusChanged = View.OnFocusChangeListener { _, isFocused ->
                 if (isFocused) sellAnalytics.logSellTokenAmountFocused()
             }
-            editTextTokenAmount.focusAndShowKeyboard()
-
-            editTextFiatAmount.isEditable = false
+            widgetSendDetails.focusInputAndShowKeyboard()
 
             buttonCashOut.setOnClickListener {
                 sellAnalytics.logSellSubmitClicked()
@@ -83,26 +80,8 @@ class SellPayloadFragment :
     }
 
     override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {
-        editTextFiatAmount.setAmount(newState.formattedFiatAmount)
-        editTextFiatAmount.setHint(getString(R.string.sell_payload_fiat_symbol, newState.fiatSymbol))
-        textViewFee.text = getString(
-            R.string.sell_payload_included_fee,
-            newState.formattedSellFiatFee,
-            newState.fiatSymbol
-        )
-        textViewRate.text = getString(
-            R.string.sell_payload_fiat_value,
-            newState.formattedTokenPrice,
-            newState.fiatSymbol
-        )
-        editTextTokenAmount.setHint(newState.tokenSymbol)
-        editTextTokenAmount.setAmount(newState.solToSell)
-        textViewAvailableAmount.text = getString(R.string.sell_payload_all_sol, newState.formattedUserAvailableBalance)
-    }
-
-    override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
-        binding.editTextTokenAmount.setHint(tokenSymbol)
-        binding.editTextTokenAmount.setupText(minAmount.toString())
+        binding.widgetSendDetails.render(newState.widgetViewState)
+        setButtonState(newState.cashOutButtonState)
     }
 
     override fun showMoonpayWidget(url: String) {
@@ -111,23 +90,12 @@ class SellPayloadFragment :
         requireContext().showUrlInCustomTabs(url)
     }
 
-    override fun setButtonState(state: SellPayloadContract.CashOutButtonState) {
+    override fun setButtonState(state: CashOutButtonState) {
         with(binding) {
             buttonCashOut.isEnabled = state.isEnabled
             buttonCashOut.setBackgroundColor(getColor(state.backgroundColor))
             buttonCashOut.setTextColor(getColor(state.textColor))
-            buttonCashOut.text = state.text
-
-            editTextTokenAmount.showError(isVisible = !state.isEnabled)
+            buttonCashOut.text = state.buttonText
         }
-    }
-
-    override fun setTokenAmount(newValue: String) {
-        binding.editTextTokenAmount.setAmount(newValue)
-    }
-
-    override fun resetFiatAndFee(feeSymbol: String) {
-        binding.editTextFiatAmount.setAmount("0")
-        binding.textViewFee.text = getString(R.string.sell_payload_included_fee, "0", feeSymbol)
     }
 }

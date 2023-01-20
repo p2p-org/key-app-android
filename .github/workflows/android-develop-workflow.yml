@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+
 jobs:
   android-lint:
     name: "Run ktlint check"
@@ -35,7 +36,6 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
-
   android-unit-tests:
     name: "Run unit tests"
     needs:
@@ -68,10 +68,10 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run unit tests
         run: ./gradlew testDebug
-
   android-build-artifacts:
     name: "Run build feature artifacts"
     needs:
+      - android-lint
       - android-unit-tests
 
     runs-on: ubuntu-latest
@@ -140,3 +140,18 @@ jobs:
           cd bash_scripts
           value=`cat timestamp.txt`
           bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+
+  update-jira-status:
+    name: "Jira manipulations"
+    needs:
+      - android-build-artifacts
+    runs-on: ubuntu-latest
+    environment: develop
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Find a Jira ticket and move it to READY FOR TESTING"
+        uses: ./.github/actions/setup-jira-rft
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
