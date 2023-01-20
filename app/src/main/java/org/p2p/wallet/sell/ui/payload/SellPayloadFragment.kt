@@ -53,6 +53,16 @@ class SellPayloadFragment :
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        presenter.checkSellLock()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.setNeedCheckForSellLock()
+    }
+
     override fun showLoading(isVisible: Boolean) {
         binding.shimmerView.isVisible = isVisible
     }

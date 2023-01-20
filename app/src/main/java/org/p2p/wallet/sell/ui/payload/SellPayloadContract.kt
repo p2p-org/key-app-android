@@ -27,5 +27,7 @@ interface SellPayloadContract {
         fun onTokenAmountChanged(newValue: String)
         fun onUserMaxClicked()
         fun switchCurrencyMode()
+        fun checkSellLock()
+        fun setNeedCheckForSellLock()
     }
 }
