@@ -89,6 +89,7 @@ class UiKitSellDetailsWidget @JvmOverloads constructor(
             textViewAmountName.text = activeModeSymbol
 
             editTextAmount.setText(viewState.inputAmount)
+            editTextAmount.setSelection(editTextAmount.text.length)
 
             textViewFiatEarningTitle.text = getString(
                 R.string.sell_fiat_earning_title,

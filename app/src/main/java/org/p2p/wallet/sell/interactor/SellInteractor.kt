@@ -1,5 +1,7 @@
 package org.p2p.wallet.sell.interactor
 
+import androidx.core.content.edit
+import android.content.SharedPreferences
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -27,8 +29,20 @@ class SellInteractor(
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
-    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract
+    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
+    private val sharedPreferences: SharedPreferences,
 ) {
+
+    companion object {
+        const val SHOW_SELL_INFORM_DIALOG_KEY = "SHOW_SELL_INFORM_DIALOG_KEY"
+    }
+
+    fun isNeedShowInformDialog(): Boolean =
+        sharedPreferences.getBoolean(SHOW_SELL_INFORM_DIALOG_KEY, true)
+
+    fun doNotShowInformDialogAgain() {
+        sharedPreferences.edit { putBoolean(SHOW_SELL_INFORM_DIALOG_KEY, false) }
+    }
 
     suspend fun loadSellAvailability() {
         if (sellEnabledFeatureToggle.isFeatureEnabled) {

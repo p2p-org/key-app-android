@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/viewSellInformViewPointer"
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewSellInformClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewSellInformViewPointer"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewSellInformMoonPayLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/ic_moonpay_logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewSellInformClose" />
+
+    <TextView
+        android:id="@+id/textViewSellInformNextStep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/sell_inform_dialog_next_step"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewSellInformMoonPayLogo" />
+
+    <View
+        android:id="@+id/viewSellInformTextBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        android:backgroundTint="@color/smoke"
+        app:layout_constraintBottom_toTopOf="@+id/checkBoxSellInformNotShow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformNextStep" />
+
+
+    <TextView
+        android:id="@+id/textViewSellInformFirstStep"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/bg_circle"
+        android:backgroundTint="@color/night"
+        android:gravity="center"
+        android:text="@string/sell_inform_dialog_first_step"
+        android:textAlignment="center"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
+        android:textColor="@color/text_snow"
+        app:layout_constraintStart_toStartOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintTop_toTopOf="@+id/textViewSellInformFirstTitle" />
+
+    <TextView
+        android:id="@+id/textViewSellInformFirstTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="12dp"
+        android:text="@string/sell_inform_dialog_first_title"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSellInformFirstSubtitle"
+        app:layout_constraintEnd_toEndOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewSellInformFirstStep"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformNextStep" />
+
+    <TextView
+        android:id="@+id/textViewSellInformFirstSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
+        android:text="@string/sell_inform_dialog_first_subtitle"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/mountain"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSellInformSecondTitle"
+        app:layout_constraintEnd_toEndOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/textViewSellInformFirstTitle"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformFirstTitle" />
+
+    <TextView
+        android:id="@+id/textViewSellInformSecondStep"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/bg_ring"
+        android:backgroundTint="@color/mountain"
+        android:gravity="center"
+        android:text="@string/sell_inform_dialog_second_step"
+        android:textAlignment="center"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
+        app:layout_constraintStart_toStartOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintTop_toTopOf="@+id/textViewSellInformSecondTitle" />
+
+    <View
+        android:id="@+id/viewSellInformLine"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginVertical="1dp"
+        android:background="@color/mountain"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSellInformSecondStep"
+        app:layout_constraintEnd_toEndOf="@+id/textViewSellInformFirstStep"
+        app:layout_constraintStart_toStartOf="@+id/textViewSellInformFirstStep"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformFirstStep" />
+
+    <TextView
+        android:id="@+id/textViewSellInformSecondTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:text="@string/sell_inform_dialog_second_title"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSellInformSecondSubtitle"
+        app:layout_constraintEnd_toEndOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewSellInformSecondStep"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformFirstSubtitle" />
+
+    <TextView
+        android:id="@+id/textViewSellInformSecondSubtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="28dp"
+        android:text="@string/sell_inform_dialog_second_subtitle"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+        android:textColor="@color/mountain"
+        app:layout_constraintBottom_toTopOf="@+id/checkBoxSellInformNotShow"
+        app:layout_constraintEnd_toEndOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/textViewSellInformSecondTitle"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformSecondTitle" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/checkBoxSellInformNotShow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="20dp"
+        android:minHeight="48dp"
+        android:text="@string/sell_inform_dialog_do_not_show"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
+        android:textColor="@color/text_night"
+        app:buttonTint="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSellInformConfirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonSellInformConfirm"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/sell_inform_dialog_confirm_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

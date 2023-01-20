@@ -11,6 +11,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.ui.error.SellErrorFragment
+import org.p2p.wallet.sell.ui.information.SellInformationBottomSheet
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -44,11 +45,18 @@ class SellPayloadFragment :
             widgetSendDetails.onInputFocusChanged = View.OnFocusChangeListener { _, isFocused ->
                 if (isFocused) sellAnalytics.logSellTokenAmountFocused()
             }
-            widgetSendDetails.focusInputAndShowKeyboard()
 
             buttonCashOut.setOnClickListener {
                 sellAnalytics.logSellSubmitClicked()
                 presenter.cashOut()
+            }
+        }
+        childFragmentManager.setFragmentResultListener(
+            SellInformationBottomSheet.SELL_INFORMATION_REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            if (bundle.getBoolean(SellInformationBottomSheet.SELL_INFORMATION_RESULT_KEY)) {
+                presenter.navigateToMoonpayWidget()
             }
         }
     }
@@ -67,6 +75,11 @@ class SellPayloadFragment :
         binding.shimmerView.isVisible = isVisible
     }
 
+    override fun showBtnLoading(isLoading: Boolean) {
+        binding.buttonCashOut.isLoadingState = isLoading
+        binding.buttonCashOut.isEnabled = !isLoading
+    }
+
     override fun navigateToSellLock(details: SellTransactionViewDetails) {
         replaceFragment(SellLockedFragment.create(details))
     }
@@ -77,6 +90,10 @@ class SellPayloadFragment :
                 errorState = SellErrorFragment.SellScreenError.ServerError()
             )
         )
+    }
+
+    override fun navigateToInformationScreen() {
+        SellInformationBottomSheet.newInstance(childFragmentManager)
     }
 
     override fun navigateNotEnoughTokensErrorScreen(minAmount: BigDecimal) {
@@ -91,6 +108,7 @@ class SellPayloadFragment :
 
     override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {
         binding.widgetSendDetails.render(newState.widgetViewState)
+        widgetSendDetails.focusInputAndShowKeyboard()
         setButtonState(newState.cashOutButtonState)
     }
 
