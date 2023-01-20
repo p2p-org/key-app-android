@@ -24,7 +24,7 @@ build/
 local.properties
 torus.properties
 signing.properties
-keys/*_apikey.properties
+apikey.properties
 credentials.properties
 p2pwallet.keystore
 *.jks

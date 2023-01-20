@@ -13,6 +13,8 @@ apply from: "$project.rootDir/scripts/ktlint.gradle"
 apply from: "$project.rootDir/scripts/versioning.gradle"
 apply from: "$project.rootDir/scripts/config.gradle"
 apply from: "$project.rootDir/scripts/signing.gradle"
+apply from: "$project.rootDir/scripts/amplitude.gradle"
+apply from: "$project.rootDir/scripts/sentry.gradle"
 
 android {
     compileSdkVersion sdkCompileVersion
@@ -28,7 +30,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
 
-        initSentry(config)
+        initApiKeys(config)
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "SENTRY_ENABLED", "false")
@@ -51,7 +53,7 @@ android {
     def torusProperties = getTorusProperties()
 
     buildTypes {
-        debug { buildType ->
+        debug {
             applicationIdSuffix ".debug"
             signingConfig signingConfigs.debug
             minifyEnabled false
@@ -60,11 +62,9 @@ android {
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_DEBUG']
-            manifestPlaceholders = [BUILD_TYPE: "debug"]
-            initApiKeys(buildType)
         }
 
-        feature { buildType ->
+        feature {
             applicationIdSuffix ".feature"
             debuggable true
             signingConfig signingConfigs.debug
@@ -74,8 +74,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_FEATURE']
-            manifestPlaceholders = [BUILD_TYPE: "feature"]
-            initApiKeys(buildType)
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
             buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
@@ -97,7 +95,6 @@ android {
         releaseFirebase { buildType ->
             signingConfig signingConfigs.release
             initReleaseType(buildType)
-            initApiKeys(buildType)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
@@ -115,7 +112,6 @@ android {
         releaseLocal { buildType ->
             signingConfig signingConfigs.release
             initReleaseType(buildType)
-            initApiKeys(buildType)
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
@@ -128,7 +124,6 @@ android {
         release { buildType ->
             signingConfig signingConfigs.release
             initReleaseType(buildType)
-            initApiKeys(buildType)
 
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 

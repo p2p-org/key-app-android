@@ -1,0 +1,27 @@
+apply plugin: 'com.android.application'
+
+android {
+    defaultConfig { defaultConfig ->
+        def sentryProperties = new PropertiesFile(rootProject.file("sentry.properties"), logger)
+        defaultConfig.manifestPlaceholders = [SENTRY_DSN: sentryProperties.getOrThrow("auth.dsn")]
+    }
+    buildTypes {
+        debug {
+            manifestPlaceholders = [SENTRY_ENV: "debug"]
+        }
+        feature {
+            manifestPlaceholders = [SENTRY_ENV: "feature"]
+        }
+        release {
+            manifestPlaceholders = [SENTRY_ENV: "release"]
+        }
+
+        releaseLocal {
+            initWith release
+        }
+
+        releaseFirebase {
+            initWith release
+        }
+    }
+}

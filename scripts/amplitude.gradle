@@ -1,0 +1,25 @@
+apply plugin: 'com.android.application'
+
+android {
+    buildTypes {
+        def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
+        debug {
+            buildConfigField("String", "amplitudeKey", apiKeysProperties.getOrThrow("amplitudeDebugKey"))
+        }
+        feature {
+            buildConfigField("String", "amplitudeKey", apiKeysProperties.getOrThrow("amplitudeDebugKey"))
+
+        }
+        release {
+            buildConfigField("String", "amplitudeKey", apiKeysProperties.getOrThrow("amplitudeProductionKey"))
+        }
+
+        releaseLocal {
+            initWith release
+        }
+
+        releaseFirebase {
+            initWith release
+        }
+    }
+}
