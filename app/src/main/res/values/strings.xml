@@ -679,8 +679,10 @@
     <string name="sell_details_cancel_failed">😢 Error with deleting. Try again</string>
 
     <string name="sell_error_body_message">Our payment service was ruined.\nVisit this page later</string>
-    <string name="sell_error_min_amount_title">You need a little more SOL</string>
-    <string name="sell_error_min_amount_subtitle">The current minimum amount is %s SOL</string>
+
+    <string name="sell_warning_only_sol_title">You can Cash out only SOL</string>
+    <string name="sell_warning_only_sol_body">To Cash out another coin swap your cryptocurrency to SOL before</string>
+    <string name="sell_warning_only_sol_button">Got it</string>
 
 
 </resources>
