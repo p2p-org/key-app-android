@@ -2,24 +2,16 @@ apply plugin: 'com.android.application'
 
 android {
     buildTypes {
+        //TODO move amplitude to separate amplitude.properties file
         def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
         debug {
             buildConfigField("String", "amplitudeKey", apiKeysProperties.getOrThrow("amplitudeDebugKey"))
         }
         feature {
             buildConfigField("String", "amplitudeKey", apiKeysProperties.getOrThrow("amplitudeDebugKey"))
-
         }
         release {
             buildConfigField("String", "amplitudeKey", apiKeysProperties.getOrThrow("amplitudeProductionKey"))
-        }
-
-        releaseLocal {
-            initWith release
-        }
-
-        releaseFirebase {
-            initWith release
         }
     }
 }

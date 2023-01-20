@@ -15,13 +15,5 @@ android {
         release {
             manifestPlaceholders = [SENTRY_ENV: "release"]
         }
-
-        releaseLocal {
-            initWith release
-        }
-
-        releaseFirebase {
-            initWith release
-        }
     }
 }
