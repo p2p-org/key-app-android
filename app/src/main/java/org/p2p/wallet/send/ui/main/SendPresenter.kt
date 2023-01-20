@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.ui.main
 
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.formatToken
@@ -38,7 +39,6 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.CurrencyMode
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SearchTarget
@@ -302,7 +302,7 @@ class SendPresenter(
         val token = token ?: return
 
         val totalAvailable = when (state.mode) {
-            is CurrencyMode.Usd -> token.totalInUsd
+            is CurrencyMode.Fiat -> token.totalInUsd
             is CurrencyMode.Token -> token.total.scaleLong()
         } ?: return
 
@@ -365,9 +365,9 @@ class SendPresenter(
         state.mode = when (state.mode) {
             is CurrencyMode.Token -> {
                 sendCurrency = USD_READABLE_SYMBOL
-                CurrencyMode.Usd
+                CurrencyMode.Fiat.Usd
             }
-            is CurrencyMode.Usd -> {
+            is CurrencyMode.Fiat -> {
                 sendCurrency = token.tokenSymbol.uppercase(Locale.getDefault())
                 CurrencyMode.Token(token)
             }
@@ -379,7 +379,7 @@ class SendPresenter(
 
     internal fun updateMaxButtonVisibility(token: Token.Active) {
         val totalAvailable = when (state.mode) {
-            is CurrencyMode.Usd -> token.totalInUsd
+            is CurrencyMode.Fiat -> token.totalInUsd
             is CurrencyMode.Token -> token.total.scaleLong()
         } ?: return
         view?.setMaxButtonVisibility(isVisible = state.inputAmount != totalAvailable.toString())
@@ -529,7 +529,7 @@ class SendPresenter(
         launch(dispatchers.ui) {
             when (state.mode) {
                 is CurrencyMode.Token -> calculateByToken(token)
-                is CurrencyMode.Usd -> calculateByUsd(token)
+                is CurrencyMode.Fiat -> calculateByUsd(token)
             }
         }.also { calculationJob = it }
     }
@@ -707,7 +707,7 @@ class SendPresenter(
 
         val newInputAmount = maxAllowedAmount.fromLamports(token.decimals).scaleLong()
         val totalInput = when (state.mode) {
-            is CurrencyMode.Usd -> newInputAmount.toUsd(token)
+            is CurrencyMode.Fiat -> newInputAmount.toUsd(token)
             is CurrencyMode.Token -> newInputAmount
         } ?: return
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sell_quote_in_fiat">1 %s ≈ %s %s</string>
+    <string name="sell_switch_currency_mode_title">Switch to %s</string>
+    <string name="sell_available_tokens">%s %s</string>
+    <string name="sell_fiat_earning_title">Sell %s, receive %s</string>
+    <string name="sell_fiat_earning_value">≈%s %s</string>
+    <string name="sell_fees_information">All fees Included %s %s ≈ %s %s</string>
+</resources>
