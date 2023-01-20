@@ -64,6 +64,7 @@ class SellPayloadPresenter(
     private lateinit var viewState: ViewState
 
     private var sellQuoteJob: Job? = null
+    private var needCheckForSellLock: Boolean = true
 
     override fun attach(view: SellPayloadContract.View) {
         super.attach(view)
@@ -97,6 +98,8 @@ class SellPayloadPresenter(
     }
 
     private suspend fun checkForSellLock() {
+        if (!needCheckForSellLock) return
+        needCheckForSellLock = false
         val userTransactionInProcess = getUserTransactionInProcess()
         if (userTransactionInProcess != null) {
             // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
@@ -112,6 +115,14 @@ class SellPayloadPresenter(
                 )
             )
         }
+    }
+
+    override fun checkSellLock() {
+        launch { checkForSellLock() }
+    }
+
+    override fun setNeedCheckForSellLock() {
+        needCheckForSellLock = true
     }
 
     private suspend fun getUserTransactionInProcess(): SellTransaction.WaitingForDepositTransaction? {
@@ -260,12 +271,15 @@ class SellPayloadPresenter(
             userSelectedAmount.isLessThan(minTokenSellAmount) -> {
                 stateBuilder.minAmountErrorState(minTokenSellAmount)
             }
+
             userSelectedAmount.isMoreThan(maxTokenSellAmount.orZero()) -> {
                 stateBuilder.maxAmountErrorState(maxTokenSellAmount.orZero())
             }
+
             userSelectedAmount.isMoreThan(userSolBalance) -> {
                 stateBuilder.notEnoughTokenErrorState()
             }
+
             else -> {
                 stateBuilder.cashOutAvailableState()
             }
