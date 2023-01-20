@@ -3,14 +3,12 @@ import org.gradle.api.GradleScriptException
 
 class PropertiesFile {
     private Properties properties = new Properties()
-    def String propertiesFileName = "-"
+    private String propertiesFileName = "-"
     private Logger logger
-    def Boolean isFileExists
 
     PropertiesFile(File propertiesFile, Logger logger) {
         this.logger = logger
         propertiesFileName = propertiesFile.name
-        isFileExists = propertiesFile.canRead()
         if (propertiesFile.canRead()) {
             properties.load(new FileInputStream(propertiesFile))
             logger.quiet("[${propertiesFile.name}] File ${propertiesFile.name} found, using file")
@@ -38,5 +36,4 @@ class PropertiesFile {
             )
         }
     }
-
 }

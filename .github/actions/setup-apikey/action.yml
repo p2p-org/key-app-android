@@ -32,7 +32,6 @@ runs:
     - name: Create apikey.properties file
       shell: bash
       run: |
-        cd keys
         touch apikey.properties
         echo "rpcPoolApiKey=\"${{ inputs.rpc-pool-secret }}\"" >> apikey.properties
         echo "moonpayKey=\"${{ inputs.moonpay-secret }}\"" >> apikey.properties
