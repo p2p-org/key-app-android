@@ -34,7 +34,6 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
-
   android-unit-tests:
     name: "Run unit tests"
     needs:
@@ -67,7 +66,6 @@ jobs:
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run unit tests
         run: ./gradlew testDebug
-
   android-build-artifacts:
     name: "Run build feature artifacts"
     needs:

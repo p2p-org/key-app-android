@@ -37,7 +37,21 @@ object HistoryModule : InjectionModule {
 
         factoryOf(::HistoryTransactionConverter)
         factoryOf(::HistoryTransactionMapper)
-        factoryOf(::HistoryInteractor)
+        factory {
+            HistoryInteractor(
+                rpcAccountRepository = get(),
+                transactionsLocalRepository = get(),
+                transactionsRemoteRepository = get(),
+                tokenKeyProvider = get(),
+                historyTransactionMapper = get(),
+                rpcSignatureRepository = get(),
+                userInteractor = get(),
+                sellInteractor = get(),
+                hiddenSellTransactionsStorage = get(),
+                sellEnabledFeatureToggle = get(),
+                serviceScope = get()
+            )
+        }
         factoryOf(::HistoryItemMapper)
         factoryOf(::HistorySellTransactionMapper)
 

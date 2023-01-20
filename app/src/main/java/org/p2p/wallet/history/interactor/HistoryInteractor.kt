@@ -4,6 +4,7 @@ import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.common.di.ServiceScope
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.stream.AccountStreamSource
 import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
@@ -34,6 +35,7 @@ class HistoryInteractor(
     private val userInteractor: UserInteractor,
     private val sellInteractor: SellInteractor,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val serviceScope: ServiceScope
 ) {
     private val allSignatures = mutableListOf<String>()
@@ -164,7 +166,7 @@ class HistoryInteractor(
             .first()
 
     suspend fun getSellTransactions(): List<SellTransaction> {
-        return if (sellInteractor.isSellAvailable()) {
+        return if (sellEnabledFeatureToggle.isFeatureEnabled) {
             sellInteractor.loadUserSellTransactions()
                 .filterNot { hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId) }
         } else {
