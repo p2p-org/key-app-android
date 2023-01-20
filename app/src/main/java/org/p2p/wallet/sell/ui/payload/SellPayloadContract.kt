@@ -4,7 +4,6 @@ import org.p2p.uikit.components.SellWidgetViewState
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import java.math.BigDecimal
 
 interface SellPayloadContract {
     data class ViewState(
@@ -19,9 +18,9 @@ interface SellPayloadContract {
         fun navigateToSellLock(details: SellTransactionViewDetails)
         fun navigateToErrorScreen()
         fun navigateToInformationScreen()
-        fun navigateNotEnoughTokensErrorScreen(minAmount: BigDecimal)
         fun updateViewState(newState: ViewState)
         fun setButtonState(state: CashOutButtonState)
+        fun showOnlySolWarning()
     }
 
     interface Presenter : MvpPresenter<View> {

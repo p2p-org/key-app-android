@@ -4,7 +4,7 @@ import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.core.utils.formatTokenForMoonpay
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -14,13 +14,13 @@ import org.p2p.wallet.sell.ui.error.SellErrorFragment
 import org.p2p.wallet.sell.ui.information.SellInformationBottomSheet
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.sell.ui.warning.SellOnlySolWarningBottomSheet
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
-import java.math.BigDecimal
 
 class SellPayloadFragment :
     BaseMvpFragment<SellPayloadContract.View, SellPayloadContract.Presenter>(R.layout.fragment_sell_payload),
@@ -92,18 +92,13 @@ class SellPayloadFragment :
         )
     }
 
-    override fun navigateToInformationScreen() {
-        SellInformationBottomSheet.newInstance(childFragmentManager)
+    override fun showOnlySolWarning() {
+        binding.root.hideKeyboard()
+        SellOnlySolWarningBottomSheet.show(childFragmentManager)
     }
 
-    override fun navigateNotEnoughTokensErrorScreen(minAmount: BigDecimal) {
-        popAndReplaceFragment(
-            SellErrorFragment.create(
-                errorState = SellErrorFragment.SellScreenError.NotEnoughAmount(
-                    formattedMinTokenAmount = minAmount.formatTokenForMoonpay()
-                )
-            )
-        )
+    override fun navigateToInformationScreen() {
+        SellInformationBottomSheet.newInstance(childFragmentManager)
     }
 
     override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {
