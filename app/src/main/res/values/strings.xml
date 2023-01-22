@@ -691,8 +691,8 @@
     <string name="sell_inform_dialog_second_step">2</string>
     <string name="sell_inform_dialog_second_title">Transfer SOL to our payment provider from Key App</string>
     <string name="sell_inform_dialog_second_subtitle">Nobody has access to your funds, so you need to execute the transaction cash out</string>
-    <string name="sell_inform_dialog_do_not_show">Don’t show me again</string>
-    <string name="sell_inform_dialog_confirm_btn">Let’s go!</string>
+    <string name="sell_inform_dialog_do_not_show">Don\'t show me again</string>
+    <string name="sell_inform_dialog_confirm_btn">Let\'s go!</string>
 
 
 </resources>

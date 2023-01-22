@@ -4,11 +4,11 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.sell.interactor.SellInteractor
 
 class SellInformationPresenter(
-    val interactor: SellInteractor,
+    private val interactor: SellInteractor,
 ) : BasePresenter<SellInformationContract.View>(), SellInformationContract.Presenter {
 
-    override fun onOkClick(notShowAgain: Boolean) {
-        if (notShowAgain) interactor.doNotShowInformDialogAgain()
+    override fun closeDialog(shouldShowAgain: Boolean) {
+        interactor.setShouldShowInformDialog(shouldShowAgain)
         view?.dismissWithOkResult()
     }
 }

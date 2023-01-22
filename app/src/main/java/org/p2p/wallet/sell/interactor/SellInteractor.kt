@@ -34,14 +34,14 @@ class SellInteractor(
 ) {
 
     companion object {
-        const val SHOW_SELL_INFORM_DIALOG_KEY = "SHOW_SELL_INFORM_DIALOG_KEY"
+        const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_DIALOG_KEY"
     }
 
-    fun isNeedShowInformDialog(): Boolean =
-        sharedPreferences.getBoolean(SHOW_SELL_INFORM_DIALOG_KEY, true)
+    fun shouldShowInformDialog(): Boolean =
+        sharedPreferences.getBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY, true)
 
-    fun doNotShowInformDialogAgain() {
-        sharedPreferences.edit { putBoolean(SHOW_SELL_INFORM_DIALOG_KEY, false) }
+    fun setShouldShowInformDialog(shouldShowAgain: Boolean) {
+        sharedPreferences.edit { putBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY, shouldShowAgain) }
     }
 
     suspend fun loadSellAvailability() {

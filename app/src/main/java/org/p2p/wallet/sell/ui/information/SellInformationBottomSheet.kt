@@ -4,13 +4,12 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSellInformationBinding
+import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class SellInformationBottomSheet :
     BaseMvpBottomSheet<SellInformationContract.View, SellInformationContract.Presenter>(
@@ -22,27 +21,22 @@ class SellInformationBottomSheet :
         const val SELL_INFORMATION_REQUEST_KEY = "SELL_INFORMATION_REQUEST_KEY"
         const val SELL_INFORMATION_RESULT_KEY = "SELL_INFORMATION_RESULT_KEY"
 
-        fun newInstance(fm: FragmentManager) {
+        fun show(fm: FragmentManager) {
             SellInformationBottomSheet()
                 .show(fm, SellInformationBottomSheet::javaClass.name)
         }
     }
 
     override val presenter: SellInformationContract.Presenter by inject()
-    private lateinit var binding: DialogSellInformationBinding
+    private val binding: DialogSellInformationBinding by viewBinding()
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = DialogSellInformationBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            imageViewSellInformClose.setOnClickListener { dismiss() }
-            buttonSellInformConfirm.setOnClickListener { presenter.onOkClick(checkBoxSellInformNotShow.isChecked) }
+            imageViewSellClose.setOnClickListener { dismiss() }
+            buttonSellConfirm.setOnClickListener { presenter.closeDialog(!checkBoxSellNotShow.isChecked) }
         }
     }
 

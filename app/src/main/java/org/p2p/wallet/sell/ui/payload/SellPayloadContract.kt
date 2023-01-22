@@ -13,7 +13,7 @@ interface SellPayloadContract {
 
     interface View : MvpView {
         fun showLoading(isVisible: Boolean)
-        fun showBtnLoading(isLoading: Boolean)
+        fun showButtonLoading(isLoading: Boolean)
         fun showMoonpayWidget(url: String)
         fun navigateToSellLock(details: SellTransactionViewDetails)
         fun navigateToErrorScreen()
@@ -30,6 +30,6 @@ interface SellPayloadContract {
         fun switchCurrencyMode()
         fun checkSellLock()
         fun setNeedCheckForSellLock()
-        fun navigateToMoonpayWidget()
+        fun buildMoonpayWidget()
     }
 }

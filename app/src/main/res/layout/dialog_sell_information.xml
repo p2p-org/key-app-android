@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <View
-        android:id="@+id/viewSellInformViewPointer"
+        android:id="@+id/viewSellViewPointer"
         android:layout_width="32dp"
         android:layout_height="4dp"
         android:layout_marginTop="6dp"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageViewSellInformClose"
+        android:id="@+id/imageViewSellClose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
@@ -26,21 +26,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewSellInformViewPointer"
+        app:layout_constraintTop_toBottomOf="@+id/viewSellViewPointer"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageViewSellInformMoonPayLogo"
+        android:id="@+id/imageViewSellMoonPayLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:src="@drawable/ic_moonpay_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewSellInformClose" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewSellClose" />
 
     <TextView
-        android:id="@+id/textViewSellInformNextStep"
+        android:id="@+id/textViewSellNextStep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -48,10 +48,10 @@
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewSellInformMoonPayLogo" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewSellMoonPayLogo" />
 
     <View
-        android:id="@+id/viewSellInformTextBackground"
+        android:id="@+id/viewSellTextBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="16dp"
@@ -59,14 +59,14 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/shape_bottomsheet_pointer"
         android:backgroundTint="@color/smoke"
-        app:layout_constraintBottom_toTopOf="@+id/checkBoxSellInformNotShow"
+        app:layout_constraintBottom_toTopOf="@+id/checkBoxSellNotShow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformNextStep" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellNextStep" />
 
 
     <TextView
-        android:id="@+id/textViewSellInformFirstStep"
+        android:id="@+id/textViewSellFirstStep"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="12dp"
@@ -77,11 +77,11 @@
         android:textAlignment="center"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
         android:textColor="@color/text_snow"
-        app:layout_constraintStart_toStartOf="@+id/viewSellInformTextBackground"
-        app:layout_constraintTop_toTopOf="@+id/textViewSellInformFirstTitle" />
+        app:layout_constraintStart_toStartOf="@+id/viewSellTextBackground"
+        app:layout_constraintTop_toTopOf="@+id/textViewSellFirstTitle" />
 
     <TextView
-        android:id="@+id/textViewSellInformFirstTitle"
+        android:id="@+id/textViewSellFirstTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -89,14 +89,14 @@
         android:layout_marginEnd="12dp"
         android:text="@string/sell_inform_dialog_first_title"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
-        app:layout_constraintBottom_toTopOf="@+id/textViewSellInformFirstSubtitle"
-        app:layout_constraintEnd_toEndOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSellFirstSubtitle"
+        app:layout_constraintEnd_toEndOf="@+id/viewSellTextBackground"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textViewSellInformFirstStep"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformNextStep" />
+        app:layout_constraintStart_toEndOf="@+id/textViewSellFirstStep"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellNextStep" />
 
     <TextView
-        android:id="@+id/textViewSellInformFirstSubtitle"
+        android:id="@+id/textViewSellFirstSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -104,14 +104,14 @@
         android:text="@string/sell_inform_dialog_first_subtitle"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/mountain"
-        app:layout_constraintBottom_toTopOf="@+id/textViewSellInformSecondTitle"
-        app:layout_constraintEnd_toEndOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSellSecondTitle"
+        app:layout_constraintEnd_toEndOf="@+id/viewSellTextBackground"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/textViewSellInformFirstTitle"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformFirstTitle" />
+        app:layout_constraintStart_toStartOf="@+id/textViewSellFirstTitle"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellFirstTitle" />
 
     <TextView
-        android:id="@+id/textViewSellInformSecondStep"
+        android:id="@+id/textViewSellSecondStep"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="12dp"
@@ -121,22 +121,22 @@
         android:text="@string/sell_inform_dialog_second_step"
         android:textAlignment="center"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
-        app:layout_constraintStart_toStartOf="@+id/viewSellInformTextBackground"
-        app:layout_constraintTop_toTopOf="@+id/textViewSellInformSecondTitle" />
+        app:layout_constraintStart_toStartOf="@+id/viewSellTextBackground"
+        app:layout_constraintTop_toTopOf="@+id/textViewSellSecondTitle" />
 
     <View
-        android:id="@+id/viewSellInformLine"
+        android:id="@+id/viewSellLine"
         android:layout_width="1dp"
         android:layout_height="0dp"
         android:layout_marginVertical="1dp"
         android:background="@color/mountain"
-        app:layout_constraintBottom_toTopOf="@+id/textViewSellInformSecondStep"
-        app:layout_constraintEnd_toEndOf="@+id/textViewSellInformFirstStep"
-        app:layout_constraintStart_toStartOf="@+id/textViewSellInformFirstStep"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformFirstStep" />
+        app:layout_constraintBottom_toTopOf="@+id/textViewSellSecondStep"
+        app:layout_constraintEnd_toEndOf="@+id/textViewSellFirstStep"
+        app:layout_constraintStart_toStartOf="@+id/textViewSellFirstStep"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellFirstStep" />
 
     <TextView
-        android:id="@+id/textViewSellInformSecondTitle"
+        android:id="@+id/textViewSellSecondTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -144,14 +144,14 @@
         android:layout_marginEnd="12dp"
         android:text="@string/sell_inform_dialog_second_title"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
-        app:layout_constraintBottom_toTopOf="@+id/textViewSellInformSecondSubtitle"
-        app:layout_constraintEnd_toEndOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSellSecondSubtitle"
+        app:layout_constraintEnd_toEndOf="@+id/viewSellTextBackground"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textViewSellInformSecondStep"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformFirstSubtitle" />
+        app:layout_constraintStart_toEndOf="@+id/textViewSellSecondStep"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellFirstSubtitle" />
 
     <TextView
-        android:id="@+id/textViewSellInformSecondSubtitle"
+        android:id="@+id/textViewSellSecondSubtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -160,14 +160,14 @@
         android:text="@string/sell_inform_dialog_second_subtitle"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/mountain"
-        app:layout_constraintBottom_toTopOf="@+id/checkBoxSellInformNotShow"
-        app:layout_constraintEnd_toEndOf="@+id/viewSellInformTextBackground"
+        app:layout_constraintBottom_toTopOf="@+id/checkBoxSellNotShow"
+        app:layout_constraintEnd_toEndOf="@+id/viewSellTextBackground"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/textViewSellInformSecondTitle"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSellInformSecondTitle" />
+        app:layout_constraintStart_toStartOf="@+id/textViewSellSecondTitle"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSellSecondTitle" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/checkBoxSellInformNotShow"
+        android:id="@+id/checkBoxSellNotShow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
@@ -177,12 +177,12 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
         android:textColor="@color/text_night"
         app:buttonTint="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/buttonSellInformConfirm"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSellConfirm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonSellInformConfirm"
+        android:id="@+id/buttonSellConfirm"
         style="@style/UiKit.Components.Button.Large"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -10,6 +10,6 @@ interface SellInformationContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun onOkClick(notShowAgain: Boolean)
+        fun closeDialog(shouldShowAgain: Boolean)
     }
 }
