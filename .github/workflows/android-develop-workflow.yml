@@ -1,3 +1,5 @@
+# Workflow for develop branch changes.
+# When a pull request is being merged in develop, this workflows triggers
 on:
   push:
     branches:

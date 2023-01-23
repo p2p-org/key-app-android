@@ -1,15 +1,12 @@
+# The workflow triggers for release branch changes only
 on:
-  pull_request:
+  push:
     branches:
       - release/*
-    inputs:
-
-
-
-
 jobs:
   android-build-local-firebase-release:
     name: "Run build AAB for Firebase"
+
     runs-on: ubuntu-latest
     environment: production
     steps:
