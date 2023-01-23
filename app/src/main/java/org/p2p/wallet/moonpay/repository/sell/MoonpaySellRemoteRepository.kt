@@ -18,7 +18,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
 private const val TAG = "MoonpaySellRemoteRepository"
