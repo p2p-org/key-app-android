@@ -26,7 +26,7 @@ runs:
       id: review
       uses: atlassian/gajira-find-issue-key@v3
       with:
-        from: commits
+        from: branch
 
     - name: "Jira Ticket Transition"
       uses: atlassian/gajira-transition@v3
