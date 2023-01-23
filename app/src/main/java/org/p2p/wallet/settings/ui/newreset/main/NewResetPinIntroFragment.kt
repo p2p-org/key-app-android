@@ -20,9 +20,6 @@ class NewResetPinIntroFragment : BaseFragment(R.layout.fragment_new_reset_pin_in
         fun create(): NewResetPinIntroFragment = NewResetPinIntroFragment()
     }
 
-    override val navBarColor: Int
-        get() = R.color.night
-
     private val binding: FragmentNewResetPinIntroBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

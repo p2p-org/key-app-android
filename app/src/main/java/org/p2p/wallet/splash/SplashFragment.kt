@@ -17,9 +17,6 @@ class SplashFragment :
 
     override val presenter: SplashContract.Presenter by inject()
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_lime
-
     override fun navigateToOnboarding() {
         replaceFragment(OnboardingRootFragment.create())
     }

@@ -24,6 +24,7 @@ import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -50,7 +51,7 @@ class ReceiveTokenFragment :
         )
     }
 
-    override val statusBarColor: Int = R.color.bg_night
+    override val customStatusBarStyle = SystemIconsStyle.WHITE
     override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     private val binding: FragmentReceiveTokenBinding by viewBinding()
@@ -62,7 +63,6 @@ class ReceiveTokenFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setLightStatusBar(darkIcons = false)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getString(R.string.receive_token_name, token.tokenName)
@@ -115,11 +115,6 @@ class ReceiveTokenFragment :
             rootView.updatePadding(bottom = systemAndIme.bottom)
             WindowInsetsCompat.CONSUMED
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        setLightSystemBar(darkIcons = true)
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
