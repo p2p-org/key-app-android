@@ -1,6 +1,8 @@
 #!/bin/bash
 git fetch
-printf "$(git shortlog origin/develop..origin/$GITHUB_HEAD_REF)" > changelog.txt
+# since we are building the app after the pull request is merged in develop branch
+# we are getting the develop's last commit description
+printf "$(git log -1 --pretty=format:'%b' develop)" > changelog.txt
 
 curl \
 -F token="$1" \
