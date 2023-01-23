@@ -18,20 +18,12 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
           moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
-          amplitude-secret-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
@@ -72,20 +64,12 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
           moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
-          amplitude-secret-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
@@ -143,20 +127,12 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
           rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-secret: ${{ secrets.MOONPAY_KEY }}
           moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
-          amplitude-secret-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}

@@ -4,24 +4,6 @@ inputs:
   firebase-secret:
     description: "Firebase secret"
     required: true
-  torus-verifier-debug:
-    description: "Torus verifier - DEBUG"
-    required: true
-  torus-verifier-feature:
-    description: "Torus verifier - FEATURE"
-    required: true
-  torus-verifier-release:
-    description: "Torus release verifier - STORE/FIREBASE/SLACK"
-    required: true
-  torus-subverifier-store:
-    description: "Torus sub-verifier - STORE"
-    required: true
-  torus-subverifier-firebase:
-    description: "Torus sub-verifier - FIREBASE"
-    required: true
-  torus-subverifier-local:
-    description: "Torus sub-verifier - LOCAL/SLACK"
-    required: true
   rpc-pool-secret:
     description: "Rpc pool api key"
     required: true
@@ -39,12 +21,6 @@ inputs:
     required: true
   intercom-key-secret:
     description: "Intercom app key"
-    required: true
-  amplitude-secret-debug:
-    description: "Amplitude api key - DEBUG"
-    required: true
-  amplitude-secret-release:
-    description: "Amplitude api key - RELEASE"
     required: true
   apps-flyer-secret:
     description: "AppsFlyer key"
@@ -81,16 +57,6 @@ runs:
       with:
         firebase-secret: ${{ inputs.firebase-secret }}
 
-    - name: "Create torus.properties"
-      uses: ./.github/actions/setup-torus
-      with:
-        torus-verifier-debug: ${{ inputs.torus-verifier-debug }}
-        torus-verifier-feature: ${{ inputs.torus-verifier-feature }}
-        torus-verifier-release: ${{ inputs.torus-verifier-release }}
-        torus-subverifier-store: ${{ inputs.torus-subverifier-store }}
-        torus-subverifier-firebase: ${{ inputs.torus-subverifier-firebase }}
-        torus-subverifier-local: ${{ inputs.torus-subverifier-local }}
-
     - name: "Create apikey.properties"
       uses: ./.github/actions/setup-apikey
       with:
@@ -102,12 +68,6 @@ runs:
         amplitude-secret: ${{ inputs.amplitude-secret }}
         apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
         moonpay-sandbox-secret: ${{ inputs.moonpay-sandbox-secret }}
-
-    - name: "Create analytics.properties"
-      uses: ./.github/actions/setup-analytics
-      with:
-        amplitude-secret-debug: ${{ inputs.amplitude-secret-debug }}
-        amplitude-secret-release: ${{ inputs.amplitude-secret-release }}
 
     - name: "Create cert.pem file"
       env:
