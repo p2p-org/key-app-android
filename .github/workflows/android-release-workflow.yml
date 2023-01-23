@@ -13,7 +13,6 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v3
-
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
@@ -29,14 +28,12 @@ jobs:
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-
       - name: "Build Firebase release AAB"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleReleaseFirebase
-
       - name: "Upload AAB to Firebase App Distribution"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
@@ -52,7 +49,6 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v3
-
       - name: "Send start deploy message to slack"
         run: |
           git fetch
@@ -75,14 +71,12 @@ jobs:
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-
       - name: "Build Slack APK artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleReleaseLocal
-
       - name: "Upload APK to Slack Channel"
         uses: ./.github/actions/setup-slack
         with:
@@ -90,7 +84,6 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "releaseLocal"
           artifact-type: "apk"
-
       - name: "Upload git changelog and Jira ticket to Slack channel"
         run: |
           cd bash_scripts
@@ -115,7 +108,6 @@ jobs:
     steps:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
-
       - name: "Send start deploy message to slack"
         run: |
           git fetch
@@ -138,14 +130,12 @@ jobs:
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-
       - name: "Build release AAB artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease
-
       - name: "Upload release AAB to Slack Channel"
         uses: ./.github/actions/setup-slack
         with:
@@ -153,7 +143,6 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "release"
           artifact-type: "bundle"
-
       - name: "Upload git changelog and Jira ticket to Slack channel"
         run: |
           cd bash_scripts
