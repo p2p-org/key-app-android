@@ -4,6 +4,7 @@ import org.p2p.solanaj.kits.transaction.SwapDetails
 import org.p2p.solanaj.kits.transaction.TransactionDetails
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.wallet.common.di.ServiceScope
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.interactor.stream.AccountStreamSource
 import org.p2p.wallet.history.interactor.stream.HistoryStreamItem
@@ -14,6 +15,7 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
@@ -32,6 +34,8 @@ class HistoryInteractor(
     private val rpcSignatureRepository: RpcSignatureRepository,
     private val userInteractor: UserInteractor,
     private val sellInteractor: SellInteractor,
+    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val serviceScope: ServiceScope
 ) {
     private val allSignatures = mutableListOf<String>()
@@ -161,8 +165,13 @@ class HistoryInteractor(
             .mapToHistoryTransactions()
             .first()
 
-    suspend fun loadSellTransactions(): List<SellTransaction> {
-        return sellInteractor.loadUserSellTransactions()
+    suspend fun getSellTransactions(): List<SellTransaction> {
+        return if (sellEnabledFeatureToggle.isFeatureEnabled) {
+            sellInteractor.loadUserSellTransactions()
+                .filterNot { hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId) }
+        } else {
+            emptyList()
+        }
     }
 
     private suspend fun loadTransactions(signatures: List<HistoryStreamItem>): List<HistoryTransaction> {

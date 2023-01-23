@@ -1,6 +1,7 @@
 package org.p2p.wallet.moonpay.model
 
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionFailureReason
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.utils.Base58String
 import java.math.BigDecimal
@@ -18,6 +19,10 @@ sealed class SellTransaction(
         SellTransactionFiatCurrency.EUR -> amounts.eurAmount
         SellTransactionFiatCurrency.USD -> amounts.usdAmount
         SellTransactionFiatCurrency.GBP -> amounts.gbpAmount
+    }
+
+    fun isCancelled(): Boolean {
+        return this is FailedTransaction && failureReason == SellTransactionFailureReason.CANCELLED
     }
 
     data class WaitingForDepositTransaction(
@@ -51,5 +56,6 @@ sealed class SellTransaction(
         override val amounts: SellTransactionAmounts,
         override val selectedFiat: SellTransactionFiatCurrency,
         override val userAddress: Base58String,
+        val failureReason: SellTransactionFailureReason?,
     ) : SellTransaction(SellTransactionStatus.FAILED)
 }

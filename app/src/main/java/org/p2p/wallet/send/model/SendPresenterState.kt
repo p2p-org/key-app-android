@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.model
 
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import java.math.BigDecimal

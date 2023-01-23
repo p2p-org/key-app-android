@@ -9,6 +9,7 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.ChronoUnit
 import org.threeten.bp.temporal.TemporalAccessor
+import timber.log.Timber
 import java.util.Locale
 import kotlin.math.ceil
 
@@ -50,6 +51,15 @@ fun Long.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(
     Instant.ofEpochMilli(this),
     ZoneId.systemDefault()
 )
+
+fun String.toZonedDateTime(): ZonedDateTime {
+    return try {
+        ZonedDateTime.ofInstant(Instant.parse(this), ZoneId.systemDefault())
+    } catch (e: Exception) {
+        Timber.e(e, "Failed to parses string in UTC format, such as '2022-12-01T10:15:20Z'")
+        ZonedDateTime.now()
+    }
+}
 
 private fun DateTimeFormatter.formatWithLocale(temporal: TemporalAccessor) =
     withLocale(Locale.ENGLISH).format(temporal)

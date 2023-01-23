@@ -14,8 +14,15 @@ import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_CHOSEN
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SCROLLED
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SEARCHED
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_VIEWED
+import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.sell.interactor.SellInteractor
+import kotlinx.coroutines.launch
 
-class BrowseAnalytics(private val tracker: Analytics) {
+class BrowseAnalytics(
+    private val tracker: Analytics,
+    private val sellInteractor: SellInteractor,
+    private val appScope: AppScope,
+) {
 
     fun logTokenListViewed(lastScreenName: String, tokenListLocation: TokenListLocation) {
         tracker.logEvent(
@@ -64,14 +71,21 @@ class BrowseAnalytics(private val tracker: Analytics) {
         )
     }
 
-    fun logScreenOpened(screenName: String, lastScreen: String) {
-        tracker.logEvent(
-            BROWSE_SCREEN_OPENED,
-            arrayOf(
-                Pair("Screen_Name", screenName),
-                Pair("Last_Screen", lastScreen)
+    fun logScreenOpened(
+        screenName: String,
+        lastScreen: String,
+        isSellEnabled: Boolean
+    ) {
+        appScope.launch {
+            tracker.logEvent(
+                event = BROWSE_SCREEN_OPENED,
+                params = mapOf(
+                    "Screen_Name" to screenName,
+                    "Last_Screen" to lastScreen,
+                    "isSellEnabled" to isSellEnabled
+                )
             )
-        )
+        }
     }
 
     fun logNetworkAdding() {

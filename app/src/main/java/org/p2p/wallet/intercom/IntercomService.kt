@@ -27,10 +27,10 @@ object IntercomService : KoinComponent {
         if (userId.isNotEmpty()) {
             Timber.tag(TAG).i("Intercom client signing in. IdentifiedUser")
             val registration = Registration.create().withUserId(userId)
-            Intercom.client().registerIdentifiedUser(registration)
+            Intercom.client().loginIdentifiedUser(registration)
         } else {
             Timber.tag(TAG).i("Intercom client signing in. UnidentifiedUser")
-            Intercom.client().registerUnidentifiedUser()
+            Intercom.client().loginUnidentifiedUser()
         }
     }
 
@@ -43,6 +43,6 @@ object IntercomService : KoinComponent {
         screenAnalyticsInteractor.logScreenOpenEvent(ScreenNames.Main.MAIN_FEEDBACK)
 
         Timber.tag(TAG).i("Intercom client displays messenger.")
-        Intercom.client().displayMessenger()
+        Intercom.client().present()
     }
 }

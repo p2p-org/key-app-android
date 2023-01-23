@@ -33,7 +33,7 @@ object EventNames {
     const val ADMIN_PIN_RESET_INVOKED = "PIN_Reset_Invoked"
     const val ADMIN_PIN_RESET_VALIDATED = "PIN_Reset_Validated"
 
-    const val GENERAL_ACTION_BUTTON_CLICKED = "Action_button_click"
+    const val GENERAL_ACTION_BUTTON_CLICKED = "Action_Button_Click"
 
     const val ONBOARD_SPLASH_VIEWED = "Splash_Viewed"
     const val ONBOARD_SPLASH_SWIPED = "Splash_Swiped"

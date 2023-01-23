@@ -1,12 +1,12 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
     id 'com.google.firebase.crashlytics'
     id "io.sentry.android.gradle" version "3.2.0"
+    id 'kotlin-kapt'
 }
 
 apply from: "$project.rootDir/scripts/ktlint.gradle"
@@ -17,7 +17,7 @@ apply from: "$project.rootDir/scripts/signing.gradle"
 android {
     compileSdkVersion sdkCompileVersion
 
-    defaultConfig {
+    defaultConfig { config ->
         applicationId "org.p2p.wallet"
         minSdkVersion sdkMinVersion
         targetSdkVersion sdkTargetVersion
@@ -28,12 +28,14 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters("armeabi-v7a", "x86_64", "arm64-v8a", "x86") }
 
-        initApiKeys(it)
-        initSentry(it)
+        initApiKeys(config)
+        initSentry(config)
 
         buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
         buildConfigField("boolean", "SENTRY_ENABLED", "false")
         buildConfigField("boolean", "AMPLITUDE_ENABLED", "false")
+        buildConfigField("boolean", "APPSFLYER_ENABLED","false")
+        buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED","false")
         buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "true")
         buildConfigField("boolean", "SSL_PINNING_ENABLED", "false")
         buildConfigField("String", "TASK_NUMBER", "\"${taskNumber()}\"")
@@ -44,7 +46,7 @@ android {
             }
         }
 
-        setProperty("archivesBaseName", getBuildAppFileName())
+        setProperty("archivesBaseName", generateAppName())
     }
 
     def torusProperties = getTorusProperties()
@@ -73,6 +75,8 @@ android {
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_FEATURE']
 
             buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED","true")
             manifestPlaceholders = [SENTRY_ENV: "feature"]
             matchingFallbacks = ['release']
 
@@ -88,27 +92,26 @@ android {
             matchingFallbacks = ["release"]
         }
 
-        releaseFirebase {
+        releaseFirebase { buildType ->
             signingConfig signingConfigs.release
-            initReleaseType(it)
+            initReleaseType(buildType)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
             resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_FIREBASE']
 
-            def currentBuildType = it
             firebaseAppDistribution {
                 artifactType = "AAB"
-                releaseNotes = releaseChangelog(VERSION_NAME, currentBuildType.name)
+                releaseNotes = releaseChangelog(VERSION_NAME, buildType.name)
                 groups = "wallet.release.test"
             }
 
             matchingFallbacks = ["release"]
         }
 
-        releaseLocal {
+        releaseLocal { buildType ->
             signingConfig signingConfigs.release
-            initReleaseType(it)
+            initReleaseType(buildType)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
@@ -117,18 +120,17 @@ android {
             matchingFallbacks = ["release"]
         }
 
-        release {
+        release { buildType ->
             signingConfig signingConfigs.release
-            initReleaseType(it)
+            initReleaseType(buildType)
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             resValue "string", "torusVerifier", torusProperties['TORUS_VERIFIER_RELEASE']
             resValue "string", "torusSubVerifier", torusProperties['TORUS_SUB_VERIFIER_RELEASE_STORE']
 
-            def currentBuildType = it
             firebaseAppDistribution {
                 artifactType = "APK"
-                releaseNotes = releaseChangelog(VERSION_NAME, currentBuildType.name)
+                releaseNotes = releaseChangelog(VERSION_NAME, buildType.name)
                 groups = "wallet.release.test"
             }
         }
@@ -145,7 +147,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = getBuildAppFileName() + "_${variant.buildType.name}" + ".apk"
+            outputFileName = generateAppName() + "-${variant.buildType.name}" + ".apk"
         }
     }
 
@@ -209,7 +211,7 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
 
     // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:28.4.2')
+    implementation platform('com.google.firebase:firebase-bom:31.1.1')
 
     // Declare the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
@@ -218,7 +220,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-config'
 
-    implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
+    implementation 'io.intercom.android:intercom-sdk:14.0.0'
 
     implementation 'com.amplitude:android-sdk:2.35.3'
 
@@ -259,6 +261,7 @@ dependencies {
 
     //AppsFlyer
     implementation 'com.appsflyer:af-android-sdk:6.9.0'
+    implementation 'androidx.ads:ads-identifier:1.0.0-alpha04'
     implementation "com.android.installreferrer:installreferrer:2.2"
 
     // TickerView

@@ -27,6 +27,8 @@ import org.p2p.wallet.common.analytics.constants.EventNames.ONBOARD_WALLET_RESTO
 import org.p2p.wallet.utils.emptyString
 import kotlin.time.Duration
 
+private const val ONBOARDING_MERGED = "Onboarding_Merged"
+
 class OnboardingAnalytics(private val tracker: Analytics) {
     fun logSplashViewed() {
         tracker.logEvent(
@@ -152,6 +154,10 @@ class OnboardingAnalytics(private val tracker: Analytics) {
                 "Seconds" to responseDuration.inWholeSeconds,
             )
         )
+    }
+
+    fun logOnboardingMerged() {
+        tracker.logEvent(event = ONBOARDING_MERGED)
     }
 
     fun setUserHasDeviceShare(hasDeviceShare: Boolean) {

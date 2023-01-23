@@ -66,8 +66,8 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     private val data: NewShowProgress by args(EXTRA_DATA)
     private val transactionId: String by args(EXTRA_TRANSACTION_ID)
 
-    private val dateFormat by unsafeLazy { SimpleDateFormat(DATE_FORMAT, Locale.getDefault()) }
-    private val timeFormat by unsafeLazy { SimpleDateFormat(TIME_FORMAT, Locale.getDefault()) }
+    private val dateFormat by unsafeLazy { SimpleDateFormat(DATE_FORMAT, Locale.US) }
+    private val timeFormat by unsafeLazy { SimpleDateFormat(TIME_FORMAT, Locale.US) }
 
     private lateinit var progressStateFormat: String
 

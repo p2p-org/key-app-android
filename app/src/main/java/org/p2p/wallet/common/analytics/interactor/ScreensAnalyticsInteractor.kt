@@ -1,11 +1,16 @@
 package org.p2p.wallet.common.analytics.interactor
 
 import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
+import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.home.analytics.BrowseAnalytics
+import org.p2p.wallet.sell.interactor.SellInteractor
+import kotlinx.coroutines.launch
 
 class ScreensAnalyticsInteractor(
     private val browseAnalytics: BrowseAnalytics,
-    private val analyticsLocalRepository: AnalyticsLocalRepository
+    private val analyticsLocalRepository: AnalyticsLocalRepository,
+    private val sellInteractor: SellInteractor,
+    private val appScope: AppScope
 ) {
 
     fun logScreenOpenEvent(newScreenName: String) {
@@ -14,7 +19,13 @@ class ScreensAnalyticsInteractor(
 
         val isNewScreenOpened = newScreenName != previousScreenName
         if (isNewScreenOpened) {
-            browseAnalytics.logScreenOpened(newScreenName, getPreviousScreenName())
+            appScope.launch {
+                browseAnalytics.logScreenOpened(
+                    screenName = newScreenName,
+                    lastScreen = getPreviousScreenName(),
+                    isSellEnabled = sellInteractor.isSellAvailable()
+                )
+            }
         }
     }
 

@@ -6,7 +6,7 @@ import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import java.net.UnknownHostException
 
-class MoonpaySellRepositoryErrorMapper {
+class SellRepositoryErrorMapper {
     // add more errors if needed
     fun fromNetworkError(error: Throwable): MoonpaySellError = when (error) {
         is UnknownHostException -> {
@@ -38,7 +38,7 @@ class MoonpaySellRepositoryErrorMapper {
             MoonpaySellError.UnknownError(error)
         }
         else -> {
-            MoonpaySellError.UnauthorizedRequest(error)
+            MoonpaySellError.UnknownError(error)
         }
     }
 }

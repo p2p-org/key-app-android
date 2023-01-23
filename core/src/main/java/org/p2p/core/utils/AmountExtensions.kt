@@ -1,6 +1,7 @@
 package org.p2p.core.utils
 
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants.FIAT_FRACTION_LENGTH
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
@@ -13,8 +14,6 @@ const val MOONPAY_DECIMAL = 2
 private const val SCALE_VALUE_SHORT = 2
 private const val SCALE_VALUE_MEDIUM = 6
 private const val SCALE_VALUE_LONG = 9
-
-private const val USD_DECIMALS = 2
 
 private const val AMOUNT_MIN_VALUE = 0.01
 
@@ -66,7 +65,7 @@ fun BigDecimal.toUsd(token: Token): BigDecimal? =
     token.rate?.let { this.multiply(it).scaleShort() }
 
 // case: 1000.023000 -> 1 000.02
-fun BigDecimal.formatUsd(): String = formatWithDecimals(USD_DECIMALS)
+fun BigDecimal.formatFiat(): String = formatWithDecimals(FIAT_FRACTION_LENGTH)
 
 // case: 10000.000000007900 -> 100 000.000000008
 fun BigDecimal.formatToken(decimals: Int = DEFAULT_DECIMAL): String = formatWithDecimals(decimals)
@@ -95,22 +94,22 @@ fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 fun BigInteger.isZeroOrLess() = isZero() || isLessThan(BigInteger.ZERO)
 
 fun BigDecimal.asCurrency(currency: String): String =
-    if (lessThenMinValue()) "<$currency 0.01" else "$currency ${formatUsd()}"
+    if (lessThenMinValue()) "<$currency 0.01" else "$currency ${formatFiat()}"
 
-fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${formatUsd()}"
+fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${formatFiat()}"
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     lessThenMinValue() -> "(<$0.01)"
-    withBraces -> "~($${formatUsd()})"
-    else -> "~$${formatUsd()}"
+    withBraces -> "~($${formatFiat()})"
+    else -> "~$${formatFiat()}"
 }
 
 fun BigDecimal.asPositiveUsdTransaction(): String = asUsdTransaction("+")
 fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
 private fun BigDecimal.asUsdTransaction(
     transactionSymbol: String
-): String = if (lessThenMinValue()) "<$ 0.01" else "$transactionSymbol$ ${formatUsd()}"
+): String = if (lessThenMinValue()) "<$ 0.01" else "$transactionSymbol$ ${formatFiat()}"
 
 fun Int?.orZero(): Int = this ?: 0
 
 // value is in (0..0.01)
-private fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())
+fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())

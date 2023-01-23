@@ -1,56 +1,73 @@
 package org.p2p.wallet.history.ui.history
 
-import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
+import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.model.SellTransaction
-import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
-import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.send.analytics.SendAnalytics
-import org.p2p.wallet.swap.analytics.SwapAnalytics
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import timber.log.Timber
-import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class HistoryPresenter(
     private val historyInteractor: HistoryInteractor,
-    private val sellInteractor: SellInteractor,
+    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
+    private val historyAnalytics: HistoryAnalytics,
     private val renBtcInteractor: RenBtcInteractor,
-    private val receiveAnalytics: ReceiveAnalytics,
-    private val swapAnalytics: SwapAnalytics,
-    private val analyticsInteractor: ScreensAnalyticsInteractor,
     private val environmentManager: NetworkEnvironmentManager,
-    private val sendAnalytics: SendAnalytics
+    private val sellTransactionsMapper: HistorySellTransactionMapper,
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
+
+    private class FetchListResult<T>(
+        content: MutableList<T> = mutableListOf(),
+        val isFailed: Boolean = false,
+    ) {
+        private val innerContent = content
+
+        private var contentFilter: ((T) -> Boolean)? = null
+
+        val content: List<T>
+            get() = contentFilter?.let(innerContent::filter) ?: innerContent
+
+        fun withContentFilter(filter: (T) -> Boolean): FetchListResult<T> = apply {
+            contentFilter = filter
+        }
+
+        fun hasFetchedItems(): Boolean = content.isNotEmpty()
+
+        fun clearContent() {
+            innerContent.clear()
+        }
+    }
+
+    private object HistoryFetchFailure : Throwable(message = "Both transactions were not fetch due to errors")
 
     private var isPagingEnded = false
     private var refreshJob: Job? = null
     private var pagingJob: Job? = null
 
     private var lastTransactionSignature: String? = null
-    private var transactions = mutableListOf<HistoryTransaction>()
-    private val moonpayTransactions = mutableListOf<SellTransaction>()
+    private var blockChainTransactionsList = FetchListResult<HistoryTransaction>()
+    private var moonpayTransactionsList = FetchListResult<SellTransaction>()
 
     override fun attach(view: HistoryContract.View) {
         super.attach(view)
-        environmentManager.addEnvironmentListener(this::class) {
-            refreshHistory()
-        }
+        environmentManager.addEnvironmentListener(this::class) { refreshHistory() }
     }
 
     override fun refreshHistory() {
         isPagingEnded = false
         lastTransactionSignature = null
         refreshJob?.cancel()
-        transactions.clear()
-        moonpayTransactions.clear()
+        blockChainTransactionsList.clearContent()
+        moonpayTransactionsList.clearContent()
         pagingJob?.cancel()
 
         refreshJob = launch {
@@ -74,8 +91,8 @@ class HistoryPresenter(
     }
 
     override fun loadHistory() {
-        if (transactions.isNotEmpty() || moonpayTransactions.isNotEmpty()) {
-            view?.showHistory(transactions, moonpayTransactions)
+        if (blockChainTransactionsList.hasFetchedItems() || moonpayTransactionsList.hasFetchedItems()) {
+            view?.showHistory(blockChainTransactionsList.content, moonpayTransactionsList.content)
             return
         }
         launch {
@@ -84,92 +101,80 @@ class HistoryPresenter(
         }
     }
 
-    // refactor and make good code in PWN-6386
+    override fun updateSellTransactions() {
+        view?.showHistory(
+            blockChainTransactions = blockChainTransactionsList.content,
+            sellTransactions = moonpayTransactionsList.content
+        )
+    }
+
     private suspend fun fetchHistory(isRefresh: Boolean = false) {
         try {
-            if (sellInteractor.isSellAvailable()) {
-                fetchMoonpayTransactions()
+            val deferredSellTransactions = async { fetchSellTransactions() }
+            val deferredBlockChainTransactions = async { fetchBlockChainTransactions(isRefresh) }
+            moonpayTransactionsList = deferredSellTransactions.await()
+            blockChainTransactionsList = deferredBlockChainTransactions.await()
+            if (moonpayTransactionsList.isFailed && blockChainTransactionsList.isFailed) {
+                view?.showPagingState(PagingState.Error(HistoryFetchFailure))
+                Timber.e(HistoryFetchFailure, "Error getting transaction whole history")
+            } else {
+                view?.showHistory(
+                    blockChainTransactions = blockChainTransactionsList.content,
+                    sellTransactions = moonpayTransactionsList.content
+                )
+                view?.showPagingState(PagingState.Idle)
             }
-            val fetchedItems = historyInteractor.loadTransactions(isRefresh)
-            transactions.addAll(fetchedItems)
-            view?.showHistory(transactions, moonpayTransactions)
-            view?.showPagingState(PagingState.Idle)
         } catch (e: CancellationException) {
             Timber.w(e, "Cancelled history next page load")
-        } catch (e: EmptyDataException) {
-            if (transactions.isEmpty()) {
-                view?.showHistory(emptyList(), moonpayTransactions)
-                isPagingEnded = true
-            }
-            view?.showPagingState(PagingState.Idle)
-        } catch (e: Throwable) {
-            view?.showPagingState(PagingState.Error(e))
-            Timber.e(e, "Error getting transaction history")
         }
     }
 
-    private suspend fun fetchMoonpayTransactions() {
-        val transactions = sellInteractor.loadUserSellTransactions()
-        moonpayTransactions.clear()
-        moonpayTransactions.addAll(transactions)
+    private suspend fun fetchBlockChainTransactions(isRefresh: Boolean): FetchListResult<HistoryTransaction> = try {
+        historyInteractor.loadTransactions(isRefresh)
+            .toMutableList()
+            .let(::FetchListResult)
+    } catch (error: Throwable) {
+        Timber.e(error, "Error while loading blockchain transactions on history")
+        FetchListResult(isFailed = true)
+    }
+
+    private suspend fun fetchSellTransactions(): FetchListResult<SellTransaction> = try {
+        sellTransactionsMapper.map(historyInteractor.getSellTransactions())
+            .toMutableList()
+            .let(::FetchListResult)
+            .withContentFilter {
+                !it.isCancelled() &&
+                    !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
+            }
+    } catch (error: Throwable) {
+        Timber.e(error, "Error while loading Moonpay sell transactions on history")
+        FetchListResult(isFailed = true)
     }
 
     override fun onItemClicked(transaction: HistoryTransaction) {
-        launch {
-            when (transaction) {
-                is HistoryTransaction.Swap -> {
-                    swapAnalytics.logSwapShowingDetails(
-                        swapStatus = SwapAnalytics.SwapStatus.SUCCESS,
-                        lastScreenName = analyticsInteractor.getPreviousScreenName(),
-                        tokenAName = transaction.sourceSymbol,
-                        tokenBName = transaction.destinationSymbol,
-                        swapSum = transaction.amountA,
-                        swapUSD = transaction.amountSentInUsd ?: BigDecimal.ZERO,
-                        feesSource = SwapAnalytics.FeeSource.UNKNOWN
+        logTransactionClicked(transaction)
+        view?.openTransactionDetailsScreen(transaction)
+    }
+
+    private fun logTransactionClicked(transaction: HistoryTransaction) {
+        when (transaction) {
+            is HistoryTransaction.Swap -> {
+                historyAnalytics.logSwapTransactionClicked(transaction)
+            }
+            is HistoryTransaction.Transfer -> {
+                launch {
+                    historyAnalytics.logTransferTransactionClicked(
+                        transaction = transaction,
+                        isRenBtcSessionActive = renBtcInteractor.isUserHasActiveSession()
                     )
                 }
-                is HistoryTransaction.Transfer -> {
-                    val renBtcSession = renBtcInteractor.findActiveSession()
-                    val isRenBtcSessionActive = renBtcSession != null && renBtcSession.isValid
-
-                    if (transaction.isSend) {
-                        val sendNetwork =
-                            if (isRenBtcSessionActive) {
-                                SendAnalytics.AnalyticsSendNetwork.BITCOIN
-                            } else {
-                                SendAnalytics.AnalyticsSendNetwork.SOLANA
-                            }
-                        sendAnalytics.logSendShowingDetails(
-                            sendStatus = SendAnalytics.SendStatus.SUCCESS,
-                            lastScreenName = analyticsInteractor.getPreviousScreenName(),
-                            tokenName = transaction.tokenData.symbol,
-                            sendNetwork = sendNetwork,
-                            sendSum = transaction.total,
-                            sendUSD = transaction.totalInUsd ?: BigDecimal.ZERO
-                        )
-                    } else {
-                        val receiveNetwork =
-                            if (isRenBtcSessionActive) {
-                                ReceiveAnalytics.ReceiveNetwork.BITCOIN
-                            } else {
-                                ReceiveAnalytics.ReceiveNetwork.SOLANA
-                            }
-                        receiveAnalytics.logReceiveShowingDetails(
-                            receiveSum = transaction.total,
-                            receiveUSD = transaction.totalInUsd ?: BigDecimal.ZERO,
-                            tokenName = transaction.tokenData.symbol,
-                            receiveNetwork = receiveNetwork
-                        )
-                    }
-                }
-                else -> {
-                    // TODO: Add support for other transaction types
-                    // do nothing yet
-                    return@launch
-                }
             }
-
-            view?.openTransactionDetailsScreen(transaction)
+            else -> Unit
         }
+    }
+
+    override fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails) {
+        historyAnalytics.logSellTransactionClicked(sellTransaction)
+        view?.openSellTransactionDetails(sellTransaction)
     }
 }

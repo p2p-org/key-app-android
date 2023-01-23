@@ -26,14 +26,14 @@
             android:layout_marginVertical="12dp"
             android:layout_marginStart="20dp"
             android:background="@drawable/bg_circle"
-            android:backgroundTint="@color/bg_rain"
+            android:backgroundTint="@color/bg_smoke"
             android:importantForAccessibility="no"
             android:padding="12dp"
             android:src="@drawable/ic_lightning"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/bg_night" />
+            app:tint="@color/bg_mountain" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progressIndicator"

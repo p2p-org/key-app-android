@@ -27,9 +27,15 @@ class SearchErrorViewHolder(
 
             when (item) {
                 is SearchResult.OwnAddressError -> {
-                    textViewDescription.setText(R.string.search_yourself_description)
+                    val description = if (item.directToken != null) {
+                        loadTokenIcon(item.directToken.iconUrl)
+                        getString(R.string.search_your_token_description, item.directToken.symbol)
+                    } else {
+                        showWalletIcon()
+                        getString(R.string.search_yourself_description)
+                    }
+                    textViewDescription.withTextOrGone(description)
                     textViewError.setText(R.string.search_yourself_error)
-                    showWalletIcon()
                 }
                 is SearchResult.InvalidDirectAddress -> {
                     val description = getString(

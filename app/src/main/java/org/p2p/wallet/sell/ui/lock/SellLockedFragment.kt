@@ -17,6 +17,7 @@ import org.p2p.wallet.databinding.FragmentSellLockBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.newsend.ui.NewSendFragment
+import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.send.model.AddressState
 import org.p2p.wallet.send.model.SearchResult
@@ -50,6 +51,7 @@ class SellLockedFragment :
 
     private val binding: FragmentSellLockBinding by viewBinding()
     private val details: SellTransactionViewDetails by args(ARG_SELL_LOCKED)
+    private val sellAnalytics: SellAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,6 +62,8 @@ class SellLockedFragment :
         }
 
         setupViews()
+
+        sellAnalytics.logSellLockedOpened()
     }
 
     private fun setupViews() = with(binding.layoutDetails) {

@@ -7,6 +7,7 @@ import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.UsernameAnalytics
 import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputView
 import org.p2p.wallet.auth.ui.reserveusername.widget.ReserveUsernameInputViewListener
@@ -75,13 +76,13 @@ class ReserveUsernameFragment :
     private val usernameDomainFeatureToggle: UsernameDomainFeatureToggle by inject()
 
     private val usernameAnalytics: UsernameAnalytics by inject()
+    private val onboardingAnalytics: OnboardingAnalytics by inject()
 
     private var clicksBeforeDebugSkip: Int = 2
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         usernameAnalytics.logUsernameCreationScreenOpened()
-
         if (BuildConfig.DEBUG) {
             initQaSkipInstrument()
         }
@@ -94,6 +95,7 @@ class ReserveUsernameFragment :
 
         binding.buttonSubmitUsername.setOnClickListener {
             usernameAnalytics.logCreateUsernameClicked()
+            onboardingAnalytics.logOnboardingMerged()
             presenter.onCreateUsernameClicked()
         }
 

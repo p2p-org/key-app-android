@@ -1,4 +1,4 @@
-name: "Publish APK/Bundle to slack channel"
+name: "Publish APK/AAB to slack channel"
 description: "Publish release, firebase, local or feature artifact to slack channel"
 inputs:
   channel-id:
@@ -9,7 +9,7 @@ inputs:
     description: "Slack bot token"
   build-type:
     required: true
-    description: "debug,feature,releaseLocal,releaseFirebase,release"
+    description: "feature,releaseLocal,releaseFirebase,release"
   artifact-type:
     required: true
     description: "apk,bundle"
@@ -25,5 +25,5 @@ runs:
         -F token="${{ inputs.bot-token }}" \
         -F channels="${{ inputs.channel-id }}" \
         -F initial_comment="Hey! Build type: ${{ inputs.build-type }} artifact type: ${{ inputs.artifact-type }}. Success :tada:" \
-        -F "file=@$(find app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }} -name 'p2p*')" \
+        -F "file=@$(find app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }} -name 'key-app*')" \
         https://slack.com/api/files.upload

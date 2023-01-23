@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.ui.main
 
+import androidx.lifecycle.DefaultLifecycleObserver
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -31,7 +32,7 @@ interface HomeContract {
         fun showSendNoTokens(fallbackToken: Token)
     }
 
-    interface Presenter : MvpPresenter<View> {
+    interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun onBuyClicked()
         fun onSendClicked()
         fun onBuyTokenClicked(token: Token)

@@ -9,6 +9,7 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
+import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.ui.error.SellErrorFragment
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
@@ -30,21 +31,36 @@ class SellPayloadFragment :
 
     override val presenter: SellPayloadContract.Presenter by inject()
     private val binding: FragmentSellPayloadBinding by viewBinding()
+    private val sellAnalytics: SellAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
 
-            textViewAvailableAmount.setOnClickListener { presenter.onUserMaxClicked() }
+            widgetSendDetails.onMaxAmountButtonClicked = presenter::onUserMaxClicked
+            widgetSendDetails.onAmountChanged = presenter::onTokenAmountChanged
+            widgetSendDetails.onCurrencyModeSwitchClicked = presenter::switchCurrencyMode
+            widgetSendDetails.onInputFocusChanged = View.OnFocusChangeListener { _, isFocused ->
+                if (isFocused) sellAnalytics.logSellTokenAmountFocused()
+            }
+            widgetSendDetails.focusInputAndShowKeyboard()
 
-            editTextTokenAmount.setAmountInputTextWatcher(presenter::onTokenAmountChanged)
-            editTextTokenAmount.focusAndShowKeyboard()
-
-            editTextFiatAmount.isEditable = false
-
-            buttonSend.setOnClickListener { presenter.cashOut() }
+            buttonCashOut.setOnClickListener {
+                sellAnalytics.logSellSubmitClicked()
+                presenter.cashOut()
+            }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenter.checkSellLock()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.setNeedCheckForSellLock()
     }
 
     override fun showLoading(isVisible: Boolean) {
@@ -63,61 +79,33 @@ class SellPayloadFragment :
         )
     }
 
-    override fun showNotEnoughMoney(minAmount: BigDecimal) {
+    override fun navigateNotEnoughTokensErrorScreen(minAmount: BigDecimal) {
         popAndReplaceFragment(
             SellErrorFragment.create(
                 errorState = SellErrorFragment.SellScreenError.NotEnoughAmount(
                     formattedMinTokenAmount = minAmount.formatTokenForMoonpay()
-                ),
+                )
             )
         )
     }
 
     override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {
-        editTextFiatAmount.setAmount(newState.formattedFiatAmount)
-        editTextFiatAmount.setHint(getString(R.string.sell_payload_fiat_symbol, newState.fiatSymbol))
-        textViewFee.text = getString(
-            R.string.sell_payload_included_fee,
-            newState.formattedSellFiatFee,
-            newState.fiatSymbol
-        )
-        textViewRate.text = getString(
-            R.string.sell_payload_fiat_value,
-            newState.formattedTokenPrice,
-            newState.fiatSymbol
-        )
-        editTextTokenAmount.setHint(newState.tokenSymbol)
-        editTextTokenAmount.setAmount(newState.solToSell)
-        textViewAvailableAmount.text = getString(R.string.sell_payload_all_sol, newState.formattedUserAvailableBalance)
-    }
-
-    override fun setMinSolToSell(minAmount: BigDecimal, tokenSymbol: String) {
-        binding.editTextTokenAmount.setHint(tokenSymbol)
-        binding.editTextTokenAmount.setupText(minAmount.toString())
+        binding.widgetSendDetails.render(newState.widgetViewState)
+        setButtonState(newState.cashOutButtonState)
     }
 
     override fun showMoonpayWidget(url: String) {
-        Timber.i("Opening Moonpay Sell widget: $url")
+        sellAnalytics.logSellMoonpayOpened()
+        Timber.i("Sell: Opening Moonpay Sell widget: $url")
         requireContext().showUrlInCustomTabs(url)
     }
 
-    override fun setButtonState(state: SellPayloadContract.CashOutButtonState) {
+    override fun setButtonState(state: CashOutButtonState) {
         with(binding) {
-            buttonSend.isEnabled = state.isEnabled
-            buttonSend.setBackgroundColor(getColor(state.backgroundColor))
-            buttonSend.setTextColor(getColor(state.textColor))
-            buttonSend.text = state.text
-
-            editTextTokenAmount.showError(isVisible = !state.isEnabled)
+            buttonCashOut.isEnabled = state.isEnabled
+            buttonCashOut.setBackgroundColor(getColor(state.backgroundColor))
+            buttonCashOut.setTextColor(getColor(state.textColor))
+            buttonCashOut.text = state.buttonText
         }
-    }
-
-    override fun setTokenAmount(newValue: String) {
-        binding.editTextTokenAmount.setAmount(newValue)
-    }
-
-    override fun resetFiatAndFee(feeSymbol: String) {
-        binding.editTextFiatAmount.setAmount("0")
-        binding.textViewFee.text = getString(R.string.sell_payload_included_fee, "0", feeSymbol)
     }
 }

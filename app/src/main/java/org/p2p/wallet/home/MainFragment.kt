@@ -6,6 +6,7 @@ import androidx.collection.set
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
@@ -27,27 +28,36 @@ import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
+import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import kotlinx.coroutines.launch
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
 class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
-    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+
     private val tabCachedFragments = SparseArrayCompat<Fragment>()
+
     private val generalAnalytics: GeneralAnalytics by inject()
+    private val swapAnalytics: SwapAnalytics by inject()
+    private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+
     private val deeplinksManager: AppDeeplinksManager by inject()
     private val solendFeatureToggle: SolendEnabledFeatureToggle by inject()
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle by inject()
+
+    private val sellInteractor: SellInteractor by inject()
 
     private var lastSelectedItemId = R.id.homeItem
 
@@ -143,6 +153,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             return
         }
 
+        if (clickedTab == ScreenTab.SWAP_SCREEN) {
+            swapAnalytics.logSwapOpenedFromMain()
+        }
+
         val itemId = clickedTab.itemId
 
         if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
@@ -223,7 +237,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
     override fun setOnCenterActionButtonListener(block: () -> Unit) {
         binding.buttonCenterAction.setOnClickListener {
-            generalAnalytics.logActionButtonClicked(analyticsInteractor.getCurrentScreenName())
+            lifecycleScope.launch {
+                generalAnalytics.logActionButtonClicked(
+                    lastScreenName = analyticsInteractor.getCurrentScreenName(),
+                    isSellEnabled = sellInteractor.isSellAvailable()
+                )
+            }
             block.invoke()
         }
     }

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
-import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.formatFiat
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -65,13 +65,9 @@ class HomeFragment :
 
     private lateinit var binding: FragmentHomeBinding
 
-    private val contentAdapter: TokenAdapter by unsafeLazy {
-        TokenAdapter(this)
-    }
+    private val contentAdapter: TokenAdapter by unsafeLazy { TokenAdapter(this) }
 
-    private val emptyAdapter: EmptyViewAdapter by unsafeLazy {
-        EmptyViewAdapter(this)
-    }
+    private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
@@ -113,7 +109,7 @@ class HomeFragment :
             viewLifecycleOwner,
             ::onFragmentResult
         )
-
+        lifecycle.addObserver(presenter)
         presenter.load()
     }
 
@@ -247,7 +243,7 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal) {
-        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatUsd())
+        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatFiat())
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

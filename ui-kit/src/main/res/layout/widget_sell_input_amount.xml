@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_rounded_solid_snow_12"
+    tools:background="@color/bg_rain"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <TextView
+        android:id="@+id/textViewQuoteValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:ellipsize="middle"
+        android:gravity="start"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1 SOL ≈ 12.85 USD" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_rounded_solid_snow_12"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewQuoteValue">
+
+        <TextView
+            android:id="@+id/textViewAmountName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.LargeTitle"
+            app:layout_constraintBottom_toTopOf="@+id/textViewFiatEarningTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewSwitchCurrency"
+            tools:text="USD" />
+
+        <EditText
+            android:id="@+id/editTextAmount"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="16dp"
+            android:background="@android:color/transparent"
+            android:digits="0123456789."
+            android:gravity="center_vertical|end"
+            android:hint="@string/amounts_view_zero_hint"
+            android:imeOptions="actionDone"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:minWidth="30dp"
+            android:singleLine="true"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.LargeTitle"
+            android:textColor="@color/text_night"
+            android:textColorHint="@color/text_silver"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewAmountName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textViewAmountName"
+            app:layout_constraintTop_toTopOf="@+id/textViewAmountName"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <TextView
+            android:id="@+id/textViewFiatEarningValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:gravity="end"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/textViewFiatEarningTitle"
+            app:layout_constraintTop_toTopOf="@+id/textViewFiatEarningTitle"
+            tools:text="≈23.21 USD" />
+
+        <TextView
+            android:id="@+id/textViewFiatEarningTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="12dp"
+            android:ellipsize="middle"
+            android:gravity="start"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textViewFiatEarningValue"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Cash out SOL, receive USD" />
+
+        <TextView
+            android:id="@+id/textViewSwitchCurrency"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="8dp"
+            android:ellipsize="middle"
+            android:gravity="center_vertical|start"
+            android:maxLines="1"
+            tools:text="Switch to USD"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+            android:textColor="@color/text_sky"
+            app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewAvailableAmountTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:gravity="center_vertical|end"
+            android:maxLines="1"
+            android:text="@string/common_all"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewSwitchCurrency"
+            app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountValue"
+            app:layout_constraintStart_toEndOf="@+id/textViewSwitchCurrency"
+            app:layout_constraintTop_toTopOf="@+id/textViewSwitchCurrency" />
+
+        <TextView
+            android:id="@+id/textViewAvailableAmountValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="middle"
+            android:gravity="center_vertical|end"
+            android:maxLines="1"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+            android:textColor="@color/text_sky"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewSwitchCurrency"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textViewAvailableAmountTitle"
+            app:layout_constraintTop_toTopOf="@+id/textViewSwitchCurrency"
+            tools:text="12.30 SOL" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <TextView
+        android:id="@+id/textViewFeesInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="28dp"
+        android:ellipsize="middle"
+        android:gravity="start"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_night"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerAmount"
+        tools:text="All fees Included 0.4 SOL ≈ 4 USD" />
+
+</merge>

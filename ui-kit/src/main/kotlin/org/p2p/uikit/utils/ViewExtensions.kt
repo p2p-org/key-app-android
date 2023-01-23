@@ -18,6 +18,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import org.p2p.core.utils.showKeyboard
@@ -35,7 +36,7 @@ fun View.requireActivity(): AppCompatActivity {
 }
 
 fun View.focusAndShowKeyboard() {
-    doOnAttach {
+    doOnLayout {
         setOnFocusChangeListener { view, focus ->
             if (focus) {
                 showKeyboard()

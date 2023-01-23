@@ -1,18 +1,17 @@
 package org.p2p.wallet.common.ui.widget
 
+import androidx.annotation.DrawableRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.OvershootInterpolator
-import androidx.annotation.DrawableRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import com.google.android.material.snackbar.ContentViewCallback
 import org.p2p.uikit.utils.getString
 import org.p2p.wallet.databinding.WidgetSnackbarBinding
-import org.p2p.wallet.utils.NoOp
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 private const val ANIMATION_DURATION = 500L
@@ -40,17 +39,15 @@ class CustomSnackBar @JvmOverloads constructor(
         animatorSet.start()
     }
 
-    override fun animateContentOut(delay: Int, duration: Int) = NoOp
+    override fun animateContentOut(delay: Int, duration: Int) = Unit
 
-    fun setMessage(text: String): CustomSnackBar {
+    fun setMessage(text: String): CustomSnackBar = apply {
         binding.textView.text = text
-        return this
     }
 
-    fun setIcon(@DrawableRes iconResId: Int): CustomSnackBar {
+    fun setIcon(@DrawableRes iconResId: Int): CustomSnackBar = apply {
         binding.imageView.setImageResource(iconResId)
         binding.imageView.isVisible = true
-        return this
     }
 
     fun setAction(actionResId: Int?, block: (() -> Unit)?) {

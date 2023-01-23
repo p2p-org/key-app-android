@@ -7,6 +7,7 @@ import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConfig
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.solend.repository.SolendConfigurationRepository
 import org.p2p.wallet.utils.toBase58Instance
@@ -24,6 +25,7 @@ class AppCreatedAction(
     private val usernameInteractor: UsernameInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val crashLogger: CrashLogger,
+    private val intercomPushService: IntercomPushService,
     private val appScope: AppScope,
 ) : KoinComponent {
 
@@ -54,16 +56,22 @@ class AppCreatedAction(
 
     private fun logFirebaseDevicePushToken() {
         appScope.launch {
-            kotlin.runCatching { pushTokenRepository.getPushToken().value }
-                .onSuccess { Timber.tag("App:device_token").d(it) }
-                .onFailure { Timber.e(it) }
+            try {
+                val pushToken = pushTokenRepository.getPushToken()
+                intercomPushService.registerForPush(pushToken.value)
+                Timber.tag("App:device_token").d(pushToken.value)
+            } catch (error: Throwable) {
+                Timber.e(error, "Failed to fetch push token")
+            }
         }
     }
 
     private fun tryRestoreUsername() {
         appScope.launch {
             try {
-                val userPublicKey = tokenKeyProvider.publicKey.takeIf(String::isNotBlank)?.toBase58Instance()
+                val userPublicKey = tokenKeyProvider.publicKey
+                    .takeIf(String::isNotBlank)
+                    ?.toBase58Instance()
                 if (userPublicKey != null) {
                     usernameInteractor.tryRestoreUsername(userPublicKey)
                 }

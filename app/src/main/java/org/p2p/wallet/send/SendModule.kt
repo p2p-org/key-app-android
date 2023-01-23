@@ -2,6 +2,7 @@ package org.p2p.wallet.send
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
@@ -10,6 +11,7 @@ import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
+import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.newsend.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.newsend.ui.NewSendContract
@@ -27,6 +29,7 @@ import org.p2p.wallet.send.ui.search.SearchPresenter
 object SendModule : InjectionModule {
     override fun create() = module {
         initDataLayer()
+        singleOf(::SendModeProvider)
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->
             SelectTokenPresenter(tokens)
         }

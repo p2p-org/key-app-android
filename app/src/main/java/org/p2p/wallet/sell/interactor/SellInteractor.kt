@@ -5,13 +5,15 @@ import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
-import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRepository
+import org.p2p.wallet.moonpay.repository.sell.SellRepository
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
+import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal
@@ -19,11 +21,13 @@ import java.math.BigDecimal
 private const val TAG = "SellInteractor"
 
 class SellInteractor(
-    private val sellRepository: MoonpaySellRepository,
+    private val sellRepository: SellRepository,
     private val currencyRepository: MoonpayCurrenciesRepository,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
+    private val userInteractor: UserInteractor,
+    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract
 ) {
 
     suspend fun loadSellAvailability() {
@@ -52,11 +56,17 @@ class SellInteractor(
     }
 
     suspend fun getSellQuoteForSol(solAmount: BigDecimal, fiat: SellTransactionFiatCurrency): MoonpaySellTokenQuote {
-        val solToken = homeLocalRepository.getUserTokens().find(Token.Active::isSOL)
-        requireNotNull(solToken) { "SOL token is not found for current user, can't sell" }
+        val solToken = requireNotNull(userInteractor.getUserSolToken()) {
+            "SOL token is not found for current user, can't sell"
+        }
 
         return sellRepository.getSellQuoteForToken(solToken, solAmount, fiat)
     }
+
+    suspend fun getTokenForSell(): Token.Active =
+        requireNotNull(userInteractor.getUserSolToken()) {
+            "SOL token is not found for current user, can't sell"
+        }
 
     suspend fun getSolCurrency(): MoonpayCurrency = currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)
 
@@ -66,5 +76,9 @@ class SellInteractor(
 
     suspend fun cancelTransaction(transactionId: String): MoonpaySellCancelResult {
         return sellRepository.cancelSellTransaction(transactionId)
+    }
+
+    fun hideTransactionFromHistory(transactionId: String) {
+        hiddenSellTransactionsStorage.putTransaction(transactionId)
     }
 }

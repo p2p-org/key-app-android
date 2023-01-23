@@ -20,6 +20,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetProgressStateBinding
 import java.util.concurrent.TimeUnit
 
+private const val STATUS_ANIMATION_DURATION = 200L
+
 class ProgressStateWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -101,7 +103,7 @@ class ProgressStateWidget @JvmOverloads constructor(
         val colorFrom: Int = binding.getColor(fromColorRes)
         val colorTo: Int = binding.getColor(toColorRes)
         ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
-            duration = TimeUnit.SECONDS.toMillis(1)
+            duration = STATUS_ANIMATION_DURATION
             addUpdateListener { animator ->
                 animatorDelegate(animator.animatedValue as Int)
             }

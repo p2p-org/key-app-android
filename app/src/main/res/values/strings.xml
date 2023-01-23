@@ -42,6 +42,7 @@
     <string name="common_go_to_swap">Go to swap</string>
     <string name="common_sell_all">Sell all</string>
     <string name="common_sorry">Sorry</string>
+    <string name="common_less_then_minimum">Less then 0.01</string>
     <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
@@ -642,14 +643,13 @@
     <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
     <string name="sell_lock_button_cancel">Remove from history</string>
     <string name="sell_lock_usd_amount">≈ $%s</string>
-
-    <string name="sell_payload_fiat_value">1 SOL ≈ %s %s</string>
-    <string name="sell_payload_fiat_symbol">≈ %s</string>
     <string name="sell_lock_warning_dialog_title">Are you sure?</string>
     <string name="sell_lock_warning_dialog_body">Are you sure you want to interrupt cash out process? Your transaction won\'t be finished.</string>
     <string name="sell_lock_warning_dialog_negative">INTERRUPT</string>
     <string name="sell_lock_warning_dialog_positive">CONTINUE TRANSACTION</string>
 
+    <string name="sell_payload_fiat_value">1 SOL ≈ %s %s</string>
+    <string name="sell_payload_fiat_symbol">≈ %s</string>
     <string name="sell_payload_title">Cash out token</string>
     <string name="sell_payload_all_sol">all %s SOL</string>
     <string name="sell_payload_included_fee">Included fee %s %s</string>

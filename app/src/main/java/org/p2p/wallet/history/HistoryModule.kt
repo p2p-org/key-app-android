@@ -22,6 +22,7 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBot
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
+import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.rpc.RpcModule
@@ -36,8 +37,23 @@ object HistoryModule : InjectionModule {
 
         factoryOf(::HistoryTransactionConverter)
         factoryOf(::HistoryTransactionMapper)
-        factoryOf(::HistoryInteractor)
+        factory {
+            HistoryInteractor(
+                rpcAccountRepository = get(),
+                transactionsLocalRepository = get(),
+                transactionsRemoteRepository = get(),
+                tokenKeyProvider = get(),
+                historyTransactionMapper = get(),
+                rpcSignatureRepository = get(),
+                userInteractor = get(),
+                sellInteractor = get(),
+                hiddenSellTransactionsStorage = get(),
+                sellEnabledFeatureToggle = get(),
+                serviceScope = get()
+            )
+        }
         factoryOf(::HistoryItemMapper)
+        factoryOf(::HistorySellTransactionMapper)
 
         factoryOf(::HistoryPresenter) bind HistoryContract.Presenter::class
         factoryOf(::TokenHistoryPresenter) bind TokenHistoryContract.Presenter::class

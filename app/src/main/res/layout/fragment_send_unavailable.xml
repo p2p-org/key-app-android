@@ -16,7 +16,7 @@
         app:navigationIcon="@drawable/ic_toolbar_back"
         app:title="@string/send_buy_or_receive_crypto"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-        app:titleTextColor="@color/text_night"/>
+        app:titleTextColor="@color/text_night" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -31,7 +31,7 @@
         app:layout_constraintHeight_min="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintVertical_chainStyle="packed"/>
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -42,8 +42,8 @@
         android:text="@string/send_no_token_title"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
         android:textColor="@color/text_night"
-        app:layout_constraintBottom_toTopOf="@id/textViewFirstDescription"
-        app:layout_constraintTop_toBottomOf="@id/imageView"/>
+        app:layout_constraintBottom_toTopOf="@id/imageViewTopLeft"
+        app:layout_constraintTop_toBottomOf="@id/imageView" />
 
     <TextView
         android:id="@+id/textViewFirstDescription"
@@ -56,7 +56,7 @@
         app:layout_constraintBottom_toBottomOf="@id/imageViewTopLeft"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewTopLeft"
-        app:layout_constraintTop_toTopOf="@id/imageViewTopLeft"/>
+        app:layout_constraintTop_toTopOf="@id/imageViewTopLeft" />
 
     <ImageView
         android:id="@+id/imageViewTopLeft"
@@ -64,14 +64,15 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="28dp"
-        android:padding="12dp"
+        android:scaleType="center"
         app:tint="@color/icons_mountain"
         android:background="@drawable/bg_circle"
         android:backgroundTint="@color/bg_rain"
         android:importantForAccessibility="no"
         android:src="@drawable/ic_lightning"
+        app:layout_constraintBottom_toTopOf="@+id/imageViewBottomLeft"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewTitle"/>
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
 
     <TextView
         android:id="@+id/textViewSecondDescription"
@@ -85,7 +86,7 @@
         app:layout_constraintBottom_toBottomOf="@id/imageViewBottomLeft"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewBottomLeft"
-        app:layout_constraintTop_toTopOf="@id/imageViewBottomLeft"/>
+        app:layout_constraintTop_toTopOf="@id/imageViewBottomLeft" />
 
     <ImageView
         android:id="@+id/imageViewBottomLeft"
@@ -97,12 +98,12 @@
         android:background="@drawable/bg_circle"
         android:backgroundTint="@color/bg_rain"
         android:importantForAccessibility="no"
-        android:padding="12dp"
+        android:scaleType="center"
         android:src="@drawable/ic_user"
         app:layout_constraintBottom_toTopOf="@id/containerBottom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageViewTopLeft"
-        app:tint="@color/icons_mountain"/>
+        app:tint="@color/icons_mountain" />
 
     <LinearLayout
         android:id="@+id/containerBottom"
@@ -128,7 +129,7 @@
             app:icon="@drawable/ic_send_buy"
             app:iconGravity="textStart"
             app:iconSize="24dp"
-            app:iconTint="@color/icons_night"/>
+            app:iconTint="@color/icons_night" />
 
         <org.p2p.uikit.components.UiKitButton
             android:id="@+id/buttonReceive"
@@ -142,7 +143,7 @@
             app:icon="@drawable/ic_send_receive"
             app:iconGravity="textStart"
             app:iconSize="24dp"
-            app:iconTint="@color/icons_night"/>
+            app:iconTint="@color/icons_night" />
 
     </LinearLayout>
 

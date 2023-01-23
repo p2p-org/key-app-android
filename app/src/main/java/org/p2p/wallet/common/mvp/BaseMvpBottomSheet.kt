@@ -61,6 +61,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         showErrorDialog(messageRes = messageResId)
     }
 
+    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
     override fun showErrorSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(getString(messageResId))
@@ -69,6 +70,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
 
+    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
     override fun showErrorSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(message)
@@ -77,6 +79,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
 
+    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
     override fun showErrorSnackBar(e: Throwable, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(e.getErrorMessage { res -> getString(res) })
@@ -85,6 +88,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
 
+    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
     override fun showSuccessSnackBar(messageResId: Int, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(getString(messageResId))
@@ -93,6 +97,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
 
+    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
     override fun showSuccessSnackBar(message: String, actionResId: Int?, block: (() -> Unit)?) {
         snackbar {
             it.setMessage(message)
@@ -101,6 +106,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
         }
     }
 
+    @Deprecated("Old design snackbar, use the UiKit snackbar", replaceWith = ReplaceWith("showUiKitSnackbar"))
     override fun showInfoSnackBar(message: String, iconResId: Int?, actionResId: Int?, actionBlock: (() -> Unit)?) {
         snackbar {
             it.setMessage(message)

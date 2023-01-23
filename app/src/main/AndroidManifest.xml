@@ -15,9 +15,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <uses-permission
-        android:name="com.google.android.gms.permission.AD_ID"
-        tools:node="remove" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
         android:name=".App"
@@ -43,7 +41,7 @@
         <activity
             android:name="org.p2p.wallet.root.RootActivity"
             android:exported="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/WalletTheme.Launcher"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
@@ -52,6 +50,23 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="key.app"
+                    android:path="/intercom"
+                    android:scheme="https" />
+
+                <data
+                    android:path="/intercom"
+                    android:scheme="key.app" />
+
             </intent-filter>
 
             <intent-filter android:autoVerify="true">

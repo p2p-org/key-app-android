@@ -13,7 +13,7 @@ import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShort
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.utils.Base58String
 
-class MoonpaySellRepositoryMapper {
+class SellRepositoryMapper {
     fun fromNetwork(
         response: List<MoonpaySellTransactionShortResponse>,
         depositWallets: List<MoonpaySellTransactionDepositWalletResponse>,
@@ -65,6 +65,7 @@ class MoonpaySellRepositoryMapper {
                     amounts = amounts,
                     selectedFiat = selectedFiat,
                     userAddress = transactionOwnerAddress,
+                    failureReason = transaction.failureReason,
                 )
             }
         }
@@ -135,7 +136,8 @@ class MoonpaySellRepositoryMapper {
                 fiatDetails = fiatDetails,
                 paymentMethod = MoonpaySellPaymentMethod.fromStringValue(paymentMethod),
                 extraFeeAmount = extraFeeAmount,
-                feeAmount = feeAmount.toBigDecimal(),
+                feeAmountInToken = (feeAmount / tokenPrice).toBigDecimal(),
+                feeAmountInFiat = feeAmount.toBigDecimal(),
                 fiatEarning = fiatEarning.toBigDecimal()
             )
         }

@@ -80,7 +80,14 @@ class TokenHistoryFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.setupView()
+        listenForSellTransactionDialogDismiss()
         presenter.loadHistory()
+    }
+
+    private fun listenForSellTransactionDialogDismiss() {
+        childFragmentManager.setFragmentResultListener(
+            SellTransactionDetailsBottomSheet.REQUEST_KEY_DISMISSED, this
+        ) { _, _ -> presenter.loadHistory() }
     }
 
     private fun FragmentTokenHistoryBinding.setupView() {
@@ -149,6 +156,13 @@ class TokenHistoryFragment :
             loadNextPage = { presenter.loadNextHistoryPage() },
         )
         addOnScrollListener(scrollListener)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // dirty duck-tape to remove hidden transactions from the list
+        // when the bottom sheet is closed
+        presenter.updateSellTransactions()
     }
 
     override fun showError(@StringRes resId: Int, argument: String) {

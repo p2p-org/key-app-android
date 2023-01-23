@@ -35,7 +35,7 @@ data class MoonpaySellTransactionShortResponse(
     @SerializedName("externalTransactionId")
     val externalTransactionId: String?,
     @SerializedName("failureReason")
-    val failureReason: String?,
+    val failureReason: SellTransactionFailureReason?,
     @SerializedName("externalCustomerId")
     val externalCustomerId: String?,
     @SerializedName("country")

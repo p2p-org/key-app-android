@@ -1,13 +1,13 @@
 package org.p2p.wallet.send.model
 
 import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import java.util.Date
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
 private const val EMPTY_BALANCE = 0L
 private const val USERNAME_KEY_APP_DOMAIN = ".key"
@@ -27,7 +27,10 @@ sealed class SearchResult(open val addressState: AddressState) : Parcelable {
     ) : SearchResult(AddressState(address))
 
     @Parcelize
-    data class OwnAddressError(val address: String) : SearchResult(AddressState(address))
+    data class OwnAddressError(
+        val address: String,
+        val directToken: TokenData? = null
+    ) : SearchResult(AddressState(address))
 
     @Parcelize
     data class AddressFound(

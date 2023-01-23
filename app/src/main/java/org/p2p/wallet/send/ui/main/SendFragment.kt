@@ -1,5 +1,10 @@
 package org.p2p.wallet.send.ui.main
 
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -7,18 +12,14 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import org.koin.android.ext.android.inject
+import org.p2p.core.common.TextContainer
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.formatUsd
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
@@ -28,7 +29,6 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.bottomsheet.ErrorBottomSheet
-import org.p2p.core.common.TextContainer
 import org.p2p.wallet.databinding.FragmentSendBinding
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
@@ -40,8 +40,8 @@ import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendConfirmData
-import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.send.model.SendFeeTotal
+import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.send.ui.dialogs.SendConfirmBottomSheet
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.send.ui.search.SearchFragment
@@ -481,7 +481,7 @@ class SendFragment :
 
     override fun showAvailableValue(available: BigDecimal, symbol: String) {
         val formatted = if (symbol == USD_READABLE_SYMBOL) {
-            getString(R.string.main_send_around_in_usd, available.formatUsd())
+            getString(R.string.main_send_around_in_usd, available.formatFiat())
         } else {
             "${available.formatToken()} $symbol"
         }
@@ -506,7 +506,7 @@ class SendFragment :
     }
 
     override fun showUsdAroundValue(usdValue: BigDecimal) {
-        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue.formatUsd())
+        binding.aroundTextView.text = getString(R.string.main_send_around_in_usd, usdValue.formatFiat())
     }
 
     override fun showButtonEnabled(isEnabled: Boolean) {
