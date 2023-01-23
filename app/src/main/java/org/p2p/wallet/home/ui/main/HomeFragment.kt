@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
-import org.p2p.core.utils.formatUsd
+import org.p2p.core.utils.formatFiat
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -28,7 +28,6 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeAction
 import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
-import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -70,8 +69,6 @@ class HomeFragment :
 
     private val emptyAdapter: EmptyViewAdapter by unsafeLazy { EmptyViewAdapter(this) }
 
-    private val intercomPushService: IntercomPushService by inject()
-
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
@@ -112,10 +109,8 @@ class HomeFragment :
             viewLifecycleOwner,
             ::onFragmentResult
         )
-
+        lifecycle.addObserver(presenter)
         presenter.load()
-
-        intercomPushService.showPushContentIfExists()
     }
 
     override fun showAddressCopied(addressAndUsername: String) {
@@ -248,7 +243,7 @@ class HomeFragment :
     }
 
     override fun showBalance(balance: BigDecimal) {
-        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatUsd())
+        binding.viewBalance.textViewAmount.text = getString(R.string.home_usd_format, balance.formatFiat())
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

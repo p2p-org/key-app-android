@@ -31,4 +31,6 @@ object Constants {
     const val ZERO_AMOUNT = "0"
 
     const val APP_HASH = "J1y9NEXfoHx"
+
+    const val FIAT_FRACTION_LENGTH = 2
 }

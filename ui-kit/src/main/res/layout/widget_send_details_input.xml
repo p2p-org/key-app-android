@@ -209,7 +209,7 @@
             android:paddingHorizontal="12dp"
             android:paddingVertical="6dp"
             android:text="@string/amounts_max"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Label1"
             android:textColor="@color/text_night"
             app:layout_constraintBottom_toBottomOf="@id/editTextAmount"
             app:layout_constraintStart_toEndOf="@id/editTextAmount"

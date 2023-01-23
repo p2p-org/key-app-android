@@ -41,7 +41,7 @@
         <activity
             android:name="org.p2p.wallet.root.RootActivity"
             android:exported="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/WalletTheme.Launcher"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
@@ -50,6 +50,23 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="key.app"
+                    android:path="/intercom"
+                    android:scheme="https" />
+
+                <data
+                    android:path="/intercom"
+                    android:scheme="key.app" />
+
             </intent-filter>
 
             <intent-filter android:autoVerify="true">

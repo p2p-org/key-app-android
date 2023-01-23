@@ -6,10 +6,10 @@ import com.appsflyer.attribution.AppsFlyerRequestListener
 import timber.log.Timber
 
 class AppsFlyerTracker(
-    private val context: Context
+    private val context: Context,
+    private val appsFlyer: AppsFlyerLib
 ) : AnalyticsTracker {
 
-    private val appsFlyer = AppsFlyerLib.getInstance()
     private val requestListener = object : AppsFlyerRequestListener {
         override fun onSuccess() {
             Timber.tag("AppsFlyerTracker").d("Event successfully logged")

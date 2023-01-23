@@ -71,7 +71,7 @@ class MoonpaySellRemoteRepository(
     override suspend fun getUserSellTransactions(
         userAddress: Base58String,
     ): List<SellTransaction> = doMoonpayRequest {
-        val userIdResponse = async { moonpayServerSideApi.getUserSellTransactions(userAddress.base58Value) }
+        val userIdResponse = async { moonpayServerSideApi.getUserSellTransactions(externalCustomerId) }
         val externalIdResponse = async { moonpayServerSideApi.getUserSellTransactions(externalCustomerId) }
         val depositWallets = getDepositWalletsForTransactions(userIdResponse.await())
 

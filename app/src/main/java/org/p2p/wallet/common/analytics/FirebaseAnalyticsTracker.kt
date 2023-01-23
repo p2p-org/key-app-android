@@ -1,9 +1,10 @@
-package org.p2p.wallet.common.analytics.trackers
+package org.p2p.wallet.common.analytics
 
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
+import org.p2p.wallet.common.analytics.trackers.AnalyticsTracker
 
-class FirebaseTracker(
+class FirebaseAnalyticsTracker(
     private val firebaseAnalytics: FirebaseAnalytics
 ) : AnalyticsTracker {
 

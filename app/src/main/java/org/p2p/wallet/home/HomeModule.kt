@@ -75,7 +75,8 @@ object HomeModule : InjectionModule {
                 tokensPolling = get(),
                 metadataInteractor = get(),
                 sellInteractor = get(),
-                sellEnabledFeatureToggle = get()
+                sellEnabledFeatureToggle = get(),
+                intercomDeeplinkManager = get()
             )
         }
         factory<ReceiveNetworkTypeContract.Presenter> { (type: NetworkType) ->

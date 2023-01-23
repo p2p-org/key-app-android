@@ -2,85 +2,19 @@ on:
   pull_request:
     branches:
       - release/*
-  push:
-    branches:
-      - main
-      - release/*
 jobs:
-  android-lint:
-    name: "Run ktlint check"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: "Init project"
-        uses: ./.github/actions/setup-project
-        with:
-          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
-          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
-          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
-          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-
-      - name: Run KtLint
-        run: ./gradlew ktlint -PautoCorrect=0
-
-#  android-unit-tests:
-#    name: "Run unit tests"
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - name: "Init project"
-#        uses: ./.github/actions/setup-project
-#        with:
-#          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-#          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-#          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-#          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-#          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-#          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-#          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-#          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
-#          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
-#          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-#          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
-#          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
-#          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-#          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
-#          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-#          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-#          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-#          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-#
-#      - name: Run unit tests
-#        run: ./gradlew testDebug
-
   android-build-local-firebase-release:
-    name: "Run build local AAB for Firebase"
+    name: "Run build AAB for Firebase"
     needs:
       - android-lint
-#      - android-unit-tests
+      - android-unit-tests
 
     runs-on: ubuntu-latest
     environment: production
     steps:
       - uses: actions/checkout@v3
 
-      - name: "Init project"
+      - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
@@ -110,12 +44,11 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleReleaseFirebase
 
-      - name: "Upload APK to Firebase App Distribution"
+      - name: "Upload AAB to Firebase App Distribution"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew appDistributionUploadReleaseFirebase
-
   android-build-local-slack-release:
     name: "Run build local APK & AAB Slack release"
     needs:
@@ -134,7 +67,7 @@ jobs:
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
-      - name: "Init project"
+      - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
@@ -157,12 +90,12 @@ jobs:
           ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
-      - name: "Build Slack APK and AAB artifact"
+      - name: "Build Slack APK artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleReleaseLocal bundleReleaseLocal
+        run: ./gradlew assembleReleaseLocal
 
       - name: "Upload APK to Slack Channel"
         uses: ./.github/actions/setup-slack
@@ -171,14 +104,6 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "releaseLocal"
           artifact-type: "apk"
-
-      - name: "Upload Bundle to Slack Channel"
-        uses: ./.github/actions/setup-slack
-        with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "releaseLocal"
-          artifact-type: "bundle"
 
       - name: "Upload git changelog and Jira ticket to Slack channel"
         run: |
@@ -213,7 +138,7 @@ jobs:
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
-      - name: "Init project"
+      - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
@@ -236,26 +161,12 @@ jobs:
           ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
-      - name: "Build release APK & AAB artifact"
+      - name: "Build release AAB artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleRelease bundleRelease
-
-      - name: "Upload release APK to Firebase App Distribution"
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew appDistributionUploadRelease
-
-      - name: "Upload release APK to Slack Channel"
-        uses: ./.github/actions/setup-slack
-        with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "release"
-          artifact-type: "apk"
+        run: ./gradlew bundleRelease
 
       - name: "Upload release AAB to Slack Channel"
         uses: ./.github/actions/setup-slack

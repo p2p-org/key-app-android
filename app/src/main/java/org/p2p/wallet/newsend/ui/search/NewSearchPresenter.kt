@@ -161,7 +161,10 @@ class NewSearchPresenter(
     private suspend fun validateOnlyAddress(target: SearchTarget) {
         when (target.validation) {
             SearchTarget.Validation.SOLANA_TYPE_ADDRESS -> searchBySolAddress(target.value)
-            else -> view?.showErrorState()
+            else -> {
+                view?.showErrorState()
+                view?.showUsersMessage(textRes = null)
+            }
         }
     }
 

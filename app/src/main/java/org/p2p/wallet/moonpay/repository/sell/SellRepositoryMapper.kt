@@ -136,7 +136,8 @@ class SellRepositoryMapper {
                 fiatDetails = fiatDetails,
                 paymentMethod = MoonpaySellPaymentMethod.fromStringValue(paymentMethod),
                 extraFeeAmount = extraFeeAmount,
-                feeAmount = feeAmount.toBigDecimal(),
+                feeAmountInToken = (feeAmount / tokenPrice).toBigDecimal(),
+                feeAmountInFiat = feeAmount.toBigDecimal(),
                 fiatEarning = fiatEarning.toBigDecimal()
             )
         }

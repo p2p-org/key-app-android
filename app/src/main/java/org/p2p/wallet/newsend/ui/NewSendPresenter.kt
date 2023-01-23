@@ -1,6 +1,8 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
@@ -15,6 +17,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYE
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
@@ -42,8 +45,6 @@ import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -54,7 +55,8 @@ class NewSendPresenter(
     private val transactionManager: TransactionManager,
     private val connectionStateProvider: ConnectionStateProvider,
     private val newSendAnalytics: NewSendAnalytics,
-    private val appScope: AppScope
+    private val appScope: AppScope,
+    sendModeProvider: SendModeProvider
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
@@ -64,7 +66,10 @@ class NewSendPresenter(
         }
     }
 
-    private val calculationMode = CalculationMode()
+    private val calculationMode = CalculationMode(
+        sendModeProvider,
+        resources.getString(R.string.common_less_then_minimum)
+    )
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
 
     private var selectedToken: Token.Active? = null

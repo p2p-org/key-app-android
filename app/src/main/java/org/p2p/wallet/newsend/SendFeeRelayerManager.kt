@@ -1,5 +1,6 @@
 package org.p2p.wallet.newsend
 
+import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -28,7 +29,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
 
 class SendFeeRelayerManager(
     private val sendInteractor: SendInteractor
@@ -56,12 +56,15 @@ class SendFeeRelayerManager(
         this.solToken = solToken
 
         onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = true))
-
-        minRentExemption = sendInteractor.getMinRelayRentExemption()
-        feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
-        sendInteractor.initialize(initialToken)
-
-        onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
+        try {
+            minRentExemption = sendInteractor.getMinRelayRentExemption()
+            feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
+            sendInteractor.initialize(initialToken)
+        } catch (e: Throwable) {
+            currentState = Failure(FeesCalculationError)
+        } finally {
+            onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
+        }
     }
 
     fun getMinRentExemption(): BigInteger = minRentExemption.orZero()
@@ -122,6 +125,7 @@ class SendFeeRelayerManager(
             )
         } catch (e: Throwable) {
             Timber.e(e, "Error during FeeRelayer fee calculation")
+            handleError(FeesCalculationError)
         } finally {
             onFeeLoading?.invoke(FeeLoadingState(isLoading = false, isDelayed = useCache))
         }

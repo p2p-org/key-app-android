@@ -1,12 +1,12 @@
 package org.p2p.uikit.components
 
+import android.content.Context
+import android.util.AttributeSet
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.postDelayed
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import android.content.Context
-import android.util.AttributeSet
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.glide.GlideManager
@@ -99,7 +99,11 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun showFeeLoading(isLoading: Boolean) {
         binding.progressBarFees.isVisible = isLoading
-        binding.imageViewFeesInfo.isInvisible = isLoading
+        if (binding.textViewFee.text.isNullOrBlank()) {
+            binding.imageViewFeesInfo.isVisible = false
+        } else {
+            binding.imageViewFeesInfo.isInvisible = isLoading
+        }
     }
 
     fun showDelayedFeeViewLoading(isLoading: Boolean) {

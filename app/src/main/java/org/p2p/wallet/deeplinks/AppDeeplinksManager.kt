@@ -9,11 +9,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.notification.NotificationType
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.utils.toStringMap
 
-class AppDeeplinksManager(private val context: Context) {
+class AppDeeplinksManager(
+    private val context: Context,
+    private val intercomDeeplinkManager: IntercomDeeplinkManager
+) {
 
     companion object {
         const val NOTIFICATION_TYPE = "eventType"
@@ -44,17 +48,30 @@ class AppDeeplinksManager(private val context: Context) {
     }
 
     fun handleDeeplinkIntent(intent: Intent) {
-        val extras = intent.extras ?: return
-        // additional parsing when app been opened with notification from background
-        if (extras.containsKey(NOTIFICATION_TYPE)) {
-            val values = extras.toStringMap()
-            val notificationType = NotificationType.fromValue(
-                values[NOTIFICATION_TYPE].orEmpty()
-            )
-            intent.addDeeplinkDataToIntent(notificationType)
+        when {
+            isAppOpenFromBackground(intent) -> {
+                val data = intent.data ?: return
+                intercomDeeplinkManager.handleBackgroundDeeplink(data)
+            }
+            isAppOpenFromForeground(intent) -> {
+                val extras = intent.extras ?: return
+                // additional parsing when app been opened with notification from background
+                if (extras.containsKey(NOTIFICATION_TYPE)) {
+                    val values = extras.toStringMap()
+                    val notificationType = NotificationType.fromValue(
+                        values[NOTIFICATION_TYPE].orEmpty()
+                    )
+                    intent.addDeeplinkDataToIntent(notificationType)
+                }
+                handleOrSaveDeeplinkIntent(intent)
+            }
+            else -> Unit
         }
-        handleOrSaveDeeplinkIntent(intent)
     }
+
+    private fun isAppOpenFromBackground(intent: Intent): Boolean = intent.data != null
+
+    private fun isAppOpenFromForeground(intent: Intent): Boolean = intent.extras != null
 
     private fun handleOrSaveDeeplinkIntent(intent: Intent) {
         intent.extras?.apply {

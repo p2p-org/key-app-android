@@ -9,7 +9,9 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.webkit.WebView
+import com.appsflyer.AppsFlyerLib
 import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.mockk.every
@@ -121,6 +123,7 @@ class CheckModulesTest : KoinTest {
         every { applicationContext }.returns(contextMock)
         every { baseContext }.returns(contextMock)
         every { resources }.returns(resourcesMock)
+        every { packageName }.returns("org.p2p.wallet")
     }
 
     private val javaxDefaultModule: Module = module {
@@ -165,11 +168,12 @@ class CheckModulesTest : KoinTest {
     }
 
     private fun mockFirebase() {
-        mockkStatic(FirebaseApp::class, FirebaseCrashlytics::class, FirebaseRemoteConfig::class)
+        mockkStatic(FirebaseApp::class, FirebaseCrashlytics::class, FirebaseRemoteConfig::class, FirebaseAnalytics::class, AppsFlyerLib::class)
         every { FirebaseApp.getInstance() } returns mockk(relaxed = true)
         every { FirebaseCrashlytics.getInstance() } returns mockk(relaxed = true)
         every { FirebaseRemoteConfig.getInstance() } returns mockk(relaxed = true)
-
+        every { FirebaseAnalytics.getInstance(applicationMock) } returns mockk(relaxed = true)
+        every { AppsFlyerLib.getInstance() } returns mockk(relaxed = true)
         mockkStatic(Cipher::class)
         every { Cipher.getInstance(any()) } returns mockk(relaxed = true)
     }
