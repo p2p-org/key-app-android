@@ -20,7 +20,6 @@ ext.initApiKeys = { defaultConfig ->
     defaultConfig.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrThrow('comparePublicKey')}")
     defaultConfig.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrThrow('intercomApiKey')}")
     defaultConfig.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrThrow('intercomAppId')}")
-    defaultConfig.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrThrow('amplitudeKey')}")
     defaultConfig.buildConfigField("String", "appsFlyerKey", "${apiKeysProperties.getOrThrow('appsFlyerKey')}")
 }
 

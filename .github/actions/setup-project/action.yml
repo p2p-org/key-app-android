@@ -40,8 +40,11 @@ inputs:
   intercom-key-secret:
     description: "Intercom app key"
     required: true
-  amplitude-secret:
-    description: "Amplitude api key"
+  amplitude-secret-debug:
+    description: "Amplitude api key - DEBUG"
+    required: true
+  amplitude-secret-release:
+    description: "Amplitude api key - RELEASE"
     required: true
   apps-flyer-secret:
     description: "AppsFlyer key"
@@ -99,6 +102,12 @@ runs:
         amplitude-secret: ${{ inputs.amplitude-secret }}
         apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
         moonpay-sandbox-secret: ${{ inputs.moonpay-sandbox-secret }}
+
+    - name: "Create analytics.properties"
+      uses: ./.github/actions/setup-analytics
+      with:
+        amplitude-secret-debug: ${{ inputs.amplitude-secret-debug }}
+        amplitude-secret-release: ${{ inputs.amplitude-secret-release }}
 
     - name: "Create cert.pem file"
       env:

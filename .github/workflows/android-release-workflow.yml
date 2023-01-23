@@ -30,7 +30,8 @@ jobs:
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          amplitude-secret-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-secret-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
@@ -83,7 +84,8 @@ jobs:
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          amplitude-secret-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-secret-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
@@ -109,7 +111,6 @@ jobs:
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_deploy_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
           bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
@@ -154,7 +155,8 @@ jobs:
           compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
           intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
           intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
+          amplitude-secret-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-secret-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
           auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
@@ -180,7 +182,6 @@ jobs:
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_deploy_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
           bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 

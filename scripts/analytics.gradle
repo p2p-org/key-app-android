@@ -1,0 +1,34 @@
+apply plugin: 'com.android.application'
+
+android {
+    buildTypes {
+        def analyticsProperties = new Properties()
+        def analyticsPropertiesFile = rootProject.file("analytics.properties")
+        if (analyticsPropertiesFile.canRead()) {
+            logger.quiet "(ANALYTICS): using analytics properties file"
+            analyticsProperties.load(new FileInputStream(analyticsPropertiesFile))
+        } else {
+            logger.quiet "(ANALYTICS): creating analytics properties from CI"
+            analyticsProperties["amplitudeDebugKey"] = "${System.getenv('AMPLITUDE_KEY_DEBUG')}"
+            analyticsProperties["amplitudeReleaseKey"] = "${System.getenv('AMPLITUDE_KEY_RELEASE')}"
+        }
+
+        def debugKey = analyticsProperties["amplitudeDebugKey"]
+
+        debug {
+            buildConfigField("String", "amplitudeKey", debugKey)
+        }
+        feature {
+            buildConfigField("String", "amplitudeKey", debugKey)
+        }
+        releaseLocal {
+            buildConfigField("String", "amplitudeKey", debugKey)
+        }
+        releaseFirebase {
+            buildConfigField("String", "amplitudeKey", debugKey)
+        }
+        release {
+            buildConfigField("String", "amplitudeKey", analyticsProperties["amplitudeReleaseKey"])
+        }
+    }
+}
