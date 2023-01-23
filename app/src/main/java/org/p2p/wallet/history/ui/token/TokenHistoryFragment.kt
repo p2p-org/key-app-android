@@ -96,7 +96,7 @@ class TokenHistoryFragment :
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
         refreshLayout.setOnRefreshListener { presenter.retryLoad() }
-        retryButton.setOnClickListener { presenter.retryLoad() }
+        errorStateLayout.buttonRetry.setOnClickListener { presenter.retryLoad() }
         historyRecyclerView.setupHistoryList()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
     }
@@ -190,7 +190,7 @@ class TokenHistoryFragment :
         with(binding) {
             shimmerView.root.isVisible = newState == PagingState.InitialLoading
             refreshLayout.isVisible = newState != PagingState.InitialLoading
-            errorStateLayout.isVisible = newState is PagingState.Error
+            errorStateLayout.root.isVisible = newState is PagingState.Error
             emptyStateLayout.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
             historyRecyclerView.isVisible =
                 (newState == PagingState.Idle && !historyAdapter.isEmpty()) || newState == PagingState.Loading
