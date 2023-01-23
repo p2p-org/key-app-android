@@ -1,13 +1,11 @@
+# The workflow triggers for release branch changes only
 on:
-  pull_request:
+  push:
     branches:
       - release/*
 jobs:
   android-build-local-firebase-release:
     name: "Run build AAB for Firebase"
-    needs:
-      - android-lint
-      - android-unit-tests
 
     runs-on: ubuntu-latest
     environment: production
@@ -51,10 +49,6 @@ jobs:
         run: ./gradlew appDistributionUploadReleaseFirebase
   android-build-local-slack-release:
     name: "Run build local APK & AAB Slack release"
-    needs:
-      - android-lint
-      - android-unit-tests
-
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -121,10 +115,6 @@ jobs:
 
   android-build-store-release:
     name: "Run build store release artifacts"
-    needs:
-      - android-lint
-      - android-unit-tests
-
     runs-on: ubuntu-latest
     environment: production
     steps:
