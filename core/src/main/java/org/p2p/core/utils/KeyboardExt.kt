@@ -21,9 +21,9 @@ fun Context.hideKeyboard() = (this as? Activity)?.hideKeyboard()
 fun Activity.showKeyboard() = WindowInsetsControllerCompat(window, window.decorView).show(WindowInsetsCompat.Type.ime())
 fun Activity.hideKeyboard() = WindowInsetsControllerCompat(window, window.decorView).hide(WindowInsetsCompat.Type.ime())
 
-fun View.getKeyboardState(): StateFlow<Boolean>? = (this.context as? Activity)?.getKeyboardState()
-fun Fragment.getKeyboardState(): StateFlow<Boolean>? = (this.activity as? Activity)?.getKeyboardState()
-fun Activity.getKeyboardState(): StateFlow<Boolean>? = (this as? KeyboardListener)?.keyboardState
+fun View.observeKeyboardState(): StateFlow<Boolean>? = (this.context as? Activity)?.observeKeyboardState()
+fun Fragment.observeKeyboardState(): StateFlow<Boolean>? = (this.activity as? Activity)?.observeKeyboardState()
+fun Activity.observeKeyboardState(): StateFlow<Boolean>? = (this as? KeyboardListener)?.keyboardState
 
 interface KeyboardListener {
     val keyboardState: StateFlow<Boolean>
