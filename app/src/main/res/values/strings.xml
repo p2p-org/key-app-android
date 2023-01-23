@@ -42,7 +42,7 @@
     <string name="common_go_to_swap">Go to swap</string>
     <string name="common_sell_all">Sell all</string>
     <string name="common_sorry">Sorry</string>
-    <string name="common_less_then_minimum">Less than 0.01</string>
+    <string name="common_less_than_minimum">Less than 0.01</string>
     <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>

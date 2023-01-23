@@ -68,7 +68,7 @@ class NewSendPresenter(
 
     private val calculationMode = CalculationMode(
         sendModeProvider,
-        resources.getString(R.string.common_less_then_minimum)
+        resources.getString(R.string.common_less_than_minimum)
     )
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
 
