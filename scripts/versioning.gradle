@@ -23,7 +23,7 @@ ext.getVersionBuild = { ->
     def buildNumberFromCi = System.getenv("CIRCLE_BUILD_NUM")
 
     if (buildNumberFromCi != null) {
-        return buildNumberFromCi.toInteger()
+        return System.currentTimeMillis() + buildNumberFromCi.toInteger()
     } else {
         return VERSION_BUILD
     }

@@ -9,6 +9,6 @@ private const val KEY_DEV_NET_ENABLED = "KEY_DEV_NET_ENABLED"
 class DevNetFeatureFlag(prefs: SharedPreferences) : InAppFeatureFlag() {
     override val featureName: String = KEY_DEV_NET_ENABLED
     override var featureValue: Boolean by BooleanPreference(
-        preferences = prefs, key = KEY_DEV_NET_ENABLED, defaultValue = BuildConfig.KEY_DEV_NET_ENABLED
+        preferences = prefs, key = KEY_DEV_NET_ENABLED, defaultValue = BuildConfig.DEBUG
     )
 }

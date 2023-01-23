@@ -25,6 +25,7 @@ local.properties
 torus.properties
 signing.properties
 apikey.properties
+analytics.properties
 credentials.properties
 p2pwallet.keystore
 *.jks
