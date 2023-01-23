@@ -769,9 +769,9 @@ class SendPresenter(
          * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
             is FeePayerState.SwitchToSpl -> {
-                val tokenToSwitch = state.tokenToSwitch
-                sendInteractor.setFeePayerToken(tokenToSwitch)
-                recalculate(tokenToSwitch)
+                val newFeePayerToken = state.tokenToSwitch
+                sendInteractor.setFeePayerToken(newFeePayerToken)
+                recalculate(newFeePayerToken)
             }
             is FeePayerState.SwitchToSol -> {
                 sendInteractor.switchFeePayerToSol(this.state.solToken)

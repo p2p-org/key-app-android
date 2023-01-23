@@ -65,7 +65,6 @@ class SendFeeRelayerManager(
             feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
             alternativeFeePayerTokens = userInteractor.getNonZeroUserTokens()
             sendInteractor.initialize(initialToken)
-            sendInteractor.initialize(initialToken)
         } catch (e: Throwable) {
             currentState = Failure(FeesCalculationError)
         } finally {
