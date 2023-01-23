@@ -25,15 +25,6 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
-          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
-          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
@@ -59,15 +50,6 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
-          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
-          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
           keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: "Build feature APK"

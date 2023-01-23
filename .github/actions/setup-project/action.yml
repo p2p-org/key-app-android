@@ -4,45 +4,6 @@ inputs:
   firebase-secret:
     description: "Firebase secret"
     required: true
-  rpc-pool-secret:
-    description: "Rpc pool api key"
-    required: true
-  moonpay-secret:
-    description: "Moonpay api key"
-    required: true
-  moonpay-sandbox-secret:
-    description: "Moonpay sandbox api key"
-    required: true
-  compare-secret:
-    description: "Compare token api key"
-    required: true
-  intercom-id-secret:
-    description: "Intercom app id"
-    required: true
-  intercom-key-secret:
-    description: "Intercom app key"
-    required: true
-  apps-flyer-secret:
-    description: "AppsFlyer key"
-    required: true
-  default-project:
-    description: "Project name for Sentry"
-    required: false
-    default: "android"
-  default-organization:
-    description: "Project organization for Sentry"
-    required: false
-    default: "p2p-wallet"
-  default-url:
-    description: "Project Sentry full URL"
-    required: false
-    default: "https://sentry.io/"
-  auth-token:
-    description: "Project Sentry Auth Token"
-    required: true
-  auth-dsn:
-    description: "Project Sentry DSN"
-    required: true
   ssl-certificate:
     description: "SSL certificate"
     required: true
@@ -56,31 +17,11 @@ runs:
       uses: ./.github/actions/setup-firebase
       with:
         firebase-secret: ${{ inputs.firebase-secret }}
-
-    - name: "Create apikey.properties"
-      uses: ./.github/actions/setup-apikey
-      with:
-        rpc-pool-secret: ${{ inputs.rpc-pool-secret }}
-        moonpay-secret: ${{ inputs.moonpay-secret }}
-        compare-secret: ${{ inputs.compare-secret }}
-        intercom-id-secret: ${{ inputs.intercom-id-secret }}
-        intercom-key-secret: ${{ inputs.intercom-key-secret }}
-        amplitude-secret: ${{ inputs.amplitude-secret }}
-        apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
-        moonpay-sandbox-secret: ${{ inputs.moonpay-sandbox-secret }}
-
     - name: "Create cert.pem file"
       env:
         SSL_CERTIFICATE: ${{ inputs.ssl-certificate }}
       shell: bash
       run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
-
-    - name: "Create sentry.properties file"
-      uses: ./.github/actions/setup-sentry
-      with:
-        auth-token: ${{ inputs.auth-token }}
-        auth-dsn: ${{ inputs.auth-dsn }}
-
     - name: "Create keystore .jks"
       uses: ./.github/actions/setup-keystore-jks
       with:
