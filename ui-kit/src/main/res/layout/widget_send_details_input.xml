@@ -137,6 +137,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/imageViewSelectToken"
             app:layout_constraintEnd_toStartOf="@+id/imageViewSelectToken"
             app:layout_constraintTop_toTopOf="@+id/imageViewSelectToken"
+            app:layout_goneMarginEnd="20dp"
             tools:text="$89.99" />
 
         <ImageView
@@ -167,11 +168,14 @@
             android:id="@+id/textViewMainAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="12dp"
+            android:layout_marginBottom="6dp"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title2"
+            app:layout_constraintBottom_toTopOf="@+id/textViewAmountTypeSwitchLabel"
             app:layout_constraintEnd_toStartOf="@+id/imageViewSwitchTo"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_goneMarginEnd="24dp"
             tools:text="USD" />
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -179,6 +183,7 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginStart="24dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
             android:background="@android:color/transparent"
             android:digits="0123456789."
@@ -197,7 +202,7 @@
             app:layout_constraintEnd_toStartOf="@id/textViewMainAmount"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textViewMainAmount"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
@@ -222,7 +227,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="12dp"
-            android:layout_marginBottom="20dp"
             android:gravity="center"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             android:textColor="@color/text_mountain"

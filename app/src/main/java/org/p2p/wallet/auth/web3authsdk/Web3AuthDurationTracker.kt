@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
+import org.p2p.wallet.infrastructure.network.environment.TorusEnvironment
 import org.p2p.wallet.utils.DateTimeUtils.PATTERN_HH_MM_SS_SS
 import org.p2p.wallet.utils.DateTimeUtils.getFormattedDate
 import org.p2p.wallet.utils.emptyString
@@ -14,7 +15,8 @@ private const val EXPECTED_REQUEST_TIME_SEC = 15
 private const val TAG = "Web3AuthDuration"
 
 class Web3AuthDurationTracker(
-    private val analytics: OnboardingAnalytics
+    private val analytics: OnboardingAnalytics,
+    private val torusNetwork: TorusEnvironment,
 ) {
 
     private class Web3AuthTakesTooLong(
@@ -34,6 +36,9 @@ class Web3AuthDurationTracker(
             buildString {
                 append("--> Web3Auth request: ")
                 append("$methodName;")
+                append("${torusNetwork.verifier};")
+                append("${torusNetwork.subVerifier};")
+                append("${torusNetwork.baseUrl};")
                 append("date=${getFormattedDate(Date().time, PATTERN_HH_MM_SS_SS)}")
             }
         )

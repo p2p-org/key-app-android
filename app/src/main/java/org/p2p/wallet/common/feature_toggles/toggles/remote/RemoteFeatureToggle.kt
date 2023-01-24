@@ -23,7 +23,7 @@ abstract class BooleanFeatureToggle(
 ) : RemoteFeatureToggle<Boolean>() {
     override val value: Boolean
         get() = valuesProvider.getBoolean(featureKey) ?: kotlin.run {
-            Timber.i("No value found for $featureKey; using defaults = $defaultValue")
+            Timber.tag("BooleanFeatureToggle").i("No value found for $featureKey; using defaults = $defaultValue")
             defaultValue
         }
     val isFeatureEnabled: Boolean get() = value
@@ -34,7 +34,7 @@ abstract class IntFeatureToggle(
 ) : RemoteFeatureToggle<Int>() {
     override val value: Int
         get() = valuesProvider.getInt(featureKey) ?: kotlin.run {
-            Timber.i("No value found for $featureKey; using defaults = $defaultValue")
+            Timber.tag("IntFeatureToggle").i("No value found for $featureKey; using defaults = $defaultValue")
             defaultValue
         }
 }
@@ -44,7 +44,7 @@ abstract class StringFeatureToggle(
 ) : RemoteFeatureToggle<String>() {
     override val value: String
         get() = valuesProvider.getString(featureKey) ?: kotlin.run {
-            Timber.i("No value found for $featureKey; using defaults = $defaultValue")
+            Timber.tag("StringFeatureToggle").i("No value found for $featureKey; using defaults = $defaultValue")
             defaultValue
         }
 }
