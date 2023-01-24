@@ -175,6 +175,8 @@ class SellTransactionDetailsBottomSheet :
         buttonTitle: String,
         buttonRemoveOrCancelTitle: String
     ) = with(binding.layoutDetails) {
+        // temp remove try again button due to absence of implementation
+        buttonAction.isVisible = details.status != SellTransactionStatus.FAILED
         buttonAction.text = buttonTitle
         buttonAction.setOnClickListener { onActionButtonClicked(action) }
 
@@ -192,11 +194,39 @@ class SellTransactionDetailsBottomSheet :
     }
 
     private fun renderAmounts() = with(binding.layoutDetails) {
-        val solAmount = details.formattedSolAmount
-        val usdAmount = details.formattedUsdAmount
-        textViewAmount.text = "$solAmount ${Constants.SOL_SYMBOL}"
-        textViewUsdValue.text = getString(R.string.sell_lock_usd_amount, usdAmount)
+        val tokenAmount = details.formattedSolAmount
+        val fiatAmount = details.formattedFiatAmount
+        val fiatAbbreviation = details.fiatAbbreviation
+        val boldAmount: String
+        val labelAmount: String
+        when (details.status) {
+            SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+                boldAmount = getString(
+                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
+                )
+                labelAmount = getString(
+                    R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, fiatAbbreviation
+                )
+            }
+            SellTransactionStatus.PENDING, SellTransactionStatus.COMPLETED -> {
+                boldAmount = getString(
+                    R.string.sell_lock_pending_fiat_amount, fiatAmount, fiatAbbreviation
+                )
+                labelAmount = getString(
+                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
+                )
+            }
+            SellTransactionStatus.FAILED -> {
+                boldAmount = getString(
+                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
+                )
+                labelAmount = emptyString()
+            }
+        }
+        textViewAmount.text = boldAmount
+        textViewFiatValue.text = labelAmount
 
+        containerReceiver.isVisible = details.status != SellTransactionStatus.FAILED
         textViewReceiverAddress.text = details.receiverAddress.let {
             if (details.isReceiverAddressWallet) it.cutMiddle() else it
         }
