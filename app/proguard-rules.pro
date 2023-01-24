@@ -78,7 +78,6 @@
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }
 -keep class com.appsflyer.** { *; }
--keep class kotlin.coroutines.intrinsics.** { *; }
 -keep public class com.android.installreferrer.** { *; }
 -keep public class com.miui.referrer.** {*;}
 -dontwarn com.appsflyer.**

@@ -91,9 +91,6 @@ class SendFragment :
         )
     }
 
-    override val statusBarColor: Int = R.color.bg_snow
-    override val navBarColor: Int = R.color.bg_snow
-
     override val presenter: SendContract.Presenter by inject()
     private val glideManager: GlideManager by inject()
 

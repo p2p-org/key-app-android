@@ -40,12 +40,6 @@ class NewSettingsFragment :
 
     override val presenter: NewSettingsContract.Presenter by inject()
 
-    override val navBarColor: Int
-        get() = R.color.bg_snow
-
-    override val statusBarColor: Int
-        get() = R.color.bg_snow
-
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val binding: FragmentSettingsBinding by viewBinding()

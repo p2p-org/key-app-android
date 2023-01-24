@@ -1,14 +1,14 @@
 package org.p2p.wallet.newsend.ui.details
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.SpanUtils
@@ -132,13 +132,23 @@ class NewSendDetailsBottomSheet :
             textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
             textViewSubtitle.apply {
                 val fee = state.sendFee
-                text = if (fee != null && !state.feeLimit.hasFreeTransactions()) {
+                text = if (!state.feeLimit.hasFreeTransactions()) {
                     setTextColor(colorNight)
-                    SpanUtils.highlightText(
-                        commonText = fee.transactionFullFee,
-                        highlightedText = fee.approxTransactionFeeUsd.orEmpty(),
-                        color = colorMountain
-                    )
+                    if (fee == null) {
+                        val zeroUsd = "(0$)"
+                        val fullZeroFeeText = "0 ${state.sourceSymbol} $zeroUsd"
+                        SpanUtils.highlightText(
+                            commonText = fullZeroFeeText,
+                            highlightedText = zeroUsd,
+                            color = colorMountain
+                        )
+                    } else {
+                        SpanUtils.highlightText(
+                            commonText = fee.transactionFullFee,
+                            highlightedText = fee.approxTransactionFeeUsd.orEmpty(),
+                            color = colorMountain
+                        )
+                    }
                 } else {
                     setTextColor(colorMint)
                     getString(R.string.send_free_fee_format, state.feeLimit.remaining)

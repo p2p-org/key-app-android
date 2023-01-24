@@ -1,9 +1,10 @@
 package org.p2p.uikit.components
 
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
 import android.content.Context
 import android.util.AttributeSet
 import android.view.Menu
+import android.widget.FrameLayout
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetBottomNavigationViewBinding
 import org.p2p.uikit.utils.inflateViewBinding
@@ -12,9 +13,13 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : CoordinatorLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     val binding = inflateViewBinding<WidgetBottomNavigationViewBinding>()
+
+    init {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigationView, null)
+    }
 
     fun getSelectedItemId(): Int = binding.bottomNavigationView.selectedItemId
 

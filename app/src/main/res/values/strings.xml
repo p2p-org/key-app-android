@@ -42,7 +42,7 @@
     <string name="common_go_to_swap">Go to swap</string>
     <string name="common_sell_all">Sell all</string>
     <string name="common_sorry">Sorry</string>
-    <string name="common_less_then_minimum">Less then 0.01</string>
+    <string name="common_less_than_minimum">Less than 0.01</string>
     <string name="not_available">N/A</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
@@ -683,6 +683,16 @@
     <string name="sell_warning_only_sol_title">You can Cash out only SOL</string>
     <string name="sell_warning_only_sol_body">To Cash out another coin swap your cryptocurrency to SOL before</string>
     <string name="sell_warning_only_sol_button">Got it</string>
+
+    <string name="sell_inform_dialog_next_step">service is next step</string>
+    <string name="sell_inform_dialog_first_step">1</string>
+    <string name="sell_inform_dialog_first_title">You will be redirected to our payment provider</string>
+    <string name="sell_inform_dialog_first_subtitle">You will need to enter your IBAN and pass KYC</string>
+    <string name="sell_inform_dialog_second_step">2</string>
+    <string name="sell_inform_dialog_second_title">Transfer SOL to our payment provider from Key App</string>
+    <string name="sell_inform_dialog_second_subtitle">Nobody has access to your funds, so you need to execute the transaction cash out</string>
+    <string name="sell_inform_dialog_do_not_show">Don\'t show me again</string>
+    <string name="sell_inform_dialog_confirm_btn">Let\'s go!</string>
 
 
 </resources>

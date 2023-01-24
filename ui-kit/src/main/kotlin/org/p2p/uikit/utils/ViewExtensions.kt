@@ -35,14 +35,19 @@ fun View.requireActivity(): AppCompatActivity {
     throw IllegalStateException("View is not attached to any activity")
 }
 
-fun View.focusAndShowKeyboard() {
+fun View.focusAndShowKeyboard(force: Boolean = false) {
     doOnLayout {
-        setOnFocusChangeListener { view, focus ->
-            if (focus) {
-                showKeyboard()
+        if (force) {
+            requestFocus()
+            showKeyboard()
+        } else {
+            setOnFocusChangeListener { view, focus ->
+                if (focus) {
+                    showKeyboard()
+                }
             }
+            requestFocus()
         }
-        requestFocus()
     }
 }
 

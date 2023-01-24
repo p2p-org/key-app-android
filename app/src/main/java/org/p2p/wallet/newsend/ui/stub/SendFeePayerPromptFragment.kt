@@ -1,16 +1,21 @@
 package org.p2p.wallet.newsend.ui.stub
 
+import androidx.core.view.WindowInsetsCompat
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendNoAccountBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -49,8 +54,8 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
     private val approximateFeeUsd: String by args(ARG_APPROXIMATE_FEE)
     private val alternativeFeePayerTokens: List<Token.Active> by args(ARG_ALTERNATIVE_TOKENS)
 
-    override val statusBarColor: Int get() = R.color.bg_smoke
-    override val navBarColor: Int get() = if (hasAlternativeFeePayerToken()) R.color.bg_night else R.color.bg_smoke
+    override val customNavigationBarStyle: SystemIconsStyle
+        get() = if (hasAlternativeFeePayerToken()) SystemIconsStyle.WHITE else SystemIconsStyle.BLACK
 
     private val sendInteractor: SendInteractor by inject()
 
@@ -74,6 +79,19 @@ class SendNoAccountFragment : BaseFragment(R.layout.fragment_send_no_account) {
             buttonOk.isVisible = !hasAlternativeFeePayerToken
 
             setMessage()
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        binding.containerBottom.doOnApplyWindowInsets { view, insets, initialPadding ->
+            val systemAndIme = insets.systemAndIme()
+            if (hasAlternativeFeePayerToken()) {
+                binding.root.updatePadding(top = systemAndIme.top)
+                binding.containerBottom.updatePadding(bottom = initialPadding.bottom + systemAndIme.bottom)
+            } else {
+                binding.root.updatePadding(top = systemAndIme.top, bottom = systemAndIme.bottom)
+            }
+            WindowInsetsCompat.CONSUMED
         }
     }
 
