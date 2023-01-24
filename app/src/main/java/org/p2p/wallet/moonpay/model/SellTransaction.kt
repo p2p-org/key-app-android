@@ -4,7 +4,6 @@ import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionFailureReason
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.utils.Base58String
-import java.math.BigDecimal
 
 sealed class SellTransaction(
     val status: SellTransactionStatus
@@ -14,12 +13,6 @@ sealed class SellTransaction(
     abstract val amounts: SellTransactionAmounts
     abstract val userAddress: Base58String
     abstract val selectedFiat: SellTransactionFiatCurrency
-
-    fun getFiatAmount(): BigDecimal = when (selectedFiat) {
-        SellTransactionFiatCurrency.EUR -> amounts.eurAmount
-        SellTransactionFiatCurrency.USD -> amounts.usdAmount
-        SellTransactionFiatCurrency.GBP -> amounts.gbpAmount
-    }
 
     fun isCancelled(): Boolean {
         return this is FailedTransaction && failureReason == SellTransactionFailureReason.CANCELLED

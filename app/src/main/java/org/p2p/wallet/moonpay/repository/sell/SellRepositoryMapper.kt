@@ -1,5 +1,6 @@
 package org.p2p.wallet.moonpay.repository.sell
 
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellPaymentMethod
@@ -20,7 +21,7 @@ class SellRepositoryMapper {
         selectedFiat: SellTransactionFiatCurrency,
         transactionOwnerAddress: Base58String,
     ): List<SellTransaction> = response.mapNotNull { transaction ->
-        val amounts = transaction.createAmounts()
+        val amounts = transaction.createAmounts(selectedFiat)
         val metadata = transaction.createMetadata()
 
         when (transaction.status) {
@@ -71,13 +72,21 @@ class SellRepositoryMapper {
         }
     }
 
-    private fun MoonpaySellTransactionShortResponse.createAmounts(): SellTransactionAmounts {
+    private fun MoonpaySellTransactionShortResponse.createAmounts(
+        selectedFiat: SellTransactionFiatCurrency
+    ): SellTransactionAmounts {
+        val validatedFiatAmount: Double = fiatAmount ?: when (selectedFiat) {
+            SellTransactionFiatCurrency.EUR -> eurRate * tokenAmount
+            SellTransactionFiatCurrency.USD -> usdRate * tokenAmount
+            SellTransactionFiatCurrency.GBP -> gbpRate * tokenAmount
+        }
         return SellTransactionAmounts(
             tokenAmount = tokenAmount.toBigDecimal(),
-            feeAmount = (feeAmount ?: 0.0).toBigDecimal(),
-            usdAmount = usdRate.toBigDecimal(),
-            eurAmount = eurRate.toBigDecimal(),
-            gbpAmount = gbpRate.toBigDecimal()
+            amountInFiat = validatedFiatAmount.toBigDecimal(),
+            feeAmount = feeAmount?.toBigDecimal().orZero(),
+            usdRate = usdRate.toBigDecimal(),
+            eurRate = eurRate.toBigDecimal(),
+            gbpRate = gbpRate.toBigDecimal(),
         )
     }
 
