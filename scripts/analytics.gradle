@@ -25,7 +25,7 @@ android {
         }
 
         def debugKey = analyticsProperties["amplitudeDebugKey"]
-        logger.quiet "(ANALYTICS): debug key from properties $debugKey}"
+        logger.quiet "(ANALYTICS): debug key from properties ${debugKey.toString().isEmpty()}"
 
         debug {
             manifestPlaceholders = [SENTRY_ENV: "debug"]
