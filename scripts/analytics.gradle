@@ -24,9 +24,8 @@ android {
             logger.quiet "(ANALYTICS): analytics properties is not found."
         }
 
-        logger.quiet "(ANALYTICS): debug key from properties ${analyticsProperties["amplitudeDebugKey"]}"
-
         def debugKey = analyticsProperties["amplitudeDebugKey"]
+        logger.quiet "(ANALYTICS): debug key from properties $debugKey}"
 
         debug {
             manifestPlaceholders = [SENTRY_ENV: "debug"]
