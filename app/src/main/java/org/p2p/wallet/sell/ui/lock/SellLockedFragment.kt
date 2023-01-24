@@ -108,9 +108,13 @@ class SellLockedFragment :
 
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
-        val usdAmount = details.formattedUsdAmount
-        textViewAmount.text = "$solAmount ${Constants.SOL_SYMBOL}"
-        textViewUsdValue.text = getString(R.string.sell_lock_usd_amount, usdAmount)
+        val fiatAmount = details.formattedFiatAmount
+        textViewAmount.text = getString(
+            R.string.sell_lock_token_amount, solAmount, Constants.SOL_SYMBOL
+        )
+        textViewFiatValue.text = getString(
+            R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, details.fiatAbbreviation
+        )
 
         textViewReceiverAddress.text = details.receiverAddress.let {
             if (details.isReceiverAddressWallet) it.cutMiddle() else it

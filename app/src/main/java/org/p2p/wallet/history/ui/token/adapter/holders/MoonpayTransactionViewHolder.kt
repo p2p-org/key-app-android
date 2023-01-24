@@ -86,8 +86,9 @@ class MoonpayTransactionViewHolder(
 
     private fun renderAmounts(item: HistoryItem.MoonpayTransactionItem) {
         binding.layoutTransactionDetails.textViewValue.text = binding.getString(
-            R.string.transaction_history_moonpay_amount_usd,
-            item.amountInUsd
+            R.string.transaction_history_moonpay_amount_fiat,
+            item.amountInFiat,
+            item.transactionDetails.fiatAbbreviation.uppercase()
         )
         binding.layoutTransactionDetails.textViewTotal.isVisible = false // hide SOL amount
     }
