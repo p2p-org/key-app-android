@@ -156,13 +156,19 @@ class NewSendPresenter(
 
             initializeFeeRelayer(view, initialToken, solToken)
             initialAmount?.let { inputAmount ->
-                if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
-                    switchCurrencyMode()
-                }
-                view.updateInputValue(inputAmount.scaleShort().toPlainString(), forced = true)
-                calculationMode.updateInputAmount(inputAmount.scaleShort().toPlainString())
-                view.disableInputs()
+                setupDefaultFields(inputAmount)
             }
+        }
+    }
+
+    private fun setupDefaultFields(inputAmount: BigDecimal) {
+        view?.apply {
+            if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                switchCurrencyMode()
+            }
+            updateInputValue(inputAmount.scaleShort().toPlainString(), forced = true)
+            calculationMode.updateInputAmount(inputAmount.scaleShort().toPlainString())
+            disableInputs()
         }
     }
 
