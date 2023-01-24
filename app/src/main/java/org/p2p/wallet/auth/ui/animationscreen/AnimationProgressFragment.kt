@@ -64,9 +64,6 @@ class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progr
 
     private val loadingTitleRes: Int by args(ARG_TITLE_RES)
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_lime
-
     private var creationProgressJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,11 +77,9 @@ class AnimationProgressFragment : BaseFragment(R.layout.fragment_animation_progr
             loadingAnimationView.isVisible = isScreenLoading
             animationView.apply {
                 if (isScreenLoading) {
-                    setSystemBarsColors(statusBarColor, R.color.bg_lime)
                     startCreationProgressJob()
                     playAnimation()
                 } else {
-                    setSystemBarsColors(statusBarColor, navBarColor)
                     creationProgressJob?.cancel()
                     cancelAnimation()
                 }

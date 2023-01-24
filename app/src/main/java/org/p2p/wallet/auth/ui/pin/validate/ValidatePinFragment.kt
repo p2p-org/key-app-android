@@ -39,9 +39,6 @@ class ValidatePinFragment :
         )
     }
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_lime
-
     override val presenter: ValidatePinContract.Presenter by inject()
     private val binding: FragmentSignInPinBinding by viewBinding()
 

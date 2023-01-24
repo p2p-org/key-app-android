@@ -10,7 +10,7 @@
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
+        android:layout_height="wrap_content"
         android:background="@color/bg_snow"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_toolbar_back"
@@ -149,13 +149,13 @@
         android:background="@drawable/bg_night_top_rounded"
         android:orientation="vertical"
         android:paddingHorizontal="20dp"
-        android:paddingVertical="20dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <org.p2p.uikit.components.UiKitSliderButton
             android:id="@+id/sliderChangePin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
             android:backgroundTint="@color/bg_snow"
             android:textColor="@color/text_night"
             app:sliderIcon="@drawable/ic_key_action"

@@ -1,6 +1,8 @@
 package org.p2p.wallet.receive.token
 
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResultListener
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -15,11 +17,14 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentReceiveTokenBinding
 import org.p2p.core.token.Token
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.renbtc.ReceiveRenBtcFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -46,7 +51,7 @@ class ReceiveTokenFragment :
         )
     }
 
-    override val statusBarColor: Int = R.color.bg_night
+    override val customStatusBarStyle = SystemIconsStyle.WHITE
     override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     private val binding: FragmentReceiveTokenBinding by viewBinding()
@@ -58,7 +63,6 @@ class ReceiveTokenFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setLightStatusBar(isLight = false)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
             toolbar.title = getString(R.string.receive_token_name, token.tokenName)
@@ -104,9 +108,13 @@ class ReceiveTokenFragment :
         receiveAnalytics.logStartScreen(analyticsInteractor.getPreviousScreenName())
     }
 
-    override fun onStop() {
-        super.onStop()
-        setLightStatusBar(isLight = true)
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            binding.toolbar.updatePadding(top = systemAndIme.top)
+            rootView.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun renderQr(qrBitmap: Bitmap?) {
