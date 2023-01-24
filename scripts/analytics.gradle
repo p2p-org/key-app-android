@@ -8,12 +8,7 @@ android {
             logger.quiet "(SENTRY): using sentry properties file"
             sentryProperties.load(new FileInputStream(sentryPropertiesFile))
         } else {
-            logger.quiet "(SENTRY): creating sentry properties from CI"
-            sentryProperties["defaults.project"] = "android"
-            sentryProperties["defaults.org"] = "p2p-wallet"
-            sentryProperties["defaults.url"] = "https://sentry.io/"
-            sentryProperties["auth.dsn"] = "${System.getenv('SENTRY_AUTH_DSN')}"
-            sentryProperties["auth.token"] = "${System.getenv('SENTRY_AUTH_TOKEN')}"
+            logger.quiet "(SENTRY): sentry properties is not found."
         }
 
         manifestPlaceholders = [SENTRY_DSN: sentryProperties["auth.dsn"]]
@@ -26,12 +21,10 @@ android {
             logger.quiet "(ANALYTICS): using analytics properties file"
             analyticsProperties.load(new FileInputStream(analyticsPropertiesFile))
         } else {
-            logger.quiet "(ANALYTICS): creating analytics properties from CI"
-            analyticsProperties["amplitudeDebugKey"] = "${System.getenv('AMPLITUDE_KEY_DEBUG')}"
-            analyticsProperties["amplitudeReleaseKey"] = "${System.getenv('AMPLITUDE_KEY_RELEASE')}"
+            logger.quiet "(ANALYTICS): analytics properties is not found."
         }
 
-        logger.quiet "(ANALYTICS): debug key \"${System.getenv('AMPLITUDE_KEY_DEBUG')}\""
+        logger.quiet "(ANALYTICS): debug key \"${System.getProperty('AMPLITUDE_KEY_DEBUG')}\""
         logger.quiet "(ANALYTICS): debug key from properties ${analyticsProperties["amplitudeDebugKey"]}"
         logger.quiet "(ANALYTICS): JIRA ${System.getenv("jira-base-url")}"
 

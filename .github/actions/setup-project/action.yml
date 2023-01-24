@@ -1,6 +1,57 @@
 name: "Setup all needed files and properties for project"
 description: "-"
 inputs:
+  amplitude-key-debug:
+    description: "Amplitude debug key"
+    required: true
+  amplitude-key-release:
+    description: "Amplitude release key"
+    required: true
+  torus-verifier-debug:
+    description: "Torus verifier - DEBUG"
+    required: true
+  torus-verifier-feature:
+    description: "Torus verifier - FEATURE"
+    required: true
+  torus-verifier-release:
+    description: "Torus verifier - RELEASE"
+    required: true
+  torus-subverifier-store:
+    description: "Torus subverifier - STORE"
+    required: true
+  torus-subverifier-firebase:
+    description: "Torus subverifier - FIREBASE"
+    required: true
+  torus-subverifier-slack:
+    description: "Torus subverifier - SLACK"
+    required: true
+  rpc-pool-key:
+    description: "Rpc pool api key"
+    required: true
+  moonpay-key:
+    description: "Moonpay api key"
+    required: true
+  moonpay-sandbox-key:
+    description: "Moonpay sandbox api key"
+    required: true
+  intercom-key:
+    description: "Intercom key"
+    required: true
+  intercom-app-id:
+    description: "Intercom app id"
+    required: true
+  apps-flyer-key:
+    description: "Apps Flyer key"
+    required: true
+  compare-key:
+    description: "Compare api key"
+    required: true
+  sentry-auth-token:
+    description: "Project Sentry Auth Token"
+    required: true
+  sentry-auth-dsn:
+    description: "Project Sentry DSN"
+    required: true
   firebase-secret:
     description: "Firebase secret"
     required: true
@@ -26,6 +77,42 @@ runs:
       uses: ./.github/actions/setup-keystore-jks
       with:
         keystore-secret: ${{ inputs.keystore-secret }}
-
+    - name: "Create analytics properties file"
+      shell: bash
+      run: |
+        touch analytics.properties
+        echo "AMPLITUDE_KEY_DEBUG=\"${{ inputs.amplitude-key-debug }}\"" >> analytics.properties
+        echo "AMPLITUDE_KEY_RELEASE=\"${{ inputs.amplitude-key-release }}\"" >> analytics.properties
+        echo "analytics.properties is successfully created"
+    - name: "Create torus properties file"
+      shell: bash
+      run: |
+        touch torus.properties
+        echo "TORUS_VERIFIER_DEBUG=\"${{ inputs.torus-verifier-debug }}\"" >> torus.properties
+        echo "TORUS_VERIFIER_FEATURE=\"${{ inputs.torus-verifier-feature }}\"" >> torus.properties
+        echo "TORUS_VERIFIER_RELEASE=\"${{ inputs.torus-verifier-release }}\"" >> torus.properties
+        echo "TORUS_SUB_VERIFIER_RELEASE_STORE=\"${{ inputs.torus-subverifier-store }}\"" >> torus.properties
+        echo "TORUS_SUB_VERIFIER_RELEASE_FIREBASE=\"${{ inputs.torus-subverifier-firebase }}\"" >> torus.properties
+        echo "TORUS_SUB_VERIFIER_RELEASE_LOCAL=\"${{ inputs.torus-subverifier-slack }}\"" >> torus.properties
+        echo "torus.properties is successfully created"
+    - name: "Create api keys properties file"
+      shell: bash
+      run: |
+        touch apikeys.properties
+        echo "rpcPoolApiKey=\"${{ inputs.rpc-pool-key }}\"" >> apikeys.properties
+        echo "moonpayKey=\"${{ inputs.moonpay-key }}\"" >> apikeys.properties
+        echo "moonpaySandboxKey=\"${{ inputs.moonpay-sandbox-key }}\"" >> apikeys.properties
+        echo "intercomApiKey=\"${{ inputs.intercom-key }}\"" >> apikeys.properties
+        echo "intercomAppId=\"${{ inputs.intercom-app-id }}\"" >> apikeys.properties
+        echo "appsFlyerKey=\"${{ inputs.apps-flyer-key }}\"" >> apikeys.properties
+        echo "comparePublicKey=\"${{ inputs.compare-key }}\"" >> apikeys.properties
+        echo "apikeys.properties is successfully created"
+    - name: "Create sentry.properties file"
+      shell: bash
+      run: |
+        touch sentry.properties
+        echo "auth.token=${{ inputs.sentry-auth-token }}" >> sentry.properties
+        echo "auth.dsn=${{ inputs.sentry-auth-dsn }}" >> sentry.properties
+        echo "sentry.properties is successfully created"
     - name: "Setup gradle"
       uses: ./.github/actions/setup-gradle
