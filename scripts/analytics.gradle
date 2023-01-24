@@ -31,6 +31,9 @@ android {
             analyticsProperties["amplitudeReleaseKey"] = "${System.getenv('AMPLITUDE_KEY_RELEASE')}"
         }
 
+        logger.quiet "(ANALYTICS): debug key \"${System.getenv('AMPLITUDE_KEY_DEBUG')}\""
+        logger.quiet "(ANALYTICS): debug key from properties ${analyticsProperties["amplitudeDebugKey"]}"
+
         def debugKey = analyticsProperties["amplitudeDebugKey"]
 
         debug {
