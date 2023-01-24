@@ -33,6 +33,7 @@ android {
 
         logger.quiet "(ANALYTICS): debug key \"${System.getenv('AMPLITUDE_KEY_DEBUG')}\""
         logger.quiet "(ANALYTICS): debug key from properties ${analyticsProperties["amplitudeDebugKey"]}"
+        logger.quiet "(ANALYTICS): JIRA ${System.getenv("jira-base-url")}"
 
         def debugKey = analyticsProperties["amplitudeDebugKey"]
 
