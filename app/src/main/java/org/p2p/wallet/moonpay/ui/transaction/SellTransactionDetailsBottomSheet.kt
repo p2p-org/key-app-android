@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.removeLinksUnderline
 import org.p2p.uikit.utils.setTextColorRes
@@ -32,6 +33,7 @@ import org.p2p.wallet.utils.viewbinding.getHtmlString
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val ARG_DETAILS = "ARG_DETAILS"
 
@@ -66,8 +68,7 @@ class SellTransactionDetailsBottomSheet :
     private fun onActionButtonClicked(action: SellTransactionDetailsButtonAction) {
         when (action) {
             SellTransactionDetailsButtonAction.SEND -> {
-                val recipient = SearchResult.AddressFound(AddressState(details.receiverAddress))
-                replaceFragment(NewSendFragment.create(recipient = recipient))
+                presenter.onSendClicked()
             }
             SellTransactionDetailsButtonAction.CLOSE -> {
                 close()
@@ -212,6 +213,21 @@ class SellTransactionDetailsBottomSheet :
 
     override fun showLoading(isLoading: Boolean) {
         binding.layoutDetails.buttonRemoveOrCancel.isLoadingState = isLoading
+    }
+
+    override fun navigateToSendScreen(
+        tokenToSend: Token.Active,
+        sendAmount: BigDecimal,
+        receiverAddress: String
+    ) {
+        val recipient = SearchResult.AddressFound(AddressState(receiverAddress))
+        replaceFragment(
+            NewSendFragment.create(
+                recipient = recipient,
+                initialToken = tokenToSend,
+                inputAmount = sendAmount
+            )
+        )
     }
 
     override fun close() {

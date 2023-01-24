@@ -9,6 +9,7 @@ import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
@@ -30,6 +31,7 @@ import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val ARG_SELL_LOCKED = "ARG_SELL_LOCKED"
 
@@ -94,12 +96,9 @@ class SellLockedFragment :
     }
 
     private fun setupButtons() = with(binding.layoutDetails) {
-        val buttonTitle = getString(R.string.common_send)
-
-        buttonAction.text = buttonTitle
+        buttonAction.setText(R.string.common_send)
         buttonAction.setOnClickListener {
-            val recipient = SearchResult.AddressFound(AddressState(details.receiverAddress))
-            replaceFragment(NewSendFragment.create(recipient = recipient))
+            presenter.onSendClicked()
         }
         buttonRemoveOrCancel.setText(R.string.common_cancel)
         buttonRemoveOrCancel.isVisible = true
@@ -131,6 +130,21 @@ class SellLockedFragment :
 
     override fun navigateBackToMain() {
         popBackStackTo(MainFragment::class)
+    }
+
+    override fun navigateToSendScreen(
+        tokenToSend: Token.Active,
+        sendAmount: BigDecimal,
+        receiverAddress: String
+    ) {
+        val recipient = SearchResult.AddressFound(AddressState(receiverAddress))
+        replaceFragment(
+            NewSendFragment.create(
+                recipient = recipient,
+                initialToken = tokenToSend,
+                inputAmount = sendAmount
+            )
+        )
     }
 
     private fun showWarningDialog() {
