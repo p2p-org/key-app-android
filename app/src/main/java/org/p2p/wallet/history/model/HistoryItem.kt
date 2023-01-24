@@ -12,6 +12,6 @@ sealed class HistoryItem {
     data class MoonpayTransactionItem(val transactionDetails: SellTransactionViewDetails) : HistoryItem() {
         val status: SellTransactionStatus = transactionDetails.status
         val amountInSol: String = transactionDetails.formattedSolAmount
-        val amountInUsd: String = transactionDetails.formattedUsdAmount
+        val amountInFiat: String = transactionDetails.formattedFiatAmount
     }
 }

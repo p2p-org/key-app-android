@@ -116,8 +116,9 @@ class SellPayloadPresenter(
                     transactionId = userTransactionInProcess.transactionId,
                     status = userTransactionInProcess.status,
                     formattedSolAmount = amounts.tokenAmount.formatTokenForMoonpay(),
-                    formattedUsdAmount = amounts.usdAmount.formatFiat(),
-                    receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value
+                    formattedFiatAmount = amounts.amountInFiat.formatFiat(),
+                    receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value,
+                    fiatAbbreviation = userTransactionInProcess.selectedFiat.abbriviation.uppercase()
                 )
             )
         }

@@ -17,7 +17,7 @@ interface MoonpayServerSideApi {
      * If sell transaction could not be canceled (e.g. because it has already been completed)
      * it will return HTTP status 409 Conflict.
      */
-    @DELETE("v3/sell_transactions/{transactionId}")
+    @DELETE("api/v3/sell_transactions/{transactionId}")
     suspend fun cancelSellTransaction(
         @Path("transactionId") sellTransactionId: String
     )
