@@ -4,6 +4,39 @@ on:
   push:
     branches:
       - develop
+      -
+env:
+  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+  firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+  keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+
+  ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+
+  jira-base-url: ${{ vars.JIRA_BASE_URL }}
+  jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+  jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
+
+  amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+  amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+
+  torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+  torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+  torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+  torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+  torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+  torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+
+  rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+  moonpay-key: ${{ secrets.MOONPAY_KEY }}
+  moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+  intercom-key: ${{ secrets.INTERCOM_APP_ID }}
+  intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+  apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+  compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+
+  sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
+  sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
 jobs:
   android-lint:
@@ -14,10 +47,6 @@ jobs:
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        with:
-          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-unit-tests:
@@ -30,10 +59,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        with:
-          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run unit tests
         run: ./gradlew testDebug
   android-build-artifacts:
@@ -57,18 +82,10 @@ jobs:
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        with:
-          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
 
       - name: "Upload APK to Firebase"
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew assembleFeature appDistributionUploadFeature
 
       - name: "Upload feature APK to Slack"
@@ -102,7 +119,3 @@ jobs:
       - uses: actions/checkout@v3
       - name: "Find a Jira ticket and move it to READY FOR TESTING"
         uses: ./.github/actions/setup-jira-rft
-        with:
-          jira-base-url: ${{ vars.JIRA_BASE_URL }}
-          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
-          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
