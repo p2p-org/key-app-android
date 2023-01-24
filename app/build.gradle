@@ -214,7 +214,7 @@ dependencies {
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Sentry
-    def sentryVersion = '6.6.0'
+    def sentryVersion = '6.12.1'
     implementation "io.sentry:sentry-android:$sentryVersion"
     implementation "io.sentry:sentry-android-fragment:$sentryVersion"
     implementation "io.sentry:sentry-android-core:$sentryVersion"

@@ -1,73 +1,71 @@
 package org.p2p.wallet.auth.gateway.repository.model
 
-sealed class GatewayServiceError : Throwable() {
-    abstract val code: Int
+sealed class GatewayServiceError(message: String, val code: Int) : Throwable(message = "$message;code=$code") {
 
     class RequestCreationFailure(
-        override val code: Int = -1,
-        override val message: String,
+        message: String,
         override val cause: Throwable?
-    ) : GatewayServiceError()
+    ) : GatewayServiceError(message, -1)
 
     class TemporaryFailure(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String
+    ) : GatewayServiceError(message, code)
 
     class PhoneNumberAlreadyConfirmed(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String
+    ) : GatewayServiceError(message, code)
 
     class CriticalServiceFailure(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String
+    ) : GatewayServiceError(message, code)
 
     class TooManyRequests(
-        override val code: Int,
-        override val message: String,
+        code: Int,
+        message: String,
         val cooldownTtl: Long
-    ) : GatewayServiceError()
+    ) : GatewayServiceError(message, code)
 
     class SmsDeliverFailed(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String
+    ) : GatewayServiceError(message, code)
 
     class CallDeliverFailed(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String
+    ) : GatewayServiceError(message, code)
 
     class SolanaPublicKeyAlreadyExists(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String
+    ) : GatewayServiceError(message, code)
 
     class UserAlreadyExists(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String
+    ) : GatewayServiceError(message, code)
 
     class PhoneNumberNotExists(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String
+    ) : GatewayServiceError(message, code)
 
     class IncorrectOtpCode(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String,
+    ) : GatewayServiceError(message, code)
 
     class UnknownFailure(
-        override val code: Int,
-        override val message: String
-    ) : GatewayServiceError()
+        code: Int,
+        message: String,
+    ) : GatewayServiceError(message, code)
 
     class TooManyOtpRequests(
-        override val code: Int,
-        override val message: String,
+        code: Int,
+        message: String,
         val cooldownTtl: Long
-    ) : GatewayServiceError()
+    ) : GatewayServiceError(message, code)
 }
