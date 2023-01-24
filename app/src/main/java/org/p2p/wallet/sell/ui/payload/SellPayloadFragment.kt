@@ -11,6 +11,9 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellPayloadBinding
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.ui.error.SellErrorFragment
+import org.p2p.wallet.sell.ui.information.SellInformationBottomSheet
+import org.p2p.wallet.sell.ui.information.SellInformationBottomSheet.Companion.SELL_INFORMATION_RESULT_KEY
+import org.p2p.wallet.sell.ui.information.SellInformationBottomSheet.Companion.SELL_INFORMATION_REQUEST_KEY
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.sell.ui.warning.SellOnlySolWarningBottomSheet
@@ -44,11 +47,18 @@ class SellPayloadFragment :
             widgetSendDetails.onInputFocusChanged = View.OnFocusChangeListener { _, isFocused ->
                 if (isFocused) sellAnalytics.logSellTokenAmountFocused()
             }
-            widgetSendDetails.focusInputAndShowKeyboard()
 
             buttonCashOut.setOnClickListener {
                 sellAnalytics.logSellSubmitClicked()
                 presenter.cashOut()
+            }
+        }
+        childFragmentManager.setFragmentResultListener(
+            SELL_INFORMATION_REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            if (bundle.getBoolean(SELL_INFORMATION_RESULT_KEY)) {
+                presenter.buildMoonpayWidget()
             }
         }
     }
@@ -65,6 +75,14 @@ class SellPayloadFragment :
 
     override fun showLoading(isVisible: Boolean) {
         binding.shimmerView.isVisible = isVisible
+        if (!isVisible) {
+            binding.widgetSendDetails.focusInputAndShowKeyboard()
+        }
+    }
+
+    override fun showButtonLoading(isLoading: Boolean) {
+        binding.buttonCashOut.isLoadingState = isLoading
+        binding.buttonCashOut.isEnabled = !isLoading
     }
 
     override fun navigateToSellLock(details: SellTransactionViewDetails) {
@@ -82,6 +100,10 @@ class SellPayloadFragment :
     override fun showOnlySolWarning() {
         binding.root.hideKeyboard()
         SellOnlySolWarningBottomSheet.show(childFragmentManager)
+    }
+
+    override fun navigateToInformationScreen() {
+        SellInformationBottomSheet.show(childFragmentManager)
     }
 
     override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {

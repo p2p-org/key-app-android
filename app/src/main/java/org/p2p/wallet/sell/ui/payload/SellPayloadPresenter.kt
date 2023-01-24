@@ -74,6 +74,7 @@ class SellPayloadPresenter(
         launch {
             try {
                 view.showLoading(isVisible = true)
+                needCheckForSellLock = true
                 // call order is important!
                 checkForSellLock()
                 sellInteractor.getTokenForSell().also {
@@ -106,7 +107,9 @@ class SellPayloadPresenter(
     private suspend fun checkForSellLock() {
         if (!needCheckForSellLock) return
         needCheckForSellLock = false
+        view?.showButtonLoading(true)
         val userTransactionInProcess = getUserTransactionInProcess()
+        view?.showButtonLoading(false)
         if (userTransactionInProcess != null) {
             // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
             val amounts = userTransactionInProcess.amounts
@@ -226,6 +229,14 @@ class SellPayloadPresenter(
     }
 
     override fun cashOut() {
+        if (sellInteractor.shouldShowInformDialog()) {
+            view?.navigateToInformationScreen()
+        } else {
+            buildMoonpayWidget()
+        }
+    }
+
+    override fun buildMoonpayWidget() {
         val userAddress = tokenKeyProvider.publicKey.toBase58Instance()
 
         val moonpayUrl = moonpayWidgetUrlBuilder.buildSellWidgetUrl(
