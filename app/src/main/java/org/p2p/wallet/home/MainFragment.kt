@@ -114,12 +114,12 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             )
             val ime = insets.ime()
             val bottomNavigationHeight = binding.bottomNavigation.height
-            val bottom = if (ime.bottom > bottomNavigationHeight) bottomNavigationHeight else 0
+            val bottomConsume = if (ime.bottom > bottomNavigationHeight) bottomNavigationHeight else ime.bottom
             insets.inset(
                 systemBars.left,
                 systemBars.top,
                 systemBars.right,
-                systemBars.bottom + bottom,
+                systemBars.bottom + bottomConsume,
             )
         }
     }

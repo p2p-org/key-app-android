@@ -13,7 +13,7 @@ fun WindowInsetsCompat.ime(): Insets = getInsets(WindowInsetsCompat.Type.ime())
 fun WindowInsetsCompat.systemBars(): Insets = getInsets(WindowInsetsCompat.Type.systemBars())
 
 fun View.doOnApplyWindowInsets(
-    f: (view: View, insets: WindowInsetsCompat, initialPadding: InitialPadding) -> WindowInsetsCompat
+    f: (view: View, insets: WindowInsetsCompat, initialPadding: InitialViewPadding) -> WindowInsetsCompat
 ) {
     // Create a snapshot of the view's padding state
     val initialPadding = recordInitialPaddingForView(this)
@@ -44,8 +44,8 @@ fun View.requestApplyInsetsWhenAttached() {
     }
 }
 
-data class InitialPadding(val left: Int, val top: Int, val right: Int, val bottom: Int)
+data class InitialViewPadding(val left: Int, val top: Int, val right: Int, val bottom: Int)
 
-fun recordInitialPaddingForView(view: View) = InitialPadding(
+fun recordInitialPaddingForView(view: View): InitialViewPadding = InitialViewPadding(
     view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom
 )
