@@ -55,24 +55,24 @@ jobs:
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-          with:
-            amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
-            amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
-            torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-            torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-            torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-            torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-            torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-            torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-            rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
-            moonpay-key: ${{ secrets.MOONPAY_KEY }}
-            moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-            intercom-key: ${{ secrets.INTERCOM_APP_ID }}
-            intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
-            apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
-            compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-            sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
-            sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-build-artifacts:
@@ -94,24 +94,24 @@ jobs:
 
       - name: "Restore properties file"
         uses: ./.github/actions/setup-project
-          with:
-            amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
-            amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
-            torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-            torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-            torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-            torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-            torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-            torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-            rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
-            moonpay-key: ${{ secrets.MOONPAY_KEY }}
-            moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-            intercom-key: ${{ secrets.INTERCOM_APP_ID }}
-            intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
-            apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
-            compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-            sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
-            sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
       - name: "Upload APK to Firebase"
