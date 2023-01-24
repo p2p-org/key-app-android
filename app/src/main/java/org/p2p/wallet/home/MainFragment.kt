@@ -154,7 +154,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         }
 
         if (clickedTab == ScreenTab.SWAP_SCREEN) {
-            swapAnalytics.logSwapOpenedFromMain()
+            lifecycleScope.launch {
+                swapAnalytics.logSwapOpenedFromMain(sellInteractor.isSellAvailable())
+            }
         }
 
         val itemId = clickedTab.itemId
