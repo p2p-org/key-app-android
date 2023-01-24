@@ -4,7 +4,7 @@ on:
     branches:
       - feature/*
 
-env:
+#env:
 #  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 #  FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
 #  firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
