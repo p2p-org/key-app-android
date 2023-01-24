@@ -1,12 +1,12 @@
 package org.p2p.wallet.history.ui.token
 
+import android.os.Bundle
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
