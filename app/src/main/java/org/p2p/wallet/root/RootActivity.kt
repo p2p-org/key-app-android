@@ -156,13 +156,10 @@ class RootActivity :
         super.onDestroy()
     }
 
-    fun setDefaultSystemBarStyle() = decorSystemBarsDelegate.setDefaultSystemBarStyle()
-
-    fun setSystemBarStyle(style: SystemIconsStyle) = decorSystemBarsDelegate.setSystemBarStyle(style)
-
-    fun setStatusBarStyle(style: SystemIconsStyle) = decorSystemBarsDelegate.setStatusBarStyle(style)
-
-    fun setNavigationBarStyle(style: SystemIconsStyle) = decorSystemBarsDelegate.setNavigationBarStyle(style)
+    fun updateSystemBarsStyle(
+        statusBarStyle: SystemIconsStyle? = null,
+        navigationBarStyle: SystemIconsStyle? = null,
+    ) = decorSystemBarsDelegate.updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
 
     private fun handleDeeplink(newIntent: Intent? = null) {
         val intentToHandle = newIntent ?: intent

@@ -51,9 +51,6 @@ class NewSearchFragment :
     }
     private val binding: FragmentNewSearchBinding by viewBinding()
 
-    override val statusBarColor: Int = R.color.bg_smoke
-    override val navBarColor: Int = R.color.bg_smoke
-
     private val searchAdapter: SearchAdapter by unsafeLazy {
         SearchAdapter(
             onItemClicked = presenter::onSearchResultClick,

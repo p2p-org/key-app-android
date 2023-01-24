@@ -28,17 +28,15 @@ class DecorSystemBarsDelegate constructor(
 
     override fun onCreate(owner: LifecycleOwner) {
         setupWindowInsets()
-        setDefaultSystemBarStyle()
+        updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
     }
 
-    fun setDefaultSystemBarStyle() {
-        setStatusBarStyle(statusBarStyle)
-        setNavigationBarStyle(navigationBarStyle)
-    }
-
-    fun setSystemBarStyle(style: SystemIconsStyle) {
-        setStatusBarStyle(style)
-        setNavigationBarStyle(style)
+    fun updateSystemBarsStyle(
+        statusBarStyle: SystemIconsStyle? = null,
+        navigationBarStyle: SystemIconsStyle? = null,
+    ) {
+        statusBarStyle?.let { setStatusBarStyle(it) }
+        navigationBarStyle?.let { setNavigationBarStyle(it) }
     }
 
     fun setStatusBarStyle(style: SystemIconsStyle) {

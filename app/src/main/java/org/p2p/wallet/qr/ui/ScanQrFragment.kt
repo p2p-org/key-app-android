@@ -25,6 +25,7 @@ import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.PermissionsDialog
 import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.args
@@ -55,8 +56,8 @@ class ScanQrFragment :
             )
     }
 
-    override val statusBarColor: Int = R.color.bg_night
-    override val navBarColor: Int = R.color.bg_night
+    override val customStatusBarStyle = SystemIconsStyle.WHITE
+    override val customNavigationBarStyle = SystemIconsStyle.WHITE
 
     private val requestKey: String by args(EXTRA_KEY)
     private val resultKey: String by args(EXTRA_RESULT)
@@ -98,10 +99,6 @@ class ScanQrFragment :
                 )
             }
         }
-    }
-
-    override fun setSystemBarsStyle() {
-        setLightSystemBar(false)
     }
 
     override fun onResume() {

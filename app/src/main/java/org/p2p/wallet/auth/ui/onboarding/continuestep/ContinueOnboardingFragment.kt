@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.ui.onboarding.NewOnboardingFragment
 import org.p2p.wallet.auth.ui.phone.PhoneNumberEnterFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentContinueOnboardingBinding
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -34,9 +35,9 @@ class ContinueOnboardingFragment :
 
     override val presenter: ContinueOnboardingContract.Presenter by inject { parametersOf(this) }
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
+    override val customStatusBarStyle = SystemIconsStyle.BLACK
+    override val customNavigationBarStyle = SystemIconsStyle.WHITE
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

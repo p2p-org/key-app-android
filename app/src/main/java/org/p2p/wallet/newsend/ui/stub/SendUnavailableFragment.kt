@@ -1,9 +1,13 @@
 package org.p2p.wallet.newsend.ui.stub
 
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
 import org.p2p.core.token.Token
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendUnavailableBinding
@@ -28,9 +32,6 @@ class SendUnavailableFragment : BaseFragment(R.layout.fragment_send_unavailable)
     private val binding: FragmentSendUnavailableBinding by viewBinding()
     private val defaultTokenToBuy: Token by args(ARG_DEFAULT_TOKEN)
 
-    override val statusBarColor: Int = R.color.bg_smoke
-    override val navBarColor: Int = R.color.bg_night
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
@@ -43,6 +44,15 @@ class SendUnavailableFragment : BaseFragment(R.layout.fragment_send_unavailable)
             buttonReceive.setOnClickListener {
                 replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        binding.containerBottom.doOnApplyWindowInsets { view, insets, initialPadding ->
+            val systemAndIme = insets.systemAndIme()
+            binding.toolbar.updatePadding(top = systemAndIme.top)
+            view.updatePadding(bottom = initialPadding.bottom + systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 }

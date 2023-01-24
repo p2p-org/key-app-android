@@ -19,6 +19,7 @@ import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentWalletFoundBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -38,9 +39,9 @@ class WalletFoundFragment :
 
     private val signInHelper: GoogleSignInHelper by inject()
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
+    override val customStatusBarStyle = SystemIconsStyle.BLACK
+    override val customNavigationBarStyle = SystemIconsStyle.WHITE
 
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult(),
@@ -135,10 +136,8 @@ class WalletFoundFragment :
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
         if (isScreenLoading) {
-            setSystemBarsColors(statusBarColor, R.color.bg_lime)
             AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = false)
         } else {
-            setSystemBarsColors(statusBarColor, navBarColor)
             AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }
     }

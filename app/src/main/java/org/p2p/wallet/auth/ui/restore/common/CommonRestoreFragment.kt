@@ -34,6 +34,7 @@ import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -64,9 +65,9 @@ class CommonRestoreFragment :
 
     private val showBackButton: Boolean by args(ARG_SHOW_BACK_BUTTON)
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
+    override val customStatusBarStyle = SystemIconsStyle.BLACK
+    override val customNavigationBarStyle = SystemIconsStyle.WHITE
 
     private val signInHelper: GoogleSignInHelper by inject()
 
@@ -236,10 +237,8 @@ class CommonRestoreFragment :
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
         if (isScreenLoading) {
-            setSystemBarsColors(statusBarColor, R.color.bg_lime)
             AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = false)
         } else {
-            setSystemBarsColors(statusBarColor, navBarColor)
             AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }
     }

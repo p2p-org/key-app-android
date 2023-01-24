@@ -1,8 +1,12 @@
 package org.p2p.wallet.settings.ui.recovery.user_seed_phrase
 
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -19,7 +23,6 @@ class UserSeedPhraseFragment :
 
     override val presenter: UserSeedPhraseContract.Presenter by inject()
     private val binding: FragmentUserSeedPhraseBinding by viewBinding()
-    override val navBarColor: Int = R.color.bg_night
 
     companion object {
         fun create() = UserSeedPhraseFragment()
@@ -43,6 +46,15 @@ class UserSeedPhraseFragment :
                     presenter.onCopyClicked()
                 }
             }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { view, insets, initialPadding ->
+            val systemAndIme = insets.systemAndIme()
+            binding.toolbar.updatePadding(top = systemAndIme.top)
+            binding.containerBottomView.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 

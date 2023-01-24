@@ -41,16 +41,6 @@ class ReserveUsernameFragment :
                 .withArgs(ARG_RESERVE_USERNAME_SOURCE to from)
     }
 
-    override val statusBarColor: Int
-        get() = when (openedFromSource) {
-            ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime
-            ReserveUsernameOpenedFrom.SETTINGS -> R.color.bg_rain
-        }
-    override val navBarColor: Int
-        get() = when (openedFromSource) {
-            ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime
-            ReserveUsernameOpenedFrom.SETTINGS -> R.color.bg_rain
-        }
     private val backgroundColorRes: Int
         get() = when (openedFromSource) {
             ReserveUsernameOpenedFrom.ONBOARDING -> R.color.bg_lime

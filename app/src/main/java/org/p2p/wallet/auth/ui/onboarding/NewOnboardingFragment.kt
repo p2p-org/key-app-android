@@ -29,6 +29,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popBackStack
@@ -48,9 +49,9 @@ class NewOnboardingFragment :
     override val presenter: NewOnboardingContract.Presenter by inject()
     private val onboardingInteractor: OnboardingInteractor by inject()
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
+    override val customStatusBarStyle = SystemIconsStyle.BLACK
+    override val customNavigationBarStyle = SystemIconsStyle.WHITE
 
     private val binding: FragmentNewOnboardingBinding by viewBinding()
 
@@ -196,10 +197,8 @@ class NewOnboardingFragment :
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
         if (isScreenLoading) {
-            setSystemBarsColors(statusBarColor, R.color.bg_lime)
             AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = true)
         } else {
-            setSystemBarsColors(statusBarColor, navBarColor)
             AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }
     }

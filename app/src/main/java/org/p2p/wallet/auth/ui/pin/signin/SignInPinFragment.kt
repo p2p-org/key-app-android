@@ -26,9 +26,6 @@ class SignInPinFragment :
         fun create(): SignInPinFragment = SignInPinFragment()
     }
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_lime
-
     override val presenter: SignInPinContract.Presenter by inject()
     private val binding: FragmentSignInPinBinding by viewBinding()
     private val biometricWrapper by lazy {

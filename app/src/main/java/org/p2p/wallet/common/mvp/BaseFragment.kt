@@ -1,7 +1,6 @@
 package org.p2p.wallet.common.mvp
 
 import androidx.annotation.AnimRes
-import androidx.annotation.ColorRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.view.WindowInsetsCompat
@@ -20,7 +19,6 @@ import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.toast
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -57,12 +55,9 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     protected val resourcesProvider: ResourcesProvider by inject()
 
-    @Deprecated("need delete")
-    protected open val statusBarColor: Int = R.color.bg_snow
-
-    @Deprecated("need delete")
-    protected open val navBarColor: Int = R.color.bg_snow
     protected open val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
+    protected open val customStatusBarStyle: SystemIconsStyle? = null
+    protected open val customNavigationBarStyle: SystemIconsStyle? = null
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
@@ -82,7 +77,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     override fun onResume() {
         super.onResume()
         logScreenOpenedEvent()
-        setSystemBarsStyle()
+        updateSystemBarsStyle()
     }
 
     // fragments in the tab are shown using show/hide methods
@@ -127,32 +122,12 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         }
     }
 
-    protected open fun setSystemBarsStyle() {
+    protected open fun updateSystemBarsStyle(
+        statusBarStyle: SystemIconsStyle? = null,
+        navigationBarStyle: SystemIconsStyle? = null,
+    ) {
         val activity = (this.activity as? RootActivity)
-        activity?.setDefaultSystemBarStyle()
-    }
-
-    @Deprecated(message = "use applyWindowInsets and set system icons color")
-    protected fun setSystemBarsColors(@ColorRes colorResId: Int, @ColorRes navBarColor: Int) {
-        setSystemBarsStyle()
-    }
-
-    protected fun setLightSystemBar(darkIcons: Boolean) {
-        val activity = (this.activity as? RootActivity)
-        val style = if (darkIcons) SystemIconsStyle.BLACK else SystemIconsStyle.WHITE
-        activity?.setSystemBarStyle(style)
-    }
-
-    protected fun setLightStatusBar(darkIcons: Boolean) {
-        val activity = (this.activity as? RootActivity)
-        val style = if (darkIcons) SystemIconsStyle.BLACK else SystemIconsStyle.WHITE
-        activity?.setStatusBarStyle(style)
-    }
-
-    protected fun setLightNavigationBar(darkIcons: Boolean) {
-        val activity = (this.activity as? RootActivity)
-        val style = if (darkIcons) SystemIconsStyle.BLACK else SystemIconsStyle.WHITE
-        activity?.setNavigationBarStyle(style)
+        activity?.updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
     }
 
     // TODO add another screens

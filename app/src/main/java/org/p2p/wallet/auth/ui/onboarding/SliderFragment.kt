@@ -16,9 +16,6 @@ class SliderFragment : BaseFragment(R.layout.fragment_onboarding_slide) {
 
     private val binding: FragmentOnboardingSlideBinding by viewBinding()
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let { args ->

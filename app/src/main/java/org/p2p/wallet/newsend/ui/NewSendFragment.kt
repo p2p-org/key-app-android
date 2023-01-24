@@ -71,8 +71,6 @@ class NewSendFragment :
     override val presenter: NewSendContract.Presenter by inject {
         parametersOf(recipient)
     }
-    override val navBarColor: Int = R.color.smoke
-    override val statusBarColor: Int = R.color.smoke
 
     private var listener: RootListener? = null
 
