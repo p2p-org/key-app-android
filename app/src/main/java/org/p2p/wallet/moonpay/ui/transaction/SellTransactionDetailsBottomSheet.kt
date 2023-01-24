@@ -183,7 +183,7 @@ class SellTransactionDetailsBottomSheet :
         buttonRemoveOrCancel.text = buttonRemoveOrCancelTitle
         buttonRemoveOrCancel.isVisible =
             details.status == SellTransactionStatus.WAITING_FOR_DEPOSIT ||
-                details.status == SellTransactionStatus.FAILED
+            details.status == SellTransactionStatus.FAILED
         buttonRemoveOrCancel.setOnClickListener {
             when (details.status) {
                 SellTransactionStatus.WAITING_FOR_DEPOSIT -> presenter.onCancelTransactionClicked()
