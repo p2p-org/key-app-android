@@ -4,17 +4,17 @@ on:
     branches:
       - feature/*
 
-env:
-  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-  FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-  firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-  keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+#env:
+#  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+#  FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+#  firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+#  keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
 
-  ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+#  ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
 
-  jira-base-url: ${{ vars.JIRA_BASE_URL }}
-  jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
-  jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
+#  jira-base-url: ${{ vars.JIRA_BASE_URL }}
+#  jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+#  jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
 
 # TODO: temporary commenting. We'll use these secrets only once and cache them
 #  amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
@@ -47,6 +47,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: "Find a Jira ticket and move it to REVIEW"
         uses: ./.github/actions/setup-jira-review
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
@@ -56,6 +60,9 @@ jobs:
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
           amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
           amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
@@ -95,6 +102,9 @@ jobs:
       - name: "Restore properties file"
         uses: ./.github/actions/setup-project
         with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
           amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
           amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
@@ -115,6 +125,9 @@ jobs:
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
       - name: "Upload APK to Firebase"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew assembleFeature appDistributionUploadFeature
       - name: "Upload feature APK to Slack"
         uses: ./.github/actions/setup-slack
@@ -137,3 +150,7 @@ jobs:
           bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
       - name: "Find a Jira ticket and move it to READY FOR TESTING"
         uses: ./.github/actions/setup-jira-rft
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
