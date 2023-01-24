@@ -4,66 +4,6 @@ inputs:
   firebase-secret:
     description: "Firebase secret"
     required: true
-  torus-verifier-debug:
-    description: "Torus verifier - DEBUG"
-    required: true
-  torus-verifier-feature:
-    description: "Torus verifier - FEATURE"
-    required: true
-  torus-verifier-release:
-    description: "Torus release verifier - STORE/FIREBASE/SLACK"
-    required: true
-  torus-subverifier-store:
-    description: "Torus sub-verifier - STORE"
-    required: true
-  torus-subverifier-firebase:
-    description: "Torus sub-verifier - FIREBASE"
-    required: true
-  torus-subverifier-local:
-    description: "Torus sub-verifier - LOCAL/SLACK"
-    required: true
-  rpc-pool-secret:
-    description: "Rpc pool api key"
-    required: true
-  moonpay-secret:
-    description: "Moonpay api key"
-    required: true
-  moonpay-sandbox-secret:
-    description: "Moonpay sandbox api key"
-    required: true
-  compare-secret:
-    description: "Compare token api key"
-    required: true
-  intercom-id-secret:
-    description: "Intercom app id"
-    required: true
-  intercom-key-secret:
-    description: "Intercom app key"
-    required: true
-  amplitude-secret:
-    description: "Amplitude api key"
-    required: true
-  apps-flyer-secret:
-    description: "AppsFlyer key"
-    required: true
-  default-project:
-    description: "Project name for Sentry"
-    required: false
-    default: "android"
-  default-organization:
-    description: "Project organization for Sentry"
-    required: false
-    default: "p2p-wallet"
-  default-url:
-    description: "Project Sentry full URL"
-    required: false
-    default: "https://sentry.io/"
-  auth-token:
-    description: "Project Sentry Auth Token"
-    required: true
-  auth-dsn:
-    description: "Project Sentry DSN"
-    required: true
   ssl-certificate:
     description: "SSL certificate"
     required: true
@@ -77,41 +17,11 @@ runs:
       uses: ./.github/actions/setup-firebase
       with:
         firebase-secret: ${{ inputs.firebase-secret }}
-
-    - name: "Create torus.properties"
-      uses: ./.github/actions/setup-torus
-      with:
-        torus-verifier-debug: ${{ inputs.torus-verifier-debug }}
-        torus-verifier-feature: ${{ inputs.torus-verifier-feature }}
-        torus-verifier-release: ${{ inputs.torus-verifier-release }}
-        torus-subverifier-store: ${{ inputs.torus-subverifier-store }}
-        torus-subverifier-firebase: ${{ inputs.torus-subverifier-firebase }}
-        torus-subverifier-local: ${{ inputs.torus-subverifier-local }}
-
-    - name: "Create apikey.properties"
-      uses: ./.github/actions/setup-apikey
-      with:
-        rpc-pool-secret: ${{ inputs.rpc-pool-secret }}
-        moonpay-secret: ${{ inputs.moonpay-secret }}
-        compare-secret: ${{ inputs.compare-secret }}
-        intercom-id-secret: ${{ inputs.intercom-id-secret }}
-        intercom-key-secret: ${{ inputs.intercom-key-secret }}
-        amplitude-secret: ${{ inputs.amplitude-secret }}
-        apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
-        moonpay-sandbox-secret: ${{ inputs.moonpay-sandbox-secret }}
-
     - name: "Create cert.pem file"
       env:
         SSL_CERTIFICATE: ${{ inputs.ssl-certificate }}
       shell: bash
       run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
-
-    - name: "Create sentry.properties file"
-      uses: ./.github/actions/setup-sentry
-      with:
-        auth-token: ${{ inputs.auth-token }}
-        auth-dsn: ${{ inputs.auth-dsn }}
-
     - name: "Create keystore .jks"
       uses: ./.github/actions/setup-keystore-jks
       with:

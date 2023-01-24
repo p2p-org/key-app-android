@@ -94,8 +94,6 @@ class App : Application() {
 
     private fun setupCrashLoggingService() {
         crashLogger.apply {
-            setCustomKey("task_number", BuildConfig.TASK_NUMBER)
-            setCustomKey("amplitude_enabled", BuildConfig.AMPLITUDE_ENABLED)
             setCustomKey("crashlytics_enabled", BuildConfig.CRASHLYTICS_ENABLED)
             setCustomKey("verifier", getString(R.string.torusVerifier))
             setCustomKey("sub_verifier", getStringResourceByName("torusSubVerifier"))
