@@ -95,7 +95,9 @@ class NewSendFragment :
             maxButtonClickListener = presenter::onMaxButtonClicked
             switchListener = presenter::switchCurrencyMode
             feeButtonClickListener = presenter::onFeeInfoClicked
-            focusAndShowKeyboard()
+            if (inputAmount == null) {
+                focusAndShowKeyboard()
+            }
         }
         binding.sliderSend.onSlideCompleteListener = { presenter.checkInternetConnection() }
         binding.sliderSend.onSlideCollapseCompleted = { presenter.send() }
