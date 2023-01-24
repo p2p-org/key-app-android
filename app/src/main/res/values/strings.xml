@@ -651,6 +651,7 @@
     <string name="sell_payload_fiat_value">1 SOL ≈ %s %s</string>
     <string name="sell_payload_fiat_symbol">≈ %s</string>
     <string name="sell_payload_title">Cash out token</string>
+    <string name="sell_payload_token_title">Cash out %s</string>
     <string name="sell_payload_all_sol">all %s SOL</string>
     <string name="sell_payload_included_fee">Included fee %s %s</string>
     <string name="sell_payload_min_sol_amount">The minimum amount is %s SOL</string>

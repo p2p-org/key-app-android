@@ -10,6 +10,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -64,6 +69,15 @@ class SellLockedFragment :
         setupViews()
 
         sellAnalytics.logSellLockedOpened()
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                rootView.appleBottomInsets(this)
+            }
+        }
     }
 
     private fun setupViews() = with(binding.layoutDetails) {

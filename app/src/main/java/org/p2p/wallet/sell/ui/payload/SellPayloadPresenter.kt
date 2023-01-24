@@ -84,6 +84,7 @@ class SellPayloadPresenter(
                         fractionLength = MOONPAY_DECIMAL
                     )
                     userSolBalance = it.total
+                    view.updateToolbarTitle(it.tokenSymbol)
                 }
 
                 // if the screen launched from the fresh - make tokenCurrencyMode default
