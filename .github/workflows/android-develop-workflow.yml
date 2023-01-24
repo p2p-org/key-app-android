@@ -116,7 +116,10 @@ jobs:
         run: ./gradlew assembleFeature
 
       - name: "Upload APK to Firebase"
-        run: ./gradlew assembleFeature appDistributionUploadFeature
+          env:
+            FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+            FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          run: ./gradlew assembleFeature appDistributionUploadFeature
 
       - name: "Upload feature APK to Slack"
         uses: ./.github/actions/setup-slack

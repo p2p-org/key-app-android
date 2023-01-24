@@ -42,6 +42,9 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleReleaseFirebase
       - name: "Upload AAB to Firebase App Distribution"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew appDistributionUploadReleaseFirebase
   android-build-local-slack-release:
     name: "Run build local APK & AAB Slack release"
