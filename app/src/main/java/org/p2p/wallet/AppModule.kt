@@ -4,6 +4,7 @@ import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import org.p2p.wallet.android.NotificationPermissionManager
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.InAppFeatureFlags
@@ -55,6 +56,9 @@ object AppModule {
                 crashLoggingFacades = getActiveCrashLoggingFacades(),
                 tokenKeyProvider = get()
             )
+        }
+        single {
+            NotificationPermissionManager(androidContext())
         }
         singleOf(::AppCreatedAction)
 

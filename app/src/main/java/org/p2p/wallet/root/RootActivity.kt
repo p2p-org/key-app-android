@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -14,6 +15,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
+import org.p2p.wallet.android.NotificationPermissionManager
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
@@ -44,6 +46,7 @@ class RootActivity :
     }
 
     private val deeplinksManager: AppDeeplinksManager by inject()
+    private val notificationPermissionManager: NotificationPermissionManager by inject()
 
     override val presenter: RootContract.Presenter by inject()
     private val adminAnalytics: AdminAnalytics by inject()
@@ -67,7 +70,6 @@ class RootActivity :
         super.onCreate(savedInstanceState)
         binding = ActivityRootBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
-
         replaceFragment(SplashFragment.create())
 
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
@@ -76,7 +78,13 @@ class RootActivity :
             logScreenOpenEvent()
         }
         supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
-
+        notificationPermissionManager.setup(
+            resultLauncher = registerForActivityResult(
+                ActivityResultContracts.RequestPermission(),
+                notificationPermissionManager.getResultCallback()
+            )
+        )
+        notificationPermissionManager.setupFragmentStackListener(supportFragmentManager)
         checkForGoogleServices()
         deeplinksManager.mainFragmentManager = supportFragmentManager
         handleDeeplink()
