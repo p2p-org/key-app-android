@@ -143,7 +143,7 @@ class NewSendButtonState(
     /**
      * Validating only SOL -> SOL operations here
      * The empty recipient is required
-     * Checking if the sender should leave at least [minRentExemption] SOL balance
+     * Checking if the sender should leave at least [minRentExemption] or Zero SOL balance
      * */
     private fun isMinRequiredBalanceLeft(): Boolean {
         if (!sourceToken.isSOL) return true
@@ -157,6 +157,6 @@ class NewSendButtonState(
         val inputAmountInLamports = calculationMode.getCurrentAmountLamports()
         val diff = sourceTotalLamports - inputAmountInLamports
 
-        return diff >= minRequiredBalance
+        return diff == BigInteger.ZERO || diff >= minRequiredBalance
     }
 }
