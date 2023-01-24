@@ -3,6 +3,12 @@ on:
   push:
     branches:
       - feature/*
+
+env:
+  firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+  ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+  keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+
 jobs:
   update-jira-status:
     name: "Move Jira Ticket to Review"
@@ -24,10 +30,6 @@ jobs:
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        with:
-          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-build-artifacts:
