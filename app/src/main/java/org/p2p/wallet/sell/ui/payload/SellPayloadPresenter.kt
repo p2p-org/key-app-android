@@ -275,9 +275,7 @@ class SellPayloadPresenter(
             CurrencyMode.Fiat.Eur,
             CurrencyMode.Fiat.Gbp,
             CurrencyMode.Fiat.Usd -> internalSwitchCurrencyMode()
-            is CurrencyMode.Token -> {
-                // do nothing
-            }
+            is CurrencyMode.Token -> Unit
         }
         val userSolBalance = userSolBalance.toPlainString()
         viewState = viewState.copy(
