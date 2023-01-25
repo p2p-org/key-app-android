@@ -15,8 +15,6 @@ class SolendAboutEarnSliderFragment : BaseFragment(R.layout.fragment_solend_abou
 
     private val binding: FragmentSolendAboutEarnSliderBinding by viewBinding()
 
-    override val statusBarColor: Int = R.color.titan_white
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sliderFragmentArgs = SolendAboutEarnSliderFragmentArgs.fromBundle(requireArguments())

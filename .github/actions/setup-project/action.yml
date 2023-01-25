@@ -1,8 +1,11 @@
 name: "Setup all needed files and properties for project"
 description: "-"
 inputs:
-  firebase-secret:
-    description: "Firebase secret"
+  amplitude-key-debug:
+    description: "Amplitude debug key"
+    required: true
+  amplitude-key-release:
+    description: "Amplitude release key"
     required: true
   torus-verifier-debug:
     description: "Torus verifier - DEBUG"
@@ -11,58 +14,46 @@ inputs:
     description: "Torus verifier - FEATURE"
     required: true
   torus-verifier-release:
-    description: "Torus release verifier - STORE/FIREBASE/SLACK"
+    description: "Torus verifier - RELEASE"
     required: true
   torus-subverifier-store:
-    description: "Torus sub-verifier - STORE"
+    description: "Torus subverifier - STORE"
     required: true
   torus-subverifier-firebase:
-    description: "Torus sub-verifier - FIREBASE"
+    description: "Torus subverifier - FIREBASE"
     required: true
-  torus-subverifier-local:
-    description: "Torus sub-verifier - LOCAL/SLACK"
+  torus-subverifier-slack:
+    description: "Torus subverifier - SLACK"
     required: true
-  rpc-pool-secret:
+  rpc-pool-key:
     description: "Rpc pool api key"
     required: true
-  moonpay-secret:
+  moonpay-key:
     description: "Moonpay api key"
     required: true
-  moonpay-sandbox-secret:
+  moonpay-sandbox-key:
     description: "Moonpay sandbox api key"
     required: true
-  compare-secret:
-    description: "Compare token api key"
+  intercom-key:
+    description: "Intercom key"
     required: true
-  intercom-id-secret:
+  intercom-app-id:
     description: "Intercom app id"
     required: true
-  intercom-key-secret:
-    description: "Intercom app key"
+  apps-flyer-key:
+    description: "Apps Flyer key"
     required: true
-  amplitude-secret:
-    description: "Amplitude api key"
+  compare-key:
+    description: "Compare api key"
     required: true
-  apps-flyer-secret:
-    description: "AppsFlyer key"
-    required: true
-  default-project:
-    description: "Project name for Sentry"
-    required: false
-    default: "android"
-  default-organization:
-    description: "Project organization for Sentry"
-    required: false
-    default: "p2p-wallet"
-  default-url:
-    description: "Project Sentry full URL"
-    required: false
-    default: "https://sentry.io/"
-  auth-token:
+  sentry-auth-token:
     description: "Project Sentry Auth Token"
     required: true
-  auth-dsn:
+  sentry-auth-dsn:
     description: "Project Sentry DSN"
+    required: true
+  firebase-secret:
+    description: "Firebase secret"
     required: true
   ssl-certificate:
     description: "SSL certificate"
@@ -77,45 +68,51 @@ runs:
       uses: ./.github/actions/setup-firebase
       with:
         firebase-secret: ${{ inputs.firebase-secret }}
-
-    - name: "Create torus.properties"
-      uses: ./.github/actions/setup-torus
-      with:
-        torus-verifier-debug: ${{ inputs.torus-verifier-debug }}
-        torus-verifier-feature: ${{ inputs.torus-verifier-feature }}
-        torus-verifier-release: ${{ inputs.torus-verifier-release }}
-        torus-subverifier-store: ${{ inputs.torus-subverifier-store }}
-        torus-subverifier-firebase: ${{ inputs.torus-subverifier-firebase }}
-        torus-subverifier-local: ${{ inputs.torus-subverifier-local }}
-
-    - name: "Create apikey.properties"
-      uses: ./.github/actions/setup-apikey
-      with:
-        rpc-pool-secret: ${{ inputs.rpc-pool-secret }}
-        moonpay-secret: ${{ inputs.moonpay-secret }}
-        compare-secret: ${{ inputs.compare-secret }}
-        intercom-id-secret: ${{ inputs.intercom-id-secret }}
-        intercom-key-secret: ${{ inputs.intercom-key-secret }}
-        amplitude-secret: ${{ inputs.amplitude-secret }}
-        apps-flyer-secret: ${{ inputs.apps-flyer-secret }}
-        moonpay-sandbox-secret: ${{ inputs.moonpay-sandbox-secret }}
-
     - name: "Create cert.pem file"
       env:
         SSL_CERTIFICATE: ${{ inputs.ssl-certificate }}
       shell: bash
       run: echo $SSL_CERTIFICATE -> app/src/main/res/raw/cert.pem
-
-    - name: "Create sentry.properties file"
-      uses: ./.github/actions/setup-sentry
-      with:
-        auth-token: ${{ inputs.auth-token }}
-        auth-dsn: ${{ inputs.auth-dsn }}
-
     - name: "Create keystore .jks"
       uses: ./.github/actions/setup-keystore-jks
       with:
         keystore-secret: ${{ inputs.keystore-secret }}
-
+    - name: "Create analytics properties file"
+      shell: bash
+      run: |
+        touch analytics.properties
+        echo "amplitudeDebugKey=\"${{ inputs.amplitude-key-debug }}\"" >> analytics.properties
+        echo "amplitudeReleaseKey=\"${{ inputs.amplitude-key-release }}\"" >> analytics.properties
+        echo "analytics.properties is successfully created"
+    - name: "Create torus properties file"
+      shell: bash
+      run: |
+        touch torus.properties
+        echo "TORUS_VERIFIER_DEBUG=\"${{ inputs.torus-verifier-debug }}\"" >> torus.properties
+        echo "TORUS_VERIFIER_FEATURE=\"${{ inputs.torus-verifier-feature }}\"" >> torus.properties
+        echo "TORUS_VERIFIER_RELEASE=\"${{ inputs.torus-verifier-release }}\"" >> torus.properties
+        echo "TORUS_SUB_VERIFIER_RELEASE_STORE=\"${{ inputs.torus-subverifier-store }}\"" >> torus.properties
+        echo "TORUS_SUB_VERIFIER_RELEASE_FIREBASE=\"${{ inputs.torus-subverifier-firebase }}\"" >> torus.properties
+        echo "TORUS_SUB_VERIFIER_RELEASE_LOCAL=\"${{ inputs.torus-subverifier-slack }}\"" >> torus.properties
+        echo "torus.properties is successfully created"
+    - name: "Create api keys properties file"
+      shell: bash
+      run: |
+        touch apikeys.properties
+        echo "rpcPoolApiKey=\"${{ inputs.rpc-pool-key }}\"" >> apikeys.properties
+        echo "moonpayKey=\"${{ inputs.moonpay-key }}\"" >> apikeys.properties
+        echo "moonpaySandboxKey=\"${{ inputs.moonpay-sandbox-key }}\"" >> apikeys.properties
+        echo "intercomApiKey=\"${{ inputs.intercom-key }}\"" >> apikeys.properties
+        echo "intercomAppId=\"${{ inputs.intercom-app-id }}\"" >> apikeys.properties
+        echo "appsFlyerKey=\"${{ inputs.apps-flyer-key }}\"" >> apikeys.properties
+        echo "comparePublicKey=\"${{ inputs.compare-key }}\"" >> apikeys.properties
+        echo "apikeys.properties is successfully created"
+    - name: "Create sentry.properties file"
+      shell: bash
+      run: |
+        touch sentry.properties
+        echo "auth.token=${{ inputs.sentry-auth-token }}" >> sentry.properties
+        echo "auth.dsn=${{ inputs.sentry-auth-dsn }}" >> sentry.properties
+        echo "sentry.properties is successfully created"
     - name: "Setup gradle"
       uses: ./.github/actions/setup-gradle

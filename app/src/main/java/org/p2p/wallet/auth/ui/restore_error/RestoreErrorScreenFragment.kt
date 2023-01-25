@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.components.UiKitButton
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.R
@@ -20,6 +24,7 @@ import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRestoreErrorScreenBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -41,9 +46,9 @@ class RestoreErrorScreenFragment :
             )
     }
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
+    override val customStatusBarStyle = SystemIconsStyle.BLACK
+    override val customNavigationBarStyle = SystemIconsStyle.WHITE
 
     override val presenter: RestoreErrorScreenContract.Presenter by inject { parametersOf(restoreState) }
     private val binding: FragmentRestoreErrorScreenBinding by viewBinding()
@@ -63,6 +68,15 @@ class RestoreErrorScreenFragment :
                 IntercomService.showMessenger()
             }
             return@setOnMenuItemClickListener true
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            rootView.updatePadding(top = systemAndIme.top)
+            binding.containerBottomButton.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 
@@ -166,10 +180,8 @@ class RestoreErrorScreenFragment :
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
         if (isScreenLoading) {
-            setSystemBarsColors(statusBarColor, R.color.bg_lime)
             AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = false)
         } else {
-            setSystemBarsColors(statusBarColor, navBarColor)
             AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }
     }

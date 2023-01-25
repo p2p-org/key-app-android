@@ -5,7 +5,8 @@ import java.math.BigDecimal
 class SellTransactionAmounts(
     val tokenAmount: BigDecimal,
     val feeAmount: BigDecimal,
-    val usdAmount: BigDecimal,
-    val eurAmount: BigDecimal,
-    val gbpAmount: BigDecimal
+    val usdRate: BigDecimal,
+    val eurRate: BigDecimal,
+    val gbpRate: BigDecimal,
+    val amountInFiat: BigDecimal
 )

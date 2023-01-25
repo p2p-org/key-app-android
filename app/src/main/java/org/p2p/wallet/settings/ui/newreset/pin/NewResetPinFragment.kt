@@ -32,12 +32,6 @@ class NewResetPinFragment :
 
     override val presenter: NewResetPinContract.Presenter by inject()
 
-    override val navBarColor: Int
-        get() = R.color.bg_rain
-
-    override val statusBarColor: Int
-        get() = R.color.bg_rain
-
     private val binding: FragmentNewResetPinBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,8 +84,6 @@ class NewResetPinFragment :
         binding.pinView.resetDotsColor()
         binding.pinView.clearPin()
         binding.textViewForgotPassword.isVisible = false
-
-        setSystemBarsColors(R.color.bg_lime, R.color.bg_lime)
     }
 
     override fun showPinConfirmed() {

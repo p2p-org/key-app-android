@@ -6,7 +6,7 @@ import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
-private val TAG = GatewayServiceSignatureFieldGenerator::class.java.simpleName
+private const val TAG = "GatewayServiceSignatureFieldGenerator"
 
 class GatewayServiceSignatureFieldGenerator {
     @Throws(GatewayServiceError.RequestCreationFailure::class)

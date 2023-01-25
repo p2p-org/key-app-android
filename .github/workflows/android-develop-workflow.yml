@@ -1,3 +1,5 @@
+# Workflow for develop branch changes.
+# When a pull request is being merged in develop, this workflows triggers
 on:
   push:
     branches:
@@ -14,24 +16,25 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
           torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
           torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
           torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
-          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
-          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
-          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-unit-tests:
@@ -46,24 +49,25 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
           torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
           torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
           torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
-          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
-          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
-          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: Run unit tests
         run: ./gradlew testDebug
   android-build-artifacts:
@@ -89,25 +93,25 @@ jobs:
         uses: ./.github/actions/setup-project
         with:
           firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
           torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
           torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
           torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
           torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
           torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-          torus-subverifier-local: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-          rpc-pool-secret: ${{ secrets.RPC_POOL_API_KEY }}
-          moonpay-secret: ${{ secrets.MOONPAY_KEY }}
-          moonpay-sandbox-secret: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          compare-secret: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          intercom-id-secret: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-key-secret: ${{ secrets.INTERCOM_API_KEY }}
-          amplitude-secret: ${{ secrets.AMPLITUDE_KEY }}
-          apps-flyer-secret: ${{ secrets.APPS_FLYER_KEY }}
-          auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-
+          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
 
@@ -129,7 +133,6 @@ jobs:
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_deploy_jira_ticket.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
           bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
@@ -149,7 +152,3 @@ jobs:
       - uses: actions/checkout@v3
       - name: "Find a Jira ticket and move it to READY FOR TESTING"
         uses: ./.github/actions/setup-jira-rft
-        with:
-          jira-base-url: ${{ vars.JIRA_BASE_URL }}
-          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
-          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}

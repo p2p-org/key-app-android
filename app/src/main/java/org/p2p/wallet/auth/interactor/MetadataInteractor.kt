@@ -7,6 +7,7 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
+import kotlinx.coroutines.CancellationException
 
 class MetadataInteractor(
     private val gatewayServiceRepository: GatewayServiceRepository,
@@ -16,11 +17,18 @@ class MetadataInteractor(
 ) {
 
     suspend fun tryLoadAndSaveMetadata() {
-        val userAccount = Account(tokenKeyProvider.keyPair)
-        val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
-        val ethereumPublicKey =
-            signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey.orEmpty()
-        return tryLoadAndSaveMetadataWithAccount(userAccount, userSeedPhrase.seedPhrase, ethereumPublicKey)
+        val web3SignUpDetails = signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails
+        if (web3SignUpDetails != null) {
+            val userAccount = Account(tokenKeyProvider.keyPair)
+            val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase()
+            tryLoadAndSaveMetadataWithAccount(
+                userAccount = userAccount,
+                mnemonicPhraseWords = userSeedPhrase.seedPhrase,
+                ethereumPublicKey = web3SignUpDetails.ethereumPublicKey
+            )
+        } else {
+            Timber.i("User doesn't have any Web3Auth sign up data, skipping metadata fetch")
+        }
     }
 
     private suspend fun tryLoadAndSaveMetadataWithAccount(
@@ -29,16 +37,24 @@ class MetadataInteractor(
         ethereumPublicKey: String
     ) {
         try {
-            requireNotNull(userAccount) { "loadAndSaveOnboarding: User account can't be null" }
-            require(mnemonicPhraseWords.isNotEmpty()) { "loadAndSaveOnboarding: seed phrase can't be null or empty" }
+            if (userAccount == null) {
+                throw GetOnboardingMetadataFailed.GetOnboardingMetadataNoAccount()
+            }
+            if (mnemonicPhraseWords.isEmpty()) {
+                throw GetOnboardingMetadataFailed.GetOnboardingMetadataNoSeedPhrase()
+            }
             gatewayServiceRepository.loadAndSaveOnboardingMetadata(
                 solanaPublicKey = userAccount.publicKey.toBase58Instance(),
                 solanaPrivateKey = userAccount.keypair.toBase58Instance(),
                 userSeedPhrase = mnemonicPhraseWords,
                 etheriumAddress = ethereumPublicKey
             )
+        } catch (cancelled: CancellationException) {
+            Timber.i(cancelled)
+        } catch (validationError: GetOnboardingMetadataFailed) {
+            Timber.e(validationError)
         } catch (error: Throwable) {
-            Timber.e(GetOnboardingMetadataFailed(error))
+            Timber.e(GetOnboardingMetadataFailed.OnboardingMetadataRequestFailure(error))
         }
     }
 }

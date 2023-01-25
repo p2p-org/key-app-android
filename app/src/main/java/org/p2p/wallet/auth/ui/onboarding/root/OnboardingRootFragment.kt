@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.ui.onboarding.root
 
 import androidx.fragment.app.Fragment
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -22,9 +23,6 @@ class OnboardingRootFragment :
 
     override val presenter: OnboardingRootContract.Presenter by inject { parametersOf(this) }
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
-
     override fun navigateToOnboarding() {
         navigateTo(NewOnboardingFragment.create())
     }
@@ -39,6 +37,10 @@ class OnboardingRootFragment :
 
     override fun navigateToCreatePin() {
         popAndReplaceFragment(NewCreatePinFragment.create(), inclusive = true)
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        // do nothing
     }
 
     private fun navigateTo(fragment: Fragment) = replaceFragment(

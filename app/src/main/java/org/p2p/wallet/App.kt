@@ -16,11 +16,11 @@ import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
+import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
-import org.p2p.wallet.utils.getStringResourceByName
 import timber.log.Timber
 
 class App : Application() {
@@ -28,6 +28,7 @@ class App : Application() {
     private val appCreatedAction: AppCreatedAction by inject()
     private val appsFlyerService: AppsFlyerService by inject()
     private val usernameInteractor: UsernameInteractor by inject()
+    private val networkServicesUrlProvider: NetworkServicesUrlProvider by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -92,11 +93,9 @@ class App : Application() {
 
     private fun setupCrashLoggingService() {
         crashLogger.apply {
-            setCustomKey("task_number", BuildConfig.TASK_NUMBER)
-            setCustomKey("amplitude_enabled", BuildConfig.AMPLITUDE_ENABLED)
             setCustomKey("crashlytics_enabled", BuildConfig.CRASHLYTICS_ENABLED)
-            setCustomKey("verifier", getString(R.string.torusVerifier))
-            setCustomKey("sub_verifier", getStringResourceByName("torusSubVerifier"))
+            setCustomKey("verifier", networkServicesUrlProvider.loadTorusEnvironment().verifier)
+            setCustomKey("sub_verifier", networkServicesUrlProvider.loadTorusEnvironment().subVerifier.orEmpty())
             setCustomKey("username", usernameInteractor.getUsername()?.fullUsername.orEmpty())
         }
     }

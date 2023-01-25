@@ -49,6 +49,9 @@ class UiKitSellDetailsWidget @JvmOverloads constructor(
     init {
         binding.textViewAvailableAmountValue.setOnClickListener { onMaxAmountButtonClicked.invoke() }
         binding.textViewSwitchCurrency.setOnClickListener { onCurrencyModeSwitchClicked.invoke() }
+        binding.viewEditTextClickable.setOnClickListener {
+            binding.editTextAmount.focusAndShowKeyboard(true)
+        }
         AmountFractionTextWatcher.installOn(
             editText = binding.editTextAmount,
             maxDecimalsAllowed = MOONPAY_DECIMAL,
@@ -89,6 +92,7 @@ class UiKitSellDetailsWidget @JvmOverloads constructor(
             textViewAmountName.text = activeModeSymbol
 
             editTextAmount.setText(viewState.inputAmount)
+            editTextAmount.setSelection(editTextAmount.text.length)
 
             textViewFiatEarningTitle.text = getString(
                 R.string.sell_fiat_earning_title,

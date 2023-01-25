@@ -1,9 +1,11 @@
 package org.p2p.wallet.receive.renbtc
 
+import androidx.core.view.WindowInsetsCompat
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResultListener
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.SpanUtils
@@ -20,6 +22,9 @@ import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
 import org.p2p.wallet.send.model.NetworkType
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -39,7 +44,7 @@ class ReceiveRenBtcFragment :
         fun create() = ReceiveRenBtcFragment()
     }
 
-    override val statusBarColor: Int = R.color.bg_night
+    override val customStatusBarStyle = SystemIconsStyle.WHITE
     override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
 
     override val presenter: ReceiveRenBtcContract.Presenter by inject()
@@ -48,7 +53,6 @@ class ReceiveRenBtcFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setLightStatusBar(false)
         analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.BITCOIN)
         with(binding) {
             toolbar.setNavigationOnClickListener { popBackStack() }
@@ -97,9 +101,13 @@ class ReceiveRenBtcFragment :
         presenter.startNewSession(requireContext())
     }
 
-    override fun onStop() {
-        super.onStop()
-        setLightStatusBar(true)
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { view, insets, initialPadding ->
+            val systemAndIme = insets.systemAndIme()
+            rootView.updatePadding(bottom = systemAndIme.bottom)
+            binding.toolbar.updatePadding(top = systemAndIme.top)
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onDestroyView() {

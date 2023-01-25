@@ -18,7 +18,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 
 private const val TAG = "MoonpaySellRemoteRepository"
@@ -71,12 +70,11 @@ class MoonpaySellRemoteRepository(
     override suspend fun getUserSellTransactions(
         userAddress: Base58String,
     ): List<SellTransaction> = doMoonpayRequest {
-        val userIdResponse = async { moonpayServerSideApi.getUserSellTransactions(externalCustomerId) }
-        val externalIdResponse = async { moonpayServerSideApi.getUserSellTransactions(externalCustomerId) }
-        val depositWallets = getDepositWalletsForTransactions(userIdResponse.await())
+        val userSellTransactions = moonpayServerSideApi.getUserSellTransactions(externalCustomerId)
+        val depositWallets = getDepositWalletsForTransactions(userSellTransactions)
 
         mapper.fromNetwork(
-            response = externalIdResponse.await(),
+            response = userSellTransactions,
             depositWallets = depositWallets,
             selectedFiat = getSellFiatCurrency(),
             transactionOwnerAddress = userAddress,
