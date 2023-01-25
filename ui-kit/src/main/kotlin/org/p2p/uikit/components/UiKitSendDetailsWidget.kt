@@ -99,11 +99,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun showFeeLoading(isLoading: Boolean) {
         binding.progressBarFees.isVisible = isLoading
-        if (binding.textViewFee.text.isNullOrBlank()) {
-            binding.imageViewFeesInfo.isVisible = false
-        } else {
-            binding.imageViewFeesInfo.isInvisible = isLoading
-        }
+        binding.imageViewFeesInfo.isInvisible = isLoading && binding.textViewFee.isVisible
     }
 
     fun showDelayedFeeViewLoading(isLoading: Boolean) {

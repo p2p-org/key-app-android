@@ -44,6 +44,7 @@ class SendFeeRelayerManager(
     private lateinit var feeLimitInfo: FreeTransactionFeeLimit
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
+    private var initializeCompleted = false
 
     private var minRentExemption: BigInteger? = null
 
@@ -57,14 +58,20 @@ class SendFeeRelayerManager(
 
         onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = true))
         try {
-            minRentExemption = sendInteractor.getMinRelayRentExemption()
-            feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
-            sendInteractor.initialize(initialToken)
+            initializeWithToken(initialToken)
+            initializeCompleted = true
         } catch (e: Throwable) {
+            initializeCompleted = false
             currentState = Failure(FeesCalculationError)
         } finally {
             onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
         }
+    }
+
+    private suspend fun initializeWithToken(initialToken: Token.Active) {
+        minRentExemption = sendInteractor.getMinRelayRentExemption()
+        feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
+        sendInteractor.initialize(initialToken)
     }
 
     fun getMinRentExemption(): BigInteger = minRentExemption.orZero()
@@ -103,6 +110,11 @@ class SendFeeRelayerManager(
 
         try {
             onFeeLoading?.invoke(FeeLoadingState(isLoading = true, isDelayed = useCache))
+            if (!initializeCompleted) {
+                initializeWithToken(sourceToken)
+                initializeCompleted = true
+            }
+
             val feeRelayerFee = calculateFeeRelayerFee(
                 sourceToken = sourceToken,
                 feePayerToken = feePayer,
