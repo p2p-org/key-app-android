@@ -2,6 +2,7 @@ package org.p2p.wallet.sell.ui.lock
 
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -31,6 +32,7 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -75,12 +77,13 @@ class SellLockedFragment :
         rootView.doOnApplyWindowInsets { _, insets, _ ->
             insets.systemAndIme().consume {
                 binding.toolbar.appleTopInsets(this)
-                rootView.appleBottomInsets(this)
+                binding.layoutDetails.root.appleBottomInsets(this)
             }
         }
     }
 
     private fun setupViews() = with(binding.layoutDetails) {
+        setupLayoutDetails()
         renderAmounts()
         renderCopyButton()
         setupTitleAndBody()
@@ -88,8 +91,13 @@ class SellLockedFragment :
         setupButtons()
     }
 
+    private fun setupLayoutDetails() = with(binding.layoutDetails) {
+        root.setBackgroundColor(getColor(R.color.bg_smoke))
+        root.updatePadding(top = 16.toPx())
+    }
+
     private fun setupTitleAndBody() = with(binding.layoutDetails) {
-        val title = getString(R.string.sell_details_waiting_deposit_title, details.formattedSolAmount)
+        val title = getString(R.string.sell_lock_title)
         val body = getString(R.string.sell_details_waiting_deposit_body)
         val bodyBackground = R.drawable.bg_rounded_solid_rain_24
         val bodyTextColorRes: Int = R.color.text_night
@@ -115,7 +123,7 @@ class SellLockedFragment :
             val recipient = SearchResult.AddressFound(AddressState(details.receiverAddress))
             replaceFragment(NewSendFragment.create(recipient = recipient))
         }
-        buttonRemoveOrCancel.setText(R.string.common_cancel)
+        buttonRemoveOrCancel.setText(R.string.sell_lock_cancel_transaction)
         buttonRemoveOrCancel.isVisible = true
         buttonRemoveOrCancel.setOnClickListener { presenter.onCancelTransactionClicked() }
     }
