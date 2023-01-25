@@ -111,8 +111,8 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
 
         handler.postDelayed(PROGRESS_DELAY_IN_MS) {
-            binding.progressBarFees.isVisible = true
-            binding.imageViewFeesInfo.isInvisible = true
+            binding.progressBarFees.isVisible = binding.textViewFee.isVisible
+            binding.imageViewFeesInfo.isVisible = false
         }
     }
 
