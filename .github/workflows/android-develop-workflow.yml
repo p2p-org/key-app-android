@@ -9,6 +9,7 @@ jobs:
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
+    environment: develop
     steps:
       - uses: actions/checkout@v3
 
@@ -33,8 +34,8 @@ jobs:
           intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
-          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-unit-tests:
@@ -43,6 +44,7 @@ jobs:
       - android-lint
 
     runs-on: ubuntu-latest
+    environment: develop
     steps:
       - uses: actions/checkout@v3
       - name: "Initialize project keys"
@@ -62,12 +64,12 @@ jobs:
           rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-key: ${{ secrets.MOONPAY_KEY }}
           moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-key: ${{  secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
-          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
       - name: Run unit tests
         run: ./gradlew testDebug
   android-build-artifacts:
@@ -106,12 +108,12 @@ jobs:
           rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-key: ${{ secrets.MOONPAY_KEY }}
           moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-key: ${{  secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
-          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
 
