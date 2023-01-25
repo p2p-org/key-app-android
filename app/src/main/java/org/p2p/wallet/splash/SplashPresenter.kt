@@ -5,6 +5,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -19,21 +20,22 @@ class SplashPresenter(
     override fun attach(view: SplashContract.View) {
         super.attach(view)
         launch {
-            sellInteractor.loadSellAvailability()
+            val sellAvailability = initialLoading { sellInteractor.loadSellAvailability() }
+            val allTokensData = initialLoading { userInteractor.loadAllTokensData() }
             delay(MINIMUM_SPLASH_SHOWING_TIME_MS)
 
-            loadPricesAndBids()
+            sellAvailability.join()
+            allTokensData.join()
+            openRootScreen()
         }
     }
 
-    private fun loadPricesAndBids() {
-        launch {
+    private fun initialLoading(action: suspend () -> Unit): Job {
+        return launch {
             try {
-                userInteractor.loadAllTokensData()
+                action()
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading initial tokens data")
-            } finally {
-                openRootScreen()
             }
         }
     }

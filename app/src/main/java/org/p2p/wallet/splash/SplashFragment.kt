@@ -18,10 +18,10 @@ class SplashFragment :
     override val presenter: SplashContract.Presenter by inject()
 
     override fun navigateToOnboarding() {
-        replaceFragment(OnboardingRootFragment.create())
+        replaceFragment(OnboardingRootFragment.create(), addToBackStack = false)
     }
 
     override fun navigateToSignIn() {
-        replaceFragment(SignInPinFragment.create())
+        replaceFragment(SignInPinFragment.create(), addToBackStack = false)
     }
 }

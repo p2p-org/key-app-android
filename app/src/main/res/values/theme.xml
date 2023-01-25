@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="WalletTheme.Launcher" parent="WalletTheme">
-<!--        <item name="android:windowBackground">@drawable/bg_splash_screen</item>-->
+    <style name="WalletTheme.Launcher" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/lime</item>
+        <item name="postSplashScreenTheme">@style/WalletTheme</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
     <style name="WalletTheme" parent="WalletBase.v21" />

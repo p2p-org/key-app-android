@@ -76,7 +76,7 @@ class RootActivity :
         setContentView(binding.root)
         setupKeyboardListener()
 
-        replaceFragment(SplashFragment.create())
+        replaceFragment(SplashFragment.create(), addToBackStack = false)
 
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
 
