@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toast
@@ -136,7 +137,7 @@ class NewSendDetailsBottomSheet :
                     setTextColor(colorNight)
                     if (fee == null) {
                         val zeroUsd = "(0$)"
-                        val fullZeroFeeText = "0 ${state.sourceSymbol} $zeroUsd"
+                        val fullZeroFeeText = "0 ${Constants.SOL_SYMBOL} $zeroUsd"
                         SpanUtils.highlightText(
                             commonText = fullZeroFeeText,
                             highlightedText = zeroUsd,
