@@ -12,7 +12,7 @@ android {
         }
 
         def sentryDsn = sentryProperties["auth.dsn"]
-        manifestPlaceholders = [SENTRY_DSN: "\"$sentryDsn\""]
+        manifestPlaceholders = [SENTRY_DSN: "$sentryDsn"]
     }
 
     buildTypes {
