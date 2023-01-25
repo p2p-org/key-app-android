@@ -54,7 +54,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:textAppearance="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
-            app:layout_constraintBottom_toTopOf="@+id/textViewUsdValue"
+            app:layout_constraintBottom_toTopOf="@+id/textViewFiatValue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +62,7 @@
             tools:text="6 SOL" />
 
         <TextView
-            android:id="@+id/textViewUsdValue"
+            android:id="@+id/textViewFiatValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
@@ -125,7 +125,7 @@
         android:backgroundTint="@color/bg_snow"
         android:orientation="horizontal"
         android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonAction"
+        app:layout_constraintBottom_toTopOf="@+id/containerButtons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -166,37 +166,38 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonAction"
-        style="@style/UiKit.Components.Button.Large"
+    <LinearLayout
+        android:id="@+id/containerButtons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/common_send"
-        app:layout_constraintBottom_toTopOf="@+id/buttonRemoveOrCancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <org.p2p.uikit.components.UiKitButton
-        android:id="@+id/buttonRemoveOrCancel"
-        style="@style/UiKit.Components.Button.Large"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/sell_lock_button_cancel"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-        android:textColor="@color/text_night"
-        android:visibility="gone"
-        app:backgroundTint="@color/bg_smoke"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonAction"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="@string/common_send" />
+
+        <org.p2p.uikit.components.UiKitButton
+            android:id="@+id/buttonRemoveOrCancel"
+            style="@style/UiKit.Components.Button.Large"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/sell_lock_button_cancel"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
+            android:textColor="@color/text_night"
+            android:visibility="gone"
+            app:backgroundTint="@color/bg_smoke"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,12 @@
 package org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase
 
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.setFragmentResultListener
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.validate.ValidatePinFragment
 import org.p2p.wallet.common.mvp.BaseFragment
@@ -24,7 +28,6 @@ class SeedPhraseUnlockFragment : BaseFragment(
     }
 
     private val binding: FragmentSeedPhraseUnlockBinding by viewBinding()
-    override val navBarColor: Int = R.color.bg_night
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,6 +42,15 @@ class SeedPhraseUnlockFragment : BaseFragment(
             if (isPinValidated) {
                 replaceFragment(UserSeedPhraseFragment.create())
             }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { view, insets, initialPadding ->
+            val systemAndIme = insets.systemAndIme()
+            binding.toolbar.updatePadding(top = systemAndIme.top)
+            binding.containerBottomView.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 }

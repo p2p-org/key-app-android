@@ -97,7 +97,7 @@ object AppModule {
 
     private fun getActiveCrashLoggingFacades(): List<CrashLoggingFacade> = buildList {
         if (BuildConfig.CRASHLYTICS_ENABLED) {
-            add(FirebaseCrashlyticsFacade(BuildConfig.CRASHLYTICS_ENABLED))
+            add(FirebaseCrashlyticsFacade())
         }
         if (BuildConfig.SENTRY_ENABLED) {
             add(SentryFacade())

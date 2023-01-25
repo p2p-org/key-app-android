@@ -1,13 +1,6 @@
 #!/bin/bash
 
-branch_name="$GITHUB_HEAD_REF"
-cut_branch_name=$( echo ${branch_name##*/} )
-IFS='-'
-read -r -a array <<< "$cut_branch_name"
-jira_ticket_message="https://p2pvalidator.atlassian.net/browse/${array[0]}-${array[1]}"
-
 slack_ktlint_message="*The process of creating a new assembly is started (0%)*:
-• *Jira Ticket* - $jira_ticket_message
 • *Upload to Firebase* -::athletic_shoe:
 • *Upload to Slack* - :athletic_shoe:"
 SLACK_SEND_MESSAGE_RESPONSE=$(curl \

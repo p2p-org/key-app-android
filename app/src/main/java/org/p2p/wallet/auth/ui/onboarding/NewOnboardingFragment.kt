@@ -3,10 +3,14 @@ package org.p2p.wallet.auth.ui.onboarding
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -25,6 +29,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.SpanUtils
 import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popBackStack
@@ -44,9 +49,9 @@ class NewOnboardingFragment :
     override val presenter: NewOnboardingContract.Presenter by inject()
     private val onboardingInteractor: OnboardingInteractor by inject()
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
+    override val customStatusBarStyle = SystemIconsStyle.BLACK
+    override val customNavigationBarStyle = SystemIconsStyle.WHITE
 
     private val binding: FragmentNewOnboardingBinding by viewBinding()
 
@@ -129,6 +134,15 @@ class NewOnboardingFragment :
         }
     }
 
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            val systemAndIme = insets.systemAndIme()
+            rootView.updatePadding(top = systemAndIme.top)
+            binding.containerBottomOnboarding.updatePadding(bottom = systemAndIme.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+    }
+
     override fun startGoogleFlow() {
         signInHelper.showSignInDialog(requireContext(), googleSignInLauncher)
     }
@@ -183,10 +197,8 @@ class NewOnboardingFragment :
 
     private fun setLoadingAnimationState(isScreenLoading: Boolean) {
         if (isScreenLoading) {
-            setSystemBarsColors(statusBarColor, R.color.bg_lime)
             AnimationProgressFragment.show(requireActivity().supportFragmentManager, isCreation = true)
         } else {
-            setSystemBarsColors(statusBarColor, navBarColor)
             AnimationProgressFragment.dismiss(requireActivity().supportFragmentManager)
         }
     }

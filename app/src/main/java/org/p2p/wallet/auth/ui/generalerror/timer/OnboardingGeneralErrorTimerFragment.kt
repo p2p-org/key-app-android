@@ -36,8 +36,6 @@ class OnboardingGeneralErrorTimerFragment :
             )
     }
 
-    override val statusBarColor: Int = R.color.bg_lime
-    override val navBarColor: Int = R.color.bg_night
     override val presenter: Presenter by inject { parametersOf(error, timerLeftTime) }
 
     private val binding: FragmentOnboardingGeneralErrorTimerBinding by viewBinding()

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="72dp"
     android:orientation="vertical"
-    tools:parentTag="androidx.coordinatorlayout.widget.CoordinatorLayout">
+    tools:parentTag="android.widget.FrameLayout">
 
     <FrameLayout
         android:layout_width="match_parent"
