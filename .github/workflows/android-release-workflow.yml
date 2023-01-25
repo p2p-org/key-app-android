@@ -34,7 +34,7 @@ jobs:
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN}}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
       - name: "Build Firebase release AAB"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -80,8 +80,8 @@ jobs:
           intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
-          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
       - name: "Build Slack APK artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -143,8 +143,8 @@ jobs:
           intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
-          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
       - name: "Build release AAB artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
