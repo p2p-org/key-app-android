@@ -75,8 +75,8 @@ jobs:
           rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-key: ${{ secrets.MOONPAY_KEY }}
           moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-key: ${{  secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -117,8 +117,8 @@ jobs:
           rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
           moonpay-key: ${{ secrets.MOONPAY_KEY }}
           moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
-          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-key: ${{  secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
