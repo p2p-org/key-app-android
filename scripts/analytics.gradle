@@ -11,7 +11,7 @@ android {
             logger.quiet "(SENTRY): sentry properties is not found."
         }
 
-        manifestPlaceholders = [SENTRY_DSN: sentryProperties["auth.dsn"]]
+        manifestPlaceholders = [SENTRY_DSN: "\"${sentryProperties["auth.dsn"]}\""]
     }
 
     buildTypes {
