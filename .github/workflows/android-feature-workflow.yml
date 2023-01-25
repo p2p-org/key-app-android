@@ -79,8 +79,8 @@ jobs:
           intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
           apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-          sentry-auth-token: ${{ secrets.SENTRY_AUTH_DSN }}
-          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN}}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-build-artifacts:

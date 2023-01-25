@@ -93,7 +93,7 @@ runs:
         echo "TORUS_VERIFIER_RELEASE=${{ inputs.torus-verifier-release }}" >> torus.properties
         echo "TORUS_SUB_VERIFIER_RELEASE_STORE=${{ inputs.torus-subverifier-store }}" >> torus.properties
         echo "TORUS_SUB_VERIFIER_RELEASE_FIREBASE=${{ inputs.torus-subverifier-firebase }}" >> torus.properties
-        echo "TORUS_SUB_VERIFIER_RELEASE_LOCAL="${{ inputs.torus-subverifier-slack }}" >> torus.properties
+        echo "TORUS_SUB_VERIFIER_RELEASE_LOCAL=${{ inputs.torus-subverifier-slack }}" >> torus.properties
         echo "torus.properties is successfully created"
     - name: "Create api keys properties file"
       shell: bash
