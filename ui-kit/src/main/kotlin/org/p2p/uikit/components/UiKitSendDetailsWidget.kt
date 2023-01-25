@@ -98,8 +98,9 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
     }
 
     fun showFeeLoading(isLoading: Boolean) {
-        binding.progressBarFees.isVisible = isLoading
-        binding.imageViewFeesInfo.isInvisible = isLoading && binding.textViewFee.isVisible
+        val canBeVisible = binding.textViewFee.isVisible
+        binding.progressBarFees.isVisible = canBeVisible && isLoading
+        binding.imageViewFeesInfo.isVisible = canBeVisible && !isLoading
     }
 
     fun showDelayedFeeViewLoading(isLoading: Boolean) {

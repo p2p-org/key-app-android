@@ -41,6 +41,7 @@
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toEndOf="@id/textViewSendLabel"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginEnd="32dp"
         tools:text="Fees: 0" />
 
     <ProgressBar
