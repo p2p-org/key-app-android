@@ -185,22 +185,12 @@ class SendFeeRelayerManager(
         useCache: Boolean = true
     ): FeeRelayerFee? {
         val recipient = result.addressState.address
-
-        return try {
-            sendInteractor.calculateFeesForFeeRelayer(
-                feePayerToken = feePayerToken,
-                token = sourceToken,
-                recipient = recipient,
-                useCache = useCache
-            )
-        } catch (e: CancellationException) {
-            Timber.i("Fee calculation is cancelled")
-            return null
-        } catch (e: Throwable) {
-            Timber.e(e, "Error calculating fees")
-            handleError(FeesCalculationError)
-            return null
-        }
+        return sendInteractor.calculateFeesForFeeRelayer(
+            feePayerToken = feePayerToken,
+            token = sourceToken,
+            recipient = recipient,
+            useCache = useCache
+        )
     }
 
     private suspend fun showFeeDetails(
@@ -280,11 +270,20 @@ class SendFeeRelayerManager(
          * Optimized recalculation and UI update
          * */
         val newFeePayer = sendInteractor.getFeePayerToken()
-        val feeRelayerFee = calculateFeeRelayerFee(
-            sourceToken = sourceToken,
-            feePayerToken = newFeePayer,
-            result = recipientAddress
-        ) ?: return
+        val feeRelayerFee = try {
+            calculateFeeRelayerFee(
+                sourceToken = sourceToken,
+                feePayerToken = newFeePayer,
+                result = recipientAddress
+            )
+        } catch (e: CancellationException) {
+            Timber.i("Fee calculation is cancelled")
+            null
+        } catch (e: Throwable) {
+            Timber.e(e, "Error calculating fees")
+            handleError(FeesCalculationError)
+            null
+        } ?: return
         val fee = buildSolanaFee(newFeePayer, sourceToken, feeRelayerFee)
         validateFunds(sourceToken, fee, inputAmount)
         currentState = UpdateFee(fee, feeLimitInfo)
