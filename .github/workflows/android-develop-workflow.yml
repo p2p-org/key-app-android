@@ -10,6 +10,7 @@ jobs:
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
+    environment: develop
     steps:
       - uses: actions/checkout@v3
 
@@ -44,6 +45,7 @@ jobs:
       - android-lint
 
     runs-on: ubuntu-latest
+    environment: develop
     steps:
       - uses: actions/checkout@v3
       - name: "Initialize project keys"
