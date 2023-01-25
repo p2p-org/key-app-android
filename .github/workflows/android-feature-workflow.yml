@@ -54,7 +54,7 @@ jobs:
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
-    environment: feature
+    environment: develop
     steps:
       - uses: actions/checkout@v3
 
