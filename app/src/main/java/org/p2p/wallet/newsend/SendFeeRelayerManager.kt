@@ -49,7 +49,7 @@ class SendFeeRelayerManager(
 
     private var minRentExemption: BigInteger? = null
 
-    private var alternativeFeePayerTokens: List<Token.Active> = emptyList()
+    private val alternativeTokensMap: HashMap<BigInteger, List<Token.Active>> = HashMap()
 
     suspend fun initialize(
         initialToken: Token.Active,
@@ -63,7 +63,6 @@ class SendFeeRelayerManager(
         try {
             minRentExemption = sendInteractor.getMinRelayRentExemption()
             feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
-            alternativeFeePayerTokens = userInteractor.getNonZeroUserTokens()
             sendInteractor.initialize(initialToken)
         } catch (e: Throwable) {
             currentState = Failure(FeesCalculationError)
@@ -236,18 +235,29 @@ class SendFeeRelayerManager(
         }
     }
 
-    private fun buildSolanaFee(
+    private suspend fun buildSolanaFee(
         newFeePayer: Token.Active,
         source: Token.Active,
         feeRelayerFee: FeeRelayerFee
-    ): SendSolanaFee =
-        SendSolanaFee(
+    ): SendSolanaFee {
+        var alternativeTokens = alternativeTokensMap[feeRelayerFee.totalInSol]
+        if (alternativeTokens == null) {
+            alternativeTokens = sendInteractor.findAlternativeFeePayerTokens(
+                userTokens = userInteractor.getNonZeroUserTokens(),
+                feePayerToExclude = newFeePayer,
+                transactionFeeInSOL = feeRelayerFee.transactionFeeInSol,
+                accountCreationFeeInSOL = feeRelayerFee.accountCreationFeeInSol
+            )
+            alternativeTokensMap[feeRelayerFee.totalInSol] = alternativeTokens
+        }
+        return SendSolanaFee(
             feePayerToken = newFeePayer,
             solToken = solToken,
             feeRelayerFee = feeRelayerFee,
-            alternativeFeePayerTokens = alternativeFeePayerTokens,
+            alternativeFeePayerTokens = alternativeTokens,
             sourceToken = source
         )
+    }
 
     private suspend fun validateAndSelectFeePayer(
         sourceToken: Token.Active,
