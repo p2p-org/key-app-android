@@ -4,6 +4,7 @@ import org.p2p.wallet.common.analytics.repository.AnalyticsLocalRepository
 import org.p2p.wallet.common.di.AppScope
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.sell.interactor.SellInteractor
+import timber.log.Timber
 import kotlinx.coroutines.launch
 
 class ScreensAnalyticsInteractor(
@@ -20,6 +21,7 @@ class ScreensAnalyticsInteractor(
         val isNewScreenOpened = newScreenName != previousScreenName
         if (isNewScreenOpened) {
             appScope.launch {
+                Timber.tag("ScreensAnalyticsInteractor",).i("logScreenOpened: $newScreenName")
                 browseAnalytics.logScreenOpened(
                     screenName = newScreenName,
                     lastScreen = getPreviousScreenName(),
