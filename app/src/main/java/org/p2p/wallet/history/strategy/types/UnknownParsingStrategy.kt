@@ -6,6 +6,7 @@ import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
 import org.p2p.solanaj.kits.transaction.network.meta.InstructionResponse
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingStrategy
+import timber.log.Timber
 
 class UnknownParsingStrategy : TransactionParsingStrategy {
 
@@ -14,6 +15,8 @@ class UnknownParsingStrategy : TransactionParsingStrategy {
         instruction: InstructionResponse,
         transactionRoot: ConfirmedTransactionRootResponse
     ): ParsingResult {
+        val logParams = "type=${instruction.parsed?.type};programId=${instruction.programId}"
+        Timber.tag("UnknownParsingStrategy").i("Creating unknown transaction: $logParams")
         return ParsingResult.Transaction.create(
             UnknownDetails(
                 signature = signature,

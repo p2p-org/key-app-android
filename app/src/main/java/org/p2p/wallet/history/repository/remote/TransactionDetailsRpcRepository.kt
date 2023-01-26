@@ -61,7 +61,7 @@ class TransactionDetailsRpcRepository(
                     transactionDetails.addAll(parsingResult.details)
                 }
                 is ParsingResult.Error -> {
-                    Timber.i("Error on parsing transaction ${parsingResult.error.message}")
+                    Timber.e(parsingResult.error, "Error on parsing transaction")
                 }
             }
         }
