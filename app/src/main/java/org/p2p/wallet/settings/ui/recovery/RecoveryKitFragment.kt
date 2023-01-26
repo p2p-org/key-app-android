@@ -4,6 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -36,6 +41,15 @@ class RecoveryKitFragment :
             }
             recoveryViewSeed.setOnClickListener {
                 presenter.onSeedPhraseClicked()
+            }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                rootView.appleBottomInsets(this)
             }
         }
     }

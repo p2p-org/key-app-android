@@ -645,6 +645,7 @@
     <string name="sell_lock_waiting_for_deposit_fiat_amount">≈%s %s</string>
     <string name="sell_lock_token_amount">%s %s</string>
     <string name="sell_lock_pending_fiat_amount">-%s %s</string>
+    <string name="sell_lock_cancel_transaction">Cancel transaction</string>
     <string name="sell_lock_warning_dialog_title">Are you sure?</string>
     <string name="sell_lock_warning_dialog_body">Are you sure you want to interrupt cash out process? Your transaction won\'t be finished.</string>
     <string name="sell_lock_warning_dialog_negative">INTERRUPT</string>
@@ -653,6 +654,7 @@
     <string name="sell_payload_fiat_value">1 SOL ≈ %s %s</string>
     <string name="sell_payload_fiat_symbol">≈ %s</string>
     <string name="sell_payload_title">Cash out token</string>
+    <string name="sell_payload_token_title">Cash out %s</string>
     <string name="sell_payload_all_sol">all %s SOL</string>
     <string name="sell_payload_included_fee">Included fee %s %s</string>
     <string name="sell_payload_min_sol_amount">The minimum amount is %s SOL</string>

@@ -5,6 +5,11 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSellErrorBinding
@@ -34,6 +39,15 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
         super.onViewCreated(view, savedInstanceState)
         setupView()
         logScreenOpened()
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                rootView.appleBottomInsets(this)
+            }
+        }
     }
 
     private fun setupView() = with(binding) {
