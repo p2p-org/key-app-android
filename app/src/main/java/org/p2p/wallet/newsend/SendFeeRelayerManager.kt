@@ -49,7 +49,7 @@ class SendFeeRelayerManager(
 
     private var minRentExemption: BigInteger? = null
 
-    private val alternativeTokensMap: HashMap<BigInteger, List<Token.Active>> = HashMap()
+    private val alternativeTokensMap: HashMap<String, List<Token.Active>> = HashMap()
 
     suspend fun initialize(
         initialToken: Token.Active,
@@ -240,7 +240,8 @@ class SendFeeRelayerManager(
         source: Token.Active,
         feeRelayerFee: FeeRelayerFee
     ): SendSolanaFee {
-        var alternativeTokens = alternativeTokensMap[feeRelayerFee.totalInSol]
+        val keyForAlternativeRequest = "${source.tokenSymbol}_${feeRelayerFee.totalInSol}"
+        var alternativeTokens = alternativeTokensMap[keyForAlternativeRequest]
         if (alternativeTokens == null) {
             alternativeTokens = sendInteractor.findAlternativeFeePayerTokens(
                 userTokens = userInteractor.getNonZeroUserTokens(),
@@ -248,7 +249,7 @@ class SendFeeRelayerManager(
                 transactionFeeInSOL = feeRelayerFee.transactionFeeInSol,
                 accountCreationFeeInSOL = feeRelayerFee.accountCreationFeeInSol
             )
-            alternativeTokensMap[feeRelayerFee.totalInSol] = alternativeTokens
+            alternativeTokensMap[keyForAlternativeRequest] = alternativeTokens
         }
         return SendSolanaFee(
             feePayerToken = newFeePayer,
