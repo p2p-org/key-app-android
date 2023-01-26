@@ -35,5 +35,6 @@ object SellStubs {
         userAddress = Constants.SOL_MINT.toBase58Instance(),
         selectedFiat = SellTransactionFiatCurrency.USD,
         moonpayDepositWalletAddress = Constants.SOL_MINT.toBase58Instance(),
+        updatedAt = ""
     )
 }
