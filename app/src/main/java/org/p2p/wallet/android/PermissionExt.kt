@@ -8,8 +8,7 @@ import androidx.fragment.app.Fragment
 import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.PermissionsUtil
 
-// TODO Replace all permission interaction in BaseQrFragment using this functions,
-// skipped this in scope of this task
+// PWN-6979 TODO Replace all permission interaction  using this functions,
 fun Fragment.requestPermissionNotification(callback: (state: PermissionState) -> Unit) {
     if (NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()) {
         callback.invoke(PermissionState.GRANTED)

@@ -27,10 +27,8 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
         onRequestPermission()
         return view
     }
-
-    protected open fun onRequestPermission() {
-        // Call this function if you want to request permission
-    }
+    // Call this function if you want to request permission
+    protected open fun onRequestPermission() = Unit
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
