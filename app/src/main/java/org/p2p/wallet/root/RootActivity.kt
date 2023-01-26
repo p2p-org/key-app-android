@@ -1,17 +1,16 @@
 package org.p2p.wallet.root
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.activity.addCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.KeyboardListener
 import org.p2p.uikit.natives.showSnackbarIndefinite
@@ -34,6 +33,7 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 
 class RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
@@ -109,7 +109,7 @@ class RootActivity :
             val findFragmentError = ClassCastException(
                 "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.rootContainer)}"
             )
-            Timber.e(findFragmentError)
+            Timber.i(findFragmentError)
         }
     }
 

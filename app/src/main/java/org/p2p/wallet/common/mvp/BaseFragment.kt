@@ -77,7 +77,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     override fun onResume() {
         super.onResume()
         logScreenOpenedEvent()
-        updateSystemBarsStyle()
+        updateSystemBarsStyle(customStatusBarStyle, customNavigationBarStyle)
     }
 
     // fragments in the tab are shown using show/hide methods

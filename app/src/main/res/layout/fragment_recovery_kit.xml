@@ -12,7 +12,7 @@
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
+        android:layout_height="wrap_content"
         android:background="@color/bg_snow"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_toolbar_back"

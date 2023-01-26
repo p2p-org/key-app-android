@@ -3,7 +3,9 @@ package org.p2p.core.utils.insets
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import android.view.View
+import org.p2p.core.R
 
 val systemAndImeType: Int
     get() = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
@@ -11,6 +13,34 @@ val systemAndImeType: Int
 fun WindowInsetsCompat.systemAndIme(): Insets = getInsets(systemAndImeType)
 fun WindowInsetsCompat.ime(): Insets = getInsets(WindowInsetsCompat.Type.ime())
 fun WindowInsetsCompat.systemBars(): Insets = getInsets(WindowInsetsCompat.Type.systemBars())
+
+inline fun Insets.consume(block: Insets.() -> Unit = {}): WindowInsetsCompat {
+    block(this)
+    return WindowInsetsCompat.CONSUMED
+}
+
+fun View.appleTopInsets(insets: Insets) {
+    appleInsetPadding(top = insets.top)
+}
+
+fun View.appleBottomInsets(insets: Insets) {
+    appleInsetPadding(bottom = insets.bottom)
+}
+
+fun View.appleInsetPadding(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) {
+    val tagKey = R.id.initial_view_padding_tag_id
+    val initialPadding = getTag(tagKey) as? InitialViewPadding ?: let {
+        val paddings = recordInitialPaddingForView(this)
+        setTag(tagKey, paddings)
+        paddings
+    }
+    updatePadding(
+        initialPadding.left + left,
+        initialPadding.top + top,
+        initialPadding.right + right,
+        initialPadding.bottom + bottom
+    )
+}
 
 fun View.doOnApplyWindowInsets(
     f: (view: View, insets: WindowInsetsCompat, initialPadding: InitialViewPadding) -> WindowInsetsCompat

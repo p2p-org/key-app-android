@@ -1,16 +1,18 @@
 package org.p2p.wallet.settings.ui.recovery.user_seed_phrase
 
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentUserSeedPhraseBinding
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -21,6 +23,7 @@ class UserSeedPhraseFragment :
     ),
     UserSeedPhraseContract.View {
 
+    override val customNavigationBarStyle: SystemIconsStyle = SystemIconsStyle.WHITE
     override val presenter: UserSeedPhraseContract.Presenter by inject()
     private val binding: FragmentUserSeedPhraseBinding by viewBinding()
 
@@ -50,11 +53,11 @@ class UserSeedPhraseFragment :
     }
 
     override fun applyWindowInsets(rootView: View) {
-        rootView.doOnApplyWindowInsets { view, insets, initialPadding ->
-            val systemAndIme = insets.systemAndIme()
-            binding.toolbar.updatePadding(top = systemAndIme.top)
-            binding.containerBottomView.updatePadding(bottom = systemAndIme.bottom)
-            WindowInsetsCompat.CONSUMED
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                binding.containerBottomView.appleBottomInsets(this)
+            }
         }
     }
 

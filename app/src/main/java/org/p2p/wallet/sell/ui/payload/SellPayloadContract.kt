@@ -19,6 +19,7 @@ interface SellPayloadContract {
         fun navigateToErrorScreen()
         fun navigateToInformationScreen()
         fun updateViewState(newState: ViewState)
+        fun updateToolbarTitle(tokenSymbol: String)
         fun setButtonState(state: CashOutButtonState)
         fun showOnlySolWarning()
     }
