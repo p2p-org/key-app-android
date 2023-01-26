@@ -47,4 +47,5 @@ class GatewayServiceErrorMapper {
                 unknownCodeError
             }
         }
+            .also { Timber.tag("GatewayServiceMapper").i(error.toString()) }
 }

@@ -52,7 +52,7 @@ class SellPayloadPresenter(
     private var minTokenSellAmount: BigDecimal = BigDecimal.ZERO
     private var maxTokenSellAmount: BigDecimal? = null
     private var rawUserSelectedAmount: String = emptyString()
-    private val userSelectedAmount: BigDecimal
+    private val selectedTokenAmount: BigDecimal
         get() = rawToDecimalAmount()
     private var tokenPrice: BigDecimal = BigDecimal.ZERO
 
@@ -121,8 +121,9 @@ class SellPayloadPresenter(
                     transactionId = userTransactionInProcess.transactionId,
                     status = userTransactionInProcess.status,
                     formattedSolAmount = amounts.tokenAmount.formatTokenForMoonpay(),
-                    formattedUsdAmount = amounts.usdAmount.formatFiat(),
-                    receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value
+                    formattedFiatAmount = amounts.amountInFiat.formatFiat(),
+                    receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value,
+                    fiatAbbreviation = userTransactionInProcess.selectedFiat.abbriviation.uppercase()
                 )
             )
         }
@@ -140,8 +141,7 @@ class SellPayloadPresenter(
         when (selectedCurrencyMode) {
             CurrencyMode.Fiat.Eur,
             CurrencyMode.Fiat.Gbp,
-            CurrencyMode.Fiat.Usd -> rawUserSelectedAmount.toBigDecimalOrZero()
-                .divide(tokenPrice, 2, RoundingMode.DOWN)
+            CurrencyMode.Fiat.Usd -> rawUserSelectedAmount.toBigDecimalOrZero().toToken()
             is CurrencyMode.Token -> rawUserSelectedAmount.toBigDecimalOrZero()
         }
 
@@ -161,7 +161,7 @@ class SellPayloadPresenter(
 
     private suspend fun initialLoadSellQuote() {
         val sellQuote = sellInteractor.getSellQuoteForSol(
-            solAmount = userSelectedAmount,
+            solAmount = selectedTokenAmount,
             fiat = fiatCurrencyMode.toSellFiatCurrency()
         )
         onSellQuoteLoaded(sellQuote)
@@ -192,7 +192,7 @@ class SellPayloadPresenter(
                 try {
                     delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                     val sellQuote = sellInteractor.getSellQuoteForSol(
-                        solAmount = userSelectedAmount,
+                        solAmount = selectedTokenAmount,
                         fiat = fiatCurrencyMode.toSellFiatCurrency()
                     )
                     onSellQuoteLoaded(sellQuote)
@@ -226,21 +226,24 @@ class SellPayloadPresenter(
     }
 
     override fun switchCurrencyMode() {
-        internalSwitchCurrencyMode()
-        view?.updateViewState(viewState)
-        onTokenAmountChanged(viewState.widgetViewState.inputAmount)
-    }
-
-    private fun internalSwitchCurrencyMode() {
+        val oldAmount = rawUserSelectedAmount.toBigDecimalOrZero()
         selectedCurrencyMode = currencyModeToSwitch
+        val switchedAmount = when (selectedCurrencyMode) {
+            CurrencyMode.Fiat.Eur,
+            CurrencyMode.Fiat.Gbp,
+            CurrencyMode.Fiat.Usd -> oldAmount.toFiat()
+            is CurrencyMode.Token -> oldAmount.toToken()
+        }
         viewState = viewState.run {
             copy(
                 widgetViewState = widgetViewState.copy(
                     currencyMode = selectedCurrencyMode,
                     currencyModeToSwitch = currencyModeToSwitch,
+                    inputAmount = switchedAmount.formatTokenForMoonpay()
                 )
             )
         }
+        view?.updateViewState(viewState)
     }
 
     override fun cashOut() {
@@ -259,7 +262,7 @@ class SellPayloadPresenter(
             userAddress = userAddress,
             externalCustomerId = externalCustomerIdProvider.getCustomerId(),
             fiatSymbol = fiatCurrencyMode.fiatAbbreviation,
-            tokenAmountToSell = userSelectedAmount.formatTokenForMoonpay(),
+            tokenAmountToSell = selectedTokenAmount.formatTokenForMoonpay(),
         )
         view?.showMoonpayWidget(url = moonpayUrl)
     }
@@ -283,34 +286,33 @@ class SellPayloadPresenter(
     }
 
     override fun onUserMaxClicked() {
-        when (selectedCurrencyMode) {
+        val maxAmount = when (selectedCurrencyMode) {
             CurrencyMode.Fiat.Eur,
             CurrencyMode.Fiat.Gbp,
-            CurrencyMode.Fiat.Usd -> internalSwitchCurrencyMode()
-            is CurrencyMode.Token -> Unit
-        }
-        val userSolBalance = userSolBalance.toPlainString()
+            CurrencyMode.Fiat.Usd -> userSolBalance.toFiat()
+            is CurrencyMode.Token -> userSolBalance
+        }.formatTokenForMoonpay()
         viewState = viewState.copy(
             widgetViewState = viewState.widgetViewState.copy(
-                inputAmount = userSolBalance
+                inputAmount = maxAmount
             )
         )
         view?.updateViewState(viewState)
-        onTokenAmountChanged(userSolBalance)
+        onTokenAmountChanged(maxAmount)
     }
 
     private fun determineButtonState(): CashOutButtonState {
         val stateBuilder = CashOutButtonState.Builder(resources)
         return when {
-            userSelectedAmount.isLessThan(minTokenSellAmount) -> {
+            selectedTokenAmount.isLessThan(minTokenSellAmount) -> {
                 stateBuilder.minAmountErrorState(minTokenSellAmount)
             }
 
-            userSelectedAmount.isMoreThan(maxTokenSellAmount.orZero()) -> {
+            selectedTokenAmount.isMoreThan(maxTokenSellAmount.orZero()) -> {
                 stateBuilder.maxAmountErrorState(maxTokenSellAmount.orZero())
             }
 
-            userSelectedAmount.isMoreThan(userSolBalance) -> {
+            selectedTokenAmount.isMoreThan(userSolBalance) -> {
                 stateBuilder.notEnoughTokenErrorState()
             }
 
@@ -335,4 +337,7 @@ class SellPayloadPresenter(
             CurrencyMode.Fiat.Gbp -> SellTransactionFiatCurrency.GBP
         }
     }
+
+    private fun BigDecimal.toFiat() = this.multiply(tokenPrice).setScale(2, RoundingMode.DOWN)
+    private fun BigDecimal.toToken() = this.divide(tokenPrice, 2, RoundingMode.DOWN)
 }

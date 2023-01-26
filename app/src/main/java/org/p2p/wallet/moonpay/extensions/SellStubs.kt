@@ -27,9 +27,10 @@ object SellStubs {
         amounts = SellTransactionAmounts(
             tokenAmount = BigDecimal.ZERO,
             feeAmount = BigDecimal.ZERO,
-            usdAmount = BigDecimal.ZERO,
-            eurAmount = BigDecimal.ZERO,
-            gbpAmount = BigDecimal.ZERO
+            usdRate = BigDecimal.ZERO,
+            eurRate = BigDecimal.ZERO,
+            gbpRate = BigDecimal.ZERO,
+            amountInFiat = BigDecimal.ZERO
         ),
         userAddress = Constants.SOL_MINT.toBase58Instance(),
         selectedFiat = SellTransactionFiatCurrency.USD,

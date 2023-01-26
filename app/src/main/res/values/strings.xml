@@ -515,7 +515,7 @@
     <string name="transaction_history_moonpay_pending_title">Processing</string>
     <string name="transaction_history_moonpay_completed_title">Funds were sent</string>
     <string name="transaction_history_moonpay_completed_subtitle">To your bank account</string>
-    <string name="transaction_history_moonpay_amount_usd">$%s</string>
+    <string name="transaction_history_moonpay_amount_fiat">%s %s</string>
     <string name="transaction_history_moonpay_amount_sol">%s SOL</string>
 
     <!-- qr -->
@@ -642,7 +642,9 @@
     <string name="sell_lock_title">Please, send crypto to\nMoonPay address</string>
     <string name="sell_lock_message">To finish processing your request you need to send SOL to the address in the description. After 7 days this transaction will be automatically declined.</string>
     <string name="sell_lock_button_cancel">Remove from history</string>
-    <string name="sell_lock_usd_amount">≈ $%s</string>
+    <string name="sell_lock_waiting_for_deposit_fiat_amount">≈%s %s</string>
+    <string name="sell_lock_token_amount">%s %s</string>
+    <string name="sell_lock_pending_fiat_amount">-%s %s</string>
     <string name="sell_lock_warning_dialog_title">Are you sure?</string>
     <string name="sell_lock_warning_dialog_body">Are you sure you want to interrupt cash out process? Your transaction won\'t be finished.</string>
     <string name="sell_lock_warning_dialog_negative">INTERRUPT</string>

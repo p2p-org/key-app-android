@@ -3,42 +3,35 @@ apply plugin: 'com.android.application'
 android {
     defaultConfig {
         def apiKeysProperties = new Properties()
-        def apiKeysPropertiesFile = rootProject.file("apikey.properties")
+        def apiKeysPropertiesFile = rootProject.file("apikeys.properties")
         if (apiKeysPropertiesFile.canRead()) {
             logger.quiet "(API KEYS): using api keys properties file"
             apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
         } else {
-            logger.quiet "(API KEYS): creating api keys properties from CI"
-            apiKeysProperties["rpcPoolApiKey"] = "${System.getenv('RPC_POOL_API_KEY')}"
-            apiKeysProperties["moonpayKey"] = "${System.getenv('MOONPAY_KEY')}"
-            apiKeysProperties["moonpaySandboxKey"] = "${System.getenv('MOONPAY_SANDBOX_KEY')}"
-            apiKeysProperties["comparePublicKey"] = "${System.getenv('COMPARE_PUBLIC_KEY')}"
-            apiKeysProperties["intercomAppId"] = "${System.getenv('INTERCOM_APP_ID')}"
-            apiKeysProperties["intercomApiKey"] = "${System.getenv('INTERCOM_API_KEY')}"
-            apiKeysProperties["appsFlyerKey"] = "${System.getenv('APPS_FLYER_KEY')}"
+            logger.quiet "(API KEYS): api keys properties file is not found"
         }
 
-        buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties["rpcPoolApiKey"]}")
-        buildConfigField("String", "moonpayKey", "${apiKeysProperties["moonpayKey"]}")
-        buildConfigField("String", "moonpaySandboxKey", "${apiKeysProperties["moonpaySandboxKey"]}")
-        buildConfigField("String", "comparePublicKey", "${apiKeysProperties["comparePublicKey"]}")
-        buildConfigField("String", "intercomApiKey", "${apiKeysProperties["intercomApiKey"]}")
-        buildConfigField("String", "intercomAppId", "${apiKeysProperties["intercomAppId"]}")
-        buildConfigField("String", "appsFlyerKey", "${apiKeysProperties["appsFlyerKey"]}")
+        buildConfigField("String", "rpcPoolApiKey", "\"${apiKeysProperties["rpcPoolApiKey"]}\"")
+        buildConfigField("String", "moonpayKey", "\"${apiKeysProperties["moonpayKey"]}\"")
+        buildConfigField("String", "moonpaySandboxKey", "\"${apiKeysProperties["moonpaySandboxKey"]}\"")
+        buildConfigField("String", "comparePublicKey", "\"${apiKeysProperties["comparePublicKey"]}\"")
+        buildConfigField("String", "intercomApiKey", "\"${apiKeysProperties["intercomApiKey"]}\"")
+        buildConfigField("String", "intercomAppId", "\"${apiKeysProperties["intercomAppId"]}\"")
+        buildConfigField("String", "appsFlyerKey", "\"${apiKeysProperties["appsFlyerKey"]}\"")
     }
 
     buildTypes {
         debug {
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
             buildConfigField("boolean", "SENTRY_ENABLED", "false")
-            buildConfigField("boolean", "APPSFLYER_ENABLED","false")
-            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED","false")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
         }
         feature {
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
             buildConfigField("boolean", "SENTRY_ENABLED", "false")
-            buildConfigField("boolean", "APPSFLYER_ENABLED","false")
-            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED","false")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
         }
         releaseFirebase {
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
