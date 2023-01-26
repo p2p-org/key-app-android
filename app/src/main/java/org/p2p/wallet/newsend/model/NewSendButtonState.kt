@@ -73,10 +73,6 @@ class NewSendButtonState(
                     val textContainer = TextContainer.Res(R.string.send_insufficient_funds)
                     State.Disabled(textContainer, R.color.text_rose)
                 }
-                !isMinRequiredBalanceLeft -> {
-                    val textContainer = TextContainer.Res(R.string.error_insufficient_funds)
-                    State.Disabled(textContainer, R.color.text_rose)
-                }
                 !isAmountValidForRecipient -> {
                     val solAmount = minRentExemption.fromLamports().scaleLong().toPlainString()
                     val format = resources.getString(R.string.send_min_warning_text_format, solAmount, SOL_SYMBOL)
@@ -84,6 +80,10 @@ class NewSendButtonState(
                         textContainer = TextContainer.Raw(format),
                         totalAmountTextColor = R.color.text_rose
                     )
+                }
+                !isMinRequiredBalanceLeft -> {
+                    val textContainer = TextContainer.Res(R.string.error_insufficient_funds)
+                    State.Disabled(textContainer, R.color.text_rose)
                 }
                 !isAmountValidForSender -> {
                     val maxSolAmountAllowed = sourceToken.totalInLamports - minRentExemption
@@ -132,12 +132,10 @@ class NewSendButtonState(
      * */
     private fun isAmountValidForSender(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
+        if (!isSourceTokenSol) return true
         val balanceDiff = sourceToken.totalInLamports - amount
 
-        val isValidRemainingSource = balanceDiff.isZero() || balanceDiff >= minRentExemption
-        if (!isSourceTokenSol) return true
-
-        return isValidRemainingSource
+        return balanceDiff.isZero() || balanceDiff >= minRentExemption
     }
 
     /**
@@ -149,7 +147,6 @@ class NewSendButtonState(
         if (!sourceToken.isSOL) return true
 
         val isRecipientEmpty = searchResult is SearchResult.AddressFound && searchResult.isEmptyBalance
-        if (!isRecipientEmpty) return true
 
         val sourceTotalLamports = sourceToken.totalInLamports
         val minRequiredBalance = minRentExemption
@@ -157,6 +154,13 @@ class NewSendButtonState(
         val inputAmountInLamports = calculationMode.getCurrentAmountLamports()
         val diff = sourceTotalLamports - inputAmountInLamports
 
-        return diff == BigInteger.ZERO || diff >= minRequiredBalance
+        val maxSolAmountAllowed = if (isRecipientEmpty) {
+            // if recipient has no solana account (balance == 0) we can send at least minRentExemption amount
+            sourceTotalLamports - minRequiredBalance
+        } else {
+            sourceTotalLamports
+        }
+
+        return diff.isZero() || maxSolAmountAllowed >= minRequiredBalance
     }
 }
