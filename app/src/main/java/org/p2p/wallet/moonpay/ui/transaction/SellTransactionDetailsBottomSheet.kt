@@ -197,29 +197,19 @@ class SellTransactionDetailsBottomSheet :
     private fun renderAmounts() = with(binding.layoutDetails) {
         val tokenAmount = details.formattedSolAmount
         val fiatAmount = details.formattedFiatAmount
-        val fiatAbbreviation = details.fiatAbbreviation
+        val fiatAbbreviation = details.fiatUiName
         val boldAmount: String
         val labelAmount: String
         when (details.status) {
-            SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+            SellTransactionStatus.WAITING_FOR_DEPOSIT, SellTransactionStatus.PENDING, SellTransactionStatus.FAILED -> {
                 boldAmount = getString(
                     R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
                 )
-                labelAmount = getString(
-                    R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, fiatAbbreviation
-                )
+                labelAmount = emptyString()
             }
-            SellTransactionStatus.PENDING, SellTransactionStatus.COMPLETED -> {
+            SellTransactionStatus.COMPLETED -> {
                 boldAmount = getString(
                     R.string.sell_lock_pending_fiat_amount, fiatAmount, fiatAbbreviation
-                )
-                labelAmount = getString(
-                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
-                )
-            }
-            SellTransactionStatus.FAILED -> {
-                boldAmount = getString(
-                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
                 )
                 labelAmount = emptyString()
             }

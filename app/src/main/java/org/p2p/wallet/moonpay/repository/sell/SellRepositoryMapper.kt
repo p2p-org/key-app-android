@@ -21,7 +21,7 @@ class SellRepositoryMapper {
         selectedFiat: SellTransactionFiatCurrency,
         transactionOwnerAddress: Base58String,
     ): List<SellTransaction> = response.mapNotNull { transaction ->
-        val amounts = transaction.createAmounts(selectedFiat)
+        val amounts = transaction.createAmounts()
         val metadata = transaction.createMetadata()
 
         when (transaction.status) {
@@ -72,17 +72,10 @@ class SellRepositoryMapper {
         }
     }
 
-    private fun MoonpaySellTransactionShortResponse.createAmounts(
-        selectedFiat: SellTransactionFiatCurrency
-    ): SellTransactionAmounts {
-        val validatedFiatAmount: Double = fiatAmount ?: when (selectedFiat) {
-            SellTransactionFiatCurrency.EUR -> eurRate * tokenAmount
-            SellTransactionFiatCurrency.USD -> usdRate * tokenAmount
-            SellTransactionFiatCurrency.GBP -> gbpRate * tokenAmount
-        }
+    private fun MoonpaySellTransactionShortResponse.createAmounts(): SellTransactionAmounts {
         return SellTransactionAmounts(
             tokenAmount = tokenAmount.toBigDecimal(),
-            amountInFiat = validatedFiatAmount.toBigDecimal(),
+            amountInFiat = fiatAmount?.toBigDecimal().orZero(),
             feeAmount = feeAmount?.toBigDecimal().orZero(),
             usdRate = usdRate.toBigDecimal(),
             eurRate = eurRate.toBigDecimal(),

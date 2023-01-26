@@ -25,6 +25,7 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.getColor
@@ -107,13 +108,11 @@ class SellLockedFragment :
 
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
-        val fiatAmount = details.formattedFiatAmount
+
         textViewAmount.text = getString(
             R.string.sell_lock_token_amount, solAmount, Constants.SOL_SYMBOL
         )
-        textViewFiatValue.text = getString(
-            R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, details.fiatAbbreviation
-        )
+        textViewFiatValue.text = emptyString()
 
         textViewReceiverAddress.text = details.receiverAddress.let {
             if (details.isReceiverAddressWallet) it.cutMiddle() else it
