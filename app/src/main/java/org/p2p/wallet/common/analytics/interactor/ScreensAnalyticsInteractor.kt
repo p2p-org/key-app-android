@@ -21,7 +21,7 @@ class ScreensAnalyticsInteractor(
         val isNewScreenOpened = newScreenName != previousScreenName
         if (isNewScreenOpened) {
             appScope.launch {
-                Timber.tag("ScreensAnalyticsInteractor",).i("logScreenOpened: $newScreenName")
+                Timber.tag("ScreensAnalyticsInteractor").i("logScreenOpened: $newScreenName")
                 browseAnalytics.logScreenOpened(
                     screenName = newScreenName,
                     lastScreen = getPreviousScreenName(),

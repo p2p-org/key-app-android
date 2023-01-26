@@ -15,8 +15,8 @@ class UnknownParsingStrategy : TransactionParsingStrategy {
         instruction: InstructionResponse,
         transactionRoot: ConfirmedTransactionRootResponse
     ): ParsingResult {
-        Timber.i("Creating unknown transaction: type=${instruction.parsed?.type} ")
-        Timber.i("Creating unknown transaction: programId=${instruction.programId} ")
+        val logParams = "type=${instruction.parsed?.type};programId=${instruction.programId}"
+        Timber.tag("UnknownParsingStrategy").i("Creating unknown transaction: $logParams")
         return ParsingResult.Transaction.create(
             UnknownDetails(
                 signature = signature,
