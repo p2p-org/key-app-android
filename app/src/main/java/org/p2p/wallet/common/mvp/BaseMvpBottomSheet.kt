@@ -8,19 +8,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
+import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.snackbar
 
 abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
     @LayoutRes val layoutRes: Int
-) : BottomSheetDialogFragment(), MvpView {
+) : BaseBottomSheet(), MvpView {
 
     abstract val presenter: P
 

@@ -57,7 +57,7 @@ class RootActivity :
     private val crashLogger: CrashLogger by inject()
 
     private val networkObserver: SolanaNetworkObserver by inject()
-    private val decorSystemBarsDelegate = DecorSystemBarsDelegate(this)
+    private val decorSystemBarsDelegate by lazy { DecorSystemBarsDelegate(this) }
     override val keyboardState: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     private lateinit var binding: ActivityRootBinding
@@ -74,6 +74,7 @@ class RootActivity :
         super.onCreate(savedInstanceState)
         binding = ActivityRootBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+        decorSystemBarsDelegate.onCreate()
         setupKeyboardListener()
 
         replaceFragment(SplashFragment.create())

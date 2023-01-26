@@ -34,4 +34,10 @@
 
         <item name="materialAlertDialogTheme">@style/UiKit.MaterialAlertDialog</item>
     </style>
+
+    <style name="WalletTheme.BottomSheet.Rounded" parent="Theme.Design.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="enableEdgeToEdge">true</item>
+        <item name="bottomSheetStyle">@style/AppRoundCornersModalStyle</item>
+    </style>
 </resources>
