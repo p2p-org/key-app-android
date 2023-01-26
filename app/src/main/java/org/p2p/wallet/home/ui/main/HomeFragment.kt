@@ -74,15 +74,6 @@ class HomeFragment :
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
-    override fun onRequestPermission() {
-        super.onRequestPermission()
-        requestPermissionNotification { permissionState ->
-            if (permissionState == PermissionState.GRANTED) {
-                AppNotificationManager.createNotificationChannels(requireContext())
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -117,6 +108,11 @@ class HomeFragment :
         )
         lifecycle.addObserver(presenter)
         presenter.load()
+        requestPermissionNotification { permissionState ->
+            if (permissionState == PermissionState.GRANTED) {
+                AppNotificationManager.createNotificationChannels(requireContext())
+            }
+        }
     }
 
     override fun showAddressCopied(addressAndUsername: String) {

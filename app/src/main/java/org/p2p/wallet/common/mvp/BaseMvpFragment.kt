@@ -24,11 +24,8 @@ abstract class BaseMvpFragment<V : MvpView, P : MvpPresenter<V>>(
         val view = super.onCreateView(inflater, container, savedInstanceState)?.apply {
             setOnClickListener { if (keyboardIsVisible) hideKeyboard() }
         }
-        onRequestPermission()
         return view
     }
-    // Call this function if you want to request permission
-    protected open fun onRequestPermission() = Unit
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
