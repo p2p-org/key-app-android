@@ -47,6 +47,8 @@ class SellInteractor(
     suspend fun loadSellAvailability() {
         if (sellEnabledFeatureToggle.isFeatureEnabled) {
             sellRepository.loadMoonpayFlags()
+        } else {
+            Timber.tag(TAG).i("Moonpay flags will not fetch, feature toggle is disabled")
         }
     }
 
