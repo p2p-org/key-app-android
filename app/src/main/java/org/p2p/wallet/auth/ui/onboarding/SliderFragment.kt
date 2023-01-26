@@ -29,7 +29,5 @@ class SliderFragment : BaseFragment(R.layout.fragment_onboarding_slide) {
         } ?: Timber.w("Error on getting SliderFragmentArgs")
     }
 
-    override fun updateSystemBarsStyle(statusBarStyle: SystemIconsStyle?, navigationBarStyle: SystemIconsStyle?) {
-        // do nothing
-    }
+    override fun updateSystemBarsStyle(statusBarStyle: SystemIconsStyle?, navigationBarStyle: SystemIconsStyle?) = Unit
 }
