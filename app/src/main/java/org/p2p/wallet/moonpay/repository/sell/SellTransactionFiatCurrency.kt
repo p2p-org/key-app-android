@@ -3,9 +3,9 @@ package org.p2p.wallet.moonpay.repository.sell
 import org.p2p.wallet.moonpay.extensions.MoonpayConstants.CountryAlpha3Code
 
 enum class SellTransactionFiatCurrency(val abbriviation: String, val uiSymbol: String) {
-    EUR(abbriviation = "eur", uiSymbol = "EUR"),
+    EUR(abbriviation = "eur", uiSymbol = "€"),
     USD(abbriviation = "usd", uiSymbol = "$"),
-    GBP(abbriviation = "gbp", uiSymbol = "GBP");
+    GBP(abbriviation = "gbp", uiSymbol = "£");
 
     companion object {
         fun getFromCountryAbbreviation(countryAlpha3: String): SellTransactionFiatCurrency {

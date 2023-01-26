@@ -8,15 +8,11 @@ android {
             logger.quiet "(SENTRY): using sentry properties file"
             sentryProperties.load(new FileInputStream(sentryPropertiesFile))
         } else {
-            logger.quiet "(SENTRY): creating sentry properties from CI"
-            sentryProperties["defaults.project"] = "android"
-            sentryProperties["defaults.org"] = "p2p-wallet"
-            sentryProperties["defaults.url"] = "https://sentry.io/"
-            sentryProperties["auth.dsn"] = "${System.getenv('SENTRY_AUTH_DSN')}"
-            sentryProperties["auth.token"] = "${System.getenv('SENTRY_AUTH_TOKEN')}"
+            logger.quiet "(SENTRY): sentry properties is not found."
         }
 
-        manifestPlaceholders = [SENTRY_DSN: sentryProperties["auth.dsn"]]
+        def sentryDsn = sentryProperties["auth.dsn"]
+        manifestPlaceholders = [SENTRY_DSN: "$sentryDsn"]
     }
 
     buildTypes {
@@ -26,32 +22,30 @@ android {
             logger.quiet "(ANALYTICS): using analytics properties file"
             analyticsProperties.load(new FileInputStream(analyticsPropertiesFile))
         } else {
-            logger.quiet "(ANALYTICS): creating analytics properties from CI"
-            analyticsProperties["amplitudeDebugKey"] = "${System.getenv('AMPLITUDE_KEY_DEBUG')}"
-            analyticsProperties["amplitudeReleaseKey"] = "${System.getenv('AMPLITUDE_KEY_RELEASE')}"
+            logger.quiet "(ANALYTICS): analytics properties is not found."
         }
 
         def debugKey = analyticsProperties["amplitudeDebugKey"]
 
         debug {
             manifestPlaceholders = [SENTRY_ENV: "debug"]
-            buildConfigField("String", "amplitudeKey", debugKey)
+            buildConfigField("String", "amplitudeKey", "\"${debugKey}\"")
         }
         feature {
             manifestPlaceholders = [SENTRY_ENV: "feature"]
-            buildConfigField("String", "amplitudeKey", debugKey)
+            buildConfigField("String", "amplitudeKey", "\"${debugKey}\"")
         }
         releaseLocal {
             manifestPlaceholders = [SENTRY_ENV: "release"]
-            buildConfigField("String", "amplitudeKey", debugKey)
+            buildConfigField("String", "amplitudeKey", "\"${debugKey}\"")
         }
         releaseFirebase {
             manifestPlaceholders = [SENTRY_ENV: "release"]
-            buildConfigField("String", "amplitudeKey", debugKey)
+            buildConfigField("String", "amplitudeKey", "\"${debugKey}\"")
         }
         release {
             manifestPlaceholders = [SENTRY_ENV: "release"]
-            buildConfigField("String", "amplitudeKey", analyticsProperties["amplitudeReleaseKey"])
+            buildConfigField("String", "amplitudeKey", "\"${analyticsProperties["amplitudeReleaseKey"]}\"")
         }
     }
 }

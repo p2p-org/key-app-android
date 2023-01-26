@@ -3,30 +3,27 @@ package org.p2p.wallet.root
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import android.graphics.Color
 import android.os.Build
+import android.view.Window
 
 enum class SystemIconsStyle {
     BLACK, WHITE
 }
 
 class DecorSystemBarsDelegate constructor(
-    private val activity: AppCompatActivity
-) : DefaultLifecycleObserver {
+    private val window: Window,
+) {
+
+    constructor(activity: AppCompatActivity) : this(activity.window)
 
     private var navigationBarStyle: SystemIconsStyle = SystemIconsStyle.BLACK
     private var statusBarStyle: SystemIconsStyle = SystemIconsStyle.BLACK
 
     private val windowInsetsController: WindowInsetsControllerCompat
-        get() = WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+        get() = WindowCompat.getInsetsController(window, window.decorView)
 
-    init {
-        activity.lifecycle.addObserver(this)
-    }
-
-    override fun onCreate(owner: LifecycleOwner) {
+    fun onCreate() {
         setupWindowInsets()
         updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
     }
@@ -53,7 +50,7 @@ class DecorSystemBarsDelegate constructor(
         }
     }
 
-    private fun setupWindowInsets() = with(activity) {
+    private fun setupWindowInsets() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

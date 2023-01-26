@@ -10,6 +10,7 @@ import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.insets.appleBottomInsets
 import org.p2p.core.utils.insets.appleTopInsets
@@ -37,6 +38,7 @@ import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val ARG_SELL_LOCKED = "ARG_SELL_LOCKED"
 
@@ -116,12 +118,9 @@ class SellLockedFragment :
     }
 
     private fun setupButtons() = with(binding.layoutDetails) {
-        val buttonTitle = getString(R.string.common_send)
-
-        buttonAction.text = buttonTitle
+        buttonAction.setText(R.string.common_send)
         buttonAction.setOnClickListener {
-            val recipient = SearchResult.AddressFound(AddressState(details.receiverAddress))
-            replaceFragment(NewSendFragment.create(recipient = recipient))
+            presenter.onSendClicked()
         }
         buttonRemoveOrCancel.setText(R.string.sell_lock_cancel_transaction)
         buttonRemoveOrCancel.isVisible = true
@@ -130,9 +129,13 @@ class SellLockedFragment :
 
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
-        val usdAmount = details.formattedUsdAmount
-        textViewAmount.text = "$solAmount ${Constants.SOL_SYMBOL}"
-        textViewUsdValue.text = getString(R.string.sell_lock_usd_amount, usdAmount)
+        val fiatAmount = details.formattedFiatAmount
+        textViewAmount.text = getString(
+            R.string.sell_lock_token_amount, solAmount, Constants.SOL_SYMBOL
+        )
+        textViewFiatValue.text = getString(
+            R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, details.fiatAbbreviation
+        )
 
         textViewReceiverAddress.text = details.receiverAddress.let {
             if (details.isReceiverAddressWallet) it.cutMiddle() else it
@@ -153,6 +156,21 @@ class SellLockedFragment :
 
     override fun navigateBackToMain() {
         popBackStackTo(MainFragment::class)
+    }
+
+    override fun navigateToSendScreen(
+        tokenToSend: Token.Active,
+        sendAmount: BigDecimal,
+        receiverAddress: String
+    ) {
+        val recipient = SearchResult.AddressFound(AddressState(receiverAddress))
+        replaceFragment(
+            NewSendFragment.create(
+                recipient = recipient,
+                initialToken = tokenToSend,
+                inputAmount = sendAmount
+            )
+        )
     }
 
     private fun showWarningDialog() {

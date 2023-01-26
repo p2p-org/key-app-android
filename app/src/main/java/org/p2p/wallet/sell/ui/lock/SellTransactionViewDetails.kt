@@ -11,7 +11,8 @@ data class SellTransactionViewDetails(
     val transactionId: String,
     val status: SellTransactionStatus,
     val formattedSolAmount: String,
-    val formattedUsdAmount: String,
+    val formattedFiatAmount: String,
+    val fiatAbbreviation: String,
     val receiverAddress: String,
 ) : Parcelable {
     @IgnoredOnParcel

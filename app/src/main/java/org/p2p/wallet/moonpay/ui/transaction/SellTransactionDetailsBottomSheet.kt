@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.removeLinksUnderline
 import org.p2p.uikit.utils.setTextColorRes
@@ -32,6 +33,7 @@ import org.p2p.wallet.utils.viewbinding.getHtmlString
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val ARG_DETAILS = "ARG_DETAILS"
 
@@ -66,8 +68,7 @@ class SellTransactionDetailsBottomSheet :
     private fun onActionButtonClicked(action: SellTransactionDetailsButtonAction) {
         when (action) {
             SellTransactionDetailsButtonAction.SEND -> {
-                val recipient = SearchResult.AddressFound(AddressState(details.receiverAddress))
-                replaceFragment(NewSendFragment.create(recipient = recipient))
+                presenter.onSendClicked()
             }
             SellTransactionDetailsButtonAction.CLOSE -> {
                 close()
@@ -175,6 +176,8 @@ class SellTransactionDetailsBottomSheet :
         buttonTitle: String,
         buttonRemoveOrCancelTitle: String
     ) = with(binding.layoutDetails) {
+        // temp remove try again button due to absence of implementation
+        buttonAction.isVisible = details.status != SellTransactionStatus.FAILED
         buttonAction.text = buttonTitle
         buttonAction.setOnClickListener { onActionButtonClicked(action) }
 
@@ -192,11 +195,39 @@ class SellTransactionDetailsBottomSheet :
     }
 
     private fun renderAmounts() = with(binding.layoutDetails) {
-        val solAmount = details.formattedSolAmount
-        val usdAmount = details.formattedUsdAmount
-        textViewAmount.text = "$solAmount ${Constants.SOL_SYMBOL}"
-        textViewUsdValue.text = getString(R.string.sell_lock_usd_amount, usdAmount)
+        val tokenAmount = details.formattedSolAmount
+        val fiatAmount = details.formattedFiatAmount
+        val fiatAbbreviation = details.fiatAbbreviation
+        val boldAmount: String
+        val labelAmount: String
+        when (details.status) {
+            SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+                boldAmount = getString(
+                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
+                )
+                labelAmount = getString(
+                    R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, fiatAbbreviation
+                )
+            }
+            SellTransactionStatus.PENDING, SellTransactionStatus.COMPLETED -> {
+                boldAmount = getString(
+                    R.string.sell_lock_pending_fiat_amount, fiatAmount, fiatAbbreviation
+                )
+                labelAmount = getString(
+                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
+                )
+            }
+            SellTransactionStatus.FAILED -> {
+                boldAmount = getString(
+                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
+                )
+                labelAmount = emptyString()
+            }
+        }
+        textViewAmount.text = boldAmount
+        textViewFiatValue.text = labelAmount
 
+        containerReceiver.isVisible = details.status != SellTransactionStatus.FAILED
         textViewReceiverAddress.text = details.receiverAddress.let {
             if (details.isReceiverAddressWallet) it.cutMiddle() else it
         }
@@ -212,6 +243,21 @@ class SellTransactionDetailsBottomSheet :
 
     override fun showLoading(isLoading: Boolean) {
         binding.layoutDetails.buttonRemoveOrCancel.isLoadingState = isLoading
+    }
+
+    override fun navigateToSendScreen(
+        tokenToSend: Token.Active,
+        sendAmount: BigDecimal,
+        receiverAddress: String
+    ) {
+        val recipient = SearchResult.AddressFound(AddressState(receiverAddress))
+        replaceFragment(
+            NewSendFragment.create(
+                recipient = recipient,
+                initialToken = tokenToSend,
+                inputAmount = sendAmount
+            )
+        )
     }
 
     override fun close() {
