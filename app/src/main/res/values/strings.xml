@@ -645,6 +645,7 @@
     <string name="sell_lock_waiting_for_deposit_fiat_amount">≈%s %s</string>
     <string name="sell_lock_token_amount">%s %s</string>
     <string name="sell_lock_pending_fiat_amount">-%s %s</string>
+    <string name="sell_lock_cancel_transaction">Cancel transaction</string>
     <string name="sell_lock_warning_dialog_title">Are you sure?</string>
     <string name="sell_lock_warning_dialog_body">Are you sure you want to interrupt cash out process? Your transaction won\'t be finished.</string>
     <string name="sell_lock_warning_dialog_negative">INTERRUPT</string>

@@ -5,6 +5,7 @@ import android.view.View
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentOnboardingSlideBinding
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
 
@@ -27,4 +28,6 @@ class SliderFragment : BaseFragment(R.layout.fragment_onboarding_slide) {
             }
         } ?: Timber.w("Error on getting SliderFragmentArgs")
     }
+
+    override fun updateSystemBarsStyle(statusBarStyle: SystemIconsStyle?, navigationBarStyle: SystemIconsStyle?) = Unit
 }
