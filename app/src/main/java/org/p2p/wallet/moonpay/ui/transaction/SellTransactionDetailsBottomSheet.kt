@@ -200,6 +200,7 @@ class SellTransactionDetailsBottomSheet :
         val fiatAbbreviation = details.fiatAbbreviation
         val boldAmount: String
         val labelAmount: String
+        val receiverTitle: String
         when (details.status) {
             SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
                 boldAmount = getString(
@@ -208,26 +209,39 @@ class SellTransactionDetailsBottomSheet :
                 labelAmount = getString(
                     R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, fiatAbbreviation
                 )
+                receiverTitle = getString(R.string.sell_details_waiting_for_deposit_send_to)
             }
-            SellTransactionStatus.PENDING, SellTransactionStatus.COMPLETED -> {
+            SellTransactionStatus.PENDING, -> {
                 boldAmount = getString(
                     R.string.sell_lock_pending_fiat_amount, fiatAmount, fiatAbbreviation
                 )
                 labelAmount = getString(
                     R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
                 )
+                receiverTitle = getString(R.string.sell_details_processing_send_to)
+            }
+            SellTransactionStatus.COMPLETED -> {
+                boldAmount = getString(
+                    R.string.sell_lock_pending_fiat_amount, fiatAmount, fiatAbbreviation
+                )
+                labelAmount = getString(
+                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
+                )
+                receiverTitle = getString(R.string.sell_details_completed_send_to)
             }
             SellTransactionStatus.FAILED -> {
                 boldAmount = getString(
                     R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
                 )
                 labelAmount = emptyString()
+                receiverTitle = emptyString()
             }
         }
         textViewAmount.text = boldAmount
         textViewFiatValue.text = labelAmount
 
         containerReceiver.isVisible = details.status != SellTransactionStatus.FAILED
+        textViewReceiverTitle.text = receiverTitle
         textViewReceiverAddress.text = details.receiverAddress.let {
             if (details.isReceiverAddressWallet) it.cutMiddle() else it
         }

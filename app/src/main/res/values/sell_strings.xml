@@ -47,6 +47,9 @@
         After 7 days your transaction has been automatically declined.\n\n
         You can try again, but your new transaction will be subject to the current rates.
     </string>
+    <string name="sell_details_waiting_for_deposit_send_to">Send to</string>
+    <string name="sell_details_processing_send_to">Will be sent to</string>
+    <string name="sell_details_completed_send_to">Sent to</string>
     <string name="sell_details_failed_button_title">Delete transaction</string>
     <string name="sell_details_receiver_moonpay_bank">Your bank account via Moonpay</string>
     <string name="sell_details_completed_button_title">Delete transaction</string>

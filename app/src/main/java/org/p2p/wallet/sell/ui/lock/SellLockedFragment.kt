@@ -115,6 +115,7 @@ class SellLockedFragment :
             R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, details.fiatAbbreviation
         )
 
+        textViewReceiverTitle.setText(R.string.sell_details_waiting_for_deposit_send_to)
         textViewReceiverAddress.text = details.receiverAddress.let {
             if (details.isReceiverAddressWallet) it.cutMiddle() else it
         }
