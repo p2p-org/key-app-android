@@ -99,8 +99,6 @@ class SellPayloadPresenter(
 
                 if (!secureStorage.getBoolean(Key.KEY_IS_SELL_WARNING_SHOWED, false)) {
                     view.showOnlySolWarning()
-                } else {
-                    view.showKeyboard()
                 }
             } catch (error: Throwable) {
                 handleError(error)

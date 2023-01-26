@@ -22,7 +22,6 @@ import org.p2p.wallet.sell.ui.information.SellInformationBottomSheet.Companion.S
 import org.p2p.wallet.sell.ui.lock.SellLockedFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.sell.ui.warning.SellOnlySolWarningBottomSheet
-import org.p2p.wallet.sell.ui.warning.SellOnlySolWarningBottomSheet.Companion.REQUEST_ONLY_SOL_DIALOG_KEY_DISMISSED
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -60,15 +59,13 @@ class SellPayloadFragment :
             }
         }
         childFragmentManager.setFragmentResultListener(
-            SELL_INFORMATION_REQUEST_KEY, this
+            SELL_INFORMATION_REQUEST_KEY,
+            viewLifecycleOwner
         ) { _, bundle ->
             if (bundle.getBoolean(SELL_INFORMATION_RESULT_KEY)) {
                 presenter.buildMoonpayWidget()
             }
         }
-        childFragmentManager.setFragmentResultListener(
-            REQUEST_ONLY_SOL_DIALOG_KEY_DISMISSED, this
-        ) { _, _ -> showKeyboard() }
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -92,6 +89,9 @@ class SellPayloadFragment :
 
     override fun showLoading(isVisible: Boolean) {
         binding.shimmerView.isVisible = isVisible
+        if (!isVisible) {
+            binding.widgetSendDetails.focusInputAndShowKeyboard()
+        }
     }
 
     override fun showButtonLoading(isLoading: Boolean) {
@@ -114,10 +114,6 @@ class SellPayloadFragment :
     override fun showOnlySolWarning() {
         binding.root.hideKeyboard()
         SellOnlySolWarningBottomSheet.show(childFragmentManager)
-    }
-
-    override fun showKeyboard() {
-        binding.widgetSendDetails.focusInputAndShowKeyboard()
     }
 
     override fun navigateToInformationScreen() {
