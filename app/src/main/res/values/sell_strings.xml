@@ -1,0 +1,73 @@
+<resources>
+    <string name="sell_lock_title">Please, send crypto to\nMoonPay address</string>
+    <string name="sell_lock_button_title">Send SOL</string>
+    <string name="sell_lock_second_button_title">Cancel</string>
+    <string name="sell_lock_message">
+        To finish processing your request you need to send SOL to the address in the description.
+        After 7 days this transaction will be automatically declined.
+    </string>
+    <string name="sell_lock_button_cancel">Remove from history</string>
+    <string name="sell_lock_waiting_for_deposit_fiat_amount">≈%s %s</string>
+    <string name="sell_lock_token_amount">%s %s</string>
+    <string name="sell_lock_pending_fiat_amount">-%s %s</string>
+    <string name="sell_lock_warning_dialog_title">Are you sure?</string>
+    <string name="sell_lock_warning_dialog_body">
+        Are you sure you want to interrupt cash out process? Your transaction won\'t be finished.
+    </string>
+    <string name="sell_lock_warning_dialog_negative">INTERRUPT</string>
+    <string name="sell_lock_warning_dialog_positive">CONTINUE TRANSACTION</string>
+
+    <string name="sell_payload_fiat_value">1 SOL ≈ %s %s</string>
+    <string name="sell_payload_fiat_symbol">≈ %s</string>
+    <string name="sell_payload_title">Cash out token</string>
+    <string name="sell_payload_all_sol">all %s SOL</string>
+    <string name="sell_payload_included_fee">Included fee %s %s</string>
+    <string name="sell_payload_min_sol_amount">The minimum amount is %s SOL</string>
+    <string name="sell_payload_max_sol_amount">The maximum amount is %s SOL</string>
+    <string name="sell_payload_not_enough_sol">Not enough SOL</string>
+    <string name="sell_payload_no_internet">☕ No internet connection</string>
+
+    <string name="sell_details_waiting_deposit_title">You need to send %s SOL</string>
+    <string name="sell_details_waiting_deposit_body">
+        You need to send SOL to the address in the description to finish your cash out operation.
+    </string>
+    <string name="sell_details_pending_title">Processing</string>
+    <string name="sell_details_pending_body">
+        SOL was sent to Moonpay and is being processed. Any questions regarding your transaction can be answered via
+        <![CDATA[<a href="https://support.moonpay.com/hc/en-gb/categories/360001595097-Customer-Support-Help-Center">Moonpay help center</a>]]>
+    </string>
+    <string name="sell_details_completed_title">The funds were sent to your bank account</string>
+    <string name="sell_details_completed_body">
+        It usually takes up to 3 business days.Any questions regarding your transaction can be answered via
+        <![CDATA[<a href="https://support.moonpay.com/hc/en-gb/categories/360001595097-Customer-Support-Help-Center">Moonpay help center</a>]]>
+    </string>
+    <string name="sell_details_failed_title">You\'ve not sent %s SOL</string>
+    <string name="sell_details_failed_body">
+        You didn\'t finish your cash out transaction.
+        After 7 days your transaction has been automatically declined.\n\n
+        You can try again, but your new transaction will be subject to the current rates.
+    </string>
+    <string name="sell_details_failed_button_title">Delete transaction</string>
+    <string name="sell_details_receiver_moonpay_bank">Your bank account via Moonpay</string>
+    <string name="sell_details_completed_button_title">Delete transaction</string>
+    <string name="sell_details_cancel_failed">😢 Error deleting. Try again</string>
+    <string name="sell_details_cancel_success">🤗 Done! Refresh the history page for the updated status</string>
+
+    <string name="sell_error_body_message">Oops, something went wrong.\nPlease try again later</string>
+
+    <string name="sell_warning_only_sol_title">You can Cash out only SOL</string>
+    <string name="sell_warning_only_sol_body">Swap your cryptocurrencies to SOL to cash out</string>
+    <string name="sell_warning_only_sol_button">Got it</string>
+
+    <string name="sell_inform_dialog_next_step">service is next step</string>
+    <string name="sell_inform_dialog_first_step">1</string>
+    <string name="sell_inform_dialog_first_title">You will be redirected to our payment provider</string>
+    <string name="sell_inform_dialog_first_subtitle">You will need to enter your IBAN and pass KYC</string>
+    <string name="sell_inform_dialog_second_step">2</string>
+    <string name="sell_inform_dialog_second_title">Transfer SOL to our payment provider from Key App</string>
+    <string name="sell_inform_dialog_second_subtitle">
+        Nobody has access to your funds, so you need to execute the transaction cash out
+    </string>
+    <string name="sell_inform_dialog_do_not_show">Don\'t show me again</string>
+    <string name="sell_inform_dialog_confirm_btn">Let\'s go!</string>
+</resources>

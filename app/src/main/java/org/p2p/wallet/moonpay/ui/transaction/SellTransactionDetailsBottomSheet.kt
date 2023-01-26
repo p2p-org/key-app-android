@@ -131,7 +131,7 @@ class SellTransactionDetailsBottomSheet :
                 bodyIconRes = R.drawable.ic_alert_rounded
                 bodyIconTint = R.color.icons_rose
                 buttonTitle = getString(R.string.common_try_again)
-                buttonRemoveOrCancelTitle = getString(R.string.sell_details_button_remove)
+                buttonRemoveOrCancelTitle = getString(R.string.sell_details_completed_button_title)
                 action = SellTransactionDetailsButtonAction.TRY_AGAIN
             }
         }

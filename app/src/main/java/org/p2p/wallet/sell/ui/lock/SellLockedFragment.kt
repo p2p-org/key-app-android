@@ -89,6 +89,7 @@ class SellLockedFragment :
         textViewMessageBody.setTextColorRes(bodyTextColorRes)
         textViewMessageBody.setLinkTextColor(getColor(R.color.text_sky))
         textViewMessageBody.movementMethod = LinkMovementMethod.getInstance()
+        
         imageViewMessageIcon.setImageResource(bodyIconRes)
         imageViewMessageIcon.imageTintList = ColorStateList.valueOf(getColor(bodyIconTint))
 
@@ -96,11 +97,10 @@ class SellLockedFragment :
     }
 
     private fun setupButtons() = with(binding.layoutDetails) {
-        buttonAction.setText(R.string.common_send)
-        buttonAction.setOnClickListener {
-            presenter.onSendClicked()
-        }
-        buttonRemoveOrCancel.setText(R.string.common_cancel)
+        buttonAction.setText(R.string.sell_lock_button_title)
+        buttonAction.setOnClickListener { presenter.onSendClicked() }
+
+        buttonRemoveOrCancel.setText(R.string.sell_lock_second_button_title)
         buttonRemoveOrCancel.isVisible = true
         buttonRemoveOrCancel.setOnClickListener { presenter.onCancelTransactionClicked() }
     }

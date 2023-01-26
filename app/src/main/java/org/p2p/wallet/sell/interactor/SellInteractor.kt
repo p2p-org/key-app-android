@@ -21,6 +21,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 
 private const val TAG = "SellInteractor"
+private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_DIALOG_KEY"
 
 class SellInteractor(
     private val sellRepository: SellRepository,
@@ -32,10 +33,6 @@ class SellInteractor(
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val sharedPreferences: SharedPreferences,
 ) {
-
-    companion object {
-        const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_DIALOG_KEY"
-    }
 
     fun shouldShowInformDialog(): Boolean =
         sharedPreferences.getBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY, true)
@@ -82,7 +79,9 @@ class SellInteractor(
             "SOL token is not found for current user, can't sell"
         }
 
-    suspend fun getSolCurrency(): MoonpayCurrency = currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)
+    suspend fun getSolCurrency(): MoonpayCurrency {
+        return currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)
+    }
 
     suspend fun getMoonpaySellFiatCurrency(): SellTransactionFiatCurrency {
         return sellRepository.getSellFiatCurrency()
