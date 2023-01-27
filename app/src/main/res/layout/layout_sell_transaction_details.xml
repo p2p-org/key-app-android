@@ -149,12 +149,14 @@
         android:backgroundTint="@color/bg_snow"
         android:orientation="horizontal"
         android:padding="16dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/buttonAction"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/containerMessage"
-        app:layout_goneMarginBottom="16dp">
+        app:layout_goneMarginBottom="16dp"
+        tools:visibility="visible">
 
         <TextView
             android:id="@+id/textViewReceiverTitle"

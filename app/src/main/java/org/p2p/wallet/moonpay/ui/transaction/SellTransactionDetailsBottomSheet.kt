@@ -55,10 +55,13 @@ class SellTransactionDetailsBottomSheet :
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
     override fun renderViewState(viewState: SellTransactionDetailsViewState) {
-        val titleBlock = viewState.titleBlock
-        val bodyBlock = viewState.messageBlock
-        val receiverBlock = viewState.receiverBlock
-        val buttonsBlock = viewState.buttonsBlock
+        renderTitle(viewState.titleBlock)
+        renderMessage(viewState.messageBlock)
+        viewState.receiverBlock?.let { renderReceiver(it) }
+        renderButtons(viewState.buttonsBlock)
+    }
+
+    private fun renderTitle(titleBlock: SellTransactionDetailsViewState.TitleBlock) {
         with(binding.layoutDetails) {
             textViewTitle.text = titleBlock.title
             textViewTitle.setTextAppearance(R.style.UiKit_TextAppearance_SemiBold_Text1)
@@ -66,7 +69,11 @@ class SellTransactionDetailsBottomSheet :
             textViewSubtitle.text = titleBlock.updatedAt
             textViewAmount.text = titleBlock.boldAmount
             textViewFiatValue.withTextOrGone(titleBlock.labelAmount)
+        }
+    }
 
+    private fun renderMessage(bodyBlock: SellTransactionDetailsViewState.BodyBlock) {
+        with(binding.layoutDetails) {
             textViewMessageBody.text = bodyBlock.bodyText
             textViewMessageBody.setTextColorRes(bodyBlock.bodyTextColor)
             textViewMessageBody.setLinkTextColor(getColor(R.color.text_sky))
@@ -76,22 +83,27 @@ class SellTransactionDetailsBottomSheet :
             imageViewMessageIcon.imageTintList = ColorStateList.valueOf(getColor(bodyBlock.bodyIconTint))
 
             containerMessage.backgroundTintList = context.getColorStateListCompat(bodyBlock.bodyBackgroundColor)
+        }
+    }
 
-            containerReceiver.isVisible = receiverBlock != null
-            if (receiverBlock != null) {
-                textViewReceiverTitle.text = receiverBlock.receiverTitle
-                textViewReceiverAddress.text = receiverBlock.receiverValue
+    private fun renderReceiver(receiverBlock: SellTransactionDetailsViewState.ReceiverBlock) {
+        with(binding.layoutDetails) {
+            containerReceiver.isVisible = true
+            textViewReceiverTitle.text = receiverBlock.receiverTitle
+            textViewReceiverAddress.text = receiverBlock.receiverValue
 
-                imageViewCopy.isVisible = receiverBlock.isCopyEnabled
-                receiverBlock.copyValueProvider?.let { copyValueProvider ->
-                    imageViewCopy.setOnClickListener {
-                        requireContext().copyToClipBoard(copyValueProvider.invoke())
-                        showUiKitSnackBar(messageResId = R.string.common_copied)
-                    }
+            imageViewCopy.isVisible = receiverBlock.isCopyEnabled
+            receiverBlock.copyValueProvider?.let { copyValueProvider ->
+                imageViewCopy.setOnClickListener {
+                    requireContext().copyToClipBoard(copyValueProvider.invoke())
+                    showUiKitSnackBar(messageResId = R.string.common_copied)
                 }
             }
+        }
+    }
 
-            // temp remove try again button due to absence of implementation
+    private fun renderButtons(buttonsBlock: SellTransactionDetailsViewState.ButtonsBlock) {
+        with(binding.layoutDetails) {
             if (buttonsBlock.mainButtonTitle != null && buttonsBlock.mainButtonAction != null) {
                 buttonAction.isVisible = true
                 buttonAction.text = buttonsBlock.mainButtonTitle
