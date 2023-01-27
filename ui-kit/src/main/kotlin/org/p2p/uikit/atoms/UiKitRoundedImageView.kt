@@ -2,7 +2,6 @@ package org.p2p.uikit.atoms
 
 import androidx.core.content.res.use
 import android.content.Context
-import android.graphics.Path
 import android.util.AttributeSet
 import com.google.android.material.imageview.ShapeableImageView
 import org.p2p.uikit.R
