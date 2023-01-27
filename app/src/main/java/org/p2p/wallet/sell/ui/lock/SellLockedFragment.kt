@@ -119,10 +119,10 @@ class SellLockedFragment :
     }
 
     private fun setupButtons() = with(binding.layoutDetails) {
-        buttonAction.setText(R.string.sell_lock_button_title)
+        buttonAction.setText(R.string.sell_details_button_send)
         buttonAction.setOnClickListener { presenter.onSendClicked() }
 
-        buttonRemoveOrCancel.setText(R.string.sell_lock_second_button_title)
+        buttonRemoveOrCancel.setText(R.string.sell_details_button_cancel)
         buttonRemoveOrCancel.isVisible = true
         buttonRemoveOrCancel.setOnClickListener { presenter.onCancelTransactionClicked() }
     }
@@ -130,14 +130,12 @@ class SellLockedFragment :
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
         textViewAmount.text = getString(
-            R.string.sell_lock_token_amount, solAmount, Constants.SOL_SYMBOL
+            R.string.sell_details_token_amount, solAmount, Constants.SOL_SYMBOL
         )
         textViewFiatValue.isVisible = false
 
-        textViewReceiverTitle.setText(R.string.sell_details_waiting_for_deposit_send_to)
-        textViewReceiverAddress.text = details.receiverAddress.let {
-            if (details.isReceiverAddressWallet) it.cutMiddle() else it
-        }
+        textViewReceiverTitle.setText(R.string.main_send_to)
+        textViewReceiverAddress.text = details.receiverAddress.cutMiddle()
     }
 
     private fun renderCopyButton() = with(binding.layoutDetails.imageViewCopy) {

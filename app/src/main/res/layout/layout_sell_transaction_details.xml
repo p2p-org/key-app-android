@@ -211,7 +211,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:text="@string/sell_lock_button_cancel"
+        android:text="@string/sell_details_button_cancel"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
         android:textColor="@color/text_night"
         android:visibility="gone"
