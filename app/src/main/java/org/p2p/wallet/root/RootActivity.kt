@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
+import com.lokalise.sdk.LokaliseContextWrapper
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.KeyboardListener
 import org.p2p.uikit.natives.showSnackbarIndefinite
@@ -67,6 +68,10 @@ class RootActivity :
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         handleDeeplink(intent)
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LokaliseContextWrapper.wrap(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

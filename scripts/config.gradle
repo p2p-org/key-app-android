@@ -18,6 +18,8 @@ android {
         buildConfigField("String", "intercomApiKey", "\"${apiKeysProperties["intercomApiKey"]}\"")
         buildConfigField("String", "intercomAppId", "\"${apiKeysProperties["intercomAppId"]}\"")
         buildConfigField("String", "appsFlyerKey", "\"${apiKeysProperties["appsFlyerKey"]}\"")
+        buildConfigField("String", "lokaliseKey", "\"${apiKeysProperties["lokaliseKey"]}\"")
+        buildConfigField("String", "lokaliseAppId", "\"${apiKeysProperties["lokaliseAppId"]}\"")
     }
 
     buildTypes {

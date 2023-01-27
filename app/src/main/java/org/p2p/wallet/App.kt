@@ -18,6 +18,7 @@ import org.p2p.wallet.common.crashlogging.CrashLogger
 import org.p2p.wallet.common.crashlogging.helpers.TimberCrashTree
 import org.p2p.wallet.infrastructure.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.lokalise.LokaliseManager
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
 import org.p2p.wallet.utils.SolanajTimberLogger
@@ -47,6 +48,7 @@ class App : Application() {
 
         appCreatedAction.invoke()
         appsFlyerService.install(this, BuildConfig.appsFlyerKey)
+        LokaliseManager.setup(this, BuildConfig.lokaliseKey, BuildConfig.lokaliseAppId)
     }
 
     private fun setupKoin() {
