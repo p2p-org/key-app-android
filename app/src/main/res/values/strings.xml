@@ -193,6 +193,7 @@
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
     <string name="main_send_to">Send to</string>
+    <string name="main_will_be_send_to">Will be sent to</string>
     <string name="main_wallet_address">Wallet address</string>
     <string name="main_send_in_usd">%s USD</string>
     <string name="main_send_around_in_usd">$ %s</string>
@@ -680,7 +681,9 @@
     <string name="sell_details_failed_body">You didn\'t finish your cash out transaction. After 7 days your transaction has been automatically declined.\n\nYou can try again, but your new transaction will be subject to the current rates.</string>
     <string name="sell_details_receiver_moonpay_bank">Your bank account via Moonpay</string>
     <string name="sell_details_button_remove">Remove from history</string>
+    <string name="sell_details_button_delete">Delete transaction</string>
     <string name="sell_details_cancel_failed">😢 Error with deleting. Try again</string>
+    <string name="sell_details_will_be_send_to">Will be sent to</string>
 
     <string name="sell_error_body_message">Our payment service was ruined.\nVisit this page later</string>
 
