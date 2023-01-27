@@ -121,7 +121,7 @@ class CalculationMode(
         return if (token.isSOL) {
             val maxAllowedAmount = token.totalInLamports - minRentExemption
             val amountInLamports = tokenAmount.toLamports(token.decimals)
-            inputAmount.isEmpty() || amountInLamports > maxAllowedAmount && amountInLamports < token.totalInLamports
+            inputAmount.isEmpty() || amountInLamports >= maxAllowedAmount && amountInLamports < token.totalInLamports
         } else {
             inputAmount.isEmpty()
         }
