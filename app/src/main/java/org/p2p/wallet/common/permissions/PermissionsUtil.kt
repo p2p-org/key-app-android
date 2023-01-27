@@ -1,17 +1,14 @@
 package org.p2p.wallet.common.permissions
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 
-@TargetApi(Build.VERSION_CODES.M)
 object PermissionsUtil {
 
     fun isGranted(context: Context, permission: String): Boolean =

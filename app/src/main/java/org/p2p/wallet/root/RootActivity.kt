@@ -78,7 +78,6 @@ class RootActivity :
         setupKeyboardListener()
 
         replaceFragment(SplashFragment.create())
-
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
 
         onBackPressedDispatcher.addCallback {

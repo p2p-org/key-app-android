@@ -1,6 +1,7 @@
 package org.p2p.wallet.infrastructure.network.interceptor
 
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import okhttp3.Interceptor
 import okhttp3.Response
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponse
@@ -29,7 +30,14 @@ class MoonpayInterceptor(
             httpCode = response.code,
             message = serverError.message,
             errorType = type
-        ).also { Timber.e(it, "Moonpay request failed") }
+        ).also { Timber.i(it, "Moonpay request failed") }
+    } catch (invalidResponse: JsonSyntaxException) {
+        Timber.i(invalidResponse, "invalid response from Moonpay")
+        MoonpayRequestException(
+            httpCode = response.code,
+            message = "Not valid response body for Moonpay request",
+            errorType = MoonpayErrorResponseType.UNKNOWN_ERROR
+        )
     } catch (e: Throwable) {
         Timber.i(e, "Error while making a request to moonpay: ${response.request.url}")
         IOException("Error reading response error body", e)

@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.ui.token
 
+import androidx.lifecycle.LifecycleOwner
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -35,13 +36,18 @@ class TokenHistoryPresenter(
     private var sellTransactionsList = HistoryFetchListResult<SellTransaction>(mutableListOf())
 
     private var pagingJob: Job? = null
-
+    private var loadingJob: Job? = null
     private var refreshJob: Job? = null
     private var paginationEnded: Boolean = false
 
     override fun attach(view: TokenHistoryContract.View) {
         super.attach(view)
         initialize()
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        loadHistory()
     }
 
     private fun initialize() {
@@ -87,18 +93,9 @@ class TokenHistoryPresenter(
             view?.showHistory(blockChainTransactionsList.content, sellTransactionsList.content)
             return
         }
-        launch {
+        loadingJob = launch {
             view?.showPagingState(PagingState.InitialLoading)
-            fetchHistory()
-        }
-    }
-
-    override fun updateSellTransactions() {
-        if (sellTransactionsList.hasFetchedItems()) {
-            view?.showHistory(
-                transactions = blockChainTransactionsList.content,
-                sellTransactions = sellTransactionsList.content
-            )
+            fetchHistory(isRefresh = true)
         }
     }
 
@@ -125,7 +122,7 @@ class TokenHistoryPresenter(
     }
 
     private suspend fun fetchBlockChainTransactions(isRefresh: Boolean) = try {
-        historyInteractor.loadTransactions(isRefresh)
+        historyInteractor.loadTransactions(token.publicKey, isRefresh)
             .toMutableList()
             .let(::HistoryFetchListResult)
     } catch (error: Throwable) {
@@ -178,5 +175,10 @@ class TokenHistoryPresenter(
                 view?.showErrorMessage(e)
             }
         }
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        loadingJob?.cancel()
     }
 }

@@ -1,6 +1,7 @@
 package org.p2p.wallet.moonpay.extensions
 
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.emptyString
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.model.SellTransactionAmounts
 import org.p2p.wallet.moonpay.model.SellTransactionMetadata
@@ -35,5 +36,6 @@ object SellStubs {
         userAddress = Constants.SOL_MINT.toBase58Instance(),
         selectedFiat = SellTransactionFiatCurrency.USD,
         moonpayDepositWalletAddress = Constants.SOL_MINT.toBase58Instance(),
+        updatedAt = emptyString()
     )
 }
