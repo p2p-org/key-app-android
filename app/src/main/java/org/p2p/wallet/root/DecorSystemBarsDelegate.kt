@@ -11,42 +11,47 @@ enum class SystemIconsStyle {
     BLACK, WHITE
 }
 
+private fun SystemIconsStyle.isLight(): Boolean = when (this) {
+    SystemIconsStyle.BLACK -> true
+    SystemIconsStyle.WHITE -> false
+}
+
 class DecorSystemBarsDelegate constructor(
     private val window: Window,
 ) {
 
     constructor(activity: AppCompatActivity) : this(activity.window)
 
-    private var navigationBarStyle: SystemIconsStyle = SystemIconsStyle.BLACK
-    private var statusBarStyle: SystemIconsStyle = SystemIconsStyle.BLACK
+    private var defaultNavigationBarStyle: SystemIconsStyle = SystemIconsStyle.BLACK
+    private var defaultStatusBarStyle: SystemIconsStyle = SystemIconsStyle.BLACK
 
     private val windowInsetsController: WindowInsetsControllerCompat
         get() = WindowCompat.getInsetsController(window, window.decorView)
 
     fun onCreate() {
         setupWindowInsets()
-        updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
+        updateSystemBarsStyle(defaultStatusBarStyle, defaultNavigationBarStyle)
     }
 
     fun updateSystemBarsStyle(
         statusBarStyle: SystemIconsStyle? = null,
         navigationBarStyle: SystemIconsStyle? = null,
     ) {
-        statusBarStyle?.let { setStatusBarStyle(it) }
-        navigationBarStyle?.let { setNavigationBarStyle(it) }
+        setStatusBarStyle(statusBarStyle ?: defaultStatusBarStyle)
+        setNavigationBarStyle(navigationBarStyle ?: defaultNavigationBarStyle)
     }
 
-    fun setStatusBarStyle(style: SystemIconsStyle) {
-        windowInsetsController.isAppearanceLightStatusBars = when (style) {
-            SystemIconsStyle.BLACK -> true
-            SystemIconsStyle.WHITE -> false
+    private fun setStatusBarStyle(style: SystemIconsStyle) {
+        val isLight = style.isLight()
+        if (windowInsetsController.isAppearanceLightStatusBars != isLight) {
+            windowInsetsController.isAppearanceLightStatusBars = isLight
         }
     }
 
-    fun setNavigationBarStyle(style: SystemIconsStyle) {
-        windowInsetsController.isAppearanceLightNavigationBars = when (style) {
-            SystemIconsStyle.BLACK -> true
-            SystemIconsStyle.WHITE -> false
+    private fun setNavigationBarStyle(style: SystemIconsStyle) {
+        val isLight = style.isLight()
+        if (windowInsetsController.isAppearanceLightNavigationBars != isLight) {
+            windowInsetsController.isAppearanceLightNavigationBars = isLight
         }
     }
 

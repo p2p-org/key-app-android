@@ -11,8 +11,8 @@
         android:layout_width="32dp"
         android:layout_height="4dp"
         android:layout_marginTop="6dp"
-        android:background="@drawable/bg_rounded_stroke"
-        android:backgroundTint="@color/bg_smoke"
+        android:background="@drawable/shape_bottomsheet_pointer"
+        android:backgroundTint="@color/bg_rain"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,11 +20,12 @@
     <include
         android:id="@+id/layoutDetails"
         layout="@layout/layout_sell_transaction_details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewTop" />
 

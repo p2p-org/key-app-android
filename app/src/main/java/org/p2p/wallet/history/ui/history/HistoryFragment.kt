@@ -71,20 +71,13 @@ class HistoryFragment :
         }
 
         listenForSellTransactionDialogDismiss()
-        presenter.loadHistory()
+        lifecycle.addObserver(presenter)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
         childFragmentManager.setFragmentResultListener(
             SellTransactionDetailsBottomSheet.REQUEST_KEY_DISMISSED, this
         ) { _, _ -> presenter.loadHistory() }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // dirty duck-tape to remove hidden transactions from the list
-        // when the bottom sheet is closed
-        presenter.updateSellTransactions()
     }
 
     override fun showPagingState(state: PagingState) {

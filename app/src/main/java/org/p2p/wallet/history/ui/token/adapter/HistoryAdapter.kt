@@ -16,8 +16,8 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.EmptyViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
+import org.p2p.wallet.history.ui.token.adapter.holders.HistorySellTransactionViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.MoonpayTransactionViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
@@ -73,7 +73,7 @@ class HistoryAdapter(
             HISTORY_EMPTY_VIEW_TYPE -> EmptyViewHolder(parent)
             HISTORY_DATE_VIEW_TYPE -> DateViewHolder(parent)
             PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)
-            TRANSACTION_MOONPAY_VIEW_TYPE -> MoonpayTransactionViewHolder(parent, onMoonpayTransactionClicked)
+            TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onMoonpayTransactionClicked)
             else -> ErrorViewHolder(parent)
         }
     }
@@ -84,7 +84,7 @@ class HistoryAdapter(
             is TransactionSwapViewHolder -> holder.onBind(currentItems[position] as TransactionItem)
             is DateViewHolder -> holder.onBind(currentItems[position] as DateItem)
             is ErrorViewHolder -> holder.onBind(pagingController.currentPagingState, onRetryClicked)
-            is MoonpayTransactionViewHolder -> holder.onBind(currentItems[position] as MoonpayTransactionItem)
+            is HistorySellTransactionViewHolder -> holder.onBind(currentItems[position] as MoonpayTransactionItem)
             is EmptyViewHolder -> Unit
             is ProgressViewHolder -> Unit
         }

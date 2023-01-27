@@ -81,7 +81,7 @@ class TokenHistoryFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.setupView()
         listenForSellTransactionDialogDismiss()
-        presenter.loadHistory()
+        lifecycle.addObserver(presenter)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
@@ -158,13 +158,6 @@ class TokenHistoryFragment :
         addOnScrollListener(scrollListener)
     }
 
-    override fun onResume() {
-        super.onResume()
-        // dirty duck-tape to remove hidden transactions from the list
-        // when the bottom sheet is closed
-        presenter.updateSellTransactions()
-    }
-
     override fun showError(@StringRes resId: Int, argument: String) {
         showErrorDialog(getString(resId, argument))
     }
@@ -186,6 +179,7 @@ class TokenHistoryFragment :
     }
 
     override fun showPagingState(newState: PagingState) {
+        Timber.tag("_____STATE").d(newState.toString())
         historyAdapter.setPagingState(newState)
         with(binding) {
             shimmerView.root.isVisible = newState == PagingState.InitialLoading

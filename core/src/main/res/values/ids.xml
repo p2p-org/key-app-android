@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="length_watcher_tag_id" type="id" />
+    <item name="initial_view_padding_tag_id" type="id" />
 </resources>

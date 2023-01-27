@@ -122,7 +122,7 @@ class OrcaSwapFragment :
         // in case of MainFragment, back is handled by MainFragment
         when (openedFrom) {
             OrcaSwapOpenedFrom.OTHER -> {
-                amountEditText.focusAndShowKeyboard()
+                amountEditText.focusAndShowKeyboard(force = true)
                 requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                     presenter.onBackPressed()
                 }
@@ -255,7 +255,7 @@ class OrcaSwapFragment :
     }
 
     override fun showNewSourceAmount(amount: String) {
-        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
         binding.amountEditText.setText(amount)
         binding.amountEditText.setSelection(amount.length)
         setupAmountFractionListener()
@@ -360,6 +360,6 @@ class OrcaSwapFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
-        org.p2p.core.textwatcher.AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
+        AmountFractionTextWatcher.uninstallFrom(binding.amountEditText)
     }
 }

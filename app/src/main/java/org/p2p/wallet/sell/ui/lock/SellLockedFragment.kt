@@ -2,6 +2,7 @@ package org.p2p.wallet.sell.ui.lock
 
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -11,6 +12,11 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -27,6 +33,7 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -68,7 +75,17 @@ class SellLockedFragment :
         sellAnalytics.logSellLockedOpened()
     }
 
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                binding.layoutDetails.root.appleBottomInsets(this)
+            }
+        }
+    }
+
     private fun setupViews() = with(binding.layoutDetails) {
+        setupLayoutDetails()
         renderAmounts()
         renderCopyButton()
         setupTitleAndBody()
@@ -76,8 +93,13 @@ class SellLockedFragment :
         setupButtons()
     }
 
+    private fun setupLayoutDetails() = with(binding.layoutDetails) {
+        root.setBackgroundColor(getColor(R.color.bg_smoke))
+        root.updatePadding(top = 16.toPx())
+    }
+
     private fun setupTitleAndBody() = with(binding.layoutDetails) {
-        val title = getString(R.string.sell_details_waiting_deposit_title, details.formattedSolAmount)
+        val title = getString(R.string.sell_lock_title)
         val body = getString(R.string.sell_details_waiting_deposit_body)
         val bodyBackground = R.drawable.bg_rounded_solid_rain_24
         val bodyTextColorRes: Int = R.color.text_night
@@ -89,6 +111,7 @@ class SellLockedFragment :
         textViewMessageBody.setTextColorRes(bodyTextColorRes)
         textViewMessageBody.setLinkTextColor(getColor(R.color.text_sky))
         textViewMessageBody.movementMethod = LinkMovementMethod.getInstance()
+
         imageViewMessageIcon.setImageResource(bodyIconRes)
         imageViewMessageIcon.imageTintList = ColorStateList.valueOf(getColor(bodyIconTint))
 
@@ -96,28 +119,24 @@ class SellLockedFragment :
     }
 
     private fun setupButtons() = with(binding.layoutDetails) {
-        buttonAction.setText(R.string.common_send)
-        buttonAction.setOnClickListener {
-            presenter.onSendClicked()
-        }
-        buttonRemoveOrCancel.setText(R.string.common_cancel)
+        buttonAction.setText(R.string.sell_details_button_send)
+        buttonAction.setOnClickListener { presenter.onSendClicked() }
+
+        buttonRemoveOrCancel.setText(R.string.sell_details_button_cancel)
         buttonRemoveOrCancel.isVisible = true
         buttonRemoveOrCancel.setOnClickListener { presenter.onCancelTransactionClicked() }
     }
 
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
-        val fiatAmount = details.formattedFiatAmount
-        textViewAmount.text = getString(
-            R.string.sell_lock_token_amount, solAmount, Constants.SOL_SYMBOL
-        )
-        textViewFiatValue.text = getString(
-            R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, details.fiatAbbreviation
-        )
 
-        textViewReceiverAddress.text = details.receiverAddress.let {
-            if (details.isReceiverAddressWallet) it.cutMiddle() else it
-        }
+        textViewAmount.text = getString(
+            R.string.sell_details_token_amount, solAmount, Constants.SOL_SYMBOL
+        )
+        textViewFiatValue.isVisible = false
+
+        textViewReceiverTitle.setText(R.string.main_send_to)
+        textViewReceiverAddress.text = details.receiverAddress.cutMiddle()
     }
 
     private fun renderCopyButton() = with(binding.layoutDetails.imageViewCopy) {

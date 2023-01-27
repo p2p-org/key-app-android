@@ -56,6 +56,7 @@ object AppModule {
                 tokenKeyProvider = get()
             )
         }
+
         singleOf(::AppCreatedAction)
 
         includes(
