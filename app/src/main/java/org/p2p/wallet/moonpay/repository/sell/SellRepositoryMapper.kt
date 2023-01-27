@@ -38,7 +38,8 @@ class SellRepositoryMapper {
                     amounts = amounts,
                     userAddress = transactionOwnerAddress,
                     selectedFiat = selectedFiat,
-                    moonpayDepositWalletAddress = moonpayDepositWalletAddress
+                    moonpayDepositWalletAddress = moonpayDepositWalletAddress,
+                    updatedAt = transaction.updatedAt,
                 )
             }
             SellTransactionStatus.PENDING -> {
@@ -48,6 +49,7 @@ class SellRepositoryMapper {
                     amounts = amounts,
                     selectedFiat = selectedFiat,
                     userAddress = transactionOwnerAddress,
+                    updatedAt = transaction.updatedAt,
                 )
             }
             SellTransactionStatus.COMPLETED -> {
@@ -57,6 +59,7 @@ class SellRepositoryMapper {
                     amounts = amounts,
                     selectedFiat = selectedFiat,
                     userAddress = transactionOwnerAddress,
+                    updatedAt = transaction.updatedAt,
                 )
             }
             SellTransactionStatus.FAILED -> {
@@ -67,6 +70,7 @@ class SellRepositoryMapper {
                     selectedFiat = selectedFiat,
                     userAddress = transactionOwnerAddress,
                     failureReason = transaction.failureReason,
+                    updatedAt = transaction.updatedAt,
                 )
             }
         }

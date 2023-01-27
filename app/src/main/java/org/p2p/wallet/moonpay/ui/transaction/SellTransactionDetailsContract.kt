@@ -14,6 +14,8 @@ interface SellTransactionDetailsContract {
             sendAmount: BigDecimal,
             receiverAddress: String
         )
+
+        fun renderViewState(viewState: SellTransactionDetailsViewState)
     }
 
     interface Presenter : MvpPresenter<View> {
