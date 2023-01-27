@@ -95,12 +95,12 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun setFeeLabel(text: String?) {
         binding.textViewFee withTextOrGone text
+        binding.layoutFeeInfo.isVisible = !text.isNullOrEmpty()
     }
 
     fun showFeeLoading(isLoading: Boolean) {
-        val canBeVisible = binding.textViewFee.isVisible
-        binding.progressBarFees.isVisible = canBeVisible && isLoading
-        binding.imageViewFeesInfo.isVisible = canBeVisible && !isLoading
+        binding.progressBarFees.isVisible = isLoading
+        binding.imageViewFeesInfo.isVisible = !isLoading
     }
 
     fun showDelayedFeeViewLoading(isLoading: Boolean) {
@@ -111,7 +111,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         }
 
         handler.postDelayed(PROGRESS_DELAY_IN_MS) {
-            binding.progressBarFees.isVisible = binding.textViewFee.isVisible
+            binding.progressBarFees.isVisible = true
             binding.imageViewFeesInfo.isVisible = false
         }
     }

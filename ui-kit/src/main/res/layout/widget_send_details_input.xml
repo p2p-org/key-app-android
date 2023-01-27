@@ -24,51 +24,53 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textViewFee"
+    <LinearLayout
+        android:id="@+id/layoutFeeInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:ellipsize="middle"
-        android:gravity="center_vertical|end"
-        android:maxLines="1"
-        android:paddingVertical="12dp"
-        android:paddingStart="8dp"
-        android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
-        android:textColor="@color/text_sky"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/tokenAmountTextView"
-        app:layout_constraintEnd_toStartOf="@id/imageViewFeesInfo"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toEndOf="@id/textViewSendLabel"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_goneMarginEnd="32dp"
-        tools:text="Fees: 0" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ProgressBar
-        android:id="@+id/progressBarFees"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="12dp"
-        android:indeterminateTint="@color/elements_sky"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/textViewFee"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textViewFee" />
+        <TextView
+            android:id="@+id/textViewFee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="middle"
+            android:gravity="center_vertical|end"
+            android:maxLines="1"
+            android:paddingVertical="12dp"
+            android:paddingStart="8dp"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_sky"
+            app:layout_goneMarginEnd="32dp"
+            tools:text="Fees: 0" />
 
-    <ImageView
-        android:id="@+id/imageViewFeesInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:importantForAccessibility="no"
-        android:padding="8dp"
-        android:src="@drawable/ic_info_solid"
-        app:layout_constraintBottom_toBottomOf="@id/textViewFee"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textViewFee"
-        app:tint="@color/icons_sky" />
+        <ProgressBar
+            android:id="@+id/progressBarFees"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center"
+            android:layout_margin="12dp"
+            android:indeterminateTint="@color/elements_sky" />
+
+        <ImageView
+            android:id="@+id/imageViewFeesInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:padding="8dp"
+            android:src="@drawable/ic_info_solid"
+            android:visibility="gone"
+            app:tint="@color/icons_sky" />
+
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerToken"
