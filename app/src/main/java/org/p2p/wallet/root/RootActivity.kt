@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
-import com.lokalise.sdk.LokaliseContextWrapper
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.KeyboardListener
 import org.p2p.uikit.natives.showSnackbarIndefinite
@@ -35,6 +34,7 @@ import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import org.p2p.wallet.lokalise.LokaliseService
 
 class RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
@@ -71,7 +71,7 @@ class RootActivity :
     }
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LokaliseContextWrapper.wrap(newBase))
+        super.attachBaseContext(LokaliseService.wrap(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
