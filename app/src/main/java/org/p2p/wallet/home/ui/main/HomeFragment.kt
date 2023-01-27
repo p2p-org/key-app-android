@@ -2,18 +2,18 @@ package org.p2p.wallet.home.ui.main
 
 import androidx.core.view.isVisible
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
+import org.p2p.wallet.android.requestPermissionNotification
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
@@ -33,6 +33,7 @@ import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
+import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
@@ -42,6 +43,7 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getColor
+import org.p2p.wallet.utils.viewbinding.viewBinding
 import java.math.BigDecimal
 
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
@@ -63,7 +65,7 @@ class HomeFragment :
 
     override val presenter: HomeContract.Presenter by inject()
 
-    private lateinit var binding: FragmentHomeBinding
+    private val binding: FragmentHomeBinding by viewBinding()
 
     private val contentAdapter: TokenAdapter by unsafeLazy { TokenAdapter(this) }
 
@@ -71,11 +73,6 @@ class HomeFragment :
 
     private val browseAnalytics: BrowseAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -111,6 +108,11 @@ class HomeFragment :
         )
         lifecycle.addObserver(presenter)
         presenter.load()
+        requestPermissionNotification { permissionState ->
+            if (permissionState == PermissionState.GRANTED) {
+                AppNotificationManager.createNotificationChannels(requireContext())
+            }
+        }
     }
 
     override fun showAddressCopied(addressAndUsername: String) {

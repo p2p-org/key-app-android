@@ -1,6 +1,7 @@
 package org.p2p.wallet.receive.widget
 
 import android.Manifest
+import android.os.Build
 import androidx.annotation.LayoutRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -22,6 +23,9 @@ abstract class BaseQrCodeFragment<V : MvpView, P : MvpPresenter<V>>(
     }
 
     protected fun checkStatusAndRequestPermissionsIfNotGranted(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return true
+        }
         return PermissionsUtil.isGranted(
             requireContext(),
             Manifest.permission.WRITE_EXTERNAL_STORAGE
