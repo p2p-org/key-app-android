@@ -99,6 +99,8 @@ class SellPayloadPresenter(
 
                 if (!secureStorage.getBoolean(Key.KEY_IS_SELL_WARNING_SHOWED, false)) {
                     view.showOnlySolWarning()
+                } else {
+                    view.showKeyboard()
                 }
             } catch (error: Throwable) {
                 handleError(error)
@@ -123,7 +125,7 @@ class SellPayloadPresenter(
                     formattedSolAmount = amounts.tokenAmount.formatTokenForMoonpay(),
                     formattedFiatAmount = amounts.amountInFiat.formatFiat(),
                     receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value,
-                    fiatAbbreviation = userTransactionInProcess.selectedFiat.abbriviation.uppercase()
+                    fiatUiName = userTransactionInProcess.selectedFiat.uiSymbol.uppercase()
                 )
             )
         }

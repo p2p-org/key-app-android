@@ -138,9 +138,9 @@ class HistoryInteractor(
         account: String,
         accountStreamSource: HistoryStreamSource
     ): List<HistoryStreamItem> {
-        val transactionsSignatures = mutableListOf<HistoryStreamItem>()
 
         val allTransactionSignatures = tokenSignaturesMap[account] ?: return emptyList()
+        val transactionsSignatures = mutableListOf<HistoryStreamItem>()
 
         while (true) {
             val firstItem = accountStreamSource.currentItem() ?: break

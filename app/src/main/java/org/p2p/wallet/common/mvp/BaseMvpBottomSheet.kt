@@ -49,6 +49,7 @@ abstract class BaseMvpBottomSheet<V : MvpView, P : MvpPresenter<V>>(
     protected fun expandToFitAllContent() {
         BottomSheetBehavior.from(requireView().parent as View).apply {
             state = BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
         }
     }
 
