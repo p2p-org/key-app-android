@@ -14,6 +14,7 @@ data class SellTransactionViewDetails(
     val formattedFiatAmount: String,
     val fiatAbbreviation: String,
     val receiverAddress: String,
+    val updatedAt: String? = null,
 ) : Parcelable {
     @IgnoredOnParcel
     val isReceiverAddressWallet: Boolean

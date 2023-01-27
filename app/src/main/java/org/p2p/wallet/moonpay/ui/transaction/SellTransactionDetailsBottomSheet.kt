@@ -1,5 +1,6 @@
 package org.p2p.wallet.moonpay.ui.transaction
 
+import androidx.annotation.ColorRes
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
@@ -15,6 +16,8 @@ import org.p2p.core.utils.Constants
 import org.p2p.core.utils.removeLinksUnderline
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
+import org.p2p.wallet.common.date.isSameDayAs
+import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogSendTransactionDetailsBinding
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
@@ -27,15 +30,23 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.getColorStateListCompat
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.unsafeLazy
+import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getHtmlString
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import java.math.BigDecimal
+import java.util.*
 
 private const val ARG_DETAILS = "ARG_DETAILS"
+private const val DATE_FORMAT = "MMMM dd, yyyy"
+private const val TIME_FORMAT = "HH:mm"
 
 class SellTransactionDetailsBottomSheet :
     BaseMvpBottomSheet<SellTransactionDetailsContract.View, SellTransactionDetailsContract.Presenter>(
@@ -57,6 +68,9 @@ class SellTransactionDetailsBottomSheet :
     private val binding: DialogSendTransactionDetailsBinding by viewBinding()
 
     private val details: SellTransactionViewDetails by args(ARG_DETAILS)
+
+    private val dateFormat by unsafeLazy { DateTimeFormatter.ofPattern(DATE_FORMAT, Locale.US) }
+    private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
@@ -86,7 +100,7 @@ class SellTransactionDetailsBottomSheet :
         val isFailedTransaction = details.status == SellTransactionStatus.FAILED
         val title: String
         val body: CharSequence
-        val bodyBackground: Int
+        val bodyBackgroundTint: Int
         val bodyTextColorRes: Int = if (isFailedTransaction) R.color.text_rose else R.color.text_night
         val bodyIconRes: Int
         val bodyIconTint: Int
@@ -97,17 +111,17 @@ class SellTransactionDetailsBottomSheet :
             SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
                 title = getString(R.string.sell_details_waiting_deposit_title, details.formattedSolAmount)
                 body = getString(R.string.sell_details_waiting_deposit_body)
-                bodyBackground = R.drawable.bg_rounded_solid_rain_24
+                bodyBackgroundTint = R.color.bg_rain
                 bodyIconRes = R.drawable.ic_alert_rounded
                 bodyIconTint = R.color.icons_sun
                 buttonTitle = getString(R.string.common_send)
-                buttonRemoveOrCancelTitle = getString(R.string.common_cancel)
+                buttonRemoveOrCancelTitle = getString(R.string.sell_lock_cancel_transaction)
                 action = SellTransactionDetailsButtonAction.SEND
             }
             SellTransactionStatus.PENDING -> {
                 title = getString(R.string.sell_details_pending_title)
                 body = getHtmlString(R.string.sell_details_pending_body).removeLinksUnderline()
-                bodyBackground = R.drawable.bg_rounded_solid_rain_24
+                bodyBackgroundTint = R.color.light_silver
                 bodyIconRes = R.drawable.ic_info_rounded
                 bodyIconTint = R.color.icons_silver
                 buttonTitle = getString(R.string.common_close)
@@ -117,17 +131,17 @@ class SellTransactionDetailsBottomSheet :
             SellTransactionStatus.COMPLETED -> {
                 title = getString(R.string.sell_details_completed_title)
                 body = getHtmlString(R.string.sell_details_completed_body).removeLinksUnderline()
-                bodyBackground = R.drawable.bg_rounded_solid_rain_24
+                bodyBackgroundTint = R.color.light_silver
                 bodyIconRes = R.drawable.ic_info_rounded
                 bodyIconTint = R.color.icons_silver
                 buttonTitle = getString(R.string.common_close)
-                buttonRemoveOrCancelTitle = emptyString()
+                buttonRemoveOrCancelTitle = getString(R.string.sell_details_button_remove)
                 action = SellTransactionDetailsButtonAction.CLOSE
             }
             SellTransactionStatus.FAILED -> {
                 title = getString(R.string.sell_details_failed_title, details.formattedSolAmount)
                 body = getString(R.string.sell_details_failed_body)
-                bodyBackground = R.drawable.bg_rounded_solid_rose20_12
+                bodyBackgroundTint = R.color.rose_20
                 bodyIconRes = R.drawable.ic_alert_rounded
                 bodyIconTint = R.color.icons_rose
                 buttonTitle = getString(R.string.common_try_again)
@@ -142,8 +156,9 @@ class SellTransactionDetailsBottomSheet :
             bodyIcon = bodyIconRes,
             bodyTextColorRes = bodyTextColorRes,
             bodyIconTint = ColorStateList.valueOf(getColor(bodyIconTint)),
-            bodyBackground = bodyBackground
+            bodyBackground = bodyBackgroundTint
         )
+        setupTransactionDate(details.updatedAt)
 
         setupButtons(
             action = action,
@@ -152,15 +167,31 @@ class SellTransactionDetailsBottomSheet :
         )
     }
 
+    private fun setupTransactionDate(
+        updatedAt: String?
+    ) = with(binding.layoutDetails) {
+        textViewSubtitle.isVisible = !updatedAt.isNullOrEmpty()
+        val time = updatedAt?.toZonedDateTime() ?: return@with
+        val now = ZonedDateTime.now()
+        val isToday = time.isSameDayAs(now)
+        val firstPart = if (isToday) getString(R.string.common_today) else dateFormat.format(time)
+        textViewSubtitle.text = getString(
+            R.string.transaction_date_format,
+            firstPart,
+            timeFormat.format(time)
+        )
+    }
+
     private fun setupTitleAndBody(
         title: String,
         body: CharSequence, // can be spanned link
         bodyIcon: Int,
         bodyIconTint: ColorStateList,
-        bodyBackground: Int,
+        @ColorRes bodyBackground: Int,
         bodyTextColorRes: Int
     ) = with(binding.layoutDetails) {
         textViewTitle.text = title
+        textViewTitle.setTextAppearance(R.style.UiKit_TextAppearance_SemiBold_Text1)
         textViewMessageBody.text = body
         textViewMessageBody.setTextColorRes(bodyTextColorRes)
         textViewMessageBody.setLinkTextColor(getColor(R.color.text_sky))
@@ -168,7 +199,7 @@ class SellTransactionDetailsBottomSheet :
         imageViewMessageIcon.setImageResource(bodyIcon)
         imageViewMessageIcon.imageTintList = bodyIconTint
 
-        containerMessage.setBackgroundResource(bodyBackground)
+        containerMessage.backgroundTintList = context.getColorStateListCompat(bodyBackground)
     }
 
     private fun setupButtons(
@@ -182,13 +213,15 @@ class SellTransactionDetailsBottomSheet :
         buttonAction.setOnClickListener { onActionButtonClicked(action) }
 
         buttonRemoveOrCancel.text = buttonRemoveOrCancelTitle
-        buttonRemoveOrCancel.isVisible =
-            details.status == SellTransactionStatus.WAITING_FOR_DEPOSIT ||
-            details.status == SellTransactionStatus.FAILED
+        buttonRemoveOrCancel.isVisible = details.status == SellTransactionStatus.WAITING_FOR_DEPOSIT ||
+            details.status == SellTransactionStatus.FAILED ||
+            details.status == SellTransactionStatus.COMPLETED
         buttonRemoveOrCancel.setOnClickListener {
             when (details.status) {
                 SellTransactionStatus.WAITING_FOR_DEPOSIT -> presenter.onCancelTransactionClicked()
-                SellTransactionStatus.FAILED -> presenter.onRemoveFromHistoryClicked()
+                SellTransactionStatus.FAILED,
+                SellTransactionStatus.COMPLETED ->
+                    presenter.onRemoveFromHistoryClicked()
                 else -> Unit
             }
         }
@@ -200,55 +233,65 @@ class SellTransactionDetailsBottomSheet :
         val fiatAbbreviation = details.fiatAbbreviation
         val boldAmount: String
         val labelAmount: String
-        val receiverTitle: String
+        val receiverAddress: String
+        val receiverTitle: String = getString(
+            if (details.status == SellTransactionStatus.PENDING) {
+                R.string.sell_details_will_be_send_to
+            } else {
+                R.string.main_send_to
+            }
+        )
         when (details.status) {
             SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
                 boldAmount = getString(
                     R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
                 )
-                labelAmount = getString(
-                    R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, fiatAbbreviation
-                )
-                receiverTitle = getString(R.string.sell_details_waiting_for_deposit_send_to)
+                labelAmount = emptyString()
+                receiverAddress = details.receiverAddress.let {
+                    if (details.isReceiverAddressWallet) it.cutMiddle() else it
+                }
             }
-            SellTransactionStatus.PENDING, -> {
+            SellTransactionStatus.PENDING -> {
                 boldAmount = getString(
-                    R.string.sell_lock_pending_fiat_amount, fiatAmount, fiatAbbreviation
+                    R.string.sell_lock_pending_fiat_amount, tokenAmount, Constants.SOL_SYMBOL,
                 )
-                labelAmount = getString(
-                    R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
-                )
-                receiverTitle = getString(R.string.sell_details_processing_send_to)
+                labelAmount = emptyString()
+                receiverAddress = getString(R.string.sell_details_receiver_moonpay_bank)
             }
+
             SellTransactionStatus.COMPLETED -> {
                 boldAmount = getString(
-                    R.string.sell_lock_pending_fiat_amount, fiatAmount, fiatAbbreviation
+                    R.string.sell_lock_pending_fiat_amount, fiatAmount, fiatAbbreviation,
                 )
                 labelAmount = getString(
                     R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
                 )
-                receiverTitle = getString(R.string.sell_details_completed_send_to)
+                receiverAddress = getString(R.string.sell_details_receiver_moonpay_bank)
             }
             SellTransactionStatus.FAILED -> {
                 boldAmount = getString(
                     R.string.sell_lock_token_amount, tokenAmount, Constants.SOL_SYMBOL
                 )
                 labelAmount = emptyString()
-                receiverTitle = emptyString()
+                receiverAddress = emptyString()
             }
         }
         textViewAmount.text = boldAmount
         textViewFiatValue.text = labelAmount
+        textViewFiatValue.isVisible = labelAmount.isNotEmpty()
+        textViewReceiverTitle.text = receiverTitle
 
         containerReceiver.isVisible = details.status != SellTransactionStatus.FAILED
-        textViewReceiverTitle.text = receiverTitle
-        textViewReceiverAddress.text = details.receiverAddress.let {
-            if (details.isReceiverAddressWallet) it.cutMiddle() else it
-        }
+        textViewReceiverAddress.text = receiverAddress
     }
 
     private fun renderCopyButton() = with(binding.layoutDetails.imageViewCopy) {
-        isVisible = details.isReceiverAddressWallet
+        isVisible = when (details.status) {
+            SellTransactionStatus.WAITING_FOR_DEPOSIT -> details.isReceiverAddressWallet
+            SellTransactionStatus.PENDING,
+            SellTransactionStatus.FAILED,
+            SellTransactionStatus.COMPLETED -> false
+        }
         setOnClickListener {
             requireContext().copyToClipBoard(details.receiverAddress)
             showUiKitSnackBar(messageResId = R.string.common_copied)
@@ -272,6 +315,7 @@ class SellTransactionDetailsBottomSheet :
                 inputAmount = sendAmount
             )
         )
+        dismissAllowingStateLoss()
     }
 
     override fun close() {

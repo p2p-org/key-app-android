@@ -1,6 +1,9 @@
 package org.p2p.wallet.sell.ui.warning
 
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +20,8 @@ import org.p2p.wallet.infrastructure.security.SecureStorageContract
 class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
 
     companion object {
+        const val REQUEST_ONLY_SOL_DIALOG_KEY_DISMISSED = "REQUEST_ONLY_SOL_DIALOG_KEY_DISMISSED"
+
         fun show(fm: FragmentManager) {
             SellOnlySolWarningBottomSheet()
                 .show(fm, SellOnlySolWarningBottomSheet::class.simpleName)
@@ -56,5 +61,10 @@ class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
             value = true
         )
         dismissAllowingStateLoss()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        setFragmentResult(REQUEST_ONLY_SOL_DIALOG_KEY_DISMISSED, bundleOf())
     }
 }
