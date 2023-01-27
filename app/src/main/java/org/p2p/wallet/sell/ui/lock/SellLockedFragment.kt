@@ -134,7 +134,7 @@ class SellLockedFragment :
         )
         textViewFiatValue.isVisible = false
 
-        textViewReceiverTitle.setText(R.string.main_send_to)
+        textViewReceiverTitle.setText(R.string.sell_details_send_to)
         textViewReceiverAddress.text = details.receiverAddress.cutMiddle()
     }
 

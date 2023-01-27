@@ -192,8 +192,6 @@
     <string name="main_swap_hint">0</string>
     <string name="main_to">To</string>
     <string name="main_select_currency">Select currency</string>
-    <string name="main_send_to">Send to</string>
-    <string name="main_will_be_send_to">Will be sent to</string>
     <string name="main_wallet_address">Wallet address</string>
     <string name="main_send_in_usd">%s USD</string>
     <string name="main_send_around_in_usd">$ %s</string>

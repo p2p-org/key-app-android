@@ -43,7 +43,7 @@ class SellTransactionDetailsViewState(
             fun rose(bodyText: CharSequence): BodyBlock = BodyBlock(
                 bodyText = bodyText,
                 bodyTextColor = R.color.text_rose,
-                bodyBackgroundColor = R.color.rose_20,
+                bodyBackgroundColor = R.color.rose_10,
                 bodyIconRes = R.drawable.ic_alert_rounded,
                 bodyIconTint = R.color.icons_rose
             )
