@@ -1,9 +1,7 @@
 package org.p2p.wallet.swap.model.orca
 
-import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
+import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.core.token.Token
-import org.p2p.wallet.send.model.FeePayerState
-import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
@@ -12,6 +10,9 @@ import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.toUsd
+import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
+import org.p2p.wallet.send.model.FeePayerState
+import org.p2p.wallet.swap.model.FeeRelayerSwapFee
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -23,12 +24,16 @@ class SwapFee constructor(
     private val solToken: Token.Active?
 ) {
 
+    @IgnoredOnParcel
+    val sourceTokenSymbol: String
+        get() = sourceToken.tokenSymbol
+
     fun calculateFeePayerState(
         strategy: FeePayerSelectionStrategy,
         sourceTokenTotal: BigInteger,
         inputAmount: BigInteger
     ): FeePayerState {
-        val isSourceSol = sourceToken.tokenSymbol == SOL_SYMBOL
+        val isSourceSol = sourceTokenSymbol == SOL_SYMBOL
         val isAllowedToCorrectAmount = strategy == FeePayerSelectionStrategy.CORRECT_AMOUNT
         val totalNeeded = fee.feeInPayingToken + inputAmount
         val isEnoughSolBalance = solToken?.let { !it.totalInLamports.isLessThan(fee.feeInSol) } ?: false
@@ -42,7 +47,7 @@ class SwapFee constructor(
             }
             // if there is enough SPL token balance to cover amount and fee
             !isSourceSol && sourceTokenTotal.isMoreThan(totalNeeded) ->
-                FeePayerState.UpdateFeePayer
+                FeePayerState.SwitchToSpl(sourceToken)
             else ->
                 FeePayerState.SwitchToSol
         }
@@ -51,7 +56,7 @@ class SwapFee constructor(
     fun isEnoughToCoverExpenses(sourceTokenTotal: BigInteger, inputAmount: BigInteger): Boolean =
         when {
             // if source is SOL, then fee payer is SOL as well
-            sourceToken.tokenSymbol == SOL_SYMBOL ->
+            sourceTokenSymbol == SOL_SYMBOL ->
                 sourceTokenTotal >= inputAmount + fee.feeInSol
             // assuming that source token is not SOL
             feePayerToken.isSOL ->
