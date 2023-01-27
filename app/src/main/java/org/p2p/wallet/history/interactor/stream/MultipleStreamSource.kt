@@ -49,6 +49,10 @@ class MultipleStreamSource(
         sources.forEach { it.reset() }
     }
 
+    override fun isPagingReachedEnd(): Boolean {
+        return sources.all { it.isPagingReachedEnd() }
+    }
+
     private suspend fun fillBuffer(configuration: StreamSourceConfiguration) =
         withContext(serviceScope.coroutineContext) {
             val items = sources.map {

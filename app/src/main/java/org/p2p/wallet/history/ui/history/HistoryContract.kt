@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.ui.history
 
+import androidx.lifecycle.DefaultLifecycleObserver
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -21,12 +22,11 @@ interface HistoryContract {
         fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails)
     }
 
-    interface Presenter : MvpPresenter<View> {
+    interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun loadHistory()
         fun refreshHistory()
         fun loadNextHistoryPage()
         fun onItemClicked(transaction: HistoryTransaction)
-        fun updateSellTransactions()
         fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails)
     }
 }

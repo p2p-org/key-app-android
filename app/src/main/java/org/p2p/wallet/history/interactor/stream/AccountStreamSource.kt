@@ -58,6 +58,10 @@ class AccountStreamSource(
         buffer.clear()
     }
 
+    override fun isPagingReachedEnd(): Boolean {
+        return isPagingEnded
+    }
+
     private suspend fun fillBuffer() {
         try {
             if (isPagingEnded) return
@@ -78,12 +82,11 @@ class AccountStreamSource(
         }
     }
 
-    private fun SignatureInformationResponse.toRpcSignature(): RpcTransactionSignature = run {
+    private fun SignatureInformationResponse.toRpcSignature(): RpcTransactionSignature =
         RpcTransactionSignature(
             signature = signature,
             status = confirmationStatus,
             blockTime = blockTime,
             error = transactionFailure
         )
-    }
 }
