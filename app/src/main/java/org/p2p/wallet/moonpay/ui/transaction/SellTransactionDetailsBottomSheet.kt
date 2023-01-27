@@ -1,7 +1,6 @@
 package org.p2p.wallet.moonpay.ui.transaction
 
 import androidx.annotation.ColorRes
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
@@ -31,6 +30,7 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.getColorStateListCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.context
@@ -199,7 +199,7 @@ class SellTransactionDetailsBottomSheet :
         imageViewMessageIcon.setImageResource(bodyIcon)
         imageViewMessageIcon.imageTintList = bodyIconTint
 
-        containerMessage.backgroundTintList = ContextCompat.getColorStateList(this.context, bodyBackground)
+        containerMessage.backgroundTintList = context.getColorStateListCompat(bodyBackground)
     }
 
     private fun setupButtons(
@@ -219,7 +219,8 @@ class SellTransactionDetailsBottomSheet :
         buttonRemoveOrCancel.setOnClickListener {
             when (details.status) {
                 SellTransactionStatus.WAITING_FOR_DEPOSIT -> presenter.onCancelTransactionClicked()
-                SellTransactionStatus.FAILED, SellTransactionStatus.COMPLETED ->
+                SellTransactionStatus.FAILED,
+                SellTransactionStatus.COMPLETED ->
                     presenter.onRemoveFromHistoryClicked()
                 else -> Unit
             }
@@ -235,7 +236,7 @@ class SellTransactionDetailsBottomSheet :
         val receiverAddress: String
         val receiverTitle: String = getString(
             if (details.status == SellTransactionStatus.PENDING) {
-                R.string.main_will_be_send_to
+                R.string.sell_details_will_be_send_to
             } else {
                 R.string.main_send_to
             }

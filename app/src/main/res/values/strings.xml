@@ -683,6 +683,7 @@
     <string name="sell_details_button_remove">Remove from history</string>
     <string name="sell_details_button_delete">Delete transaction</string>
     <string name="sell_details_cancel_failed">😢 Error with deleting. Try again</string>
+    <string name="sell_details_will_be_send_to">Will be sent to</string>
 
     <string name="sell_error_body_message">Our payment service was ruined.\nVisit this page later</string>
 
