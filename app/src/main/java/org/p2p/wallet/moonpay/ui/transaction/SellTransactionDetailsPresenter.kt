@@ -127,7 +127,7 @@ class SellTransactionDetailsPresenter(
             boldAmount = resources.getString(
                 R.string.sell_details_fiat_amount,
                 currentTransaction.formattedFiatAmount,
-                currentTransaction.fiatAbbreviation
+                currentTransaction.fiatUiName
             ),
             labelAmount = resources.getString(
                 R.string.sell_details_token_amount,

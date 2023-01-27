@@ -129,6 +129,7 @@ class SellLockedFragment :
 
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
+
         textViewAmount.text = getString(
             R.string.sell_details_token_amount, solAmount, Constants.SOL_SYMBOL
         )
