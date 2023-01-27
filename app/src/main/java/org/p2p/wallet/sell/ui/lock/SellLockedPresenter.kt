@@ -19,6 +19,7 @@ class SellLockedPresenter(
         launch {
             when (val result = sellInteractor.cancelTransaction(currentTransaction.transactionId)) {
                 is MoonpaySellCancelResult.CancelSuccess -> {
+                    view?.showUiKitSnackBar(messageResId = R.string.sell_details_cancel_success)
                     view?.navigateBack()
                 }
                 is MoonpaySellCancelResult.CancelFailed -> {
