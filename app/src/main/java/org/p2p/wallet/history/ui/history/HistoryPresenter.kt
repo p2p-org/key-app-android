@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.ui.history
 
+import androidx.lifecycle.LifecycleOwner
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.analytics.HistoryAnalytics
@@ -41,6 +42,11 @@ class HistoryPresenter(
         environmentManager.addEnvironmentListener(this::class) { refreshHistory() }
     }
 
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        loadHistory()
+    }
+
     override fun refreshHistory() {
         isPagingEnded = false
         lastTransactionSignature = null
@@ -76,15 +82,8 @@ class HistoryPresenter(
         }
         launch {
             view?.showPagingState(PagingState.InitialLoading)
-            fetchHistory()
+            fetchHistory(isRefresh = true)
         }
-    }
-
-    override fun updateSellTransactions() {
-        view?.showHistory(
-            blockChainTransactions = blockChainTransactionsList.content,
-            sellTransactions = moonpayTransactionsList.content
-        )
     }
 
     private suspend fun fetchHistory(isRefresh: Boolean = false) {

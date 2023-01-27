@@ -22,6 +22,7 @@ interface SellPayloadContract {
         fun updateToolbarTitle(tokenSymbol: String)
         fun setButtonState(state: CashOutButtonState)
         fun showOnlySolWarning()
+        fun showKeyboard()
     }
 
     interface Presenter : MvpPresenter<View> {

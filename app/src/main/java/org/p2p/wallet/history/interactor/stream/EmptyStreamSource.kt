@@ -16,6 +16,7 @@ class EmptyStreamSource : HistoryStreamSource {
         return null
     }
 
-    override fun reset() {
-    }
+    override fun reset() = Unit
+
+    override fun isPagingReachedEnd(): Boolean = false
 }

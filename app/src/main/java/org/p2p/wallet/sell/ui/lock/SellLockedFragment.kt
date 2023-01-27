@@ -111,6 +111,7 @@ class SellLockedFragment :
         textViewMessageBody.setTextColorRes(bodyTextColorRes)
         textViewMessageBody.setLinkTextColor(getColor(R.color.text_sky))
         textViewMessageBody.movementMethod = LinkMovementMethod.getInstance()
+
         imageViewMessageIcon.setImageResource(bodyIconRes)
         imageViewMessageIcon.imageTintList = ColorStateList.valueOf(getColor(bodyIconTint))
 
@@ -118,28 +119,24 @@ class SellLockedFragment :
     }
 
     private fun setupButtons() = with(binding.layoutDetails) {
-        buttonAction.setText(R.string.common_send)
-        buttonAction.setOnClickListener {
-            presenter.onSendClicked()
-        }
-        buttonRemoveOrCancel.setText(R.string.sell_lock_cancel_transaction)
+        buttonAction.setText(R.string.sell_details_button_send)
+        buttonAction.setOnClickListener { presenter.onSendClicked() }
+
+        buttonRemoveOrCancel.setText(R.string.sell_details_button_cancel)
         buttonRemoveOrCancel.isVisible = true
         buttonRemoveOrCancel.setOnClickListener { presenter.onCancelTransactionClicked() }
     }
 
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
-        val fiatAmount = details.formattedFiatAmount
-        textViewAmount.text = getString(
-            R.string.sell_lock_token_amount, solAmount, Constants.SOL_SYMBOL
-        )
-        textViewFiatValue.text = getString(
-            R.string.sell_lock_waiting_for_deposit_fiat_amount, fiatAmount, details.fiatAbbreviation
-        )
 
-        textViewReceiverAddress.text = details.receiverAddress.let {
-            if (details.isReceiverAddressWallet) it.cutMiddle() else it
-        }
+        textViewAmount.text = getString(
+            R.string.sell_details_token_amount, solAmount, Constants.SOL_SYMBOL
+        )
+        textViewFiatValue.isVisible = false
+
+        textViewReceiverTitle.setText(R.string.main_send_to)
+        textViewReceiverAddress.text = details.receiverAddress.cutMiddle()
     }
 
     private fun renderCopyButton() = with(binding.layoutDetails.imageViewCopy) {

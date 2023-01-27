@@ -99,8 +99,7 @@
                 android:layout_marginTop="8dp"
                 android:src="@drawable/ic_wallet"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/fromTextView"
-                app:paintStyle="stroke" />
+                app:layout_constraintTop_toBottomOf="@id/fromTextView" />
 
             <TextView
                 android:id="@+id/sourceTextView"
