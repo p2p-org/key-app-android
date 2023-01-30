@@ -46,12 +46,12 @@ class SearchViewHolder(
         with(binding) {
             if (item.username.endsWith(usernameDomainFeatureToggle.value)) {
                 imageResource = R.drawable.ic_key_app_circle
-                walletImageView.setPadding(0, 0, 0, 0)
+                frameWalletImageView.setPadding(0, 0, 0, 0)
                 textViewTop.text = item.getFormattedUsername()
                 textViewBottom.isVisible = false
             } else {
                 imageResource = R.drawable.ic_search_wallet
-                walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                frameWalletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
                 textViewTop.text = item.username
                 textViewBottom.withTextOrGone(item.addressState.address.cutMiddle(CUT_ADDRESS_SYMBOLS_COUNT))
             }
@@ -68,14 +68,14 @@ class SearchViewHolder(
             val imageIconUrl = item.sourceToken?.iconUrl
             val description: String?
             val imageObject: Any = if (imageIconUrl != null) {
-                walletImageView.setPadding(0, 0, 0, 0)
+                frameWalletImageView.setPadding(0, 0, 0, 0)
                 description = getString(
                     R.string.search_no_other_tokens_description,
                     item.sourceToken.tokenSymbol
                 )
                 imageIconUrl
             } else {
-                walletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                frameWalletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
                 description = null
                 R.drawable.ic_search_wallet
             }
