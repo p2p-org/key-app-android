@@ -42,8 +42,8 @@ class OrcaSwapInteractor(
     /*
     * Initialize fee payer token
     * */
-    suspend fun initialize(sol: Token.Active) {
-        feePayerToken = sol
+    suspend fun initialize(initialToken: Token.Active) {
+        feePayerToken = initialToken
         orcaInfoInteractor.load()
         feeRelayerInteractor.load()
     }
