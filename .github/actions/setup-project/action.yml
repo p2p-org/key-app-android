@@ -61,6 +61,12 @@ inputs:
   keystore-secret:
     description: "Release JKS keystore"
     required: true
+  lokalise-key:
+    description: "Lokalise API key"
+    required: true
+  lokalise-app-id:
+    description: "Lokalise App ID"
+    required: true
 runs:
   using: composite
   steps:
@@ -106,6 +112,8 @@ runs:
         echo "intercomAppId=${{ inputs.intercom-app-id }}" >> apikeys.properties
         echo "appsFlyerKey=${{ inputs.apps-flyer-key }}" >> apikeys.properties
         echo "comparePublicKey=${{ inputs.compare-key }}" >> apikeys.properties
+        echo "lokaliseKey=${{ inputs.lokalise-key }}" >> apikeys.properties
+        echo "lokaliseAppId=${{ inputs.lokalise-app-id }}" >> apikeys.properties
         echo "apikeys.properties is successfully created"
     - name: "Create sentry.properties file"
       shell: bash
