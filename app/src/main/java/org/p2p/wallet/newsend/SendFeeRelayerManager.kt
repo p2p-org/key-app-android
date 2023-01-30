@@ -111,6 +111,7 @@ class SendFeeRelayerManager(
         useCache: Boolean
     ) {
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
+        val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
 
         try {
             onFeeLoading?.invoke(FeeLoadingState(isLoading = true, isDelayed = useCache))
@@ -131,7 +132,6 @@ class SendFeeRelayerManager(
                 return
             }
 
-            val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
             showFeeDetails(
                 sourceToken = sourceToken,
                 feeRelayerFee = feeRelayerFee,
@@ -139,6 +139,10 @@ class SendFeeRelayerManager(
                 inputAmount = inputAmount,
                 strategy = strategy
             )
+        } catch (illegalStateException: IllegalStateException) {
+            Timber.i(illegalStateException, "Error during FeeRelayer fee calculation try to switch to sol")
+            sendInteractor.switchFeePayerToSol(solToken)
+            recalculate(sourceToken, inputAmount)
         } catch (e: Throwable) {
             Timber.e(e, "Error during FeeRelayer fee calculation")
             handleError(FeesCalculationError)
@@ -283,7 +287,7 @@ class SendFeeRelayerManager(
                 sendInteractor.setFeePayerToken(state.tokenToSwitch)
             }
             is FeePayerState.SwitchToSol -> {
-                sendInteractor.switchFeePayerToSol(this.solToken)
+                sendInteractor.switchFeePayerToSol(solToken)
             }
             is FeePayerState.ReduceInputAmount -> {
                 sendInteractor.setFeePayerToken(sourceToken)
