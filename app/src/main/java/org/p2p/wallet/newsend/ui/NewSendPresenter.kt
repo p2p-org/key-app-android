@@ -428,7 +428,10 @@ class NewSendPresenter(
     }
 
     private fun showMaxButtonIfNeeded() {
-        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(feeRelayerManager.getMinRentExemption())
+        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(
+            minRentExemption = feeRelayerManager.getMinRentExemption(),
+            isRecipientEmpty = recipientAddress is SearchResult.AddressFound && recipientAddress.isEmptyBalance
+        )
         view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
