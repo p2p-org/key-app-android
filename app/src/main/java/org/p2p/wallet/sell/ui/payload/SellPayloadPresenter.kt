@@ -190,7 +190,6 @@ class SellPayloadPresenter(
         sellQuoteJob = launch {
             while (isActive) {
                 try {
-                    delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                     val sellQuote = sellInteractor.getSellQuoteForSol(
                         solAmount = selectedTokenAmount,
                         fiat = fiatCurrencyMode.toSellFiatCurrency()
@@ -198,6 +197,8 @@ class SellPayloadPresenter(
                     onSellQuoteLoaded(sellQuote)
                 } catch (error: Throwable) {
                     handleError(error)
+                } finally {
+                    delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                 }
             }
         }
