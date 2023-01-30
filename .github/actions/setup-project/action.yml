@@ -46,6 +46,18 @@ inputs:
   compare-key:
     description: "Compare api key"
     required: true
+  default-project:
+    description: "Project name for Sentry"
+    required: false
+    default: "android"
+  default-organization:
+    description: "Project organization for Sentry"
+    required: false
+    default: "p2p-wallet"
+  default-url:
+    description: "Project Sentry full URL"
+    required: false
+    default: "https://sentry.io/"
   sentry-auth-token:
     description: "Project Sentry Auth Token"
     required: true
@@ -119,6 +131,9 @@ runs:
       shell: bash
       run: |
         touch sentry.properties
+        echo "defaults.project=${{ inputs.default-project }}" >> sentry.properties
+        echo "defaults.org=${{ inputs.default-organization }}" >> sentry.properties
+        echo "defaults.url=${{ inputs.default-url }}" >> sentry.properties
         echo "auth.token=${{ inputs.sentry-auth-token }}" >> sentry.properties
         echo "auth.dsn=${{ inputs.sentry-auth-dsn }}" >> sentry.properties
         echo "sentry.properties is successfully created"
