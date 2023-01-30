@@ -25,13 +25,15 @@ import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
 
 class SendFeeRelayerManager(
-    private val sendInteractor: SendInteractor
+    private val sendInteractor: SendInteractor,
+    private val userInteractor: UserInteractor
 ) {
 
     var onStateUpdated: ((FeeRelayerState) -> Unit)? = null
@@ -46,6 +48,8 @@ class SendFeeRelayerManager(
     private lateinit var solToken: Token.Active
 
     private var minRentExemption: BigInteger? = null
+
+    private val alternativeTokensMap: HashMap<String, List<Token.Active>> = HashMap()
 
     suspend fun initialize(
         initialToken: Token.Active,
@@ -231,17 +235,30 @@ class SendFeeRelayerManager(
         }
     }
 
-    private fun buildSolanaFee(
+    private suspend fun buildSolanaFee(
         newFeePayer: Token.Active,
         source: Token.Active,
         feeRelayerFee: FeeRelayerFee
-    ): SendSolanaFee =
-        SendSolanaFee(
+    ): SendSolanaFee {
+        val keyForAlternativeRequest = "${source.tokenSymbol}_${feeRelayerFee.totalInSol}"
+        var alternativeTokens = alternativeTokensMap[keyForAlternativeRequest]
+        if (alternativeTokens == null) {
+            alternativeTokens = sendInteractor.findAlternativeFeePayerTokens(
+                userTokens = userInteractor.getNonZeroUserTokens(),
+                feePayerToExclude = newFeePayer,
+                transactionFeeInSOL = feeRelayerFee.transactionFeeInSol,
+                accountCreationFeeInSOL = feeRelayerFee.accountCreationFeeInSol
+            )
+            alternativeTokensMap[keyForAlternativeRequest] = alternativeTokens
+        }
+        return SendSolanaFee(
             feePayerToken = newFeePayer,
-            sourceTokenSymbol = source.tokenSymbol,
             solToken = solToken,
-            feeRelayerFee = feeRelayerFee
+            feeRelayerFee = feeRelayerFee,
+            alternativeFeePayerTokens = alternativeTokens,
+            sourceToken = source
         )
+    }
 
     private suspend fun validateAndSelectFeePayer(
         sourceToken: Token.Active,
@@ -260,8 +277,8 @@ class SendFeeRelayerManager(
          * - In other cases, switching to SOL
          * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
-            is FeePayerState.UpdateFeePayer -> {
-                sendInteractor.setFeePayerToken(sourceToken)
+            is FeePayerState.SwitchToSpl -> {
+                sendInteractor.setFeePayerToken(state.tokenToSwitch)
             }
             is FeePayerState.SwitchToSol -> {
                 sendInteractor.switchFeePayerToSol(this.solToken)

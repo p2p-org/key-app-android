@@ -136,6 +136,12 @@ android {
         ignoredBuildTypes = ["debug", "feature"]
         autoInstallation { enabled = false }
     }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
 }
 dependencies {
     implementation project(':solana')
@@ -248,6 +254,10 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     // https://github.com/robolectric/robolectric
     testImplementation "org.robolectric:robolectric:4.5.1"
+
+    implementation('com.lokalise.android:sdk:2.1.1') {
+        transitive = true
+    }
     // Coroutines support
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 

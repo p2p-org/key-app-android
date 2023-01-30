@@ -129,12 +129,13 @@ class SellLockedFragment :
 
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
+
         textViewAmount.text = getString(
             R.string.sell_details_token_amount, solAmount, Constants.SOL_SYMBOL
         )
         textViewFiatValue.isVisible = false
 
-        textViewReceiverTitle.setText(R.string.main_send_to)
+        textViewReceiverTitle.setText(R.string.sell_details_send_to)
         textViewReceiverAddress.text = details.receiverAddress.cutMiddle()
     }
 

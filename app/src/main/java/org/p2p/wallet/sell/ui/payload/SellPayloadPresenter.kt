@@ -125,7 +125,7 @@ class SellPayloadPresenter(
                     formattedSolAmount = amounts.tokenAmount.formatTokenForMoonpay(),
                     formattedFiatAmount = amounts.amountInFiat.formatFiat(),
                     receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value,
-                    fiatAbbreviation = userTransactionInProcess.selectedFiat.abbriviation.uppercase()
+                    fiatUiName = userTransactionInProcess.selectedFiat.uiSymbol.uppercase()
                 )
             )
         }

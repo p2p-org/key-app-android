@@ -34,6 +34,7 @@ import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import org.p2p.wallet.lokalise.LokaliseService
 
 class RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
@@ -67,6 +68,10 @@ class RootActivity :
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         handleDeeplink(intent)
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LokaliseService.wrap(newBase))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

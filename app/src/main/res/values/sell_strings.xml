@@ -38,7 +38,10 @@
     <string name="sell_details_button_delete">Delete transaction</string>
     <string name="sell_details_button_cancel">Cancel transaction</string>
     <string name="sell_details_cancel_failed">😢 Error deleting. Try again</string>
+    <string name="sell_details_cancel_success">🤗 Done! Refresh History page for actual status</string>
     <string name="sell_details_will_be_send_to">Will be sent to</string>
+    <string name="sell_details_send_to">Send to</string>
+    <string name="sell_details_sent_to">Sent to</string>
     <string name="sell_details_token_amount">%s %s</string>
     <string name="sell_details_fiat_amount">%s %s</string>
 

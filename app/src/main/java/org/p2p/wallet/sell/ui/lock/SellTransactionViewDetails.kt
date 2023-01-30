@@ -12,7 +12,7 @@ data class SellTransactionViewDetails(
     val status: SellTransactionStatus,
     val formattedSolAmount: String,
     val formattedFiatAmount: String,
-    val fiatAbbreviation: String,
+    val fiatUiName: String,
     val receiverAddress: String,
     val updatedAt: String? = null,
 ) : Parcelable {
