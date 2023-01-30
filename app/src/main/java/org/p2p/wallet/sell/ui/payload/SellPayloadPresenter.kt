@@ -141,7 +141,7 @@ class SellPayloadPresenter(
 
     private fun rawToDecimalAmount(): BigDecimal =
         when (selectedCurrencyMode) {
-            is CurrencyMode.Fiat-> rawUserSelectedAmount.toBigDecimalOrZero().toToken()
+            is CurrencyMode.Fiat -> rawUserSelectedAmount.toBigDecimalOrZero().toToken()
             is CurrencyMode.Token -> rawUserSelectedAmount.toBigDecimalOrZero()
         }
 
@@ -273,7 +273,7 @@ class SellPayloadPresenter(
             is CashOutButtonState.CashOutAvailable, is CashOutButtonState.NotEnoughUserTokenError -> {
                 startLoadSellQuoteJob()
             }
-            is CashOutButtonState.MinAmountEntered, is CashOutButtonState.MaxAmountExceeded, -> {
+            is CashOutButtonState.MinAmountEntered, is CashOutButtonState.MaxAmountExceeded -> {
                 sellQuoteJob?.cancel()
             }
         }
@@ -288,7 +288,7 @@ class SellPayloadPresenter(
 
     override fun onUserMaxClicked() {
         val maxAmount = when (selectedCurrencyMode) {
-            is CurrencyMode.Fiat-> userSolBalance.toFiat()
+            is CurrencyMode.Fiat -> userSolBalance.toFiat()
             is CurrencyMode.Token -> userSolBalance
         }.formatTokenForMoonpay()
         viewState = viewState.copy(
