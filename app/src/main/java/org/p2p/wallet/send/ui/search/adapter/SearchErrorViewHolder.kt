@@ -63,8 +63,8 @@ class SearchErrorViewHolder(
     }
 
     private fun loadTokenIcon(iconUrl: String?) {
+        binding.frameWalletImageView.setPadding(0, 0, 0, 0)
         with(binding.imageViewWallet) {
-            binding.frameWalletImageView.setPadding(0, 0, 0, 0)
             alpha = 1f
 
             Glide.with(this)
