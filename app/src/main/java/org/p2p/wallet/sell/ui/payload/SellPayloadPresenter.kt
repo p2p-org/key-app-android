@@ -37,6 +37,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
+private const val SELL_QUOTE_NEW_AMOUNT_DELAY = 1_000L
 
 class SellPayloadPresenter(
     private val sellInteractor: SellInteractor,
@@ -188,9 +189,9 @@ class SellPayloadPresenter(
     private fun startLoadSellQuoteJob() {
         sellQuoteJob?.cancel()
         sellQuoteJob = launch {
+            delay(SELL_QUOTE_NEW_AMOUNT_DELAY)
             while (isActive) {
                 try {
-                    delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                     val sellQuote = sellInteractor.getSellQuoteForSol(
                         solAmount = selectedTokenAmount,
                         fiat = fiatCurrencyMode.toSellFiatCurrency()
@@ -198,6 +199,8 @@ class SellPayloadPresenter(
                     onSellQuoteLoaded(sellQuote)
                 } catch (error: Throwable) {
                     handleError(error)
+                } finally {
+                    delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                 }
             }
         }
