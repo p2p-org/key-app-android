@@ -1,8 +1,9 @@
 # The workflow for feature pull requests before they are merged
 on:
-  push:
+  pull_request:
     branches:
-      - feature/*
+      - develop
+      - release/*
 
 #env:
 #  FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
