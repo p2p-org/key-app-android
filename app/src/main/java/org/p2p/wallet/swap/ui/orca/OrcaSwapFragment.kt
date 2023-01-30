@@ -108,7 +108,7 @@ class OrcaSwapFragment :
                     if (settingsResult != null) presenter.setNewSettings(settingsResult)
                 }
                 result.containsKey(EXTRA_RESULT_KEY_DISMISS) -> {
-                    popBackStack()
+                    presenter.cleanFields()
                 }
             }
         }
@@ -330,9 +330,9 @@ class OrcaSwapFragment :
     override fun showProgressDialog(transactionId: String, data: ShowProgress?) {
         if (data != null) {
             analyticsInteractor.logScreenOpenEvent(ScreenNames.Swap.PROCESSING)
-            ProgressBottomSheet.show(parentFragmentManager, transactionId, data, KEY_REQUEST_SWAP)
+            ProgressBottomSheet.show(requireActivity().supportFragmentManager, transactionId, data, KEY_REQUEST_SWAP)
         } else {
-            ProgressBottomSheet.hide(parentFragmentManager)
+            ProgressBottomSheet.hide(requireActivity().supportFragmentManager)
         }
     }
 
