@@ -6,17 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <org.p2p.uikit.atoms.UiKitRoundedImageView
-        android:id="@+id/imageViewWallet"
+    <FrameLayout
+        android:id="@+id/frameWalletImageView"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginVertical="16dp"
-        android:background="@drawable/bg_rain_rounded_24"
         android:padding="12dp"
-        android:src="@drawable/ic_search_wallet"
+        android:background="@drawable/bg_rain_rounded_24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <org.p2p.uikit.atoms.UiKitRoundedImageView
+            android:id="@+id/imageViewWallet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_rain_rounded_24"
+            android:src="@drawable/ic_search_wallet"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/textViewAddress"
@@ -29,8 +37,8 @@
         android:textColor="@color/night_30"
         app:layout_constraintBottom_toTopOf="@id/textViewDescription"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageViewWallet"
-        app:layout_constraintTop_toTopOf="@+id/imageViewWallet"
+        app:layout_constraintStart_toEndOf="@+id/frameWalletImageView"
+        app:layout_constraintTop_toTopOf="@+id/frameWalletImageView"
         tools:text="2PfZSWb...Y6yQxfS" />
 
     <TextView
@@ -44,9 +52,9 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewWallet"
+        app:layout_constraintBottom_toBottomOf="@+id/frameWalletImageView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageViewWallet"
+        app:layout_constraintStart_toEndOf="@+id/frameWalletImageView"
         app:layout_constraintTop_toBottomOf="@id/textViewAddress"
         tools:text="Your address" />
 
@@ -62,7 +70,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageViewWallet"
+        app:layout_constraintTop_toBottomOf="@id/frameWalletImageView"
         tools:text="You cannot send tokens to yourself" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

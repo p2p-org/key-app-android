@@ -151,7 +151,7 @@
                         android:layout_height="32dp"
                         android:layout_gravity="center"
                         android:background="@drawable/bg_app_rounded"
-                        android:padding="4dp"
+                        app:contentPadding="4dp"
                         android:rotation="180"
                         android:src="@drawable/ic_back"
                         app:layout_constraintBottom_toBottomOf="parent"
