@@ -37,15 +37,15 @@
     <string name="sell_details_button_send">Send</string>
     <string name="sell_details_button_delete">Delete transaction</string>
     <string name="sell_details_button_cancel">Cancel transaction</string>
-    <string name="sell_details_cancel_failed">😢 Error with deleting. Try again</string>
+    <string name="sell_details_cancel_failed">😢 Error deleting. Try again</string>
     <string name="sell_details_will_be_send_to">Will be sent to</string>
     <string name="sell_details_token_amount">%s %s</string>
     <string name="sell_details_fiat_amount">%s %s</string>
 
-    <string name="sell_error_body_message">Our payment service was ruined.\nVisit this page later</string>
+    <string name="sell_error_body_message">Oops, something went wrong.\nPlease try again later</string>
 
     <string name="sell_warning_only_sol_title">You can Cash out only SOL</string>
-    <string name="sell_warning_only_sol_body">To Cash out another coin swap your cryptocurrency to SOL before</string>
+    <string name="sell_warning_only_sol_body">Swap your cryptocurrencies to SOL to cash out</string>
     <string name="sell_warning_only_sol_button">Got it</string>
 
     <string name="sell_inform_dialog_next_step">service is next step</string>
