@@ -66,7 +66,7 @@ class SellTransactionDetailsPresenter(
             bodyText = resources.getString(R.string.sell_details_waiting_deposit_body),
         )
         val receiverBlock = SellTransactionDetailsViewState.ReceiverBlock(
-            receiverTitle = resources.getString(R.string.main_send_to),
+            receiverTitle = resources.getString(R.string.sell_details_send_to),
             receiverValue = currentTransaction.receiverAddress.cutMiddle(),
             isCopyEnabled = true,
             copyValueProvider = currentTransaction::receiverAddress
@@ -139,7 +139,7 @@ class SellTransactionDetailsPresenter(
             bodyText = resources.getHtmlString(R.string.sell_details_completed_body).removeLinksUnderline(),
         )
         val receiverBlock = SellTransactionDetailsViewState.ReceiverBlock(
-            receiverTitle = resources.getString(R.string.sell_details_will_be_send_to),
+            receiverTitle = resources.getString(R.string.sell_details_sent_to),
             receiverValue = resources.getString(R.string.sell_details_receiver_moonpay_bank),
             isCopyEnabled = false
         )
@@ -190,6 +190,7 @@ class SellTransactionDetailsPresenter(
         launch {
             when (val result = sellInteractor.cancelTransaction(currentTransaction.transactionId)) {
                 is MoonpaySellCancelResult.CancelSuccess -> {
+                    view?.showUiKitSnackBar(messageResId = R.string.sell_details_cancel_success)
                     view?.close()
                 }
                 is MoonpaySellCancelResult.CancelFailed -> {

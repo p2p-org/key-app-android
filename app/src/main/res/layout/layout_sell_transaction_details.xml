@@ -162,7 +162,7 @@
             android:id="@+id/textViewReceiverTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/main_send_to"
+            android:text="@string/sell_details_send_to"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
