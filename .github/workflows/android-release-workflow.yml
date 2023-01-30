@@ -35,6 +35,8 @@ jobs:
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Build Firebase release AAB"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -82,6 +84,8 @@ jobs:
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Build Slack APK artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -145,6 +149,8 @@ jobs:
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Build release AAB artifact"
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
