@@ -52,37 +52,39 @@ class UserRemoteRepository(
             val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
 
             // Get token symbols from user accounts plus SOL
-            val tokenSymbols = (
+            val tokenIds = (
                 accounts.mapNotNull {
-                    userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
+                    userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.coingeckoId
                 } + POPULAR_TOKENS
                 ).distinct()
 
             // Load and save user tokens prices
             if (fetchPrices) {
-                loadAndSaveUserTokens(tokenSymbols)
+                loadAndSaveUserTokens(tokenIds)
             } else {
-                checkForNewTokens(tokenSymbols)
+                checkForNewTokens(tokenIds)
             }
 
             // Map accounts to List<Token.Active>
             mapAccountsToTokens(publicKey, accounts)
         }
 
-    private suspend fun checkForNewTokens(tokenSymbols: List<String>) {
+    private suspend
+
+    fun checkForNewTokens(tokenIds: List<String>) {
         val localPrices = userLocalRepository.getTokenPrices()
             .firstOrNull()
             ?.map { it.tokenSymbol }
             .orEmpty()
-        val userTokensDiff = tokenSymbols.minus(localPrices.toSet())
+        val userTokensDiff = tokenIds.minus(localPrices.toSet())
         if (userTokensDiff.isNotEmpty()) {
-            loadAndSaveUserTokens(tokenSymbols)
+            loadAndSaveUserTokens(tokenIds)
         }
     }
 
-    private suspend fun loadAndSaveUserTokens(tokenSymbols: List<String>) {
+    private suspend fun loadAndSaveUserTokens(tokenIds: List<String>) {
         val prices = tokenPricesRepository.getTokenPricesBySymbols(
-            tokenSymbols.map { TokenSymbol(it) },
+            tokenIds.map { TokenSymbol(it) },
             USD_READABLE_SYMBOL
         )
         userLocalRepository.setTokenPrices(prices)
@@ -102,7 +104,7 @@ class UserRemoteRepository(
             }
 
             val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
-            val price = userLocalRepository.getPriceByToken(token.symbol)
+            val price = userLocalRepository.getPriceByToken(token.coingeckoId)
             TokenConverter.fromNetwork(it, token, price)
         }
 
