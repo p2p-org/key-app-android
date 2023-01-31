@@ -704,6 +704,7 @@ class OrcaSwapPresenter(
         Timber.e(error, "Error swapping tokens")
         view?.showErrorMessage(error)
         view?.showProgressDialog(transactionId, null)
+        cleanFields()
     }
 
     private fun showDebugBestSwapPairRoute(bestPairRoute: OrcaPoolsPair) {
