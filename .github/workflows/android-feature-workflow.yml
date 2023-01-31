@@ -41,7 +41,7 @@ on:
 
 jobs:
   update-jira-status:
-    if: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' }}
+    if: ${{ github.event_name == 'pull_request' }}
     name: "Move Jira Ticket to Review"
     runs-on: ubuntu-latest
     environment: develop
