@@ -7,7 +7,7 @@ import org.p2p.wallet.home.api.CryptoCompareApi
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.user.repository.prices.TokenSymbol
+import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.scaleMedium
 
@@ -21,11 +21,11 @@ class TokenPricesCryptoCompareRepository(
 ) : TokenPricesRemoteRepository {
 
     override suspend fun getTokenPriceBySymbol(
-        tokenSymbol: TokenSymbol,
+        tokenSymbol: TokenId,
         targetCurrency: String
     ): TokenPrice = withContext(dispatchers.io) {
         val responseJson = cryptoCompareApi.getPrice(
-            tokenFrom = tokenSymbol.symbol,
+            tokenFrom = tokenSymbol.id,
             tokenTo = targetCurrency,
             apiKey = BuildConfig.comparePublicKey
         )
@@ -33,13 +33,13 @@ class TokenPricesCryptoCompareRepository(
         val priceValue = responseJson.getAsJsonPrimitive(Constants.USD_READABLE_SYMBOL)
 
         TokenPrice(
-            tokenSymbol = tokenSymbol.symbol,
+            tokenSymbol = tokenSymbol.id,
             price = priceValue.asBigDecimal.scaleMedium()
         )
     }
 
     override suspend fun getTokenPricesBySymbols(
-        tokenSymbols: List<TokenSymbol>,
+        tokenSymbols: List<TokenId>,
         targetCurrency: String
     ): List<TokenPrice> = withContext(dispatchers.io) {
         loadPrices(
@@ -48,8 +48,8 @@ class TokenPricesCryptoCompareRepository(
         )
     }
 
-    private suspend fun loadPrices(tokenSymbols: List<TokenSymbol>, targetCurrencySymbol: String): List<TokenPrice> {
-        return tokenSymbols.map { it.symbol }
+    private suspend fun loadPrices(tokenSymbols: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> {
+        return tokenSymbols.map { it.id }
             .chunked(COMPARE_API_CHUNK_SIZE)
             .flatMap { chunkedTokenSymbols ->
                 // CompareApi cannot resolve more than 30 token prices at once,

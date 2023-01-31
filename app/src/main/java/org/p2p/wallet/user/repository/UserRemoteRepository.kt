@@ -13,7 +13,7 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.core.token.TokenData
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.user.repository.prices.TokenSymbol
+import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT
 import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
@@ -69,9 +69,7 @@ class UserRemoteRepository(
             mapAccountsToTokens(publicKey, accounts)
         }
 
-    private suspend
-
-    fun checkForNewTokens(tokenIds: List<String>) {
+    private suspend fun checkForNewTokens(tokenIds: List<String>) {
         val localPrices = userLocalRepository.getTokenPrices()
             .firstOrNull()
             ?.map { it.tokenSymbol }
@@ -84,7 +82,7 @@ class UserRemoteRepository(
 
     private suspend fun loadAndSaveUserTokens(tokenIds: List<String>) {
         val prices = tokenPricesRepository.getTokenPricesBySymbols(
-            tokenIds.map { TokenSymbol(it) },
+            tokenIds.map { TokenId(it) },
             USD_READABLE_SYMBOL
         )
         userLocalRepository.setTokenPrices(prices)

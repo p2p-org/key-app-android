@@ -15,7 +15,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.user.repository.prices.TokenSymbol
+import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
@@ -70,7 +70,7 @@ class SeedPhraseInteractor(
         val balance = balances.find { it.first == account.publicKey.toBase58() }
             ?.second
             ?: return@mapNotNull null
-        val tokenSymbol = TokenSymbol(SOL_NAME.lowercase())
+        val tokenSymbol = TokenId(SOL_NAME.lowercase())
 
         val exchangeRate =
             solRate ?: tokenPricesRepository.getTokenPriceBySymbol(tokenSymbol, USD_READABLE_SYMBOL).price

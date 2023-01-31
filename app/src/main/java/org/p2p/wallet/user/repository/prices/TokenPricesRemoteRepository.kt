@@ -4,12 +4,12 @@ import org.p2p.wallet.home.model.TokenPrice
 
 interface TokenPricesRemoteRepository {
     suspend fun getTokenPricesBySymbols(
-        tokenSymbols: List<TokenSymbol>,
+        tokenSymbols: List<TokenId>,
         targetCurrency: String
     ): List<TokenPrice>
 
     suspend fun getTokenPriceBySymbol(
-        tokenSymbol: TokenSymbol,
+        tokenSymbol: TokenId,
         targetCurrency: String
     ): TokenPrice
 }
