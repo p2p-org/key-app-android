@@ -50,8 +50,10 @@ class MoonpaySellRemoteRepository(
             try {
                 cachedMoonpayIpFlags = moonpayClientSideApi.getIpAddress(BuildConfig.moonpayKey)
                 Timber.tag(TAG).i("Moonpay IP flags were fetched successfully")
+                crashLogger.setCustomKey("is_moonpay_ip_fetched", true)
             } catch (e: Throwable) {
-                Timber.tag(TAG).i(e, "failed to fetch moonpay IP flags")
+                Timber.tag(TAG).e(e, "failed to fetch moonpay IP flags")
+                crashLogger.setCustomKey("is_moonpay_ip_fetched", false)
                 ipFlagsFetchErrorCause = e
             }
         }
@@ -61,7 +63,7 @@ class MoonpaySellRemoteRepository(
         val ipFlags = cachedMoonpayIpFlags
         if (ipFlags == null) {
             val reasonForNull = ipFlagsFetchErrorCause ?: IllegalStateException("Unknown reason for unfetched IP flags")
-            Timber.tag(TAG).e(MoonpayRepositoryIpFetchError(reasonForNull))
+            Timber.tag(TAG).i(MoonpayRepositoryIpFetchError(reasonForNull))
             crashLogger.setCustomKey("is_moonpay_sell_enabled", false)
             crashLogger.setCustomKey("country_from_moonpay", "not_set")
             return false

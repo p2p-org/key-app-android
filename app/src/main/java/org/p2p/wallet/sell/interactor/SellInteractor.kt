@@ -51,8 +51,8 @@ class SellInteractor(
 
     suspend fun isSellAvailable(): Boolean {
         return sellEnabledFeatureToggle.isFeatureEnabled &&
-            sellRepository.isSellAllowedForUser() &&
-            isUserBalancePositive()
+            isUserBalancePositive() &&
+            sellRepository.isSellAllowedForUser()
     }
 
     private suspend fun isUserBalancePositive(): Boolean {
