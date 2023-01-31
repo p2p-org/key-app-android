@@ -16,7 +16,6 @@ import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenSymbol
-import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.utils.mnemoticgenerator.English
@@ -26,6 +25,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
+import org.p2p.core.utils.Constants.SOL_NAME
 
 // duck-taped, extract to storage some day
 const val KEY_IS_AUTH_BY_SEED_PHRASE = "KEY_IS_AUTH_BY_SEED_PHRASE"
@@ -70,7 +70,7 @@ class SeedPhraseInteractor(
         val balance = balances.find { it.first == account.publicKey.toBase58() }
             ?.second
             ?: return@mapNotNull null
-        val tokenSymbol = TokenSymbol(SOL_SYMBOL)
+        val tokenSymbol = TokenSymbol(SOL_NAME.lowercase())
 
         val exchangeRate =
             solRate ?: tokenPricesRepository.getTokenPriceBySymbol(tokenSymbol, USD_READABLE_SYMBOL).price

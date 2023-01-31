@@ -7,7 +7,7 @@
     <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
     <string name="solanaWalletExplorer">https://explorer.solana.com/address/%s</string>
 
-    <string name="solanaTokensBaseUrl">https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/</string>
+    <string name="solanaTokensBaseUrl">https://raw.githubusercontent.com/p2p-org/token-list/main/src/tokens/</string>
 
     <string name="feeRelayerBaseUrl">https://fee-relayer.key.app/</string>
     <string name="feeRelayerTestBaseUrl">https://fee-relayer.keyapp.org/</string>

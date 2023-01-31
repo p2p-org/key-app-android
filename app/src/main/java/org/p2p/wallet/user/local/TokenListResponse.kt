@@ -36,5 +36,7 @@ data class TokenExtensions(
     @SerializedName("serumV3Usdc")
     val serumV3Usdc: String?,
     @SerializedName("serumV3Usdt")
-    val serumV3Usdt: String?
+    val serumV3Usdt: String?,
+    @SerializedName("coingeckoId")
+    val coingeckoId: String?
 )
