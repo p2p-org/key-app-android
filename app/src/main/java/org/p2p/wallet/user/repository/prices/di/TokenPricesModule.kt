@@ -38,8 +38,6 @@ object TokenPricesModule : InjectionModule {
 
             TokenPricesCoinGeckoRepository(
                 coinGeckoApi = coinGeckoApi,
-                fileRepository = get(),
-                gson = get(),
                 dispatchers = get()
             )
         }

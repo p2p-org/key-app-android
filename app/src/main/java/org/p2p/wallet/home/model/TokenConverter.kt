@@ -23,7 +23,8 @@ object TokenConverter {
             decimals = response.decimals,
             isWrapped = response.isWrapped(),
             serumV3Usdc = response.extensions?.serumV3Usdc,
-            serumV3Usdt = response.extensions?.serumV3Usdt
+            serumV3Usdt = response.extensions?.serumV3Usdt,
+            coingeckoId = response.extensions?.coingeckoId
         )
 
     fun fromNetwork(
@@ -111,5 +112,6 @@ object TokenConverter {
             isWrapped = token.isWrapped,
             serumV3Usdc = token.serumV3Usdc,
             serumV3Usdt = token.serumV3Usdt,
+            coingeckoId = null
         )
 }

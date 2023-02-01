@@ -4,9 +4,6 @@ import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-typealias CurrencyToPrice = Map<String, Float>
-typealias TokenIdsToPrices = Map<String, CurrencyToPrice>
-
 interface CoinGeckoApi {
     /**
      * {
@@ -16,11 +13,11 @@ interface CoinGeckoApi {
      *   ...
      * }
      */
-    @GET("simple/price")
+    @GET("coins/markets")
     suspend fun getTokenPrices(
         @Query("ids") tokenIds: String,
-        @Query("vs_currencies") targetCurrency: String
-    ): TokenIdsToPrices
+        @Query("vs_currency") targetCurrency: String
+    ): List<CoinGeckoPriceResponse>
 
     @GET("coins/list")
     suspend fun getAllTokens(): ResponseBody
