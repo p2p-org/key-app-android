@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -27,6 +28,12 @@ fun Context.vibrate(duration: Long = 500) {
 }
 
 fun Context.getHtmlString(@StringRes id: Int, vararg args: Any): Spanned =
+    HtmlCompat.fromHtml(
+        if (args.isNotEmpty()) getString(id, *args) else getString(id),
+        HtmlCompat.FROM_HTML_MODE_LEGACY
+    )
+
+fun Resources.getHtmlString(@StringRes id: Int, vararg args: Any): Spanned =
     HtmlCompat.fromHtml(
         if (args.isNotEmpty()) getString(id, *args) else getString(id),
         HtmlCompat.FROM_HTML_MODE_LEGACY

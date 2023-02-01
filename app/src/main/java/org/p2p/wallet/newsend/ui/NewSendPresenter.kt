@@ -72,7 +72,7 @@ class NewSendPresenter(
         sendModeProvider,
         resources.getString(R.string.common_less_than_minimum)
     )
-    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
+    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
     private var selectedToken: Token.Active? = null
     private var initialAmount: BigDecimal? = null
@@ -242,6 +242,7 @@ class NewSendPresenter(
     override fun updateToken(newToken: Token.Active) {
         token = newToken
         showMaxButtonIfNeeded()
+        view?.setFeeLabel(resources.getString(R.string.send_fees))
         updateButton(requireToken(), feeRelayerManager.getState())
 
         /*
@@ -258,6 +259,7 @@ class NewSendPresenter(
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
         newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
+        view?.setFeeLabel(resources.getString(R.string.send_fees))
         /*
          * Trigger recalculation for USD input
          * */
@@ -271,6 +273,7 @@ class NewSendPresenter(
     override fun updateInputAmount(amount: String) {
         calculationMode.updateInputAmount(amount)
         showMaxButtonIfNeeded()
+        view?.setFeeLabel(resources.getString(R.string.send_fees))
         updateButton(requireToken(), feeRelayerManager.getState())
 
         newSendAnalytics.setMaxButtonClicked(isClicked = false)

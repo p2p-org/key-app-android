@@ -1,6 +1,21 @@
 package org.p2p.wallet.swap.ui.orca
 
 import android.content.res.Resources
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
+import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isMoreThan
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
+import org.p2p.core.utils.scaleLong
+import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.toBigDecimalOrZero
+import org.p2p.core.utils.toLamports
+import org.p2p.core.utils.toUsd
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AuthAnalytics
@@ -12,7 +27,6 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.send.model.FeePayerState
@@ -36,27 +50,13 @@ import org.p2p.wallet.transaction.interactor.TransactionBuilderInteractor
 import org.p2p.wallet.transaction.model.ShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.core.utils.asUsd
 import org.p2p.wallet.utils.divideSafe
 import org.p2p.wallet.utils.emptyString
-import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.isMoreThan
-import org.p2p.core.utils.isZero
-import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleLong
-import org.p2p.core.utils.scaleMedium
-import org.p2p.core.utils.toBigDecimalOrZero
-import org.p2p.core.utils.toLamports
-import org.p2p.core.utils.toUsd
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.UUID
 import kotlin.properties.Delegates.observable
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 private const val TAG_SWAP = "SWAP_STATE"
 
@@ -527,12 +527,12 @@ class OrcaSwapPresenter(
        * - In other cases, switching to SOL
        * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
-            is FeePayerState.UpdateFeePayer -> {
-                swapInteractor.setFeePayerToken(sourceToken)
-                recalculate(destination)
-            }
             is FeePayerState.SwitchToSol -> {
                 swapInteractor.switchFeePayerToSol(solToken)
+                recalculate(destination)
+            }
+            is FeePayerState.SwitchToSpl -> {
+                swapInteractor.switchFeePayerToSol(state.tokenToSwitch)
                 recalculate(destination)
             }
             is FeePayerState.ReduceInputAmount -> {

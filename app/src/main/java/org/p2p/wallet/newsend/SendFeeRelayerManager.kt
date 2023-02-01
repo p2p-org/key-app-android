@@ -25,13 +25,15 @@ import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
 
 class SendFeeRelayerManager(
-    private val sendInteractor: SendInteractor
+    private val sendInteractor: SendInteractor,
+    private val userInteractor: UserInteractor
 ) {
 
     var onStateUpdated: ((FeeRelayerState) -> Unit)? = null
@@ -44,8 +46,11 @@ class SendFeeRelayerManager(
     private lateinit var feeLimitInfo: FreeTransactionFeeLimit
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
+    private var initializeCompleted = false
 
     private var minRentExemption: BigInteger? = null
+
+    private val alternativeTokensMap: HashMap<String, List<Token.Active>> = HashMap()
 
     suspend fun initialize(
         initialToken: Token.Active,
@@ -57,14 +62,20 @@ class SendFeeRelayerManager(
 
         onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = true))
         try {
-            minRentExemption = sendInteractor.getMinRelayRentExemption()
-            feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
-            sendInteractor.initialize(initialToken)
+            initializeWithToken(initialToken)
+            initializeCompleted = true
         } catch (e: Throwable) {
+            initializeCompleted = false
             currentState = Failure(FeesCalculationError)
         } finally {
             onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = false))
         }
+    }
+
+    private suspend fun initializeWithToken(initialToken: Token.Active) {
+        minRentExemption = sendInteractor.getMinRelayRentExemption()
+        feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
+        sendInteractor.initialize(initialToken)
     }
 
     fun getMinRentExemption(): BigInteger = minRentExemption.orZero()
@@ -103,6 +114,11 @@ class SendFeeRelayerManager(
 
         try {
             onFeeLoading?.invoke(FeeLoadingState(isLoading = true, isDelayed = useCache))
+            if (!initializeCompleted) {
+                initializeWithToken(sourceToken)
+                initializeCompleted = true
+            }
+
             val feeRelayerFee = calculateFeeRelayerFee(
                 sourceToken = sourceToken,
                 feePayerToken = feePayer,
@@ -185,22 +201,12 @@ class SendFeeRelayerManager(
         useCache: Boolean = true
     ): FeeRelayerFee? {
         val recipient = result.addressState.address
-
-        return try {
-            sendInteractor.calculateFeesForFeeRelayer(
-                feePayerToken = feePayerToken,
-                token = sourceToken,
-                recipient = recipient,
-                useCache = useCache
-            )
-        } catch (e: CancellationException) {
-            Timber.i("Fee calculation is cancelled")
-            return null
-        } catch (e: Throwable) {
-            Timber.e(e, "Error calculating fees")
-            handleError(FeesCalculationError)
-            return null
-        }
+        return sendInteractor.calculateFeesForFeeRelayer(
+            feePayerToken = feePayerToken,
+            token = sourceToken,
+            recipient = recipient,
+            useCache = useCache
+        )
     }
 
     private suspend fun showFeeDetails(
@@ -231,17 +237,30 @@ class SendFeeRelayerManager(
         }
     }
 
-    private fun buildSolanaFee(
+    private suspend fun buildSolanaFee(
         newFeePayer: Token.Active,
         source: Token.Active,
         feeRelayerFee: FeeRelayerFee
-    ): SendSolanaFee =
-        SendSolanaFee(
+    ): SendSolanaFee {
+        val keyForAlternativeRequest = "${source.tokenSymbol}_${feeRelayerFee.totalInSol}"
+        var alternativeTokens = alternativeTokensMap[keyForAlternativeRequest]
+        if (alternativeTokens == null) {
+            alternativeTokens = sendInteractor.findAlternativeFeePayerTokens(
+                userTokens = userInteractor.getNonZeroUserTokens(),
+                feePayerToExclude = newFeePayer,
+                transactionFeeInSOL = feeRelayerFee.transactionFeeInSol,
+                accountCreationFeeInSOL = feeRelayerFee.accountCreationFeeInSol
+            )
+            alternativeTokensMap[keyForAlternativeRequest] = alternativeTokens
+        }
+        return SendSolanaFee(
             feePayerToken = newFeePayer,
-            sourceTokenSymbol = source.tokenSymbol,
             solToken = solToken,
-            feeRelayerFee = feeRelayerFee
+            feeRelayerFee = feeRelayerFee,
+            alternativeFeePayerTokens = alternativeTokens,
+            sourceToken = source
         )
+    }
 
     private suspend fun validateAndSelectFeePayer(
         sourceToken: Token.Active,
@@ -260,8 +279,8 @@ class SendFeeRelayerManager(
          * - In other cases, switching to SOL
          * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
-            is FeePayerState.UpdateFeePayer -> {
-                sendInteractor.setFeePayerToken(sourceToken)
+            is FeePayerState.SwitchToSpl -> {
+                sendInteractor.setFeePayerToken(state.tokenToSwitch)
             }
             is FeePayerState.SwitchToSol -> {
                 sendInteractor.switchFeePayerToSol(this.solToken)
@@ -280,11 +299,20 @@ class SendFeeRelayerManager(
          * Optimized recalculation and UI update
          * */
         val newFeePayer = sendInteractor.getFeePayerToken()
-        val feeRelayerFee = calculateFeeRelayerFee(
-            sourceToken = sourceToken,
-            feePayerToken = newFeePayer,
-            result = recipientAddress
-        ) ?: return
+        val feeRelayerFee = try {
+            calculateFeeRelayerFee(
+                sourceToken = sourceToken,
+                feePayerToken = newFeePayer,
+                result = recipientAddress
+            )
+        } catch (e: CancellationException) {
+            Timber.i("Fee calculation is cancelled")
+            null
+        } catch (e: Throwable) {
+            Timber.e(e, "Error calculating fees")
+            handleError(FeesCalculationError)
+            null
+        } ?: return
         val fee = buildSolanaFee(newFeePayer, sourceToken, feeRelayerFee)
         validateFunds(sourceToken, fee, inputAmount)
         currentState = UpdateFee(fee, feeLimitInfo)
