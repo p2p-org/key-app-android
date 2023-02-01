@@ -13,7 +13,7 @@ import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
 import org.p2p.core.token.TokenData
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
-import org.p2p.wallet.user.repository.prices.TokenSymbol
+import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT
 import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
@@ -52,37 +52,37 @@ class UserRemoteRepository(
             val accounts = rpcRepository.getTokenAccountsByOwner(publicKey).accounts
 
             // Get token symbols from user accounts plus SOL
-            val tokenSymbols = (
+            val tokenIds = (
                 accounts.mapNotNull {
-                    userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.symbol
+                    userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.coingeckoId
                 } + POPULAR_TOKENS
                 ).distinct()
 
             // Load and save user tokens prices
             if (fetchPrices) {
-                loadAndSaveUserTokens(tokenSymbols)
+                loadAndSaveUserTokens(tokenIds)
             } else {
-                checkForNewTokens(tokenSymbols)
+                checkForNewTokens(tokenIds)
             }
 
             // Map accounts to List<Token.Active>
             mapAccountsToTokens(publicKey, accounts)
         }
 
-    private suspend fun checkForNewTokens(tokenSymbols: List<String>) {
+    private suspend fun checkForNewTokens(tokenIds: List<String>) {
         val localPrices = userLocalRepository.getTokenPrices()
             .firstOrNull()
-            ?.map { it.tokenSymbol }
+            ?.map { it.tokenId }
             .orEmpty()
-        val userTokensDiff = tokenSymbols.minus(localPrices.toSet())
+        val userTokensDiff = tokenIds.minus(localPrices.toSet())
         if (userTokensDiff.isNotEmpty()) {
-            loadAndSaveUserTokens(tokenSymbols)
+            loadAndSaveUserTokens(tokenIds)
         }
     }
 
-    private suspend fun loadAndSaveUserTokens(tokenSymbols: List<String>) {
-        val prices = tokenPricesRepository.getTokenPricesBySymbols(
-            tokenSymbols.map { TokenSymbol(it) },
+    private suspend fun loadAndSaveUserTokens(tokenIds: List<String>) {
+        val prices = tokenPricesRepository.getTokenPriceByIds(
+            tokenIds.map { tokenId -> TokenId(id = tokenId) },
             USD_READABLE_SYMBOL
         )
         userLocalRepository.setTokenPrices(prices)
@@ -102,7 +102,7 @@ class UserRemoteRepository(
             }
 
             val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
-            val price = userLocalRepository.getPriceByToken(token.symbol)
+            val price = userLocalRepository.getPriceByToken(token.coingeckoId)
             TokenConverter.fromNetwork(it, token, price)
         }
 

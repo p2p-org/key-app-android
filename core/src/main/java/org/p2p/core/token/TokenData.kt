@@ -12,5 +12,6 @@ data class TokenData(
     val decimals: Int,
     val isWrapped: Boolean,
     val serumV3Usdc: String?,
-    val serumV3Usdt: String?
+    val serumV3Usdt: String?,
+    val coingeckoId: String?
 ) : Parcelable
