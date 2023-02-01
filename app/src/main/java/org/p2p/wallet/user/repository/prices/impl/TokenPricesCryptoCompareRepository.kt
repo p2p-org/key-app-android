@@ -20,12 +20,12 @@ class TokenPricesCryptoCompareRepository(
     private val dispatchers: CoroutineDispatchers
 ) : TokenPricesRemoteRepository {
 
-    override suspend fun getTokenPriceBySymbol(
-        tokenSymbol: TokenId,
+    override suspend fun getTokenPriceById(
+        tokenId: TokenId,
         targetCurrency: String
     ): TokenPrice = withContext(dispatchers.io) {
         val responseJson = cryptoCompareApi.getPrice(
-            tokenFrom = tokenSymbol.id,
+            tokenFrom = tokenId.id,
             tokenTo = targetCurrency,
             apiKey = BuildConfig.comparePublicKey
         )
@@ -33,23 +33,23 @@ class TokenPricesCryptoCompareRepository(
         val priceValue = responseJson.getAsJsonPrimitive(Constants.USD_READABLE_SYMBOL)
 
         TokenPrice(
-            tokenSymbol = tokenSymbol.id,
+            tokenId = tokenId.id,
             price = priceValue.asBigDecimal.scaleMedium()
         )
     }
 
-    override suspend fun getTokenPricesBySymbols(
-        tokenSymbols: List<TokenId>,
+    override suspend fun getTokenPriceByIds(
+        tokenIds: List<TokenId>,
         targetCurrency: String
     ): List<TokenPrice> = withContext(dispatchers.io) {
         loadPrices(
-            tokenSymbols = tokenSymbols,
+            tokenIds = tokenIds,
             targetCurrencySymbol = targetCurrency
         )
     }
 
-    private suspend fun loadPrices(tokenSymbols: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> {
-        return tokenSymbols.map { it.id }
+    private suspend fun loadPrices(tokenIds: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> {
+        return tokenIds.map { it.id }
             .chunked(COMPARE_API_CHUNK_SIZE)
             .flatMap { chunkedTokenSymbols ->
                 // CompareApi cannot resolve more than 30 token prices at once,

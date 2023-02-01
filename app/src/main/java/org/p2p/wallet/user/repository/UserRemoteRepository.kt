@@ -72,7 +72,7 @@ class UserRemoteRepository(
     private suspend fun checkForNewTokens(tokenIds: List<String>) {
         val localPrices = userLocalRepository.getTokenPrices()
             .firstOrNull()
-            ?.map { it.tokenSymbol }
+            ?.map { it.tokenId }
             .orEmpty()
         val userTokensDiff = tokenIds.minus(localPrices.toSet())
         if (userTokensDiff.isNotEmpty()) {
@@ -81,8 +81,8 @@ class UserRemoteRepository(
     }
 
     private suspend fun loadAndSaveUserTokens(tokenIds: List<String>) {
-        val prices = tokenPricesRepository.getTokenPricesBySymbols(
-            tokenIds.map { TokenId(it) },
+        val prices = tokenPricesRepository.getTokenPriceByIds(
+            tokenIds.map { tokenId -> TokenId(id = tokenId) },
             USD_READABLE_SYMBOL
         )
         userLocalRepository.setTokenPrices(prices)

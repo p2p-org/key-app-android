@@ -12,29 +12,29 @@ class TokenPricesCoinGeckoRepository(
     private val dispatchers: CoroutineDispatchers
 ) : TokenPricesRemoteRepository {
 
-    override suspend fun getTokenPricesBySymbols(
-        tokenSymbols: List<TokenId>,
+    override suspend fun getTokenPriceByIds(
+        tokenIds: List<TokenId>,
         targetCurrency: String
     ): List<TokenPrice> = withContext(dispatchers.io) {
-        loadPrices(tokenSymbols, targetCurrency)
+        loadPrices(tokenIds, targetCurrency)
     }
 
-    override suspend fun getTokenPriceBySymbol(
-        tokenSymbol: TokenId,
+    override suspend fun getTokenPriceById(
+        tokenId: TokenId,
         targetCurrency: String
     ): TokenPrice = withContext(dispatchers.io) {
-        loadPrices(listOf(tokenSymbol), targetCurrency).first()
+        loadPrices(listOf(tokenId), targetCurrency).first()
     }
 
-    private suspend fun loadPrices(tokenSymbols: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> {
-        val tokenIdsForReqeust = tokenSymbols.joinToString(",") { it.id }
+    private suspend fun loadPrices(tokenIds: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> {
+        val tokenIdsForReqeust = tokenIds.joinToString(",") { it.id }
         return coinGeckoApi.getTokenPrices(
             tokenIds = tokenIdsForReqeust,
             targetCurrency = targetCurrencySymbol.lowercase()
         )
             .map {
                 TokenPrice(
-                    tokenSymbol = it.id,
+                    tokenId = it.id,
                     price = it.currentPrice
                 )
             }

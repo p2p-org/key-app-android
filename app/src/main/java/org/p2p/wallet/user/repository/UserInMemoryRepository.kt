@@ -26,7 +26,7 @@ class UserInMemoryRepository : UserLocalRepository {
     override fun getTokenPrices(): Flow<List<TokenPrice>> = pricesFlow
 
     override fun getPriceByToken(symbol: String?): TokenPrice? {
-        return pricesFlow.value.firstOrNull { it.tokenSymbol == symbol }
+        return pricesFlow.value.firstOrNull { it.tokenId == symbol }
     }
 
     override fun setTokenData(data: List<TokenData>) {

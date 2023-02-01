@@ -70,10 +70,10 @@ class SeedPhraseInteractor(
         val balance = balances.find { it.first == account.publicKey.toBase58() }
             ?.second
             ?: return@mapNotNull null
-        val tokenSymbol = TokenId(SOL_NAME.lowercase())
+        val tokenId = TokenId(SOL_NAME.lowercase())
 
         val exchangeRate =
-            solRate ?: tokenPricesRepository.getTokenPriceBySymbol(tokenSymbol, USD_READABLE_SYMBOL).price
+            solRate ?: tokenPricesRepository.getTokenPriceById(tokenId, USD_READABLE_SYMBOL).price
         if (solRate == null) solRate = exchangeRate
 
         val total = balance.fromLamports().scaleLong()
