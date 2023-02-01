@@ -5,16 +5,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary"
+    android:background="@color/bg_smoke"
     android:orientation="vertical">
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIconTint="@color/icons_night"
         app:title="@string/home_history"
-        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
-        app:titleTextColor="@color/text_night" />
+        app:titleMargin="16dp"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
@@ -31,8 +35,8 @@
                 android:id="@+id/historyRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 android:clipToPadding="false"
+                android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -42,49 +46,18 @@
                 tools:listitem="@layout/item_history_transaction"
                 tools:visibility="visible" />
 
-            <LinearLayout
+            <include
                 android:id="@+id/emptyStateLayout"
+                layout="@layout/layout_history_empty_placeholder"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="0dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.4">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="140dp"
-                    android:src="@drawable/ic_history_empty_placeholder"
-                    tools:ignore="contentDescription" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ic_history_placeholder_shadow" />
-
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:text="@string/receive_no_transactions_yet"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold20" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:text="@string/receive_no_transactions_yet_message"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-                    android:textColor="@color/textIconSecondary" />
-
-            </LinearLayout>
+                app:layout_constraintVertical_bias="0.4"
+                tools:visibility="visible" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/errorStateLayout"

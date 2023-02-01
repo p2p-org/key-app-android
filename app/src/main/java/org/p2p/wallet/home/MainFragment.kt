@@ -1,5 +1,8 @@
 package org.p2p.wallet.home
 
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
@@ -8,10 +11,8 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
@@ -24,9 +25,11 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseFragment
+import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
+import org.p2p.wallet.deeplinks.MainScreenActionButtonHandler
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
@@ -43,11 +46,14 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import kotlinx.coroutines.launch
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
-class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
+class MainFragment :
+    BaseFragment(R.layout.fragment_main),
+    MainTabsSwitcher,
+    CenterActionButtonClickSetter,
+    MainScreenActionButtonHandler {
 
     private val binding: FragmentMainBinding by viewBinding()
 
@@ -64,6 +70,9 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
     private val sellInteractor: SellInteractor by inject()
 
     private var lastSelectedItemId = R.id.homeItem
+
+    private val mainScreenActionButtonHandler: MainScreenActionButtonHandler?
+        get() = tabCachedFragments[R.id.homeItem] as? MainScreenActionButtonHandler
 
     companion object {
         fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainFragment =
@@ -273,6 +282,10 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             }
             block.invoke()
         }
+    }
+
+    override fun onActionButtonClicked(clickedButton: ActionButton) {
+        mainScreenActionButtonHandler?.onActionButtonClicked(clickedButton)
     }
 
     // TODO: this is a dirty hack on how to trigger data update

@@ -5,17 +5,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary"
+    android:background="@color/bg_smoke"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
+    <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_back_night"
-        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-        app:titleTextColor="@color/text_night" />
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="@color/icons_night"
+        app:titleMargin="16dp"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -69,39 +72,17 @@
             app:layout_constraintTop_toBottomOf="@id/view_action_buttons"
             tools:visibility="gone" />
 
-        <LinearLayout
+        <include
             android:id="@+id/emptyStateLayout"
+            layout="@layout/layout_history_empty_placeholder"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_action_buttons"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="320dp"
-                android:src="@drawable/ic_history_empty_placeholder"
-                tools:ignore="contentDescription" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/receive_no_transactions_yet"
-                android:textAppearance="@style/WalletTheme.TextAppearance.Bold28" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:text="@string/receive_no_transactions_yet_message"
-                android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
-
-        </LinearLayout>
+            tools:visibility="visible" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"

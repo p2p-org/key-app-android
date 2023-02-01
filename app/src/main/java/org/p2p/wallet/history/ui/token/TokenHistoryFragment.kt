@@ -99,6 +99,8 @@ class TokenHistoryFragment :
         errorStateLayout.buttonRetry.setOnClickListener { presenter.retryLoad() }
         historyRecyclerView.setupHistoryList()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
+        emptyStateLayout.buttonBuy.setOnClickListener { onActionButtonClicked(ActionButton.BUY_BUTTON) }
+        emptyStateLayout.buttonReceive.setOnClickListener { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) }
     }
 
     private fun Toolbar.setupToolbar() {
@@ -170,7 +172,7 @@ class TokenHistoryFragment :
         historyAdapter.setTransactions(transactions, sellTransactions)
 
         val isEmpty = historyAdapter.isEmpty()
-        binding.emptyStateLayout.isVisible = isEmpty
+        binding.emptyStateLayout.root.isVisible = isEmpty
         binding.refreshLayout.isVisible = !isEmpty
     }
 
@@ -185,7 +187,7 @@ class TokenHistoryFragment :
             shimmerView.root.isVisible = newState == PagingState.InitialLoading
             refreshLayout.isVisible = newState != PagingState.InitialLoading
             errorStateLayout.root.isVisible = newState is PagingState.Error
-            emptyStateLayout.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
+            emptyStateLayout.root.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
             historyRecyclerView.isVisible =
                 (newState == PagingState.Idle && !historyAdapter.isEmpty()) || newState == PagingState.Loading
         }
