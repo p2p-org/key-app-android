@@ -117,14 +117,11 @@ class CalculationMode(
 
     fun getCurrencyMode(): CurrencyMode = currencyMode
 
-    fun isMaxButtonVisible(minRentExemption: BigInteger, isRecipientEmpty: Boolean): Boolean {
+    fun isMaxButtonVisible(minRentExemption: BigInteger): Boolean {
         return if (token.isSOL) {
             val maxAllowedAmount = token.totalInLamports - minRentExemption
             val amountInLamports = tokenAmount.toLamports(token.decimals)
-            val isInputValidForRecipient = amountInLamports >= minRentExemption
-            val isInvalidAmount = isRecipientEmpty && !isInputValidForRecipient
-            val inValidRange = amountInLamports >= maxAllowedAmount && amountInLamports < token.totalInLamports
-            inputAmount.isEmpty() || (inValidRange && isInvalidAmount)
+            inputAmount.isEmpty() || amountInLamports >= maxAllowedAmount && amountInLamports < token.totalInLamports
         } else {
             inputAmount.isEmpty()
         }
