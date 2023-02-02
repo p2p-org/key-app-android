@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.model
+package org.p2p.wallet.newsend.model
 
 import androidx.annotation.StringRes
 import android.content.res.Resources

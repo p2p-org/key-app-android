@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui.search.adapter
+package org.p2p.wallet.newsend.ui.search.adapter
 
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
@@ -9,7 +9,7 @@ import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.databinding.ItemSearchBinding
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.DateTimeUtils
 import org.p2p.wallet.utils.cutMiddle

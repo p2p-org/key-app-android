@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.model
+package org.p2p.wallet.newsend.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.IgnoredOnParcel
@@ -17,8 +17,8 @@ import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
-import org.p2p.wallet.send.model.FeePayerState.ReduceInputAmount
-import org.p2p.wallet.send.model.FeePayerState.SwitchToSol
+import org.p2p.wallet.newsend.model.FeePayerState.ReduceInputAmount
+import org.p2p.wallet.newsend.model.FeePayerState.SwitchToSol
 import java.math.BigDecimal
 import java.math.BigInteger
 
