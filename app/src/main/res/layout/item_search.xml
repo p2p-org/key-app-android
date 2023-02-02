@@ -8,19 +8,28 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
-    <org.p2p.uikit.atoms.UiKitRoundedImageView
-        android:id="@+id/walletImageView"
+    <FrameLayout
+        android:id="@+id/frameWalletImageView"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginVertical="12dp"
         android:layout_marginStart="16dp"
         android:background="@drawable/bg_rain_rounded_24"
         android:padding="12dp"
-        android:src="@drawable/ic_search_wallet"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <org.p2p.uikit.atoms.UiKitRoundedImageView
+            android:id="@+id/walletImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_rain_rounded_24"
+            android:src="@drawable/ic_search_wallet"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/textViewDate"
@@ -33,9 +42,9 @@
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/walletImageView"
+        app:layout_constraintBottom_toBottomOf="@id/frameWalletImageView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/walletImageView"
+        app:layout_constraintTop_toTopOf="@id/frameWalletImageView"
         tools:text="Today"
         tools:visibility="gone" />
 
@@ -50,8 +59,8 @@
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@+id/textViewBottom"
         app:layout_constraintEnd_toStartOf="@id/textViewDate"
-        app:layout_constraintStart_toEndOf="@id/walletImageView"
-        app:layout_constraintTop_toTopOf="@id/walletImageView"
+        app:layout_constraintStart_toEndOf="@id/frameWalletImageView"
+        app:layout_constraintTop_toTopOf="@id/frameWalletImageView"
         tools:text="kirill.p2p.sol" />
 
     <TextView
@@ -65,9 +74,9 @@
         android:singleLine="true"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
-        app:layout_constraintBottom_toBottomOf="@id/walletImageView"
+        app:layout_constraintBottom_toBottomOf="@id/frameWalletImageView"
         app:layout_constraintEnd_toStartOf="@id/textViewDate"
-        app:layout_constraintStart_toEndOf="@id/walletImageView"
+        app:layout_constraintStart_toEndOf="@id/frameWalletImageView"
         app:layout_constraintTop_toBottomOf="@id/textViewTop"
         tools:text="FG4Y3yX4A...rdpadasT" />
 

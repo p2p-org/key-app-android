@@ -36,6 +36,8 @@ jobs:
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-unit-tests:
@@ -70,6 +72,8 @@ jobs:
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: Run unit tests
         run: ./gradlew testDebug
   android-build-artifacts:
@@ -114,6 +118,8 @@ jobs:
           compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
 
@@ -154,3 +160,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: "Find a Jira ticket and move it to READY FOR TESTING"
         uses: ./.github/actions/setup-jira-rft
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}

@@ -1,6 +1,5 @@
 package org.p2p.wallet.newsend
 
-import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -30,6 +29,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
+import kotlinx.coroutines.CancellationException
 
 class SendFeeRelayerManager(
     private val sendInteractor: SendInteractor,
@@ -111,7 +111,6 @@ class SendFeeRelayerManager(
         useCache: Boolean
     ) {
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
-        val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
 
         try {
             onFeeLoading?.invoke(FeeLoadingState(isLoading = true, isDelayed = useCache))
@@ -132,6 +131,7 @@ class SendFeeRelayerManager(
                 return
             }
 
+            val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
             showFeeDetails(
                 sourceToken = sourceToken,
                 feeRelayerFee = feeRelayerFee,
@@ -139,10 +139,8 @@ class SendFeeRelayerManager(
                 inputAmount = inputAmount,
                 strategy = strategy
             )
-        } catch (illegalStateException: IllegalStateException) {
-            Timber.i(illegalStateException, "Error during FeeRelayer fee calculation try to switch to sol")
-            sendInteractor.switchFeePayerToSol(solToken)
-            recalculate(sourceToken, inputAmount)
+        } catch (e: CancellationException) {
+            Timber.i("Smart selection job was cancelled")
         } catch (e: Throwable) {
             Timber.e(e, "Error during FeeRelayer fee calculation")
             handleError(FeesCalculationError)

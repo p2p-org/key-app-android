@@ -141,6 +141,7 @@ class SellLockedFragment :
 
     private fun renderCopyButton() = with(binding.layoutDetails.imageViewCopy) {
         isVisible = details.isReceiverAddressWallet
+        binding.layoutDetails.containerReceiver.isVisible = true
         setOnClickListener {
             requireContext().copyToClipBoard(details.receiverAddress)
             showUiKitSnackBar(messageResId = R.string.common_copied)

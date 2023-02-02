@@ -1,4 +1,4 @@
-package org.p2p.wallet.android
+package org.p2p.wallet.common.permissions.new
 
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher

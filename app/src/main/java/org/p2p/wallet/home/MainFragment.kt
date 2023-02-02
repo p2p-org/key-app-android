@@ -1,5 +1,8 @@
 package org.p2p.wallet.home
 
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
@@ -8,10 +11,8 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
@@ -43,11 +44,13 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import kotlinx.coroutines.launch
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
-class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
+class MainFragment :
+    BaseFragment(R.layout.fragment_main),
+    MainTabsSwitcher,
+    CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
 
@@ -186,6 +189,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         }
 
         val itemId = clickedTab.itemId
+
+        // fixme: https://p2pvalidator.atlassian.net/browse/PWN-7051 Refreshing swap every time
+        if (clickedTab == ScreenTab.SWAP_SCREEN) {
+            tabCachedFragments.remove(itemId)
+        }
 
         if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
             val fragment = when (clickedTab) {

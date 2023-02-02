@@ -203,7 +203,11 @@ class NewSendFragment :
         binding.widgetSendDetails.showDelayedFeeViewLoading(isLoading)
     }
 
-    override fun setFeeLabel(text: String?) {
+    override fun showFeeViewVisible(isVisible: Boolean) {
+        binding.widgetSendDetails.showFeeVisible(isVisible = isVisible)
+    }
+
+    override fun setFeeLabel(text: String) {
         binding.widgetSendDetails.setFeeLabel(text)
     }
 
