@@ -6,19 +6,6 @@ on:
       - release/*
 
 jobs:
-  update-jira-status:
-    if: ${{ github.event_name == 'pull_request' }}
-    name: "Move Jira Ticket to Review"
-    runs-on: ubuntu-latest
-    environment: develop
-    steps:
-      - uses: actions/checkout@v3
-      - name: "Find a Jira ticket and move it to REVIEW"
-        uses: ./.github/actions/setup-jira-review
-        with:
-          jira-base-url: ${{ vars.JIRA_BASE_URL }}
-          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
-          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
