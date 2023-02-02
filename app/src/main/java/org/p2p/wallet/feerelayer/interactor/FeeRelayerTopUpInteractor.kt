@@ -203,7 +203,7 @@ class FeeRelayerTopUpInteractor(
                 }
             }
         } else {
-            neededAmount.transaction += minimumRelayAccountBalance
+            neededAmount.accountBalances += minimumRelayAccountBalance
         }
         return neededAmount
     }
