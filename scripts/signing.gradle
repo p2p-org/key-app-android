@@ -23,7 +23,7 @@ android {
                 signingProperties["keyPassword"] = "${System.getenv('KEY_PASSWORD')}"
             }
 
-            storeFile rootProject.file(signingProperties['keystorePath'])
+            storeFile rootProject.file('p2pwallet.jks')
             storePassword signingProperties['keystorePassword']
             keyAlias signingProperties['keyAlias']
             keyPassword signingProperties['keyPassword']

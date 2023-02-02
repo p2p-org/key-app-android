@@ -187,6 +187,11 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
 
         val itemId = clickedTab.itemId
 
+        // fixme: https://p2pvalidator.atlassian.net/browse/PWN-7051 Refreshing swap every time
+        if (clickedTab == ScreenTab.SWAP_SCREEN) {
+            tabCachedFragments.remove(itemId)
+        }
+
         if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
             val fragment = when (clickedTab) {
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()

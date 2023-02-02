@@ -46,6 +46,18 @@ inputs:
   compare-key:
     description: "Compare api key"
     required: true
+  default-project:
+    description: "Project name for Sentry"
+    required: false
+    default: "android"
+  default-organization:
+    description: "Project organization for Sentry"
+    required: false
+    default: "p2p-wallet"
+  default-url:
+    description: "Project Sentry full URL"
+    required: false
+    default: "https://sentry.io/"
   sentry-auth-token:
     description: "Project Sentry Auth Token"
     required: true
@@ -60,6 +72,12 @@ inputs:
     required: true
   keystore-secret:
     description: "Release JKS keystore"
+    required: true
+  lokalise-key:
+    description: "Lokalise API key"
+    required: true
+  lokalise-app-id:
+    description: "Lokalise App ID"
     required: true
 runs:
   using: composite
@@ -106,11 +124,16 @@ runs:
         echo "intercomAppId=${{ inputs.intercom-app-id }}" >> apikeys.properties
         echo "appsFlyerKey=${{ inputs.apps-flyer-key }}" >> apikeys.properties
         echo "comparePublicKey=${{ inputs.compare-key }}" >> apikeys.properties
+        echo "lokaliseKey=${{ inputs.lokalise-key }}" >> apikeys.properties
+        echo "lokaliseAppId=${{ inputs.lokalise-app-id }}" >> apikeys.properties
         echo "apikeys.properties is successfully created"
     - name: "Create sentry.properties file"
       shell: bash
       run: |
         touch sentry.properties
+        echo "defaults.project=${{ inputs.default-project }}" >> sentry.properties
+        echo "defaults.org=${{ inputs.default-organization }}" >> sentry.properties
+        echo "defaults.url=${{ inputs.default-url }}" >> sentry.properties
         echo "auth.token=${{ inputs.sentry-auth-token }}" >> sentry.properties
         echo "auth.dsn=${{ inputs.sentry-auth-dsn }}" >> sentry.properties
         echo "sentry.properties is successfully created"

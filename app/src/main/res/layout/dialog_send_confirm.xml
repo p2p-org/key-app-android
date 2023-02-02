@@ -106,7 +106,7 @@
         android:layout_gravity="center"
         android:layout_marginStart="16dp"
         android:background="@drawable/bg_app_rounded"
-        android:padding="8dp"
+        app:contentPadding="8dp"
         android:src="@drawable/ic_wallet_gray"
         app:layout_constraintBottom_toBottomOf="@id/destinationTextView"
         app:layout_constraintStart_toStartOf="parent"
