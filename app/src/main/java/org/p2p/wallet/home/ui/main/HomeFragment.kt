@@ -9,7 +9,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
-import org.p2p.wallet.android.requestPermissionNotification
+import org.p2p.wallet.common.permissions.new.requestPermissionNotification
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -111,6 +111,9 @@ class HomeFragment :
         requestPermissionNotification { permissionState ->
             if (permissionState == PermissionState.GRANTED) {
                 AppNotificationManager.createNotificationChannels(requireContext())
+                browseAnalytics.logNotificationPermissionAllowed(isGranted = true)
+            } else {
+                browseAnalytics.logNotificationPermissionAllowed(isGranted = false)
             }
         }
     }

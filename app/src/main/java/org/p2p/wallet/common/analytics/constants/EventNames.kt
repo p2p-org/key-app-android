@@ -15,6 +15,7 @@ object EventNames {
     const val BROWSE_BANNER_BACKUP_PRESSED = "Banner_Backup_Pressed"
     const val BROWSE_BANNER_NOTIFICATION_PRESSED = "Banner_Notifications_Pressed"
     const val BROWSE_BANNER_FEEDBACK_PRESSED = "Banner_Feedback_Pressed"
+    const val BROWSE_NOTIFICATION_PERMISSION_ALLOWED = "Push_Allowed"
 
     const val AUTH_VIEWED = "Auth_Viewed"
     const val AUTH_VALIDATED = "Auth_Validated"
