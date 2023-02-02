@@ -28,7 +28,6 @@ import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
-import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.intercom.IntercomService
@@ -44,6 +43,7 @@ import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import kotlinx.coroutines.launch
+import org.p2p.wallet.history.ui.new_history.NewHistoryFragment
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
@@ -153,7 +153,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         childFragmentManager.fragments.forEach { fragment ->
             when (fragment) {
                 is HomeFragment -> tabCachedFragments.put(R.id.homeItem, fragment)
-                is HistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
+                is NewHistoryFragment -> tabCachedFragments.put(R.id.historyItem, fragment)
                 is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
                 is OrcaSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
@@ -191,7 +191,7 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
             val fragment = when (clickedTab) {
                 ScreenTab.HOME_SCREEN -> HomeFragment.create()
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
-                ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
+                ScreenTab.HISTORY_SCREEN -> NewHistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
                 ScreenTab.SWAP_SCREEN -> OrcaSwapFragment.create(OrcaSwapOpenedFrom.MAIN_SCREEN)
                 else -> error("Can't create fragment for $clickedTab")
