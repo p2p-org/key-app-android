@@ -82,7 +82,7 @@ class BrowseAnalytics(
                 params = mapOf(
                     "Screen_Name" to screenName,
                     "Last_Screen" to lastScreen,
-                    "isSellEnabled" to isSellEnabled
+                    "Is_Sell_Enabled" to isSellEnabled
                 )
             )
         }

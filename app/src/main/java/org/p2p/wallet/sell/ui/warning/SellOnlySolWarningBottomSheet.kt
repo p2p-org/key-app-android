@@ -16,6 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogSellWarningOnlySolBinding
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.sell.analytics.SellAnalytics
 
 class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
 
@@ -31,6 +32,7 @@ class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
     private lateinit var binding: DialogSellWarningOnlySolBinding
 
     private val secureStorage: SecureStorageContract by inject()
+    private val sellAnalytics: SellAnalytics by inject()
 
     override fun onCreateInnerView(
         inflater: LayoutInflater,
@@ -51,7 +53,10 @@ class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
             setText(R.string.sell_warning_only_sol_button)
             setBackgroundColor(getColor(R.color.bg_night))
             setTextColorRes(R.color.text_snow)
-            setOnClickListener { onCloseButtonClicked() }
+            setOnClickListener {
+                sellAnalytics.logSellOnlySolWarningClosed()
+                onCloseButtonClicked()
+            }
         }
     }
 
