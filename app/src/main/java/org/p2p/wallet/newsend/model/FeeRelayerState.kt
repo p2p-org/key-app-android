@@ -11,7 +11,11 @@ sealed interface FeeRelayerState {
         val solanaFee: SendSolanaFee?,
         val feeLimitInfo: FreeTransactionFeeLimit
     ) : FeeRelayerState
-    data class Failure(val errorStateError: FeeRelayerStateError) : FeeRelayerState
+    data class Failure(val errorStateError: FeeRelayerStateError) : FeeRelayerState {
+        fun isFeeCalculationError(): Boolean {
+            return errorStateError == FeeRelayerStateError.FeesCalculationError
+        }
+    }
 
     fun isValidState(): Boolean = this is UpdateFee || this is ReduceAmount || this is Idle
 }
