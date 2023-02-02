@@ -9,7 +9,7 @@ class GeneralAnalytics(private val tracker: Analytics) {
             event = EventNames.GENERAL_ACTION_BUTTON_CLICKED,
             params = mapOf(
                 "Last_Screen" to lastScreenName,
-                "isSellEnabled" to isSellEnabled
+                "Is_Sell_Enabled" to isSellEnabled
             )
         )
     }
