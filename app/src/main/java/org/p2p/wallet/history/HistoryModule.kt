@@ -19,8 +19,6 @@ import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseReposit
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
 import org.p2p.wallet.history.repository.remote.HistoryRemoteRepository
-import org.p2p.wallet.history.repository.remote.HistoryRemoteRepositoryImpl
-import org.p2p.wallet.history.repository.remote.RpcHistoryRemoteRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
@@ -31,10 +29,10 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsCon
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
-import org.p2p.wallet.history.ui.new_history.NewHistoryContract
-import org.p2p.wallet.history.ui.new_history.NewHistoryPresenter
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewPresenter
+import org.p2p.wallet.history.ui.new_history.NewHistoryContract
+import org.p2p.wallet.history.ui.new_history.NewHistoryPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.rpc.RpcModule
@@ -109,5 +107,10 @@ object HistoryModule : InjectionModule {
                 )
             )
         }
+
+        factory { HistoryServiceInteractor(get()) }
+        factory { RpcHistoryRemoteRepository(get()) }
+        single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(HistoryServiceApi::class.java) }
+        factory<NewHistoryContract.Presenter> { NewHistoryPresenter(get(), get()) }
     }
 }
