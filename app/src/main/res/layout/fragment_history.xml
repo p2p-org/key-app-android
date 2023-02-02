@@ -2,166 +2,28 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary"
+    android:background="@color/bg_smoke"
     android:orientation="vertical">
 
     <org.p2p.uikit.organisms.UiKitToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIconTint="@color/icons_night"
         app:title="@string/home_history"
-        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
-        app:titleTextColor="@color/text_night" />
+        app:titleMargin="16dp"
+        app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refreshLayout"
+    <include
+        android:id="@+id/layoutHistoryList"
+        layout="@layout/layout_history_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/historyRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
-                android:clipToPadding="false"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_history_transaction"
-                tools:visibility="visible" />
-
-            <LinearLayout
-                android:id="@+id/emptyStateLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.4">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="140dp"
-                    android:src="@drawable/ic_history_empty_placeholder"
-                    tools:ignore="contentDescription" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ic_history_placeholder_shadow" />
-
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:text="@string/receive_no_transactions_yet"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold20" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:text="@string/receive_no_transactions_yet_message"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-                    android:textColor="@color/textIconSecondary" />
-
-            </LinearLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/errorStateLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/errorImageView"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:background="@drawable/bg_circle_stroke_icon_secondary"
-                    android:src="@drawable/ic_history_error_placeholder"
-                    app:layout_constraintBottom_toTopOf="@id/retryButton"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.4"
-                    tools:ignore="contentDescription" />
-
-
-                <TextView
-                    android:id="@+id/textViewError"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:gravity="center"
-                    android:text="@string/common_error"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
-                    app:layout_constraintTop_toBottomOf="@id/errorImageView" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:text="@string/error_history_message"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
-                    android:textColor="@color/textIconSecondary"
-                    app:layout_constraintTop_toBottomOf="@id/textViewError" />
-
-                <org.p2p.uikit.components.UiKitButton
-                    android:id="@+id/retryButton"
-                    style="@style/UiKit.Components.Button.Large"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/ui_kit_button_large_height"
-                    android:layout_margin="16dp"
-                    android:backgroundTint="@color/bg_night"
-                    android:text="@string/common_try_again"
-                    android:textColor="@color/lime"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
-        tools:visibility="gone">
-
-        <include
-            android:id="@+id/shimmerView"
-            layout="@layout/view_history_shimmer" />
-    </FrameLayout>
-
-    <View
-        android:id="@+id/refreshLayoutProgressPlaceholder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
-        android:background="@color/white_50"
-        android:clickable="true"
-        android:visibility="gone" />
+        android:layout_marginTop="?actionBarSize" />
 
 </FrameLayout>

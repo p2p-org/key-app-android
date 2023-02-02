@@ -1,9 +1,6 @@
 package org.p2p.wallet.swap.ui.orca
 
 import android.content.res.Resources
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
@@ -57,6 +54,9 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.UUID
 import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TAG_SWAP = "SWAP_STATE"
 
@@ -332,6 +332,16 @@ class OrcaSwapPresenter(
                 showError(transactionId, error)
             }
         }
+    }
+
+    override fun cleanFields() {
+        val initialToken = initialToken ?: solToken ?: return
+        setNewSourceToken(initialToken)
+        view?.showNewSourceAmount(emptyString())
+
+        sourceAmount = "0"
+
+        isMaxClicked = false
     }
 
     private fun findValidFeePayer(
@@ -694,6 +704,7 @@ class OrcaSwapPresenter(
         Timber.e(error, "Error swapping tokens")
         view?.showErrorMessage(error)
         view?.showProgressDialog(transactionId, null)
+        cleanFields()
     }
 
     private fun showDebugBestSwapPairRoute(bestPairRoute: OrcaPoolsPair) {
