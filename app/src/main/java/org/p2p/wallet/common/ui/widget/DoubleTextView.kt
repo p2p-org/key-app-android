@@ -11,7 +11,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetDoubleTextViewBinding
-import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.uikit.utils.colorFromTheme
 
 class DoubleTextView @JvmOverloads constructor(
     context: Context,
