@@ -271,11 +271,6 @@
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
     <string name="home_tokens">Tokens</string>
 
-    <!-- History -->
-    <string name="history_empty_message">Your history will appear here.\nTo get started you can:</string>
-    <string name="history_empty_option_buy">Buy crypto</string>
-    <string name="history_empty_option_receive">Receive</string>
-
     <!-- receive -->
     <string name="receive_solana">Solana</string>
     <string name="receive_bitcoin">Bitcoin</string>

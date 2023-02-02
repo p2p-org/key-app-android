@@ -19,7 +19,7 @@
         tools:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/imagePlaceholder"
+            android:id="@+id/imageViewPlaceholder"
             android:layout_width="match_parent"
             android:layout_height="192dp"
             android:src="@drawable/ic_history_empty"
@@ -29,7 +29,7 @@
             tools:ignore="contentDescription" />
 
         <TextView
-            android:id="@+id/textEmptyMessage"
+            android:id="@+id/textViewEmptyMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -39,7 +39,7 @@
             android:textColor="@color/text_night"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imagePlaceholder" />
+            app:layout_constraintTop_toBottomOf="@+id/imageViewPlaceholder" />
 
         <org.p2p.uikit.components.UiKitButton
             android:id="@+id/buttonBuy"
@@ -50,7 +50,7 @@
             android:backgroundTint="@color/bg_night"
             android:text="@string/history_empty_option_buy"
             android:textColor="@color/text_lime"
-            app:layout_constraintTop_toBottomOf="@+id/textEmptyMessage" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewEmptyMessage" />
 
         <org.p2p.uikit.components.UiKitButton
             android:id="@+id/buttonReceive"
