@@ -26,6 +26,7 @@ import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.newsend.model.FeeCalculationState
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
@@ -83,7 +84,7 @@ class SendInteractor(
         token: Token.Active,
         recipient: String,
         useCache: Boolean = true
-    ): FeeRelayerFee? {
+    ): FeeCalculationState? {
         val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
         val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(ACCOUNT_INFO_DATA_LENGTH)
 
@@ -112,18 +113,19 @@ class SendInteractor(
 
         if (fees.total.isZero()) return null
 
-        val feeInSpl = getFeesInPayingToken(
-            feePayerToken = feePayerToken,
-            transactionFeeInSOL = fees.transaction,
-            accountCreationFeeInSOL = fees.accountBalances
-        )
-        return FeeRelayerFee(
-            transactionFeeInSol = fees.transaction,
-            accountCreationFeeInSol = fees.accountBalances,
-            transactionFeeInSpl = feeInSpl.transaction,
-            accountCreationFeeInSpl = feeInSpl.accountBalances,
-            expectedFee = expectedFee
-        )
+        val feeInSpl = try {
+            getFeesInPayingToken(
+                feePayerToken = feePayerToken,
+                transactionFeeInSOL = fees.transaction,
+                accountCreationFeeInSOL = fees.accountBalances
+            )
+        } catch (e: IllegalStateException) {
+            val fee = FeeRelayerFee(solFeeAmount = fees, splFeeAmount = fees, expectedFee = expectedFee)
+            return FeeCalculationState.SwitchToSol(fee)
+        }
+
+        val fee = FeeRelayerFee(solFeeAmount = fees, splFeeAmount = feeInSpl, expectedFee = expectedFee)
+        return FeeCalculationState.FeePayerFound(fee)
     }
 
     /*

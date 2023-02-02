@@ -1,9 +1,9 @@
 package org.p2p.wallet.feerelayer.model
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.p2p.solanaj.core.FeeAmount
 import java.math.BigInteger
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class FeeRelayerFee constructor(
@@ -15,6 +15,14 @@ data class FeeRelayerFee constructor(
 
     val expectedFee: FeeAmount
 ) : Parcelable {
+
+    constructor(solFeeAmount: FeeAmount, splFeeAmount: FeeAmount, expectedFee: FeeAmount) : this(
+        transactionFeeInSol = solFeeAmount.accountBalances,
+        accountCreationFeeInSol = solFeeAmount.transaction,
+        transactionFeeInSpl = splFeeAmount.transaction,
+        accountCreationFeeInSpl = splFeeAmount.accountBalances,
+        expectedFee = expectedFee
+    )
 
     val totalInSol: BigInteger
         get() = transactionFeeInSol + accountCreationFeeInSol

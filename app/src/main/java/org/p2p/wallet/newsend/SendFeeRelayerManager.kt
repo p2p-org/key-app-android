@@ -1,5 +1,6 @@
 package org.p2p.wallet.newsend
 
+import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -11,6 +12,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FreeTransactionFeeLimit
 import org.p2p.wallet.newsend.model.CalculationMode
+import org.p2p.wallet.newsend.model.FeeCalculationState
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.FeeRelayerState.Failure
@@ -29,7 +31,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
 
 class SendFeeRelayerManager(
     private val sendInteractor: SendInteractor,
@@ -203,12 +204,20 @@ class SendFeeRelayerManager(
         useCache: Boolean = true
     ): FeeRelayerFee? {
         val recipient = result.addressState.address
-        return sendInteractor.calculateFeesForFeeRelayer(
+        val state = sendInteractor.calculateFeesForFeeRelayer(
             feePayerToken = feePayerToken,
             token = sourceToken,
             recipient = recipient,
             useCache = useCache
         )
+        return when (state) {
+            is FeeCalculationState.FeePayerFound -> state.splFee
+            is FeeCalculationState.SwitchToSol -> {
+                sendInteractor.switchFeePayerToSol(solToken)
+                state.solFee
+            }
+            else -> null
+        }
     }
 
     private suspend fun showFeeDetails(

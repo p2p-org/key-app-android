@@ -35,6 +35,7 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.newsend.model.FeeCalculationState
 import org.p2p.wallet.renbtc.interactor.BurnBtcInteractor
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.model.AddressValidation
@@ -652,18 +653,27 @@ class SendPresenter(
             return null
         }
 
+        val fee = when (fees) {
+            is FeeCalculationState.FeePayerFound -> fees.splFee
+            is FeeCalculationState.SwitchToSol -> {
+                sendInteractor.switchFeePayerToSol(state.solToken)
+                fees.solFee
+            }
+            else -> null
+        }
+
         /*
          * Checking if fee or feeInPayingToken are null
          * feeInPayingToken can be null only for renBTC network
          * */
-        if (fees?.totalInSpl == null || sourceToken.isSOL) {
+        if (fee?.totalInSpl == null || sourceToken.isSOL) {
             state.sendFeeRelayerFee = null
             calculateTotal(sendFeeRelayerFee = null)
             view?.hideAccountFeeView()
             return null
         }
 
-        return fees
+        return fee
     }
 
     private fun handleError() {
