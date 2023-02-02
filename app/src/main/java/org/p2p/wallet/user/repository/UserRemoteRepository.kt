@@ -111,7 +111,7 @@ class UserRemoteRepository(
          * */
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return tokens
-        val solPrice = userLocalRepository.getPriceByToken(tokenData.symbol)
+        val solPrice = userLocalRepository.getPriceByToken(tokenData.coingeckoId)
         val solToken = Token.createSOL(
             publicKey = publicKey,
             tokenData = tokenData,
@@ -133,7 +133,7 @@ class UserRemoteRepository(
 
         if (result == null) return null
 
-        val price = userLocalRepository.getPriceByToken(result.symbol.uppercase())
+        val price = userLocalRepository.getPriceByToken(result.coingeckoId)
         return TokenConverter.fromNetwork(account, result, price)
     }
 }
