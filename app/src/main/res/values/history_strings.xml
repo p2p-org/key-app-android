@@ -5,4 +5,6 @@
     <string name="history_empty_option_buy">Buy crypto</string>
     <string name="history_empty_option_receive">Receive</string>
 
+    <string name="history_error_message">Oops! Something happened.</string>
+
 </resources>
