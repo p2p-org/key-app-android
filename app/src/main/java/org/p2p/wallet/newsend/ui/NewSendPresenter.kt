@@ -273,7 +273,6 @@ class NewSendPresenter(
     override fun updateInputAmount(amount: String) {
         calculationMode.updateInputAmount(amount)
         showMaxButtonIfNeeded()
-        view?.setFeeLabel(resources.getString(R.string.send_fees))
         updateButton(requireToken(), feeRelayerManager.getState())
 
         newSendAnalytics.setMaxButtonClicked(isClicked = false)

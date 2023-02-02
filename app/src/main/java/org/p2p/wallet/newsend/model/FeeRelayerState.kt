@@ -13,5 +13,5 @@ sealed interface FeeRelayerState {
     ) : FeeRelayerState
     data class Failure(val errorStateError: FeeRelayerStateError) : FeeRelayerState
 
-    fun isValidState(): Boolean = this is UpdateFee || this is ReduceAmount
+    fun isValidState(): Boolean = this is UpdateFee || this is ReduceAmount || this is Idle
 }
