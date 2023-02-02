@@ -1,5 +1,8 @@
 package org.p2p.wallet.send.interactor
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isZero
@@ -26,15 +29,11 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
 import java.math.BigInteger
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.withContext
 
 private const val SEND_TAG = "SEND"
 
@@ -134,13 +133,15 @@ class SendInteractor(
     * */
     suspend fun findAlternativeFeePayerTokens(
         userTokens: List<Token.Active>,
-        fee: SendSolanaFee
+        feePayerToExclude: Token.Active,
+        transactionFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
     ): List<Token.Active> = withContext(dispatchers.io) {
-        val tokenToExclude = fee.feePayerToken.tokenSymbol
+        val tokenToExclude = feePayerToExclude.tokenSymbol
         val fees = userTokens
             .map { token ->
                 // converting SOL fee in token lamports to verify the balance coverage
-                async { getFeesInPayingTokeNullable(token, fee) }
+                async { getFeesInPayingTokeNullable(token, transactionFeeInSOL, accountCreationFeeInSOL) }
             }
             .awaitAll()
             .filterNotNull()
@@ -149,7 +150,8 @@ class SendInteractor(
         userTokens.filter { token ->
             if (token.tokenSymbol == tokenToExclude) return@filter false
 
-            if (token.isSOL) return@filter token.totalInLamports >= fee.feeRelayerFee.totalInSol
+            val totalInSol = transactionFeeInSOL + accountCreationFeeInSOL
+            if (token.isSOL) return@filter token.totalInLamports >= totalInSol
 
             // assuming that all other tokens are SPL
             val feesInSpl = fees[token.tokenSymbol] ?: return@filter false
@@ -233,12 +235,13 @@ class SendInteractor(
 
     private suspend fun getFeesInPayingTokeNullable(
         token: Token.Active,
-        fee: SendSolanaFee
+        transactionFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
     ): Pair<String, FeeAmount>? = try {
         val feeInSpl = getFeesInPayingToken(
             feePayerToken = token,
-            transactionFeeInSOL = fee.feeRelayerFee.transactionFeeInSol,
-            accountCreationFeeInSOL = fee.feeRelayerFee.accountCreationFeeInSol
+            transactionFeeInSOL = transactionFeeInSOL,
+            accountCreationFeeInSOL = accountCreationFeeInSOL
         )
 
         token.tokenSymbol to feeInSpl

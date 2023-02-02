@@ -10,6 +10,9 @@ import timber.log.Timber
 private const val TAG = "CrashHttpLoggingInterceptor"
 
 class CrashHttpLoggingInterceptor : Interceptor {
+
+    private var rpcMethodName: String? = null
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
@@ -28,9 +31,9 @@ class CrashHttpLoggingInterceptor : Interceptor {
     private fun createRequestLog(request: Request): String = buildString {
         append("NETWORK ${request.url} | ")
 
-        val jsonRpcMethodName = getRpcMethodName(request)
-        if (jsonRpcMethodName != null) {
-            append("$jsonRpcMethodName | ")
+        rpcMethodName = getRpcMethodName(request)
+        if (rpcMethodName != null) {
+            append("$rpcMethodName | ")
         }
 
         append("${request.method} ")
@@ -45,8 +48,9 @@ class CrashHttpLoggingInterceptor : Interceptor {
 
     private fun createResponseLog(response: Response) = buildString {
         append("NETWORK ${response.request.url} | ")
-        if (response.request.url.host.contains("rpcpool")) {
-            getRpcMethodName(response.request)?.let { append("$it ") }
+        if (rpcMethodName != null) {
+            append(rpcMethodName)
+            rpcMethodName = null
         }
 
         append("<-- ")

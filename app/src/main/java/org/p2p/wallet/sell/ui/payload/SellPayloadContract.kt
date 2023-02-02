@@ -4,7 +4,6 @@ import org.p2p.uikit.components.SellWidgetViewState
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import java.math.BigDecimal
 
 interface SellPayloadContract {
     data class ViewState(
@@ -14,12 +13,16 @@ interface SellPayloadContract {
 
     interface View : MvpView {
         fun showLoading(isVisible: Boolean)
+        fun showButtonLoading(isLoading: Boolean)
         fun showMoonpayWidget(url: String)
         fun navigateToSellLock(details: SellTransactionViewDetails)
         fun navigateToErrorScreen()
-        fun navigateNotEnoughTokensErrorScreen(minAmount: BigDecimal)
+        fun navigateToInformationScreen()
         fun updateViewState(newState: ViewState)
+        fun updateToolbarTitle(tokenSymbol: String)
         fun setButtonState(state: CashOutButtonState)
+        fun showOnlySolWarning()
+        fun showKeyboard()
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -29,5 +32,6 @@ interface SellPayloadContract {
         fun switchCurrencyMode()
         fun checkSellLock()
         fun setNeedCheckForSellLock()
+        fun buildMoonpayWidget()
     }
 }

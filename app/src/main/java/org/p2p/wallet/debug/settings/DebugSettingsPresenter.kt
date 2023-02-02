@@ -167,9 +167,7 @@ class DebugSettingsPresenter(
 
             appendBreakLine()
 
-            createFlagRecord("AMPLITUDE_ENABLED", BuildConfig.AMPLITUDE_ENABLED)
             createFlagRecord("CRASHLYTICS_ENABLED", BuildConfig.CRASHLYTICS_ENABLED)
-            createFlagRecord("KEY_DEV_NET_ENABLED", BuildConfig.KEY_DEV_NET_ENABLED)
         }
         return listOf(
             SettingsRow.Info(

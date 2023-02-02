@@ -13,7 +13,7 @@ import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-class MoonpayTransactionViewHolder(
+class HistorySellTransactionViewHolder(
     parent: ViewGroup,
     private val onItemClicked: (SellTransactionViewDetails) -> Unit,
     private val binding: ItemHistoryMoonpayTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
@@ -57,10 +57,7 @@ class MoonpayTransactionViewHolder(
         val subtitleReceiver: String
         when (item.status) {
             SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
-                titleStatus = getString(
-                    R.string.transaction_history_moonpay_waiting_for_deposit_title,
-                    item.amountInSol
-                )
+                titleStatus = getString(R.string.transaction_history_moonpay_waiting_for_deposit_title)
                 subtitleReceiver = getString(
                     R.string.transaction_history_moonpay_waiting_for_deposit_subtitle,
                     item.transactionDetails.receiverAddress.cutMiddle()
@@ -68,11 +65,11 @@ class MoonpayTransactionViewHolder(
             }
             SellTransactionStatus.PENDING -> {
                 titleStatus = getString(R.string.transaction_history_moonpay_pending_title)
-                subtitleReceiver = item.transactionDetails.receiverAddress
+                subtitleReceiver = getString(R.string.transaction_history_moonpay_completed_subtitle)
             }
             SellTransactionStatus.COMPLETED -> {
                 titleStatus = getString(R.string.transaction_history_moonpay_completed_title)
-                subtitleReceiver = item.transactionDetails.receiverAddress
+                subtitleReceiver = getString(R.string.transaction_history_moonpay_completed_subtitle)
             }
             SellTransactionStatus.FAILED -> {
                 titleStatus = getString(R.string.transaction_history_moonpay_failed_title)
@@ -85,10 +82,18 @@ class MoonpayTransactionViewHolder(
     }
 
     private fun renderAmounts(item: HistoryItem.MoonpayTransactionItem) {
-        binding.layoutTransactionDetails.textViewValue.text = binding.getString(
-            R.string.transaction_history_moonpay_amount_usd,
-            item.amountInUsd
-        )
+        if (item.status == SellTransactionStatus.COMPLETED) {
+            binding.layoutTransactionDetails.textViewValue.text = binding.getString(
+                R.string.transaction_history_moonpay_amount_fiat,
+                item.amountInFiat,
+                item.transactionDetails.fiatUiName.uppercase()
+            )
+        } else {
+            binding.layoutTransactionDetails.textViewValue.text = binding.getString(
+                R.string.transaction_history_moonpay_amount_sol,
+                item.amountInSol,
+            )
+        }
         binding.layoutTransactionDetails.textViewTotal.isVisible = false // hide SOL amount
     }
 }

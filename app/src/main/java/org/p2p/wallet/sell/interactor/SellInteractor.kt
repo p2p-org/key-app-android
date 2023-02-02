@@ -1,5 +1,7 @@
 package org.p2p.wallet.sell.interactor
 
+import androidx.core.content.edit
+import android.content.SharedPreferences
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -19,6 +21,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 
 private const val TAG = "SellInteractor"
+private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_DIALOG_KEY"
 
 class SellInteractor(
     private val sellRepository: SellRepository,
@@ -27,19 +30,29 @@ class SellInteractor(
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
-    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract
+    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
+    private val sharedPreferences: SharedPreferences,
 ) {
+
+    fun shouldShowInformDialog(): Boolean =
+        sharedPreferences.getBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY, true)
+
+    fun setShouldShowInformDialog(shouldShowAgain: Boolean) {
+        sharedPreferences.edit { putBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY, shouldShowAgain) }
+    }
 
     suspend fun loadSellAvailability() {
         if (sellEnabledFeatureToggle.isFeatureEnabled) {
             sellRepository.loadMoonpayFlags()
+        } else {
+            Timber.tag(TAG).i("Moonpay flags will not fetch, feature toggle is disabled")
         }
     }
 
     suspend fun isSellAvailable(): Boolean {
         return sellEnabledFeatureToggle.isFeatureEnabled &&
-            sellRepository.isSellAllowedForUser() &&
-            isUserBalancePositive()
+            isUserBalancePositive() &&
+            sellRepository.isSellAllowedForUser()
     }
 
     private suspend fun isUserBalancePositive(): Boolean {
@@ -68,7 +81,9 @@ class SellInteractor(
             "SOL token is not found for current user, can't sell"
         }
 
-    suspend fun getSolCurrency(): MoonpayCurrency = currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)
+    suspend fun getSolCurrency(): MoonpayCurrency {
+        return currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)
+    }
 
     suspend fun getMoonpaySellFiatCurrency(): SellTransactionFiatCurrency {
         return sellRepository.getSellFiatCurrency()

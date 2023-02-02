@@ -1,11 +1,13 @@
 package org.p2p.wallet.history.ui.token
 
+import androidx.lifecycle.LifecycleOwner
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.analytics.HistoryAnalytics
+import org.p2p.wallet.history.interactor.HistoryFetchListResult
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
@@ -28,41 +30,24 @@ class TokenHistoryPresenter(
     private val sellTransactionsMapper: HistorySellTransactionMapper,
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
-    private class FetchListResult<T>(
-        content: MutableList<T> = mutableListOf(),
-        val isFailed: Boolean = false,
-    ) {
-        private val innerContent = content
-
-        private var contentFilter: ((T) -> Boolean)? = null
-
-        val content: List<T>
-            get() = contentFilter?.let(innerContent::filter) ?: innerContent
-
-        fun withContentFilter(filter: (T) -> Boolean): FetchListResult<T> = apply {
-            contentFilter = filter
-        }
-
-        fun hasItems(): Boolean = content.isNotEmpty()
-
-        fun clearContent() {
-            innerContent.clear()
-        }
-    }
-
     private object HistoryFetchFailure : Throwable(message = "Both transactions were not fetch due to errors")
 
-    private var blockChainTransactionsList = FetchListResult<HistoryTransaction>(mutableListOf())
-    private var sellTransactionsList = FetchListResult<SellTransaction>(mutableListOf())
+    private var blockChainTransactionsList = HistoryFetchListResult<HistoryTransaction>(mutableListOf())
+    private var sellTransactionsList = HistoryFetchListResult<SellTransaction>(mutableListOf())
 
     private var pagingJob: Job? = null
-
+    private var loadingJob: Job? = null
     private var refreshJob: Job? = null
     private var paginationEnded: Boolean = false
 
     override fun attach(view: TokenHistoryContract.View) {
         super.attach(view)
         initialize()
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        loadHistory()
     }
 
     private fun initialize() {
@@ -104,22 +89,13 @@ class TokenHistoryPresenter(
     }
 
     override fun loadHistory() {
-        if (blockChainTransactionsList.hasItems() || sellTransactionsList.hasItems()) {
+        if (blockChainTransactionsList.hasFetchedItems() || sellTransactionsList.hasFetchedItems()) {
             view?.showHistory(blockChainTransactionsList.content, sellTransactionsList.content)
             return
         }
-        launch {
+        loadingJob = launch {
             view?.showPagingState(PagingState.InitialLoading)
-            fetchHistory()
-        }
-    }
-
-    override fun updateSellTransactions() {
-        if (sellTransactionsList.hasItems()) {
-            view?.showHistory(
-                transactions = blockChainTransactionsList.content,
-                sellTransactions = sellTransactionsList.content
-            )
+            fetchHistory(isRefresh = true)
         }
     }
 
@@ -132,7 +108,7 @@ class TokenHistoryPresenter(
             if (token.isSOL) {
                 sellTransactionsList = fetchSellTransactions()
             }
-            blockChainTransactionsList = fetchBlockChainTransactions(isRefresh)
+            blockChainTransactionsList += fetchBlockChainTransactions(isRefresh)
             if (blockChainTransactionsList.isFailed && sellTransactionsList.isFailed) {
                 view?.showPagingState(PagingState.Error(HistoryFetchFailure))
                 Timber.e(HistoryFetchFailure, "Error getting transaction history for token")
@@ -146,25 +122,25 @@ class TokenHistoryPresenter(
     }
 
     private suspend fun fetchBlockChainTransactions(isRefresh: Boolean) = try {
-        historyInteractor.loadTransactions(isRefresh)
+        historyInteractor.loadTransactions(token.publicKey, isRefresh)
             .toMutableList()
-            .let(::FetchListResult)
+            .let(::HistoryFetchListResult)
     } catch (error: Throwable) {
         Timber.e(error, "Error while loading blockchain transactions on history")
-        FetchListResult(isFailed = true)
+        HistoryFetchListResult(isFailed = true)
     }
 
-    private suspend fun fetchSellTransactions(): FetchListResult<SellTransaction> = try {
+    private suspend fun fetchSellTransactions(): HistoryFetchListResult<SellTransaction> = try {
         sellTransactionsMapper.map(historyInteractor.getSellTransactions())
             .toMutableList()
-            .let(::FetchListResult)
+            .let(::HistoryFetchListResult)
             .withContentFilter {
                 !it.isCancelled() &&
                     !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
             }
     } catch (error: Throwable) {
         Timber.e(error, "Error while loading Moonpay sell transactions on history")
-        FetchListResult(isFailed = true)
+        HistoryFetchListResult(isFailed = true)
     }
 
     override fun onItemClicked(transaction: HistoryTransaction) {
@@ -199,5 +175,10 @@ class TokenHistoryPresenter(
                 view?.showErrorMessage(e)
             }
         }
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        loadingJob?.cancel()
     }
 }

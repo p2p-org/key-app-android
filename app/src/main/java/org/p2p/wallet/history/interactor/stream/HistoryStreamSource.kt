@@ -9,4 +9,6 @@ interface HistoryStreamSource {
     suspend fun currentItem(): HistoryStreamItem?
 
     fun reset()
+
+    fun isPagingReachedEnd(): Boolean
 }

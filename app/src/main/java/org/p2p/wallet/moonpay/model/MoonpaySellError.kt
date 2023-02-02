@@ -1,5 +1,6 @@
 package org.p2p.wallet.moonpay.model
 
+import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import java.net.UnknownHostException
 
 sealed class MoonpaySellError(
@@ -20,4 +21,7 @@ sealed class MoonpaySellError(
 
     class TokenToSellNotFound(cause: Throwable) :
         MoonpaySellError(message = "Cryptocurrency to sell not found", cause = cause)
+
+    class RequestFailed(cause: MoonpayRequestException) :
+        MoonpaySellError(message = cause.message, cause = cause)
 }

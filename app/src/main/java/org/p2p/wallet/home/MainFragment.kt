@@ -4,6 +4,7 @@ import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +13,9 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.ime
+import org.p2p.core.utils.insets.systemBars
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.GeneralAnalytics
@@ -99,11 +103,33 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         }
     }
 
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { view, insets, initialPadding ->
+            val systemBars = insets.systemBars()
+            view.updatePadding(
+                left = initialPadding.left + systemBars.left,
+                top = initialPadding.top + systemBars.top,
+                right = initialPadding.right + systemBars.right,
+                bottom = initialPadding.bottom + systemBars.bottom,
+            )
+            val ime = insets.ime()
+            val bottomNavigationHeight = binding.bottomNavigation.height
+            val bottomConsume = if (ime.bottom > bottomNavigationHeight) bottomNavigationHeight else ime.bottom
+            insets.inset(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom + bottomConsume,
+            )
+        }
+    }
+
     private fun doOnCreateAction(action: MainFragmentOnCreateAction) {
         when (action) {
             is MainFragmentOnCreateAction.ShowSnackbar -> {
                 showUiKitSnackBar(messageResId = action.messageResId)
             }
+
             is MainFragmentOnCreateAction.PlayAnimation -> {
                 with(binding.animationView) {
                     setAnimation(action.animationRes)
@@ -154,10 +180,17 @@ class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, Cen
         }
 
         if (clickedTab == ScreenTab.SWAP_SCREEN) {
-            swapAnalytics.logSwapOpenedFromMain()
+            lifecycleScope.launch {
+                swapAnalytics.logSwapOpenedFromMain(sellInteractor.isSellAvailable())
+            }
         }
 
         val itemId = clickedTab.itemId
+
+        // fixme: https://p2pvalidator.atlassian.net/browse/PWN-7051 Refreshing swap every time
+        if (clickedTab == ScreenTab.SWAP_SCREEN) {
+            tabCachedFragments.remove(itemId)
+        }
 
         if (!tabCachedFragments.containsKey(clickedTab.itemId)) {
             val fragment = when (clickedTab) {

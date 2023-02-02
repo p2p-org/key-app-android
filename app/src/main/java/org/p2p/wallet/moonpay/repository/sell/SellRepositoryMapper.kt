@@ -1,5 +1,6 @@
 package org.p2p.wallet.moonpay.repository.sell
 
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellPaymentMethod
@@ -37,7 +38,8 @@ class SellRepositoryMapper {
                     amounts = amounts,
                     userAddress = transactionOwnerAddress,
                     selectedFiat = selectedFiat,
-                    moonpayDepositWalletAddress = moonpayDepositWalletAddress
+                    moonpayDepositWalletAddress = moonpayDepositWalletAddress,
+                    updatedAt = transaction.updatedAt,
                 )
             }
             SellTransactionStatus.PENDING -> {
@@ -47,6 +49,7 @@ class SellRepositoryMapper {
                     amounts = amounts,
                     selectedFiat = selectedFiat,
                     userAddress = transactionOwnerAddress,
+                    updatedAt = transaction.updatedAt,
                 )
             }
             SellTransactionStatus.COMPLETED -> {
@@ -56,6 +59,7 @@ class SellRepositoryMapper {
                     amounts = amounts,
                     selectedFiat = selectedFiat,
                     userAddress = transactionOwnerAddress,
+                    updatedAt = transaction.updatedAt,
                 )
             }
             SellTransactionStatus.FAILED -> {
@@ -66,6 +70,7 @@ class SellRepositoryMapper {
                     selectedFiat = selectedFiat,
                     userAddress = transactionOwnerAddress,
                     failureReason = transaction.failureReason,
+                    updatedAt = transaction.updatedAt,
                 )
             }
         }
@@ -74,10 +79,11 @@ class SellRepositoryMapper {
     private fun MoonpaySellTransactionShortResponse.createAmounts(): SellTransactionAmounts {
         return SellTransactionAmounts(
             tokenAmount = tokenAmount.toBigDecimal(),
-            feeAmount = (feeAmount ?: 0.0).toBigDecimal(),
-            usdAmount = usdRate.toBigDecimal(),
-            eurAmount = eurRate.toBigDecimal(),
-            gbpAmount = gbpRate.toBigDecimal()
+            amountInFiat = fiatAmount?.toBigDecimal().orZero(),
+            feeAmount = feeAmount?.toBigDecimal().orZero(),
+            usdRate = usdRate.toBigDecimal(),
+            eurRate = eurRate.toBigDecimal(),
+            gbpRate = gbpRate.toBigDecimal(),
         )
     }
 

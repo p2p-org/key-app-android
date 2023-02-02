@@ -1,6 +1,7 @@
 package org.p2p.wallet.moonpay.serversideapi
 
 import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
+import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -17,8 +18,8 @@ interface MoonpayServerSideApi {
      * If sell transaction could not be canceled (e.g. because it has already been completed)
      * it will return HTTP status 409 Conflict.
      */
-    @DELETE("v3/sell_transactions/{transactionId}")
+    @DELETE("api/v3/sell_transactions/{transactionId}")
     suspend fun cancelSellTransaction(
         @Path("transactionId") sellTransactionId: String
-    )
+    ): Response<Unit>
 }

@@ -5,15 +5,18 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSellErrorBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.sell.analytics.SellAnalytics
-import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStackTo
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import kotlinx.parcelize.Parcelize
@@ -38,6 +41,15 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
         logScreenOpened()
     }
 
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                rootView.appleBottomInsets(this)
+            }
+        }
+    }
+
     private fun setupView() = with(binding) {
         toolbar.setNavigationOnClickListener { popBackStackTo(MainFragment::class) }
         textViewTitle.setText(sellErrorState.titleResId)
@@ -51,10 +63,6 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
                 is SellScreenError.ServerError -> {
                     popBackStackTo(MainFragment::class)
                 }
-                is SellScreenError.NotEnoughAmount -> {
-                    sellAnalytics.logSellErrorMinAmountSwapClicked()
-                    replaceFragment(OrcaSwapFragment.create())
-                }
             }
         }
     }
@@ -62,7 +70,6 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
     private fun logScreenOpened() {
         when (sellErrorState) {
             is SellScreenError.ServerError -> sellAnalytics.logSellServerErrorOpened()
-            is SellScreenError.NotEnoughAmount -> sellAnalytics.logSellErrorMinAmountOpened()
         }
     }
 
@@ -82,17 +89,6 @@ class SellErrorFragment : BaseFragment(R.layout.fragment_sell_error) {
         ) : SellScreenError() {
             override fun getSubtitle(resources: Resources): String =
                 resources.getString(R.string.sell_error_body_message)
-        }
-
-        @Parcelize
-        data class NotEnoughAmount(
-            val formattedMinTokenAmount: String,
-            override val titleResId: Int = R.string.sell_error_min_amount_title,
-            override val iconResId: Int = R.drawable.ic_coins,
-            override val buttonTextResId: Int = R.string.common_go_to_swap,
-        ) : SellScreenError() {
-            override fun getSubtitle(resources: Resources): String =
-                resources.getString(R.string.sell_error_min_amount_subtitle, formattedMinTokenAmount)
         }
     }
 }

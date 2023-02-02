@@ -1,25 +1,24 @@
 package org.p2p.wallet.common.mvp
 
+import androidx.annotation.AnimRes
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.annotation.AnimRes
-import androidx.annotation.ColorRes
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.toast
-import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
@@ -36,6 +35,8 @@ import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
+import org.p2p.wallet.root.RootActivity
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.send.ui.main.SendFragment
 import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
@@ -54,10 +55,9 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     protected val resourcesProvider: ResourcesProvider by inject()
 
-    protected open val statusBarColor: Int = R.color.bg_snow
-    protected open val navBarColor: Int = R.color.bg_snow
     protected open val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.BLACK
-    protected open val systemIconsStyle: SystemIconsStyle = SystemIconsStyle.BLACK
+    protected open val customStatusBarStyle: SystemIconsStyle? = null
+    protected open val customNavigationBarStyle: SystemIconsStyle? = null
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         val extra = if (enter) EXTRA_OVERRIDDEN_ENTER_ANIMATION else EXTRA_OVERRIDDEN_EXIT_ANIMATION
@@ -71,12 +71,13 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setSystemBarsColors(statusBarColor, navBarColor)
+        applyWindowInsets(view)
     }
 
     override fun onResume() {
         super.onResume()
         logScreenOpenedEvent()
+        updateSystemBarsStyle(customStatusBarStyle, customNavigationBarStyle)
     }
 
     // fragments in the tab are shown using show/hide methods
@@ -108,31 +109,25 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         arguments = (arguments ?: Bundle()).apply { putInt(extraKey, animation) }
     }
 
-    protected fun setSystemBarsColors(@ColorRes colorResId: Int, @ColorRes navBarColor: Int) {
-        val window = requireActivity().window ?: return
-        with(window) {
-            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            statusBarColor = resourcesProvider.getColor(colorResId)
-            navigationBarColor = resourcesProvider.getColor(navBarColor)
-            if (systemIconsStyle == SystemIconsStyle.WHITE) {
-                decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
-            } else {
-                decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
+    protected open fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { view, insets, initialPadding ->
+            val systemAndIme = insets.systemAndIme()
+            view.updatePadding(
+                left = initialPadding.left + systemAndIme.left,
+                top = initialPadding.top + systemAndIme.top,
+                right = initialPadding.right + systemAndIme.right,
+                bottom = initialPadding.bottom + systemAndIme.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
         }
-        WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
-    /*
-       Change status bar and its icons color
-       isLight = true - white status bar, dark icons
-       isLight = false - dark status bar, white icons
-       Don't forget to reset status bar color on fragment destroy to restore previous color
-    */
-    protected fun setLightStatusBar(isLight: Boolean) {
-        val window = requireActivity().window
-        val decorView = window.decorView
-        WindowInsetsControllerCompat(window, decorView).isAppearanceLightStatusBars = isLight
+    protected open fun updateSystemBarsStyle(
+        statusBarStyle: SystemIconsStyle? = null,
+        navigationBarStyle: SystemIconsStyle? = null,
+    ) {
+        val activity = (this.activity as? RootActivity)
+        activity?.updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
     }
 
     // TODO add another screens
@@ -190,9 +185,5 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
                 style = snackbarStyle
             )
         }
-    }
-
-    enum class SystemIconsStyle {
-        BLACK, WHITE
     }
 }

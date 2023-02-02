@@ -9,6 +9,8 @@ import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsContract
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsPresenter
 import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.sell.ui.information.SellInformationContract
+import org.p2p.wallet.sell.ui.information.SellInformationPresenter
 import org.p2p.wallet.sell.ui.lock.SellLockedContract
 import org.p2p.wallet.sell.ui.lock.SellLockedPresenter
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract
@@ -22,5 +24,6 @@ object SellModule : InjectionModule {
         factoryOf(::SellPayloadPresenter) bind SellPayloadContract.Presenter::class
         factoryOf(::SellLockedPresenter) bind SellLockedContract.Presenter::class
         factoryOf(::SellTransactionDetailsPresenter) bind SellTransactionDetailsContract.Presenter::class
+        factoryOf(::SellInformationPresenter) bind SellInformationContract.Presenter::class
     }
 }

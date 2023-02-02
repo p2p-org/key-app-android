@@ -12,9 +12,8 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 object TrackersFactory {
     fun create(app: Application, tokenKeyProvider: TokenKeyProvider): Set<AnalyticsTracker> = buildSet {
-        if (BuildConfig.AMPLITUDE_ENABLED) {
-            add(AmplitudeTracker(app, tokenKeyProvider))
-        }
+        add(AmplitudeTracker(app, tokenKeyProvider))
+
         if (BuildConfig.APPSFLYER_ENABLED) {
             add(AppsFlyerTracker(app, AppsFlyerLib.getInstance()))
         }

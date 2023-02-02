@@ -219,7 +219,7 @@
                             android:layout_marginTop="16dp"
                             android:layout_marginBottom="16dp"
                             android:background="@drawable/bg_rounded_solid_rain_12"
-                            android:padding="4dp"
+                            app:contentPadding="4dp"
                             android:src="@drawable/ic_search"
                             app:cornerRadius="8dp"
                             app:layout_constraintBottom_toTopOf="@id/bottomBarrier"
@@ -375,7 +375,7 @@
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         android:background="@drawable/bg_error_rounded_12"
-                        android:padding="8dp"
+                        app:contentPadding="8dp"
                         android:src="@drawable/ic_warning"
                         app:cornerRadius="8dp" />
 

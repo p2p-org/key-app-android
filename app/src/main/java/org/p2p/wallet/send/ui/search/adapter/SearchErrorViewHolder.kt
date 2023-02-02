@@ -55,16 +55,16 @@ class SearchErrorViewHolder(
     }
 
     private fun showWalletIcon() {
+        binding.frameWalletImageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
         binding.imageViewWallet.apply {
-            setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
             alpha = 0.3f
             setImageResource(R.drawable.ic_search_wallet)
         }
     }
 
     private fun loadTokenIcon(iconUrl: String?) {
+        binding.frameWalletImageView.setPadding(0, 0, 0, 0)
         with(binding.imageViewWallet) {
-            setPadding(0, 0, 0, 0)
             alpha = 1f
 
             Glide.with(this)

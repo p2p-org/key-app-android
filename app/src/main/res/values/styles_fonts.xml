@@ -24,6 +24,7 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <!--todo OLD STYLES use UiKit.TextAppearance.SemiBold.Title3-->-->
     <style name="WalletTheme.TextAppearance.Bold20">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_bold</item>
@@ -94,19 +95,19 @@
         <item name="fontFamily">@font/manrope_semibold</item>
         <item name="android:textSize">12sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Title3-->
     <style name="WalletTheme.TextAppearance.Medium20" parent="WalletTheme.TextAppearance.Medium">
         <item name="android:textSize">20sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Text2-->
     <style name="WalletTheme.TextAppearance.Medium16" parent="WalletTheme.TextAppearance.Medium">
         <item name="android:textSize">16sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Text3-->
     <style name="WalletTheme.TextAppearance.Medium14" parent="WalletTheme.TextAppearance.Medium">
         <item name="android:textSize">14sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Label1-->
     <style name="WalletTheme.TextAppearance.Medium12" parent="WalletTheme.TextAppearance.Medium">
         <item name="android:textSize">12sp</item>
     </style>
@@ -115,49 +116,51 @@
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_medium</item>
     </style>
-
+    <!--todo OLD STYLES use no more delete -->
     <style name="WalletTheme.TextAppearance.Regular24">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_regular</item>
         <item name="android:textSize">24sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Title3-->
     <style name="WalletTheme.TextAppearance.Regular20">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_regular</item>
         <item name="android:textSize">20sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Text2-->
     <style name="WalletTheme.TextAppearance.Regular16">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_regular</item>
         <item name="android:textSize">16sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Text3-->
     <style name="WalletTheme.TextAppearance.Regular14">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_regular</item>
         <item name="android:textSize">14sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Label1-->
     <style name="WalletTheme.TextAppearance.Regular12">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_regular</item>
         <item name="android:textSize">12sp</item>
     </style>
-
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Text2-->
     <style name="WalletTheme.TextAppearance.Light16">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_light</item>
         <item name="android:textSize">16sp</item>
     </style>
 
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Text4-->
     <style name="WalletTheme.TextAppearance.Light14">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_light</item>
         <item name="android:textSize">14sp</item>
     </style>
 
+    <!-- todo OLD STYLES use UiKit.TextAppearance.Regular.Label1-->
     <style name="WalletTheme.TextAppearance.Light12">
         <item name="android:textColor">@color/textIconPrimary</item>
         <item name="fontFamily">@font/manrope_light</item>

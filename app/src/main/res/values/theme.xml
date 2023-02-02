@@ -8,8 +8,6 @@
     <style name="WalletTheme" parent="WalletBase.v21" />
 
     <style name="WalletBase.v21" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/statusBarColor</item>
-        <item name="android:navigationBarColor">@color/navigationBarColor</item>
         <item name="colorPrimary">@color/night</item>
         <item name="colorPrimaryDark">@color/night_30</item>
         <item name="colorSecondary">@color/mountain</item>
@@ -35,5 +33,11 @@
         <item name="snackbarButtonStyle">@style/UiKit.Native.SnackbarButton</item>
 
         <item name="materialAlertDialogTheme">@style/UiKit.MaterialAlertDialog</item>
+    </style>
+
+    <style name="WalletTheme.BottomSheet.Rounded" parent="Theme.Design.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="enableEdgeToEdge">true</item>
+        <item name="bottomSheetStyle">@style/AppRoundCornersModalStyle</item>
     </style>
 </resources>

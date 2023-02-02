@@ -4,8 +4,10 @@ import android.content.res.Resources
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.di.AppScope
@@ -68,9 +70,9 @@ class NewSendPresenter(
 
     private val calculationMode = CalculationMode(
         sendModeProvider,
-        resources.getString(R.string.common_less_then_minimum)
+        resources.getString(R.string.common_less_than_minimum)
     )
-    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
+    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
     private var selectedToken: Token.Active? = null
     private var initialAmount: BigDecimal? = null
@@ -153,6 +155,20 @@ class NewSendPresenter(
             }
 
             initializeFeeRelayer(view, initialToken, solToken)
+            initialAmount?.let { inputAmount ->
+                setupDefaultFields(inputAmount)
+            }
+        }
+    }
+
+    private fun setupDefaultFields(inputAmount: BigDecimal) {
+        view?.apply {
+            if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
+                switchCurrencyMode()
+            }
+            updateInputValue(inputAmount.scaleShort().toPlainString(), forced = true)
+            calculationMode.updateInputAmount(inputAmount.scaleShort().toPlainString())
+            disableInputs()
         }
     }
 
@@ -226,6 +242,7 @@ class NewSendPresenter(
     override fun updateToken(newToken: Token.Active) {
         token = newToken
         showMaxButtonIfNeeded()
+        view?.setFeeLabel(resources.getString(R.string.send_fees))
         updateButton(requireToken(), feeRelayerManager.getState())
 
         /*
@@ -242,6 +259,7 @@ class NewSendPresenter(
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
         newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
+        view?.setFeeLabel(resources.getString(R.string.send_fees))
         /*
          * Trigger recalculation for USD input
          * */
@@ -255,6 +273,7 @@ class NewSendPresenter(
     override fun updateInputAmount(amount: String) {
         calculationMode.updateInputAmount(amount)
         showMaxButtonIfNeeded()
+        view?.setFeeLabel(resources.getString(R.string.send_fees))
         updateButton(requireToken(), feeRelayerManager.getState())
 
         newSendAnalytics.setMaxButtonClicked(isClicked = false)

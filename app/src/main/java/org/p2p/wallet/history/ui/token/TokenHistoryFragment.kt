@@ -1,12 +1,12 @@
 package org.p2p.wallet.history.ui.token
 
+import android.os.Bundle
+import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -81,7 +81,7 @@ class TokenHistoryFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.setupView()
         listenForSellTransactionDialogDismiss()
-        presenter.loadHistory()
+        lifecycle.addObserver(presenter)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
@@ -96,7 +96,7 @@ class TokenHistoryFragment :
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
         refreshLayout.setOnRefreshListener { presenter.retryLoad() }
-        retryButton.setOnClickListener { presenter.retryLoad() }
+        errorStateLayout.buttonRetry.setOnClickListener { presenter.retryLoad() }
         historyRecyclerView.setupHistoryList()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
     }
@@ -158,13 +158,6 @@ class TokenHistoryFragment :
         addOnScrollListener(scrollListener)
     }
 
-    override fun onResume() {
-        super.onResume()
-        // dirty duck-tape to remove hidden transactions from the list
-        // when the bottom sheet is closed
-        presenter.updateSellTransactions()
-    }
-
     override fun showError(@StringRes resId: Int, argument: String) {
         showErrorDialog(getString(resId, argument))
     }
@@ -186,11 +179,12 @@ class TokenHistoryFragment :
     }
 
     override fun showPagingState(newState: PagingState) {
+        Timber.tag("_____STATE").d(newState.toString())
         historyAdapter.setPagingState(newState)
         with(binding) {
             shimmerView.root.isVisible = newState == PagingState.InitialLoading
             refreshLayout.isVisible = newState != PagingState.InitialLoading
-            errorStateLayout.isVisible = newState is PagingState.Error
+            errorStateLayout.root.isVisible = newState is PagingState.Error
             emptyStateLayout.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
             historyRecyclerView.isVisible =
                 (newState == PagingState.Idle && !historyAdapter.isEmpty()) || newState == PagingState.Loading

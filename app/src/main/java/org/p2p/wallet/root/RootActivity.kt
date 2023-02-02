@@ -1,16 +1,18 @@
 package org.p2p.wallet.root
 
+import androidx.activity.addCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import androidx.activity.addCallback
-import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.KeyboardListener
 import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
@@ -30,11 +32,15 @@ import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import org.p2p.wallet.lokalise.LokaliseService
 
 class RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
     RootContract.View,
-    RootListener {
+    RootListener,
+    KeyboardListener {
 
     companion object {
         const val ACTION_RESTART = "android.intent.action.RESTART"
@@ -52,6 +58,8 @@ class RootActivity :
     private val crashLogger: CrashLogger by inject()
 
     private val networkObserver: SolanaNetworkObserver by inject()
+    private val decorSystemBarsDelegate by lazy { DecorSystemBarsDelegate(this) }
+    override val keyboardState: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     private lateinit var binding: ActivityRootBinding
 
@@ -62,14 +70,19 @@ class RootActivity :
         handleDeeplink(intent)
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LokaliseService.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.WalletTheme)
         super.onCreate(savedInstanceState)
         binding = ActivityRootBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+        decorSystemBarsDelegate.onCreate()
+        setupKeyboardListener()
 
         replaceFragment(SplashFragment.create())
-
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
 
         onBackPressedDispatcher.addCallback {
@@ -84,6 +97,14 @@ class RootActivity :
         registerNetworkObserver()
     }
 
+    private fun setupKeyboardListener() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            keyboardState.value = imeVisible
+            insets
+        }
+    }
+
     private fun logScreenOpenEvent() {
         val openedFragment = supportFragmentManager.findFragmentById(R.id.rootContainer) as? BaseFragment
         if (openedFragment != null) {
@@ -92,7 +113,7 @@ class RootActivity :
             val findFragmentError = ClassCastException(
                 "Can't log screen open event: fragment - ${supportFragmentManager.findFragmentById(R.id.rootContainer)}"
             )
-            Timber.e(findFragmentError)
+            Timber.i(findFragmentError)
         }
     }
 
@@ -139,6 +160,11 @@ class RootActivity :
         deeplinksManager.mainFragmentManager = null
         super.onDestroy()
     }
+
+    fun updateSystemBarsStyle(
+        statusBarStyle: SystemIconsStyle? = null,
+        navigationBarStyle: SystemIconsStyle? = null,
+    ) = decorSystemBarsDelegate.updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
 
     private fun handleDeeplink(newIntent: Intent? = null) {
         val intentToHandle = newIntent ?: intent

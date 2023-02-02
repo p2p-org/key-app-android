@@ -64,6 +64,7 @@ interface OrcaSwapContract {
         fun fillMaxAmount()
         fun reverseTokens()
         fun onFeeLimitsClicked()
+        fun cleanFields()
         fun onBackPressed()
     }
 }

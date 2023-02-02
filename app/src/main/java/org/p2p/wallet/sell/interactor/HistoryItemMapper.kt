@@ -39,8 +39,10 @@ class HistoryItemMapper(private val resources: Resources) {
             transactionId = it.transactionId,
             status = it.status,
             formattedSolAmount = it.amounts.tokenAmount.formatToken(),
-            formattedUsdAmount = it.getFiatAmount().formatFiat(),
-            receiverAddress = receiverAddress
+            formattedFiatAmount = it.amounts.amountInFiat.formatFiat(),
+            fiatUiName = it.selectedFiat.uiSymbol,
+            receiverAddress = receiverAddress,
+            updatedAt = it.updatedAt,
         )
             .let(HistoryItem::MoonpayTransactionItem)
     }

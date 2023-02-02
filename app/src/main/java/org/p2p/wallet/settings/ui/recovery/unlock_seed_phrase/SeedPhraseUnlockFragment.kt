@@ -1,12 +1,18 @@
 package org.p2p.wallet.settings.ui.recovery.unlock_seed_phrase
 
+import androidx.fragment.app.setFragmentResultListener
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.setFragmentResultListener
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.pin.validate.ValidatePinFragment
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSeedPhraseUnlockBinding
+import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.settings.ui.recovery.user_seed_phrase.UserSeedPhraseFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -23,8 +29,8 @@ class SeedPhraseUnlockFragment : BaseFragment(
         fun create(): SeedPhraseUnlockFragment = SeedPhraseUnlockFragment()
     }
 
+    override val customNavigationBarStyle: SystemIconsStyle = SystemIconsStyle.WHITE
     private val binding: FragmentSeedPhraseUnlockBinding by viewBinding()
-    override val navBarColor: Int = R.color.bg_night
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,6 +44,15 @@ class SeedPhraseUnlockFragment : BaseFragment(
             val isPinValidated = bundle.getBoolean(EXTRA_RESULT_KEY)
             if (isPinValidated) {
                 replaceFragment(UserSeedPhraseFragment.create())
+            }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                binding.containerBottomView.appleBottomInsets(this)
             }
         }
     }

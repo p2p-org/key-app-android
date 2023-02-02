@@ -71,9 +71,6 @@ class NewSelectTokenFragment :
 
     private val binding: FragmentSelectTokenNewBinding by viewBinding()
 
-    override val navBarColor: Int = R.color.bg_smoke
-    override val statusBarColor: Int = R.color.bg_smoke
-
     private val tokenAdapter: NewSelectTokenAdapter by unsafeLazy {
         NewSelectTokenAdapter(
             onItemClicked = {

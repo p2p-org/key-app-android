@@ -1,51 +1,57 @@
-ext.initReleaseType = { buildType ->
-    buildType.minifyEnabled true
-    buildType.shrinkResources true
-    buildType.debuggable false
+apply plugin: 'com.android.application'
 
-    buildType.buildConfigField("boolean", "AMPLITUDE_ENABLED", "true")
-    buildType.buildConfigField("boolean", "KEY_DEV_NET_ENABLED", "false")
-    buildType.buildConfigField("boolean", "SENTRY_ENABLED", "true")
-    buildType.buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
-    buildType.buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "true")
-    buildType.manifestPlaceholders = [SENTRY_ENV: "release"]
-}
+android {
+    defaultConfig {
+        def apiKeysProperties = new Properties()
+        def apiKeysPropertiesFile = rootProject.file("apikeys.properties")
+        if (apiKeysPropertiesFile.canRead()) {
+            logger.quiet "(API KEYS): using api keys properties file"
+            apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
+        } else {
+            logger.quiet "(API KEYS): api keys properties file is not found"
+        }
 
-ext.initApiKeys = { defaultConfig ->
-    def apiKeysProperties = new PropertiesFile(rootProject.file("apikey.properties"), logger)
-
-    defaultConfig.buildConfigField("String", "rpcPoolApiKey", "${apiKeysProperties.getOrThrow('rpcPoolApiKey')}")
-    defaultConfig.buildConfigField("String", "moonpayKey", "${apiKeysProperties.getOrThrow('moonpayKey')}")
-    defaultConfig.buildConfigField("String", "moonpaySandboxKey", "${apiKeysProperties.getOrThrow('moonpaySandboxKey')}")
-    defaultConfig.buildConfigField("String", "comparePublicKey", "${apiKeysProperties.getOrThrow('comparePublicKey')}")
-    defaultConfig.buildConfigField("String", "intercomApiKey", "${apiKeysProperties.getOrThrow('intercomApiKey')}")
-    defaultConfig.buildConfigField("String", "intercomAppId", "${apiKeysProperties.getOrThrow('intercomAppId')}")
-    defaultConfig.buildConfigField("String", "amplitudeKey", "${apiKeysProperties.getOrThrow('amplitudeKey')}")
-    defaultConfig.buildConfigField("String", "appsFlyerKey", "${apiKeysProperties.getOrThrow('appsFlyerKey')}")
-}
-
-ext.initSentry = { defaultConfig ->
-    def sentryProperties = new PropertiesFile(rootProject.file("sentry.properties"), logger)
-    defaultConfig.manifestPlaceholders = [SENTRY_DSN: sentryProperties.getOrThrow("auth.dsn")]
-}
-
-ext.getTorusProperties = { ->
-    def torusProperties = new Properties()
-
-    def torusPropertiesFile = rootProject.file("torus.properties")
-    if (torusPropertiesFile.canRead()) {
-        logger.quiet "(TORUS): using torus properties file"
-        torusProperties.load(new FileInputStream(torusPropertiesFile))
-    } else {
-        logger.quiet "(TORUS): using torus properties from CI"
-        torusProperties["TORUS_VERIFIER_DEBUG"] = "${System.getenv('TORUS_VERIFIER_DEBUG')}"
-        torusProperties["TORUS_VERIFIER_FEATURE"] = "${System.getenv('TORUS_VERIFIER_FEATURE')}"
-        torusProperties["TORUS_VERIFIER_RELEASE"] = "${System.getenv('TORUS_VERIFIER_RELEASE')}"
-
-        torusProperties["TORUS_SUB_VERIFIER_RELEASE_STORE"] = "${System.getenv('TORUS_SUB_VERIFIER_RELEASE_STORE')}"
-        torusProperties["TORUS_SUB_VERIFIER_RELEASE_FIREBASE"] = "${System.getenv('TORUS_SUB_VERIFIER_RELEASE_FIREBASE')}"
-        torusProperties["TORUS_SUB_VERIFIER_RELEASE_LOCAL"] = "${System.getenv('TORUS_SUB_VERIFIER_RELEASE_LOCAL')}"
+        buildConfigField("String", "rpcPoolApiKey", "\"${apiKeysProperties["rpcPoolApiKey"]}\"")
+        buildConfigField("String", "moonpayKey", "\"${apiKeysProperties["moonpayKey"]}\"")
+        buildConfigField("String", "moonpaySandboxKey", "\"${apiKeysProperties["moonpaySandboxKey"]}\"")
+        buildConfigField("String", "comparePublicKey", "\"${apiKeysProperties["comparePublicKey"]}\"")
+        buildConfigField("String", "intercomApiKey", "\"${apiKeysProperties["intercomApiKey"]}\"")
+        buildConfigField("String", "intercomAppId", "\"${apiKeysProperties["intercomAppId"]}\"")
+        buildConfigField("String", "appsFlyerKey", "\"${apiKeysProperties["appsFlyerKey"]}\"")
+        buildConfigField("String", "lokaliseKey", "\"${apiKeysProperties["lokaliseKey"]}\"")
+        buildConfigField("String", "lokaliseAppId", "\"${apiKeysProperties["lokaliseAppId"]}\"")
     }
 
-    return torusProperties
+    buildTypes {
+        debug {
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "false")
+            buildConfigField("boolean", "SENTRY_ENABLED", "false")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
+        }
+        feature {
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+            buildConfigField("boolean", "SENTRY_ENABLED", "false")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
+        }
+        releaseFirebase {
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+            buildConfigField("boolean", "SENTRY_ENABLED", "false")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
+        }
+        releaseLocal {
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+            buildConfigField("boolean", "SENTRY_ENABLED", "false")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
+        }
+        release {
+            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
+            buildConfigField("boolean", "SENTRY_ENABLED", "true")
+            buildConfigField("boolean", "APPSFLYER_ENABLED", "true")
+            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "true")
+        }
+    }
 }

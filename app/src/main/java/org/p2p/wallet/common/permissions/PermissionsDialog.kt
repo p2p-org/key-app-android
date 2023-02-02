@@ -15,7 +15,6 @@ private const val PERMISSION_REQUEST_CODE = 42
 private const val PERMISSIONS_EXTRA = "permissions"
 private const val PAYLOAD_EXTRA = "payload"
 
-// PWN-3969
 @Suppress("DEPRECATION")
 class PermissionsDialog : DialogFragment() {
 

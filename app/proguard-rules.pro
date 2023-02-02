@@ -78,7 +78,6 @@
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }
 -keep class com.appsflyer.** { *; }
--keep class kotlin.coroutines.intrinsics.** { *; }
 -keep public class com.android.installreferrer.** { *; }
 -keep public class com.miui.referrer.** {*;}
 -dontwarn com.appsflyer.**
@@ -88,3 +87,8 @@
 # Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
+-keep class com.lokalise.** { *; }
+-dontwarn com.lokalise.*
+-keep interface io.realm.annotations.RealmModule { *; }
+-keep class io.realm.annotations.RealmModule { *; }

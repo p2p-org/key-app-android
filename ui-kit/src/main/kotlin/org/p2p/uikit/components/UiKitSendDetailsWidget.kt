@@ -95,15 +95,12 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
     fun setFeeLabel(text: String?) {
         binding.textViewFee withTextOrGone text
+        binding.layoutFeeInfo.isVisible = !text.isNullOrEmpty()
     }
 
     fun showFeeLoading(isLoading: Boolean) {
         binding.progressBarFees.isVisible = isLoading
-        if (binding.textViewFee.text.isNullOrBlank()) {
-            binding.imageViewFeesInfo.isVisible = false
-        } else {
-            binding.imageViewFeesInfo.isInvisible = isLoading
-        }
+        binding.imageViewFeesInfo.isVisible = !isLoading
     }
 
     fun showDelayedFeeViewLoading(isLoading: Boolean) {
@@ -115,7 +112,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
         handler.postDelayed(PROGRESS_DELAY_IN_MS) {
             binding.progressBarFees.isVisible = true
-            binding.imageViewFeesInfo.isInvisible = true
+            binding.imageViewFeesInfo.isVisible = false
         }
     }
 
@@ -143,6 +140,14 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
                 setSelection(text?.length.orZero())
             }
         }
+    }
+
+    fun disableInputs() {
+        binding.imageViewSwitchTo.isVisible = false
+        binding.viewSwitchToClickArea.isInvisible = true
+        binding.textViewMax.isVisible = false
+        binding.editTextAmount.isEnabled = false
+        binding.textViewAmountTypeSwitchLabel.isVisible = false
     }
 
     fun setInputTextColor(@ColorRes colorRes: Int) {

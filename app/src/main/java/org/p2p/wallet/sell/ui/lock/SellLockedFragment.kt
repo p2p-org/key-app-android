@@ -2,6 +2,7 @@ package org.p2p.wallet.sell.ui.lock
 
 import androidx.activity.addCallback
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -9,7 +10,13 @@ import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -26,10 +33,12 @@ import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import java.math.BigDecimal
 
 private const val ARG_SELL_LOCKED = "ARG_SELL_LOCKED"
 
@@ -66,7 +75,17 @@ class SellLockedFragment :
         sellAnalytics.logSellLockedOpened()
     }
 
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                binding.layoutDetails.root.appleBottomInsets(this)
+            }
+        }
+    }
+
     private fun setupViews() = with(binding.layoutDetails) {
+        setupLayoutDetails()
         renderAmounts()
         renderCopyButton()
         setupTitleAndBody()
@@ -74,8 +93,13 @@ class SellLockedFragment :
         setupButtons()
     }
 
+    private fun setupLayoutDetails() = with(binding.layoutDetails) {
+        root.setBackgroundColor(getColor(R.color.bg_smoke))
+        root.updatePadding(top = 16.toPx())
+    }
+
     private fun setupTitleAndBody() = with(binding.layoutDetails) {
-        val title = getString(R.string.sell_details_waiting_deposit_title, details.formattedSolAmount)
+        val title = getString(R.string.sell_lock_title)
         val body = getString(R.string.sell_details_waiting_deposit_body)
         val bodyBackground = R.drawable.bg_rounded_solid_rain_24
         val bodyTextColorRes: Int = R.color.text_night
@@ -87,6 +111,7 @@ class SellLockedFragment :
         textViewMessageBody.setTextColorRes(bodyTextColorRes)
         textViewMessageBody.setLinkTextColor(getColor(R.color.text_sky))
         textViewMessageBody.movementMethod = LinkMovementMethod.getInstance()
+
         imageViewMessageIcon.setImageResource(bodyIconRes)
         imageViewMessageIcon.imageTintList = ColorStateList.valueOf(getColor(bodyIconTint))
 
@@ -94,31 +119,29 @@ class SellLockedFragment :
     }
 
     private fun setupButtons() = with(binding.layoutDetails) {
-        val buttonTitle = getString(R.string.common_send)
+        buttonAction.setText(R.string.sell_details_button_send)
+        buttonAction.setOnClickListener { presenter.onSendClicked() }
 
-        buttonAction.text = buttonTitle
-        buttonAction.setOnClickListener {
-            val recipient = SearchResult.AddressFound(AddressState(details.receiverAddress))
-            replaceFragment(NewSendFragment.create(recipient = recipient))
-        }
-        buttonRemoveOrCancel.setText(R.string.common_cancel)
+        buttonRemoveOrCancel.setText(R.string.sell_details_button_cancel)
         buttonRemoveOrCancel.isVisible = true
         buttonRemoveOrCancel.setOnClickListener { presenter.onCancelTransactionClicked() }
     }
 
     private fun renderAmounts() = with(binding.layoutDetails) {
         val solAmount = details.formattedSolAmount
-        val usdAmount = details.formattedUsdAmount
-        textViewAmount.text = "$solAmount ${Constants.SOL_SYMBOL}"
-        textViewUsdValue.text = getString(R.string.sell_lock_usd_amount, usdAmount)
 
-        textViewReceiverAddress.text = details.receiverAddress.let {
-            if (details.isReceiverAddressWallet) it.cutMiddle() else it
-        }
+        textViewAmount.text = getString(
+            R.string.sell_details_token_amount, solAmount, Constants.SOL_SYMBOL
+        )
+        textViewFiatValue.isVisible = false
+
+        textViewReceiverTitle.setText(R.string.sell_details_send_to)
+        textViewReceiverAddress.text = details.receiverAddress.cutMiddle()
     }
 
     private fun renderCopyButton() = with(binding.layoutDetails.imageViewCopy) {
         isVisible = details.isReceiverAddressWallet
+        binding.layoutDetails.containerReceiver.isVisible = true
         setOnClickListener {
             requireContext().copyToClipBoard(details.receiverAddress)
             showUiKitSnackBar(messageResId = R.string.common_copied)
@@ -131,6 +154,21 @@ class SellLockedFragment :
 
     override fun navigateBackToMain() {
         popBackStackTo(MainFragment::class)
+    }
+
+    override fun navigateToSendScreen(
+        tokenToSend: Token.Active,
+        sendAmount: BigDecimal,
+        receiverAddress: String
+    ) {
+        val recipient = SearchResult.AddressFound(AddressState(receiverAddress))
+        replaceFragment(
+            NewSendFragment.create(
+                recipient = recipient,
+                initialToken = tokenToSend,
+                inputAmount = sendAmount
+            )
+        )
     }
 
     private fun showWarningDialog() {
