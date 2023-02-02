@@ -8,3 +8,4 @@ data class LamportsAmount(val value: BigDecimal) {
 }
 
 fun BigDecimal.toLamportsInstance(): LamportsAmount = LamportsAmount(this)
+fun Double.toLamportsInstance(): LamportsAmount = toBigDecimal().toLamportsInstance()
