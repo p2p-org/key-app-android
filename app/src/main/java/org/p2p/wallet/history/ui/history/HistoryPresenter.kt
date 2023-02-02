@@ -1,6 +1,10 @@
 package org.p2p.wallet.history.ui.history
 
 import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.analytics.HistoryAnalytics
@@ -12,13 +16,11 @@ import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 class HistoryPresenter(
+    private val userInteractor: UserInteractor,
     private val historyInteractor: HistoryInteractor,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val historyAnalytics: HistoryAnalytics,
@@ -83,6 +85,14 @@ class HistoryPresenter(
         launch {
             view?.showPagingState(PagingState.InitialLoading)
             fetchHistory(isRefresh = true)
+        }
+    }
+
+    override fun onBuyClicked() {
+        launch {
+            val tokensForBuy = userInteractor.getTokensForBuy()
+            if (tokensForBuy.isEmpty()) return@launch
+            view?.showBuyScreen(tokensForBuy.first())
         }
     }
 

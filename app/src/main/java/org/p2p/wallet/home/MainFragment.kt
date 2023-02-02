@@ -1,5 +1,8 @@
 package org.p2p.wallet.home
 
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
@@ -8,10 +11,8 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
@@ -28,6 +29,7 @@ import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
+import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.intercom.IntercomService
@@ -47,7 +49,10 @@ import org.p2p.wallet.history.ui.new_history.NewHistoryFragment
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
-class MainFragment : BaseFragment(R.layout.fragment_main), MainTabsSwitcher, CenterActionButtonClickSetter {
+class MainFragment :
+    BaseFragment(R.layout.fragment_main),
+    MainTabsSwitcher,
+    CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
 

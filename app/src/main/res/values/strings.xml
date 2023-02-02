@@ -305,7 +305,6 @@
     <string name="receive_renbtc_transaction_format">Receiving %s renBTC</string>
     <string name="receive_renbtc_transaction">Receiving renBTC</string>
     <string name="receive_tap_to_read">Tap to read</string>
-    <string name="receive_no_transactions_yet">No transactions yet</string>
     <string name="receive_token_list_info">Each token in this list is available for receiving with this address; you can search for a token by typing its name or ticker.\n\nIf a token is not on this list, we do not recommend sending it to this address.</string>
     <string name="receive_token_list_do_not_recommend">we do not recommend sending it to this address.</string>
     <string name="receive_view_solana_explorer">View in Solana explorer</string>
@@ -322,7 +321,6 @@
     <string name="receive_via_bitcoin_network_info">Make sure you understand these aspects</string>
     <string name="receive_understand">I understand</string>
     <string name="receive_token_list_search">Search for a token</string>
-    <string name="receive_no_transactions_yet_message">After first transaction you will be\nable to view it here</string>
     <string name="receive_btc_buy_info">• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b> You can choose\n\t\twhich currency to pay in below.</string>
     <string name="receive_btc_topup_info">• A <b>renBTC account is required</b> to receive\n\t\tbitcoins over the Bitcoin network.\n\n• Your wallet list does not contain a renBTC\n\t\taccount, and to create one <b>you need to\n\t\tmake a transaction.</b>\n\n• You <b>don\'t have funds</b> to pay for account\n\t\tcreation, but if someone sends renBTC to\n\t\tyour address, it will be created for you.</string>
     <string name="receive_btc_for_free_info">• You\'re going to create a public Bitcoin\n\t\taddress that will be valid for the next <b>24\n\t\thours</b>. You still can hold and send Bitcoin\n\t\twithout restrictions.\n\n• It\'s a <b>one-time address</b>, so if you send\n\t\tmultiple transactions, your money will be\n\t\tlost.</string>
