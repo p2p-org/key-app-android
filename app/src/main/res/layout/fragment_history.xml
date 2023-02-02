@@ -2,7 +2,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_smoke"
@@ -20,121 +19,11 @@
         app:titleMargin="16dp"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refreshLayout"
+    <include
+        android:id="@+id/layoutHistoryList"
+        layout="@layout/layout_history_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/historyRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:clipToPadding="false"
-                android:paddingBottom="@dimen/history_transaction_list_last_item_padding"
-                android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_history_transaction"
-                tools:visibility="visible" />
-
-            <include
-                android:id="@+id/emptyStateLayout"
-                layout="@layout/layout_history_empty_placeholder"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.4"
-                tools:visibility="visible" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/errorStateLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/errorImageView"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:background="@drawable/bg_circle_stroke_icon_secondary"
-                    android:src="@drawable/ic_history_error_placeholder"
-                    app:layout_constraintBottom_toTopOf="@id/retryButton"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.4"
-                    tools:ignore="contentDescription" />
-
-
-                <TextView
-                    android:id="@+id/textViewError"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:gravity="center"
-                    android:text="@string/common_error"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Bold20"
-                    app:layout_constraintTop_toBottomOf="@id/errorImageView" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:text="@string/error_history_message"
-                    android:textAppearance="@style/WalletTheme.TextAppearance.Medium14"
-                    android:textColor="@color/textIconSecondary"
-                    app:layout_constraintTop_toBottomOf="@id/textViewError" />
-
-                <org.p2p.uikit.components.UiKitButton
-                    android:id="@+id/retryButton"
-                    style="@style/UiKit.Components.Button.Large"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/ui_kit_button_large_height"
-                    android:layout_margin="16dp"
-                    android:backgroundTint="@color/bg_night"
-                    android:text="@string/common_try_again"
-                    android:textColor="@color/lime"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
-        tools:visibility="gone">
-
-        <include
-            android:id="@+id/shimmerView"
-            layout="@layout/view_history_shimmer" />
-    </FrameLayout>
-
-    <View
-        android:id="@+id/refreshLayoutProgressPlaceholder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
-        android:background="@color/white_50"
-        android:clickable="true"
-        android:visibility="gone" />
+        android:layout_marginTop="?actionBarSize" />
 
 </FrameLayout>
