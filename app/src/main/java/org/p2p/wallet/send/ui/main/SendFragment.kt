@@ -52,7 +52,7 @@ import org.p2p.wallet.transaction.ui.ProgressBottomSheet
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.backStackEntryCount
-import org.p2p.wallet.utils.colorFromTheme
+import org.p2p.uikit.utils.colorFromTheme
 import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getClipboardText

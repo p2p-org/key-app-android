@@ -35,7 +35,7 @@ class SwapAnalytics(private val tracker: Analytics) {
     fun logSwapOpenedFromMain(isSellEnabled: Boolean) {
         tracker.logEvent(
             event = SWAP_MAIN_SWAP,
-            params = mapOf("isSellEnabled" to isSellEnabled)
+            params = mapOf("Is_Sell_Enabled" to isSellEnabled)
         )
     }
 
