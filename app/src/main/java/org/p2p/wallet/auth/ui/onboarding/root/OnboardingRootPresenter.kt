@@ -45,4 +45,8 @@ class OnboardingRootPresenter(
     private fun userLeftOnPinCreation(): Boolean {
         return tokenKeyProvider.keyPair.isNotEmpty() && !authInteractor.isAuthorized()
     }
+
+    override fun logNotificationPermissionGranted(isGranted: Boolean) {
+        onboardingAnalytics.setUserGrantedNotificationPermissions(isGranted = isGranted)
+    }
 }

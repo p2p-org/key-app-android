@@ -15,7 +15,6 @@ object EventNames {
     const val BROWSE_BANNER_BACKUP_PRESSED = "Banner_Backup_Pressed"
     const val BROWSE_BANNER_NOTIFICATION_PRESSED = "Banner_Notifications_Pressed"
     const val BROWSE_BANNER_FEEDBACK_PRESSED = "Banner_Feedback_Pressed"
-    const val BROWSE_NOTIFICATION_PERMISSION_ALLOWED = "Push_Allowed"
 
     const val AUTH_VIEWED = "Auth_Viewed"
     const val AUTH_VALIDATED = "Auth_Validated"
@@ -59,6 +58,7 @@ object EventNames {
     const val ONBOARD_PUSH_APPROVED = "Push_Approved"
 
     const val ONBOARDING_PROPERTY_USER_DEVICE_SHARE = "User_Deviceshare"
+    const val ONBOARDING_PROPERTY_USER_PUSH_ALLOWED = "Push_Allowed"
     const val ONBOARDING_TORUS_REQUEST = "Onboarding_Torus_Request"
 
     const val BUY_SCREEN_OPENED = "Buy_Screen_Opened"
