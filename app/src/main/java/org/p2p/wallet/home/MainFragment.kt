@@ -25,11 +25,9 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BaseFragment
-import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentMainBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
-import org.p2p.wallet.deeplinks.MainScreenActionButtonHandler
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
@@ -52,8 +50,7 @@ private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 class MainFragment :
     BaseFragment(R.layout.fragment_main),
     MainTabsSwitcher,
-    CenterActionButtonClickSetter,
-    MainScreenActionButtonHandler {
+    CenterActionButtonClickSetter {
 
     private val binding: FragmentMainBinding by viewBinding()
 
@@ -70,9 +67,6 @@ class MainFragment :
     private val sellInteractor: SellInteractor by inject()
 
     private var lastSelectedItemId = R.id.homeItem
-
-    private val mainScreenActionButtonHandler: MainScreenActionButtonHandler?
-        get() = tabCachedFragments[R.id.homeItem] as? MainScreenActionButtonHandler
 
     companion object {
         fun create(actions: ArrayList<MainFragmentOnCreateAction> = arrayListOf()): MainFragment =
@@ -282,10 +276,6 @@ class MainFragment :
             }
             block.invoke()
         }
-    }
-
-    override fun onActionButtonClicked(clickedButton: ActionButton) {
-        mainScreenActionButtonHandler?.onActionButtonClicked(clickedButton)
     }
 
     // TODO: this is a dirty hack on how to trigger data update

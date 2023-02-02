@@ -7,21 +7,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
-import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentHistoryBinding
-import org.p2p.wallet.deeplinks.MainScreenActionButtonHandler
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.moonpay.model.SellTransaction
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -71,13 +73,11 @@ class HistoryFragment :
                 presenter.refreshHistory()
             }
 
-            val actionButtonHandler = parentFragment as? MainScreenActionButtonHandler
-
             emptyStateLayout.buttonBuy.setOnClickListener {
-                actionButtonHandler?.onActionButtonClicked(ActionButton.BUY_BUTTON)
+                presenter.onBuyClicked()
             }
             emptyStateLayout.buttonReceive.setOnClickListener {
-                actionButtonHandler?.onActionButtonClicked(ActionButton.RECEIVE_BUTTON)
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
         }
 
@@ -112,6 +112,10 @@ class HistoryFragment :
         val isHistoryEmpty = adapter.isEmpty()
         binding.emptyStateLayout.root.isVisible = isHistoryEmpty
         binding.historyRecyclerView.isVisible = !isHistoryEmpty
+    }
+
+    override fun showBuyScreen(token: Token) {
+        replaceFragment(NewBuyFragment.create(token))
     }
 
     override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {

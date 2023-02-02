@@ -19,7 +19,6 @@ import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
-import org.p2p.wallet.deeplinks.MainScreenActionButtonHandler
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.home.model.HomeElementItem
@@ -58,8 +57,7 @@ private const val KEY_REQUEST_TOKEN_INFO = "KEY_REQUEST_TOKEN_INFO"
 
 class HomeFragment :
     BaseMvpFragment<HomeContract.View, HomeContract.Presenter>(R.layout.fragment_home),
-    HomeContract.View,
-    MainScreenActionButtonHandler {
+    HomeContract.View {
 
     companion object {
         fun create(): HomeFragment = HomeFragment()
@@ -169,7 +167,7 @@ class HomeFragment :
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
-    override fun onActionButtonClicked(clickedButton: ActionButton) {
+    private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
             ActionButton.BUY_BUTTON -> {
                 presenter.onBuyClicked()
