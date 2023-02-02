@@ -9,7 +9,6 @@ import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_CURRENCY_LIST
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_NETWORK_ADDING
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_NETWORK_CHANGING
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_NETWORK_SAVED
-import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_NOTIFICATION_PERMISSION_ALLOWED
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_SCREEN_OPENED
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_CHOSEN
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SCROLLED
@@ -123,15 +122,6 @@ class BrowseAnalytics(
 
     fun logBannerFeedbackPressed() {
         tracker.logEvent(BROWSE_BANNER_FEEDBACK_PRESSED)
-    }
-
-    fun logNotificationPermissionAllowed(isGranted: Boolean) {
-        tracker.logEvent(
-            BROWSE_NOTIFICATION_PERMISSION_ALLOWED,
-            arrayOf(
-                "Push_Allowed" to isGranted
-            )
-        )
     }
 
     enum class TokenListLocation(val title: String) {
