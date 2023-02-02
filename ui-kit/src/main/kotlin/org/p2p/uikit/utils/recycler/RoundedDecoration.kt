@@ -14,14 +14,14 @@ interface RoundItem {
     fun needDecorate(): Boolean
 }
 
-class RoundedDecoration constructor(roundDp: Float) : RecyclerView.ItemDecoration() {
+class RoundedDecoration(roundDp: Float) : RecyclerView.ItemDecoration() {
 
     private val shapeTopRounded: ShapeAppearanceModel = shapeTopRounded(roundDp)
     private val shapeRounded: ShapeAppearanceModel = shapeRoundedAll(roundDp)
     private val shapeBottomRounded: ShapeAppearanceModel = shapeBottomRounded(roundDp)
     private val shapeRectangle: ShapeAppearanceModel = shapeRectangle()
 
-    private fun RecyclerView.ViewHolder.notNeedDecorate(): Boolean {
+    private fun RecyclerView.ViewHolder.noNeedToDecorate(): Boolean {
         return !(this is RoundItem && this.needDecorate())
     }
 
@@ -35,7 +35,7 @@ class RoundedDecoration constructor(roundDp: Float) : RecyclerView.ItemDecoratio
 
     override fun getItemOffsets(outRect: Rect, view: View, recyclerView: RecyclerView, state: RecyclerView.State) {
         val viewHolder = recyclerView.getChildViewHolder(view)
-        if (viewHolder.notNeedDecorate()) return
+        if (viewHolder.noNeedToDecorate()) return
         val adapter = recyclerView.adapter ?: return
 
         val previousHolderItemType = adapter.tryGetViewType(viewHolder.bindingAdapterPosition - 1)

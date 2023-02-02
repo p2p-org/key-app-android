@@ -72,39 +72,29 @@ fun View.shapeOutline(
     updateOutline()
 }
 
-fun shapeRectangle() = ShapeAppearanceModel.builder().build()
+fun shapeRectangle(): ShapeAppearanceModel = ShapeAppearanceModel.builder().build()
 
-fun shapeRounded24dp() = ShapeAppearanceModel.builder()
+fun shapeRounded24dp(): ShapeAppearanceModel = ShapeAppearanceModel.builder()
     .setAllCorners(CornerFamily.ROUNDED, 24f.toPx())
     .build()
 
-fun shapeTopRounded24dp() =
-    shapeTopRounded(
-        topDp = 24f,
-    )
+fun shapeTopRounded24dp(): ShapeAppearanceModel = shapeTopRounded(topDp = 24f)
 
-fun shapeBottomRounded24dp() =
-    shapeBottomRounded(
-        bottomDp = 24f,
-    )
+fun shapeBottomRounded24dp(): ShapeAppearanceModel = shapeBottomRounded(bottomDp = 24f)
 
-fun shapeTopRounded(
-    topDp: Float = 0f,
-) = shapeRounded(
+fun shapeTopRounded(topDp: Float = 0f): ShapeAppearanceModel = shapeRounded(
     topLeftDp = topDp,
     topRightDp = topDp,
 )
 
-fun shapeBottomRounded(
-    bottomDp: Float = 0f,
-) = shapeRounded(
+fun shapeBottomRounded(bottomDp: Float = 0f): ShapeAppearanceModel = shapeRounded(
     bottomRightDp = bottomDp,
     bottomLeftDp = bottomDp,
 )
 
 fun shapeRoundedAll(
     cornerSizeDp: Float = 0f,
-) = ShapeAppearanceModel.builder()
+): ShapeAppearanceModel = ShapeAppearanceModel.builder()
     .setAllCorners(CornerFamily.ROUNDED, cornerSizeDp)
     .build()
 
@@ -113,7 +103,7 @@ fun shapeRounded(
     topRightDp: Float = 0f,
     bottomRightDp: Float = 0f,
     bottomLeftDp: Float = 0f,
-) = ShapeAppearanceModel.builder()
+): ShapeAppearanceModel = ShapeAppearanceModel.builder()
     .setTopLeftCorner(CornerFamily.ROUNDED, topLeftDp.toPx())
     .setTopRightCorner(CornerFamily.ROUNDED, topRightDp.toPx())
     .setBottomRightCorner(CornerFamily.ROUNDED, bottomRightDp.toPx())
