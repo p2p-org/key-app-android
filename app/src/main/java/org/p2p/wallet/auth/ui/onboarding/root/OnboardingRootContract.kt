@@ -11,5 +11,7 @@ interface OnboardingRootContract {
         fun navigateToCreatePin()
     }
 
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun logNotificationPermissionGranted(isGranted: Boolean)
+    }
 }

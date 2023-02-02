@@ -15,12 +15,10 @@ import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SC
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SEARCHED
 import org.p2p.wallet.common.analytics.constants.EventNames.BROWSE_TOKEN_LIST_VIEWED
 import org.p2p.wallet.common.di.AppScope
-import org.p2p.wallet.sell.interactor.SellInteractor
 import kotlinx.coroutines.launch
 
 class BrowseAnalytics(
     private val tracker: Analytics,
-    private val sellInteractor: SellInteractor,
     private val appScope: AppScope,
 ) {
 
