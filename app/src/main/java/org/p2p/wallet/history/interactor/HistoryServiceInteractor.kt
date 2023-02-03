@@ -29,7 +29,7 @@ class HistoryServiceInteractor(
         BorshSerializable {
 
         override fun serializeSelf(): ByteArray = getBorshBuffer().write(
-            pubkey.toBase58Instance(),
+            pubkey.contentToString(),
             offset,
             limit,
             0
