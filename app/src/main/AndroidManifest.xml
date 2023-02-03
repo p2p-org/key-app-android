@@ -45,7 +45,6 @@
         <activity
             android:name="org.p2p.wallet.root.RootActivity"
             android:exported="true"
-            android:hardwareAccelerated="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/WalletTheme.Launcher"
