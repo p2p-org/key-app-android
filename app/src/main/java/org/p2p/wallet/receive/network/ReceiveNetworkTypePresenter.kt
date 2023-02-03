@@ -13,7 +13,7 @@ import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH

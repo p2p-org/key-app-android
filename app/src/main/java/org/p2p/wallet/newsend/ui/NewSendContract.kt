@@ -5,7 +5,7 @@ import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.send.model.SendFeeTotal
+import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.transaction.model.NewShowProgress
 import java.math.BigDecimal
 

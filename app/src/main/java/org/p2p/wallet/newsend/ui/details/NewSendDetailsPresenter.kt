@@ -3,8 +3,8 @@ package org.p2p.wallet.newsend.ui.details
 import android.content.res.Resources
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.send.interactor.SendInteractor
-import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.newsend.interactor.SendInteractor
+import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.getErrorMessage
 import timber.log.Timber

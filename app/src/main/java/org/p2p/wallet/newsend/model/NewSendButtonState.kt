@@ -12,7 +12,6 @@ import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.R
-import org.p2p.wallet.send.model.SearchResult
 import java.math.BigInteger
 
 class NewSendButtonState(

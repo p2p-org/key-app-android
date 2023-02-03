@@ -26,9 +26,9 @@ import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonState
-import org.p2p.wallet.send.interactor.SendInteractor
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.newsend.interactor.SendInteractor
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStatus

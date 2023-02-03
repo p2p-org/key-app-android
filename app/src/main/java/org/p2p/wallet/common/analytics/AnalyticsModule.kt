@@ -24,7 +24,6 @@ import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.analytics.SellAnalytics
-import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
 object AnalyticsModule : InjectionModule {
@@ -46,7 +45,6 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::ScreensAnalyticsInteractor)
         factoryOf(::OnboardingAnalytics)
         factoryOf(::BrowseAnalytics)
-        factoryOf(::SendAnalytics)
         factoryOf(::HomeAnalytics)
         factoryOf(::UsernameAnalytics)
         factoryOf(::RenBtcAnalytics)
