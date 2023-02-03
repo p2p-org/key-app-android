@@ -1,9 +1,8 @@
 package org.p2p.wallet.swap.jupiter.api
 
-import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.swap.jupiter.api.request.CreateSwapTransactionRequest
 import org.p2p.wallet.swap.jupiter.api.response.CreateSwapTransactionResponse
-import org.p2p.wallet.swap.jupiter.api.response.quote.SwapJupiterQuoteResponse
+import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.utils.Base58String
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -18,9 +17,9 @@ interface SwapJupiterApi {
     ): CreateSwapTransactionResponse
 
     @GET("v4/quote")
-    suspend fun getQuote(
-        @Query("inputMint") inputMint: Base64String,
-        @Query("outputMint") outputMint: Base64String,
+    suspend fun getSwapRoutes(
+        @Query("inputMint") inputMint: Base58String,
+        @Query("outputMint") outputMint: Base58String,
         @Query("amount") amount: BigDecimal,
         @Query("userPublicKey") userPublicKey: Base58String,
     ): SwapJupiterQuoteResponse

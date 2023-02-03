@@ -4,10 +4,10 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.swap.jupiter.api.request.JupiterSwapFeesRequest
 import org.p2p.wallet.swap.jupiter.api.request.SwapRouteRequest
-import org.p2p.wallet.swap.jupiter.api.response.quote.SwapJupiterQuoteResponse
+import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.swap.jupiter.repository.model.SwapFees
 import org.p2p.wallet.swap.jupiter.repository.model.SwapMarketInformation
-import org.p2p.wallet.swap.jupiter.repository.model.SwapQuote
+import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwap
 import org.p2p.wallet.swap.jupiter.repository.model.SwapRoute
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
@@ -19,10 +19,14 @@ class JupiterSwapRoutesRepository(
     private val dispatchers: CoroutineDispatchers,
 ) : SwapRoutesRepository {
 
-    override suspend fun getSwapQuote(swapQuote: SwapQuote, userPublicKey: Base58String): List<SwapRoute> =
+    override suspend fun getSwapRoutes(jupiterSwap: JupiterSwap, userPublicKey: Base58String): List<SwapRoute> =
         withContext(dispatchers.io) {
-            api.getQuote(swapQuote.inputMint, swapQuote.outputMint, swapQuote.amount, userPublicKey)
-                .toSwapRoute()
+            api.getSwapRoutes(
+                inputMint = jupiterSwap.inputMint,
+                outputMint = jupiterSwap.outputMint,
+                amount = jupiterSwap.amount,
+                userPublicKey = userPublicKey
+            ).toSwapRoute()
         }
 
     private fun SwapJupiterQuoteResponse.toSwapRoute(): List<SwapRoute> = routes
