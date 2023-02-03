@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap.jupiter.repository.model
 
 import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenExtensions
+import java.math.BigDecimal
 
 data class JupiterToken(
     val address: String,
@@ -10,5 +11,6 @@ data class JupiterToken(
     val logoURI: String,
     val name: String,
     val symbol: String,
-    val tags: List<String>
+    val tags: List<String>,
+    val priceInUsd: BigDecimal
 )
