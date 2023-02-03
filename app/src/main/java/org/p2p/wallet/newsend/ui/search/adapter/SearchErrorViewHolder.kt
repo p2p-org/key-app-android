@@ -1,11 +1,11 @@
-package org.p2p.wallet.send.ui.search.adapter
+package org.p2p.wallet.newsend.ui.search.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSearchInvalidResultBinding
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toPx

@@ -17,8 +17,8 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewSearchBinding
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.qr.ui.ScanQrFragment
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.ui.search.adapter.SearchAdapter
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.ui.search.adapter.SearchAdapter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment

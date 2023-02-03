@@ -7,9 +7,9 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatur
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.newsend.model.SearchState
-import org.p2p.wallet.send.interactor.SearchInteractor
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SearchTarget
+import org.p2p.wallet.newsend.interactor.SearchInteractor
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchTarget
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber

@@ -16,7 +16,7 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendNoAccountBinding
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
 import org.p2p.wallet.root.SystemIconsStyle
-import org.p2p.wallet.send.interactor.SendInteractor
+import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment

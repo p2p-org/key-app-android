@@ -1,6 +1,6 @@
 package org.p2p.wallet.newsend.repository
 
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchResult
 import java.util.Date
 
 interface RecipientsLocalRepository {

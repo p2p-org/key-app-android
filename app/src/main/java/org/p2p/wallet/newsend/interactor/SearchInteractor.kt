@@ -1,12 +1,12 @@
-package org.p2p.wallet.send.interactor
+package org.p2p.wallet.newsend.interactor
 
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenData
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
-import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.AddressState
+import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance

@@ -10,7 +10,7 @@ import org.p2p.wallet.home.ui.main.TOKENS_VALID_FOR_BUY
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.Base58String
