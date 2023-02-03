@@ -8,6 +8,7 @@ import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterToken
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.withContext
 
@@ -33,6 +34,10 @@ class JupiterSwapTokenRepository(
         prices: Map<TokenId, BigDecimal>
     ): List<JupiterToken> = map { response ->
         val tokenId = TokenId(response.extensions.coingeckoId)
+        val tokenPrice = prices[tokenId] ?: kotlin.run {
+            Timber.i("Couldn't find any price for token with id ${tokenId.id}; available prices: $prices")
+            BigDecimal.ZERO
+        }
         JupiterToken(
             address = response.address,
             chainId = response.chainId,
@@ -42,7 +47,7 @@ class JupiterSwapTokenRepository(
             name = response.name,
             symbol = response.symbol,
             tags = response.tags,
-            priceInUsd = prices[tokenId].orZero()
+            priceInUsd = tokenPrice
         )
     }
 }
