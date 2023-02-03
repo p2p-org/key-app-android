@@ -74,7 +74,7 @@ object HistoryModule : InjectionModule {
         single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java) }
         singleOf(::TransactionDetailsRpcRepository) bind TransactionDetailsRemoteRepository::class
 
-        factory { HistoryServiceInteractor(get(),get()) }
+        factory { HistoryServiceInteractor(get(), get()) }
         factory { RpcHistoryRemoteRepository(get()) }
         single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(HistoryServiceApi::class.java) }
         factory<NewHistoryContract.Presenter> { NewHistoryPresenter(get(), get()) }

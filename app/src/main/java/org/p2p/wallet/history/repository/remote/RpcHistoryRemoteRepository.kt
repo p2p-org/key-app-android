@@ -15,7 +15,7 @@ class RpcHistoryRemoteRepository(
     private val historyApi: HistoryServiceApi
 ) {
 
-    suspend fun getHistory(userId: String,signature: Base58String, limit: Int, offset: Int): List<RpcHistoryResponse> {
+    suspend fun getHistory(userId: String, signature: Base58String, limit: Int, offset: Int): List<RpcHistoryResponse> {
         val requestParams = mapOf(
             REQUEST_PARAMS_USER_ID to userId,
             REQUEST_PARAMS_LIMIT to limit,
