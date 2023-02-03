@@ -5,16 +5,16 @@ import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 
 private const val HISTORY_SEND_CLICKED = "History_Send_Clicked"
 
 class HistoryAnalytics(
     private val tracker: Analytics,
-    private val sendAnalytics: SendAnalytics,
+    private val sendAnalytics: NewSendAnalytics,
     private val receiveAnalytics: ReceiveAnalytics,
     private val swapAnalytics: SwapAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
@@ -38,12 +38,12 @@ class HistoryAnalytics(
     ) {
         if (transaction.isSend) {
             val sendNetwork = if (isRenBtcSessionActive) {
-                SendAnalytics.AnalyticsSendNetwork.BITCOIN
+                NewSendAnalytics.AnalyticsSendNetwork.BITCOIN
             } else {
-                SendAnalytics.AnalyticsSendNetwork.SOLANA
+                NewSendAnalytics.AnalyticsSendNetwork.SOLANA
             }
             sendAnalytics.logSendShowingDetails(
-                sendStatus = SendAnalytics.SendStatus.SUCCESS,
+                sendStatus = NewSendAnalytics.SendStatus.SUCCESS,
                 lastScreenName = analyticsInteractor.getPreviousScreenName(),
                 tokenName = transaction.tokenData.symbol,
                 sendNetwork = sendNetwork,

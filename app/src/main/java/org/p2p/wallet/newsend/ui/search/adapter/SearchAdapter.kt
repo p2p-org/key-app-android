@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.ui.search.adapter
+package org.p2p.wallet.newsend.ui.search.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -6,7 +6,7 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchResult
 
 class SearchAdapter(
     private val onItemClicked: (SearchResult) -> Unit,

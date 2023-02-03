@@ -31,14 +31,13 @@ import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.SystemIconsStyle
-import org.p2p.wallet.send.ui.main.SendFragment
-import org.p2p.wallet.send.ui.network.NetworkSelectionFragment
 import org.p2p.wallet.settings.ui.reset.seedinfo.SeedInfoFragment
 import org.p2p.wallet.settings.ui.security.SecurityFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
@@ -143,14 +142,13 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is NewSettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
         is SecurityFragment -> ScreenNames.Settings.SECURITY
-        is NetworkSelectionFragment -> ScreenNames.Send.NETWORK
         is OrcaSwapFragment -> ScreenNames.Swap.MAIN
         is TokenHistoryFragment -> ScreenNames.Token.TOKEN_SCREEN
         is SignInPinFragment -> ScreenNames.Lock.SCREEN
         is HistoryFragment -> ScreenNames.Main.MAIN_HISTORY
         is ReceiveSolanaFragment -> ScreenNames.Receive.SOLANA
         is ReceiveNetworkTypeFragment -> ScreenNames.Receive.NETWORK
-        is SendFragment -> ScreenNames.Send.MAIN
+        is NewSendFragment -> ScreenNames.Send.MAIN
         else -> emptyString()
     }
 

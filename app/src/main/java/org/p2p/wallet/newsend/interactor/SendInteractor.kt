@@ -1,4 +1,4 @@
-package org.p2p.wallet.send.interactor
+package org.p2p.wallet.newsend.interactor
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,7 +29,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.send.model.SolanaAddress
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
 import timber.log.Timber
@@ -164,30 +163,6 @@ class SendInteractor(
 
     suspend fun getFreeTransactionsInfo(): FreeTransactionFeeLimit =
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-
-    suspend fun checkAddress(destinationAddress: PublicKey, token: Token.Active): SolanaAddress =
-        try {
-            val isSolAddress = addressInteractor.isSolAddress(destinationAddress.toBase58())
-            if (isSolAddress && token.isSOL) {
-                SolanaAddress.AccountExists
-            } else {
-                val address = addressInteractor.findSplTokenAddressData(
-                    destinationAddress = destinationAddress,
-                    mintAddress = token.mintAddress,
-                    useCache = false
-                )
-                val accountAddress = address.destinationAddress.toBase58()
-                if (address.shouldCreateAccount) {
-                    Timber.tag("Address").d("Account should be created: $accountAddress")
-                    SolanaAddress.NewAccountNeeded
-                } else {
-                    Timber.tag("Address").d("Account exists: $accountAddress")
-                    SolanaAddress.AccountExists
-                }
-            }
-        } catch (e: IllegalStateException) {
-            SolanaAddress.InvalidAddress
-        }
 
     suspend fun sendTransaction(
         destinationAddress: PublicKey,

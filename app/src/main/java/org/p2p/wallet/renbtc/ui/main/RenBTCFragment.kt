@@ -19,7 +19,7 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.renbtc.ui.transactions.RenTransactionsFragment
-import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
