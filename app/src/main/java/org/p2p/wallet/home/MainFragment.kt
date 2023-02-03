@@ -111,7 +111,7 @@ class MainFragment :
             val systemBars = insets.systemBars()
             view.updatePadding(
                 left = initialPadding.left + systemBars.left,
-                top = initialPadding.top + systemBars.top,
+                top = 0,
                 right = initialPadding.right + systemBars.right,
                 bottom = initialPadding.bottom + systemBars.bottom,
             )
@@ -120,7 +120,7 @@ class MainFragment :
             val bottomConsume = if (ime.bottom > bottomNavigationHeight) bottomNavigationHeight else ime.bottom
             insets.inset(
                 systemBars.left,
-                systemBars.top,
+                0,
                 systemBars.right,
                 systemBars.bottom + bottomConsume,
             )
