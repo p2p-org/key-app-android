@@ -15,7 +15,7 @@ class NewHistoryPresenter(
     override fun loadHistory() {
         launch {
             try {
-                historyInteractor.loadHistory(userInteractor.publicKey, 10, 0)
+                historyInteractor.loadHistory(userInteractor.publicKey, userInteractor.keyPair,10, 0)
             } catch (e: Throwable) {
                 Timber.tag("______").d(e)
             }
