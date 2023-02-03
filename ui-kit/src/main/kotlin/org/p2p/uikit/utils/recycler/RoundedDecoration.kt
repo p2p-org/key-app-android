@@ -1,17 +1,20 @@
 package org.p2p.uikit.utils.recycler
 
-import androidx.recyclerview.widget.RecyclerView
-import android.graphics.Rect
+import android.graphics.Canvas
 import android.view.View
+import androidx.core.view.forEach
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.shape.ShapeAppearanceModel
 import org.p2p.uikit.utils.rippleBackground
 import org.p2p.uikit.utils.shapeBottomRounded
+import org.p2p.uikit.utils.shapeOutline
 import org.p2p.uikit.utils.shapeRectangle
 import org.p2p.uikit.utils.shapeRoundedAll
 import org.p2p.uikit.utils.shapeTopRounded
 
-interface RoundItem {
+interface RoundedItem {
     fun needDecorate(): Boolean
+    fun roundingHash(): String
 }
 
 class RoundedDecoration(roundDp: Float) : RecyclerView.ItemDecoration() {
@@ -21,51 +24,62 @@ class RoundedDecoration(roundDp: Float) : RecyclerView.ItemDecoration() {
     private val shapeBottomRounded: ShapeAppearanceModel = shapeBottomRounded(roundDp)
     private val shapeRectangle: ShapeAppearanceModel = shapeRectangle()
 
-    private fun RecyclerView.ViewHolder.noNeedToDecorate(): Boolean {
-        return !(this is RoundItem && this.needDecorate())
+    private fun RoundedItem?.noNeedToDecorate(): Boolean {
+        return this?.needDecorate() != true
     }
 
-    private fun RecyclerView.Adapter<*>.tryGetViewType(position: Int): Int {
-        return try {
-            getItemViewType(position)
-        } catch (e: Exception) {
-            RecyclerView.INVALID_TYPE
+    private fun RoundedItemAdapterInterface.tryGetItemHash(position: Int): String {
+        return getRoundedItem(position).getItemHash()
+    }
+
+    private fun RoundedItem?.getItemHash(): String {
+        return this?.roundingHash().toString()
+    }
+
+    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        parent.forEach {
+            roundItem(it, parent)
         }
     }
 
-    override fun getItemOffsets(outRect: Rect, view: View, recyclerView: RecyclerView, state: RecyclerView.State) {
+    private fun roundItem(view: View, recyclerView: RecyclerView) {
         val viewHolder = recyclerView.getChildViewHolder(view)
-        if (viewHolder.noNeedToDecorate()) return
-        val adapter = recyclerView.adapter ?: return
+        val adapter = recyclerView.adapter as? RoundedItemAdapterInterface ?: return
 
-        val previousHolderItemType = adapter.tryGetViewType(viewHolder.bindingAdapterPosition - 1)
-        val currentHolderItemType = adapter.getItemViewType(viewHolder.bindingAdapterPosition)
-        val nextHolderItemType = adapter.tryGetViewType(viewHolder.bindingAdapterPosition + 1)
+        val currentHolderItem = adapter.getRoundedItem(viewHolder.absoluteAdapterPosition)
+        if (currentHolderItem.noNeedToDecorate()) return
 
-        viewHolder.itemView.rippleBackground(
-            selectShape(
-                previousHolderItemType = previousHolderItemType,
-                currentHolderItemType = currentHolderItemType,
-                nextHolderItemType = nextHolderItemType,
-            )
+        val previousHolderItemHash = adapter.tryGetItemHash(viewHolder.absoluteAdapterPosition - 1)
+        val currentHolderItemHash = currentHolderItem.getItemHash()
+        val nextHolderItemHash = adapter.tryGetItemHash(viewHolder.absoluteAdapterPosition + 1)
+
+        val shape = selectShape(
+            previousHolderItemHash = previousHolderItemHash,
+            currentHolderItemHash = currentHolderItemHash,
+            nextHolderItemHash = nextHolderItemHash,
         )
+
+        if (viewHolder.itemView.foreground == null) {
+            viewHolder.itemView.rippleBackground(shape)
+        } else {
+            viewHolder.itemView.shapeOutline(shape)
+        }
     }
 
     private fun selectShape(
-        previousHolderItemType: Int,
-        currentHolderItemType: Int,
-        nextHolderItemType: Int,
+        previousHolderItemHash: String,
+        currentHolderItemHash: String,
+        nextHolderItemHash: String,
     ): ShapeAppearanceModel {
-
         return when {
-            previousHolderItemType != currentHolderItemType &&
-                currentHolderItemType != nextHolderItemType -> shapeRounded
-            previousHolderItemType != currentHolderItemType &&
-                currentHolderItemType == nextHolderItemType -> shapeTopRounded
-            previousHolderItemType == currentHolderItemType &&
-                currentHolderItemType != nextHolderItemType -> shapeBottomRounded
-            previousHolderItemType == currentHolderItemType &&
-                currentHolderItemType == nextHolderItemType -> shapeRectangle
+            previousHolderItemHash != currentHolderItemHash &&
+                currentHolderItemHash != nextHolderItemHash -> shapeRounded
+            previousHolderItemHash != currentHolderItemHash &&
+                currentHolderItemHash == nextHolderItemHash -> shapeTopRounded
+            previousHolderItemHash == currentHolderItemHash &&
+                currentHolderItemHash != nextHolderItemHash -> shapeBottomRounded
+            previousHolderItemHash == currentHolderItemHash &&
+                currentHolderItemHash == nextHolderItemHash -> shapeRectangle
             else -> shapeRectangle
         }
     }

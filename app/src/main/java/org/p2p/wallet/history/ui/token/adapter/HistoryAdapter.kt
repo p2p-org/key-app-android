@@ -1,20 +1,20 @@
 package org.p2p.wallet.history.ui.token.adapter
 
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import android.annotation.SuppressLint
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import org.p2p.core.glide.GlideManager
+import org.p2p.uikit.utils.recycler.RoundedItem
+import org.p2p.uikit.utils.recycler.RoundedItemAdapterInterface
 import org.p2p.wallet.common.date.isSameAs
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryItem.DateItem
-import org.p2p.wallet.history.model.HistoryItem.Empty
 import org.p2p.wallet.history.model.HistoryItem.MoonpayTransactionItem
 import org.p2p.wallet.history.model.HistoryItem.TransactionItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
-import org.p2p.wallet.history.ui.token.adapter.holders.EmptyViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.HistorySellTransactionViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHolder
@@ -26,12 +26,11 @@ import org.p2p.wallet.sell.interactor.HistoryItemMapper
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 private const val TRANSACTION_VIEW_TYPE = 1
-private const val HISTORY_EMPTY_VIEW_TYPE = 2
-private const val HISTORY_DATE_VIEW_TYPE = 3
-private const val PROGRESS_VIEW_TYPE = 4
-private const val ERROR_VIEW_TYPE = 5
-private const val TRANSACTION_SWAP_VIEW_TYPE = 6
-private const val TRANSACTION_MOONPAY_VIEW_TYPE = 7
+private const val HISTORY_DATE_VIEW_TYPE = 2
+private const val PROGRESS_VIEW_TYPE = 3
+private const val ERROR_VIEW_TYPE = 4
+private const val TRANSACTION_SWAP_VIEW_TYPE = 5
+private const val TRANSACTION_MOONPAY_VIEW_TYPE = 6
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
@@ -39,7 +38,7 @@ class HistoryAdapter(
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
     private val onMoonpayTransactionClicked: (SellTransactionViewDetails) -> Unit,
     private val onRetryClicked: () -> Unit,
-) : RecyclerView.Adapter<HistoryTransactionViewHolder>() {
+) : RecyclerView.Adapter<HistoryTransactionViewHolder>(), RoundedItemAdapterInterface {
 
     private val currentItems = mutableListOf<HistoryItem>()
     private val pagingController = HistoryAdapterPagingController(this)
@@ -70,7 +69,6 @@ class HistoryAdapter(
         return when (viewType) {
             TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, onTransactionClicked)
             TRANSACTION_SWAP_VIEW_TYPE -> TransactionSwapViewHolder(parent, glideManager, onTransactionClicked)
-            HISTORY_EMPTY_VIEW_TYPE -> EmptyViewHolder(parent)
             HISTORY_DATE_VIEW_TYPE -> DateViewHolder(parent)
             PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)
             TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onMoonpayTransactionClicked)
@@ -85,7 +83,6 @@ class HistoryAdapter(
             is DateViewHolder -> holder.onBind(currentItems[position] as DateItem)
             is ErrorViewHolder -> holder.onBind(pagingController.currentPagingState, onRetryClicked)
             is HistorySellTransactionViewHolder -> holder.onBind(currentItems[position] as MoonpayTransactionItem)
-            is EmptyViewHolder -> Unit
             is ProgressViewHolder -> Unit
         }
     }
@@ -94,7 +91,6 @@ class HistoryAdapter(
         return when (val item = currentItems.getOrNull(position)) {
             is TransactionItem -> item.transaction.signature.hashCode().toLong()
             is DateItem -> item.date.hashCode().toLong()
-            is Empty -> position.hashCode().toLong()
             else -> RecyclerView.NO_ID
         }
     }
@@ -122,7 +118,6 @@ class HistoryAdapter(
         return when (val item = currentItems[position]) {
             is DateItem -> HISTORY_DATE_VIEW_TYPE
             is TransactionItem -> getTransactionItemViewType(item)
-            is Empty -> HISTORY_EMPTY_VIEW_TYPE
             is MoonpayTransactionItem -> TRANSACTION_MOONPAY_VIEW_TYPE
         }
     }
@@ -168,4 +163,15 @@ class HistoryAdapter(
     }
 
     fun isEmpty() = currentItems.isEmpty()
+
+    override fun getRoundedItem(adapterPosition: Int): RoundedItem? {
+        // for progress item just get last item
+        // TODO PWN-6888 rewrite on pagination implementation
+        val position = if (adapterPosition == currentItems.size && pagingController.isPagingInLoadingState()) {
+            adapterPosition - 1
+        } else {
+            adapterPosition
+        }
+        return currentItems.getOrNull(position)
+    }
 }
