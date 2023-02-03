@@ -103,7 +103,7 @@ jobs:
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          bash slack_shortlog_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} "main"
           cd ..
 
       - name: "Send finish deploy message to Slack"
@@ -168,7 +168,7 @@ jobs:
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_deploy_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          bash slack_shortlog_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} "main"
           cd ..
 
       - name: "Send finish deploy message to Slack"
