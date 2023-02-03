@@ -1,6 +1,5 @@
 package org.p2p.wallet.swap.jupiter.repository.model
 
-import com.google.gson.annotations.SerializedName
 import org.p2p.wallet.utils.LamportsAmount
 
 data class SwapFees(
@@ -17,6 +16,5 @@ data class SwapFees(
      * the total lamports needed for fees and deposits above
      */
     val totalFeeAndDeposits: LamportsAmount,
-    @SerializedName("minimumSOLForTransaction")
     val minimumSolForTransaction: LamportsAmount
 )
