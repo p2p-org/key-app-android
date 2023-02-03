@@ -81,7 +81,7 @@ class TokenHistoryFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.setupView()
         listenForSellTransactionDialogDismiss()
-        presenter.loadHistory()
+        lifecycle.addObserver(presenter)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
@@ -95,10 +95,15 @@ class TokenHistoryFragment :
 
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
-        refreshLayout.setOnRefreshListener { presenter.retryLoad() }
-        errorStateLayout.buttonRetry.setOnClickListener { presenter.retryLoad() }
-        historyRecyclerView.setupHistoryList()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
+        with(layoutHistoryList) {
+            refreshLayout.setOnRefreshListener { presenter.retryLoad() }
+            errorStateLayout.buttonRetry.setOnClickListener { presenter.retryLoad() }
+            historyRecyclerView.setupHistoryList()
+
+            emptyStateLayout.buttonBuy.setOnClickListener { onActionButtonClicked(ActionButton.BUY_BUTTON) }
+            emptyStateLayout.buttonReceive.setOnClickListener { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) }
+        }
     }
 
     private fun Toolbar.setupToolbar() {
@@ -158,27 +163,22 @@ class TokenHistoryFragment :
         addOnScrollListener(scrollListener)
     }
 
-    override fun onResume() {
-        super.onResume()
-        // dirty duck-tape to remove hidden transactions from the list
-        // when the bottom sheet is closed
-        presenter.updateSellTransactions()
-    }
-
     override fun showError(@StringRes resId: Int, argument: String) {
         showErrorDialog(getString(resId, argument))
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {
-        binding.refreshLayout.isRefreshing = isRefreshing
+        binding.layoutHistoryList.refreshLayout.isRefreshing = isRefreshing
     }
 
     override fun showHistory(transactions: List<HistoryTransaction>, sellTransactions: List<SellTransaction>) {
-        historyAdapter.setTransactions(transactions, sellTransactions)
+        with(binding.layoutHistoryList) {
+            historyAdapter.setTransactions(transactions, sellTransactions)
 
-        val isEmpty = historyAdapter.isEmpty()
-        binding.emptyStateLayout.isVisible = isEmpty
-        binding.refreshLayout.isVisible = !isEmpty
+            val isEmpty = historyAdapter.isEmpty()
+            emptyStateLayout.root.isVisible = isEmpty
+            refreshLayout.isVisible = !isEmpty
+        }
     }
 
     override fun showActionButtons(actionButtons: List<ActionButton>) {
@@ -186,12 +186,13 @@ class TokenHistoryFragment :
     }
 
     override fun showPagingState(newState: PagingState) {
+        Timber.tag("_____STATE").d(newState.toString())
         historyAdapter.setPagingState(newState)
-        with(binding) {
+        with(binding.layoutHistoryList) {
             shimmerView.root.isVisible = newState == PagingState.InitialLoading
             refreshLayout.isVisible = newState != PagingState.InitialLoading
             errorStateLayout.root.isVisible = newState is PagingState.Error
-            emptyStateLayout.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
+            emptyStateLayout.root.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
             historyRecyclerView.isVisible =
                 (newState == PagingState.Idle && !historyAdapter.isEmpty()) || newState == PagingState.Loading
         }
@@ -210,8 +211,10 @@ class TokenHistoryFragment :
     }
 
     override fun scrollToTop() {
-        binding.historyRecyclerView.post {
-            binding.historyRecyclerView.smoothScrollToPosition(0)
+        with(binding.layoutHistoryList.historyRecyclerView) {
+            post {
+                smoothScrollToPosition(0)
+            }
         }
     }
 }

@@ -1,5 +1,8 @@
 package org.p2p.wallet.send.ui.main
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
@@ -67,9 +70,6 @@ import java.math.RoundingMode
 import java.util.Locale
 import java.util.UUID
 import kotlin.properties.Delegates
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 @Deprecated("Will be removed, old design flow")
 class SendPresenter(
@@ -104,6 +104,8 @@ class SendPresenter(
     private var feePayerJob: Job? = null
     private lateinit var transactionId: String
 
+    private var availableTokensToSwitch: List<Token.Active> = emptyList()
+
     override fun setInitialToken(initialToken: Token.Active) {
         state.updateInitialToken(initialToken)
     }
@@ -119,6 +121,7 @@ class SendPresenter(
 
                 sendInteractor.initialize(initialToken).also { token = initialToken }
                 state.minRentExemption = sendInteractor.getMinRelayRentExemption()
+                availableTokensToSwitch = userInteractor.getNonZeroUserTokens()
 
                 calculateTotal(sendFeeRelayerFee = null)
             } catch (e: Throwable) {
@@ -727,9 +730,10 @@ class SendPresenter(
 
         return SendSolanaFee(
             feePayerToken = newFeePayer,
-            sourceTokenSymbol = source.tokenSymbol,
+            sourceToken = source,
             feeRelayerFee = feeRelayerFee,
-            solToken = state.solToken
+            solToken = state.solToken,
+            alternativeFeePayerTokens = availableTokensToSwitch
         ).also { state.sendFeeRelayerFee = it }
     }
 
@@ -764,9 +768,10 @@ class SendPresenter(
          * - In other cases, switching to SOL
          * */
         when (val state = fee.calculateFeePayerState(strategy, tokenTotal, inputAmount)) {
-            is FeePayerState.UpdateFeePayer -> {
-                sendInteractor.setFeePayerToken(sourceToken)
-                recalculate(sourceToken)
+            is FeePayerState.SwitchToSpl -> {
+                val newFeePayerToken = state.tokenToSwitch
+                sendInteractor.setFeePayerToken(newFeePayerToken)
+                recalculate(newFeePayerToken)
             }
             is FeePayerState.SwitchToSol -> {
                 sendInteractor.switchFeePayerToSol(this.state.solToken)

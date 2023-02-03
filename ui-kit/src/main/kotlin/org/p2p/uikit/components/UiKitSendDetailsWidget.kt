@@ -1,12 +1,12 @@
 package org.p2p.uikit.components
 
-import android.content.Context
-import android.util.AttributeSet
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.postDelayed
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import android.content.Context
+import android.util.AttributeSet
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.glide.GlideManager
@@ -17,7 +17,6 @@ import org.p2p.uikit.databinding.WidgetSendDetailsInputBinding
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.withTextOrGone
 import java.util.concurrent.atomic.AtomicInteger
 
 private const val MAX_FRACTION_LENGTH = 9
@@ -93,17 +92,17 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.textViewMainAmount.text = text
     }
 
-    fun setFeeLabel(text: String?) {
-        binding.textViewFee withTextOrGone text
+    fun setFeeLabel(text: String) {
+        binding.textViewFee.text = text
+    }
+
+    fun showFeeVisible(isVisible: Boolean) {
+        binding.layoutFeeInfo.isVisible = isVisible
     }
 
     fun showFeeLoading(isLoading: Boolean) {
         binding.progressBarFees.isVisible = isLoading
-        if (binding.textViewFee.text.isNullOrBlank()) {
-            binding.imageViewFeesInfo.isVisible = false
-        } else {
-            binding.imageViewFeesInfo.isInvisible = isLoading
-        }
+        binding.imageViewFeesInfo.isVisible = !isLoading
     }
 
     fun showDelayedFeeViewLoading(isLoading: Boolean) {
@@ -115,7 +114,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
 
         handler.postDelayed(PROGRESS_DELAY_IN_MS) {
             binding.progressBarFees.isVisible = true
-            binding.imageViewFeesInfo.isInvisible = true
+            binding.imageViewFeesInfo.isVisible = false
         }
     }
 
@@ -189,9 +188,10 @@ interface UiKitSendDetailsWidgetContract {
     fun setInputColor(@ColorRes colorRes: Int)
     fun setMainAmountLabel(symbol: String)
     fun setMaxButtonVisible(isVisible: Boolean)
-    fun setFeeLabel(text: String?)
+    fun setFeeLabel(text: String)
     fun setTokenContainerEnabled(isEnabled: Boolean)
     fun setInputEnabled(isEnabled: Boolean)
+    fun showFeeViewVisible(isVisible: Boolean)
 
     fun restoreSlider()
 }

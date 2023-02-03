@@ -58,6 +58,7 @@ object EventNames {
     const val ONBOARD_PUSH_APPROVED = "Push_Approved"
 
     const val ONBOARDING_PROPERTY_USER_DEVICE_SHARE = "User_Deviceshare"
+    const val ONBOARDING_PROPERTY_USER_PUSH_ALLOWED = "Push_Allowed"
     const val ONBOARDING_TORUS_REQUEST = "Onboarding_Torus_Request"
 
     const val BUY_SCREEN_OPENED = "Buy_Screen_Opened"

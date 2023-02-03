@@ -1,8 +1,5 @@
 package org.p2p.wallet.history.strategy.context
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.withContext
 import org.p2p.solanaj.kits.transaction.TransactionDetailsType
 import org.p2p.solanaj.kits.transaction.UnknownDetails
 import org.p2p.solanaj.kits.transaction.network.ConfirmedTransactionRootResponse
@@ -11,7 +8,11 @@ import org.p2p.wallet.common.di.ServiceScope
 import org.p2p.wallet.history.strategy.ParsingResult
 import org.p2p.wallet.history.strategy.TransactionParsingContext
 import org.p2p.wallet.history.strategy.TransactionParsingStrategy
-import kotlin.IllegalStateException
+import org.p2p.wallet.utils.appendBreakLine
+import timber.log.Timber
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 
 class SolanaParsingContext(
     private val strategies: List<TransactionParsingStrategy>,
@@ -22,13 +23,16 @@ class SolanaParsingContext(
         root: ConfirmedTransactionRootResponse
     ): ParsingResult = withContext(serviceScope.coroutineContext) {
         val messageResponse = root.transaction?.message
-            ?: return@withContext ParsingResult.Transaction.create(
-                UnknownDetails(
-                    signature = root.transaction?.getTransactionId()!!,
-                    blockTime = root.blockTime,
-                    slot = root.slot,
+            ?: return@withContext run {
+                Timber.i("Creating unknown details transaction: $root")
+                ParsingResult.Transaction.create(
+                    UnknownDetails(
+                        signature = root.transaction?.getTransactionId()!!,
+                        blockTime = root.blockTime,
+                        slot = root.slot,
+                    )
                 )
-            )
+            }
         val instructions = messageResponse
             .instructions
             .map { async { toParsingResult(root, it) } }
@@ -41,17 +45,48 @@ class SolanaParsingContext(
         return@withContext ParsingResult.Transaction(details)
     }
 
+    private class ParsingContextError(
+        customMessage: String,
+        root: ConfirmedTransactionRootResponse,
+        instruction: InstructionResponse
+    ) : Throwable(
+        message = buildString {
+            append(customMessage)
+            appendBreakLine()
+            append("programId=${instruction.programId};")
+            appendBreakLine()
+            append("transactionId=${root.transaction?.getTransactionId()}")
+            appendBreakLine()
+            append("parsedType=${instruction.parsed?.type}")
+        }
+    )
+
     private suspend fun toParsingResult(
         root: ConfirmedTransactionRootResponse,
         instruction: InstructionResponse
     ): ParsingResult {
         val signature = root.transaction?.getTransactionId()
-            ?: return ParsingResult.Error(IllegalStateException("Signature cannot be null"))
+            ?: return ParsingResult.Error(
+                ParsingContextError(
+                    customMessage = "Signature cannot be null",
+                    root = root,
+                    instruction = instruction
+                )
+            )
 
         val type = TransactionDetailsType.valueOf(instruction.parsed?.type)
 
         val parsingStrategy = strategies.firstOrNull { it.getType() == type }
-            ?: return ParsingResult.Error(IllegalStateException("Unknown type of transaction"))
+            ?: return run {
+                val strategies = strategies.map(TransactionParsingStrategy::getType)
+                ParsingResult.Error(
+                    ParsingContextError(
+                        customMessage = "Couldn't find any available strategies for type=$type in $strategies",
+                        root = root,
+                        instruction = instruction
+                    )
+                )
+            }
 
         return parsingStrategy.parseTransaction(
             signature = signature,

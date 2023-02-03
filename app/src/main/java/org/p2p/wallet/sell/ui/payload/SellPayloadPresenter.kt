@@ -37,6 +37,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
+private const val SELL_QUOTE_NEW_AMOUNT_DELAY = 1_000L
 
 class SellPayloadPresenter(
     private val sellInteractor: SellInteractor,
@@ -52,7 +53,7 @@ class SellPayloadPresenter(
     private var minTokenSellAmount: BigDecimal = BigDecimal.ZERO
     private var maxTokenSellAmount: BigDecimal? = null
     private var rawUserSelectedAmount: String = emptyString()
-    private val userSelectedAmount: BigDecimal
+    private val selectedTokenAmount: BigDecimal
         get() = rawToDecimalAmount()
     private var tokenPrice: BigDecimal = BigDecimal.ZERO
 
@@ -84,6 +85,7 @@ class SellPayloadPresenter(
                         fractionLength = MOONPAY_DECIMAL
                     )
                     userSolBalance = it.total
+                    view.updateToolbarTitle(it.tokenSymbol)
                 }
 
                 // if the screen launched from the fresh - make tokenCurrencyMode default
@@ -98,6 +100,8 @@ class SellPayloadPresenter(
 
                 if (!secureStorage.getBoolean(Key.KEY_IS_SELL_WARNING_SHOWED, false)) {
                     view.showOnlySolWarning()
+                } else {
+                    view.showKeyboard()
                 }
             } catch (error: Throwable) {
                 handleError(error)
@@ -122,7 +126,7 @@ class SellPayloadPresenter(
                     formattedSolAmount = amounts.tokenAmount.formatTokenForMoonpay(),
                     formattedFiatAmount = amounts.amountInFiat.formatFiat(),
                     receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value,
-                    fiatAbbreviation = userTransactionInProcess.selectedFiat.abbriviation.uppercase()
+                    fiatUiName = userTransactionInProcess.selectedFiat.uiSymbol.uppercase()
                 )
             )
         }
@@ -138,10 +142,7 @@ class SellPayloadPresenter(
 
     private fun rawToDecimalAmount(): BigDecimal =
         when (selectedCurrencyMode) {
-            CurrencyMode.Fiat.Eur,
-            CurrencyMode.Fiat.Gbp,
-            CurrencyMode.Fiat.Usd -> rawUserSelectedAmount.toBigDecimalOrZero()
-                .divide(tokenPrice, 2, RoundingMode.DOWN)
+            is CurrencyMode.Fiat -> rawUserSelectedAmount.toBigDecimalOrZero().toToken()
             is CurrencyMode.Token -> rawUserSelectedAmount.toBigDecimalOrZero()
         }
 
@@ -161,7 +162,7 @@ class SellPayloadPresenter(
 
     private suspend fun initialLoadSellQuote() {
         val sellQuote = sellInteractor.getSellQuoteForSol(
-            solAmount = userSelectedAmount,
+            solAmount = selectedTokenAmount,
             fiat = fiatCurrencyMode.toSellFiatCurrency()
         )
         onSellQuoteLoaded(sellQuote)
@@ -188,16 +189,18 @@ class SellPayloadPresenter(
     private fun startLoadSellQuoteJob() {
         sellQuoteJob?.cancel()
         sellQuoteJob = launch {
+            delay(SELL_QUOTE_NEW_AMOUNT_DELAY)
             while (isActive) {
                 try {
-                    delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                     val sellQuote = sellInteractor.getSellQuoteForSol(
-                        solAmount = userSelectedAmount,
+                        solAmount = selectedTokenAmount,
                         fiat = fiatCurrencyMode.toSellFiatCurrency()
                     )
                     onSellQuoteLoaded(sellQuote)
                 } catch (error: Throwable) {
                     handleError(error)
+                } finally {
+                    delay(SELL_QUOTE_REQUEST_DEBOUNCE_TIME)
                 }
             }
         }
@@ -226,21 +229,22 @@ class SellPayloadPresenter(
     }
 
     override fun switchCurrencyMode() {
-        internalSwitchCurrencyMode()
-        view?.updateViewState(viewState)
-        onTokenAmountChanged(viewState.widgetViewState.inputAmount)
-    }
-
-    private fun internalSwitchCurrencyMode() {
+        val oldAmount = rawUserSelectedAmount.toBigDecimalOrZero()
         selectedCurrencyMode = currencyModeToSwitch
+        val switchedAmount = when (selectedCurrencyMode) {
+            is CurrencyMode.Fiat -> oldAmount.toFiat()
+            is CurrencyMode.Token -> oldAmount.toToken()
+        }
         viewState = viewState.run {
             copy(
                 widgetViewState = widgetViewState.copy(
                     currencyMode = selectedCurrencyMode,
                     currencyModeToSwitch = currencyModeToSwitch,
+                    inputAmount = switchedAmount.formatTokenForMoonpay()
                 )
             )
         }
+        view?.updateViewState(viewState)
     }
 
     override fun cashOut() {
@@ -259,7 +263,7 @@ class SellPayloadPresenter(
             userAddress = userAddress,
             externalCustomerId = externalCustomerIdProvider.getCustomerId(),
             fiatSymbol = fiatCurrencyMode.fiatAbbreviation,
-            tokenAmountToSell = userSelectedAmount.formatTokenForMoonpay(),
+            tokenAmountToSell = selectedTokenAmount.formatTokenForMoonpay(),
         )
         view?.showMoonpayWidget(url = moonpayUrl)
     }
@@ -268,10 +272,13 @@ class SellPayloadPresenter(
         rawUserSelectedAmount = newValue
 
         val buttonState = determineButtonState()
-        if (buttonState.isEnabled) {
-            startLoadSellQuoteJob()
-        } else {
-            sellQuoteJob?.cancel()
+        when (buttonState) {
+            is CashOutButtonState.CashOutAvailable, is CashOutButtonState.NotEnoughUserTokenError -> {
+                startLoadSellQuoteJob()
+            }
+            is CashOutButtonState.MinAmountEntered, is CashOutButtonState.MaxAmountExceeded -> {
+                sellQuoteJob?.cancel()
+            }
         }
         viewState = viewState.copy(
             cashOutButtonState = buttonState,
@@ -283,39 +290,35 @@ class SellPayloadPresenter(
     }
 
     override fun onUserMaxClicked() {
-        when (selectedCurrencyMode) {
-            CurrencyMode.Fiat.Eur,
-            CurrencyMode.Fiat.Gbp,
-            CurrencyMode.Fiat.Usd -> internalSwitchCurrencyMode()
-            is CurrencyMode.Token -> Unit
-        }
-        val userSolBalance = userSolBalance.toPlainString()
+        val maxAmount = when (selectedCurrencyMode) {
+            is CurrencyMode.Fiat -> userSolBalance.toFiat()
+            is CurrencyMode.Token -> userSolBalance
+        }.formatTokenForMoonpay()
         viewState = viewState.copy(
             widgetViewState = viewState.widgetViewState.copy(
-                inputAmount = userSolBalance
+                inputAmount = maxAmount
             )
         )
         view?.updateViewState(viewState)
-        onTokenAmountChanged(userSolBalance)
+        onTokenAmountChanged(maxAmount)
     }
 
     private fun determineButtonState(): CashOutButtonState {
-        val stateBuilder = CashOutButtonState.Builder(resources)
         return when {
-            userSelectedAmount.isLessThan(minTokenSellAmount) -> {
-                stateBuilder.minAmountErrorState(minTokenSellAmount)
+            selectedTokenAmount.isLessThan(minTokenSellAmount) -> {
+                CashOutButtonState.MinAmountEntered(resources, minTokenSellAmount)
             }
 
-            userSelectedAmount.isMoreThan(maxTokenSellAmount.orZero()) -> {
-                stateBuilder.maxAmountErrorState(maxTokenSellAmount.orZero())
+            selectedTokenAmount.isMoreThan(maxTokenSellAmount.orZero()) -> {
+                CashOutButtonState.MaxAmountExceeded(resources, maxTokenSellAmount.orZero())
             }
 
-            userSelectedAmount.isMoreThan(userSolBalance) -> {
-                stateBuilder.notEnoughTokenErrorState()
+            selectedTokenAmount.isMoreThan(userSolBalance) -> {
+                CashOutButtonState.NotEnoughUserTokenError(resources)
             }
 
             else -> {
-                stateBuilder.cashOutAvailableState()
+                CashOutButtonState.CashOutAvailable(resources)
             }
         }
     }
@@ -335,4 +338,7 @@ class SellPayloadPresenter(
             CurrencyMode.Fiat.Gbp -> SellTransactionFiatCurrency.GBP
         }
     }
+
+    private fun BigDecimal.toFiat() = this.multiply(tokenPrice).setScale(2, RoundingMode.DOWN)
+    private fun BigDecimal.toToken() = this.divide(tokenPrice, 2, RoundingMode.DOWN)
 }

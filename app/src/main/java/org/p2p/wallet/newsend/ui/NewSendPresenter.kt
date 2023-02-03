@@ -1,8 +1,6 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
@@ -47,6 +45,8 @@ import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -72,7 +72,7 @@ class NewSendPresenter(
         sendModeProvider,
         resources.getString(R.string.common_less_than_minimum)
     )
-    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor)
+    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
     private var selectedToken: Token.Active? = null
     private var initialAmount: BigDecimal? = null
@@ -204,7 +204,7 @@ class NewSendPresenter(
                 view.showUiKitSnackBar(resources.getString(R.string.send_reduced_amount_calculation_message))
             }
             is FeeRelayerState.Failure -> {
-                view.setFeeLabel(text = null)
+                if (newState.isFeeCalculationError()) view.showFeeViewVisible(isVisible = false)
                 updateButton(requireToken(), newState)
             }
             is FeeRelayerState.Idle -> Unit
@@ -242,6 +242,7 @@ class NewSendPresenter(
     override fun updateToken(newToken: Token.Active) {
         token = newToken
         showMaxButtonIfNeeded()
+        view?.showFeeViewVisible(isVisible = true)
         updateButton(requireToken(), feeRelayerManager.getState())
 
         /*
@@ -258,6 +259,7 @@ class NewSendPresenter(
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
         newSendAnalytics.logSwitchCurrencyModeClicked(newMode)
+        view?.showFeeViewVisible(isVisible = true)
         /*
          * Trigger recalculation for USD input
          * */
@@ -270,6 +272,7 @@ class NewSendPresenter(
 
     override fun updateInputAmount(amount: String) {
         calculationMode.updateInputAmount(amount)
+        view?.showFeeViewVisible(isVisible = true)
         showMaxButtonIfNeeded()
         updateButton(requireToken(), feeRelayerManager.getState())
 
@@ -302,6 +305,7 @@ class NewSendPresenter(
         val token = token ?: return
         val totalAvailable = calculationMode.getMaxAvailableAmount() ?: return
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
+        view?.showFeeViewVisible(isVisible = true)
 
         showMaxButtonIfNeeded()
 

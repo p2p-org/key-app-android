@@ -1,6 +1,9 @@
 package org.p2p.wallet.sell.ui.warning
 
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResult
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +16,13 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ui.bottomsheet.BaseDoneBottomSheet
 import org.p2p.wallet.databinding.DialogSellWarningOnlySolBinding
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
+import org.p2p.wallet.sell.analytics.SellAnalytics
 
 class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
 
     companion object {
+        const val REQUEST_ONLY_SOL_DIALOG_KEY_DISMISSED = "REQUEST_ONLY_SOL_DIALOG_KEY_DISMISSED"
+
         fun show(fm: FragmentManager) {
             SellOnlySolWarningBottomSheet()
                 .show(fm, SellOnlySolWarningBottomSheet::class.simpleName)
@@ -26,6 +32,7 @@ class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
     private lateinit var binding: DialogSellWarningOnlySolBinding
 
     private val secureStorage: SecureStorageContract by inject()
+    private val sellAnalytics: SellAnalytics by inject()
 
     override fun onCreateInnerView(
         inflater: LayoutInflater,
@@ -46,7 +53,10 @@ class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
             setText(R.string.sell_warning_only_sol_button)
             setBackgroundColor(getColor(R.color.bg_night))
             setTextColorRes(R.color.text_snow)
-            setOnClickListener { onCloseButtonClicked() }
+            setOnClickListener {
+                sellAnalytics.logSellOnlySolWarningClosed()
+                onCloseButtonClicked()
+            }
         }
     }
 
@@ -56,5 +66,10 @@ class SellOnlySolWarningBottomSheet : BaseDoneBottomSheet() {
             value = true
         )
         dismissAllowingStateLoss()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        setFragmentResult(REQUEST_ONLY_SOL_DIALOG_KEY_DISMISSED, bundleOf())
     }
 }

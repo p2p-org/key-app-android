@@ -1,12 +1,13 @@
 package org.p2p.wallet.history.ui.history
 
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -18,8 +19,11 @@ import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.moonpay.model.SellTransaction
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
+import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import timber.log.Timber
@@ -48,9 +52,9 @@ class HistoryFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding) {
+        with(binding.layoutHistoryList) {
 
-            retryButton.setOnClickListener {
+            errorStateLayout.buttonRetry.setOnClickListener {
                 presenter.refreshHistory()
             }
             val scrollListener = EndlessScrollListener(
@@ -65,13 +69,17 @@ class HistoryFragment :
                 presenter.refreshHistory()
                 scrollListener.reset()
             }
-            retryButton.setOnClickListener {
-                presenter.refreshHistory()
+
+            emptyStateLayout.buttonBuy.setOnClickListener {
+                presenter.onBuyClicked()
+            }
+            emptyStateLayout.buttonReceive.setOnClickListener {
+                replaceFragment(ReceiveSolanaFragment.create(token = null))
             }
         }
 
         listenForSellTransactionDialogDismiss()
-        presenter.loadHistory()
+        lifecycle.addObserver(presenter)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
@@ -80,20 +88,13 @@ class HistoryFragment :
         ) { _, _ -> presenter.loadHistory() }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // dirty duck-tape to remove hidden transactions from the list
-        // when the bottom sheet is closed
-        presenter.updateSellTransactions()
-    }
-
     override fun showPagingState(state: PagingState) {
         adapter.setPagingState(state)
-        with(binding) {
+        with(binding.layoutHistoryList) {
             shimmerView.root.isVisible = state == PagingState.InitialLoading
             refreshLayout.isVisible = state != PagingState.InitialLoading
-            errorStateLayout.isVisible = state is PagingState.Error
-            emptyStateLayout.isVisible = state == PagingState.Idle && adapter.isEmpty()
+            errorStateLayout.root.isVisible = state is PagingState.Error
+            emptyStateLayout.root.isVisible = state == PagingState.Idle && adapter.isEmpty()
             historyRecyclerView.isVisible =
                 (state == PagingState.Idle && !adapter.isEmpty()) || state == PagingState.Loading
         }
@@ -103,11 +104,17 @@ class HistoryFragment :
         blockChainTransactions: List<HistoryTransaction>,
         sellTransactions: List<SellTransaction>
     ) {
-        adapter.setTransactions(blockChainTransactions, sellTransactions)
+        with(binding.layoutHistoryList) {
+            adapter.setTransactions(blockChainTransactions, sellTransactions)
 
-        val isHistoryEmpty = adapter.isEmpty()
-        binding.emptyStateLayout.isVisible = isHistoryEmpty
-        binding.historyRecyclerView.isVisible = !isHistoryEmpty
+            val isHistoryEmpty = adapter.isEmpty()
+            emptyStateLayout.root.isVisible = isHistoryEmpty
+            historyRecyclerView.isVisible = !isHistoryEmpty
+        }
+    }
+
+    override fun showBuyScreen(token: Token) {
+        replaceFragment(NewBuyFragment.create(token))
     }
 
     override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {
@@ -127,13 +134,13 @@ class HistoryFragment :
         }
     }
 
-    override fun showRefreshing(isRefreshing: Boolean) = with(binding) {
+    override fun showRefreshing(isRefreshing: Boolean) = with(binding.layoutHistoryList) {
         refreshLayout.isRefreshing = isRefreshing
         refreshLayoutProgressPlaceholder.isVisible = isRefreshing
     }
 
     override fun scrollToTop() {
-        binding.historyRecyclerView.smoothScrollToPosition(0)
+        binding.layoutHistoryList.historyRecyclerView.smoothScrollToPosition(0)
     }
 
     override fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails) {

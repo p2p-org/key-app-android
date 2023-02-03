@@ -8,7 +8,6 @@ import androidx.annotation.CallSuper
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.DialogBaseDoneBinding
 import org.p2p.wallet.utils.args
@@ -19,7 +18,7 @@ import org.p2p.wallet.utils.withTextOrGone
  * or X at top to close (if needed) to cover cases where you do not need logic and Presenter
  * you need to show some Info content or select something and return as a result with [setFragmentResult]
  **/
-abstract class BaseDoneBottomSheet : BottomSheetDialogFragment() {
+abstract class BaseDoneBottomSheet : BaseBottomSheet() {
 
     companion object {
         const val ARG_TITLE = "ARG_TITLE"
