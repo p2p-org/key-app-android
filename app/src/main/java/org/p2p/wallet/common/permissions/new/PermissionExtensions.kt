@@ -1,4 +1,4 @@
-package org.p2p.wallet.android
+package org.p2p.wallet.common.permissions.new
 
 import android.Manifest
 import android.os.Build
