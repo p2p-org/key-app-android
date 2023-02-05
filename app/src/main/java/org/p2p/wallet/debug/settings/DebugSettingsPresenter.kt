@@ -68,6 +68,10 @@ class DebugSettingsPresenter(
     private fun getMainSettings(): List<SettingsRow> {
         return listOfNotNull(
             SettingsRow.Section(
+                titleResId = R.string.common_go_to_swap,
+                iconRes = R.drawable.ic_swap_filled
+            ),
+            SettingsRow.Section(
                 titleResId = R.string.debug_settings_notifications_title,
                 iconRes = R.drawable.ic_settings_notification
             ),

@@ -67,6 +67,9 @@ class DebugSettingsFragment :
 
     private fun onSettingsRowClicked(@StringRes titleResId: Int) {
         when (titleResId) {
+            R.string.common_go_to_swap -> {
+                replaceFragment(TestSwapFragment())
+            }
             R.string.debug_settings_notifications_title -> {
                 replaceFragment(PushNotificationsFragment.create())
             }
