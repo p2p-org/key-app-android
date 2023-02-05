@@ -5,6 +5,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.utils.replaceFragment
 
 class SplashFragment :
@@ -23,5 +24,9 @@ class SplashFragment :
 
     override fun navigateToSignIn() {
         replaceFragment(SignInPinFragment.create(), addToBackStack = false)
+    }
+
+    override fun hideSplashScreen() {
+        (activity as? RootActivity)?.hideSplashScreen()
     }
 }

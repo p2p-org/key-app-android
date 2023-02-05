@@ -20,11 +20,4 @@
     <!--        app:lottie_loop="true"-->
     <!--        app:lottie_rawRes="@raw/key_app_splash_logo" />-->
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/app_name"
-        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title1" />
-
 </FrameLayout>

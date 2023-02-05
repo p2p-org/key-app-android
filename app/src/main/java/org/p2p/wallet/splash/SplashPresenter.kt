@@ -5,10 +5,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-private const val MINIMUM_SPLASH_SHOWING_TIME_MS = 2000L
 
 class SplashPresenter(
     private val authInteractor: AuthInteractor,
@@ -19,7 +16,6 @@ class SplashPresenter(
         super.attach(view)
         launch {
             val allTokensData = initialLoading { userInteractor.loadAllTokensData() }
-            delay(MINIMUM_SPLASH_SHOWING_TIME_MS)
             allTokensData.join()
             openRootScreen()
         }
@@ -41,5 +37,6 @@ class SplashPresenter(
         } else {
             view?.navigateToOnboarding()
         }
+        view?.hideSplashScreen()
     }
 }
