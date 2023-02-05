@@ -7,7 +7,7 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentTestSwapBinding
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class TestSwapFragment:BaseFragment(R.layout.fragment_test_swap) {
+class TestSwapFragment : BaseFragment(R.layout.fragment_test_swap) {
 
     private val binding: FragmentTestSwapBinding by viewBinding()
 
@@ -18,9 +18,6 @@ class TestSwapFragment:BaseFragment(R.layout.fragment_test_swap) {
             val from = binding.fromInput.text
             val to = binding.toInput.text
             val amount = binding.amount.text
-
-
         }
     }
-
 }
