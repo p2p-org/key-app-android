@@ -39,6 +39,12 @@ jobs:
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
+      - name: "Create release signing configs properties"
+        uses: ./.github/actions/setup-signing-configs
+        with:
+          keystore-password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key-alias: ${{ secrets.KEY_ALIAS }}
+          key-password: ${{ secrets.KEY_PASSWORD }}
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         env:
@@ -46,10 +52,6 @@ jobs:
       - name: Create and fill p2pwallet.jks
         run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2pwallet.jks
       - name: "Build release AAB&APK artifacts"
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease assembleRelease
       - name: "Upload AAB to Firebase App Distribution"
         env:
