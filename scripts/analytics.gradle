@@ -35,14 +35,6 @@ android {
             manifestPlaceholders = [SENTRY_ENV: "feature"]
             buildConfigField("String", "amplitudeKey", "\"${debugKey}\"")
         }
-        releaseLocal {
-            manifestPlaceholders = [SENTRY_ENV: "release"]
-            buildConfigField("String", "amplitudeKey", "\"${debugKey}\"")
-        }
-        releaseFirebase {
-            manifestPlaceholders = [SENTRY_ENV: "release"]
-            buildConfigField("String", "amplitudeKey", "\"${debugKey}\"")
-        }
         release {
             manifestPlaceholders = [SENTRY_ENV: "release"]
             buildConfigField("String", "amplitudeKey", "\"${analyticsProperties["amplitudeReleaseKey"]}\"")
