@@ -172,6 +172,6 @@ class HistoryAdapter(
         } else {
             adapterPosition
         }
-        return currentItems.getOrNull(position)
+        return currentItems.getOrNull(position) as? RoundedItem
     }
 }
