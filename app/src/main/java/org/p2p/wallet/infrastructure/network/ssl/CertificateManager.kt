@@ -3,8 +3,6 @@ package org.p2p.wallet.infrastructure.network.ssl
 import android.content.res.Resources
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
-import org.p2p.wallet.BuildConfig
-import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SslPinningFeatureToggle
 import timber.log.Timber
 import java.io.InputStream
