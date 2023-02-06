@@ -1,6 +1,5 @@
 package org.p2p.wallet.history.ui.token.adapter.holders
 
-import androidx.core.view.isVisible
 import android.content.res.ColorStateList
 import android.view.ViewGroup
 import org.p2p.wallet.R
@@ -77,23 +76,23 @@ class HistorySellTransactionViewHolder(
             }
         }
 
-        layoutTransactionDetails.textViewTitle.text = titleStatus
-        layoutTransactionDetails.textViewSubtitle.text = subtitleReceiver
+        layoutTransactionDetails.startAmountView.title = titleStatus
+        layoutTransactionDetails.startAmountView.subtitle = subtitleReceiver
     }
 
     private fun renderAmounts(item: HistoryItem.MoonpayTransactionItem) {
         if (item.status == SellTransactionStatus.COMPLETED) {
-            binding.layoutTransactionDetails.textViewValue.text = binding.getString(
+            binding.layoutTransactionDetails.endAmountView.usdAmount = binding.getString(
                 R.string.transaction_history_moonpay_amount_fiat,
                 item.amountInFiat,
                 item.transactionDetails.fiatUiName.uppercase()
             )
         } else {
-            binding.layoutTransactionDetails.textViewValue.text = binding.getString(
+            binding.layoutTransactionDetails.endAmountView.usdAmount = binding.getString(
                 R.string.transaction_history_moonpay_amount_sol,
                 item.amountInSol,
             )
         }
-        binding.layoutTransactionDetails.textViewTotal.isVisible = false // hide SOL amount
+        binding.layoutTransactionDetails.endAmountView.tokenAmount = null // hide SOL amount
     }
 }

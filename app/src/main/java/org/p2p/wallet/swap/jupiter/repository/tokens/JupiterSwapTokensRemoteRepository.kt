@@ -1,12 +1,14 @@
 package org.p2p.wallet.swap.jupiter.repository.tokens
 
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.orZero
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
-import org.p2p.wallet.swap.jupiter.repository.model.JupiterToken
+import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.withContext
@@ -17,7 +19,7 @@ class JupiterSwapTokensRemoteRepository(
     private val dispatchers: CoroutineDispatchers,
 ) : JupiterSwapTokensRepository {
 
-    override suspend fun getTokens(): List<JupiterToken> = withContext(dispatchers.io) {
+    override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.io) {
         val tokens = api.getSwapTokens()
         val prices = fetchPricesForTokens(tokens)
         tokens.toJupiterToken(prices)
@@ -31,26 +33,26 @@ class JupiterSwapTokensRemoteRepository(
 
     private fun List<JupiterTokenResponse>.toJupiterToken(
         prices: Map<TokenId, BigDecimal>
-    ): List<JupiterToken> = map { response ->
-        val tokenPrice = if (response.extensions.coingeckoId != null) {
-            val tokenId = TokenId(response.extensions.coingeckoId)
-            prices[tokenId] ?: kotlin.run {
-                Timber.i("Couldn't find any price for token with id ${tokenId.id}; available prices: $prices")
-                BigDecimal.ZERO
+    ): List<JupiterSwapToken> = map { response ->
+        val tokenPrice = response.extensions.coingeckoId?.let { prices[TokenId(it)] }
+
+        if (tokenPrice == null) {
+            val errorMessage = buildString {
+                append("Couldn't find any price for token with id: ${response.extensions.coingeckoId}; ")
+                append("available prices: $prices")
             }
-        } else {
-            BigDecimal.ZERO
+            Timber.i(errorMessage)
         }
-        JupiterToken(
-            address = response.address,
+        JupiterSwapToken(
+            tokenMint = response.address.toBase58Instance(),
             chainId = response.chainId,
             decimals = response.decimals,
-            extensions = response.extensions,
-            logoURI = response.logoUri,
-            name = response.name,
-            symbol = response.symbol,
+            coingeckoId = response.extensions.coingeckoId,
+            logoUri = response.logoUri,
+            tokenName = response.name,
+            tokenSymbol = response.symbol,
             tags = response.tags,
-            priceInUsd = tokenPrice
+            priceInUsd = tokenPrice.orZero()
         )
     }
 }

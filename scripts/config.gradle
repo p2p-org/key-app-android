@@ -2,24 +2,17 @@ apply plugin: 'com.android.application'
 
 android {
     defaultConfig {
-        def apiKeysProperties = new Properties()
-        def apiKeysPropertiesFile = rootProject.file("apikeys.properties")
-        if (apiKeysPropertiesFile.canRead()) {
-            logger.quiet "(API KEYS): using api keys properties file"
-            apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
-        } else {
-            logger.quiet "(API KEYS): api keys properties file is not found"
-        }
+        def apiKeysProperties = new PropertiesFile(rootProject.file("apikeys.properties"), logger)
 
-        buildConfigField("String", "rpcPoolApiKey", "\"${apiKeysProperties["rpcPoolApiKey"]}\"")
-        buildConfigField("String", "moonpayKey", "\"${apiKeysProperties["moonpayKey"]}\"")
-        buildConfigField("String", "moonpaySandboxKey", "\"${apiKeysProperties["moonpaySandboxKey"]}\"")
-        buildConfigField("String", "comparePublicKey", "\"${apiKeysProperties["comparePublicKey"]}\"")
-        buildConfigField("String", "intercomApiKey", "\"${apiKeysProperties["intercomApiKey"]}\"")
-        buildConfigField("String", "intercomAppId", "\"${apiKeysProperties["intercomAppId"]}\"")
-        buildConfigField("String", "appsFlyerKey", "\"${apiKeysProperties["appsFlyerKey"]}\"")
-        buildConfigField("String", "lokaliseKey", "\"${apiKeysProperties["lokaliseKey"]}\"")
-        buildConfigField("String", "lokaliseAppId", "\"${apiKeysProperties["lokaliseAppId"]}\"")
+        buildConfigField("String", "rpcPoolApiKey", "\"${apiKeysProperties.getOrThrow('rpcPoolApiKey')}\"")
+        buildConfigField("String", "moonpayKey", "\"${apiKeysProperties.getOrThrow('moonpayKey')}\"")
+        buildConfigField("String", "moonpaySandboxKey", "\"${apiKeysProperties.getOrThrow('moonpaySandboxKey')}\"")
+        buildConfigField("String", "comparePublicKey", "\"${apiKeysProperties.getOrThrow('comparePublicKey')}\"")
+        buildConfigField("String", "intercomApiKey", "\"${apiKeysProperties.getOrThrow('intercomApiKey')}\"")
+        buildConfigField("String", "intercomAppId", "\"${apiKeysProperties.getOrThrow('intercomAppId')}\"")
+        buildConfigField("String", "appsFlyerKey", "\"${apiKeysProperties.getOrThrow('appsFlyerKey')}\"")
+        buildConfigField("String", "lokaliseKey", "\"${apiKeysProperties.getOrThrow('lokaliseKey')}\"")
+        buildConfigField("String", "lokaliseAppId", "\"${apiKeysProperties.getOrThrow('lokaliseAppId')}\"")
     }
 
     buildTypes {
@@ -30,18 +23,6 @@ android {
             buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
         }
         feature {
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
-            buildConfigField("boolean", "SENTRY_ENABLED", "false")
-            buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
-            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
-        }
-        releaseFirebase {
-            buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
-            buildConfigField("boolean", "SENTRY_ENABLED", "false")
-            buildConfigField("boolean", "APPSFLYER_ENABLED", "false")
-            buildConfigField("boolean", "FIREBASE_ANALYTICS_ENABLED", "false")
-        }
-        releaseLocal {
             buildConfigField("boolean", "CRASHLYTICS_ENABLED", "true")
             buildConfigField("boolean", "SENTRY_ENABLED", "false")
             buildConfigField("boolean", "APPSFLYER_ENABLED", "false")

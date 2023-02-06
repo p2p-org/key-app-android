@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.jupiter.api
 import org.p2p.wallet.swap.jupiter.api.request.CreateSwapTransactionRequest
 import org.p2p.wallet.swap.jupiter.api.response.CreateSwapTransactionResponse
 import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
+import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -24,10 +25,10 @@ interface SwapJupiterApi {
 
     @GET("v4/quote")
     suspend fun getSwapRoutes(
-        @Query("inputMint") inputMint: String,
-        @Query("outputMint") outputMint: String,
+        @Query("inputMint") inputMint: Base58String,
+        @Query("outputMint") outputMint: Base58String,
         @Query("amount") amountInLamports: BigInteger,
-        @Query("userPublicKey") userPublicKey: String,
+        @Query("userPublicKey") userPublicKey: Base58String,
         @Query("asLegacyTransaction") asLegacyTransaction: Boolean = true
     ): SwapJupiterQuoteResponse
 }

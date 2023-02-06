@@ -8,7 +8,7 @@ sealed class SwapFailure(
     override val cause: Throwable? = null
 ) : Throwable() {
     data class CreateSwapTransactionFailed(
-        val route: SwapRoute,
+        val route: JupiterSwapRoute,
         override val cause: Throwable
     ) : SwapFailure("$CREATE_SWAP_TRANSACTION_ERROR ${route.amountInLamports}")
 }

@@ -38,7 +38,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
-            versionNameSuffix ".${getVersionBuild()}-debug"
+            versionNameSuffix ".${VERSION_BUILD}-debug"
         }
 
         feature {
@@ -47,7 +47,7 @@ android {
             debuggable true
             minifyEnabled true
             shrinkResources true
-            versionNameSuffix ".${getVersionBuild()}-feature"
+            versionNameSuffix ".${VERSION_BUILD}-feature"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             firebaseAppDistribution {
@@ -60,32 +60,6 @@ android {
                 mappingFileUploadEnabled true
             }
             matchingFallbacks = ["debug"]
-        }
-
-        releaseFirebase { buildType ->
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            firebaseAppDistribution {
-                artifactType = "AAB"
-                releaseNotes = releaseChangelog(VERSION_NAME, buildType.name)
-                groups = "wallet.release.test"
-            }
-
-            matchingFallbacks = ["release"]
-        }
-
-        releaseLocal { buildType ->
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            matchingFallbacks = ["release"]
         }
 
         release { buildType ->

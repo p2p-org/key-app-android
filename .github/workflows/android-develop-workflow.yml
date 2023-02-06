@@ -87,7 +87,6 @@ jobs:
     steps:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
-
       - name: "Send start deploy message to slack"
         run: |
           git fetch
@@ -122,13 +121,11 @@ jobs:
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
-
       - name: "Upload APK to Firebase"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew assembleFeature appDistributionUploadFeature
-
       - name: "Upload feature APK to Slack"
         uses: ./.github/actions/setup-slack
         with:
@@ -136,7 +133,8 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "feature"
           artifact-type: "apk"
-
+      - name: "Commit changes"
+        uses: ./.github/actions/setup-commit
       - name: "Upload changelog, and Jira ticket to slack channel"
         run: |
           cd bash_scripts

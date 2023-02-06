@@ -13,6 +13,7 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.recycler.RoundedDecoration
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
@@ -154,6 +155,7 @@ class TokenHistoryFragment :
         layoutManager = LinearLayoutManager(requireContext())
 
         attachAdapter(historyAdapter)
+        addItemDecoration(RoundedDecoration(16f))
         clearOnScrollListeners()
 
         val scrollListener = EndlessScrollListener(
@@ -174,6 +176,7 @@ class TokenHistoryFragment :
     override fun showHistory(transactions: List<HistoryTransaction>, sellTransactions: List<SellTransaction>) {
         with(binding.layoutHistoryList) {
             historyAdapter.setTransactions(transactions, sellTransactions)
+            historyRecyclerView.invalidateItemDecorations()
 
             val isEmpty = historyAdapter.isEmpty()
             emptyStateLayout.root.isVisible = isEmpty
