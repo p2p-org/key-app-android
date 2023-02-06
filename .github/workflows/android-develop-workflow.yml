@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - feature/*
 
 env:
   setup_project_inputs: |
