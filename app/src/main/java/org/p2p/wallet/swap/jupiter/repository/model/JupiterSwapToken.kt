@@ -6,8 +6,8 @@ data class JupiterSwapToken(
     val address: Base58String,
     val chainId: Int,
     val decimals: Int,
-    val coingeckoId: String,
-    val logoUri: String,
+    val coingeckoId: String?,
+    val logoUri: String?,
     val name: String,
     val symbol: String,
     val tags: List<String>

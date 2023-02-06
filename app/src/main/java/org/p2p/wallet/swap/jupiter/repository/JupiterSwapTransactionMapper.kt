@@ -31,19 +31,19 @@ class JupiterSwapTransactionMapper {
             outAmount = domainModel.outAmount.toPlainString(),
             minInAmount = domainModel.minInAmount?.toPlainString(),
             minOutAmount = domainModel.minOutAmount?.toPlainString(),
-            priceImpactPct = domainModel.priceImpactPct,
+            priceImpactPct = domainModel.priceImpactPct.toDouble(),
             lpFee = domainModel.lpFee.let { domainFee ->
                 SwapRouteRequest.MarketInfoRequest.LpFeeRequest(
                     amount = domainFee.amount,
                     mint = domainFee.mint.base58Value,
-                    pct = domainFee.pct
+                    pct = domainFee.pct.toDouble()
                 )
             },
             platformFee = domainModel.platformFee.let { domainFee ->
                 SwapRouteRequest.MarketInfoRequest.PlatformFeeRequest(
                     amount = domainFee.amount,
                     mint = domainFee.mint.base58Value,
-                    pct = domainFee.pct
+                    pct = domainFee.pct.toDouble()
                 )
             }
         )

@@ -1,6 +1,7 @@
 package org.p2p.wallet.swap
 
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
@@ -22,6 +23,18 @@ import org.p2p.wallet.swap.interactor.serum.SerumOpenOrdersInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapAmountInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
+import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
+import org.p2p.wallet.swap.jupiter.api.SwapJupiterTokensApi
+import org.p2p.wallet.swap.jupiter.domain.JupiterSwapInteractor
+import org.p2p.wallet.swap.jupiter.repository.JupiterRemoteMapper
+import org.p2p.wallet.swap.jupiter.repository.JupiterRemoteRepository
+import org.p2p.wallet.swap.jupiter.repository.JupiterSwapRoutesMapper
+import org.p2p.wallet.swap.jupiter.repository.JupiterSwapRoutesRepository
+import org.p2p.wallet.swap.jupiter.repository.JupiterSwapTransactionMapper
+import org.p2p.wallet.swap.jupiter.repository.JupiterSwapTransactionRepository
+import org.p2p.wallet.swap.jupiter.repository.JupiterTokensRepository
+import org.p2p.wallet.swap.jupiter.repository.SwapRoutesRepository
+import org.p2p.wallet.swap.jupiter.repository.SwapTransactionRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
@@ -94,5 +107,31 @@ object SwapModule : InjectionModule {
                 transactionManager = get(),
             )
         } bind OrcaSwapContract.Presenter::class
+
+        single {
+            val baseUrl = androidContext().getString(R.string.jupiterCacheBaseUrl)
+            getRetrofit(
+                baseUrl = baseUrl,
+                tag = "JupiterCache",
+                interceptor = null
+            ).create(SwapJupiterTokensApi::class.java)
+        }
+
+        single {
+            val baseUrl = androidContext().getString(R.string.jupiterQuoteBaseUrl)
+            getRetrofit(
+                baseUrl = baseUrl,
+                tag = "JupiterQuote",
+                interceptor = null
+            ).create(SwapJupiterApi::class.java)
+        }
+        factoryOf(::JupiterSwapRoutesMapper)
+        factoryOf(::JupiterRemoteMapper)
+        factoryOf(::JupiterSwapTransactionMapper)
+
+        factory { JupiterSwapRoutesRepository(get(), get(), get()) } bind SwapRoutesRepository::class
+        factory { JupiterSwapTransactionRepository(get(), get(), get()) } bind SwapTransactionRepository::class
+        factory { JupiterRemoteRepository(get(), get()) } bind JupiterTokensRepository::class
+        factory { JupiterSwapInteractor(get(), get(), get(), get(), get()) }
     }
 }

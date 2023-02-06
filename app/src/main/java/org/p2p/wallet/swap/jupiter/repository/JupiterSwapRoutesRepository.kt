@@ -15,10 +15,10 @@ class JupiterSwapRoutesRepository(
     override suspend fun getSwapRoutes(jupiterSwap: JupiterSwap, userPublicKey: Base58String): List<SwapRoute> =
         mapper.toSwapRoute(
             api.getSwapRoutes(
-                inputMint = jupiterSwap.inputMint,
-                outputMint = jupiterSwap.outputMint,
+                inputMint = jupiterSwap.inputMint.base58Value,
+                outputMint = jupiterSwap.outputMint.base58Value,
                 amount = jupiterSwap.amount,
-                userPublicKey = userPublicKey
+                userPublicKey = userPublicKey.base58Value
             )
         )
 }

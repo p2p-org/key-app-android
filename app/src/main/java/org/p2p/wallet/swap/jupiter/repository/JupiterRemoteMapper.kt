@@ -11,7 +11,7 @@ class JupiterRemoteMapper {
             address = response.address.toBase58Instance(),
             chainId = response.chainId,
             decimals = response.decimals,
-            coingeckoId = response.extensions.coingeckoId,
+            coingeckoId = response.extensions?.coingeckoId,
             logoUri = response.logoUri,
             name = response.name,
             symbol = response.symbol,

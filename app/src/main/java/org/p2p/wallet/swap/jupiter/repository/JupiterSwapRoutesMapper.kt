@@ -37,19 +37,19 @@ class JupiterSwapRoutesMapper {
                 outAmount = response.outAmount.toBigDecimal(),
                 minInAmount = response.minInAmount?.toBigDecimal(),
                 minOutAmount = response.minOutAmount?.toBigDecimal(),
-                priceImpactPct = response.priceImpactPct,
+                priceImpactPct = response.priceImpactPct.toBigDecimal(),
                 lpFee = response.lpFee.let { responseFee ->
                     SwapMarketInformation.LpFee(
                         amount = responseFee.amount,
                         mint = responseFee.mint.toBase58Instance(),
-                        pct = responseFee.pct
+                        pct = responseFee.pct.toBigDecimal()
                     )
                 },
                 platformFee = response.platformFee.let { responseFee ->
                     SwapMarketInformation.PlatformFeeRequest(
                         amount = responseFee.amount,
                         mint = responseFee.mint.toBase58Instance(),
-                        pct = responseFee.pct
+                        pct = responseFee.pct.toBigDecimal()
                     )
                 }
             )

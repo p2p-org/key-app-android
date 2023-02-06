@@ -13,19 +13,19 @@ data class SwapMarketInformation(
     val outAmount: BigDecimal,
     val minInAmount: BigDecimal?,
     val minOutAmount: BigDecimal?,
-    val priceImpactPct: Int,
+    val priceImpactPct: BigDecimal,
     val lpFee: LpFee,
     val platformFee: PlatformFeeRequest
 ) {
     data class LpFee(
         val amount: String,
         val mint: Base58String,
-        val pct: Int
+        val pct: BigDecimal
     )
 
     data class PlatformFeeRequest(
         val amount: String,
         val mint: Base58String,
-        val pct: Int
+        val pct: BigDecimal
     )
 }
