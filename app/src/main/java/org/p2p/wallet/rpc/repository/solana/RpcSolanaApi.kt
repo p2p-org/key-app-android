@@ -15,7 +15,7 @@ interface RpcSolanaApi {
     suspend fun sendTransaction(
         @Body rpcRequest: RpcRequest,
         @Url url: String = emptyString()
-    ): CommonResponse<String>
+    ): CommonResponse<String> // First Transaction Signature embedded in the transaction
 
     @POST
     suspend fun getConfirmedSignatureForAddress(
