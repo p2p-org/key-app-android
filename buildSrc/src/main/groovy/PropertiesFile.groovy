@@ -18,7 +18,7 @@ class PropertiesFile {
     }
 
     String getOrThrow(String key) {
-        if (key == "null" || properties.containsKey(key)) {
+        if (properties.containsKey(key)) {
             properties.getProperty(key)
         } else {
             throw new GradleScriptException(

@@ -2,30 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     defaultConfig {
-        def sentryProperties = new Properties()
-        def sentryPropertiesFile = rootProject.file("sentry.properties")
-        if (sentryPropertiesFile.canRead()) {
-            logger.quiet "(SENTRY): using sentry properties file"
-            sentryProperties.load(new FileInputStream(sentryPropertiesFile))
-        } else {
-            logger.quiet "(SENTRY): sentry properties is not found."
-        }
-
-        def sentryDsn = sentryProperties["auth.dsn"]
+        def sentryProperties = new PropertiesFile(rootProject.file("sentry.properties"), logger)
+        def sentryDsn = sentryProperties.getOrThrow('auth.dsn')
         manifestPlaceholders = [SENTRY_DSN: "$sentryDsn"]
     }
 
     buildTypes {
-        def analyticsProperties = new Properties()
-        def analyticsPropertiesFile = rootProject.file("analytics.properties")
-        if (analyticsPropertiesFile.canRead()) {
-            logger.quiet "(ANALYTICS): using analytics properties file"
-            analyticsProperties.load(new FileInputStream(analyticsPropertiesFile))
-        } else {
-            logger.quiet "(ANALYTICS): analytics properties is not found."
-        }
-
-        def debugKey = analyticsProperties["amplitudeDebugKey"]
+        def analyticsProperties = new PropertiesFile(rootProject.file("analytics.properties"), logger)
+        def debugKey = analyticsProperties.getOrThrow('amplitudeDebugKey')
 
         debug {
             manifestPlaceholders = [SENTRY_ENV: "debug"]
@@ -37,7 +21,7 @@ android {
         }
         release {
             manifestPlaceholders = [SENTRY_ENV: "release"]
-            buildConfigField("String", "amplitudeKey", "\"${analyticsProperties["amplitudeReleaseKey"]}\"")
+            buildConfigField("String", "amplitudeKey", "\"${analyticsProperties.getOrThrow('amplitudeReleaseKey')}\"")
         }
     }
 }
