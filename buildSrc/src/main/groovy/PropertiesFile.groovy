@@ -17,6 +17,24 @@ class PropertiesFile {
         }
     }
 
+    String getOrDefault(String key, String defaultValue) {
+        if (properties.containsKey(key)) {
+            properties.getProperty(key)
+        } else {
+            logger.quiet("[$propertiesFileName] No $key found, using default: $defaultValue")
+            defaultValue
+        }
+    }
+
+    String getOrNull(String key) {
+        if (properties.containsKey(key)) {
+            properties.getProperty(key)
+        } else {
+            logger.quiet("[$propertiesFileName] No $key found, using default: $defaultValue")
+            null
+        }
+    }
+
     String getOrThrow(String key) {
         if (properties.containsKey(key)) {
             properties.getProperty(key)
