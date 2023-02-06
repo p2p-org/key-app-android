@@ -1,20 +1,20 @@
 package org.p2p.wallet.swap.jupiter.repository.model
 
-import org.p2p.wallet.utils.LamportsAmount
+import java.math.BigInteger
 
 data class SwapFees(
-    val signatureFee: LamportsAmount,
+    val signatureFee: BigInteger,
     /**
      * the total amount needed for deposit of serum order account(s).
      */
-    val openOrdersDeposits: List<LamportsAmount>,
+    val openOrdersDeposits: List<BigInteger>,
     /**
      * the total amount needed for deposit of associative token account(s).
      */
-    val ataDeposits: List<LamportsAmount>,
+    val ataDeposits: List<BigInteger>,
     /**
      * the total lamports needed for fees and deposits above
      */
-    val totalFeeAndDeposits: LamportsAmount,
-    val minimumSolForTransaction: LamportsAmount
+    val totalFeeAndDeposits: BigInteger,
+    val minimumSolForTransaction: BigInteger
 )
