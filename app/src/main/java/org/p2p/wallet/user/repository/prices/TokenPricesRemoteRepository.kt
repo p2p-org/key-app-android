@@ -8,6 +8,11 @@ interface TokenPricesRemoteRepository {
         targetCurrency: String
     ): List<TokenPrice>
 
+    suspend fun getTokenPricesByIdsMap(
+        tokenIds: List<TokenId>,
+        targetCurrency: String
+    ): Map<TokenId, TokenPrice>
+
     suspend fun getTokenPriceById(
         tokenId: TokenId,
         targetCurrency: String
