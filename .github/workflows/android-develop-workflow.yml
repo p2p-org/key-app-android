@@ -137,9 +137,7 @@ jobs:
       - name: "Commit changes"
         uses: ./.github/actions/setup-commit
         with:
-          github-repository: ${{ env.GITHUB_REPOSITORY }}
-          github-ref: ${{ env.GITHUB_REF }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.KEY_APP_GITHUB_TOKEN }}
 #      - name: "Upload changelog, and Jira ticket to slack channel"
 #        run: |
 #          cd bash_scripts
