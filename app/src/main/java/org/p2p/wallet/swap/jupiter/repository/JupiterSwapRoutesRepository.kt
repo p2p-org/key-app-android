@@ -1,6 +1,5 @@
 package org.p2p.wallet.swap.jupiter.repository
 
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwap
 import org.p2p.wallet.swap.jupiter.repository.model.SwapRoute
