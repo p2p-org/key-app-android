@@ -90,25 +90,25 @@ data class SwapRouteRequest(
 
 data class JupiterSwapFeesRequest(
     @SerializedName("signatureFee")
-    val signatureFeeInLamports: Double,
+    val signatureFeeInLamports: Long,
     @SerializedName("openOrdersDeposits")
     /**
      * the total amount needed for deposit of serum order account(s).
      */
-    val openOrdersDepositsLamports: List<Double>,
+    val openOrdersDepositsLamports: List<Long>,
     /**
      * the total amount needed for deposit of associative token account(s).
      */
     @SerializedName("ataDeposits")
-    val ataDeposits: List<Double>,
+    val ataDeposits: List<Long>,
     /**
      * the total lamports needed for fees and deposits above
      */
     @SerializedName("totalFeeAndDeposits")
-    val totalFeeAndDepositsLamports: Double,
+    val totalFeeAndDepositsLamports: Long,
     /**
      * the minimum lamports needed for transaction(s)
      */
     @SerializedName("minimumSOLForTransaction")
-    val minimumSolForTransactionLamports: Double
+    val minimumSolForTransactionLamports: Long
 )
