@@ -16,15 +16,5 @@ task setVersionBuild(group: 'versioning', description: 'Sets build version') {
 }
 
 ext.generateAppName = { ->
-    "key-app-${VERSION_NAME}.${getVersionBuild()}"
-}
-
-ext.getVersionBuild = { ->
-    def buildNumberFromCi = System.getenv("CIRCLE_BUILD_NUM")
-
-    if (buildNumberFromCi != null) {
-        return System.currentTimeMillis() + buildNumberFromCi.toInteger()
-    } else {
-        return VERSION_BUILD
-    }
+    "key-app-${VERSION_NAME}.${VERSION_BUILD}"
 }
