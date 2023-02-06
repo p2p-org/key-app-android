@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/backgroundPrimary"
+    android:layout_marginHorizontal="16dp"
+    android:background="@color/bg_snow"
     android:orientation="horizontal">
 
     <org.p2p.uikit.atoms.TransactionSwapImageView

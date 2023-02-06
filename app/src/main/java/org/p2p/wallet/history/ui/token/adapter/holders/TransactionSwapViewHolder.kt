@@ -11,7 +11,6 @@ import org.p2p.wallet.utils.setStatus
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
-import org.p2p.wallet.utils.withTextOrGone
 import timber.log.Timber
 
 class TransactionSwapViewHolder(
@@ -40,11 +39,11 @@ class TransactionSwapViewHolder(
             )
 
             with(transactionData) {
-                textViewValue.withTextOrGone(transaction.getReceivedUsdAmount())
-                textViewValue.setTextColor(getColor(R.color.color_green))
-                textViewTotal.text = "${transaction.amountB} ${transaction.destinationSymbol}"
-                textViewTitle.text = getString(R.string.transaction_history_swap)
-                textViewSubtitle.text = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
+                endAmountView.usdAmount = transaction.getReceivedUsdAmount()
+                endAmountView.setTokenAmountTextColor(getColor(R.color.color_green))
+                endAmountView.tokenAmount = "${transaction.amountB} ${transaction.destinationSymbol}"
+                startAmountView.title = getString(R.string.transaction_history_swap)
+                startAmountView.subtitle = "${transaction.sourceSymbol} to ${transaction.destinationSymbol}"
             }
         }
         setStatus(transaction)

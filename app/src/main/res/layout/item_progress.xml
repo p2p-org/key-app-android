@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.facebook.shimmer.ShimmerFrameLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:shimmer_auto_start="true"
-    app:shimmer_base_alpha="1"
-    app:shimmer_base_color="@color/backgroundAppStroke"
-    app:shimmer_highlight_alpha="0"
-    app:shimmer_highlight_color="@color/backgroundAppStroke">
+    android:layout_marginHorizontal="16dp"
+    android:background="@drawable/bg_snow_bottom_rounded_16"
+    android:paddingVertical="12dp">
 
-    <LinearLayout
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="1"
+        app:shimmer_base_color="@color/backgroundAppStroke"
+        app:shimmer_highlight_alpha="0"
+        app:shimmer_highlight_color="@color/backgroundAppStroke">
 
-        <include layout="@layout/item_history_shimmer" />
+        <include
+            layout="@layout/item_history_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <include layout="@layout/item_history_shimmer" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
-        <include layout="@layout/item_history_shimmer" />
-
-    </LinearLayout>
-</com.facebook.shimmer.ShimmerFrameLayout>
+</FrameLayout>
