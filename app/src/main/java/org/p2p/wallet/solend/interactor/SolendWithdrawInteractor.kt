@@ -43,7 +43,7 @@ class SolendWithdrawInteractor(
         val hasFreeTransactions = false /* freeTransactionFeeLimit.hasFreeTransactions() */
         val realFeePayerAddress = if (hasFreeTransactions) relayInfo.feePayerAddress else account.publicKey
 
-        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
+        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
         val serializedTransaction = solendRepository.createWithdrawTransaction(
             relayProgramId = relayProgramId,
             ownerAddress = ownerAddress,
@@ -51,7 +51,7 @@ class SolendWithdrawInteractor(
             withdrawAmount = amountInLamports,
             remainingFreeTransactionsCount = 0,
             lendingMarketAddress = null,
-            blockhash = recentBlockhash,
+            blockhash = recentBlockhash.recentBlockhash,
             payFeeWithRelay = hasFreeTransactions,
             feePayerToken = null,
             realFeePayerAddress = realFeePayerAddress,

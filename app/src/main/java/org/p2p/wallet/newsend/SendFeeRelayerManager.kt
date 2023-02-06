@@ -19,11 +19,11 @@ import org.p2p.wallet.newsend.model.FeeRelayerState.UpdateFee
 import org.p2p.wallet.newsend.model.FeeRelayerStateError
 import org.p2p.wallet.newsend.model.FeeRelayerStateError.FeesCalculationError
 import org.p2p.wallet.newsend.model.FeeRelayerStateError.InsufficientFundsToCoverFees
-import org.p2p.wallet.send.interactor.SendInteractor
-import org.p2p.wallet.send.model.FeePayerState
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SendFeeTotal
-import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.newsend.interactor.SendInteractor
+import org.p2p.wallet.newsend.model.FeePayerState
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SendFeeTotal
+import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import java.math.BigDecimal

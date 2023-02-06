@@ -21,7 +21,7 @@ import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.renbtc.ui.main.RenBTCFragment
-import org.p2p.wallet.send.model.NetworkType
+import org.p2p.wallet.newsend.model.NetworkType
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment

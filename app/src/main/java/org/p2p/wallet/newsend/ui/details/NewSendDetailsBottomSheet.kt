@@ -17,7 +17,7 @@ import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogNewSendDetailsBinding
-import org.p2p.wallet.send.model.SendFeeTotal
+import org.p2p.wallet.newsend.model.SendFeeTotal
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.unsafeLazy

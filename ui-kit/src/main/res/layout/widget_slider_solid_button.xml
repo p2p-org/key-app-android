@@ -78,10 +78,9 @@
                 android:id="@+id/imageViewAction"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@color/lime"
+                android:background="@drawable/bg_lime_rounded_32"
                 android:padding="12dp"
                 android:src="@drawable/ic_key_action"
-                app:cornerRadius="32dp"
                 app:tint="@color/night"
                 tools:ignore="ContentDescription" />
 
