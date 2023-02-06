@@ -11,7 +11,7 @@ runs:
   using: composite
   steps:
     - name: Commit and push changes
-      uses: actions/checkout@v2
+      shell: bash
       run: |
         git config --global user.name 'key-app-github'
         git config --global user.email 'key-app@github.com'
