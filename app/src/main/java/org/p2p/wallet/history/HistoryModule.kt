@@ -80,7 +80,6 @@ object HistoryModule : InjectionModule {
         factory { RpcHistoryRemoteRepository(get(), get(), get()) }
         factory<NewHistoryContract.Presenter> { NewHistoryPresenter(get()) }
 
-
         factory { HistoryServiceSignatureFieldGenerator(get()) }
 
         single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(HistoryServiceApi::class.java) }

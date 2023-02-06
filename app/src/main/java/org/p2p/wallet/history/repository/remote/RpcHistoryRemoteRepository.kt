@@ -5,7 +5,6 @@ import org.p2p.wallet.history.api.HistoryServiceApi
 import org.p2p.wallet.history.api.model.RpcHistoryResponse
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.utils.Base58String
 import java.util.Optional
 
 private const val REQUEST_PARAMS_USER_ID = "user_id"

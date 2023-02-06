@@ -52,16 +52,17 @@ class NewHistoryTransactionMapper(
             fee = transactionInfo.feeInfoResponse.feeAmount?.toBigInteger().orZero()
         )
     }
-
-    private fun parseSwapTransaction(item: RpcHistoryResponse): HistoryTransaction.Swap {
-        return HistoryTransaction.Swap(
-            signature = item.txTransaction,
-            date = item.date.toZonedDateTime(),
-            blockNumber = null,
-            status = item.stauts.fromNetwork(),
-        )
-    }
 }
+
+//    private fun parseSwapTransaction(item: RpcHistoryResponse): HistoryTransaction.Swap {
+//        return HistoryTransaction.Swap(
+//            signature = item.txTransaction,
+//            date = item.date.toZonedDateTime(),
+//            blockNumber = null,
+//            status = item.stauts.fromNetwork(),
+//        )
+//    }
+// }
 
 private fun RpcHistoryStatusResponse.fromNetwork(): TransactionStatus {
     return when (this) {

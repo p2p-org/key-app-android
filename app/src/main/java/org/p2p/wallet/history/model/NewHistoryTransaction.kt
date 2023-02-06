@@ -4,10 +4,7 @@ data class NewHistoryTransaction(
     val signature: String,
     val type: NewHistoryTransactionType,
 
-) {
-
-
-}
+)
 
 enum class NewHistoryTransactionType {
     Send,
