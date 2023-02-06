@@ -22,16 +22,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
-        releaseFirebase {
-            debuggable = false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
-        releaseLocal {
-            debuggable = false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-
         release {
             debuggable = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -63,14 +53,6 @@ android {
         feature {
             java.srcDirs += 'src/feature/kotlin'
             res.srcDirs += 'src/feature/res'
-        }
-        releaseFirebase {
-            java.srcDirs += 'src/releaseFirebase/kotlin'
-            res.srcDirs += 'src/releaseFirebase/res'
-        }
-        releaseLocal {
-            java.srcDirs += 'src/releaseLocal/kotlin'
-            res.srcDirs += 'src/releaseLocal/res'
         }
         release {
             java.srcDirs += 'src/release/kotlin'

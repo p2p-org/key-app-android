@@ -9,24 +9,11 @@ android {
         }
 
         release {
-            def signingProperties = new Properties()
-
-            def signingPropertiesFile = rootProject.file("signing.properties")
-            if (signingPropertiesFile.canRead()) {
-                logger.quiet "(SIGNING): using signing properties file"
-                signingProperties.load(new FileInputStream(signingPropertiesFile))
-            } else {
-                logger.quiet "(SIGNING): using signing properties from CI"
-                signingProperties["keystorePath"] = "${System.getenv('KEYSTORE_PATH')}"
-                signingProperties["keystorePassword"] = "${System.getenv('KEYSTORE_PASSWORD')}"
-                signingProperties["keyAlias"] = "${System.getenv('KEY_ALIAS')}"
-                signingProperties["keyPassword"] = "${System.getenv('KEY_PASSWORD')}"
-            }
-
+            def signingProperties = new PropertiesFile(rootProject.file("signing.properties"), logger)
             storeFile rootProject.file('p2pwallet.jks')
-            storePassword signingProperties['keystorePassword']
-            keyAlias signingProperties['keyAlias']
-            keyPassword signingProperties['keyPassword']
+            storePassword signingProperties.getOrNull('keystorePassword')
+            keyAlias signingProperties.getOrNull('keyAlias')
+            keyPassword signingProperties.getOrNull('keyPassword')
         }
     }
 }
