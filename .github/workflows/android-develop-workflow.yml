@@ -135,7 +135,11 @@ jobs:
 #          build-type: "feature"
 #          artifact-type: "apk"
       - name: "Commit changes"
-        uses: ./.github/actions/setup-commit-changes
+        uses: ./.github/actions/setup-commit
+        with:
+          github-repository: ${{ env.GITHUB_REPOSITORY }}
+          github-ref: ${{ env.GITHUB_REF }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 #      - name: "Upload changelog, and Jira ticket to slack channel"
 #        run: |
 #          cd bash_scripts

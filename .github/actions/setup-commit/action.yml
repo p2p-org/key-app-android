@@ -1,0 +1,32 @@
+name: "Commit and push changes"
+description: "Commit and push changes which are made within the workflow"
+
+inputs:
+  github-repository:
+    description: "Github author name"
+    required: true
+  github-ref:
+    description: "Github author email"
+    required: true
+  github-token:
+    description: "Github secret token"
+    required: true
+  github-commit-message:
+    description: "Github commit message"
+    required: false
+    default: "Bump version"
+
+runs:
+  using: composite
+  steps:
+    - name: Commit and push changes
+      uses: actions/git@v2
+      with:
+        repo: ${{ inputs.github-repository }}
+        ref: ${{ inputs.github-ref }}
+        author_email: "key-app@github.com"
+        author_name: "Key App"
+        branch: develop
+        message: ${{ inputs.github-commit-message }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
