@@ -1,7 +1,9 @@
 package org.p2p.wallet.swap
 
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.token.Token
@@ -24,23 +26,25 @@ import org.p2p.wallet.swap.interactor.serum.SerumSwapAmountInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
-import org.p2p.wallet.swap.jupiter.api.SwapJupiterTokensApi
 import org.p2p.wallet.swap.jupiter.domain.JupiterSwapInteractor
-import org.p2p.wallet.swap.jupiter.repository.JupiterRemoteMapper
-import org.p2p.wallet.swap.jupiter.repository.JupiterRemoteRepository
-import org.p2p.wallet.swap.jupiter.repository.JupiterSwapRoutesMapper
-import org.p2p.wallet.swap.jupiter.repository.JupiterSwapRoutesRepository
-import org.p2p.wallet.swap.jupiter.repository.JupiterSwapTransactionMapper
-import org.p2p.wallet.swap.jupiter.repository.JupiterSwapTransactionRepository
-import org.p2p.wallet.swap.jupiter.repository.JupiterTokensRepository
-import org.p2p.wallet.swap.jupiter.repository.SwapRoutesRepository
-import org.p2p.wallet.swap.jupiter.repository.SwapTransactionRepository
+import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesMapper
+import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRemoteRepository
+import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
+import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRemoteRepository
+import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
+import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionMapper
+import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
+import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
+import retrofit2.Retrofit
+import retrofit2.create
 
 object SwapModule : InjectionModule {
+
+    const val JUPITER_RETROFIT_QUALIFIER = "JUPITER_RETROFIT_QUALIFIER"
 
     override fun create() = module {
         single {
@@ -107,31 +111,18 @@ object SwapModule : InjectionModule {
                 transactionManager = get(),
             )
         } bind OrcaSwapContract.Presenter::class
+        initJupiterSwap()
+    }
 
-        single {
-            val baseUrl = androidContext().getString(R.string.jupiterCacheBaseUrl)
-            getRetrofit(
-                baseUrl = baseUrl,
-                tag = "JupiterCache",
-                interceptor = null
-            ).create(SwapJupiterTokensApi::class.java)
-        }
+    private fun Module.initJupiterSwap() {
+        single { get<Retrofit>(named(JUPITER_RETROFIT_QUALIFIER)).create<SwapJupiterApi>() }
 
-        single {
-            val baseUrl = androidContext().getString(R.string.jupiterQuoteBaseUrl)
-            getRetrofit(
-                baseUrl = baseUrl,
-                tag = "JupiterQuote",
-                interceptor = null
-            ).create(SwapJupiterApi::class.java)
-        }
         factoryOf(::JupiterSwapRoutesMapper)
-        factoryOf(::JupiterRemoteMapper)
         factoryOf(::JupiterSwapTransactionMapper)
 
-        factory { JupiterSwapRoutesRepository(get(), get(), get()) } bind SwapRoutesRepository::class
-        factory { JupiterSwapTransactionRepository(get(), get(), get()) } bind SwapTransactionRepository::class
-        factory { JupiterRemoteRepository(get(), get()) } bind JupiterTokensRepository::class
-        factory { JupiterSwapInteractor(get(), get(), get(), get(), get()) }
+        factoryOf(::JupiterSwapRoutesRemoteRepository) bind JupiterSwapRoutesRepository::class
+        factoryOf(::JupiterSwapTransactionRemoteRepository) bind JupiterSwapTransactionRepository::class
+        factoryOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
+        factoryOf(::JupiterSwapInteractor)
     }
 }

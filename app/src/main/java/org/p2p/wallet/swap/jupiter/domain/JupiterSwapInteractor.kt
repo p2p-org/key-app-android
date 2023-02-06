@@ -6,15 +6,15 @@ import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
-import org.p2p.wallet.swap.jupiter.repository.SwapTransactionRepository
 import org.p2p.wallet.swap.jupiter.repository.model.SwapRoute
+import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
 class JupiterSwapInteractor(
     private val relaySdkFacade: RelaySdkFacade,
     private val tokenKeyProvider: TokenKeyProvider,
-    private val swapTransactionRepository: SwapTransactionRepository,
+    private val swapTransactionRepository: JupiterSwapTransactionRepository,
     private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val rpcSolanaRepository: RpcSolanaRepository
 ) {

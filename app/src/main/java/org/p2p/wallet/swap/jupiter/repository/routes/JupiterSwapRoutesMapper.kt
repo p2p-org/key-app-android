@@ -1,4 +1,4 @@
-package org.p2p.wallet.swap.jupiter.repository
+package org.p2p.wallet.swap.jupiter.repository.routes
 
 import org.p2p.wallet.swap.jupiter.api.request.JupiterSwapFeesRequest
 import org.p2p.wallet.swap.jupiter.api.request.SwapRouteRequest
@@ -10,7 +10,7 @@ import org.p2p.wallet.utils.toBase58Instance
 
 class JupiterSwapRoutesMapper {
 
-    fun toSwapRoute(response: SwapJupiterQuoteResponse): List<SwapRoute> = response.routes
+    fun fromNetwork(response: SwapJupiterQuoteResponse): List<SwapRoute> = response.routes
         .map { route ->
             SwapRoute(
                 inAmountInLamports = route.inAmount.toBigInteger(),

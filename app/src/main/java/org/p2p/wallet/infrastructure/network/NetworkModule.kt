@@ -36,6 +36,7 @@ import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.REN_POOL_RETROFIT_QUALIFIER
 import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
+import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
 import retrofit2.Retrofit
@@ -118,6 +119,15 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = baseUrl,
                 tag = "RegisterUsernameService",
+                interceptor = null
+            )
+        }
+
+        single(named(SwapModule.JUPITER_RETROFIT_QUALIFIER)) {
+            val baseUrl = androidContext().getString(R.string.jupiterQuoteBaseUrl)
+            getRetrofit(
+                baseUrl = baseUrl,
+                tag = "JupiterQuoteService",
                 interceptor = null
             )
         }

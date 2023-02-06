@@ -1,8 +1,8 @@
-package org.p2p.wallet.swap.jupiter.repository
+package org.p2p.wallet.swap.jupiter.repository.tokens
 
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.swap.jupiter.api.SwapJupiterTokensApi
+import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterToken
 import org.p2p.wallet.user.repository.prices.TokenId
@@ -11,14 +11,14 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.withContext
 
-class JupiterSwapTokenRepository(
-    private val api: SwapJupiterTokensApi,
+class JupiterSwapTokensRemoteRepository(
+    private val api: SwapJupiterApi,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
     private val dispatchers: CoroutineDispatchers,
-) : SwapTokensRepository {
+) : JupiterSwapTokensRepository {
 
     override suspend fun getTokens(): List<JupiterToken> = withContext(dispatchers.io) {
-        val tokens = api.getTokens()
+        val tokens = api.getSwapTokens()
         val prices = fetchPricesForTokens(tokens)
         tokens.toJupiterToken(prices)
     }

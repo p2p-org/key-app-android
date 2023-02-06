@@ -1,4 +1,4 @@
-package org.p2p.wallet.swap.jupiter.repository
+package org.p2p.wallet.swap.jupiter.repository.transaction
 
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.swap.jupiter.api.request.CreateSwapTransactionRequest
