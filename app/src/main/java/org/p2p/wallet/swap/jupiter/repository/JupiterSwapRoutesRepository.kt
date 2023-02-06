@@ -8,7 +8,6 @@ import org.p2p.wallet.utils.Base58String
 
 class JupiterSwapRoutesRepository(
     private val api: SwapJupiterApi,
-    private val dispatchers: CoroutineDispatchers,
     private val mapper: JupiterSwapRoutesMapper,
 ) : SwapRoutesRepository {
 
