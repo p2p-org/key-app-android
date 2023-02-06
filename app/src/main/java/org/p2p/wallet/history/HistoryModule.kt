@@ -16,9 +16,12 @@ import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
+import org.p2p.wallet.history.repository.remote.HistoryRemoteRepository
+import org.p2p.wallet.history.repository.remote.HistoryRemoteRepositoryImpl
 import org.p2p.wallet.history.repository.remote.RpcHistoryRemoteRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
 import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
+import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetPresenter
@@ -74,9 +77,25 @@ object HistoryModule : InjectionModule {
         single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java) }
         singleOf(::TransactionDetailsRpcRepository) bind TransactionDetailsRemoteRepository::class
 
-        factory { HistoryServiceInteractor(get(), get()) }
-        factory { RpcHistoryRemoteRepository(get()) }
+        factory { RpcHistoryRemoteRepository(get(), get(), get()) }
+        factory<NewHistoryContract.Presenter> { NewHistoryPresenter(get()) }
+
+
+        factory { HistoryServiceSignatureFieldGenerator(get()) }
+
         single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(HistoryServiceApi::class.java) }
-        factory<NewHistoryContract.Presenter> { NewHistoryPresenter(get(), get()) }
+
+        factory { HistoryServiceInteractor(get()) }
+
+        factory<HistoryRemoteRepository> { HistoryRemoteRepositoryImpl(get()) }
+        factory<List<HistoryRemoteRepository>> {
+            listOf(
+                RpcHistoryRemoteRepository(
+                    historyApi = get(),
+                    tokenKeyProvider = get(),
+                    historyServiceSignatureFieldGenerator = get()
+                )
+            )
+        }
     }
 }

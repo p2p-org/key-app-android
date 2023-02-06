@@ -27,7 +27,7 @@ import java.util.Locale
 const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
 class GatewayServiceCreateWalletMapper(
-    private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator,
+    private val signatureFieldGenerator: PushServiceSignatureFieldGenerator,
     private val onboardingMetadataCipher: GatewayServiceOnboardingMetadataCipher,
     private val errorMapper: GatewayServiceErrorMapper,
     private val gson: Gson

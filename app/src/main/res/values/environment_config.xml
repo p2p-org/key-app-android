@@ -26,7 +26,7 @@
 
     <string name="orcaApiBaseUrl">https://orca.key.app/</string>
 
-    <string name="notificationServiceBaseUrl">https://push-service.key.app/</string>
+    <string name="notificationServiceBaseUrl">https://push-service.keyapp.org/</string>
     <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/notifier/</string>
 
     <string name="web3AuthServiceBaseUrl">https://web3-auth.keyapp.org/</string>

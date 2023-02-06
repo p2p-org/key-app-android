@@ -6,9 +6,9 @@ import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 
-private const val TAG = "GatewayServiceSignatureFieldGenerator"
+private const val TAG = "PushServiceSignatureFieldGenerator"
 
-class GatewayServiceSignatureFieldGenerator {
+class PushServiceSignatureFieldGenerator {
     @Throws(GatewayServiceError.RequestCreationFailure::class)
     fun generateSignatureField(
         userPrivateKey: Base58String,

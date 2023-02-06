@@ -36,7 +36,6 @@ class App : Application() {
         setupKoin()
 
         setupTimber()
-
         setupCrashLoggingService()
 
         IntercomService.setup(app = this, apiKey = BuildConfig.intercomApiKey, appId = BuildConfig.intercomAppId)
