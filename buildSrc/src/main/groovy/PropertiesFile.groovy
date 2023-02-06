@@ -30,7 +30,7 @@ class PropertiesFile {
         if (properties.containsKey(key)) {
             properties.getProperty(key)
         } else {
-            logger.quiet("[$propertiesFileName] No $key found, using default: $defaultValue")
+            logger.quiet("[$propertiesFileName] No $key found, using null")
             null
         }
     }
