@@ -79,7 +79,7 @@ data class SwapRouteRequest(
 
         data class PlatformFeeRequest(
             @SerializedName("amount")
-            val amount: String,
+            val amountInLamports: String,
             @SerializedName("mint")
             val mint: String,
             @SerializedName("pct")

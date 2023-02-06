@@ -7,5 +7,5 @@ sealed class SwapFailure(
     data class CreateSwapTransactionFailed(
         val route: SwapRoute,
         override val cause: Throwable
-    ) : SwapFailure("Failed to create swap transaction with Jupiter API for route with amount: ${route.amount}")
+    ) : SwapFailure("Failed to create swap transaction with Jupiter API for route with amount: ${route.amountInLamports}")
 }

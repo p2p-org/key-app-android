@@ -8,7 +8,7 @@ data class JupiterToken(
     val chainId: Int,
     val decimals: Int,
     val extensions: JupiterTokenExtensions,
-    val logoURI: String,
+    val logoURI: String?,
     val name: String,
     val symbol: String,
     val tags: List<String>,

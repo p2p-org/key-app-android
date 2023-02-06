@@ -15,6 +15,7 @@ import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwap
 import org.p2p.wallet.swap.jupiter.repository.model.SwapRoute
 import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import timber.log.Timber
 
 class TestSwapFragment : BaseFragment(R.layout.fragment_test_swap) {
 
@@ -30,11 +31,11 @@ class TestSwapFragment : BaseFragment(R.layout.fragment_test_swap) {
 
         lifecycleScope.launchWhenCreated {
             val tokens = jupiterRepository.getTokens()
-            binding.fromInput.setText(tokens.first { it.symbol == "SOL" }.address.base58Value)
-            binding.fromInputLayout.helperText = "SOL"
+            binding.fromInput.setText(tokens.first { it.symbol == "USDT" }.address.base58Value)
+            binding.fromInputLayout.helperText = "USDT"
 
-            binding.toInput.setText(tokens.first { it.symbol == "USDC" }.address.base58Value)
-            binding.toInputLayout.helperText = "USDC"
+            binding.toInput.setText(tokens.first { it.symbol == "SOL" }.address.base58Value)
+            binding.toInputLayout.helperText = "SOL"
 
             binding.getRoute.setOnClickListener {
                 val from = binding.fromInput.text?.toString() ?: ""
@@ -47,10 +48,14 @@ class TestSwapFragment : BaseFragment(R.layout.fragment_test_swap) {
                     binding.swap.isEnabled = true
                     binding.swap.setOnClickListener {
                         lifecycleScope.launchWhenResumed {
-                            try {
-                                interactor.swapTokens(route)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
+                            when (val result = interactor.swapTokens(route)) {
+                                is JupiterSwapInteractor.JupiterSwapTokensResult.Success -> {
+                                    showUiKitSnackBar(message = "success")
+                                }
+                                is JupiterSwapInteractor.JupiterSwapTokensResult.Failure -> {
+                                    Timber.e(result)
+                                    showUiKitSnackBar(message = "failure")
+                                }
                             }
                         }
                     }
@@ -66,9 +71,9 @@ class TestSwapFragment : BaseFragment(R.layout.fragment_test_swap) {
     ): SwapRoute? = try {
         repository.getSwapRoutes(
             jupiterSwap = JupiterSwap(
-                from.toBase58Instance(),
-                to.toBase58Instance(),
-                amount.toBigDecimal(),
+                inputMint = from.toBase58Instance(),
+                outputMint = to.toBase58Instance(),
+                amountInLamports = amount.toBigInteger(),
             ),
             userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         ).first()

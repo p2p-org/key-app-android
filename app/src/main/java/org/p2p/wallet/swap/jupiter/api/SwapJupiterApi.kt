@@ -7,7 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
-import java.math.BigDecimal
+import java.math.BigInteger
 
 interface SwapJupiterApi {
     @POST("v4/swap")
@@ -19,7 +19,8 @@ interface SwapJupiterApi {
     suspend fun getSwapRoutes(
         @Query("inputMint") inputMint: String,
         @Query("outputMint") outputMint: String,
-        @Query("amount") amount: BigDecimal,
+        @Query("amount") amountInLamports: BigInteger,
         @Query("userPublicKey") userPublicKey: String,
+        @Query("asLegacyTransaction") asLegacyTransaction: Boolean = true
     ): SwapJupiterQuoteResponse
 }

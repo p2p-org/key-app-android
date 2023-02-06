@@ -17,7 +17,7 @@ class JupiterSwapRoutesRepository(
             api.getSwapRoutes(
                 inputMint = jupiterSwap.inputMint.base58Value,
                 outputMint = jupiterSwap.outputMint.base58Value,
-                amount = jupiterSwap.amount,
+                amountInLamports = jupiterSwap.amountInLamports,
                 userPublicKey = userPublicKey.base58Value
             )
         )

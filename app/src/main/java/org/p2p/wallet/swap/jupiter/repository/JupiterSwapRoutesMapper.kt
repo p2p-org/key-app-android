@@ -13,11 +13,11 @@ class JupiterSwapRoutesMapper {
     fun toSwapRoute(response: SwapJupiterQuoteResponse): List<SwapRoute> = response.routes
         .map { route ->
             SwapRoute(
-                inAmount = route.inAmount.toBigDecimal(),
-                outAmount = route.outAmount.toBigDecimal(),
+                inAmountInLamports = route.inAmount.toBigInteger(),
+                outAmountInLamports = route.outAmount.toBigInteger(),
                 priceImpactPct = route.priceImpactPct.toBigDecimal(),
                 marketInfos = route.marketInfos.toSwapMarketInformation(),
-                amount = route.amount.toBigDecimal(),
+                amountInLamports = route.amount.toBigInteger(),
                 slippageBps = route.slippageBps,
                 otherAmountThreshold = route.otherAmountThreshold,
                 swapMode = route.swapMode,
@@ -33,21 +33,21 @@ class JupiterSwapRoutesMapper {
                 inputMint = response.inputMint.toBase58Instance(),
                 outputMint = response.outputMint.toBase58Instance(),
                 notEnoughLiquidity = response.notEnoughLiquidity,
-                inAmount = response.inAmount.toBigDecimal(),
-                outAmount = response.outAmount.toBigDecimal(),
-                minInAmount = response.minInAmount?.toBigDecimal(),
-                minOutAmount = response.minOutAmount?.toBigDecimal(),
+                inAmount = response.inAmount.toBigInteger(),
+                outAmount = response.outAmount.toBigInteger(),
+                minInAmount = response.minInAmount?.toBigInteger(),
+                minOutAmount = response.minOutAmount?.toBigInteger(),
                 priceImpactPct = response.priceImpactPct.toBigDecimal(),
                 lpFee = response.lpFee.let { responseFee ->
                     SwapMarketInformation.LpFee(
-                        amount = responseFee.amount,
+                        amountInLamports = responseFee.amount.toBigInteger(),
                         mint = responseFee.mint.toBase58Instance(),
                         pct = responseFee.pct.toBigDecimal()
                     )
                 },
                 platformFee = response.platformFee.let { responseFee ->
                     SwapMarketInformation.PlatformFeeRequest(
-                        amount = responseFee.amount,
+                        amountInLamports = responseFee.amountInLamports.toBigInteger(),
                         mint = responseFee.mint.toBase58Instance(),
                         pct = responseFee.pct.toBigDecimal()
                     )

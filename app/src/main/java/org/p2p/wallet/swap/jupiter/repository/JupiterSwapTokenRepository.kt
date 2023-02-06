@@ -24,7 +24,7 @@ class JupiterSwapTokenRepository(
     }
 
     private suspend fun fetchPricesForTokens(tokens: List<JupiterTokenResponse>): Map<TokenId, BigDecimal> {
-        val tokensIds = tokens.map { it.extensions.coingeckoId.let(::TokenId) }
+        val tokensIds = tokens.mapNotNull { it.extensions.coingeckoId?.let(::TokenId) }
         return tokenPricesRepository.getTokenPricesByIdsMap(tokensIds, Constants.USD_SYMBOL)
             .mapValues { it.value.price }
     }
@@ -32,9 +32,13 @@ class JupiterSwapTokenRepository(
     private fun List<JupiterTokenResponse>.toJupiterToken(
         prices: Map<TokenId, BigDecimal>
     ): List<JupiterToken> = map { response ->
-        val tokenId = TokenId(response.extensions.coingeckoId)
-        val tokenPrice = prices[tokenId] ?: kotlin.run {
-            Timber.i("Couldn't find any price for token with id ${tokenId.id}; available prices: $prices")
+        val tokenPrice = if (response.extensions.coingeckoId != null) {
+            val tokenId = TokenId(response.extensions.coingeckoId)
+            prices[tokenId] ?: kotlin.run {
+                Timber.i("Couldn't find any price for token with id ${tokenId.id}; available prices: $prices")
+                BigDecimal.ZERO
+            }
+        } else {
             BigDecimal.ZERO
         }
         JupiterToken(

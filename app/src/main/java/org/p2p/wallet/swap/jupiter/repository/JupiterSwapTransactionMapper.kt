@@ -27,21 +27,21 @@ class JupiterSwapTransactionMapper {
             inputMint = domainModel.inputMint.base58Value,
             outputMint = domainModel.outputMint.base58Value,
             notEnoughLiquidity = domainModel.notEnoughLiquidity,
-            inAmount = domainModel.inAmount.toPlainString(),
-            outAmount = domainModel.outAmount.toPlainString(),
-            minInAmount = domainModel.minInAmount?.toPlainString(),
-            minOutAmount = domainModel.minOutAmount?.toPlainString(),
+            inAmount = domainModel.inAmount.toString(),
+            outAmount = domainModel.outAmount.toString(),
+            minInAmount = domainModel.minInAmount.toString(),
+            minOutAmount = domainModel.minOutAmount.toString(),
             priceImpactPct = domainModel.priceImpactPct.toDouble(),
             lpFee = domainModel.lpFee.let { domainFee ->
                 SwapRouteRequest.MarketInfoRequest.LpFeeRequest(
-                    amount = domainFee.amount,
+                    amount = domainFee.amountInLamports.toString(),
                     mint = domainFee.mint.base58Value,
                     pct = domainFee.pct.toDouble()
                 )
             },
             platformFee = domainModel.platformFee.let { domainFee ->
                 SwapRouteRequest.MarketInfoRequest.PlatformFeeRequest(
-                    amount = domainFee.amount,
+                    amountInLamports = domainFee.amountInLamports.toString(),
                     mint = domainFee.mint.base58Value,
                     pct = domainFee.pct.toDouble()
                 )
@@ -52,11 +52,11 @@ class JupiterSwapTransactionMapper {
     private fun SwapRoute.toRequest(userPublicKey: Base58String): CreateSwapTransactionRequest {
         return CreateSwapTransactionRequest(
             route = SwapRouteRequest(
-                inAmount = inAmount.toPlainString(),
-                outAmount = outAmount.toPlainString(),
+                inAmount = inAmountInLamports.toString(),
+                outAmount = outAmountInLamports.toString(),
                 priceImpactPct = priceImpactPct.toDouble(),
                 marketInfos = marketInfos.toRequest(),
-                amount = amount.toPlainString(),
+                amount = amountInLamports.toString(),
                 slippageBps = slippageBps,
                 otherAmountThreshold = otherAmountThreshold,
                 swapMode = swapMode,
