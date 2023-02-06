@@ -83,7 +83,7 @@ fun shapeBottomRounded(bottomDp: Float = 0f): ShapeAppearanceModel = shapeRounde
 fun shapeRoundedAll(
     cornerSizeDp: Float = 0f,
 ): ShapeAppearanceModel = ShapeAppearanceModel.builder()
-    .setAllCorners(CornerFamily.ROUNDED, cornerSizeDp)
+    .setAllCorners(CornerFamily.ROUNDED, cornerSizeDp.toPx())
     .build()
 
 fun shapeRounded(
