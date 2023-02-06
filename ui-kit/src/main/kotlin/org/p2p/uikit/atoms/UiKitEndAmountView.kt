@@ -2,6 +2,7 @@ package org.p2p.uikit.atoms
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
@@ -28,6 +29,10 @@ class UiKitEndAmountView @JvmOverloads constructor(
             binding.tokenAmountTextView.withTextOrGone(value)
             field = value
         }
+
+    fun setTokenAmountTextColor(@ColorInt color: Int) {
+        binding.tokenAmountTextView.setTextColor(color)
+    }
 
     @DrawableRes
     var icon: Int? = null

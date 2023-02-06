@@ -10,25 +10,24 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="2dp"
         android:background="@drawable/bg_token_swap_rounded" />
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/sourceImageView"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_gravity="top"
         android:layout_margin="2dp"
-        app:cornerRadius="8dp"
+        app:cornerRadius="16dp"
         tools:src="@tools:sample/avatars" />
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/destinationImageView"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_gravity="end|bottom"
         android:layout_margin="2dp"
-        app:cornerRadius="8dp"
+        app:cornerRadius="16dp"
         tools:src="@tools:sample/avatars" />
 
     <ImageView
