@@ -6,8 +6,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.intellij.lang.annotations.Language
 import org.junit.Test
+import org.p2p.wallet.sdk.facade.model.solend.KeyAppSdkMethodResultException
 import org.p2p.wallet.sdk.facade.model.solend.SolendMarketInformationResponse
-import org.p2p.wallet.sdk.facade.model.solend.SolendMethodResultException
 
 class SolendMethodResultMapperTest {
 
@@ -27,7 +27,7 @@ class SolendMethodResultMapperTest {
         val mapper = SdkMethodResultMapper(Gson())
         // then
         assertThatThrownBy { mapper.fromSdk<SolendMarketInformationResponse>(givenErrorJson) }
-            .isInstanceOf(SolendMethodResultException::class.java)
+            .isInstanceOf(KeyAppSdkMethodResultException::class.java)
             .message()
             .isNotBlank
             .isNotNull
