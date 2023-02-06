@@ -1,7 +1,6 @@
 package org.p2p.wallet.swap.jupiter.repository
 
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.orZero
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterTokensApi
 import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
@@ -43,7 +42,7 @@ class JupiterSwapTokenRepository(
             chainId = response.chainId,
             decimals = response.decimals,
             extensions = response.extensions,
-            logoURI = response.logoURI,
+            logoURI = response.logoUri,
             name = response.name,
             symbol = response.symbol,
             tags = response.tags,

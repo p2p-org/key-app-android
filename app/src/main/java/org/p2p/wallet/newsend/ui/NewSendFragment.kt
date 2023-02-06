@@ -20,9 +20,9 @@ import org.p2p.wallet.newsend.ui.dialogs.FreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.newsend.ui.stub.SendNoAccountFragment
 import org.p2p.wallet.root.RootListener
-import org.p2p.wallet.send.model.SearchResult
-import org.p2p.wallet.send.model.SendFeeTotal
-import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.model.SendFeeTotal
+import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args

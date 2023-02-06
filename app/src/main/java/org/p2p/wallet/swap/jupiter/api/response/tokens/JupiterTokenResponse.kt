@@ -12,7 +12,7 @@ data class JupiterTokenResponse(
     @SerializedName("extensions")
     val extensions: JupiterTokenExtensions,
     @SerializedName("logoURI")
-    val logoURI: String,
+    val logoUri: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("symbol")

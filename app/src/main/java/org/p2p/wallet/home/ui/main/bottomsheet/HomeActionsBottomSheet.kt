@@ -9,9 +9,9 @@ import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHomeActionsBinding
+import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.analytics.SellAnalytics
-import org.p2p.wallet.send.analytics.SendAnalytics
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -41,7 +41,7 @@ class HomeActionsBottomSheet :
     private val resultKey: String by args(EXTRA_RESULT_KEY)
     private val requestKey: String by args(EXTRA_REQUEST_KEY)
 
-    private val sendAnalytics: SendAnalytics by inject()
+    private val sendAnalytics: NewSendAnalytics by inject()
     private val swapAnalytics: SwapAnalytics by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
     private val sellAnalytics: SellAnalytics by inject()
