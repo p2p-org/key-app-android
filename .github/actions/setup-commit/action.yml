@@ -15,5 +15,5 @@ runs:
       run: |
         git config --global user.name 'key-app-github'
         git config --global user.email 'key-app@github.com'
-        git commit -am "Bump version"
+        git commit -am "${{ inputs.github-commit-message }}"
         git push

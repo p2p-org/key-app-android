@@ -36,7 +36,7 @@ runs:
         version=$((timestamp + run_number))
         
         # Set the version build number using the unique identifier
-        ./gradlew setVersionBuild -Pversion=version
+        ./gradlew setVersionBuild -Pversion=$version
         echo "Set build version to ${version}"
     - name: Store version number
       shell: bash
