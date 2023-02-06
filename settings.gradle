@@ -1,2 +1,2 @@
 include ':solana', ':app', ':ui-kit', ':core'
-rootProject.name = "Key App"
+rootProject.name = "key-app"

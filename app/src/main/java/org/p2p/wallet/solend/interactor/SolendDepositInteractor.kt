@@ -57,7 +57,7 @@ class SolendDepositInteractor(
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
         val remainingFreeTransactionsCount = freeTransactionFeeLimit.remaining
         val relayProgramId = FeeRelayerProgram.getProgramId(isMainnet = true).toBase58()
-        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash().recentBlockhash
+        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
 
         // todo: use `hasFreeTransactions` when fee relayer is fixed
         val hasFreeTransactions = false /* freeTransactionFeeLimit.hasFreeTransactions() */
@@ -71,7 +71,7 @@ class SolendDepositInteractor(
             depositAmount = amountInLamports,
             remainingFreeTransactionsCount = remainingFreeTransactionsCount,
             lendingMarketAddress = null,
-            blockhash = recentBlockhash,
+            blockhash = recentBlockhash.recentBlockhash,
             payFeeWithRelay = hasFreeTransactions,
             feePayerToken = null,
             realFeePayerAddress = realFeePayerAddress,

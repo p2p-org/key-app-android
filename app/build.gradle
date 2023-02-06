@@ -62,32 +62,6 @@ android {
             matchingFallbacks = ["debug"]
         }
 
-        releaseFirebase { buildType ->
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            firebaseAppDistribution {
-                artifactType = "AAB"
-                releaseNotes = releaseChangelog(VERSION_NAME, buildType.name)
-                groups = "wallet.release.test"
-            }
-
-            matchingFallbacks = ["release"]
-        }
-
-        releaseLocal { buildType ->
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            matchingFallbacks = ["release"]
-        }
-
         release { buildType ->
             signingConfig signingConfigs.release
             debuggable false
