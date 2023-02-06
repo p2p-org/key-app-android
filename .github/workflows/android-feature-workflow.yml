@@ -65,7 +65,8 @@ jobs:
         uses: ./.github/actions/setup-project
         env:
           inputs: ${{ env.setup_project_inputs }}
-
+      - name: "check name, google services"
+        run: echo ${{ env.firebase-secret }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
       - name: "Upload APK to Firebase"
