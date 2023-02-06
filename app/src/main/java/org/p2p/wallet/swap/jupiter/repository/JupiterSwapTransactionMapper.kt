@@ -9,7 +9,6 @@ import org.p2p.wallet.swap.jupiter.repository.model.SwapFees
 import org.p2p.wallet.swap.jupiter.repository.model.SwapMarketInformation
 import org.p2p.wallet.swap.jupiter.repository.model.SwapRoute
 import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.LamportsAmount
 
 class JupiterSwapTransactionMapper {
 
@@ -71,11 +70,11 @@ class JupiterSwapTransactionMapper {
 
     private fun SwapFees.toRequest(): JupiterSwapFeesRequest {
         return JupiterSwapFeesRequest(
-            signatureFeeInLamports = signatureFee.valueAsDouble,
-            openOrdersDepositsLamports = openOrdersDeposits.map(LamportsAmount::valueAsDouble),
-            ataDeposits = ataDeposits.map(LamportsAmount::valueAsDouble),
-            totalFeeAndDepositsLamports = totalFeeAndDeposits.valueAsDouble,
-            minimumSolForTransactionLamports = minimumSolForTransaction.valueAsDouble
+            signatureFeeInLamports = signatureFee.toLong(),
+            openOrdersDepositsLamports = openOrdersDeposits.map { it.toLong() },
+            ataDeposits = ataDeposits.map { it.toLong() },
+            totalFeeAndDepositsLamports = totalFeeAndDeposits.toLong(),
+            minimumSolForTransactionLamports = minimumSolForTransaction.toLong()
         )
     }
 }
