@@ -4,96 +4,95 @@ on:
   push:
     branches:
       - develop
-      - feature/*
 
 jobs:
-#  android-lint:
-#    name: "Run ktlint check"
-#    runs-on: ubuntu-latest
-#    environment: develop
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - name: "Initialize project keys"
-#        uses: ./.github/actions/setup-project
-#        with:
-#          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-#          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-#          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-#          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
-#          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
-#          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-#          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-#          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-#          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-#          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-#          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-#          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
-#          moonpay-key: ${{ secrets.MOONPAY_KEY }}
-#          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-#          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
-#          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
-#          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
-#          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-#          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-#          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-#          lokalise-key: ${{ secrets.LOKALISE_KEY }}
-#          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-#      - name: Run ktlint
-#        run: ./gradlew ktlint -PautoCorrect=0
-#  android-unit-tests:
-#    name: "Run unit tests"
-#    needs:
-#      - android-lint
-#
-#    runs-on: ubuntu-latest
-#    environment: develop
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: "Initialize project keys"
-#        uses: ./.github/actions/setup-project
-#        with:
-#          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-#          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
-#          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
-#          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
-#          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
-#          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
-#          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
-#          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-#          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-#          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
-#          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
-#          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
-#          moonpay-key: ${{ secrets.MOONPAY_KEY }}
-#          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-#          intercom-key: ${{  secrets.INTERCOM_API_KEY }}
-#          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
-#          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
-#          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-#          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-#          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-#          lokalise-key: ${{ secrets.LOKALISE_KEY }}
-#          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-#      - name: Run unit tests
-#        run: ./gradlew testDebug
+  android-lint:
+    name: "Run ktlint check"
+    runs-on: ubuntu-latest
+    environment: develop
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Initialize project keys"
+        uses: ./.github/actions/setup-project
+        with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_APP_ID }}
+          intercom-app-id: ${{ secrets.INTERCOM_API_KEY }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+      - name: Run ktlint
+        run: ./gradlew ktlint -PautoCorrect=0
+  android-unit-tests:
+    name: "Run unit tests"
+    needs:
+      - android-lint
+
+    runs-on: ubuntu-latest
+    environment: develop
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Initialize project keys"
+        uses: ./.github/actions/setup-project
+        with:
+          firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+          ssl-certificate: ${{ secrets.SSL_CERTIFICATE }}
+          keystore-secret: ${{ secrets.KEYSTORE_SECRET }}
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          torus-subverifier-firebase: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_FIREBASE }}
+          torus-subverifier-slack: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_LOCAL }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{  secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+      - name: Run unit tests
+        run: ./gradlew testDebug
   android-build-artifacts:
     name: "Run build feature artifacts"
-#    needs:
-#      - android-lint
-#      - android-unit-tests
+    needs:
+      - android-lint
+      - android-unit-tests
 
     runs-on: ubuntu-latest
     environment: develop
     steps:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
-#      - name: "Send start deploy message to slack"
-#        run: |
-#          git fetch
-#          cd bash_scripts
-#          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-#          cd ..
+      - name: "Send start deploy message to slack"
+        run: |
+          git fetch
+          cd bash_scripts
+          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          cd ..
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
@@ -120,46 +119,46 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-#      - name: "Build feature APK"
-#        run: ./gradlew assembleFeature
-#      - name: "Upload APK to Firebase"
-#        env:
-#          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-#          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-#        run: ./gradlew assembleFeature appDistributionUploadFeature
-#      - name: "Upload feature APK to Slack"
-#        uses: ./.github/actions/setup-slack
-#        with:
-#          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-#          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-#          build-type: "feature"
-#          artifact-type: "apk"
+      - name: "Build feature APK"
+        run: ./gradlew assembleFeature
+      - name: "Upload APK to Firebase"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: ./gradlew assembleFeature appDistributionUploadFeature
+      - name: "Upload feature APK to Slack"
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "feature"
+          artifact-type: "apk"
       - name: "Commit changes"
         uses: ./.github/actions/setup-commit
-#      - name: "Upload changelog, and Jira ticket to slack channel"
-#        run: |
-#          cd bash_scripts
-#          value=`cat timestamp.txt`
-#          bash slack_develop_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-#          cd ..
-#
-#      - name: "Send finish deploy message to slack"
-#        run: |
-#          cd bash_scripts
-#          value=`cat timestamp.txt`
-#          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+      - name: "Upload changelog, and Jira ticket to slack channel"
+        run: |
+          cd bash_scripts
+          value=`cat timestamp.txt`
+          bash slack_develop_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          cd ..
 
-#  update-jira-status:
-#    name: "Jira manipulations"
-#    needs:
-#      - android-build-artifacts
-#    runs-on: ubuntu-latest
-#    environment: develop
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: "Find a Jira ticket and move it to READY FOR TESTING"
-#        uses: ./.github/actions/setup-jira-rft
-#        with:
-#          jira-base-url: ${{ vars.JIRA_BASE_URL }}
-#          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
-#          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
+      - name: "Send finish deploy message to slack"
+        run: |
+          cd bash_scripts
+          value=`cat timestamp.txt`
+          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+
+  update-jira-status:
+    name: "Jira manipulations"
+    needs:
+      - android-build-artifacts
+    runs-on: ubuntu-latest
+    environment: develop
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Find a Jira ticket and move it to READY FOR TESTING"
+        uses: ./.github/actions/setup-jira-rft
+        with:
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
+          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
+          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
