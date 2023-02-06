@@ -30,6 +30,8 @@ class SeedPhraseWordViewHolder(
     private val radius: Float = binding.textViewWord.textSize / 3
     private val filter = BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL)
     fun onBind(item: SeedPhraseWord) = with(binding) {
+        binding.root.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+
         SeedPhraseWatcher.uninstallFrom(binding.editTextWord)
         textWatcher?.isLastKey = adapterPosition == SEED_PHRASE_SIZE_LONG
 
