@@ -9,8 +9,7 @@ ext.VERSION_CODE = 1_000_00 * (VERSION_MAJOR as Integer) +
 task setVersionBuild(group: 'versioning', description: 'Sets build version') {
     doLast {
         ant.propertyfile(file: 'gradle.properties') {
-            int buildNumber = VERSION_BUILD as Integer + version.toInteger()
-            entry(key: 'VERSION_BUILD', value: buildNumber)
+            entry(key: 'VERSION_BUILD', value: version)
         }
     }
 }
