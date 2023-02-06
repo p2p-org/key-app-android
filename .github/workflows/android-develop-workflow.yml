@@ -1,12 +1,10 @@
 # Workflow for develop branch changes.
 # When a pull request is being merged in develop, this workflows triggers
-#on:
-#  push:
-#    branches:
-#      - develop
-#      - feature/*
-
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - develop
+      - feature/*
 
 jobs:
 #  android-lint:
