@@ -11,9 +11,9 @@ runs:
   using: composite
   steps:
     - name: Commit and push changes
-      uses: actions/checkout@v3
+      shell: bash
       run: |
         git config --global user.name 'key-app-github'
         git config --global user.email 'key-app@github.com'
-        git commit -am ${{ inputs.github-commit-message }}
+        git commit -am "Bump version"
         git push
