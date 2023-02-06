@@ -1,15 +1,15 @@
 package org.p2p.wallet.user.repository.prices.impl
 
 import com.google.gson.JsonObject
-import kotlinx.coroutines.withContext
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.scaleMedium
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.home.api.CryptoCompareApi
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenId
-import org.p2p.core.utils.Constants
-import org.p2p.core.utils.scaleMedium
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
+import kotlinx.coroutines.withContext
 
 private const val COMPARE_API_CHUNK_SIZE = 30
 private const val COMPARE_API_BODY_KEY = "Response"
@@ -46,6 +46,13 @@ class TokenPricesCryptoCompareRepository(
             tokenIds = tokenIds,
             targetCurrencySymbol = targetCurrency
         )
+    }
+
+    override suspend fun getTokenPricesByIdsMap(
+        tokenIds: List<TokenId>,
+        targetCurrency: String
+    ): Map<TokenId, TokenPrice> {
+        return getTokenPriceByIds(tokenIds, targetCurrency).associateBy { TokenId(it.tokenId) }
     }
 
     private suspend fun loadPrices(tokenIds: List<TokenId>, targetCurrencySymbol: String): List<TokenPrice> {
