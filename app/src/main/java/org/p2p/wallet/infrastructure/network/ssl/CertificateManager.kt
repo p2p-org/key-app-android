@@ -25,20 +25,21 @@ class CertificateManager(
 ) {
 
     fun setCertificate(builder: OkHttpClient.Builder) {
-        if (sslPinningFeatureToggle.isFeatureEnabled) {
-            try {
-                createCertificate(resources.openRawResource(R.raw.cert)).apply {
-                    systemDefaultTrustManager()?.let { trustManager ->
-                        Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
-                        builder.sslSocketFactory(socketFactory, trustManager)
-                    }
-                }
-            } catch (e: Exception) {
-                if (!BuildConfig.DEBUG) {
-                    Timber.tag(SSL_CERT_TAG).e(e, "Error on opening SSL cert")
-                }
-            }
-        }
+        // TODO: When ssl will be back, we should add SSL certificate to CI/CD
+//        if (sslPinningFeatureToggle.isFeatureEnabled) {
+//            try {
+//                createCertificate(resources.openRawResource(R.raw.cert)).apply {
+//                    systemDefaultTrustManager()?.let { trustManager ->
+//                        Timber.tag(SSL_CERT_TAG).i("SslSocketFactory successfully added with cert")
+//                        builder.sslSocketFactory(socketFactory, trustManager)
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                if (!BuildConfig.DEBUG) {
+//                    Timber.tag(SSL_CERT_TAG).e(e, "Error on opening SSL cert")
+//                }
+//            }
+//        }
     }
 
     private fun createCertificate(trustedCertificateIS: InputStream): SSLContext {

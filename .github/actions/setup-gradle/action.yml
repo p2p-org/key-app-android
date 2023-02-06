@@ -38,9 +38,3 @@ runs:
         # Set the version build number using the unique identifier
         ./gradlew setVersionBuild -Pversion=$version
         echo "Set build version to ${version}"
-    - name: Store version number
-      shell: bash
-      id: store-version-number
-      run: echo "version=${version}"
-      env:
-        version: ${{ steps.store-version-number.outputs.version }}
