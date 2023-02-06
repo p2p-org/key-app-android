@@ -2,9 +2,6 @@ name: "Commit and push changes"
 description: "Commit and push changes which are made within the workflow"
 
 inputs:
-  github-token:
-    description: "Github secret token"
-    required: true
   github-commit-message:
     description: "Github commit message"
     required: false
@@ -15,8 +12,6 @@ runs:
   steps:
     - name: Commit and push changes
       uses: actions/checkout@v2
-      with:
-        token: ${{ inputs.github-token }}
       run: |
         git config --global user.name 'key-app-github'
         git config --global user.email 'key-app@github.com'
