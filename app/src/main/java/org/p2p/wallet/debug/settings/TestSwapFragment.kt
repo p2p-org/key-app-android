@@ -14,10 +14,15 @@ class TestSwapFragment : BaseFragment(R.layout.fragment_test_swap) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.swap.setOnClickListener {
+        binding.getRoute.setOnClickListener {
             val from = binding.fromInput.text
             val to = binding.toInput.text
             val amount = binding.amount.text
+
+            binding.swap.isEnabled = true
+
+            binding.swap.setOnClickListener {
+            }
         }
     }
 }

@@ -47,7 +47,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Amount"
-        app:layout_constraintBottom_toTopOf="@+id/swap"
+        app:layout_constraintBottom_toTopOf="@+id/getRoute"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,14 +61,26 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/swap"
+        android:id="@+id/getRoute"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="swap"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="get route"
+        app:layout_constraintBottom_toTopOf="@+id/swap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/amountLayout" />
+
+    <Button
+        android:id="@+id/swap"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="swap"
+        android:enabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/getRoute" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
