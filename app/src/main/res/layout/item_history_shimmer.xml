@@ -11,8 +11,9 @@
         android:id="@+id/iconView"
         android:layout_width="44dp"
         android:layout_height="44dp"
-        android:background="@drawable/bg_stroke_rounded"
+        android:background="@drawable/bg_rain_rounded_24"
         android:backgroundTint="@color/backgroundAppStroke"
+        android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,52 +23,28 @@
         android:layout_width="0dp"
         android:layout_height="16dp"
         android:layout_marginHorizontal="16dp"
-        android:background="@drawable/bg_stroke_rounded"
+        android:background="@drawable/bg_rounded_rain_4"
         android:backgroundTint="@color/backgroundAppStroke"
+        android:importantForAccessibility="no"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/iconView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.2" />
+        app:layout_constraintWidth_percent="0.5" />
 
     <ImageView
         android:id="@+id/bottomLeftView"
         android:layout_width="0dp"
         android:layout_height="16dp"
         android:layout_marginHorizontal="16dp"
-        android:background="@drawable/bg_stroke_rounded"
+        android:background="@drawable/bg_rounded_rain_4"
         android:backgroundTint="@color/backgroundAppStroke"
+        android:importantForAccessibility="no"
         app:layout_constraintBottom_toBottomOf="@id/iconView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/iconView"
-        app:layout_constraintWidth_percent="0.3" />
-
-    <ImageView
-        android:id="@+id/topRightView"
-        android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginHorizontal="16dp"
-        android:background="@drawable/bg_stroke_rounded"
-        android:backgroundTint="@color/backgroundAppStroke"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toEndOf="@id/iconView"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.3" />
-
-    <ImageView
-        android:id="@+id/bottomRightView"
-        android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginHorizontal="16dp"
-        android:background="@drawable/bg_stroke_rounded"
-        android:backgroundTint="@color/backgroundAppStroke"
-        app:layout_constraintBottom_toBottomOf="@id/iconView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toEndOf="@id/iconView"
-        app:layout_constraintWidth_percent="0.2" />
+        app:layout_constraintWidth_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
