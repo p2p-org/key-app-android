@@ -6,16 +6,20 @@ import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.emptyString
 import org.threeten.bp.ZonedDateTime
 
-sealed class HistoryItem : RoundedItem {
-    data class TransactionItem(val transaction: HistoryTransaction) : HistoryItem() {
+sealed interface HistoryItem : RoundedItem {
+    data class TransactionItem(val transaction: HistoryTransaction) : HistoryItem {
         override fun needDecorate(): Boolean = true
 
         override fun roundingHash(): String = HistoryItem::javaClass.name
     }
 
-    data class DateItem(val date: ZonedDateTime) : HistoryItem()
+    data class DateItem(val date: ZonedDateTime) : HistoryItem {
+        override fun needDecorate(): Boolean = false
 
-    data class MoonpayTransactionItem(val transactionDetails: SellTransactionViewDetails) : HistoryItem() {
+        override fun roundingHash(): String = emptyString()
+    }
+
+    data class MoonpayTransactionItem(val transactionDetails: SellTransactionViewDetails) : HistoryItem {
         val status: SellTransactionStatus = transactionDetails.status
         val amountInSol: String = transactionDetails.formattedSolAmount
         val amountInFiat: String = transactionDetails.formattedFiatAmount
@@ -23,7 +27,4 @@ sealed class HistoryItem : RoundedItem {
 
         override fun roundingHash(): String = HistoryItem::javaClass.name
     }
-
-    override fun needDecorate(): Boolean = false
-    override fun roundingHash(): String = emptyString()
 }

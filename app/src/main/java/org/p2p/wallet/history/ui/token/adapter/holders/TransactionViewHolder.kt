@@ -36,8 +36,6 @@ class TransactionViewHolder(
         with(binding) {
             transactionTokenImageView.setTransactionIcon(transaction.getIcon())
             with(transactionData) {
-                endAmountView.usdAmount
-                endAmountView.tokenAmount
                 startAmountView.title = getString(transaction.getTitle())
                 startAmountView.subtitle = transaction.signature.cutMiddle()
                 endAmountView.usdAmount = transaction.getTotal()
