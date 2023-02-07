@@ -35,7 +35,7 @@ jobs:
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        env:
+        with:
           inputs: ${{ env.setup_project_inputs }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
@@ -58,7 +58,7 @@ jobs:
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        env:
+        with:
           inputs: ${{ env.setup_project_inputs }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
