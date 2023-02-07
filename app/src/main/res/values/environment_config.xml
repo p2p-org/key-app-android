@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_scheme">keyapp</string>
+
     <string name="compareBaseUrl">https://min-api.cryptocompare.com/</string>
     <string name="coinGeckoBaseUrl">https://api.coingecko.com/api/v3/</string>
 

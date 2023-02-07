@@ -1,10 +1,10 @@
 package org.p2p.wallet.deeplinks
 
-import androidx.core.content.getSystemService
-import androidx.fragment.app.FragmentManager
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import androidx.core.content.getSystemService
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
@@ -49,11 +49,11 @@ class AppDeeplinksManager(
 
     fun handleDeeplinkIntent(intent: Intent) {
         when {
-            isAppOpenFromBackground(intent) -> {
+            isDeeplinkWithUri(intent) -> {
                 val data = intent.data ?: return
                 intercomDeeplinkManager.handleBackgroundDeeplink(data)
             }
-            isAppOpenFromForeground(intent) -> {
+            isDeeplinkWithExtras(intent) -> {
                 val extras = intent.extras ?: return
                 // additional parsing when app been opened with notification from background
                 if (extras.containsKey(NOTIFICATION_TYPE)) {
@@ -69,9 +69,9 @@ class AppDeeplinksManager(
         }
     }
 
-    private fun isAppOpenFromBackground(intent: Intent): Boolean = intent.data != null
+    private fun isDeeplinkWithUri(intent: Intent): Boolean = intent.data != null
 
-    private fun isAppOpenFromForeground(intent: Intent): Boolean = intent.extras != null
+    private fun isDeeplinkWithExtras(intent: Intent): Boolean = intent.extras != null
 
     private fun handleOrSaveDeeplinkIntent(intent: Intent) {
         intent.extras?.apply {
