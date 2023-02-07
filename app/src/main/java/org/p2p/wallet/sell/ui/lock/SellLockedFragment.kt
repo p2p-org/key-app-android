@@ -24,6 +24,7 @@ import org.p2p.wallet.databinding.FragmentSellLockBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.newsend.ui.NewSendFragment
+import org.p2p.wallet.newsend.ui.SendOpenedFrom
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.newsend.model.AddressState
@@ -166,7 +167,8 @@ class SellLockedFragment :
             NewSendFragment.create(
                 recipient = recipient,
                 initialToken = tokenToSend,
-                inputAmount = sendAmount
+                inputAmount = sendAmount,
+                openedFrom = SendOpenedFrom.SELL_FLOW
             )
         )
     }
