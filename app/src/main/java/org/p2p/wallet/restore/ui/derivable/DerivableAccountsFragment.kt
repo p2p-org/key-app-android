@@ -1,8 +1,8 @@
 package org.p2p.wallet.restore.ui.derivable
 
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.solanaj.crypto.DerivationPath
@@ -12,6 +12,8 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentDerivableAccountsBinding
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.deeplinks.DeeplinkUtils
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.ui.derivable.bottomsheet.SelectDerivableAccountBottomSheet
@@ -48,6 +50,7 @@ class DerivableAccountsFragment :
     private val binding: FragmentDerivableAccountsBinding by viewBinding()
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val deeplinksManager: AppDeeplinksManager by inject()
 
     private var selectedPath: DerivationPath = DerivationPath.BIP44CHANGE
 
@@ -83,13 +86,17 @@ class DerivableAccountsFragment :
             restoreButton.setOnClickListener { presenter.createAndSaveAccount() }
         }
 
-        presenter.loadData()
+        if (DeeplinkUtils.hasFastOnboardingDeeplink(deeplinksManager.pendingDeeplinkUri)) {
+            presenter.createAndSaveAccount()
+        } else {
+            presenter.loadData()
 
-        childFragmentManager.setFragmentResultListener(
-            KEY_REQUEST_PATH,
-            viewLifecycleOwner,
-            ::onFragmentResult
-        )
+            childFragmentManager.setFragmentResultListener(
+                KEY_REQUEST_PATH,
+                viewLifecycleOwner,
+                ::onFragmentResult
+            )
+        }
     }
 
     override fun showAccounts(accounts: List<DerivableAccount>) {

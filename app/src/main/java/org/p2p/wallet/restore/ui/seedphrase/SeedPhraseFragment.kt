@@ -1,15 +1,15 @@
 package org.p2p.wallet.restore.ui.seedphrase
 
-import androidx.core.content.FileProvider
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.FileProvider
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
-import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -17,6 +17,9 @@ import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSeedPhraseBinding
+import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.deeplinks.DeeplinkQuery
+import org.p2p.wallet.deeplinks.DeeplinkUtils
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.utils.popBackStack
@@ -36,6 +39,7 @@ class SeedPhraseFragment :
     override val presenter: SeedPhraseContract.Presenter by inject()
     private val binding: FragmentSeedPhraseBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val deeplinksManager: AppDeeplinksManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,6 +60,23 @@ class SeedPhraseFragment :
             }
 
             seedPhraseView.focusAndShowKeyboard()
+        }
+
+        val deeplinkUri = deeplinksManager.pendingDeeplinkUri ?: return
+        if (DeeplinkUtils.hasFastOnboardingDeeplink(deeplinkUri)) {
+            deeplinkUri.getQueryParameter(DeeplinkQuery.value)?.let { seed ->
+                if (seed.isNotEmpty()) {
+                    val keys = seed.split("-").map {
+                        SeedPhraseWord(
+                            text = it,
+                            isValid = true,
+                            isBlurred = false
+                        )
+                    }
+                    presenter.setNewSeedPhrase(keys)
+                    presenter.verifySeedPhrase()
+                }
+            }
         }
     }
 
