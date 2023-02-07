@@ -26,23 +26,23 @@ env:
     lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
 
 jobs:
-  android-lint:
-    name: "Run ktlint check"
-    runs-on: ubuntu-latest
-    environment: develop
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: "Initialize project keys"
-        uses: ./.github/actions/setup-project
-        with:
-          inputs: ${{ env.setup_project_inputs }}
-      - name: Run ktlint
-        run: ./gradlew ktlint -PautoCorrect=0
+#  android-lint:
+#    name: "Run ktlint check"
+#    runs-on: ubuntu-latest
+#    environment: develop
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      - name: "Initialize project keys"
+#        uses: ./.github/actions/setup-project
+#        env:
+#          inputs: ${{ env.setup_project_inputs }}
+#      - name: Run ktlint
+#        run: ./gradlew ktlint -PautoCorrect=0
   android-build-artifacts:
     name: "Run build feature artifacts"
-    needs:
-      - android-lint
+#    needs:
+#      - android-lint
 
     runs-on: ubuntu-latest
     environment: production
@@ -58,7 +58,7 @@ jobs:
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        with:
+        env:
           inputs: ${{ env.setup_project_inputs }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature

@@ -75,11 +75,9 @@ runs:
   using: composite
   steps:
     - name: "Create Firebase google-services.json"
-      env:
-        FIREBASE_SECRET: ${{ inputs.google-services-file }}
-      shell: bash
-      run: |
-        echo $FIREBASE_SECRET > app/google-services.json
+      uses: ./.github/actions/setup-firebase
+      with:
+        firebase-secret: ${{ inputs.google-services-file }}
     - name: "Create analytics properties file"
       shell: bash
       run: |
