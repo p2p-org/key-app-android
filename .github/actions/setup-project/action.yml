@@ -80,8 +80,7 @@ runs:
       shell: bash
       run: |
         echo $FIREBASE_SECRET > app/google-services.json
-        secret=${{ inputs.google-services-file }}
-        echo "firebase secret: ${secret}"
+        echo "${{ env.FIREBASE_SECRET }}"
     - name: "Create analytics properties file"
       shell: bash
       run: |
