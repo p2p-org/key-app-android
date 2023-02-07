@@ -46,7 +46,7 @@ jobs:
       - android-lint
 
     runs-on: ubuntu-latest
-    environment: feature
+    environment: production
     steps:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
