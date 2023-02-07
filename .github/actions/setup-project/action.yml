@@ -62,7 +62,7 @@ inputs:
   sentry-auth-dsn:
     description: "Project Sentry DSN"
     required: true
-  google-services-file:
+  firebase-secret:
     description: "Firebase google services json file"
     required: true
   lokalise-key:
@@ -74,13 +74,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: "Create Firebase google-services.json"
+    - name: Create google-service.json
       env:
-        FIREBASE_SECRET: ${{ inputs.google-services-file }}
+        FIREBASE_SECRET: ${{ inputs.firebase-secret }}
       shell: bash
       run: |
         echo $FIREBASE_SECRET > app/google-services.json
-        echo "${{ env.FIREBASE_SECRET }}"
     - name: "Create analytics properties file"
       shell: bash
       run: |
