@@ -3,14 +3,8 @@ apply from: "$project.rootDir/scripts/common-library.gradle"
 dependencies {
     implementation project(":core")
 
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation baseAndroidDeps
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-
-    implementation("com.google.android.material:material") {
-        version { strictly "1.6.1" }
-    }
 
     api 'com.google.android.flexbox:flexbox:3.0.0'
 
