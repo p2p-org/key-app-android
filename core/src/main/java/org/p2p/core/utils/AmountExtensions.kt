@@ -96,7 +96,12 @@ fun BigInteger.isZeroOrLess() = isZero() || isLessThan(BigInteger.ZERO)
 fun BigDecimal.asCurrency(currency: String): String =
     if (lessThenMinValue()) "<$currency 0.01" else "$currency ${formatFiat()}"
 
-fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${formatFiat()}"
+fun BigDecimal.asUsd(tokenAmount: BigDecimal? = null): String =
+    when {
+        tokenAmount != null && this.isZero() && !tokenAmount.isZero() -> "<$ 0.01"
+        else -> if (lessThenMinValue()) "<$ 0.01" else "$ ${formatFiat()}"
+    }
+
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     lessThenMinValue() -> "(<$0.01)"
     withBraces -> "~($${formatFiat()})"
