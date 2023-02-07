@@ -23,11 +23,11 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellLockBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
+import org.p2p.wallet.newsend.model.AddressState
+import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.newsend.model.AddressState
-import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
@@ -136,7 +136,7 @@ class SellLockedFragment :
         textViewFiatValue.isVisible = false
 
         textViewReceiverTitle.setText(R.string.sell_details_send_to)
-        textViewReceiverAddress.text = details.receiverAddress.cutMiddle()
+        textViewReceiverAddress.text = details.receiverAddress.cutMiddle(cutCount = 6)
     }
 
     private fun renderCopyButton() = with(binding.layoutDetails.imageViewCopy) {

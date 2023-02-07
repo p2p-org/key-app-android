@@ -26,3 +26,8 @@ fun String.cutEnd(): String {
     val lastFour = this.takeLast(4)
     return "$firstSixteen...$lastFour"
 }
+
+fun String.cutStart(lastCount: Int): String {
+    val lastSymbols = this.takeLast(lastCount)
+    return "...$lastSymbols"
+}

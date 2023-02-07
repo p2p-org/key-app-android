@@ -67,7 +67,7 @@ class SellTransactionDetailsPresenter(
         )
         val receiverBlock = SellTransactionDetailsViewState.ReceiverBlock(
             receiverTitle = resources.getString(R.string.sell_details_send_to),
-            receiverValue = currentTransaction.receiverAddress.cutMiddle(),
+            receiverValue = currentTransaction.receiverAddress.cutMiddle(cutCount = 6),
             isCopyEnabled = true,
             copyValueProvider = currentTransaction::receiverAddress
         )

@@ -7,7 +7,7 @@ import org.p2p.wallet.databinding.ItemHistoryMoonpayTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
@@ -59,7 +59,7 @@ class HistorySellTransactionViewHolder(
                 titleStatus = getString(R.string.transaction_history_moonpay_waiting_for_deposit_title)
                 subtitleReceiver = getString(
                     R.string.transaction_history_moonpay_waiting_for_deposit_subtitle,
-                    item.transactionDetails.receiverAddress.cutMiddle()
+                    item.transactionDetails.receiverAddress.cutStart(4)
                 )
             }
             SellTransactionStatus.PENDING -> {
