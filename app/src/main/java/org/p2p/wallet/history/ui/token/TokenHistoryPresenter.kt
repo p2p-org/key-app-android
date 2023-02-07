@@ -1,6 +1,9 @@
 package org.p2p.wallet.history.ui.token
 
 import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -16,9 +19,6 @@ import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import timber.log.Timber
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class TokenHistoryPresenter(
     private val token: Token.Active,
@@ -109,7 +109,7 @@ class TokenHistoryPresenter(
                 sellTransactionsList = fetchSellTransactions()
             }
             blockChainTransactionsList += fetchBlockChainTransactions(isRefresh)
-            if (blockChainTransactionsList.isFailed && sellTransactionsList.isFailed) {
+            if (blockChainTransactionsList.isFailed || sellTransactionsList.isFailed) {
                 view?.showPagingState(PagingState.Error(HistoryFetchFailure))
                 Timber.e(HistoryFetchFailure, "Error getting transaction history for token")
             } else {

@@ -102,7 +102,7 @@ class HistoryPresenter(
             val deferredBlockChainTransactions = async { fetchBlockChainTransactions(isRefresh) }
             moonpayTransactionsList = deferredSellTransactions.await()
             blockChainTransactionsList += deferredBlockChainTransactions.await()
-            if (moonpayTransactionsList.isFailed && blockChainTransactionsList.isFailed) {
+            if (moonpayTransactionsList.isFailed || blockChainTransactionsList.isFailed) {
                 view?.showPagingState(PagingState.Error(HistoryFetchFailure))
                 Timber.e(HistoryFetchFailure, "Error getting transaction whole history")
             } else {
