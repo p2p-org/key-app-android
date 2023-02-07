@@ -12,5 +12,5 @@ data class JupiterSwapToken(
     val tokenName: String,
     val tokenSymbol: String,
     val tags: List<String>,
-    val priceInUsd: BigDecimal
+    val priceInUsd: BigDecimal?
 )
