@@ -133,6 +133,8 @@ dependencies {
     implementation("com.google.android.material:material") {
         version { strictly "1.6.1" }
     }
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
     implementation "androidx.browser:browser:1.4.0"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
