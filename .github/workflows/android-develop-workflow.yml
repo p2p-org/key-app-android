@@ -75,9 +75,7 @@ jobs:
         uses: ./.github/actions/setup-project
         env:
           inputs: ${{ env.setup_project_inputs }}
-      - name: "Build feature APK"
-        run: ./gradlew assembleFeature
-      - name: "Upload APK to Firebase"
+      - name: "Build & upload APK to Firebase (Feature)"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
