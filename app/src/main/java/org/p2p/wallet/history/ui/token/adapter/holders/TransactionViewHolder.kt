@@ -75,7 +75,6 @@ class TransactionViewHolder(
                 endAmountView.bottomValue = null
                 endAmountView.topValue = null
 
-
                 startAmountView.title = getString(R.string.transaction_history_create)
                 startAmountView.subtitle = transaction.signature.cutMiddle()
             }
