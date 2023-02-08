@@ -9,7 +9,8 @@ import org.p2p.uikit.model.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
 
 class UiKitLeftSideView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null
+    context: Context,
+    attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
     private val binding = inflateViewBinding<UiKitLeftSideIconTripleTextBinding>()

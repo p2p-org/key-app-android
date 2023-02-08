@@ -5,6 +5,6 @@ import android.content.Context
 import android.util.AttributeSet
 
 class UiKitFinanceBlock @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null
-) : ConstraintLayout(context, attrs) {
-}
+    context: Context,
+    attrs: AttributeSet? = null
+) : ConstraintLayout(context, attrs)

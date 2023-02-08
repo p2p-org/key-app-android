@@ -14,7 +14,8 @@ import kotlin.reflect.KClass
 typealias BindingWithViews = Pair<ViewBinding, List<View>>
 
 class UiKitIconWrapper @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null
+    context: Context,
+    attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
     private var currentModel: IconWrapperUiModel? = null
