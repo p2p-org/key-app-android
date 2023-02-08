@@ -27,14 +27,14 @@ interface AccountStorageContract {
         }
     }
 
-    fun <T> saveObject(key: Key, data: T)
-    fun <T : Any> getObject(key: Key, type: KClass<T>): T?
+    suspend fun <T> saveObject(key: Key, data: T)
+    suspend fun <T : Any> getObject(key: Key, type: KClass<T>): T?
 
-    fun saveString(key: Key, data: String)
-    fun getString(key: Key): String?
+    suspend fun saveString(key: Key, data: String)
+    suspend fun getString(key: Key): String?
 
-    fun contains(key: Key): Boolean
+    suspend fun contains(key: Key): Boolean
 
-    fun remove(key: Key)
-    fun removeAll()
+    suspend fun remove(key: Key)
+    suspend fun removeAll()
 }

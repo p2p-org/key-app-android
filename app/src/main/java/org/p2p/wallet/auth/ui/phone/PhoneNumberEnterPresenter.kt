@@ -130,7 +130,7 @@ class PhoneNumberEnterPresenter(
         }
     }
 
-    private fun handleGatewayServiceError(gatewayServiceError: GatewayServiceError) {
+    private suspend fun handleGatewayServiceError(gatewayServiceError: GatewayServiceError) {
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(gatewayServiceError)) {
             is GatewayHandledState.CriticalError -> {
                 view?.navigateToCriticalErrorScreen(gatewayHandledResult)

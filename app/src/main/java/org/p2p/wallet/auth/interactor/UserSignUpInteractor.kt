@@ -42,7 +42,7 @@ class UserSignUpInteractor(
         }
     }
 
-    fun continueSignUpUser(): SignUpResult {
+    suspend fun continueSignUpUser(): SignUpResult {
         return try {
             val lastUserDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()
                 ?: throw NullPointerException("Last sign up user details (aka device share) not found")

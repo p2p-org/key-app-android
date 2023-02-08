@@ -13,11 +13,13 @@ import timber.log.Timber
 
 private const val TAG = "RestoreFlowDataLocalRepository"
 
-class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStorage) {
+class RestoreFlowDataLocalRepository(private val signUpDetailsStorage: UserSignUpDetailsStorage) {
 
     var isRestoreWalletRequestSent = false
 
     var userPhoneNumberEnteredCount = 0
+
+    private var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
 
     val userRestorePublicKey: Base58String?
         get() = restoreUserKeyPair?.publicKey?.toBase58Instance()
@@ -38,14 +40,16 @@ class RestoreFlowDataLocalRepository(signUpDetailsStorage: UserSignUpDetailsStor
             Timber.tag(TAG).i("User phone is received and set: ${userPhoneNumber?.formattedValue?.length}")
         }
 
-    var deviceShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? =
-        signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare
-        set(value) {
-                field = value
-                Timber.tag(TAG).i(
-                    "deviceShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}"
-                )
-            }
+    suspend fun getDeviceShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta? {
+        return signUpDetailsStorage.getLastSignUpUserDetails()?.signUpDetails?.deviceShare
+    }
+
+    suspend fun saveDeviceShare(value: Web3AuthSignUpResponse.ShareDetailsWithMeta?) {
+        deviceShare = value
+        Timber.tag(TAG).i(
+            "deviceShare is received and set: ${value?.innerShareDetails?.shareValue?.value?.length}"
+        )
+    }
 
     var customShare: Web3AuthSignUpResponse.ShareDetailsWithMeta? = null
         set(value) {

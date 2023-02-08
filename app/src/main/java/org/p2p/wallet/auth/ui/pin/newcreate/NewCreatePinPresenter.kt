@@ -38,8 +38,6 @@ class NewCreatePinPresenter(
 ) : BasePresenter<NewCreatePinContract.View>(),
     NewCreatePinContract.Presenter {
 
-    private val wasCreationFlow = signUpDetailsStorage.isSignUpInProcess()
-
     private var createdPin = emptyString()
     private var pinMode = PinMode.CREATE
     private var navigateBackOnBackPressed = false
@@ -76,11 +74,13 @@ class NewCreatePinPresenter(
         } else {
             restoreWalletAnalytics.logRestoreWalletPinConfirmed()
         }
-        if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
-            closeCreatePinFlow()
-        } else {
-            view?.vibrate(VIBRATE_DURATION)
-            enableBiometric()
+        launch {
+            if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
+                closeCreatePinFlow()
+            } else {
+                view?.vibrate(VIBRATE_DURATION)
+                enableBiometric()
+            }
         }
     }
 
@@ -101,7 +101,7 @@ class NewCreatePinPresenter(
         }
     }
 
-    private fun enableBiometric() {
+    private suspend fun enableBiometric() {
         try {
             val cipher = authInteractor.getPinEncodeCipher()
             analytics.logBioApproved()
@@ -145,13 +145,13 @@ class NewCreatePinPresenter(
         }
     }
 
-    private fun closeCreatePinFlow() {
+    private suspend fun closeCreatePinFlow() {
         // sometimes user can use seed phrase to login, we cant show item to him too
         val isUsernameAuthNotBySeedPhrase = !sharedPreferences.getBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, false)
         val isUserCanRegisterUsername =
             registerUsernameEnabledFeatureToggle.isFeatureEnabled &&
                 signUpDetailsStorage.getLastSignUpUserDetails() != null &&
-                isUsernameAuthNotBySeedPhrase && wasCreationFlow
+                isUsernameAuthNotBySeedPhrase && signUpDetailsStorage.isSignUpInProcess()
 
         if (isUserCanRegisterUsername) {
             view?.navigateToRegisterUsername()
@@ -160,7 +160,7 @@ class NewCreatePinPresenter(
         }
     }
 
-    private fun registerComplete(pinCode: String, cipher: EncodeCipher?) {
+    private suspend fun registerComplete(pinCode: String, cipher: EncodeCipher?) {
         authInteractor.registerComplete(pinCode, cipher)
         authInteractor.finishSignUp()
         // TODO determine pin complexity

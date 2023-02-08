@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
+import org.p2p.wallet.datastore.preferences.UserPreferencesStore
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
@@ -31,14 +32,14 @@ class SellInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
-    private val sharedPreferences: SharedPreferences,
+    private val sharedPreferences: UserPreferencesStore,
 ) {
 
-    fun shouldShowInformDialog(): Boolean =
-        sharedPreferences.getBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY, true)
+    suspend fun shouldShowInformDialog(): Boolean =
+        sharedPreferences.getBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY)
 
-    fun setShouldShowInformDialog(shouldShowAgain: Boolean) {
-        sharedPreferences.edit { putBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY, shouldShowAgain) }
+    suspend fun setShouldShowInformDialog(shouldShowAgain: Boolean) {
+        sharedPreferences.putBoolean(SHOULD_SHOW_SELL_INFORM_DIALOG_KEY, shouldShowAgain)
     }
 
     suspend fun loadSellAvailability() {

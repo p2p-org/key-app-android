@@ -91,7 +91,7 @@ class NewSmsInputPresenter(
         connectToTimer()
     }
 
-    private fun handleGatewayError(error: GatewayServiceError) {
+    private suspend fun handleGatewayError(error: GatewayServiceError) {
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(error)) {
             is GatewayHandledState.CriticalError -> {
                 view?.navigateToGatewayErrorScreen(gatewayHandledResult)

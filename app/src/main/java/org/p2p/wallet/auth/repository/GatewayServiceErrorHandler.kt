@@ -20,7 +20,7 @@ class GatewayServiceErrorHandler(
     private val restoreWalletInteractor: RestoreWalletInteractor
 ) {
 
-    fun handle(error: GatewayServiceError): GatewayHandledState? {
+    suspend fun handle(error: GatewayServiceError): GatewayHandledState? {
         return when (error) {
             is GatewayServiceError.CriticalServiceFailure -> {
                 GatewayHandledState.CriticalError(error.code)

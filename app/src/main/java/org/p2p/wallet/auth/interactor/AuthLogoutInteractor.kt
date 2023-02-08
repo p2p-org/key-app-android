@@ -6,6 +6,7 @@ import androidx.core.content.edit
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.di.AppScope
+import org.p2p.wallet.datastore.preferences.UserPreferencesStore
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
@@ -24,7 +25,7 @@ class AuthLogoutInteractor(
     private val context: Context,
     private val secureStorage: SecureStorageContract,
     private val renBtcInteractor: RenBtcInteractor,
-    private val sharedPreferences: SharedPreferences,
+    private val userDataStore: UserPreferencesStore ,
     private val tokenKeyProvider: TokenKeyProvider,
     private val sendModeProvider: SendModeProvider,
     private val mainLocalRepository: HomeLocalRepository,
@@ -45,7 +46,7 @@ class AuthLogoutInteractor(
             analytics.setUserId(null)
 
             updatesManager.stop()
-            sharedPreferences.edit { clear() }
+            userDataStore.clear()
             tokenKeyProvider.clear()
             sendModeProvider.clear()
             secureStorage.clear()

@@ -24,7 +24,7 @@ class RestoreWalletInteractor(
 
     fun getUserPhoneNumber() = restoreFlowDataLocalRepository.userPhoneNumber
 
-    fun getUserEmailAddress() = signUpDetailsStorage.getLastSignUpUserDetails()?.userId
+    suspend fun getUserEmailAddress() = signUpDetailsStorage.getLastSignUpUserDetails()?.userId
 
     fun generateRestoreUserKeyPair() {
         restoreFlowDataLocalRepository.generateRestoreUserKeyPair()
@@ -49,7 +49,7 @@ class RestoreWalletInteractor(
         customShareRestoreInteractor.setIsRestoreWalletRequestSent(isSent)
     }
 
-    fun isDeviceShareSaved(): Boolean = signUpDetailsStorage.isDeviceShareSaved()
+    suspend fun isDeviceShareSaved(): Boolean = signUpDetailsStorage.isDeviceShareSaved()
 
     fun getUserEnterPhoneNumberTriesCount() = restoreFlowDataLocalRepository.userPhoneNumberEnteredCount
 

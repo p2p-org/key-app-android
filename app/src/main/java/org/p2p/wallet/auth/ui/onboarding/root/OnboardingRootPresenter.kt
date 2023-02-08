@@ -1,5 +1,6 @@
 package org.p2p.wallet.auth.ui.onboarding.root
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
@@ -17,24 +18,26 @@ class OnboardingRootPresenter(
 
     override fun attach(view: OnboardingRootContract.View) {
         super.attach(view)
-        // pass empty string as UserId to launch IntercomService as anonymous user
-        IntercomService.signIn(emptyString())
+        launch {
+            // pass empty string as UserId to launch IntercomService as anonymous user
+            IntercomService.signIn(emptyString())
 
-        val userDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()
-        onboardingAnalytics.setUserHasDeviceShare(
-            hasDeviceShare = userDetails?.signUpDetails?.deviceShare != null
-        )
-        when {
-            userLeftOnPinCreation() -> view.navigateToCreatePin()
-            userDetails != null -> handleUserDetailsExist(userDetails)
-            else -> view.navigateToOnboarding()
+            val userDetails = userSignUpDetailsStorage.getLastSignUpUserDetails()
+            onboardingAnalytics.setUserHasDeviceShare(
+                hasDeviceShare = userDetails?.signUpDetails?.deviceShare != null
+            )
+            when {
+                userLeftOnPinCreation() -> view.navigateToCreatePin()
+                userDetails != null -> handleUserDetailsExist(userDetails)
+                else -> view.navigateToOnboarding()
+            }
+
+            // Sign in unidentified user for help messenger in onboarding flow
+            IntercomService.signIn(emptyString())
         }
-
-        // Sign in unidentified user for help messenger in onboarding flow
-        IntercomService.signIn(emptyString())
     }
 
-    private fun handleUserDetailsExist(userDetails: UserSignUpDetailsStorage.SignUpUserDetails) {
+    private suspend fun handleUserDetailsExist(userDetails: UserSignUpDetailsStorage.SignUpUserDetails) {
         when {
             userSignUpDetailsStorage.isSignUpInProcess() -> view?.navigateToContinueOnboarding()
             userDetails.signUpDetails.deviceShare != null -> view?.navigateToRestore()

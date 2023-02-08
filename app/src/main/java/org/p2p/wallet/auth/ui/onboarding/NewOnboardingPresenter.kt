@@ -18,10 +18,12 @@ class NewOnboardingPresenter(
 ) : BasePresenter<NewOnboardingContract.View>(), NewOnboardingContract.Presenter {
 
     override fun onSignUpButtonClicked() {
-        if (userSignUpDetailsStorage.isSignUpInProcess()) {
-            view?.navigateToContinueCreateWallet()
-        } else {
-            view?.startGoogleFlow()
+        launch {
+            if (userSignUpDetailsStorage.isSignUpInProcess()) {
+                view?.navigateToContinueCreateWallet()
+            } else {
+                view?.startGoogleFlow()
+            }
         }
     }
 

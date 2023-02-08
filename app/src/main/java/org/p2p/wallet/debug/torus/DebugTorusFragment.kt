@@ -2,6 +2,7 @@ package org.p2p.wallet.debug.torus
 
 import android.os.Bundle
 import android.view.View
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
@@ -25,7 +26,7 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
 
     private val appRestarter: AppRestarter by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = runBlocking {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
@@ -58,10 +59,11 @@ class DebugTorusFragment : BaseFragment(R.layout.fragment_debug_torus) {
             } else {
                 "No device share"
             }
-            shareDeleteButton.apply {
-                isEnabled = hasShare
-                setOnClickListener {
-                    signUpDetailsStorage.removeAllShares()
+            shareDeleteButton.also {
+                it.isEnabled = hasShare
+                it.setOnClickListener {
+                    //TODO create new solution
+                    //signUpDetailsStorage.removeAllShares()
                     appRestarter.restartApp()
                 }
             }

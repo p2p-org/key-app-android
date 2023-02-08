@@ -27,7 +27,7 @@ class CreateWalletInteractor(
             ?: throw CreateWalletFailure("User public key is null")
         val userPrivateKey = signUpFlowDataRepository.userPrivateKeyB58
             ?: throw CreateWalletFailure("User private key is null")
-        val etheriumPublicKey = signUpFlowDataRepository.ethereumPublicKey
+        val etheriumPublicKey = signUpFlowDataRepository.getEthereumPublicKey()
             ?: throw CreateWalletFailure("User etherium public key is null")
 
         val isNumberAlreadyUsed = userPhoneNumber == signUpFlowDataRepository.userPhoneNumber
@@ -65,11 +65,11 @@ class CreateWalletInteractor(
             ?: throw CreateWalletFailure("User public key is null")
         val userPrivateKey = signUpFlowDataRepository.userPrivateKeyB58
             ?: throw CreateWalletFailure("User private key is null")
-        val etheriumPublicKey = signUpFlowDataRepository.ethereumPublicKey
+        val etheriumPublicKey = signUpFlowDataRepository.getEthereumPublicKey()
             ?: throw CreateWalletFailure("User etherium public key is null")
-        val thirdShare = signUpFlowDataRepository.thirdShare
+        val thirdShare = signUpFlowDataRepository.getThirdShare()
             ?: throw CreateWalletFailure("Custom third share is null")
-        val encryptedMnemonicPhrase = signUpFlowDataRepository.encryptedMnemonicPhrase
+        val encryptedMnemonicPhrase = signUpFlowDataRepository.getEncryptedMnemonicPhrase()
             ?: throw CreateWalletFailure("Encrypted mnemonic phrase is null")
         val phoneNumber = signUpFlowDataRepository.userPhoneNumber
             ?: throw CreateWalletFailure("User phone number is null")

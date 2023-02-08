@@ -248,10 +248,12 @@ class SellPayloadPresenter(
     }
 
     override fun cashOut() {
-        if (sellInteractor.shouldShowInformDialog()) {
-            view?.navigateToInformationScreen()
-        } else {
-            buildMoonpayWidget()
+        launch {
+            if (sellInteractor.shouldShowInformDialog()) {
+                view?.navigateToInformationScreen()
+            } else {
+                buildMoonpayWidget()
+            }
         }
     }
 

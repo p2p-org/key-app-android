@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
 
 class UserDataStoreEditorImpl(private val preferences: MutablePreferences) : UserDataStore.Editor {
 
@@ -34,5 +36,17 @@ class UserDataStoreEditorImpl(private val preferences: MutablePreferences) : Use
 
     override suspend fun putInt(key: String, value: Int) {
         preferences[intPreferencesKey(key)] = value
+    }
+
+    override suspend fun putDouble(key: String, value: Double) {
+        preferences[doublePreferencesKey(key)] = value
+    }
+
+    override suspend fun remove(key: String) {
+        preferences.remove(stringPreferencesKey(key))
+    }
+
+    override suspend fun clear() {
+        preferences.clear()
     }
 }

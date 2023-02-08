@@ -52,7 +52,7 @@ class UserRestoreInteractor(
         val torusKey = restoreFlowDataLocalRepository.torusKey
         val socialShareUserId = restoreFlowDataLocalRepository.socialShareUserId
 
-        val deviceShare = restoreFlowDataLocalRepository.deviceShare
+        val deviceShare = restoreFlowDataLocalRepository.getDeviceShare()
         if (torusKey.isNullOrEmpty() && socialShareUserId.isNullOrEmpty()) {
             Timber.i(RestoreError("Failed to restore with SocialPlusCustomShare"))
             RestoreFailure.SocialPlusCustomShare.TorusKeyNotFound
@@ -118,7 +118,7 @@ class UserRestoreInteractor(
             ?: error("Device+Custom restore way failed. Third share is null")
         val encryptedMnemonic = restoreFlowDataLocalRepository.encryptedMnemonicJson
             ?: error("Device+Custom restore way failed. Mnemonic phrase is null")
-        val deviceShare = restoreFlowDataLocalRepository.deviceShare
+        val deviceShare = restoreFlowDataLocalRepository.getDeviceShare()
 
         if (deviceShare == null) {
             RestoreFailure.DevicePlusCustomShare(RestoreUserException("No Device Share"))
@@ -152,7 +152,7 @@ class UserRestoreInteractor(
     private suspend fun tryRestoreUser(
         restoreFlow: RestoreWallet.DevicePlusSocialShare
     ): RestoreUserResult = try {
-        val deviceShare = restoreFlowDataLocalRepository.deviceShare
+        val deviceShare = restoreFlowDataLocalRepository.getDeviceShare()
             ?: error("Device+Social restore way failed. Device share is null")
         val torusKey = restoreFlowDataLocalRepository.torusKey
             ?: error("Device+Social restore way failed. Social share is null")

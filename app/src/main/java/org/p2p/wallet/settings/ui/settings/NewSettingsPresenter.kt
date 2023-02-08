@@ -42,10 +42,10 @@ class NewSettingsPresenter(
 
     override fun attach(view: NewSettingsContract.View) {
         super.attach(view)
-        loadSettings()
+        launch { loadSettings() }
     }
 
-    private fun loadSettings() {
+    private suspend fun loadSettings() {
         try {
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
@@ -75,12 +75,14 @@ class NewSettingsPresenter(
     }
 
     override fun onBiometricSignInEnableConfirmed(biometricsCipher: EncodeCipher) {
-        try {
-            authInteractor.enableFingerprintSignIn(biometricsCipher)
-            loadSettings()
-        } catch (fingerPrintChangeError: Throwable) {
-            Timber.e(fingerPrintChangeError, "Failed to change biometric login flag")
-            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+        launch {
+            try {
+                authInteractor.enableFingerprintSignIn(biometricsCipher)
+                loadSettings()
+            } catch (fingerPrintChangeError: Throwable) {
+                Timber.e(fingerPrintChangeError, "Failed to change biometric login flag")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
         }
     }
 

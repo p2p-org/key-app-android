@@ -41,14 +41,17 @@ class SignUpFlowDataLocalRepository(
     val userPrivateKeyB58: Base58String?
         get() = userAccount?.keypair?.toBase58Instance()
 
-    val ethereumPublicKey: String?
-        get() = signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey
+    suspend fun getEthereumPublicKey(): String? {
+        return signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.ethereumPublicKey
+    }
 
-    val thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta?
-        get() = signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.customThirdShare
+    suspend fun getThirdShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta? {
+        return signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.customThirdShare
+    }
 
-    val encryptedMnemonicPhrase: JsonObject?
-        get() = signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.encryptedMnemonicPhrase
+    suspend fun getEncryptedMnemonicPhrase(): JsonObject? {
+        return signUpUserStorage.getLastSignUpUserDetails()?.signUpDetails?.encryptedMnemonicPhrase
+    }
 
     var userPhoneNumber: PhoneNumber? = null
         set(value) {

@@ -18,8 +18,10 @@ class ContinueOnboardingPresenter(
 
     override fun attach(view: ContinueOnboardingContract.View) {
         super.attach(view)
-        val userId = signUpDetailsStorage.getLastSignUpUserDetails()?.userId.orEmpty()
-        view.showUserId(userId)
+        launch {
+            val userId = signUpDetailsStorage.getLastSignUpUserDetails()?.userId.orEmpty()
+            view.showUserId(userId)
+        }
     }
 
     override fun continueSignUp() {

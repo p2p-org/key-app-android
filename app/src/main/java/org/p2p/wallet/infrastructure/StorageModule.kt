@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -11,6 +12,9 @@ import org.p2p.wallet.common.crypto.keystore.EncoderDecoder
 import org.p2p.wallet.common.crypto.keystore.EncoderDecoderMarshmallow
 import org.p2p.wallet.common.crypto.keystore.KeyStoreWrapper
 import org.p2p.wallet.common.feature_toggles.remote_config.LocalFeatureToggleStorage
+import org.p2p.wallet.datastore.UserDataStoreImpl
+import org.p2p.wallet.datastore.UserDataStoreService
+import org.p2p.wallet.datastore.preferences.UserPreferencesStore
 import org.p2p.wallet.infrastructure.account.AccountStorage
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorage
@@ -27,6 +31,15 @@ object StorageModule {
     }
 
     fun create() = module {
+
+        single<UserPreferencesStore> {
+            val preferences = UserDataStoreService.DATA_STORE_MIGRATION_PREFS_NAMES.map { name ->
+                get<SharedPreferences>(named(name))
+            }
+            val dataStore = UserDataStoreService.create(preferences)
+
+            val dataStoreImpl = UserDataStoreImpl(dataStore)
+        }
         // TODO PWN-5418 - extract misc data to separate prefs
         single { androidPreferences("prefs") }
 
@@ -52,7 +65,7 @@ object StorageModule {
                     keyStore = get(),
                     sharedPreferences = prefs
                 ),
-                sharedPreferences = prefs,
+                dataStore = get(),
                 gson = get()
             )
         } bind AccountStorageContract::class

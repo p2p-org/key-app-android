@@ -45,18 +45,20 @@ class SolendEarnPresenter(
 
     override fun attach(view: SolendEarnContract.View) {
         super.attach(view)
-        val onboardingCompletedKey = accountStorage.getString(
-            AccountStorageContract.Key.KEY_SOLEND_ONBOARDING_COMPLETED.withCustomKey(
-                tokenKeyProvider.publicKey
+        launch {
+            val onboardingCompletedKey = accountStorage.getString(
+                AccountStorageContract.Key.KEY_SOLEND_ONBOARDING_COMPLETED.withCustomKey(
+                    tokenKeyProvider.publicKey
+                )
             )
-        )
-        val needShowOnboarding = onboardingCompletedKey == null
-        if (needShowOnboarding && onboardingFirstShowing) {
-            onboardingFirstShowing = false
-            view.showSolendOnboarding()
-        }
-        if (deposits.isNotEmpty()) {
-            handleDepositsResult(deposits)
+            val needShowOnboarding = onboardingCompletedKey == null
+            if (needShowOnboarding && onboardingFirstShowing) {
+                onboardingFirstShowing = false
+                view.showSolendOnboarding()
+            }
+            if (deposits.isNotEmpty()) {
+                handleDepositsResult(deposits)
+            }
         }
     }
 

@@ -20,7 +20,7 @@ class UserSignUpDetailsStorage(
         val signUpDetails: Web3AuthSignUpResponse
     )
 
-    fun save(data: Web3AuthSignUpResponse, userId: String, isCreate: Boolean = true): Boolean {
+    suspend fun save(data: Web3AuthSignUpResponse, userId: String, isCreate: Boolean = true): Boolean {
         val value = SignUpUserDetails(userId, data)
 
         accountStorage.saveObject(Key.KEY_LAST_DEVICE_SHARE_ID, value)
@@ -32,24 +32,24 @@ class UserSignUpDetailsStorage(
         return true
     }
 
-    fun getLastSignUpUserDetails(): SignUpUserDetails? {
+    suspend fun getLastSignUpUserDetails(): SignUpUserDetails? {
         return kotlin.runCatching { accountStorage.getObject(Key.KEY_LAST_DEVICE_SHARE_ID, SignUpUserDetails::class) }
             .onSuccess { Timber.tag(TAG).i("Last sign up user details(null=${it == null}) received!") }
             .onFailure { Timber.tag(TAG).e(it) }
             .getOrNull()
     }
 
-    fun isDeviceShareSaved(): Boolean =
+    suspend fun isDeviceShareSaved(): Boolean =
         getLastSignUpUserDetails()?.signUpDetails?.deviceShare != null && !isSignUpInProcess()
 
-    fun isSignUpInProcess(): Boolean = accountStorage.getString(Key.KEY_IN_SIGN_UP_PROCESS) != null
+    suspend fun isSignUpInProcess(): Boolean = accountStorage.getString(Key.KEY_IN_SIGN_UP_PROCESS) != null
 
-    fun removeAllShares() {
+    suspend fun removeAllShares() {
         accountStorage.removeAll()
         removeLastDeviceShare()
     }
 
-    private fun removeLastDeviceShare() {
+    private suspend fun removeLastDeviceShare() {
         accountStorage.apply {
             remove(Key.KEY_LAST_DEVICE_SHARE_ID)
             remove(Key.KEY_IN_SIGN_UP_PROCESS)

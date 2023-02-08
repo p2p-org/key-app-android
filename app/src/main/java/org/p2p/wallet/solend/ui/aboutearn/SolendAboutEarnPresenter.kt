@@ -1,5 +1,6 @@
 package org.p2p.wallet.solend.ui.aboutearn
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.account.AccountStorage
 import org.p2p.wallet.infrastructure.account.AccountStorageContract
@@ -15,12 +16,14 @@ class SolendAboutEarnPresenter(
     }
 
     override fun onContinueButtonClicked() {
-        accountStorage.saveString(
-            AccountStorageContract.Key.KEY_SOLEND_ONBOARDING_COMPLETED.withCustomKey(
-                tokenKeyProvider.publicKey
-            ),
-            "+"
-        )
-        view?.closeOnboarding()
+        launch {
+            accountStorage.saveString(
+                AccountStorageContract.Key.KEY_SOLEND_ONBOARDING_COMPLETED.withCustomKey(
+                    tokenKeyProvider.publicKey
+                ),
+                "+"
+            )
+            view?.closeOnboarding()
+        }
     }
 }

@@ -142,7 +142,7 @@ class AuthInteractor(
 
     fun isFingerprintEnabled(): Boolean = getBiometricStatus() == BiometricStatus.ENABLED
 
-    fun finishSignUp() {
+    suspend fun finishSignUp() {
         accountStorage.remove(Key.KEY_IN_SIGN_UP_PROCESS)
 
         // Send device push token to NotificationService on creation and restoring the wallet

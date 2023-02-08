@@ -105,7 +105,7 @@ object AuthModule {
                 context = get(),
                 secureStorage = get(),
                 renBtcInteractor = get(),
-                sharedPreferences = get(),
+                userDataStore = get(),
                 tokenKeyProvider = get(),
                 sendModeProvider = get(),
                 mainLocalRepository = get(),

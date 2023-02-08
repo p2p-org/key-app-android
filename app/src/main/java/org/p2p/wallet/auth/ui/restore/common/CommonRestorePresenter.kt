@@ -37,12 +37,14 @@ class CommonRestorePresenter(
     }
 
     override fun switchFlowToRestore() {
-        val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
-        restoreStateMachine.updateState(RestoreState.CommonRestoreScreenState(isDeviceShareSaved))
-        restoreWalletInteractor.generateRestoreUserKeyPair()
-        view?.setRestoreViaGoogleFlowVisibility(
-            isVisible = accountStorageContract.isDeviceShareSaved() && !accountStorageContract.isSignUpInProcess()
-        )
+        launch {
+            val isDeviceShareSaved = restoreWalletInteractor.isDeviceShareSaved()
+            restoreStateMachine.updateState(RestoreState.CommonRestoreScreenState(isDeviceShareSaved))
+            restoreWalletInteractor.generateRestoreUserKeyPair()
+            view?.setRestoreViaGoogleFlowVisibility(
+                isVisible = accountStorageContract.isDeviceShareSaved() && !accountStorageContract.isSignUpInProcess()
+            )
+        }
     }
 
     override fun setGoogleIdToken(userId: String, idToken: String) {

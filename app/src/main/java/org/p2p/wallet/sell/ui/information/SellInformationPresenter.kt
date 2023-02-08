@@ -1,5 +1,6 @@
 package org.p2p.wallet.sell.ui.information
 
+import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.sell.interactor.SellInteractor
 
@@ -8,7 +9,9 @@ class SellInformationPresenter(
 ) : BasePresenter<SellInformationContract.View>(), SellInformationContract.Presenter {
 
     override fun closeDialog(shouldShowAgain: Boolean) {
-        interactor.setShouldShowInformDialog(shouldShowAgain)
-        view?.dismissWithOkResult()
+        launch {
+            interactor.setShouldShowInformDialog(shouldShowAgain)
+            view?.dismissWithOkResult()
+        }
     }
 }

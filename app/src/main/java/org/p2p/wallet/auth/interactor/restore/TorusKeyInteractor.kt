@@ -48,13 +48,15 @@ class TorusKeyInteractor(
         createFlowDataLocalRepository.signUpUserId = socialShareUserId
     }
 
-    private fun fillRestoreFlowData(fetchedTorusKey: String, socialShareUserId: String) {
+    private suspend fun fillRestoreFlowData(fetchedTorusKey: String, socialShareUserId: String) {
         restoreFlowDataLocalRepository.also { repository ->
             repository.torusKey = fetchedTorusKey
             repository.socialShareUserId = socialShareUserId
-            repository.deviceShare = userSignUpDetailsStorage.getLastSignUpUserDetails()
-                ?.signUpDetails
-                ?.deviceShare
+            repository.saveDeviceShare(
+                userSignUpDetailsStorage.getLastSignUpUserDetails()
+                    ?.signUpDetails
+                    ?.deviceShare
+            )
         }
     }
 }

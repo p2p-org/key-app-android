@@ -8,13 +8,14 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class UserDataStoreImpl(
     private val dataStore: DataStore<Preferences>
 ) : UserDataStore {
 
-    override suspend fun edit(block: (UserDataStore.Editor) -> Unit) {
+    override suspend fun edit(block: suspend (UserDataStore.Editor) -> Unit) {
         dataStore.edit {
             block.invoke(UserDataStoreEditorImpl(it))
         }
@@ -45,6 +46,12 @@ class UserDataStoreImpl(
         return dataStore.data.map { preferences ->
             val value = preferences[doublePreferencesKey(key)]
             value
+        }
+    }
+
+    override fun contains(key: String): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            preferences.contains(stringPreferencesKey(key))
         }
     }
 }

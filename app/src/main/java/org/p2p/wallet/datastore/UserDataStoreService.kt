@@ -8,6 +8,7 @@ import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 object UserDataStoreService {
 
@@ -18,8 +19,9 @@ object UserDataStoreService {
     )
 
     fun create(
+        context: Context,
         preferences: List<SharedPreferences>
-    ): ReadOnlyProperty<Context, DataStore<Preferences>> {
+    ): DataStore<Preferences> {
 
         val isPreferencesEmpty = preferences.any { it.all.isEmpty() }
 
@@ -40,3 +42,4 @@ object UserDataStoreService {
         return dataStore
     }
 }
+
