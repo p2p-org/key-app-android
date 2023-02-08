@@ -6,8 +6,7 @@ on:
       - release/*
 
 env:
-  setup_project_inputs: |
-#
+  setup_project_inputs:
     firebase-secret: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
     amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
     amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
