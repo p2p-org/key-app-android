@@ -40,8 +40,8 @@ jobs:
 #        run: ./gradlew ktlint -PautoCorrect=0
   android-build-artifacts:
     name: "Run build feature artifacts"
-    needs:
-      - android-lint
+#    needs:
+#      - android-lint
 
     runs-on: ubuntu-latest
     environment: manual
