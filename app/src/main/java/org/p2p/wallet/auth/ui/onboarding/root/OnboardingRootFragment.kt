@@ -14,8 +14,6 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.permissions.PermissionsUtil
-import org.p2p.wallet.deeplinks.AppDeeplinksManager
-import org.p2p.wallet.deeplinks.DeeplinkUtils
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.replaceFragment
 
@@ -29,8 +27,6 @@ class OnboardingRootFragment :
 
     override val presenter: OnboardingRootContract.Presenter by inject { parametersOf(this) }
 
-    private val deeplinksManager: AppDeeplinksManager by inject()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -38,10 +34,6 @@ class OnboardingRootFragment :
             val permissionName = Manifest.permission.POST_NOTIFICATIONS
             val isNotificationPermissionGranted = PermissionsUtil.isGranted(requireContext(), permissionName)
             presenter.logNotificationPermissionGranted(isNotificationPermissionGranted)
-        }
-
-        if (DeeplinkUtils.hasFastOnboardingDeeplink(deeplinksManager.pendingDeeplinkUri)) {
-            navigateToRestore()
         }
     }
 

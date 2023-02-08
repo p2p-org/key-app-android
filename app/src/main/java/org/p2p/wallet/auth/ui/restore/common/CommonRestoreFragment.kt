@@ -32,8 +32,6 @@ import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
-import org.p2p.wallet.deeplinks.AppDeeplinksManager
-import org.p2p.wallet.deeplinks.DeeplinkUtils
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.root.SystemIconsStyle
@@ -80,8 +78,6 @@ class CommonRestoreFragment :
 
     private val restoreWalletAnalytics: RestoreWalletAnalytics by inject()
     private val onboardingAnalytics: OnboardingAnalytics by inject()
-
-    private val deeplinksManager: AppDeeplinksManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -130,10 +126,6 @@ class CommonRestoreFragment :
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
-        }
-
-        if (DeeplinkUtils.hasFastOnboardingDeeplink(deeplinksManager.pendingDeeplinkUri)) {
-            onSeedPhraseClicked()
         }
     }
 
