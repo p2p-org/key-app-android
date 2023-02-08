@@ -146,9 +146,6 @@ object NetworkModule : InjectionModule {
             .readTimeout(DEFAULT_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .connectTimeout(DEFAULT_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .apply {
-                val certificateManager: CertificateManager = get()
-                certificateManager.setCertificate(this)
-
                 if (interceptor != null) {
                     addInterceptor(interceptor)
                 }

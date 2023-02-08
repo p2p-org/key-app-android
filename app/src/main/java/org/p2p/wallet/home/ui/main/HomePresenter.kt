@@ -3,11 +3,6 @@ package org.p2p.wallet.home.ui.main
 import androidx.lifecycle.LifecycleOwner
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
-import org.p2p.core.utils.Constants.BTC_SYMBOL
-import org.p2p.core.utils.Constants.ETH_SYMBOL
-import org.p2p.core.utils.Constants.SOL_SYMBOL
-import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.R
@@ -42,10 +37,14 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.utils.Constants.BTC_COINGECKO_ID
+import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
+import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
+import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 
-val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, BTC_SYMBOL, ETH_SYMBOL, USDT_SYMBOL)
-val TOKENS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
+val POPULAR_TOKENS = setOf(USDC_COINGECKO_ID, SOL_COINGECKO_ID, BTC_COINGECKO_ID, ETH_COINGECKO_ID, USDC_COINGECKO_ID)
+val TOKENS_VALID_FOR_BUY = listOf(USDC_COINGECKO_ID, SOL_COINGECKO_ID)
 
 private val LOAD_TOKENS_DELAY_MS = 1.toDuration(DurationUnit.SECONDS).inWholeMilliseconds
 

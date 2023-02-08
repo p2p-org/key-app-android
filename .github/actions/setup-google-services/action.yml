@@ -1,7 +1,7 @@
-name: "Setup Firebase"
+name: "Setup Firebase files"
 description: "Create google-services.json file"
 inputs:
-  firebase-secret:
+  google-services-content:
     required: true
     description: "Firebase secret"
 
@@ -10,7 +10,7 @@ runs:
   steps:
     - name: Create google-service.json
       env:
-        FIREBASE_SECRET: ${{ inputs.firebase-secret }}
+        FIREBASE_SECRET: ${{ inputs.google-services-content }}
       shell: bash
       run: |
         echo $FIREBASE_SECRET > app/google-services.json
