@@ -109,7 +109,7 @@ class TokenHistoryPresenter(
                 sellTransactionsList = fetchSellTransactions()
             }
             blockChainTransactionsList += fetchBlockChainTransactions(isRefresh)
-            if (blockChainTransactionsList.isFailed || sellTransactionsList.isFailed) {
+            if (blockChainTransactionsList.isFailed && sellTransactionsList.isFailed) {
                 view?.showPagingState(PagingState.Error(HistoryFetchFailure))
                 Timber.e(HistoryFetchFailure, "Error getting transaction history for token")
             } else {
@@ -131,13 +131,15 @@ class TokenHistoryPresenter(
     }
 
     private suspend fun fetchSellTransactions(): HistoryFetchListResult<SellTransaction> = try {
-        sellTransactionsMapper.map(historyInteractor.getSellTransactions())
-            .toMutableList()
-            .let(::HistoryFetchListResult)
-            .withContentFilter {
-                !it.isCancelled() &&
-                    !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
-            }
+        historyInteractor.getSellTransactions()?.let { sellTransactions ->
+            sellTransactionsMapper.map(sellTransactions)
+                .toMutableList()
+                .let(::HistoryFetchListResult)
+                .withContentFilter {
+                    !it.isCancelled() &&
+                        !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
+                }
+        } ?: HistoryFetchListResult(isFailed = true)
     } catch (error: Throwable) {
         Timber.e(error, "Error while loading Moonpay sell transactions on history")
         HistoryFetchListResult(isFailed = true)
