@@ -23,7 +23,7 @@ object UserDataStoreService {
 
         val isPreferencesEmpty = preferences.any { it.all.isEmpty() }
 
-        val migrationPreferencesList = if (isPreferencesEmpty) {
+        val migrationPreferencesList = if (!isPreferencesEmpty) {
             DATA_STORE_MIGRATION_PREFS_NAMES
         } else {
             emptyList()
