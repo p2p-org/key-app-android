@@ -56,10 +56,10 @@ class AppDeeplinksManager(
         when {
             isDeeplinkWithUri(intent) -> {
                 val data = intent.data ?: return
-                if (context.getString(R.string.app_scheme) == data.scheme) {
-                    if (data.host in DeeplinkHosts.validListToStartDeeplinks) {
-                        pendingDeeplinkUri = data
-                    }
+                if (context.getString(R.string.app_scheme) == data.scheme &&
+                    data.host in DeeplinkHosts.validListToStartDeeplinks
+                ) {
+                    pendingDeeplinkUri = data
                 } else {
                     intercomDeeplinkManager.handleBackgroundDeeplink(data)
                 }
