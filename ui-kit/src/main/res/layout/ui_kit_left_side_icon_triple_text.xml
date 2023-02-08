@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:layout_height="72dp"
+    tools:layout_width="match_parent"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <org.p2p.uikit.atoms.icon_wrapper.UiKitIconWrapper
+        android:id="@+id/imageViewIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/barrierText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@tools:sample/avatars" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrierText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="right"
+        app:constraint_referenced_ids="imageViewIcon" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewFirst"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
+        app:layout_constraintBottom_toTopOf="@+id/textViewSecond"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintStart_toEndOf="@+id/barrierText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_default="wrap"
+        tools:text="@tools:sample/lorem/random" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewSecond"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        app:layout_constraintBottom_toTopOf="@+id/textViewThird"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintStart_toEndOf="@+id/barrierText"
+        app:layout_constraintTop_toBottomOf="@+id/textViewFirst"
+        app:layout_constraintWidth_default="wrap"
+        tools:text="@tools:sample/lorem/random" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewThird"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintStart_toEndOf="@+id/barrierText"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSecond"
+        app:layout_constraintWidth_default="wrap"
+        tools:text="@tools:sample/lorem/random" />
+
+</merge>

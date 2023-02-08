@@ -10,6 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import com.google.android.material.shape.ShapeAppearanceModel.PILL
 
 fun View.rippleBackground(
     shape: ShapeAppearanceModel? = shapeRectangle(),
@@ -61,6 +62,10 @@ fun View.shapeOutline(
 }
 
 fun shapeRectangle(): ShapeAppearanceModel = ShapeAppearanceModel.builder().build()
+
+fun shapeCircle(): ShapeAppearanceModel = ShapeAppearanceModel.builder()
+    .setAllCornerSizes(PILL)
+    .build()
 
 fun shapeRounded24dp(): ShapeAppearanceModel = ShapeAppearanceModel.builder()
     .setAllCorners(CornerFamily.ROUNDED, 24f.toPx())
