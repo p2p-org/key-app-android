@@ -19,7 +19,7 @@ class GlideManager(context: Context) {
             .listener(SvgSoftwareLayerSetter())
     }
 
-    fun load(imageView: ImageView, url: String?, size: Int = DEFAULT_IMAGE_SIZE) {
+    fun load(imageView: ImageView, url: String?, size: Int = DEFAULT_IMAGE_SIZE, circleCrop: Boolean = false) {
         if (url.isNullOrEmpty()) return
 
         if (url.contains(".svg")) {
@@ -32,8 +32,12 @@ class GlideManager(context: Context) {
             Glide
                 .with(imageView)
                 .load(url)
-                .placeholder(R.drawable.ic_placeholder_image)
-                .into(imageView)
+                .placeholder(R.drawable.ic_placeholder_image).apply {
+                    val target = if (circleCrop) {
+                        circleCrop()
+                    } else this
+                    target.into(imageView)
+                }
         }
     }
 

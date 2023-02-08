@@ -26,3 +26,9 @@ fun String.cutEnd(): String {
     val lastFour = this.takeLast(4)
     return "$firstSixteen...$lastFour"
 }
+
+@Suppress("MagicNumber")
+fun String.cutStart(): String {
+    val lastFour = this.takeLast(4)
+    return "...$lastFour"
+}

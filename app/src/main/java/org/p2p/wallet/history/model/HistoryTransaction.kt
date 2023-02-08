@@ -7,17 +7,19 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.R
-import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.USD_SYMBOL
 import org.p2p.core.utils.asUsd
-import org.p2p.wallet.utils.cutMiddle
+import org.p2p.core.utils.asUsdTransaction
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.scaleShortOrFirstNotZero
+import org.p2p.wallet.R
+import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.cutStart
 import org.threeten.bp.ZonedDateTime
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -90,6 +92,8 @@ sealed class HistoryTransaction(
         val isSend: Boolean
             get() = type == TransferType.SEND
 
+        fun getTokenUrl(): String? = tokenData.iconUrl
+
         @DrawableRes
         fun getIcon(): Int = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
 
@@ -99,22 +103,20 @@ sealed class HistoryTransaction(
             resources.getString(R.string.details_transfer_format, destination.cutMiddle(), tokenData.symbol)
         }
 
-        fun getAddress(): String = if (isSend) "To ${cutAddress(destination)}" else "From ${cutAddress(senderAddress)}"
+        fun getAddress(): String = if (isSend) "To ${destination.cutStart()}" else "From ${senderAddress.cutStart()}"
 
-        fun getValue(): String? = totalInUsd?.let {
-            "${getSymbol(isSend)} ${it.scaleShortOrFirstNotZero().asUsd()}"
-        }
+        fun getValue(): String? = totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isSend))
 
-        fun getTotal(): String = getFormattedTotal()
+        fun getTotal(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
 
         @StringRes
         fun getTypeName(): Int = if (isSend) R.string.transaction_history_send else R.string.transaction_history_receive
 
         @ColorRes
         fun getTextColor() = if (isSend) {
-            R.color.textIconPrimary
+            R.color.text_night
         } else {
-            R.color.systemSuccessMain
+            R.color.text_mint
         }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
@@ -132,6 +134,7 @@ sealed class HistoryTransaction(
         override val date: ZonedDateTime,
         override val blockNumber: Int,
         override val status: TransactionStatus,
+        val tokenData: TokenData?,
         val destination: String,
         val senderAddress: String,
         val type: RenBtcType,
@@ -146,6 +149,8 @@ sealed class HistoryTransaction(
 
         @StringRes
         fun getTitle(): Int = if (isBurn) R.string.main_burn_renbtc else R.string.main_mint_renbtc
+
+        fun getTokenUrl(): String? = tokenData?.iconUrl
 
         @DrawableRes
         fun getIcon(): Int = if (isBurn) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
@@ -170,9 +175,12 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val blockNumber: Int,
         override val status: TransactionStatus,
+        val tokenData: TokenData?,
         val fee: BigInteger,
         val tokenSymbol: String,
     ) : HistoryTransaction(date) {
+
+        fun getTokenUrl(): String? = tokenData?.iconUrl
 
         fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
             "$tokenSymbol $operationText"
@@ -187,10 +195,13 @@ sealed class HistoryTransaction(
         override val signature: String,
         override val blockNumber: Int,
         override val status: TransactionStatus,
+        val tokenData: TokenData?,
         val account: String,
         val mint: String,
         val tokenSymbol: String,
     ) : HistoryTransaction(date) {
+
+        fun getTokenUrl(): String? = tokenData?.iconUrl
 
         fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
             "$tokenSymbol $operationText"

@@ -469,8 +469,8 @@
     <string name="transaction_history_swap">Swap</string>
     <string name="transaction_history_send">Send</string>
     <string name="transaction_history_receive">Receive</string>
-    <string name="transaction_history_create">Create</string>
-    <string name="transaction_history_closed">Closed</string>
+    <string name="transaction_history_create">Create account</string>
+    <string name="transaction_history_closed">Close account</string>
 
     <string name="transaction_history_moonpay_failed_title">You\'ve not sent</string>
     <string name="transaction_history_moonpay_failed_subtitle">SOL to Moonpay</string>
