@@ -31,10 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: "Initialize project keys"
-        uses: ./.github/actions/setup-project
-        env:
-          inputs: ${{ env.setup_project_inputs }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
   android-build-artifacts:
@@ -63,12 +59,12 @@ jobs:
           cd ..
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
-      - name: "Build & upload APK to Firebase (Feature)"
+      - name: "Upload APK to Firebase (Feature)"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew appDistributionUploadFeature
-      - name: "Upload feature APK to Slack"
+      - name: "Upload APK to Slack (Feature)"
         uses: ./.github/actions/setup-slack
         with:
           bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
