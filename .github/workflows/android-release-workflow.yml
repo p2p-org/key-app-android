@@ -43,6 +43,10 @@ jobs:
           keystore-password: ${{ secrets.KEYSTORE_PASSWORD }}
           key-alias: ${{ secrets.KEY_ALIAS }}
           key-password: ${{ secrets.KEY_PASSWORD }}
+      - name: "Initializing firebase configs"
+        uses: ./.github/actions/setup-google-services
+        with:
+          google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         env:
