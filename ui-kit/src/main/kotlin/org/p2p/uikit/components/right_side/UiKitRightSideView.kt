@@ -24,13 +24,25 @@ class UiKitRightSideView @JvmOverloads constructor(
         }
     }
 
-    // example todo
-    /*fun setOnSwitchAction(onItemSwitchAction: (view: UiKitRightSideView, item: RightSideUiModel.Switcher) -> Unit) {
-        (viewPool.findPoolOfViews(RightSideUiModel.Switcher::class).first as SwitcherBinding)
+    val item: RightSideUiModel
+        get() = currentModel ?: throw IllegalStateException("Not bind yet")
+
+    init {
+        if (isInEditMode) {
+            inflateViewBinding<WidgetRightSideDoubleTextBinding>()
+        }
+    }
+
+    fun setOnSwitchAction(onItemSwitchAction: (view: UiKitRightSideView, item: RightSideUiModel, isChecked: Boolean) -> Unit) {
+        onItemSwitchAction(this, item, true)
+
+        // todo
+        // example
+        /*(viewPool.findPoolOfViews(RightSideUiModel.Switcher::class).first as SwitcherBinding)
             .switch.setOnCheckedChangeListener{
                 onItemSwitchAction(this, currentModel as RightSideUiModel.Switcher)
-            }
-    }*/
+            }*/
+    }
 
     fun bind(model: RightSideUiModel) {
         val pair = viewPool.updatePoolOfViews(this.currentModel, model)

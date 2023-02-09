@@ -29,12 +29,24 @@ class FinanceBlockFragment : Fragment(R.layout.fragment_finance_block) {
 
     private val adapter = Adapter(
         DiffCallback(),
-        financeBlockDelegate {
-            it.setOnClickAction { view, item ->
-                item.payload
-                view.binding.leftSideView
+        financeBlockDelegate(
+            inflateListener = { finBlock ->
+                finBlock.setOnClickAction { view, item ->
+                    val rootPayload = finBlock.item.payload
+                    item.payload
+                    view.binding.leftSideView
+                }
+
+                finBlock.binding.rightSideView.setOnSwitchAction { view, item, isChecked ->
+                    // root payload
+                    val rootPayload = finBlock.item.payload
+                    // inner payload
+                    // item.payload
+                }
+            }, onBindListener = { view, item ->
+
             }
-        },
+        ),
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,9 +89,11 @@ class FinanceBlockFragment : Fragment(R.layout.fragment_finance_block) {
         val list = mutableListOf<Any>()
 
         Random.nextInt(0, 4)
-        list.add(FinanceBlockUiModel(
-            LeftSideUiModel.IconWithText( firstLineText = firstText())
-        ))
+        list.add(
+            FinanceBlockUiModel(
+                LeftSideUiModel.IconWithText(firstLineText = firstText())
+            )
+        )
         for (i in 1..100) {
             list.add(
                 FinanceBlockUiModel(
@@ -101,15 +115,17 @@ private class Adapter(
 ) : AsyncListDifferDelegationAdapter<Any>(diffCallback, *delegates)
 
 fun financeBlockDelegate(
-    inflateListener: (view: UiKitFinanceBlockView) -> Unit,
+    inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
+    onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockUiModel) -> Unit)? = null,
 ) = adapterDelegateViewBinding<FinanceBlockUiModel, Any, ItemFinanceBlockBinding>(
     { layoutInflater, parent -> ItemFinanceBlockBinding.inflate(layoutInflater, parent, false) }
 ) {
 
-    inflateListener(binding.root)
+    inflateListener?.invoke(binding.root)
 
     bind {
         binding.root.bind(item)
+        onBindListener?.invoke(binding.root, item)
     }
 }
 

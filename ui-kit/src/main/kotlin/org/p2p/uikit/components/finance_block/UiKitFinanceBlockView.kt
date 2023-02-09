@@ -18,7 +18,9 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
 
     val binding = inflateViewBinding<WidgetFinanceBlockBinding>()
 
-    private var item: FinanceBlockUiModel? = null
+    private var _item: FinanceBlockUiModel? = null
+    val item: FinanceBlockUiModel
+        get() = _item ?: throw IllegalStateException("Not bind yet")
 
     init {
         val paddingHorizontal = 16.toPx()
@@ -29,14 +31,14 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
 
     fun setOnClickAction(onItemClickAction: (view: UiKitFinanceBlockView, item: FinanceBlockUiModel) -> Unit) {
         setOnClickListener {
-            onItemClickAction.invoke(this, item!!)
+            onItemClickAction.invoke(this, item)
         }
     }
 
     fun bind(model: FinanceBlockUiModel) {
-        item = model
-        isEnabled = model.availability.isEnabled
-        isClickable = model.availability.isClickable
+        _item = model
+        isEnabled = model.accessibility.isEnabled
+        isClickable = model.accessibility.isClickable
         binding.leftSideView.isInvisible = model.leftSideUiModel == null
         model.leftSideUiModel?.let { binding.leftSideView.bind(it) }
         binding.leftSideView.isVisible = model.leftSideUiModel != null

@@ -23,6 +23,12 @@ class UiKitIconWrapper @JvmOverloads constructor(
         }
     }
 
+    init {
+        if (isInEditMode) {
+            inflateViewBinding<WidgetIconWrapperTwoBinding>()
+        }
+    }
+
     fun bind(uiModel: IconWrapperUiModel) {
         val pair = viewPool.updatePoolOfViews(this.currentModel, uiModel)
         when (uiModel) {

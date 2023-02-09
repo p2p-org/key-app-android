@@ -16,8 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:background="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewFirst"
@@ -37,7 +36,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_goneMarginStart="0dp"
-        tools:text="@tools:sample/lorem/random" />
+        tools:text="Send" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewSecond"
@@ -57,7 +56,7 @@
         app:layout_constraintStart_toEndOf="@+id/imageViewIcon"
         app:layout_constraintTop_toBottomOf="@+id/textViewFirst"
         app:layout_goneMarginStart="0dp"
-        tools:text="@tools:sample/lorem[5]" />
+        tools:text="23.8112 SOL" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewThird"
