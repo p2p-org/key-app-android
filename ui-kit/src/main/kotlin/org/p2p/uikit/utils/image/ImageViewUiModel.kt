@@ -4,7 +4,6 @@ import androidx.annotation.ColorRes
 import androidx.annotation.Px
 import androidx.core.view.isVisible
 import android.widget.ImageView
-import android.widget.TextView
 import com.google.android.material.shape.MaterialShapeDrawable
 import org.p2p.core.common.IconContainer
 import org.p2p.core.common.setIcon
@@ -13,7 +12,6 @@ import org.p2p.uikit.utils.background.BackgroundUiModel
 import org.p2p.uikit.utils.background.shape.shapeCircle
 import org.p2p.uikit.utils.background.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
-import org.p2p.uikit.utils.text.TextViewUiModel
 import org.p2p.uikit.utils.text.bind
 
 data class ImageViewUiModel(
