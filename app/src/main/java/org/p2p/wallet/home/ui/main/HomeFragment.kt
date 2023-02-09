@@ -1,8 +1,8 @@
 package org.p2p.wallet.home.ui.main
 
-import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
@@ -17,6 +17,7 @@ import org.p2p.wallet.common.permissions.new.requestPermissionNotification
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentHomeBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
+import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.deeplinks.CenterActionButtonClickSetter
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.analytics.BrowseAnalytics
@@ -28,7 +29,6 @@ import org.p2p.wallet.home.ui.main.bottomsheet.HomeActionsBottomSheet
 import org.p2p.wallet.home.ui.main.empty.EmptyViewAdapter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectTokenBottomSheet
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.moonpay.extensions.SellStubs
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
@@ -36,7 +36,6 @@ import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.sell.ui.lock.SellLockedFragment
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
@@ -153,10 +152,7 @@ class HomeFragment :
                 viewDebugShadow.isVisible = true
                 imageViewDebug.isVisible = true
                 imageViewDebug.setOnClickListener {
-                    replaceFragment(
-                        SellLockedFragment.create(
-                        SellStubs.TRANSACTION_DETAILS
-                    ))
+                    replaceFragment(DebugSettingsFragment.create())
                 }
             }
         }
