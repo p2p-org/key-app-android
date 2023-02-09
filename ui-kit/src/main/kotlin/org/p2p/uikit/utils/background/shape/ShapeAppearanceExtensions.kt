@@ -10,7 +10,7 @@ import com.google.android.material.shape.ShapeAppearanceModel.PILL
 import org.p2p.uikit.utils.resFromTheme
 import org.p2p.uikit.utils.toPx
 
-fun View.rippleBackground(
+fun View.rippleForeground(
     shape: ShapeAppearanceModel? = shapeRectangle(),
     @AttrRes color: Int = android.R.attr.selectableItemBackground,
 ) {

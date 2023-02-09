@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.graphics.Canvas
 import android.view.View
 import com.google.android.material.shape.ShapeAppearanceModel
-import org.p2p.uikit.utils.background.shape.rippleBackground
+import org.p2p.uikit.utils.background.shape.rippleForeground
 import org.p2p.uikit.utils.background.shape.shapeBottomRounded
 import org.p2p.uikit.utils.background.shape.shapeOutline
 import org.p2p.uikit.utils.background.shape.shapeRectangle
@@ -63,7 +63,7 @@ class RoundedDecoration(@Px round: Float) : RecyclerView.ItemDecoration() {
         )
 
         if (viewHolder.itemView.foreground == null) {
-            viewHolder.itemView.rippleBackground(shape)
+            viewHolder.itemView.rippleForeground(shape)
         } else {
             viewHolder.itemView.shapeOutline(shape)
         }
