@@ -5,7 +5,7 @@ import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
 import org.p2p.uikit.databinding.UiKitLeftSideIconTripleTextBinding
-import org.p2p.uikit.model.bindOrGone
+import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
 
 class UiKitLeftSideView @JvmOverloads constructor(

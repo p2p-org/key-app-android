@@ -1,6 +1,6 @@
 package org.p2p.uikit.atoms.icon_wrapper
 
-import org.p2p.uikit.model.ImageViewUiModel
+import org.p2p.uikit.utils.image.ImageViewUiModel
 
 sealed interface IconWrapperUiModel {
 

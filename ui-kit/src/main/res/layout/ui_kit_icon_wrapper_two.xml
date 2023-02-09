@@ -9,7 +9,7 @@
     tools:layout_width="48dp"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <org.p2p.uikit.atoms.UiKitRoundedImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageViewFirstIcon"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -23,7 +23,7 @@
         app:layout_constraintWidth_percent="0.625"
         tools:src="@tools:sample/avatars" />
 
-    <org.p2p.uikit.atoms.UiKitRoundedImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageViewSecondIcon"
         android:layout_width="0dp"
         android:layout_height="0dp"

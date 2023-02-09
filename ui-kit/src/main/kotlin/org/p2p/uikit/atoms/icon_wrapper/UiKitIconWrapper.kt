@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import org.p2p.uikit.databinding.UiKitIconWrapperSingleBinding
 import org.p2p.uikit.databinding.UiKitIconWrapperTwoBinding
+import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.inflateViewBinding
 import kotlin.reflect.KClass
 
@@ -32,6 +33,7 @@ class UiKitIconWrapper @JvmOverloads constructor(
             is IconWrapperUiModel.SingleIcon -> (pair.first as UiKitIconWrapperSingleBinding).bind(uiModel)
             is IconWrapperUiModel.TwoIcon -> (pair.first as UiKitIconWrapperTwoBinding).bind(uiModel)
         }
+        this.currentModel = uiModel
     }
 
     private fun UiKitIconWrapperSingleBinding.bind(uiModel: IconWrapperUiModel.SingleIcon) {

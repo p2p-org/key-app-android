@@ -23,6 +23,6 @@ fun ImageView.setIcon(icon: IconContainer): Unit = when (icon) {
     is IconContainer.DrawableIcon -> this.setImageDrawable(icon.drawable)
     is IconContainer.Res -> this.setImageResource(icon.drawableRes)
     is IconContainer.Uri -> {
-        // todo static glide
+        // todo static glide or arg
     }
 }

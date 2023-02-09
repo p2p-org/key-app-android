@@ -1,16 +1,17 @@
 package org.p2p.uikit.utils.recycler
 
-import android.graphics.Canvas
-import android.view.View
+import androidx.annotation.Px
 import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
+import android.graphics.Canvas
+import android.view.View
 import com.google.android.material.shape.ShapeAppearanceModel
-import org.p2p.uikit.utils.rippleBackground
-import org.p2p.uikit.utils.shapeBottomRounded
-import org.p2p.uikit.utils.shapeOutline
-import org.p2p.uikit.utils.shapeRectangle
-import org.p2p.uikit.utils.shapeRoundedAll
-import org.p2p.uikit.utils.shapeTopRounded
+import org.p2p.uikit.utils.background.shape.rippleBackground
+import org.p2p.uikit.utils.background.shape.shapeBottomRounded
+import org.p2p.uikit.utils.background.shape.shapeOutline
+import org.p2p.uikit.utils.background.shape.shapeRectangle
+import org.p2p.uikit.utils.background.shape.shapeRoundedAll
+import org.p2p.uikit.utils.background.shape.shapeTopRounded
 
 private const val DEFAULT_ROUNDING_GROUP = "RoundedItem"
 
@@ -19,11 +20,11 @@ interface RoundedItem {
     fun roundingGroup(): String = DEFAULT_ROUNDING_GROUP
 }
 
-class RoundedDecoration(roundDp: Float) : RecyclerView.ItemDecoration() {
+class RoundedDecoration(@Px round: Float) : RecyclerView.ItemDecoration() {
 
-    private val shapeTopRounded: ShapeAppearanceModel = shapeTopRounded(roundDp)
-    private val shapeRounded: ShapeAppearanceModel = shapeRoundedAll(roundDp)
-    private val shapeBottomRounded: ShapeAppearanceModel = shapeBottomRounded(roundDp)
+    private val shapeTopRounded: ShapeAppearanceModel = shapeTopRounded(round)
+    private val shapeRounded: ShapeAppearanceModel = shapeRoundedAll(round)
+    private val shapeBottomRounded: ShapeAppearanceModel = shapeBottomRounded(round)
     private val shapeRectangle: ShapeAppearanceModel = shapeRectangle()
 
     private fun RoundedItem?.noNeedToDecorate(): Boolean {
