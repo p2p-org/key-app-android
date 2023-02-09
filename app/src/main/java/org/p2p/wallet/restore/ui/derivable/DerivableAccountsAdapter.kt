@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import org.p2p.wallet.R
-import org.p2p.wallet.databinding.ItemTokenSimpleBinding
-import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleShort
+import org.p2p.wallet.R
+import org.p2p.wallet.databinding.ItemTokenSimpleBinding
+import org.p2p.wallet.restore.model.DerivableAccount
 
 private const val FULL_ALPHA = 1.0f
 private const val HALF_ALPHA = 0.5f
@@ -56,9 +56,9 @@ class DerivableAccountsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
             startAmountView.title = SOL_SYMBOL
             tokenImageView.setImageResource(R.drawable.ic_solana_card)
             startAmountView.subtitle = cutAddress(account.account.publicKey.toBase58())
-            endAmountView.usdAmount = "$total $"
+            endAmountView.topValue = "$total $"
 
-            endAmountView.tokenAmount = if (tokenTotal.isZero()) {
+            endAmountView.bottomValue = if (tokenTotal.isZero()) {
                 null
             } else {
                 "${tokenTotal.toPlainString()} $SOL_SYMBOL"

@@ -1,8 +1,15 @@
 package org.p2p.wallet.user.repository
 
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.model.types.Account
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenData
+import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT
+import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
+import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
+import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.ui.main.POPULAR_TOKENS
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -11,15 +18,8 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.api.SolanaApi
-import org.p2p.core.token.TokenData
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenId
-import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT
-import org.p2p.core.utils.Constants.REN_BTC_DEVNET_MINT_ALTERNATE
-import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
-import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
-import kotlinx.coroutines.flow.firstOrNull
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 
 class UserRemoteRepository(
     private val solanaApi: SolanaApi,
@@ -102,7 +102,7 @@ class UserRemoteRepository(
             }
 
             val token = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
-            val price = userLocalRepository.getPriceByToken(token.coingeckoId)
+            val price = userLocalRepository.getPriceByTokenId(token.coingeckoId)
             TokenConverter.fromNetwork(it, token, price)
         }
 
@@ -111,7 +111,7 @@ class UserRemoteRepository(
          * */
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(WRAPPED_SOL_MINT) ?: return tokens
-        val solPrice = userLocalRepository.getPriceByToken(tokenData.coingeckoId)
+        val solPrice = userLocalRepository.getPriceByTokenId(tokenData.coingeckoId)
         val solToken = Token.createSOL(
             publicKey = publicKey,
             tokenData = tokenData,
@@ -133,7 +133,7 @@ class UserRemoteRepository(
 
         if (result == null) return null
 
-        val price = userLocalRepository.getPriceByToken(result.coingeckoId)
+        val price = userLocalRepository.getPriceByTokenId(result.coingeckoId)
         return TokenConverter.fromNetwork(account, result, price)
     }
 }

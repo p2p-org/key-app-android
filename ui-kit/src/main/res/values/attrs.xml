@@ -14,8 +14,8 @@
 
     <declare-styleable name="UiKitEndAmountView">
         <attr name="icon" />
-        <attr name="usdAmount" format="string" />
-        <attr name="tokenAmount" format="string" />
+        <attr name="topValue" format="string" />
+        <attr name="bottomValue" format="string" />
     </declare-styleable>
 
     <declare-styleable name="UiKitBadgeView">

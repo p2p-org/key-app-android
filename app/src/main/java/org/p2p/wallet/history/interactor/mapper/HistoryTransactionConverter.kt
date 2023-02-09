@@ -1,5 +1,15 @@
 package org.p2p.wallet.history.interactor.mapper
 
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
+import java.math.BigDecimal
+import org.p2p.core.token.TokenData
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.scaleLong
+import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
 import org.p2p.solanaj.kits.transaction.CreateAccountDetails
@@ -11,16 +21,6 @@ import org.p2p.wallet.history.model.RenBtcType
 import org.p2p.wallet.history.model.TransferType
 import org.p2p.wallet.home.model.TokenPrice
 import org.p2p.wallet.transaction.model.TransactionStatus
-import org.p2p.core.token.TokenData
-import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.scaleLong
-import org.p2p.core.utils.scaleMedium
-import org.p2p.core.utils.scaleShort
-import org.p2p.core.utils.toBigDecimalOrZero
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
-import java.math.BigDecimal
 
 class HistoryTransactionConverter {
 
@@ -75,6 +75,7 @@ class HistoryTransactionConverter {
     /* Burn or mint transaction */
     fun mapBurnOrMintTransactionToHistory(
         response: BurnOrMintDetails,
+        tokenData: TokenData?,
         userPublicKey: String,
         rate: TokenPrice?
     ): HistoryTransaction {
@@ -98,6 +99,7 @@ class HistoryTransactionConverter {
             destination = destination.orEmpty(),
             senderAddress = senderAddress.orEmpty(),
             fee = response.fee.toBigInteger(),
+            tokenData = tokenData,
             totalInUsd = amount,
             total = response.uiAmount.toBigDecimalOrZero(),
             date = date,
@@ -156,7 +158,11 @@ class HistoryTransactionConverter {
     }
 
     /* Create account transaction */
-    fun mapCreateAccountTransactionToHistory(response: CreateAccountDetails, symbol: String): HistoryTransaction =
+    fun mapCreateAccountTransactionToHistory(
+        response: CreateAccountDetails,
+        tokenData: TokenData?,
+        symbol: String
+    ): HistoryTransaction =
         HistoryTransaction.CreateAccount(
             signature = response.signature,
             blockNumber = response.slot,
@@ -164,18 +170,24 @@ class HistoryTransactionConverter {
                 Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
             ),
+            tokenData = tokenData,
             fee = response.fee.toBigInteger(),
             status = TransactionStatus.from(response),
             tokenSymbol = symbol
         )
 
     /* Close account transaction */
-    fun mapCloseAccountTransactionToHistory(response: CloseAccountDetails, symbol: String): HistoryTransaction =
+    fun mapCloseAccountTransactionToHistory(
+        response: CloseAccountDetails,
+        tokenData: TokenData?,
+        symbol: String,
+    ): HistoryTransaction =
         HistoryTransaction.CloseAccount(
             signature = response.signature,
             blockNumber = response.slot,
             account = response.account.orEmpty(),
             mint = response.mint.orEmpty(),
+            tokenData = tokenData,
             date = ZonedDateTime.ofInstant(
                 Instant.ofEpochMilli(response.blockTimeMillis),
                 ZoneId.systemDefault()
