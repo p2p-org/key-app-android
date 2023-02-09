@@ -13,8 +13,6 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<UiKitFinanceBlockBinding>()
 
-
-    private fun bind(){
-
+    private fun bind() {
     }
 }

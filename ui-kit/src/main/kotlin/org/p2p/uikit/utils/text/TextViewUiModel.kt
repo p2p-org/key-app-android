@@ -11,7 +11,6 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.insets.InitialViewPadding
 import org.p2p.uikit.utils.background.BackgroundUiModel
 import org.p2p.uikit.utils.getColorStateList
-import org.p2p.uikit.utils.toPx
 
 data class TextViewUiModel(
     val text: TextContainer,
