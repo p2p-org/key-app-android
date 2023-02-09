@@ -16,7 +16,7 @@ runs:
       id: find-jira-ticket
       run: |
         jira_ticket=$(echo "${{ github.event.head_commit.message }}" | grep -Eo "PWN-[0-9]+")
-        echo "JIRA Ticket=${jira_ticket}"
+        echo "JIRA Ticket: $jira_ticket"
       env:
         jira-ticket: ${{ steps.find-jira-ticket.outputs.jira_ticket }}
     - name: Update JIRA issue status
