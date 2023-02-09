@@ -6,7 +6,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import android.content.Context
 import android.util.AttributeSet
-import org.p2p.uikit.databinding.UiKitFinanceBlockBinding
+import org.p2p.uikit.databinding.WidgetFinanceBlockBinding
 import org.p2p.uikit.utils.background.shape.rippleForeground
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.toPx
@@ -16,7 +16,7 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
-    val binding = inflateViewBinding<UiKitFinanceBlockBinding>()
+    val binding = inflateViewBinding<WidgetFinanceBlockBinding>()
 
     private var _item: FinanceBlockUiModel? = null
     val item: FinanceBlockUiModel

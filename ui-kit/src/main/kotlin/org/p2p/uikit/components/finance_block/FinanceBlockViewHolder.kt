@@ -2,10 +2,10 @@ package org.p2p.uikit.components.finance_block
 
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import org.p2p.uikit.databinding.UiKitFinanceBlockBinding
+import org.p2p.uikit.databinding.WidgetFinanceBlockBinding
 
 class FinanceBlockViewHolder(
-    private val binding: UiKitFinanceBlockBinding,
+    private val binding: WidgetFinanceBlockBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     var item: FinanceBlockUiModel? = null

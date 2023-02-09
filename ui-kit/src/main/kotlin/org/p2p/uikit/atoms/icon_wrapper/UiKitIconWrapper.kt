@@ -6,8 +6,8 @@ import androidx.viewbinding.ViewBinding
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import org.p2p.uikit.databinding.UiKitIconWrapperSingleBinding
-import org.p2p.uikit.databinding.UiKitIconWrapperTwoBinding
+import org.p2p.uikit.databinding.WidgetIconWrapperSingleBinding
+import org.p2p.uikit.databinding.WidgetIconWrapperTwoBinding
 import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.inflateViewBinding
 import kotlin.reflect.KClass
@@ -30,17 +30,17 @@ class UiKitIconWrapper @JvmOverloads constructor(
             else -> viewPool[currentModel::class] ?: return
         }
         when (uiModel) {
-            is IconWrapperUiModel.SingleIcon -> (pair.first as UiKitIconWrapperSingleBinding).bind(uiModel)
-            is IconWrapperUiModel.TwoIcon -> (pair.first as UiKitIconWrapperTwoBinding).bind(uiModel)
+            is IconWrapperUiModel.SingleIcon -> (pair.first as WidgetIconWrapperSingleBinding).bind(uiModel)
+            is IconWrapperUiModel.TwoIcon -> (pair.first as WidgetIconWrapperTwoBinding).bind(uiModel)
         }
         this.currentModel = uiModel
     }
 
-    private fun UiKitIconWrapperSingleBinding.bind(uiModel: IconWrapperUiModel.SingleIcon) {
+    private fun WidgetIconWrapperSingleBinding.bind(uiModel: IconWrapperUiModel.SingleIcon) {
         this.imageViewIcon.bind(uiModel.icon)
     }
 
-    private fun UiKitIconWrapperTwoBinding.bind(uiModel: IconWrapperUiModel.TwoIcon) {
+    private fun WidgetIconWrapperTwoBinding.bind(uiModel: IconWrapperUiModel.TwoIcon) {
         this.imageViewFirstIcon.bind(uiModel.first)
         this.imageViewSecondIcon.bind(uiModel.second)
     }
@@ -58,8 +58,8 @@ class UiKitIconWrapper @JvmOverloads constructor(
 
     private fun inflateNewViewType(newViewType: IconWrapperUiModel): BindingWithViews {
         val binding = when (newViewType) {
-            is IconWrapperUiModel.SingleIcon -> inflateViewBinding<UiKitIconWrapperSingleBinding>()
-            is IconWrapperUiModel.TwoIcon -> inflateViewBinding<UiKitIconWrapperTwoBinding>()
+            is IconWrapperUiModel.SingleIcon -> inflateViewBinding<WidgetIconWrapperSingleBinding>()
+            is IconWrapperUiModel.TwoIcon -> inflateViewBinding<WidgetIconWrapperTwoBinding>()
         }
         val newView = mutableListOf<View>()
         this.forEach { newView.add(it) }
