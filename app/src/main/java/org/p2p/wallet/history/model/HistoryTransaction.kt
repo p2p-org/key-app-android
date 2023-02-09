@@ -5,6 +5,11 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import android.content.res.Resources
 import android.os.Parcelable
+import org.threeten.bp.ZonedDateTime
+import java.math.BigDecimal
+import java.math.BigInteger
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.TokenData
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.USD_SYMBOL
@@ -16,13 +21,9 @@ import org.p2p.core.utils.scaleMedium
 import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.wallet.R
 import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.utils.CUT_4_SYMBOLS
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
-import org.threeten.bp.ZonedDateTime
-import java.math.BigDecimal
-import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
 private const val ADDRESS_SYMBOL_COUNT = 10
 
@@ -37,6 +38,14 @@ sealed class HistoryTransaction(
     protected fun getSymbol(isSend: Boolean): String = if (isSend) "-" else "+"
 
     fun getBlockNumber(): String? = blockNumber?.let { "#$it" }
+
+    @IgnoredOnParcel
+    val isFailed: Boolean
+        get() = status == TransactionStatus.ERROR
+
+    @IgnoredOnParcel
+    val isPending: Boolean
+        get() = status == TransactionStatus.PENDING
 
     @Parcelize
     data class Swap(
@@ -65,6 +74,23 @@ sealed class HistoryTransaction(
 
         fun getFormattedAmount() =
             "${amountA.formatToken()} $sourceSymbol to ${amountB.formatToken()} $destinationSymbol"
+
+        @StringRes
+        fun getTypeName(): Int = when {
+            isFailed -> R.string.transaction_history_swap_failed
+            isPending -> R.string.transaction_history_swap_pending
+            else -> R.string.transaction_history_swap
+        }
+
+        @ColorRes
+        fun getTextColor() = when {
+            isFailed -> {
+                R.color.text_rose
+            }
+            else -> {
+                R.color.text_mint
+            }
+        }
 
         fun getFormattedFee() = "$fee lamports"
 
@@ -110,13 +136,32 @@ sealed class HistoryTransaction(
         fun getTotal(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
 
         @StringRes
-        fun getTypeName(): Int = if (isSend) R.string.transaction_history_send else R.string.transaction_history_receive
+        fun getTypeName(): Int = when {
+            isFailed -> {
+                if (isSend) R.string.transaction_history_send_failed
+                else R.string.transaction_history_receive_failed
+            }
+            isPending -> {
+                if (isSend) R.string.transaction_history_send_pending
+                else R.string.transaction_history_receive_pending
+            }
+            else -> {
+                if (isSend) R.string.transaction_history_send
+                else R.string.transaction_history_receive
+            }
+        }
 
         @ColorRes
-        fun getTextColor() = if (isSend) {
-            R.color.text_night
-        } else {
-            R.color.text_mint
+        fun getTextColor() = when {
+            isFailed -> {
+                R.color.text_rose
+            }
+            isSend -> {
+                R.color.text_night
+            }
+            else -> {
+                R.color.text_mint
+            }
         }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
@@ -218,14 +263,13 @@ sealed class HistoryTransaction(
         override val status: TransactionStatus
     ) : HistoryTransaction(date)
 
-    @Suppress("MagicNumber")
     fun cutAddress(address: String): String {
         if (address.length < ADDRESS_SYMBOL_COUNT) {
             return address
         }
 
-        val firstSix = address.take(4)
-        val lastFour = address.takeLast(4)
+        val firstSix = address.take(CUT_4_SYMBOLS)
+        val lastFour = address.takeLast(CUT_4_SYMBOLS)
         return "$firstSix...$lastFour"
     }
 }

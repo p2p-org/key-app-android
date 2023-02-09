@@ -2,18 +2,17 @@ package org.p2p.wallet.history.ui.token.adapter.holders
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
+import timber.log.Timber
 import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemHistoryTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.setStatus
+import org.p2p.wallet.utils.getStatusIcon
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
-import timber.log.Timber
 
 class TransactionViewHolder(
     parent: ViewGroup,
@@ -117,9 +116,6 @@ class TransactionViewHolder(
     }
 
     private fun setStatus(transaction: HistoryTransaction) = with(binding) {
-        transactionTokenImageView.setStatus(transaction.status)
-        if (transaction.status == TransactionStatus.ERROR) {
-            transactionData.endAmountView.setTopValueTextColor(getColor(R.color.text_rose))
-        }
+        transactionData.startAmountView.setSubtitleDrawable(left = transaction.status.getStatusIcon() ?: 0)
     }
 }
