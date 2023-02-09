@@ -4,12 +4,15 @@ import androidx.annotation.ColorRes
 import androidx.annotation.Px
 import androidx.core.view.isVisible
 import android.widget.ImageView
+import com.google.android.material.shape.ShapeAppearanceModel
 import org.p2p.core.common.IconContainer
 import org.p2p.core.common.setIcon
 import org.p2p.uikit.R
-import org.p2p.uikit.utils.background.BackgroundUiModel
-import org.p2p.uikit.utils.background.applyTo
+import org.p2p.uikit.utils.background.DrawableUiModel
+import org.p2p.uikit.utils.background.applyBackground
+import org.p2p.uikit.utils.background.applyForeground
 import org.p2p.uikit.utils.background.shape.shapeCircle
+import org.p2p.uikit.utils.background.shape.shapeOutline
 import org.p2p.uikit.utils.background.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
 
@@ -17,25 +20,28 @@ data class ImageViewUiModel(
     val icon: IconContainer,
     @ColorRes val iconTint: Int? = null,
     val scaleType: ImageView.ScaleType = ImageView.ScaleType.CENTER,
-    // use MaterialShapeDrawable + ShapeAppearanceModel for clipping
-    val background: BackgroundUiModel? = null,
+    val background: DrawableUiModel? = null,
+    val foreground: DrawableUiModel? = null,
+    val clippingShape: ShapeAppearanceModel? = null,
 )
 
 fun commonCircleImage(
     icon: IconContainer,
     @ColorRes backgroundTint: Int = R.color.icons_rain,
     @Px strokeWidth: Float = 0f,
-    @ColorRes strokeColor: Int? = null,
+    @ColorRes strokeColor: Int = android.R.color.transparent,
 ): ImageViewUiModel = ImageViewUiModel(
     icon = icon,
-    background = BackgroundUiModel(
-        background = shapeDrawable(
-            shape = shapeCircle(),
-        ),
-        backgroundTint = backgroundTint,
+    background = DrawableUiModel(
+        drawable = shapeDrawable(shape = shapeCircle()),
+        tint = backgroundTint,
+    ),
+    foreground = DrawableUiModel(
+        drawable = shapeDrawable(shape = shapeCircle()),
         strokeColor = strokeColor,
         strokeWidth = strokeWidth,
-    )
+    ),
+    clippingShape = shapeCircle()
 )
 
 fun ImageView.bindOrGone(model: ImageViewUiModel?) {
@@ -47,5 +53,7 @@ fun ImageView.bind(model: ImageViewUiModel) {
     setIcon(model.icon)
     imageTintList = model.iconTint?.let { getColorStateList(it) }
     scaleType = model.scaleType
-    model.background.applyTo(this)
+    model.background.applyBackground(this)
+    model.foreground.applyForeground(this)
+    shapeOutline(model.clippingShape)
 }

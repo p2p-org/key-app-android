@@ -10,8 +10,8 @@ import android.widget.TextView
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.insets.InitialViewPadding
 import org.p2p.core.utils.orZero
-import org.p2p.uikit.utils.background.BackgroundUiModel
-import org.p2p.uikit.utils.background.applyTo
+import org.p2p.uikit.utils.background.DrawableUiModel
+import org.p2p.uikit.utils.background.applyBackground
 import org.p2p.uikit.utils.getColorStateList
 
 data class TextViewUiModel(
@@ -24,7 +24,7 @@ data class TextViewUiModel(
 )
 
 data class TextViewBackgroundUiModel(
-    val drawable: BackgroundUiModel,
+    val background: DrawableUiModel,
     val padding: InitialViewPadding = InitialViewPadding(0, 0, 0, 0)
 )
 
@@ -38,7 +38,7 @@ fun TextView.bind(model: TextViewUiModel) {
     model.textColor?.let { getColorStateList(it) }
     model.textSize?.let { textSize = it }
     gravity = model.gravity
-    model.badgeBackground?.drawable?.applyTo(this)
+    model.badgeBackground?.background?.applyBackground(this)
     updatePadding(
         left = model.badgeBackground?.padding?.left.orZero(),
         top = model.badgeBackground?.padding?.top.orZero(),

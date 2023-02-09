@@ -60,7 +60,7 @@ class FinanceBlockFragment : Fragment(R.layout.fragment_finance_block) {
         )
 
         val firstIcon = commonCircleImage(
-            icon = IconContainer.Res(R.drawable.ic_check),
+            icon = IconContainer.Res(R.drawable.shape_bottom_navigation_background),
             strokeWidth = 2f.toPx(),
             strokeColor = R.color.icons_grass,
         ).copy(

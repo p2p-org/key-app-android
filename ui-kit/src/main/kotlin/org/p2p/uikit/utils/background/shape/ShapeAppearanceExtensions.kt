@@ -19,8 +19,13 @@ fun View.rippleForeground(
 }
 
 fun View.shapeOutline(
-    shape: ShapeAppearanceModel
+    shape: ShapeAppearanceModel?
 ) {
+    if (shape == null) {
+        this.outlineProvider = null
+        invalidateOutline()
+        return
+    }
     val outlineProvider = this.outlineProvider
     if (outlineProvider is RoundOutlineProvider) {
         outlineProvider.update(shape)
