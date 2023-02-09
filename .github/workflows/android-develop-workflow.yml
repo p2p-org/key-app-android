@@ -106,6 +106,7 @@ jobs:
 
   update-jira-status:
     name: "Jira manipulations"
+    if: github.ref == 'refs/heads/develop'
     needs:
       - android-build-artifacts
     runs-on: ubuntu-latest
@@ -115,5 +116,4 @@ jobs:
         uses: ./.github/actions/setup-jira-rft
         with:
           jira-base-url: ${{ vars.JIRA_BASE_URL }}
-          jira-user-email: ${{ vars.JIRA_USER_EMAIL }}
           jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
