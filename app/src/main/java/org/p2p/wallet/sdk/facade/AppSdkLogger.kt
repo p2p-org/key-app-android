@@ -3,7 +3,7 @@ package org.p2p.wallet.sdk.facade
 import org.p2p.wallet.BuildConfig
 import timber.log.Timber
 
-private const val TAG = "SolendSdkLogger"
+private const val TAG = "AppSdkLogger"
 
 class AppSdkLogger {
 

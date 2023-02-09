@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.intellij.lang.annotations.Language
 import org.junit.Test
-import org.p2p.wallet.sdk.facade.model.solend.KeyAppSdkMethodResultException
+import org.p2p.wallet.sdk.facade.model.KeyAppSdkMethodResultException
 import org.p2p.wallet.sdk.facade.model.solend.SolendMarketInformationResponse
 
 class SolendMethodResultMapperTest {

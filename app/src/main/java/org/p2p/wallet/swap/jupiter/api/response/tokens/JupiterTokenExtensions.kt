@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class JupiterTokenExtensions(
     @SerializedName("coingeckoId")
-    val coingeckoId: String
+    val coingeckoId: String?
 )
