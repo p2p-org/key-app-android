@@ -1,11 +1,11 @@
 package org.p2p.wallet.deeplinks
 
+import androidx.core.content.getSystemService
+import androidx.fragment.app.FragmentManager
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.core.content.getSystemService
-import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
@@ -56,9 +56,8 @@ class AppDeeplinksManager(
         when {
             isDeeplinkWithUri(intent) -> {
                 val data = intent.data ?: return
-                if (context.getString(R.string.app_scheme) == data.scheme &&
-                    data.host in DeeplinkHosts.validListToStartDeeplinks
-                ) {
+                val needStartDeeplink = data.host in DeeplinkHosts.validListToStartDeeplinks
+                if (context.getString(R.string.app_scheme) == data.scheme && needStartDeeplink) {
                     pendingDeeplinkUri = data
                 } else {
                     intercomDeeplinkManager.handleBackgroundDeeplink(data)

@@ -29,7 +29,7 @@ class SplashFragment :
 
     override fun navigateToMain() {
         popAndReplaceFragment(
-            MainFragment.create(arrayListOf()),
+            MainFragment.create(),
             inclusive = true
         )
     }
