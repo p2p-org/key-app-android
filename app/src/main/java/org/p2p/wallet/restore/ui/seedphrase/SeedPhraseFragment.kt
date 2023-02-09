@@ -1,15 +1,15 @@
 package org.p2p.wallet.restore.ui.seedphrase
 
-import androidx.core.content.FileProvider
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.FileProvider
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
-import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R

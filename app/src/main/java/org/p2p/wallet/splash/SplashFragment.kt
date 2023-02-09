@@ -5,6 +5,8 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
+import org.p2p.wallet.home.MainFragment
+import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.replaceFragment
 
 class SplashFragment :
@@ -23,5 +25,12 @@ class SplashFragment :
 
     override fun navigateToSignIn() {
         replaceFragment(SignInPinFragment.create())
+    }
+
+    override fun navigateToMain() {
+        popAndReplaceFragment(
+            MainFragment.create(),
+            inclusive = true
+        )
     }
 }
