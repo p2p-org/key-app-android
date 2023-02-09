@@ -24,9 +24,16 @@ class UiKitRightSideView @JvmOverloads constructor(
         }
     }
 
+    // example todo
+    /*fun setOnSwitchAction(onItemSwitchAction: (view: UiKitRightSideView, item: RightSideUiModel.Switcher) -> Unit) {
+        (viewPool.findPoolOfViews(RightSideUiModel.Switcher::class).first as SwitcherBinding)
+            .switch.setOnCheckedChangeListener{
+                onItemSwitchAction(this, currentModel as RightSideUiModel.Switcher)
+            }
+    }*/
+
     fun bind(model: RightSideUiModel) {
-        val currentModel = this.currentModel
-        val pair = viewPool.updatePoolOfViews(currentModel, model)
+        val pair = viewPool.updatePoolOfViews(this.currentModel, model)
         when (model) {
             is RightSideUiModel.TwoLineText -> (pair.first as WidgetRightSideDoubleTextBinding).bind(model)
             is RightSideUiModel.SingleTextTwoIcon -> (pair.first as WidgetRightSideSingleTextTwoIconBinding).bind(model)

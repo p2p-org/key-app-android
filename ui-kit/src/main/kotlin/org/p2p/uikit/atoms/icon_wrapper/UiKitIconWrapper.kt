@@ -24,8 +24,7 @@ class UiKitIconWrapper @JvmOverloads constructor(
     }
 
     fun bind(uiModel: IconWrapperUiModel) {
-        val currentModel = this.currentModel
-        val pair = viewPool.updatePoolOfViews(currentModel, uiModel)
+        val pair = viewPool.updatePoolOfViews(this.currentModel, uiModel)
         when (uiModel) {
             is IconWrapperUiModel.SingleIcon -> (pair.first as WidgetIconWrapperSingleBinding).bind(uiModel)
             is IconWrapperUiModel.TwoIcon -> (pair.first as WidgetIconWrapperTwoBinding).bind(uiModel)
