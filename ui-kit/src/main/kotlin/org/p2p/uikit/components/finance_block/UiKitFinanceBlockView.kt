@@ -7,7 +7,7 @@ import androidx.core.view.updatePadding
 import android.content.Context
 import android.util.AttributeSet
 import org.p2p.uikit.databinding.WidgetFinanceBlockBinding
-import org.p2p.uikit.utils.background.shape.rippleForeground
+import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.toPx
 

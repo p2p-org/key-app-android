@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.RecyclerView
 import android.graphics.Canvas
 import android.view.View
 import com.google.android.material.shape.ShapeAppearanceModel
-import org.p2p.uikit.utils.background.shape.rippleForeground
-import org.p2p.uikit.utils.background.shape.shapeBottomRounded
-import org.p2p.uikit.utils.background.shape.shapeOutline
-import org.p2p.uikit.utils.background.shape.shapeRectangle
-import org.p2p.uikit.utils.background.shape.shapeRoundedAll
-import org.p2p.uikit.utils.background.shape.shapeTopRounded
+import org.p2p.uikit.utils.drawable.shape.rippleForeground
+import org.p2p.uikit.utils.drawable.shape.shapeBottomRounded
+import org.p2p.uikit.utils.drawable.shape.shapeOutline
+import org.p2p.uikit.utils.drawable.shape.shapeRectangle
+import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
+import org.p2p.uikit.utils.drawable.shape.shapeTopRounded
 
 private const val DEFAULT_ROUNDING_GROUP = "RoundedItem"
 

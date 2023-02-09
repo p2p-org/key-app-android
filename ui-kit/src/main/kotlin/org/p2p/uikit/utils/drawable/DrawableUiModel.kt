@@ -1,4 +1,4 @@
-package org.p2p.uikit.utils.background
+package org.p2p.uikit.utils.drawable
 
 import androidx.annotation.ColorRes
 import androidx.annotation.Px
@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import org.p2p.uikit.utils.background.shape.shapeRectangle
+import org.p2p.uikit.utils.drawable.shape.shapeRectangle
 
 data class DrawableUiModel(
     val drawable: Drawable = shapeDrawable(),

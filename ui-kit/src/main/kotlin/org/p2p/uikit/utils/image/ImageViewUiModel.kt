@@ -8,12 +8,12 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import org.p2p.core.common.IconContainer
 import org.p2p.core.common.setIcon
 import org.p2p.uikit.R
-import org.p2p.uikit.utils.background.DrawableUiModel
-import org.p2p.uikit.utils.background.applyBackground
-import org.p2p.uikit.utils.background.applyForeground
-import org.p2p.uikit.utils.background.shape.shapeCircle
-import org.p2p.uikit.utils.background.shape.shapeOutline
-import org.p2p.uikit.utils.background.shapeDrawable
+import org.p2p.uikit.utils.drawable.DrawableUiModel
+import org.p2p.uikit.utils.drawable.applyBackground
+import org.p2p.uikit.utils.drawable.applyForeground
+import org.p2p.uikit.utils.drawable.shape.shapeCircle
+import org.p2p.uikit.utils.drawable.shape.shapeOutline
+import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
 
 data class ImageViewUiModel(

@@ -11,10 +11,10 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.insets.InitialViewPadding
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.R
-import org.p2p.uikit.utils.background.DrawableUiModel
-import org.p2p.uikit.utils.background.applyBackground
-import org.p2p.uikit.utils.background.shape.shapeRoundedAll
-import org.p2p.uikit.utils.background.shapeDrawable
+import org.p2p.uikit.utils.drawable.DrawableUiModel
+import org.p2p.uikit.utils.drawable.applyBackground
+import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
+import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.toPx
 

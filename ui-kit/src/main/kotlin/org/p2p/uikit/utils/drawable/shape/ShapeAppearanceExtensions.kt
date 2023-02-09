@@ -1,4 +1,4 @@
-package org.p2p.uikit.utils.background.shape
+package org.p2p.uikit.utils.drawable.shape
 
 import androidx.annotation.AttrRes
 import androidx.annotation.Px
