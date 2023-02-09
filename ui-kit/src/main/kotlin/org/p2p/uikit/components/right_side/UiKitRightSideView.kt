@@ -33,7 +33,9 @@ class UiKitRightSideView @JvmOverloads constructor(
         }
     }
 
-    fun setOnSwitchAction(onItemSwitchAction: (view: UiKitRightSideView, item: RightSideUiModel, isChecked: Boolean) -> Unit) {
+    fun setOnSwitchAction(
+        onItemSwitchAction: (view: UiKitRightSideView, item: RightSideUiModel, isChecked: Boolean) -> Unit
+    ) {
         onItemSwitchAction(this, item, true)
 
         // todo

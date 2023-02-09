@@ -35,4 +35,3 @@ fun BackgroundUiModel?.applyTo(view: View) {
     view.background = drawable
     view.backgroundTintList = model.backgroundTint?.let { view.context.getColorStateList(it) }
 }
-
