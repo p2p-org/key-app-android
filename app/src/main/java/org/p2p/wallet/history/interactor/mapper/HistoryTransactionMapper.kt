@@ -1,6 +1,7 @@
 package org.p2p.wallet.history.interactor.mapper
 
 import kotlinx.coroutines.withContext
+import org.p2p.core.utils.Constants
 import org.p2p.solanaj.kits.TokenTransaction
 import org.p2p.solanaj.kits.transaction.BurnOrMintDetails
 import org.p2p.solanaj.kits.transaction.CloseAccountDetails
@@ -14,7 +15,6 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.utils.Constants
 
 class HistoryTransactionMapper(
     private val userLocalRepository: UserLocalRepository,
@@ -52,8 +52,8 @@ class HistoryTransactionMapper(
         val sourceData = userLocalRepository.findTokenData(finalMintA) ?: return null
         val destinationData = userLocalRepository.findTokenData(finalMintB) ?: return null
 
-        val destinationRate = userLocalRepository.getPriceByToken(destinationData.symbol)
-        val sourceRate = userLocalRepository.getPriceByToken(sourceData.symbol)
+        val destinationRate = userLocalRepository.getPriceByTokenId(destinationData.coingeckoId)
+        val sourceRate = userLocalRepository.getPriceByTokenId(sourceData.coingeckoId)
         return historyTransactionConverter.mapSwapTransactionToHistory(
             response = details,
             sourceData = sourceData,
@@ -105,9 +105,8 @@ class HistoryTransactionMapper(
         publicKey: String
     ): HistoryTransaction? {
         val mint = if (transfer.isSimpleTransfer) Constants.WRAPPED_SOL_MINT else transfer.mint
-        val symbol = findSymbol(mint)
-        val rate = userLocalRepository.getPriceByToken(symbol)
         val source = mint?.let { userLocalRepository.findTokenData(it) } ?: return null
+        val rate = userLocalRepository.getPriceByTokenId(source.coingeckoId)
         return historyTransactionConverter.mapTransferTransactionToHistory(
             response = transfer,
             tokenData = source,
@@ -118,23 +117,30 @@ class HistoryTransactionMapper(
     }
 
     private fun parseBurnAndMintDetails(details: BurnOrMintDetails, userPublicKey: String): HistoryTransaction {
-        val symbol = findSymbol(details.mint)
-        val rate = userLocalRepository.getPriceByToken(symbol)
-        return historyTransactionConverter.mapBurnOrMintTransactionToHistory(details, userPublicKey, rate)
+        val source = details.mint.let { userLocalRepository.findTokenData(it) }
+        val rate = source?.coingeckoId?.let { userLocalRepository.getPriceByTokenId(it) }
+        return historyTransactionConverter.mapBurnOrMintTransactionToHistory(
+            response = details,
+            tokenData = source,
+            userPublicKey = userPublicKey,
+            rate = rate
+        )
     }
 
     private fun parseCreateDetails(
         details: CreateAccountDetails
     ): HistoryTransaction {
         val symbol = findSymbol(details.mint)
-        return historyTransactionConverter.mapCreateAccountTransactionToHistory(details, symbol)
+        val source = details.mint?.let { userLocalRepository.findTokenData(it) }
+        return historyTransactionConverter.mapCreateAccountTransactionToHistory(details, source, symbol)
     }
 
     private fun parseCloseDetails(
         details: CloseAccountDetails
     ): HistoryTransaction {
         val symbol = findSymbol(details.mint)
-        return historyTransactionConverter.mapCloseAccountTransactionToHistory(details, symbol)
+        val source = details.mint?.let { userLocalRepository.findTokenData(it) }
+        return historyTransactionConverter.mapCloseAccountTransactionToHistory(details, source, symbol)
     }
 
     private fun findSymbol(mint: String?): String {
