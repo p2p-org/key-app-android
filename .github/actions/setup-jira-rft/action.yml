@@ -15,9 +15,7 @@ runs:
       shell: bash
       id: find-jira-ticket
       run: |
-        cd bash_scripts
-        bash extract_jira_key.sh
-        cd ..
+        chmod +x ./.bash_scripts/extract_jira_key.sh
         echo "JIRA Ticket: $jira_ticket"
       env:
         jira-ticket: ${{ steps.find-jira-ticket.outputs.jira_ticket }}
