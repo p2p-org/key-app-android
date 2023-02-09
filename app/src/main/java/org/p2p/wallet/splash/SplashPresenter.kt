@@ -13,7 +13,6 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class SplashPresenter(
@@ -53,7 +52,6 @@ class SplashPresenter(
         } else {
             view?.navigateToOnboarding()
         }
-        view?.hideSplashScreen()
     }
 
     private suspend fun handleDeeplink() {

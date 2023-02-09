@@ -22,13 +22,15 @@ class SplashFragment :
 
     override fun navigateToOnboarding() {
         replaceFragment(OnboardingRootFragment.create(), addToBackStack = false)
+        hideSplashScreen()
     }
 
     override fun navigateToSignIn() {
         replaceFragment(SignInPinFragment.create(), addToBackStack = false)
+        hideSplashScreen()
     }
 
-    override fun hideSplashScreen() {
+    private fun hideSplashScreen() {
         (activity as? RootActivity)?.hideSplashScreen()
     }
 
@@ -37,5 +39,6 @@ class SplashFragment :
             MainFragment.create(),
             inclusive = true
         )
+        hideSplashScreen()
     }
 }
