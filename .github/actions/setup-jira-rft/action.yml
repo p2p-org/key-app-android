@@ -15,6 +15,7 @@ runs:
       shell: bash
       id: find-jira-ticket
       run: |
+        chmod +x ./.bash_scripts/find_jira_key.sh
         jira_ticket=$(./bash_scripts/find_jira_key.sh)
         echo "JIRA Ticket: $jira_ticket"
       env:
