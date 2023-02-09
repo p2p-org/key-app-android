@@ -8,12 +8,19 @@ ext {
 
     kotlinVersion = '1.7.20'
 
+    androidxCoreKtxVersion = '1.9.0'
+    appCompatVersion = '1.6.0'
+    materialDesignVersion = '1.8.0'
+    recyclerviewVersion = '1.2.1'
+    activityKtxVersion = '1.6.0'
+    fragmentKtxVersion = '1.4.1'
+
     baseAndroidDeps = [
-            "androidx.core:core-ktx:1.9.0",
-            "androidx.appcompat:appcompat:1.6.0",
-            "com.google.android.material:material:1.8.0",
-            "androidx.recyclerview:recyclerview:1.2.1",
-            "androidx.activity:activity-ktx:1.6.0",
-            "androidx.fragment:fragment-ktx:1.4.1",
+            "androidx.core:core-ktx:$androidxCoreKtxVersion",
+            "androidx.appcompat:appcompat:$appCompatVersion",
+            "com.google.android.material:material:$materialDesignVersion",
+            "androidx.recyclerview:recyclerview:$recyclerviewVersion",
+            "androidx.activity:activity-ktx:$activityKtxVersion",
+            "androidx.fragment:fragment-ktx:$fragmentKtxVersion",
     ]
 }
