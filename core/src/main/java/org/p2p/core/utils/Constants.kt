@@ -17,6 +17,12 @@ object Constants {
     const val BTC_SYMBOL = "BTC"
     const val ETH_SYMBOL = "ETH"
 
+    const val SOL_COINGECKO_ID = "solana"
+    const val USDC_COINGECKO_ID = "usd-coin"
+    const val BTC_COINGECKO_ID = "bitcoin"
+    const val ETH_COINGECKO_ID = "ethereum"
+    const val USDT_COINGECKO_ID = "tether"
+
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
     const val REN_BTC_DEVNET_MINT = "FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD"
     const val REN_BTC_DEVNET_MINT_ALTERNATE = "CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5"
