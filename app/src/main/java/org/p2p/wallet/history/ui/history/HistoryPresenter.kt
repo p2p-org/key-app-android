@@ -1,10 +1,12 @@
 package org.p2p.wallet.history.ui.history
 
 import androidx.lifecycle.LifecycleOwner
+import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.p2p.core.utils.merge
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.analytics.HistoryAnalytics
@@ -15,9 +17,9 @@ import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManag
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.sell.interactor.HistoryItemMapper
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.user.interactor.UserInteractor
-import timber.log.Timber
 
 class HistoryPresenter(
     private val userInteractor: UserInteractor,
@@ -27,6 +29,7 @@ class HistoryPresenter(
     private val renBtcInteractor: RenBtcInteractor,
     private val environmentManager: NetworkEnvironmentManager,
     private val sellTransactionsMapper: HistorySellTransactionMapper,
+    private val historyItemMapper: HistoryItemMapper,
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     private object HistoryFetchFailure : Throwable(message = "Both transactions were not fetch due to errors")
@@ -79,7 +82,13 @@ class HistoryPresenter(
 
     override fun loadHistory() {
         if (blockChainTransactionsList.hasFetchedItems() || moonpayTransactionsList.hasFetchedItems()) {
-            view?.showHistory(blockChainTransactionsList.content, moonpayTransactionsList.content)
+
+            view?.showHistory(
+                merge(
+                    historyItemMapper.fromDomainSell(moonpayTransactionsList.content), // goes first
+                    historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
+                )
+            )
             return
         }
         launch {
@@ -107,8 +116,10 @@ class HistoryPresenter(
                 Timber.e(HistoryFetchFailure, "Error getting transaction whole history")
             } else {
                 view?.showHistory(
-                    blockChainTransactions = blockChainTransactionsList.content,
-                    sellTransactions = moonpayTransactionsList.content
+                    merge(
+                        historyItemMapper.fromDomainSell(moonpayTransactionsList.content), // goes first
+                        historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
+                    )
                 )
                 view?.showPagingState(PagingState.Idle)
             }

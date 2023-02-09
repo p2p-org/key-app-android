@@ -1,10 +1,12 @@
 package org.p2p.wallet.history.ui.token
 
 import androidx.lifecycle.LifecycleOwner
+import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
+import org.p2p.core.utils.merge
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -18,7 +20,7 @@ import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
-import timber.log.Timber
+import org.p2p.wallet.sell.interactor.HistoryItemMapper
 
 class TokenHistoryPresenter(
     private val token: Token.Active,
@@ -28,6 +30,7 @@ class TokenHistoryPresenter(
     private val renBtcInteractor: RenBtcInteractor,
     private val tokenInteractor: TokenInteractor,
     private val sellTransactionsMapper: HistorySellTransactionMapper,
+    private val historyItemMapper: HistoryItemMapper,
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     private object HistoryFetchFailure : Throwable(message = "Both transactions were not fetch due to errors")
@@ -90,7 +93,12 @@ class TokenHistoryPresenter(
 
     override fun loadHistory() {
         if (blockChainTransactionsList.hasFetchedItems() || sellTransactionsList.hasFetchedItems()) {
-            view?.showHistory(blockChainTransactionsList.content, sellTransactionsList.content)
+            view?.showHistory(
+                merge(
+                    historyItemMapper.fromDomainSell(sellTransactionsList.content), // goes first
+                    historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
+                )
+            )
             return
         }
         loadingJob = launch {
@@ -113,7 +121,12 @@ class TokenHistoryPresenter(
                 view?.showPagingState(PagingState.Error(HistoryFetchFailure))
                 Timber.e(HistoryFetchFailure, "Error getting transaction history for token")
             } else {
-                view?.showHistory(blockChainTransactionsList.content, sellTransactionsList.content)
+                view?.showHistory(
+                    merge(
+                        historyItemMapper.fromDomainSell(sellTransactionsList.content), // goes first
+                        historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
+                    )
+                )
                 view?.showPagingState(PagingState.Idle)
             }
         } catch (e: CancellationException) {

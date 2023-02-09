@@ -6,8 +6,8 @@ import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.moonpay.model.SellTransaction
 
 interface TokenHistoryContract {
 
@@ -17,10 +17,7 @@ interface TokenHistoryContract {
         fun showRefreshing(isRefreshing: Boolean)
         fun showError(@StringRes resId: Int, argument: String)
         fun scrollToTop()
-        fun showHistory(
-            transactions: List<HistoryTransaction>,
-            sellTransactions: List<SellTransaction>
-        )
+        fun showHistory(history: List<HistoryItem>)
         fun showDetailsScreen(transaction: HistoryTransaction)
     }
 

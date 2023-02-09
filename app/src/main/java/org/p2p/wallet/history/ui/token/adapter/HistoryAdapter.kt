@@ -1,9 +1,9 @@
 package org.p2p.wallet.history.ui.token.adapter
 
-import android.annotation.SuppressLint
-import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import android.annotation.SuppressLint
+import android.view.ViewGroup
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.recycler.RoundedItem
 import org.p2p.uikit.utils.recycler.RoundedItemAdapterInterface
@@ -21,8 +21,6 @@ import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHol
 import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
-import org.p2p.wallet.moonpay.model.SellTransaction
-import org.p2p.wallet.sell.interactor.HistoryItemMapper
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 private const val TRANSACTION_VIEW_TYPE = 1
@@ -34,7 +32,6 @@ private const val TRANSACTION_MOONPAY_VIEW_TYPE = 6
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
-    private val historyItemMapper: HistoryItemMapper,
     private val onTransactionClicked: (HistoryTransaction) -> Unit,
     private val onMoonpayTransactionClicked: (SellTransactionViewDetails) -> Unit,
     private val onRetryClicked: () -> Unit,
@@ -44,21 +41,16 @@ class HistoryAdapter(
     private val pagingController = HistoryAdapterPagingController(this)
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setTransactions(
-        newTransactions: List<HistoryTransaction>,
-        newMoonpayTransactions: List<SellTransaction>
-    ) {
+    fun setTransactions(newTransactions: List<HistoryItem>) {
         // force notifyDataSetChanged on first load
         // to fix jumping into the middle because of DiffUtil
         if (currentItems.isEmpty()) {
-            currentItems += historyItemMapper.fromDomainSell(newMoonpayTransactions) // goes first
-            currentItems += historyItemMapper.fromDomainBlockchain(newTransactions)
+            currentItems += newTransactions
             notifyDataSetChanged()
         } else {
             val oldItems = ArrayList(currentItems)
             currentItems.clear()
-            currentItems += historyItemMapper.fromDomainSell(newMoonpayTransactions) // goes first
-            currentItems += historyItemMapper.fromDomainBlockchain(newTransactions)
+            currentItems += newTransactions
 
             DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
                 .dispatchUpdatesTo(this)

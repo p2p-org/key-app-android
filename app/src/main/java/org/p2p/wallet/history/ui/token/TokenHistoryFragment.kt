@@ -1,15 +1,15 @@
 package org.p2p.wallet.history.ui.token
 
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import org.koin.android.ext.android.get
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
@@ -22,11 +22,11 @@ import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
-import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -42,7 +42,6 @@ import org.p2p.wallet.utils.showErrorDialog
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import timber.log.Timber
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
@@ -65,7 +64,6 @@ class TokenHistoryFragment :
     private val historyAdapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             glideManager = glideManager,
-            historyItemMapper = get(),
             onTransactionClicked = presenter::onItemClicked,
             onRetryClicked = presenter::loadNextHistoryPage,
             onMoonpayTransactionClicked = { SellTransactionDetailsBottomSheet.show(childFragmentManager, it) }
@@ -173,9 +171,9 @@ class TokenHistoryFragment :
         binding.layoutHistoryList.refreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showHistory(transactions: List<HistoryTransaction>, sellTransactions: List<SellTransaction>) {
+    override fun showHistory(history: List<HistoryItem>) {
         with(binding.layoutHistoryList) {
-            historyAdapter.setTransactions(transactions, sellTransactions)
+            historyAdapter.setTransactions(history)
             historyRecyclerView.invalidateItemDecorations()
 
             val isEmpty = historyAdapter.isEmpty()
