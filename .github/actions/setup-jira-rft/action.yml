@@ -13,13 +13,11 @@ runs:
   steps:
     - name: "Extract JIRA key from commit message"
       shell: bash
-      if: github.ref == 'refs/heads/develop'
-      id: extract_jira_key
-      env:
-        JIRA_ISSUE_KEY: ${{ extract_jira_key(github.event.head_commit.message) }}
       run: |
-        echo "JIRA Issue Key: ${{ env.JIRA_ISSUE_KEY }}"
-        echo "Extracted from Commit Message: ${{ github.event.head_commit.message }}"
+        JIRA_KEY=$(echo "${{ github.event.head_commit.message }}" | grep -Eo "PWN-[0-9]+")
+        echo "JIRA Key: ${{ JIRA_KEY }}"
+      env:
+        JIRA_ISSUE_KEY: ${{ env.JIRA_KEY }}
     - name: Update JIRA issue status
       shell: bash
       if: env.JIRA_ISSUE_KEY
