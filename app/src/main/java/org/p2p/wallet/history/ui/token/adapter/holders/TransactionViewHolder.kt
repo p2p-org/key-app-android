@@ -38,9 +38,9 @@ class TransactionViewHolder(
     private fun showBurnOrMint(transaction: HistoryTransaction.BurnOrMint) {
         with(binding) {
             transactionTokenImageView.apply {
-                transaction.getTokenUrl()?.let {
-                    setTokenImage(glideManager, it)
-                } ?: setTransactionIcon(transaction.getIcon())
+                transaction.getTokenIconUrl()
+                    ?.also { setTokenImage(glideManager, it) }
+                    ?: setTransactionIcon(transaction.getIcon())
             }
             with(transactionData) {
                 startAmountView.title = getString(transaction.getTitle())
@@ -67,9 +67,9 @@ class TransactionViewHolder(
     private fun showCreateAccountTransaction(transaction: HistoryTransaction.CreateAccount) {
         with(binding) {
             transactionTokenImageView.apply {
-                transaction.getTokenUrl()?.let {
-                    setTokenImage(glideManager, it)
-                } ?: setTransactionIcon(R.drawable.ic_transaction_create)
+                transaction.getTokenIconUrl()
+                    ?.also { setTokenImage(glideManager, it) }
+                    ?: setTransactionIcon(R.drawable.ic_transaction_create)
             }
             with(transactionData) {
                 endAmountView.bottomValue = null
@@ -85,7 +85,7 @@ class TransactionViewHolder(
     private fun showCloseTransaction(transaction: HistoryTransaction.CloseAccount) {
         with(binding) {
             transactionTokenImageView.apply {
-                transaction.getTokenUrl()?.let {
+                transaction.getTokenIconUrl()?.let {
                     setTokenImage(glideManager, it)
                 } ?: setTransactionIcon(R.drawable.ic_transaction_closed)
             }
@@ -102,9 +102,9 @@ class TransactionViewHolder(
     private fun showTransferTransaction(transaction: HistoryTransaction.Transfer) {
         with(binding) {
             transactionTokenImageView.apply {
-                transaction.getTokenUrl()?.let {
-                    setTokenImage(glideManager, it)
-                } ?: setTransactionIcon(transaction.getIcon())
+                transaction.getTokenIconUrl()
+                    ?.also { setTokenImage(glideManager, it) }
+                    ?: setTransactionIcon(transaction.getIcon())
             }
             with(transactionData) {
                 startAmountView.title = transaction.getAddress()

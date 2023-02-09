@@ -26,18 +26,15 @@ class GlideManager(context: Context) {
             requestBuilder
                 .load(Uri.parse(url))
                 .apply(RequestOptions().override(size, size))
-                .centerCrop()
+                .run { if (circleCrop) circleCrop() else centerCrop() }
                 .into(imageView)
         } else {
             Glide
                 .with(imageView)
                 .load(url)
-                .placeholder(R.drawable.ic_placeholder_image).apply {
-                    val target = if (circleCrop) {
-                        circleCrop()
-                    } else this
-                    target.into(imageView)
-                }
+                .placeholder(R.drawable.ic_placeholder_image)
+                .run { if (circleCrop) circleCrop() else this }
+                .into(imageView)
         }
     }
 
