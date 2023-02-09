@@ -13,6 +13,7 @@ import org.p2p.uikit.utils.withImageOrGone
 
 private const val IMAGE_SIZE = 28
 
+@Deprecated(message = "use UiKitIconWrapper")
 class TransactionSwapImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
