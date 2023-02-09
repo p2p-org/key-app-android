@@ -20,7 +20,7 @@ class MoonpayExternalCustomerIdProvider(private val seedPhraseProvider: SeedPhra
 
     private fun generateCustomerId(): Base58String = try {
         val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
-        check(userSeedPhrase.isNotEmpty()){ "User seed phrase is empty" }
+        check(userSeedPhrase.isNotEmpty()) { "User seed phrase is empty" }
 
         val masterPrivateKey = MnemonicCode.toSeed(userSeedPhrase, emptyString())
         val derivedPrivateKey: ByteArray = derivationPath.derivePrivateKeyFromSeed(masterPrivateKey)
