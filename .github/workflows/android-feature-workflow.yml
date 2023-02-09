@@ -89,7 +89,7 @@ jobs:
 #          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
   update-jira-status:
     name: "Jira manipulations"
-    if: github.ref == 'refs/heads/develop'
+#    if: github.ref == 'refs/heads/develop'
 #    needs:
 #      - android-build-artifacts
     runs-on: ubuntu-latest
