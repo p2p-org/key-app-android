@@ -6,11 +6,10 @@ import org.p2p.solanaj.utils.crypto.encodeToBase58
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.sdk.RelaySdk
 import org.p2p.wallet.sdk.facade.mapper.SdkMethodResultMapper
+import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
+import org.p2p.wallet.sdk.facade.model.relay.RelaySignTransactionResponse
 import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.utils.toBase58Instance
 import kotlinx.coroutines.withContext
-
-class SdkSignedTransaction(val transaction: Base58String)
 
 class RelaySdkFacade(
     private val relaySdk: RelaySdk,
@@ -23,7 +22,7 @@ class RelaySdkFacade(
         transaction: Base58String,
         keyPair: Base58String,
         recentBlockhash: RecentBlockhash
-    ): SdkSignedTransaction {
+    ): RelaySdkSignedTransaction {
         return actualSignTransaction(
             transaction = transaction.base58Value,
             keyPair = keyPair.decodeToBytes(),
@@ -35,7 +34,7 @@ class RelaySdkFacade(
         transaction: Base64String,
         keyPair: Base58String,
         recentBlockhash: RecentBlockhash
-    ): SdkSignedTransaction = actualSignTransaction(
+    ): RelaySdkSignedTransaction = actualSignTransaction(
         transaction = transaction.base64Value,
         keyPair = keyPair.decodeToBytes(),
         recentBlockhash = recentBlockhash.recentBlockhash
@@ -59,8 +58,8 @@ class RelaySdkFacade(
         )
         logger.logResponse("signTransaction", response)
 
-        SdkSignedTransaction(
-            transaction = methodResultMapper.fromSdk<String>(response).toBase58Instance()
+        RelaySdkSignedTransaction(
+            methodResultMapper.fromSdk<RelaySignTransactionResponse>(response).transactionAsBase58
         )
     }
 }
