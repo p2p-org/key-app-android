@@ -9,26 +9,29 @@
 
     <org.p2p.uikit.atoms.UiKitStartAmountView
         android:id="@+id/startAmountView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/endAmountView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_min="80dp"
         tools:subtitle="From ....S39N"
         tools:title="Receive" />
 
     <org.p2p.uikit.atoms.UiKitEndAmountView
         android:id="@+id/endAmountView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="16dp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/startAmountView"
+        app:layout_constraintStart_toEndOf="@id/startAmountView"
         app:layout_constraintTop_toTopOf="parent"
         tools:bottomValue="0.014 SOL"
-        tools:topValue="- 10.00 $" />
+        tools:topValue="- 10.00$" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,43 +3,35 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <TextView
         android:id="@+id/textViewTopValue"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ellipsize="middle"
-        android:gravity="end"
-        android:maxLines="1"
+        android:gravity="end|center_vertical"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
         android:textColor="@color/text_night"
         app:layout_constraintBottom_toTopOf="@id/textViewBottomValue"
         app:layout_constraintEnd_toStartOf="@id/imageViewAction"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="$190.91" />
 
     <TextView
         android:id="@+id/textViewBottomValue"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ellipsize="middle"
-        android:gravity="end"
-        android:maxLines="1"
+        android:gravity="end|center_vertical"
         android:paddingTop="8dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
         android:textColor="@color/text_mountain"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/imageViewAction"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewTopValue"
-        tools:text="23.81120 SOL" />
+        tools:text="23.8112 SOL" />
 
     <ImageView
         android:id="@+id/imageViewAction"
