@@ -99,8 +99,8 @@ class SellPayloadFragment :
         binding.buttonCashOut.isEnabled = !isLoading
     }
 
-    override fun navigateToSellLock(details: SellTransactionViewDetails) {
-        replaceFragment(SellLockedFragment.create(details))
+    override fun navigateToSellLock(details: SellTransactionViewDetails, isTransactionJustCreated: Boolean) {
+        replaceFragment(SellLockedFragment.create(details, isTransactionJustCreated))
     }
 
     override fun navigateToErrorScreen() {
@@ -124,16 +124,16 @@ class SellPayloadFragment :
         SellInformationBottomSheet.show(childFragmentManager)
     }
 
-    override fun updateViewState(newState: SellPayloadContract.ViewState) = with(binding) {
+    override fun updateViewState(newState: SellPayloadContract.ViewState) {
         binding.widgetSendDetails.render(newState.widgetViewState)
         setButtonState(newState.cashOutButtonState)
     }
 
     override fun updateToolbarTitle(tokenSymbol: String) {
         val title = if (tokenSymbol.isNotEmpty()) {
-            resources.getString(R.string.sell_payload_token_title, tokenSymbol)
+            getString(R.string.sell_payload_token_title, tokenSymbol)
         } else {
-            resources.getString(R.string.sell_payload_title)
+            getString(R.string.sell_payload_title)
         }
         binding.toolbar.title = title
     }
@@ -141,15 +141,15 @@ class SellPayloadFragment :
     override fun showMoonpayWidget(url: String) {
         sellAnalytics.logSellMoonpayOpened()
         Timber.i("Sell: Opening Moonpay Sell widget: $url")
-        requireContext().showUrlInCustomTabs(url)
+        showUrlInCustomTabs(url)
     }
 
     override fun setButtonState(state: CashOutButtonState) {
-        with(binding) {
-            buttonCashOut.isEnabled = state.isEnabled
-            buttonCashOut.setBackgroundColor(getColor(state.backgroundColor))
-            buttonCashOut.setTextColor(getColor(state.textColor))
-            buttonCashOut.text = state.buttonText
+        with(binding.buttonCashOut) {
+            isEnabled = state.isEnabled
+            setBackgroundColor(getColor(state.backgroundColor))
+            setTextColor(getColor(state.textColor))
+            text = state.buttonText
         }
     }
 }
