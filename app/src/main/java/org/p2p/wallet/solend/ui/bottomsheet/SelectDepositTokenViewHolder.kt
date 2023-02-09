@@ -8,11 +8,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import org.p2p.core.glide.SvgSoftwareLayerSetter
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSelectionViewHolder
 import org.p2p.wallet.databinding.ItemSolendDepositTokenBinding
 import org.p2p.wallet.solend.model.SolendDepositToken
-import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import java.math.BigDecimal
 
@@ -46,7 +46,7 @@ class SelectDepositTokenViewHolder(
             amountViewStart.subtitle = item.tokenName
 
             val supplyInterestToShow = item.supplyInterest ?: BigDecimal.ZERO
-            amountViewEnd.usdAmount = "${supplyInterestToShow.scaleShort()}%"
+            amountViewEnd.topValue = "${supplyInterestToShow.scaleShort()}%"
 
             itemView.setOnClickListener { onItemClicked(item) }
         }

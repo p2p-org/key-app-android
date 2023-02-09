@@ -67,7 +67,7 @@ class HistoryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryTransactionViewHolder {
         return when (viewType) {
-            TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, onTransactionClicked)
+            TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, glideManager, onTransactionClicked)
             TRANSACTION_SWAP_VIEW_TYPE -> TransactionSwapViewHolder(parent, glideManager, onTransactionClicked)
             HISTORY_DATE_VIEW_TYPE -> DateViewHolder(parent)
             PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)

@@ -1,6 +1,8 @@
 package org.p2p.wallet.root
 
 import androidx.activity.addCallback
+import androidx.core.splashscreen.SplashScreen
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +26,7 @@ import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
@@ -34,7 +37,6 @@ import org.p2p.wallet.utils.replaceFragment
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import org.p2p.wallet.lokalise.LokaliseService
 
 class RootActivity :
     BaseMvpActivity<RootContract.View, RootContract.Presenter>(),
@@ -64,6 +66,7 @@ class RootActivity :
     private lateinit var binding: ActivityRootBinding
 
     private var snackbar: Snackbar? = null
+    private var splashScreenBox: SplashScreenBox? = null
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -75,14 +78,14 @@ class RootActivity :
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.WalletTheme)
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         binding = ActivityRootBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         decorSystemBarsDelegate.onCreate()
         setupKeyboardListener()
-
-        replaceFragment(SplashFragment.create())
+        keepVisibleSplash(splashScreen)
+        replaceFragment(SplashFragment.create(), addToBackStack = false)
         adminAnalytics.logAppOpened(AdminAnalytics.AppOpenSource.DIRECT)
 
         onBackPressedDispatcher.addCallback {
@@ -95,6 +98,20 @@ class RootActivity :
         handleDeeplink()
 
         registerNetworkObserver()
+    }
+
+    fun hideSplashScreen() {
+        splashScreenBox?.let {
+            it.splashScreen.remove()
+            decorSystemBarsDelegate.updateSystemBarsStyle(it.pendingStatusBarStyle, it.pendingNavigationBarStyle)
+        }
+        splashScreenBox = null
+    }
+
+    private fun keepVisibleSplash(splashScreen: SplashScreen) {
+        splashScreen.setOnExitAnimationListener { splashProvider ->
+            splashScreenBox = SplashScreenBox(splashProvider)
+        }
     }
 
     private fun setupKeyboardListener() {
@@ -164,7 +181,17 @@ class RootActivity :
     fun updateSystemBarsStyle(
         statusBarStyle: SystemIconsStyle? = null,
         navigationBarStyle: SystemIconsStyle? = null,
-    ) = decorSystemBarsDelegate.updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
+    ) {
+        val splashScreenBox = this.splashScreenBox
+        if (splashScreenBox != null) {
+            this.splashScreenBox = splashScreenBox.copy(
+                pendingStatusBarStyle = statusBarStyle,
+                pendingNavigationBarStyle = navigationBarStyle
+            )
+        } else {
+            decorSystemBarsDelegate.updateSystemBarsStyle(statusBarStyle, navigationBarStyle)
+        }
+    }
 
     private fun handleDeeplink(newIntent: Intent? = null) {
         val intentToHandle = newIntent ?: intent

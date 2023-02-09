@@ -1,8 +1,8 @@
 package org.p2p.wallet.restore.ui.derivable
 
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.os.Bundle
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.solanaj.crypto.DerivationPath

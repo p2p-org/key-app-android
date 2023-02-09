@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="WalletBase.v27" parent="WalletBase.v21">
-    </style>
+    <style name="WalletBase.v27" parent="WalletBase.v21"/>
 
-    <style name="WalletTheme" parent="WalletBase.v27" />
+    <style name="WalletTheme" parent="WalletBase.v27">
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
 </resources>

@@ -3,10 +3,10 @@ package org.p2p.wallet.infrastructure.network.environment
 import androidx.core.content.edit
 import android.content.Context
 import android.content.SharedPreferences
+import timber.log.Timber
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.utils.getStringResourceByName
-import timber.log.Timber
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
