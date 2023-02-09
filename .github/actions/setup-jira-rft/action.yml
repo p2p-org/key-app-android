@@ -27,5 +27,5 @@ runs:
         curl -D- -H "Authorization: Basic ${{ inputs.jira-api-token }}" \
           -X PUT \
           -H "Content-Type: application/json" \
-          -d '{"fields": {"status": {"name": "Ready for Testing"}}}' \
+          -d '{"fields": {"status": {"name": "QA"}}}' \
           https://${{ inputs.jira-base-url }}/rest/api/2/issue/${{ env.jira-ticket }}
