@@ -112,10 +112,7 @@ class CommonRestoreFragment :
             }
 
             buttonBottom.setOnClickListener {
-                presenter.useSeedPhrase()
-                restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.SEED)
-                onboardingAnalytics.logOnboardingMerged()
-                replaceFragment(SeedPhraseFragment.create())
+                onSeedPhraseClicked()
             }
             if (BuildConfig.DEBUG) {
                 buttonBottom.setOnLongClickListener {
@@ -139,6 +136,13 @@ class CommonRestoreFragment :
             binding.containerBottom.updatePadding(bottom = systemAndIme.bottom)
             WindowInsetsCompat.CONSUMED
         }
+    }
+
+    private fun onSeedPhraseClicked() {
+        presenter.useSeedPhrase()
+        restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.SEED)
+        onboardingAnalytics.logOnboardingMerged()
+        replaceFragment(SeedPhraseFragment.create())
     }
 
     override fun startGoogleFlow() {

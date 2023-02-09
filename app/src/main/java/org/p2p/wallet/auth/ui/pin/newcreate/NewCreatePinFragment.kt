@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
-import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R

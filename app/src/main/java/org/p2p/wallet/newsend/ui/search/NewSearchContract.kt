@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.newsend.model.SearchResult
 
 interface NewSearchContract {
 

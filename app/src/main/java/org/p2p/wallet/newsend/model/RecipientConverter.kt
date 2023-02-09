@@ -1,8 +1,6 @@
 package org.p2p.wallet.newsend.model
 
 import org.p2p.wallet.newsend.db.RecipientEntity
-import org.p2p.wallet.send.model.AddressState
-import org.p2p.wallet.send.model.SearchResult
 import java.util.Date
 
 private const val EMPTY_TIMESTAMP = 0L

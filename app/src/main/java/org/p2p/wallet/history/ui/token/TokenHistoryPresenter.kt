@@ -1,6 +1,9 @@
 package org.p2p.wallet.history.ui.token
 
 import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -16,9 +19,6 @@ import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import timber.log.Timber
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class TokenHistoryPresenter(
     private val token: Token.Active,
@@ -131,13 +131,15 @@ class TokenHistoryPresenter(
     }
 
     private suspend fun fetchSellTransactions(): HistoryFetchListResult<SellTransaction> = try {
-        sellTransactionsMapper.map(historyInteractor.getSellTransactions())
-            .toMutableList()
-            .let(::HistoryFetchListResult)
-            .withContentFilter {
-                !it.isCancelled() &&
-                    !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
-            }
+        historyInteractor.getSellTransactions()?.let { sellTransactions ->
+            sellTransactionsMapper.map(sellTransactions)
+                .toMutableList()
+                .let(::HistoryFetchListResult)
+                .withContentFilter {
+                    !it.isCancelled() &&
+                        !hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId)
+                }
+        } ?: HistoryFetchListResult(isFailed = true)
     } catch (error: Throwable) {
         Timber.e(error, "Error while loading Moonpay sell transactions on history")
         HistoryFetchListResult(isFailed = true)

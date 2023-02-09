@@ -9,6 +9,7 @@ import org.koin.android.ext.android.inject
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
+import org.p2p.uikit.utils.recycler.RoundedDecoration
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
@@ -64,7 +65,7 @@ class HistoryFragment :
 
             historyRecyclerView.addOnScrollListener(scrollListener)
             historyRecyclerView.attachAdapter(adapter)
-
+            historyRecyclerView.addItemDecoration(RoundedDecoration(16f))
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
                 scrollListener.reset()
@@ -106,6 +107,7 @@ class HistoryFragment :
     ) {
         with(binding.layoutHistoryList) {
             adapter.setTransactions(blockChainTransactions, sellTransactions)
+            historyRecyclerView.invalidateItemDecorations()
 
             val isHistoryEmpty = adapter.isEmpty()
             emptyStateLayout.root.isVisible = isHistoryEmpty

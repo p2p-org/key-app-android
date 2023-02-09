@@ -11,11 +11,10 @@
         android:id="@+id/transactionTokenImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="2dp"
         android:background="@drawable/bg_token_rounded"
-        app:contentPadding="12dp"
         android:src="@drawable/ic_transaction_send"
-        app:cornerRadius="16dp"
+        app:contentPadding="12dp"
+        app:cornerRadius="24dp"
         tools:visibility="visible" />
 
     <ImageView

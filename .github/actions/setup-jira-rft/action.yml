@@ -23,6 +23,7 @@ runs:
         JIRA_API_TOKEN: ${{ inputs.jira-api-token }}
 
     - name: "Find ticket number in from commits"
+      if: github.ref == 'refs/heads/develop'
       id: rft
       uses: atlassian/gajira-find-issue-key@v3
       with:
