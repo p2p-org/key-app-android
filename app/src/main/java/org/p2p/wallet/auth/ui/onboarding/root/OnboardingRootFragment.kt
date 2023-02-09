@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.ui.onboarding.root
 
-import androidx.fragment.app.Fragment
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
