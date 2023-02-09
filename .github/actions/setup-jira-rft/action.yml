@@ -16,7 +16,7 @@ runs:
       id: find-jira-ticket
       run: |
         cd bash_scripts
-        bash extract_jira_key.sh
+        bash find_jira_key.sh
         cd ..
         echo "JIRA Ticket: $jira_ticket"
       env:
