@@ -5,10 +5,10 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.sdk.facade.SolendSdkFacade
 import org.p2p.wallet.sdk.facade.model.solend.SolendFeePayerTokenData
 import org.p2p.wallet.sdk.facade.model.solend.SolendPool
-import org.p2p.wallet.solend.model.SolendTokenFee
 import org.p2p.wallet.solend.model.SolendDepositMapper
 import org.p2p.wallet.solend.model.SolendDepositToken
 import org.p2p.wallet.solend.model.SolendMarketInfo
+import org.p2p.wallet.solend.model.SolendTokenFee
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.Base58String
 import timber.log.Timber
@@ -50,7 +50,7 @@ class SolendDepositsRemoteRepository(
                 val tokenData =
                     userLocalRepository.findTokenDataBySymbol(deposit.depositTokenSymbol) ?: return@mapNotNull null
                 val tokenPrice =
-                    userLocalRepository.getPriceByToken(deposit.depositTokenSymbol) ?: return@mapNotNull null
+                    userLocalRepository.getPriceByTokenId(deposit.depositTokenSymbol) ?: return@mapNotNull null
                 val userToken = userTokens.find { it.tokenSymbol == deposit.depositTokenSymbol }
                 mapper.fromNetwork(
                     tokenData = tokenData,
@@ -63,7 +63,7 @@ class SolendDepositsRemoteRepository(
         } else {
             marketsInfo.mapNotNull { info ->
                 val tokenData = userLocalRepository.findTokenDataBySymbol(info.tokenSymbol) ?: return@mapNotNull null
-                val tokenPrice = userLocalRepository.getPriceByToken(info.tokenSymbol) ?: return@mapNotNull null
+                val tokenPrice = userLocalRepository.getPriceByTokenId(info.tokenSymbol) ?: return@mapNotNull null
                 val userToken = userTokens.find { it.tokenSymbol == info.tokenSymbol }
                 val activeDeposit = deposits.find { it.depositTokenSymbol == info.tokenSymbol }
                 mapper.fromNetwork(
