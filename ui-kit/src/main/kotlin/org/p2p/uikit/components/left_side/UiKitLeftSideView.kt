@@ -5,6 +5,7 @@ import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
 import org.p2p.uikit.databinding.WidgetLeftSideIconTripleTextBinding
+import org.p2p.uikit.databinding.WidgetRightSideDoubleTextBinding
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.text.bindOrGone
 
