@@ -92,8 +92,6 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "feature"
           artifact-type: "apk"
-      - name: "Commit changes"
-        uses: ./.github/actions/setup-commit
       - name: "Upload changelog, and Jira ticket to slack channel"
         run: |
           cd bash_scripts
@@ -107,6 +105,8 @@ jobs:
           value=`cat timestamp.txt`
           bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
 
+      - name: "Commit changes"
+        uses: ./.github/actions/setup-commit
   update-jira-status:
     name: "Jira manipulations"
     if: github.ref == 'refs/heads/develop'
