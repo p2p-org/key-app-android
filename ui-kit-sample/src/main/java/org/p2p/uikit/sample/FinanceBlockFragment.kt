@@ -15,13 +15,15 @@ import org.p2p.uikit.atoms.icon_wrapper.IconWrapperUiModel
 import org.p2p.uikit.components.finance_block.FinanceBlockUiModel
 import org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
 import org.p2p.uikit.components.left_side.LeftSideUiModel
+import org.p2p.uikit.components.right_side.RightSideUiModel
 import org.p2p.uikit.databinding.ItemFinanceBlockBinding
 import org.p2p.uikit.sample.databinding.FragmentFinanceBlockBinding
+import org.p2p.uikit.utils.image.ImageViewUiModel
 import org.p2p.uikit.utils.image.commonCircleImage
+import org.p2p.uikit.utils.text.TextViewBackgroundUiModel
 import org.p2p.uikit.utils.text.TextViewUiModel
 import org.p2p.uikit.utils.toPx
 import kotlin.jvm.internal.Intrinsics
-import kotlin.random.Random
 
 class FinanceBlockFragment : Fragment(R.layout.fragment_finance_block) {
 
@@ -55,54 +57,47 @@ class FinanceBlockFragment : Fragment(R.layout.fragment_finance_block) {
         binding.recyclerView.layoutManager = LinearLayoutManager(view.context)
         binding.recyclerView.adapter = adapter
 
-        fun firstText() = TextViewUiModel(
-            TextContainer.Raw("teeest")
-        )
-
-        val firstIcon = commonCircleImage(
-            icon = IconContainer.Res(R.drawable.shape_bottom_navigation_background),
-            strokeWidth = 2f.toPx(),
-            strokeColor = R.color.icons_grass,
-        ).copy(
-            iconTint = R.color.icons_night,
-        )
-
-        fun firstIcon() = firstIcon
-
-        val secondIcon = commonCircleImage(
-            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
-            strokeWidth = 2f.toPx(),
-            strokeColor = R.color.icons_electric,
-        ).copy(
-            iconTint = R.color.icons_night,
-        )
-
-        fun secondIcon() = secondIcon
-
-        val mock = listOf(
-            IconWrapperUiModel.SingleIcon(firstIcon()),
-            IconWrapperUiModel.SingleIcon(secondIcon()),
-            IconWrapperUiModel.TwoIcon(firstIcon(), secondIcon()),
-            IconWrapperUiModel.TwoIcon(secondIcon(), firstIcon()),
-        )
-
         val list = mutableListOf<Any>()
 
-        Random.nextInt(0, 4)
-        list.add(
-            FinanceBlockUiModel(
-                LeftSideUiModel.IconWithText(firstLineText = firstText())
-            )
-        )
-        for (i in 1..100) {
-            list.add(
-                FinanceBlockUiModel(
-                    LeftSideUiModel.IconWithText(
-                        icon = mock[Random.nextInt(0, 4)],
-                        firstLineText = firstText()
-                    )
-                )
-            )
+        fun model(left: LeftSideUiModel? = null) =
+            FinanceBlockUiModel(left, null)
+
+        fun model(right: RightSideUiModel? = null) =
+            FinanceBlockUiModel(null, right)
+
+        fun model(left: LeftSideUiModel? = null, right: RightSideUiModel? = null) =
+            FinanceBlockUiModel(left, right)
+
+        list.apply {
+            add(model(leftSingleLine))
+            add(model(leftDoubleLine))
+            add(model(leftTripleLine))
+            add(model(leftSingleLineWithoutImage))
+            add(model(leftTripleLineWithoutImage))
+
+            add(model(rightTwoLineSingleLine))
+            add(model(rightTwoLineDoubleLine))
+            add(model(rightSingleLineText))
+            add(model(rightSingleLineTextIcon))
+            add(model(rightSingleLineIcon))
+            add(model(rightSingleLineTextTwoIcon))
+
+            add(model(leftTripleCustomText, rightTextBadge))
+
+
+            add(model(leftDoubleLine, rightTwoLineSingleLine))
+            add(model(leftDoubleLine, rightTwoLineDoubleLine))
+            add(model(leftDoubleLine, rightSingleLineText))
+            add(model(leftDoubleLine, rightSingleLineTextIcon))
+            add(model(leftDoubleLine, rightSingleLineIcon))
+            add(model(leftDoubleLine, rightSingleLineTextTwoIcon))
+
+            add(model(leftSingleLine, rightTwoLineSingleLine))
+            add(model(leftDoubleLine, rightTwoLineDoubleLine))
+            add(model(leftTripleLine, rightSingleLineText))
+            add(model(leftSingleLineWithoutImage, rightSingleLineTextIcon))
+            add(model(leftDoubleLine, rightSingleLineIcon))
+            add(model(leftTripleLineWithoutImage, rightSingleLineTextTwoIcon))
         }
 
         adapter.items = list
@@ -148,3 +143,140 @@ private class DiffCallback : DiffUtil.ItemCallback<Any>() {
         }
     }
 }
+
+val leftSingleLine: LeftSideUiModel
+    get() = LeftSideUiModel.IconWithText(
+        icon = IconWrapperUiModel.SingleIcon(fullFit),
+        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
+    )
+
+val leftDoubleLine: LeftSideUiModel
+    get() = LeftSideUiModel.IconWithText(
+        icon = IconWrapperUiModel.TwoIcon(
+            fullFit,
+            centerIcon
+        ),
+        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
+        secondLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+    )
+
+val leftTripleLine: LeftSideUiModel
+    get() = LeftSideUiModel.IconWithText(
+        icon = IconWrapperUiModel.SingleIcon(centerIcon),
+        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
+        secondLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+        thirdLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+    )
+
+val leftTripleCustomText: LeftSideUiModel
+    get() = LeftSideUiModel.IconWithText(
+        icon = IconWrapperUiModel.SingleIcon(centerIcon),
+        firstLineText = TextViewUiModel(
+            text = TextContainer.Raw("Send"),
+            titleTextAppearance = R.style.UiKit_TextAppearance_SemiBold_Text1,
+            textColor = R.color.text_rose,
+            textSizeSp = 24f,
+        ),
+        secondLineText = TextViewUiModel(
+            text = TextContainer.Raw("23.8112 SOL"),
+            textColor = R.color.text_electric,
+        ),
+        thirdLineText = TextViewUiModel(
+            text = TextContainer.Raw("23.8112 SOL"),
+            textColor = R.color.text_lime,
+            textSizeSp = 9f,
+        ),
+    )
+
+val leftSingleLineWithoutImage: LeftSideUiModel
+    get() = LeftSideUiModel.IconWithText(
+        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
+    )
+
+val leftTripleLineWithoutImage: LeftSideUiModel
+    get() = LeftSideUiModel.IconWithText(
+        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
+        secondLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+        thirdLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+    )
+
+val rightTwoLineSingleLine: RightSideUiModel
+    get() = RightSideUiModel.TwoLineText(
+        firstLineText = TextViewUiModel(text = TextContainer.Raw("$190.91")),
+    )
+
+val rightTwoLineDoubleLine: RightSideUiModel
+    get() = RightSideUiModel.TwoLineText(
+        firstLineText = TextViewUiModel(text = TextContainer.Raw("$190.91")),
+        secondLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+    )
+
+val rightSingleLineText: RightSideUiModel
+    get() = RightSideUiModel.SingleTextTwoIcon(
+        text = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+    )
+
+val rightSingleLineTextIcon: RightSideUiModel
+    get() = RightSideUiModel.SingleTextTwoIcon(
+        text = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+        firstIcon = ImageViewUiModel(
+            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+            iconTint = R.color.icons_mountain
+        ),
+    )
+
+val rightSingleLineIcon: RightSideUiModel
+    get() = RightSideUiModel.SingleTextTwoIcon(
+        firstIcon = ImageViewUiModel(
+            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+            iconTint = R.color.icons_mountain
+        ),
+    )
+
+val rightSingleLineTextTwoIcon: RightSideUiModel
+    get() = RightSideUiModel.SingleTextTwoIcon(
+        text = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+        firstIcon = ImageViewUiModel(
+            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+            iconTint = R.color.icons_mountain
+        ),
+        secondIcon = ImageViewUiModel(
+            icon = IconContainer.Res(R.drawable.ic_info_outline),
+            iconTint = R.color.icons_mountain
+        ),
+    )
+
+val rightTextBadge: RightSideUiModel
+    get() = RightSideUiModel.SingleTextTwoIcon(
+        text = TextViewUiModel(
+            text = TextContainer.Raw("23.8112 SOL"),
+            badgeBackground = TextViewBackgroundUiModel(),
+        ),
+        firstIcon = ImageViewUiModel(
+            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+            iconTint = R.color.icons_mountain
+        ),
+        secondIcon = ImageViewUiModel(
+            icon = IconContainer.Res(R.drawable.ic_info_outline),
+            iconTint = R.color.icons_mountain
+        ),
+    )
+
+val fullFit: ImageViewUiModel
+    get() = commonCircleImage(
+        icon = IconContainer.Res(R.drawable.shape_bottom_navigation_background),
+        strokeWidth = 2f.toPx(),
+        strokeColor = R.color.icons_grass,
+    ).copy(
+        iconTint = R.color.icons_night,
+    )
+
+val centerIcon: ImageViewUiModel
+    get() = commonCircleImage(
+        icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+        strokeWidth = 2f.toPx(),
+        strokeColor = R.color.icons_electric,
+    ).copy(
+        iconTint = R.color.icons_night,
+    )
+

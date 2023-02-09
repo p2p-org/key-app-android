@@ -27,6 +27,7 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
         val paddingVertical = 12.toPx()
         updatePadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical)
         rippleForeground()
+        minHeight = 72.toPx()
     }
 
     fun setOnClickAction(onItemClickAction: (view: UiKitFinanceBlockView, item: FinanceBlockUiModel) -> Unit) {
@@ -41,7 +42,7 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
         isClickable = model.accessibility.isClickable
         binding.leftSideView.isInvisible = model.leftSideUiModel == null
         model.leftSideUiModel?.let { binding.leftSideView.bind(it) }
-        binding.leftSideView.isVisible = model.leftSideUiModel != null
-        model.leftSideUiModel?.let { binding.leftSideView.bind(it) }
+        binding.rightSideView.isVisible = model.rightSideUiModel != null
+        model.rightSideUiModel?.let { binding.rightSideView.bind(it) }
     }
 }

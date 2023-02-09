@@ -10,22 +10,41 @@ import android.widget.TextView
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.insets.InitialViewPadding
 import org.p2p.core.utils.orZero
+import org.p2p.uikit.R
 import org.p2p.uikit.utils.background.DrawableUiModel
 import org.p2p.uikit.utils.background.applyBackground
+import org.p2p.uikit.utils.background.shape.shapeRoundedAll
+import org.p2p.uikit.utils.background.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
+import org.p2p.uikit.utils.toPx
 
 data class TextViewUiModel(
     val text: TextContainer,
     @StyleRes val titleTextAppearance: Int? = null,
     @ColorRes val textColor: Int? = null,
-    @Px val textSize: Float? = null,
+    val textSizeSp: Float? = null,
     val gravity: Int = Gravity.CENTER,
     val badgeBackground: TextViewBackgroundUiModel? = null
 )
 
 data class TextViewBackgroundUiModel(
-    val background: DrawableUiModel,
-    val padding: InitialViewPadding = InitialViewPadding(0, 0, 0, 0)
+    val background: DrawableUiModel = badgeRounded(),
+    val padding: InitialViewPadding = badgePadding()
+)
+
+fun badgePadding(
+    @Px left: Int = 8.toPx(),
+    @Px top: Int = 0.toPx(),
+    @Px right: Int = 8.toPx(),
+    @Px bottom: Int = 0.toPx(),
+): InitialViewPadding = InitialViewPadding(left, top, right, bottom)
+
+fun badgeRounded(
+    @Px cornerSize: Float = 32f.toPx(),
+    @ColorRes tint: Int = R.color.elements_lime,
+): DrawableUiModel = DrawableUiModel(
+    drawable = shapeDrawable(shapeRoundedAll(cornerSize)),
+    tint = tint,
 )
 
 fun TextView.bindOrGone(model: TextViewUiModel?) {
@@ -36,7 +55,7 @@ fun TextView.bindOrGone(model: TextViewUiModel?) {
 fun TextView.bind(model: TextViewUiModel) {
     model.titleTextAppearance?.let { setTextAppearance(it) }
     model.textColor?.let { getColorStateList(it) }
-    model.textSize?.let { textSize = it }
+    model.textSizeSp?.let { textSize = it }
     gravity = model.gravity
     model.badgeBackground?.background?.applyBackground(this)
     updatePadding(
