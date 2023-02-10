@@ -10,6 +10,7 @@ import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.recycler.RoundedDecoration
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
@@ -65,7 +66,7 @@ class HistoryFragment :
 
             historyRecyclerView.addOnScrollListener(scrollListener)
             historyRecyclerView.attachAdapter(adapter)
-            historyRecyclerView.addItemDecoration(RoundedDecoration(16f))
+            historyRecyclerView.addItemDecoration(RoundedDecoration(16f.toPx()))
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
                 scrollListener.reset()
