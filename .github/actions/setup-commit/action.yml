@@ -19,7 +19,7 @@ runs:
     - name: Commit and push changes
       shell: bash
       run: |
-        git config --global user.name 'key-app-bot`'
+        git config --global user.name '1sakov'
         git config --global user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
         token=${{ inputs.admin-access-token }}
