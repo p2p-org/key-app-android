@@ -30,12 +30,12 @@ sealed class TextContainer : Parcelable {
 
     @Parcelize
     class Raw(
-        private val text: String
+        private val text: CharSequence
     ) : TextContainer() {
         override fun applyTo(textView: TextView) {
             textView.text = text
         }
 
-        override fun getString(context: Context): String = text
+        override fun getString(context: Context): String = text.toString()
     }
 }
