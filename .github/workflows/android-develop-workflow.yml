@@ -111,9 +111,11 @@ jobs:
     needs:
       - android-build-artifacts
     steps:
-      uses: ./.github/actions/setup-commit
-      with:
-        github-author-email: ${{ vars.JIRA_USER_EMAIL }}
+      - name: "Checkout to the current commit hash"
+        uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-commit
+        with:
+          github-author-email: ${{ vars.JIRA_USER_EMAIL }}
   update-jira-status:
     name: "Jira manipulations"
     if: always()
