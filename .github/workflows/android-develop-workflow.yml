@@ -34,12 +34,8 @@ jobs:
         uses: ./.github/actions/setup-project
         env:
           inputs: ${{ env.setup_project_inputs }}
-#      - name: Run ktlint
-#        run: ./gradlew ktlint -PautoCorrect=0
-      - name: "Commit changes"
-        uses: ./.github/actions/setup-commit
-        with:
-          github-author-email: ${{ vars.JIRA_USER_EMAIL }}
+      - name: Run ktlint
+        run: ./gradlew ktlint -PautoCorrect=0
   android-unit-tests:
     name: "Run unit tests"
     needs:
@@ -115,7 +111,7 @@ jobs:
           github-author-email: ${{ vars.JIRA_USER_EMAIL }}
   update-jira-status:
     name: "Jira manipulations"
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop' or always()
     needs:
       - android-build-artifacts
     runs-on: ubuntu-latest
