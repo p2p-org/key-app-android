@@ -9,6 +9,9 @@ inputs:
   github-author-email:
     description: "Github author email"
     required: true
+  admin-access-token:
+    description: "Github access token with admin permissions"
+    required: true
 
 runs:
   using: composite
@@ -19,4 +22,5 @@ runs:
         git config --global user.name 'key-app-bot`'
         git config --global user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
-        git push
+        token=${{ inputs.admin-access-token }}
+        git push https://$token@github.com/1sakov/https://github.com/p2p-org/key-app-android.git
