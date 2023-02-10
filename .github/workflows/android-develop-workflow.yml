@@ -56,9 +56,10 @@ jobs:
         run: ./gradlew testDebug
   android-build-artifacts:
     name: "Run build feature artifacts"
+    if: github.ref == 'refs/heads/develop'
     needs:
       - android-lint
-      - android-unit-tests
+#      - android-unit-tests
 
     runs-on: ubuntu-latest
     steps:
@@ -72,44 +73,52 @@ jobs:
         uses: ./.github/actions/setup-project
         env:
           inputs: ${{ env.setup_project_inputs }}
-      - name: "Send start deploy message to slack"
-        run: |
-          git fetch
-          cd bash_scripts
-          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
-      - name: "Build feature APK"
-        run: ./gradlew assembleFeature
-      - name: "Upload APK to Firebase (Feature)"
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew appDistributionUploadFeature
-      - name: "Upload APK to Slack (Feature)"
-        uses: ./.github/actions/setup-slack
+#      - name: "Send start deploy message to slack"
+#        run: |
+#          git fetch
+#          cd bash_scripts
+#          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+#          cd ..
+#      - name: "Build feature APK"
+#        run: ./gradlew assembleFeature
+#      - name: "Upload APK to Firebase (Feature)"
+#        env:
+#          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+#          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+#        run: ./gradlew appDistributionUploadFeature
+#      - name: "Upload APK to Slack (Feature)"
+#        uses: ./.github/actions/setup-slack
+#        with:
+#          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+#          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+#          build-type: "feature"
+#          artifact-type: "apk"
+#      - name: "Upload changelog, and Jira ticket to slack channel"
+#        run: |
+#          cd bash_scripts
+#          value=`cat timestamp.txt`
+#          bash slack_develop_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+#          cd ..
+#
+#      - name: "Send finish deploy message to slack"
+#        run: |
+#          cd bash_scripts
+#          value=`cat timestamp.txt`
+#          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+  commit-and-push:
+    name: "Commit and Push changes"
+    runs-on: ubuntu-latest
+    needs:
+      - android-build-artifacts
+    steps:
+      - name: "Checkout to the current commit hash"
+        uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-commit
         with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "feature"
-          artifact-type: "apk"
-      - name: "Upload changelog, and Jira ticket to slack channel"
-        run: |
-          cd bash_scripts
-          value=`cat timestamp.txt`
-          bash slack_develop_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
-
-      - name: "Send finish deploy message to slack"
-        run: |
-          cd bash_scripts
-          value=`cat timestamp.txt`
-          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-
-      - name: "Commit changes"
-        uses: ./.github/actions/setup-commit
+          github-author-email: ${{ vars.JIRA_USER_EMAIL }}
   update-jira-status:
     name: "Jira manipulations"
-    if: github.ref == 'refs/heads/develop'
+    if: always()
     needs:
       - android-build-artifacts
     runs-on: ubuntu-latest
