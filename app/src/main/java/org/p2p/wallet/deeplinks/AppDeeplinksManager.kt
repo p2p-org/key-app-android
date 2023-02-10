@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentManager
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
@@ -28,6 +29,10 @@ class AppDeeplinksManager(
     var mainFragmentManager: FragmentManager? = null
 
     private var pendingIntent: Intent? = null
+    var pendingDeeplinkUri: Uri? = null
+
+    val hasPendingDeeplink
+        get() = pendingDeeplinkUri != null
 
     fun buildIntent(notificationType: NotificationType): Intent {
         val activityManager = context.getSystemService<ActivityManager>()
@@ -49,11 +54,16 @@ class AppDeeplinksManager(
 
     fun handleDeeplinkIntent(intent: Intent) {
         when {
-            isAppOpenFromBackground(intent) -> {
+            isDeeplinkWithUri(intent) -> {
                 val data = intent.data ?: return
-                intercomDeeplinkManager.handleBackgroundDeeplink(data)
+                val needStartDeeplink = data.host in DeeplinkHosts.validListToStartDeeplinks
+                if (context.getString(R.string.app_scheme) == data.scheme && needStartDeeplink) {
+                    pendingDeeplinkUri = data
+                } else {
+                    intercomDeeplinkManager.handleBackgroundDeeplink(data)
+                }
             }
-            isAppOpenFromForeground(intent) -> {
+            isDeeplinkWithExtras(intent) -> {
                 val extras = intent.extras ?: return
                 // additional parsing when app been opened with notification from background
                 if (extras.containsKey(NOTIFICATION_TYPE)) {
@@ -69,9 +79,9 @@ class AppDeeplinksManager(
         }
     }
 
-    private fun isAppOpenFromBackground(intent: Intent): Boolean = intent.data != null
+    private fun isDeeplinkWithUri(intent: Intent): Boolean = intent.data != null
 
-    private fun isAppOpenFromForeground(intent: Intent): Boolean = intent.extras != null
+    private fun isDeeplinkWithExtras(intent: Intent): Boolean = intent.extras != null
 
     private fun handleOrSaveDeeplinkIntent(intent: Intent) {
         intent.extras?.apply {

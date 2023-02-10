@@ -1,14 +1,18 @@
 package org.p2p.wallet.solend.ui.deposit
 
+import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.Constants
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.orZero
+import org.p2p.core.utils.scaleShort
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.toPx
@@ -20,12 +24,8 @@ import org.p2p.wallet.solend.model.SolendTransactionDetailsState
 import org.p2p.wallet.solend.ui.bottomsheet.SelectDepositTokenBottomSheet
 import org.p2p.wallet.solend.ui.bottomsheet.SolendTransactionDetailsBottomSheet
 import org.p2p.wallet.solend.ui.info.SolendInfoBottomSheet
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.args
-import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.orZero
 import org.p2p.wallet.utils.popBackStack
-import org.p2p.core.utils.scaleShort
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
@@ -136,7 +136,7 @@ class SolendDepositFragment :
         amountViewStart.subtitle = depositToken.tokenName
 
         val supplyInterestToShow = depositToken.supplyInterest ?: BigDecimal.ZERO
-        amountViewEnd.usdAmount = "${supplyInterestToShow.scaleShort()}%"
+        amountViewEnd.topValue = "${supplyInterestToShow.scaleShort()}%"
 
         val onTokenClick: ((View) -> Unit)?
         val icon: Int?
