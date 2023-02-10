@@ -13,7 +13,7 @@ fun TransactionSwapImageView.setStatus(status: TransactionStatus?) {
     setStatusIcon(status.getStatusIcon())
 }
 
-private fun TransactionStatus?.getStatusIcon(): Int? = when (this) {
+fun TransactionStatus?.getStatusIcon(): Int? = when (this) {
     TransactionStatus.PENDING -> R.drawable.ic_state_pending
     TransactionStatus.ERROR -> R.drawable.ic_state_error
     else -> null

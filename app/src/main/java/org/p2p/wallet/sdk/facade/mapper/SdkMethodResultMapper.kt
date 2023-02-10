@@ -2,7 +2,7 @@ package org.p2p.wallet.sdk.facade.mapper
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.p2p.wallet.sdk.facade.model.solend.KeyAppSdkMethodResultException
+import org.p2p.wallet.sdk.facade.model.KeyAppSdkMethodResultException
 import timber.log.Timber
 
 class SdkMethodResultMapper(

@@ -7,4 +7,17 @@
 
     <string name="history_error_message">Oops! Something happened.</string>
 
+    <string name="transaction_history_unknown">Unknown</string>
+    <string name="transaction_history_swap">Swap</string>
+    <string name="transaction_history_swap_pending">Swapping…</string>
+    <string name="transaction_history_swap_failed">Swap failed</string>
+    <string name="transaction_history_send">Send</string>
+    <string name="transaction_history_send_pending">Sending…</string>
+    <string name="transaction_history_send_failed">Send failed</string>
+    <string name="transaction_history_receive">Receive</string>
+    <string name="transaction_history_receive_pending">Receiving…</string>
+    <string name="transaction_history_receive_failed">Receive failed</string>
+    <string name="transaction_history_create">Create account</string>
+    <string name="transaction_history_closed">Close account</string>
+
 </resources>

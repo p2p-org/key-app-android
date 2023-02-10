@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="WalletBase.v31" parent="WalletBase.v27">
-        <item name="postSplashScreenTheme">@style/WalletTheme.Launcher</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/lime</item>
-        <item name="windowSplashScreenBackground">@color/lime</item>
-    </style>
+    <style name="WalletBase.v31" parent="WalletBase.v27" />
 
-    <style name="WalletTheme" parent="WalletBase.v29" />
-
+    <style name="WalletTheme" parent="WalletBase.v31" />
 </resources>
