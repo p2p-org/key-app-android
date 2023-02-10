@@ -194,9 +194,14 @@ class TokenHistoryFragment :
             refreshLayout.isVisible = newState != PagingState.InitialLoading
             errorStateLayout.root.isVisible = newState is PagingState.Error
             emptyStateLayout.root.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
-            historyRecyclerView.isVisible =
-                (newState == PagingState.Idle && !historyAdapter.isEmpty()) || newState == PagingState.Loading
+            historyRecyclerView.isVisible = recyclerVisibilityValidState(newState)
         }
+    }
+
+    private fun recyclerVisibilityValidState(state: PagingState): Boolean {
+        val isInitState = state == PagingState.Idle && !historyAdapter.isEmpty()
+        val isFetchPageErrorState = state is PagingState.Error && !historyAdapter.isEmpty()
+        return isInitState || isFetchPageErrorState || state == PagingState.Loading
     }
 
     override fun showDetailsScreen(transaction: HistoryTransaction) {

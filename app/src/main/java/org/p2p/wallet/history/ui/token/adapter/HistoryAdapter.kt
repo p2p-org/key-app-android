@@ -73,7 +73,7 @@ class HistoryAdapter(
             is TransactionViewHolder -> holder.onBind(currentItems[position] as TransactionItem)
             is TransactionSwapViewHolder -> holder.onBind(currentItems[position] as TransactionItem)
             is DateViewHolder -> holder.onBind(currentItems[position] as DateItem)
-            is ErrorViewHolder -> holder.onBind(pagingController.currentPagingState, onRetryClicked)
+            is ErrorViewHolder -> holder.onBind(onRetryClicked)
             is HistorySellTransactionViewHolder -> holder.onBind(currentItems[position] as MoonpayTransactionItem)
             is ProgressViewHolder -> Unit
         }
@@ -157,13 +157,16 @@ class HistoryAdapter(
     fun isEmpty() = currentItems.isEmpty()
 
     override fun getRoundedItem(adapterPosition: Int): RoundedItem? {
-        // for progress item just get last item
-        // TODO PWN-6888 rewrite on pagination implementation
-        val position = if (adapterPosition == currentItems.size && pagingController.isPagingInLoadingState()) {
+        val position = if (adapterPosition == currentItems.size && needToShowAdditionalItem()) {
             adapterPosition - 1
         } else {
             adapterPosition
         }
         return currentItems.getOrNull(position) as? RoundedItem
+    }
+
+    private fun needToShowAdditionalItem(): Boolean {
+        val isFetchPageError = pagingController.isPagingErrorState() && currentItems.isNotEmpty()
+        return pagingController.isPagingInLoadingState() || isFetchPageError
     }
 }

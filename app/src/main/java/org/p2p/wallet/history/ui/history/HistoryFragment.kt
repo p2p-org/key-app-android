@@ -45,7 +45,7 @@ class HistoryFragment :
             glideManager = glideManager,
             onTransactionClicked = presenter::onItemClicked,
             onMoonpayTransactionClicked = presenter::onSellTransactionClicked,
-            onRetryClicked = {}
+            onRetryClicked = presenter::loadNextHistoryPage
         )
     }
 
@@ -92,11 +92,16 @@ class HistoryFragment :
         with(binding.layoutHistoryList) {
             shimmerView.root.isVisible = state == PagingState.InitialLoading
             refreshLayout.isVisible = state != PagingState.InitialLoading
-            errorStateLayout.root.isVisible = state is PagingState.Error
+            errorStateLayout.root.isVisible = state is PagingState.Error && adapter.isEmpty()
             emptyStateLayout.root.isVisible = state == PagingState.Idle && adapter.isEmpty()
-            historyRecyclerView.isVisible =
-                (state == PagingState.Idle && !adapter.isEmpty()) || state == PagingState.Loading
+            historyRecyclerView.isVisible = recyclerVisibilityValidState(state)
         }
+    }
+
+    private fun recyclerVisibilityValidState(state: PagingState): Boolean {
+        val isInitState = state == PagingState.Idle && !adapter.isEmpty()
+        val isFetchPageErrorState = state is PagingState.Error && !adapter.isEmpty()
+        return isInitState || isFetchPageErrorState || state == PagingState.Loading
     }
 
     override fun showHistory(history: List<HistoryItem>) {
