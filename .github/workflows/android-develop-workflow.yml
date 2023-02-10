@@ -30,10 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: "Initialize project keys"
-        uses: ./.github/actions/setup-project
-        env:
-          inputs: ${{ env.setup_project_inputs }}
+#      - name: "Initialize project keys"
+#        uses: ./.github/actions/setup-project
+#        env:
+#          inputs: ${{ env.setup_project_inputs }}
 #      - name: Run ktlint
 #        run: ./gradlew ktlint -PautoCorrect=0
       - name: "Commit changes"
