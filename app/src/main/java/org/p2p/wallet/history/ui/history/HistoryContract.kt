@@ -26,7 +26,6 @@ interface HistoryContract {
         fun refreshHistory()
         fun loadNextHistoryPage()
         fun onBuyClicked()
-        fun onItemClicked(transaction: HistoryTransaction)
-        fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails)
+        fun onItemClicked(historyItem: HistoryItem)
     }
 }

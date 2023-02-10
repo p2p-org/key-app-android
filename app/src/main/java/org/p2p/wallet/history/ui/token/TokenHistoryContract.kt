@@ -8,6 +8,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 interface TokenHistoryContract {
 
@@ -19,11 +20,12 @@ interface TokenHistoryContract {
         fun scrollToTop()
         fun showHistory(history: List<HistoryItem>)
         fun showDetailsScreen(transaction: HistoryTransaction)
+        fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails)
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun loadHistory()
-        fun onItemClicked(transaction: HistoryTransaction)
+        fun onItemClicked(historyItem: HistoryItem)
         fun closeAccount()
         fun loadNextHistoryPage()
         fun retryLoad()

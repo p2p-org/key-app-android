@@ -43,8 +43,7 @@ class HistoryFragment :
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             glideManager = glideManager,
-            onTransactionClicked = presenter::onItemClicked,
-            onMoonpayTransactionClicked = presenter::onSellTransactionClicked,
+            onHistoryItemClicked = presenter::onItemClicked,
             onRetryClicked = presenter::loadNextHistoryPage
         )
     }

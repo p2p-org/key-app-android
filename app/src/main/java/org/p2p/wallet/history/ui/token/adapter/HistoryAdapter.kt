@@ -21,7 +21,6 @@ import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHol
 import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val HISTORY_DATE_VIEW_TYPE = 2
@@ -32,8 +31,7 @@ private const val TRANSACTION_MOONPAY_VIEW_TYPE = 6
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
-    private val onTransactionClicked: (HistoryTransaction) -> Unit,
-    private val onMoonpayTransactionClicked: (SellTransactionViewDetails) -> Unit,
+    private val onHistoryItemClicked: (HistoryItem) -> Unit,
     private val onRetryClicked: () -> Unit,
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>(), RoundedItemAdapterInterface {
 
@@ -59,11 +57,11 @@ class HistoryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryTransactionViewHolder {
         return when (viewType) {
-            TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, glideManager, onTransactionClicked)
-            TRANSACTION_SWAP_VIEW_TYPE -> TransactionSwapViewHolder(parent, glideManager, onTransactionClicked)
+            TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, glideManager, onHistoryItemClicked)
+            TRANSACTION_SWAP_VIEW_TYPE -> TransactionSwapViewHolder(parent, glideManager, onHistoryItemClicked)
             HISTORY_DATE_VIEW_TYPE -> DateViewHolder(parent)
             PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)
-            TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onMoonpayTransactionClicked)
+            TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onHistoryItemClicked)
             else -> ErrorViewHolder(parent)
         }
     }

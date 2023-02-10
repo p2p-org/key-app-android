@@ -12,6 +12,7 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.interactor.HistoryFetchListResult
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
@@ -152,7 +153,15 @@ class HistoryPresenter(
             HistoryFetchListResult(isFailed = true)
         }
 
-    override fun onItemClicked(transaction: HistoryTransaction) {
+    override fun onItemClicked(historyItem: HistoryItem) {
+        when (historyItem) {
+            is HistoryItem.TransactionItem -> onTransactionItemClicked(historyItem.transaction)
+            is HistoryItem.MoonpayTransactionItem -> onSellTransactionClicked(historyItem.transactionDetails)
+            else -> Timber.e("Unsupported Transaction click! $historyItem")
+        }
+    }
+
+    private fun onTransactionItemClicked(transaction: HistoryTransaction) {
         logTransactionClicked(transaction)
         view?.openTransactionDetailsScreen(transaction)
     }
@@ -174,7 +183,7 @@ class HistoryPresenter(
         }
     }
 
-    override fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails) {
+    private fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails) {
         historyAnalytics.logSellTransactionClicked(sellTransaction)
         view?.openSellTransactionDetails(sellTransaction)
     }
