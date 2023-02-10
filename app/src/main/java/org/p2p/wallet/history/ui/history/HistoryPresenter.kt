@@ -84,8 +84,7 @@ class HistoryPresenter(
         if (blockChainTransactionsList.hasFetchedItems() || moonpayTransactionsList.hasFetchedItems()) {
 
             view?.showHistory(
-                merge(
-                    historyItemMapper.fromDomainSell(moonpayTransactionsList.content), // goes first
+                historyItemMapper.fromDomainSell(moonpayTransactionsList.content).merge( // goes first
                     historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
                 )
             )
@@ -116,8 +115,7 @@ class HistoryPresenter(
                 Timber.e(HistoryFetchFailure, "Error getting transaction whole history")
             } else {
                 view?.showHistory(
-                    merge(
-                        historyItemMapper.fromDomainSell(moonpayTransactionsList.content), // goes first
+                    historyItemMapper.fromDomainSell(moonpayTransactionsList.content).merge( // goes first
                         historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
                     )
                 )

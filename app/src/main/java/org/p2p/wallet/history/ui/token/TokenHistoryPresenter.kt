@@ -94,8 +94,7 @@ class TokenHistoryPresenter(
     override fun loadHistory() {
         if (blockChainTransactionsList.hasFetchedItems() || sellTransactionsList.hasFetchedItems()) {
             view?.showHistory(
-                merge(
-                    historyItemMapper.fromDomainSell(sellTransactionsList.content), // goes first
+                historyItemMapper.fromDomainSell(sellTransactionsList.content).merge( // goes first
                     historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
                 )
             )
@@ -122,8 +121,7 @@ class TokenHistoryPresenter(
                 Timber.e(HistoryFetchFailure, "Error getting transaction history for token")
             } else {
                 view?.showHistory(
-                    merge(
-                        historyItemMapper.fromDomainSell(sellTransactionsList.content), // goes first
+                    historyItemMapper.fromDomainSell(sellTransactionsList.content).merge( // goes first
                         historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
                     )
                 )
