@@ -1,7 +1,6 @@
 package org.p2p.wallet.moonpay.model
 
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
-import java.io.IOException
 
 sealed class MoonpaySellError(
     override val message: String? = null,
@@ -13,7 +12,7 @@ sealed class MoonpaySellError(
     class UnauthorizedRequest(cause: Throwable) :
         MoonpaySellError(message = "Request was unauthorized", cause = cause)
 
-    class NoInternetForRequest(cause: IOException) :
+    class NoInternetForRequest(cause: Throwable) :
         MoonpaySellError(message = "No internet for making request", cause = cause)
 
     class UnknownError(cause: Throwable) :
