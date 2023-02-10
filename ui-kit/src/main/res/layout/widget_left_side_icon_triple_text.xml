@@ -9,10 +9,11 @@
     tools:layout_width="match_parent"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <org.p2p.uikit.atoms.icon_wrapper.UiKitIconWrapper
+    <org.p2p.uikit.components.icon_wrapper.UiKitIconWrapper
         android:id="@+id/imageViewIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:duplicateParentState="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:duplicateParentState="true"
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
@@ -44,6 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
+        android:duplicateParentState="true"
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
@@ -63,6 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:duplicateParentState="true"
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"

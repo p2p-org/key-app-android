@@ -1,4 +1,4 @@
-package org.p2p.uikit.atoms.icon_wrapper
+package org.p2p.uikit.components.icon_wrapper
 
 import org.p2p.uikit.utils.image.ImageViewUiModel
 

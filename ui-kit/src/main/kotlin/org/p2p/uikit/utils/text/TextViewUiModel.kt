@@ -20,7 +20,7 @@ import org.p2p.uikit.utils.toPx
 
 data class TextViewUiModel(
     val text: TextContainer,
-    @StyleRes val titleTextAppearance: Int? = null,
+    @StyleRes val textAppearance: Int? = null,
     @ColorRes val textColor: Int? = null,
     val textSizeSp: Float? = null,
     val gravity: Int = Gravity.CENTER,
@@ -53,7 +53,7 @@ fun TextView.bindOrGone(model: TextViewUiModel?) {
 }
 
 fun TextView.bind(model: TextViewUiModel) {
-    model.titleTextAppearance?.let { setTextAppearance(it) }
+    model.textAppearance?.let { setTextAppearance(it) }
     model.textColor?.let { getColorStateList(it) }
     model.textSizeSp?.let { textSize = it }
     gravity = model.gravity

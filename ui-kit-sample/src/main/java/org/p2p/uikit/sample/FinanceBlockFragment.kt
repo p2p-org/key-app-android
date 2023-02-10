@@ -11,7 +11,7 @@ import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import org.p2p.core.common.IconContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.uikit.atoms.icon_wrapper.IconWrapperUiModel
+import org.p2p.uikit.components.icon_wrapper.IconWrapperUiModel
 import org.p2p.uikit.components.finance_block.FinanceBlockUiModel
 import org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
 import org.p2p.uikit.components.left_side.LeftSideUiModel
@@ -110,7 +110,7 @@ private class Adapter(
 ) : AsyncListDifferDelegationAdapter<Any>(diffCallback, *delegates)
 
 fun financeBlockDelegate(
-    inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
+    inflateListener: ((view: UiKitFinanceBlockView) -> Unit)? = null,
     onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockUiModel) -> Unit)? = null,
 ) = adapterDelegateViewBinding<FinanceBlockUiModel, Any, ItemFinanceBlockBinding>(
     { layoutInflater, parent -> ItemFinanceBlockBinding.inflate(layoutInflater, parent, false) }
@@ -173,7 +173,7 @@ val leftTripleCustomText: LeftSideUiModel
         icon = IconWrapperUiModel.SingleIcon(centerIcon),
         firstLineText = TextViewUiModel(
             text = TextContainer.Raw("Send"),
-            titleTextAppearance = R.style.UiKit_TextAppearance_SemiBold_Text1,
+            textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text1,
             textColor = R.color.text_rose,
             textSizeSp = 24f,
         ),
