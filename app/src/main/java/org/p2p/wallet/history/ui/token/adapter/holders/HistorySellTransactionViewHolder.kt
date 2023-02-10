@@ -59,7 +59,7 @@ class HistorySellTransactionViewHolder(
                 titleStatus = getString(R.string.transaction_history_moonpay_waiting_for_deposit_title)
                 subtitleReceiver = getString(
                     R.string.transaction_history_moonpay_waiting_for_deposit_subtitle,
-                    item.transactionDetails.receiverAddress.cutStart(4)
+                    item.transactionDetails.receiverAddress.cutStart()
                 )
             }
             SellTransactionStatus.PENDING -> {

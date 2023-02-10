@@ -21,6 +21,7 @@ import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.util.Locale
 import kotlinx.coroutines.launch
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 
 private const val DATE_FORMAT = "MMMM dd, yyyy"
 private const val TIME_FORMAT = "HH:mm"
@@ -67,7 +68,7 @@ class SellTransactionDetailsPresenter(
         )
         val receiverBlock = SellTransactionDetailsViewState.ReceiverBlock(
             receiverTitle = resources.getString(R.string.sell_details_send_to),
-            receiverValue = currentTransaction.receiverAddress.cutMiddle(cutCount = 6),
+            receiverValue = currentTransaction.receiverAddress.cutMiddle(cutCount = CUT_ADDRESS_SYMBOLS_COUNT),
             isCopyEnabled = true,
             copyValueProvider = currentTransaction::receiverAddress
         )
