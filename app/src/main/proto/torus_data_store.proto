@@ -1,0 +1,33 @@
+syntax = 'proto3';
+
+option java_package = "org.p2p.wallet";
+option java_multiple_files = true;
+
+message  TorusDataStore {
+  string ethereum_public_key = 1;
+  string mnemonic_phrase = 2;
+  string encrypted_mnemonic_phrase = 3;
+  DeviceShare device_share = 4;
+  DeviceShare custom_third_share = 5;
+}
+
+message DeviceShare {
+  ShareInnerDetails share = 1;
+  Verifier verifier = 2;
+}
+
+message ShareInnerDetails {
+  ShareValue shareValue = 1;
+  string polynomial_id = 2;
+}
+
+message ShareValue {
+  string value = 1;
+  string share_index = 2;
+}
+
+message Verifier {
+  string verifier = 1;
+  string storage = 2;
+  string type = 3;
+}

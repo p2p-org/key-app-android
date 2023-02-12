@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-parcelize'
+    id "com.google.protobuf" version "0.8.17"
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
     id 'com.google.firebase.crashlytics'
@@ -15,6 +16,7 @@ apply from: "$project.rootDir/scripts/signing.gradle"
 apply from: "$project.rootDir/scripts/config.gradle"
 apply from: "$project.rootDir/scripts/analytics.gradle"
 apply from: "$project.rootDir/scripts/torus.gradle"
+apply from: "$project.rootDir/scripts/protobuf.gradle"
 
 android {
     compileSdkVersion sdkCompileVersion

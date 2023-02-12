@@ -1,0 +1,10 @@
+syntax='proto3';
+
+option java_package = "org.p2p.wallet";
+option java_multiple_files = true;
+
+message AuthDataStore {
+  string pin_code_salt = 1;
+  string pin_code_hash = 2;
+  string pin_code_biometric_hash = 3;
+}
