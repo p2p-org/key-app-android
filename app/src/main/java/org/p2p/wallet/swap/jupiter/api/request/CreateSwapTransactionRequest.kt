@@ -62,7 +62,7 @@ data class SwapRouteRequest(
         @SerializedName("minOutAmount")
         val minOutAmount: String?,
         @SerializedName("priceImpactPct")
-        val priceImpactPct: Int,
+        val priceImpactPct: Double,
         @SerializedName("lpFee")
         val lpFee: LpFeeRequest,
         @SerializedName("platformFee")
@@ -74,16 +74,16 @@ data class SwapRouteRequest(
             @SerializedName("mint")
             val mint: String,
             @SerializedName("pct")
-            val pct: Int
+            val pct: Double
         )
 
         data class PlatformFeeRequest(
             @SerializedName("amount")
-            val amount: String,
+            val amountInLamports: String,
             @SerializedName("mint")
             val mint: String,
             @SerializedName("pct")
-            val pct: Int
+            val pct: Double
         )
     }
 }

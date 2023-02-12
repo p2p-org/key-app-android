@@ -33,6 +33,7 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import timber.log.Timber
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
@@ -242,8 +243,12 @@ class NewBuyFragment :
             currencyCode = selectedCurrency.code.lowercase(),
             paymentMethod = paymentMethod
         )
-        analyticsInteractor.logScreenOpenEvent(ScreenNames.Buy.EXTERNAL)
-        requireContext().showUrlInCustomTabs(url)
+        try {
+            requireContext().showUrlInCustomTabs(url)
+            analyticsInteractor.logScreenOpenEvent(ScreenNames.Buy.EXTERNAL)
+        } catch (error: Throwable) {
+            Timber.e(error, "Unable to open moonpay widget in tabs")
+        }
     }
 
     override fun close() {

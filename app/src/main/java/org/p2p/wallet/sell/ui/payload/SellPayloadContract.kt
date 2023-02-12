@@ -15,7 +15,7 @@ interface SellPayloadContract {
         fun showLoading(isVisible: Boolean)
         fun showButtonLoading(isLoading: Boolean)
         fun showMoonpayWidget(url: String)
-        fun navigateToSellLock(details: SellTransactionViewDetails)
+        fun navigateToSellLock(details: SellTransactionViewDetails, isTransactionJustCreated: Boolean)
         fun navigateToErrorScreen()
         fun navigateToInformationScreen()
         fun updateViewState(newState: ViewState)

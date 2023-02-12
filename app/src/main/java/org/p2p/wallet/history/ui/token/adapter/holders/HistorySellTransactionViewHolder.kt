@@ -82,17 +82,17 @@ class HistorySellTransactionViewHolder(
 
     private fun renderAmounts(item: HistoryItem.MoonpayTransactionItem) {
         if (item.status == SellTransactionStatus.COMPLETED) {
-            binding.layoutTransactionDetails.endAmountView.usdAmount = binding.getString(
+            binding.layoutTransactionDetails.endAmountView.topValue = binding.getString(
                 R.string.transaction_history_moonpay_amount_fiat,
                 item.amountInFiat,
                 item.transactionDetails.fiatUiName.uppercase()
             )
         } else {
-            binding.layoutTransactionDetails.endAmountView.usdAmount = binding.getString(
+            binding.layoutTransactionDetails.endAmountView.topValue = binding.getString(
                 R.string.transaction_history_moonpay_amount_sol,
                 item.amountInSol,
             )
         }
-        binding.layoutTransactionDetails.endAmountView.tokenAmount = null // hide SOL amount
+        binding.layoutTransactionDetails.endAmountView.bottomValue = null // hide SOL amount
     }
 }

@@ -26,6 +26,8 @@
 
     <string name="orcaApiBaseUrl">https://orca.key.app/</string>
 
+    <string name="jupiterQuoteBaseUrl">https://quote-api.jup.ag/</string>
+
     <string name="notificationServiceBaseUrl">https://push-service.key.app/</string>
     <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/notifier/</string>
 

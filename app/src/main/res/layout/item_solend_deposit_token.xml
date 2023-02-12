@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/amountViewStart"
         app:layout_constraintTop_toTopOf="@id/imageViewToken"
-        app:tokenAmount="@string/solend_top_up_apy_title"
-        tools:usdAmount="2.21%" />
+        app:bottomValue="@string/solend_top_up_apy_title"
+        tools:topValue="2.21%" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
