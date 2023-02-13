@@ -115,7 +115,8 @@ jobs:
       - name: "Commit and Push changes"
         uses: ./.github/actions/setup-commit
         with:
-          github-author-email: ${{ vars.JIRA_USER_EMAIL }}
+          github-author-email: ${{ vars.JIRA_USER_EMAIL }}ADMIN_ACCESS_TOKEN
+          admin-access-token: ${{ secrets.ADMIN_ACCESS_TOKEN }}
   update-jira-status:
     name: "Jira manipulations"
     needs:
