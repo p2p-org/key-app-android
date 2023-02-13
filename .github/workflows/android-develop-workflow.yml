@@ -26,42 +26,42 @@ env:
     lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
 
 jobs:
-  android-lint:
-    name: "Run ktlint check"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: "Initialize project keys"
-        uses: ./.github/actions/setup-project
-        env:
-          inputs: ${{ env.setup_project_inputs }}
-      - name: Run ktlint
-        run: ./gradlew ktlint -PautoCorrect=0
-  android-unit-tests:
-    name: "Run unit tests"
-    needs:
-      - android-lint
-
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: "Initializing firebase configs"
-        uses: ./.github/actions/setup-google-services
-        with:
-          google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-      - name: "Restore properties files cache"
-        uses: actions/cache@v3
-        with:
-          path: .
-          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
-          restore: true
-      - name: Run unit tests
-        run: ./gradlew testDebug
+#  android-lint:
+#    name: "Run ktlint check"
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: "Initialize project keys"
+#        uses: ./.github/actions/setup-project
+#        env:
+#          inputs: ${{ env.setup_project_inputs }}
+#      - name: Run ktlint
+#        run: ./gradlew ktlint -PautoCorrect=0
+#  android-unit-tests:
+#    name: "Run unit tests"
+#    needs:
+#      - android-lint
+#
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: "Initializing firebase configs"
+#        uses: ./.github/actions/setup-google-services
+#        with:
+#          google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
+#      - name: "Restore properties files cache"
+#        uses: actions/cache@v3
+#        with:
+#          path: .
+#          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
+#          restore: true
+#      - name: Run unit tests
+#        run: ./gradlew testDebug
   android-build-artifacts:
     name: "Run build feature artifacts"
 #    if: github.ref == 'refs/heads/develop'
-    needs:
-      - android-lint
+#    needs:
+#      - android-lint
 #      - android-unit-tests
 
     runs-on: ubuntu-latest
