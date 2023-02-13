@@ -122,9 +122,11 @@ class TokenHistoryPresenter(
                 view?.showPagingState(PagingState.Error(HistoryFetchFailure))
                 Timber.e(HistoryFetchFailure, "Error getting transaction history for token")
             } else {
+                val sellTransactions = historyItemMapper.fromDomainSell(sellTransactionsList.content)
+                val blockchainTransactions = historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
                 view?.showHistory(
-                    historyItemMapper.fromDomainSell(sellTransactionsList.content).merge( // goes first
-                        historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
+                    sellTransactions.merge( // goes first
+                        blockchainTransactions
                     )
                 )
                 view?.showPagingState(PagingState.Idle)
@@ -162,7 +164,11 @@ class TokenHistoryPresenter(
         when (historyItem) {
             is HistoryItem.TransactionItem -> onTransactionItemClicked(historyItem.transaction)
             is HistoryItem.MoonpayTransactionItem -> onSellTransactionClicked(historyItem.transactionDetails)
-            else -> Timber.e("Unsupported Transaction click! $historyItem")
+            else -> {
+                val errorMessage = "Unsupported Transaction click! $historyItem"
+                Timber.e(errorMessage)
+                throw UnsupportedOperationException(errorMessage)
+            }
         }
     }
 

@@ -83,10 +83,11 @@ class HistoryPresenter(
 
     override fun loadHistory() {
         if (blockChainTransactionsList.hasFetchedItems() || moonpayTransactionsList.hasFetchedItems()) {
-
+            val sellTransactions = historyItemMapper.fromDomainSell(moonpayTransactionsList.content)
+            val blockchainTransactions = historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
             view?.showHistory(
-                historyItemMapper.fromDomainSell(moonpayTransactionsList.content).merge( // goes first
-                    historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
+                sellTransactions.merge( // goes first
+                    blockchainTransactions
                 )
             )
             return
@@ -157,7 +158,11 @@ class HistoryPresenter(
         when (historyItem) {
             is HistoryItem.TransactionItem -> onTransactionItemClicked(historyItem.transaction)
             is HistoryItem.MoonpayTransactionItem -> onSellTransactionClicked(historyItem.transactionDetails)
-            else -> Timber.e("Unsupported Transaction click! $historyItem")
+            else -> {
+                val errorMessage = "Unsupported Transaction click! $historyItem"
+                Timber.e(errorMessage)
+                throw UnsupportedOperationException(errorMessage)
+            }
         }
     }
 

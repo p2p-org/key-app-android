@@ -93,11 +93,11 @@ class HistoryFragment :
             refreshLayout.isVisible = state != PagingState.InitialLoading
             errorStateLayout.root.isVisible = state is PagingState.Error && adapter.isEmpty()
             emptyStateLayout.root.isVisible = state == PagingState.Idle && adapter.isEmpty()
-            historyRecyclerView.isVisible = recyclerVisibilityValidState(state)
+            historyRecyclerView.isVisible = isHistoryItemsVisible(state)
         }
     }
 
-    private fun recyclerVisibilityValidState(state: PagingState): Boolean {
+    private fun isHistoryItemsVisible(state: PagingState): Boolean {
         val isInitState = state == PagingState.Idle && !adapter.isEmpty()
         val isFetchPageErrorState = state is PagingState.Error && !adapter.isEmpty()
         return isInitState || isFetchPageErrorState || state == PagingState.Loading
