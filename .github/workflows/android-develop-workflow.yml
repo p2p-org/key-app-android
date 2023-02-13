@@ -68,8 +68,6 @@ jobs:
     steps:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
-      - name: "Generate a unique version build"
-        uses: ./.github/actions/setup-version-build
       - name: "Initializing firebase configs"
         uses: ./.github/actions/setup-google-services
         with:
@@ -80,6 +78,8 @@ jobs:
           path: .
           key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
           restore: true
+      - name: "Generate a unique version build"
+        uses: ./.github/actions/setup-version-build
 #      - name: "Send start deploy message to slack"
 #        run: |
 #          git fetch
