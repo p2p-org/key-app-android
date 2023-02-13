@@ -2,7 +2,6 @@
 <resources>
     <item name="length_watcher_tag_id" type="id" />
     <item name="initial_view_padding_tag_id" type="id" />
-    <item name="initial_view_margin_tag_id" type="id" />
     <item name="view_coroutine_scope_tag_id" type="id" />
     <item name="view_keyboard_listener_job_tag_id" type="id" />
 </resources>

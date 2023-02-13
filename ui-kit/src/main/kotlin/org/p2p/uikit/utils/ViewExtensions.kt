@@ -1,5 +1,15 @@
 package org.p2p.uikit.utils
 
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
+import androidx.core.view.doOnLayout
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -11,17 +21,11 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.doOnAttach
-import androidx.core.view.doOnDetach
-import androidx.core.view.doOnLayout
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
+import org.p2p.core.utils.disableOnKeyboardOpenDynamicBottomOffset
+import org.p2p.core.utils.enableOnKeyboardOpenDynamicBottomOffset
 import org.p2p.core.utils.showKeyboard
+
+val ON_KEYBOARD_OPEN_DELTA_OFFSET = 28f.toPx()
 
 fun View.requireActivity(): AppCompatActivity {
     var context: Context = context
@@ -144,3 +148,12 @@ fun View.getColorStateList(@ColorRes colorRes: Int): ColorStateList =
 
 fun Fragment.getColor(@ColorRes colorRes: Int): Int =
     requireContext().getColor(colorRes)
+
+fun View.setDynamicButtonOffset(
+    isEnabled: Boolean,
+    onKeyboardOpenDeltaOffset: Float = ON_KEYBOARD_OPEN_DELTA_OFFSET
+): Unit = if (isEnabled) {
+    enableOnKeyboardOpenDynamicBottomOffset(onKeyboardOpenDeltaOffset)
+} else {
+    disableOnKeyboardOpenDynamicBottomOffset()
+}
