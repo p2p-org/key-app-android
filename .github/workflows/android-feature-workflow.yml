@@ -1,9 +1,9 @@
 # The workflow for feature pull requests before they are merged
-on:
-  pull_request:
-    branches:
-      - develop
-      - release/*
+#on:
+#  pull_request:
+#    branches:
+#      - develop
+#      - release/*
 
 env:
   setup_project_inputs: |
