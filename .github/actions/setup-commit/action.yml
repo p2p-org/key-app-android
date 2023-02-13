@@ -23,4 +23,4 @@ runs:
         git config user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
         token=${{ inputs.admin-access-token }}
-        git push https://$token@github.com/p2p-org/key-app-android.git HEAD:develop
+        git push https://$token@github.com/p2p-org/key-app-android.git
