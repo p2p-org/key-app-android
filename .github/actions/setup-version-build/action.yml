@@ -1,0 +1,20 @@
+name: "Setup version build"
+description: "Generating a unique version build in app/gradle.properties"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup version
+      shell: bash
+      run: |
+        # Get the current date in milliseconds
+        timestamp=$(date +%s%3N)
+        
+        run_number=${{ github.run_number }}
+        
+        # Combine the timestamp with the GITHUB_RUN_NUMBER
+        version=$((timestamp / run_number))
+        
+        # Set the version build number using the unique identifier
+        ./gradlew setVersionBuild -Pversion=$version
+        echo "Set build version to ${version}"

@@ -48,10 +48,12 @@ jobs:
         uses: ./.github/actions/setup-google-services
         with:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-      - name: "Initialize project keys"
-        uses: ./.github/actions/setup-project
-        env:
-          inputs: ${{ env.setup_project_inputs }}
+      - name: "Restore properties files cache"
+        uses: actions/cache@v3
+        with:
+          path: .
+          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
+          restore: true
       - name: Run unit tests
         run: ./gradlew testDebug
   android-build-artifacts:
@@ -65,14 +67,18 @@ jobs:
     steps:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
+      - name: "Generate a unique version build"
+        uses: ./.github/actions/setup-version-build
       - name: "Initializing firebase configs"
         uses: ./.github/actions/setup-google-services
         with:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-      - name: "Initialize project keys"
-        uses: ./.github/actions/setup-project
-        env:
-          inputs: ${{ env.setup_project_inputs }}
+      - name: "Restore properties files cache"
+        uses: actions/cache@v3
+        with:
+          path: .
+          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
+          restore: true
 #      - name: "Send start deploy message to slack"
 #        run: |
 #          git fetch
@@ -105,20 +111,12 @@ jobs:
 #          cd bash_scripts
 #          value=`cat timestamp.txt`
 #          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-  commit-and-push:
-    name: "Commit and Push changes"
-    runs-on: ubuntu-latest
-    needs:
-      - android-build-artifacts
-    steps:
-      - name: "Checkout to the current commit hash"
-        uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-commit
+      - name: "Commit and Push changes"
+        uses: ./.github/actions/setup-commit
         with:
           github-author-email: ${{ vars.JIRA_USER_EMAIL }}
   update-jira-status:
     name: "Jira manipulations"
-    if: always()
     needs:
       - android-build-artifacts
     runs-on: ubuntu-latest
