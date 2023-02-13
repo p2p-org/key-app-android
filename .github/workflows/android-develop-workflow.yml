@@ -59,7 +59,7 @@ jobs:
         run: ./gradlew testDebug
   android-build-artifacts:
     name: "Run build feature artifacts"
-    if: github.ref == 'refs/heads/develop'
+#    if: github.ref == 'refs/heads/develop'
     needs:
       - android-lint
 #      - android-unit-tests
