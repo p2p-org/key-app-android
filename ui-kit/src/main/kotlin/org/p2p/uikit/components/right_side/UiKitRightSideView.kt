@@ -15,16 +15,16 @@ class UiKitRightSideView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
-    private var currentModel: RightSideUiModel? = null
-    private val viewPool = ComponentViewPool<RightSideUiModel>(this) {
+    private var currentModel: RightSideCellModel? = null
+    private val viewPool = ComponentViewPool<RightSideCellModel>(this) {
         when (this) {
-            RightSideUiModel.TwoLineText::class -> inflateViewBinding<WidgetRightSideDoubleTextBinding>()
-            RightSideUiModel.SingleTextTwoIcon::class -> inflateViewBinding<WidgetRightSideSingleTextTwoIconBinding>()
+            RightSideCellModel.TwoLineText::class -> inflateViewBinding<WidgetRightSideDoubleTextBinding>()
+            RightSideCellModel.SingleTextTwoIcon::class -> inflateViewBinding<WidgetRightSideSingleTextTwoIconBinding>()
             else -> throw IllegalArgumentException("add remaining type")
         }
     }
 
-    val item: RightSideUiModel
+    val item: RightSideCellModel
         get() = currentModel ?: throw IllegalStateException("Not bind yet")
 
     init {
@@ -34,7 +34,7 @@ class UiKitRightSideView @JvmOverloads constructor(
     }
 
     fun setOnSwitchAction(
-        onItemSwitchAction: (view: UiKitRightSideView, item: RightSideUiModel, isChecked: Boolean) -> Unit
+        onItemSwitchAction: (view: UiKitRightSideView, item: RightSideCellModel, isChecked: Boolean) -> Unit
     ) {
 
         // todo
@@ -45,21 +45,22 @@ class UiKitRightSideView @JvmOverloads constructor(
             }*/
     }
 
-    fun bind(model: RightSideUiModel) {
+    fun bind(model: RightSideCellModel) {
         val pair = viewPool.updatePoolOfViews(this.currentModel, model)
         when (model) {
-            is RightSideUiModel.TwoLineText -> (pair.first as WidgetRightSideDoubleTextBinding).bind(model)
-            is RightSideUiModel.SingleTextTwoIcon -> (pair.first as WidgetRightSideSingleTextTwoIconBinding).bind(model)
+            is RightSideCellModel.TwoLineText -> (pair.first as WidgetRightSideDoubleTextBinding).bind(model)
+            is RightSideCellModel.SingleTextTwoIcon ->
+                (pair.first as WidgetRightSideSingleTextTwoIconBinding).bind(model)
         }
         this.currentModel = model
     }
 
-    private fun WidgetRightSideDoubleTextBinding.bind(model: RightSideUiModel.TwoLineText) {
+    private fun WidgetRightSideDoubleTextBinding.bind(model: RightSideCellModel.TwoLineText) {
         this.textViewFirst.bindOrGone(model.firstLineText)
         this.textViewSecond.bindOrGone(model.secondLineText)
     }
 
-    private fun WidgetRightSideSingleTextTwoIconBinding.bind(model: RightSideUiModel.SingleTextTwoIcon) {
+    private fun WidgetRightSideSingleTextTwoIconBinding.bind(model: RightSideCellModel.SingleTextTwoIcon) {
         this.textViewFirst.bindOrGone(model.text)
         this.imageViewFirstIcon.bindOrGone(model.firstIcon)
         this.imageViewSecondIcon.bindOrGone(model.secondIcon)

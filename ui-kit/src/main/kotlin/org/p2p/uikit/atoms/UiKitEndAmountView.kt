@@ -12,7 +12,7 @@ import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
-@Deprecated("use [UiKitFinanceBlockView] without [FinanceBlockUiModel.leftSideUiModel]")
+@Deprecated("use [UiKitFinanceBlockView] without [FinanceBlockCellModel.leftSideCellModel]")
 class UiKitEndAmountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

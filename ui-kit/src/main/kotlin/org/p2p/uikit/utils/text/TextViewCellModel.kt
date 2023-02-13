@@ -11,24 +11,24 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.insets.InitialViewPadding
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.R
-import org.p2p.uikit.utils.drawable.DrawableUiModel
+import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
 import org.p2p.uikit.utils.toPx
 
-data class TextViewUiModel(
+data class TextViewCellModel(
     val text: TextContainer,
     @StyleRes val textAppearance: Int? = null,
     @ColorRes val textColor: Int? = null,
     val textSizeSp: Float? = null,
     val gravity: Int = Gravity.CENTER,
-    val badgeBackground: TextViewBackgroundUiModel? = null
+    val badgeBackground: TextViewBackgroundModel? = null
 )
 
-data class TextViewBackgroundUiModel(
-    val background: DrawableUiModel = badgeRounded(),
+data class TextViewBackgroundModel(
+    val background: DrawableCellModel = badgeRounded(),
     val padding: InitialViewPadding = badgePadding()
 )
 
@@ -42,17 +42,17 @@ fun badgePadding(
 fun badgeRounded(
     @Px cornerSize: Float = 32f.toPx(),
     @ColorRes tint: Int = R.color.elements_lime,
-): DrawableUiModel = DrawableUiModel(
+): DrawableCellModel = DrawableCellModel(
     drawable = shapeDrawable(shapeRoundedAll(cornerSize)),
     tint = tint,
 )
 
-fun TextView.bindOrGone(model: TextViewUiModel?) {
+fun TextView.bindOrGone(model: TextViewCellModel?) {
     this.isVisible = model != null
     if (model != null) bind(model)
 }
 
-fun TextView.bind(model: TextViewUiModel) {
+fun TextView.bind(model: TextViewCellModel) {
     model.textAppearance?.let { setTextAppearance(it) }
     model.textColor?.let { getColorStateList(it) }
     model.textSizeSp?.let { textSize = it }

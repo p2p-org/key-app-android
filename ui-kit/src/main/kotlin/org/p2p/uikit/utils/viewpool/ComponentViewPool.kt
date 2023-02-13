@@ -8,19 +8,19 @@ import kotlin.reflect.KClass
 
 typealias BindingWithViews = Pair<ViewBinding, List<View>>
 
-class ComponentViewPool<UiModel : Any>(
+class ComponentViewPool<CellModel : Any>(
     private val viewGroup: ViewGroup,
-    private val inflater: KClass<out UiModel>.() -> ViewBinding
+    private val inflater: KClass<out CellModel>.() -> ViewBinding
 ) {
 
-    private val viewPool = mutableMapOf<KClass<out UiModel>, BindingWithViews>()
+    private val viewPool = mutableMapOf<KClass<out CellModel>, BindingWithViews>()
 
-    fun findPoolOfViews(type: KClass<out UiModel>, removeIfInflate: Boolean): BindingWithViews {
+    fun findPoolOfViews(type: KClass<out CellModel>, removeIfInflate: Boolean): BindingWithViews {
         return viewPool[type] ?: inflateAndSave(type)
             .also { if (removeIfInflate) viewGroup.removeAllViews() }
     }
 
-    fun updatePoolOfViews(oldModel: UiModel?, newModel: UiModel): BindingWithViews {
+    fun updatePoolOfViews(oldModel: CellModel?, newModel: CellModel): BindingWithViews {
         return when {
             oldModel == null -> inflateAndSave(newModel::class)
             oldModel != newModel -> updatePoolOfChildViews(newModel::class)
@@ -28,15 +28,15 @@ class ComponentViewPool<UiModel : Any>(
         }
     }
 
-    private fun updatePoolOfChildViews(newUiModel: KClass<out UiModel>): BindingWithViews {
-        val pair = viewPool[newUiModel]
+    private fun updatePoolOfChildViews(newModel: KClass<out CellModel>): BindingWithViews {
+        val pair = viewPool[newModel]
         viewGroup.removeAllViews()
         return pair
             ?.also { it.second.forEach { view -> viewGroup.addView(view) } }
-            ?: inflateAndSave(newUiModel)
+            ?: inflateAndSave(newModel)
     }
 
-    private fun inflateAndSave(type: KClass<out UiModel>): BindingWithViews {
+    private fun inflateAndSave(type: KClass<out CellModel>): BindingWithViews {
         val binding = inflater(type)
         val newView = mutableListOf<View>()
         viewGroup.forEach { newView.add(it) }

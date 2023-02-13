@@ -8,7 +8,7 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import org.p2p.core.common.IconContainer
 import org.p2p.core.common.setIcon
 import org.p2p.uikit.R
-import org.p2p.uikit.utils.drawable.DrawableUiModel
+import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.applyForeground
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
@@ -16,12 +16,12 @@ import org.p2p.uikit.utils.drawable.shape.shapeOutline
 import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
 
-data class ImageViewUiModel(
+data class ImageViewCellModel(
     val icon: IconContainer,
     @ColorRes val iconTint: Int? = null,
     val scaleType: ImageView.ScaleType = ImageView.ScaleType.CENTER,
-    val background: DrawableUiModel? = null,
-    val foreground: DrawableUiModel? = null,
+    val background: DrawableCellModel? = null,
+    val foreground: DrawableCellModel? = null,
     val clippingShape: ShapeAppearanceModel? = null,
 )
 
@@ -30,13 +30,13 @@ fun commonCircleImage(
     @ColorRes backgroundTint: Int = R.color.icons_rain,
     @Px strokeWidth: Float = 0f,
     @ColorRes strokeColor: Int = android.R.color.transparent,
-): ImageViewUiModel = ImageViewUiModel(
+): ImageViewCellModel = ImageViewCellModel(
     icon = icon,
-    background = DrawableUiModel(
+    background = DrawableCellModel(
         drawable = shapeDrawable(shape = shapeCircle()),
         tint = backgroundTint,
     ),
-    foreground = DrawableUiModel(
+    foreground = DrawableCellModel(
         drawable = shapeDrawable(shape = shapeCircle()),
         strokeColor = strokeColor,
         strokeWidth = strokeWidth,
@@ -44,12 +44,12 @@ fun commonCircleImage(
     clippingShape = shapeCircle()
 )
 
-fun ImageView.bindOrGone(model: ImageViewUiModel?) {
+fun ImageView.bindOrGone(model: ImageViewCellModel?) {
     this.isVisible = model != null
     if (model != null) bind(model)
 }
 
-fun ImageView.bind(model: ImageViewUiModel) {
+fun ImageView.bind(model: ImageViewCellModel) {
     setIcon(model.icon)
     imageTintList = model.iconTint?.let { getColorStateList(it) }
     scaleType = model.scaleType

@@ -14,11 +14,11 @@ class UiKitIconWrapper @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ConstraintLayout(context, attrs) {
 
-    private var currentModel: IconWrapperUiModel? = null
-    private val viewPool = ComponentViewPool<IconWrapperUiModel>(this) {
+    private var currentModel: IconWrapperCellModel? = null
+    private val viewPool = ComponentViewPool<IconWrapperCellModel>(this) {
         when (this) {
-            IconWrapperUiModel.SingleIcon::class -> inflateViewBinding<WidgetIconWrapperSingleBinding>()
-            IconWrapperUiModel.TwoIcon::class -> inflateViewBinding<WidgetIconWrapperTwoBinding>()
+            IconWrapperCellModel.SingleIcon::class -> inflateViewBinding<WidgetIconWrapperSingleBinding>()
+            IconWrapperCellModel.TwoIcon::class -> inflateViewBinding<WidgetIconWrapperTwoBinding>()
             else -> throw IllegalArgumentException("add remaining type")
         }
     }
@@ -29,21 +29,21 @@ class UiKitIconWrapper @JvmOverloads constructor(
         }
     }
 
-    fun bind(uiModel: IconWrapperUiModel) {
-        val pair = viewPool.updatePoolOfViews(this.currentModel, uiModel)
-        when (uiModel) {
-            is IconWrapperUiModel.SingleIcon -> (pair.first as WidgetIconWrapperSingleBinding).bind(uiModel)
-            is IconWrapperUiModel.TwoIcon -> (pair.first as WidgetIconWrapperTwoBinding).bind(uiModel)
+    fun bind(model: IconWrapperCellModel) {
+        val pair = viewPool.updatePoolOfViews(this.currentModel, model)
+        when (model) {
+            is IconWrapperCellModel.SingleIcon -> (pair.first as WidgetIconWrapperSingleBinding).bind(model)
+            is IconWrapperCellModel.TwoIcon -> (pair.first as WidgetIconWrapperTwoBinding).bind(model)
         }
-        this.currentModel = uiModel
+        this.currentModel = model
     }
 
-    private fun WidgetIconWrapperSingleBinding.bind(uiModel: IconWrapperUiModel.SingleIcon) {
-        this.imageViewIcon.bind(uiModel.icon)
+    private fun WidgetIconWrapperSingleBinding.bind(model: IconWrapperCellModel.SingleIcon) {
+        this.imageViewIcon.bind(model.icon)
     }
 
-    private fun WidgetIconWrapperTwoBinding.bind(uiModel: IconWrapperUiModel.TwoIcon) {
-        this.imageViewFirstIcon.bind(uiModel.first)
-        this.imageViewSecondIcon.bind(uiModel.second)
+    private fun WidgetIconWrapperTwoBinding.bind(model: IconWrapperCellModel.TwoIcon) {
+        this.imageViewFirstIcon.bind(model.first)
+        this.imageViewSecondIcon.bind(model.second)
     }
 }

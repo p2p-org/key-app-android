@@ -9,7 +9,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import org.p2p.uikit.utils.drawable.shape.shapeRectangle
 
-data class DrawableUiModel(
+data class DrawableCellModel(
     val drawable: Drawable = shapeDrawable(),
     @ColorRes val tint: Int = android.R.color.transparent,
     // only MaterialShapeDrawable support
@@ -22,7 +22,7 @@ fun shapeDrawable(
     shape: ShapeAppearanceModel = shapeRectangle(),
 ) = MaterialShapeDrawable(shape)
 
-fun DrawableUiModel?.applyBackground(view: View) {
+fun DrawableCellModel?.applyBackground(view: View) {
     val model = this
     if (model == null) {
         view.background = null
@@ -34,7 +34,7 @@ fun DrawableUiModel?.applyBackground(view: View) {
     view.backgroundTintList = view.context.getColorStateList(model.tint)
 }
 
-fun DrawableUiModel?.applyForeground(view: View) {
+fun DrawableCellModel?.applyForeground(view: View) {
     val model = this
     if (model == null) {
         view.foreground = null
@@ -46,7 +46,7 @@ fun DrawableUiModel?.applyForeground(view: View) {
     view.foregroundTintList = view.context.getColorStateList(model.tint)
 }
 
-private fun DrawableUiModel.mutateDrawable(context: Context): Drawable? {
+private fun DrawableCellModel.mutateDrawable(context: Context): Drawable? {
     val drawable = this.drawable.mutate().constantState?.newDrawable()
     if (drawable is MaterialShapeDrawable) {
         drawable.strokeColor = context.getColorStateList(this.strokeColor)

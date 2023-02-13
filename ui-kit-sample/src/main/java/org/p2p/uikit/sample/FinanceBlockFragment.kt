@@ -11,17 +11,18 @@ import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import org.p2p.core.common.IconContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.uikit.components.icon_wrapper.IconWrapperUiModel
-import org.p2p.uikit.components.finance_block.FinanceBlockUiModel
+import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
+import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
 import org.p2p.uikit.components.finance_block.UiKitFinanceBlockView
-import org.p2p.uikit.components.left_side.LeftSideUiModel
-import org.p2p.uikit.components.right_side.RightSideUiModel
+import org.p2p.uikit.components.left_side.LeftSideCellModel
+import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.databinding.ItemFinanceBlockBinding
+import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.sample.databinding.FragmentFinanceBlockBinding
-import org.p2p.uikit.utils.image.ImageViewUiModel
+import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.image.commonCircleImage
-import org.p2p.uikit.utils.text.TextViewBackgroundUiModel
-import org.p2p.uikit.utils.text.TextViewUiModel
+import org.p2p.uikit.utils.text.TextViewBackgroundModel
+import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import kotlin.jvm.internal.Intrinsics
 
@@ -57,16 +58,16 @@ class FinanceBlockFragment : Fragment(R.layout.fragment_finance_block) {
         binding.recyclerView.layoutManager = LinearLayoutManager(view.context)
         binding.recyclerView.adapter = adapter
 
-        val list = mutableListOf<Any>()
+        val list = mutableListOf<AnyCellItem>()
 
-        fun model(left: LeftSideUiModel? = null) =
-            FinanceBlockUiModel(left, null)
+        fun model(left: LeftSideCellModel? = null) =
+            FinanceBlockCellModel(left, null)
 
-        fun model(right: RightSideUiModel? = null) =
-            FinanceBlockUiModel(null, right)
+        fun model(right: RightSideCellModel? = null) =
+            FinanceBlockCellModel(null, right)
 
-        fun model(left: LeftSideUiModel? = null, right: RightSideUiModel? = null) =
-            FinanceBlockUiModel(left, right)
+        fun model(left: LeftSideCellModel? = null, right: RightSideCellModel? = null) =
+            FinanceBlockCellModel(left, right)
 
         list.apply {
             add(model(leftSingleLine))
@@ -105,14 +106,14 @@ class FinanceBlockFragment : Fragment(R.layout.fragment_finance_block) {
 }
 
 private class Adapter(
-    diffCallback: DiffUtil.ItemCallback<Any>,
-    vararg delegates: AdapterDelegate<List<Any>>,
-) : AsyncListDifferDelegationAdapter<Any>(diffCallback, *delegates)
+    diffCallback: DiffUtil.ItemCallback<AnyCellItem>,
+    vararg delegates: AdapterDelegate<List<AnyCellItem>>,
+) : AsyncListDifferDelegationAdapter<AnyCellItem>(diffCallback, *delegates)
 
 fun financeBlockDelegate(
     inflateListener: ((view: UiKitFinanceBlockView) -> Unit)? = null,
-    onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockUiModel) -> Unit)? = null,
-) = adapterDelegateViewBinding<FinanceBlockUiModel, Any, ItemFinanceBlockBinding>(
+    onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit)? = null,
+) = adapterDelegateViewBinding<FinanceBlockCellModel, AnyCellItem, ItemFinanceBlockBinding>(
     { layoutInflater, parent -> ItemFinanceBlockBinding.inflate(layoutInflater, parent, false) }
 ) {
 
@@ -124,145 +125,145 @@ fun financeBlockDelegate(
     }
 }
 
-private class DiffCallback : DiffUtil.ItemCallback<Any>() {
-    override fun areItemsTheSame(oldItem: Any, newItem: Any): Boolean {
+private class DiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
+    override fun areItemsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
             else -> oldItem.javaClass == newItem.javaClass
         }
     }
 
-    override fun areContentsTheSame(oldItem: Any, newItem: Any): Boolean {
+    override fun areContentsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
             else -> Intrinsics.areEqual(oldItem, newItem)
         }
     }
 
-    override fun getChangePayload(oldItem: Any, newItem: Any): Any? {
+    override fun getChangePayload(oldItem: AnyCellItem, newItem: AnyCellItem): Any? {
         return when {
             else -> super.getChangePayload(oldItem, newItem)
         }
     }
 }
 
-val leftSingleLine: LeftSideUiModel
-    get() = LeftSideUiModel.IconWithText(
-        icon = IconWrapperUiModel.SingleIcon(fullFit),
-        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
+val leftSingleLine: LeftSideCellModel
+    get() = LeftSideCellModel.IconWithText(
+        icon = IconWrapperCellModel.SingleIcon(fullFit),
+        firstLineText = TextViewCellModel(text = TextContainer.Raw("Send")),
     )
 
-val leftDoubleLine: LeftSideUiModel
-    get() = LeftSideUiModel.IconWithText(
-        icon = IconWrapperUiModel.TwoIcon(
+val leftDoubleLine: LeftSideCellModel
+    get() = LeftSideCellModel.IconWithText(
+        icon = IconWrapperCellModel.TwoIcon(
             fullFit,
             centerIcon
         ),
-        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
-        secondLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+        firstLineText = TextViewCellModel(text = TextContainer.Raw("Send")),
+        secondLineText = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
     )
 
-val leftTripleLine: LeftSideUiModel
-    get() = LeftSideUiModel.IconWithText(
-        icon = IconWrapperUiModel.SingleIcon(centerIcon),
-        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
-        secondLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
-        thirdLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+val leftTripleLine: LeftSideCellModel
+    get() = LeftSideCellModel.IconWithText(
+        icon = IconWrapperCellModel.SingleIcon(centerIcon),
+        firstLineText = TextViewCellModel(text = TextContainer.Raw("Send")),
+        secondLineText = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
+        thirdLineText = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
     )
 
-val leftTripleCustomText: LeftSideUiModel
-    get() = LeftSideUiModel.IconWithText(
-        icon = IconWrapperUiModel.SingleIcon(centerIcon),
-        firstLineText = TextViewUiModel(
+val leftTripleCustomText: LeftSideCellModel
+    get() = LeftSideCellModel.IconWithText(
+        icon = IconWrapperCellModel.SingleIcon(centerIcon),
+        firstLineText = TextViewCellModel(
             text = TextContainer.Raw("Send"),
             textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text1,
             textColor = R.color.text_rose,
             textSizeSp = 24f,
         ),
-        secondLineText = TextViewUiModel(
+        secondLineText = TextViewCellModel(
             text = TextContainer.Raw("23.8112 SOL"),
             textColor = R.color.text_electric,
         ),
-        thirdLineText = TextViewUiModel(
+        thirdLineText = TextViewCellModel(
             text = TextContainer.Raw("23.8112 SOL"),
             textColor = R.color.text_lime,
             textSizeSp = 9f,
         ),
     )
 
-val leftSingleLineWithoutImage: LeftSideUiModel
-    get() = LeftSideUiModel.IconWithText(
-        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
+val leftSingleLineWithoutImage: LeftSideCellModel
+    get() = LeftSideCellModel.IconWithText(
+        firstLineText = TextViewCellModel(text = TextContainer.Raw("Send")),
     )
 
-val leftTripleLineWithoutImage: LeftSideUiModel
-    get() = LeftSideUiModel.IconWithText(
-        firstLineText = TextViewUiModel(text = TextContainer.Raw("Send")),
-        secondLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
-        thirdLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+val leftTripleLineWithoutImage: LeftSideCellModel
+    get() = LeftSideCellModel.IconWithText(
+        firstLineText = TextViewCellModel(text = TextContainer.Raw("Send")),
+        secondLineText = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
+        thirdLineText = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
     )
 
-val rightTwoLineSingleLine: RightSideUiModel
-    get() = RightSideUiModel.TwoLineText(
-        firstLineText = TextViewUiModel(text = TextContainer.Raw("$190.91")),
+val rightTwoLineSingleLine: RightSideCellModel
+    get() = RightSideCellModel.TwoLineText(
+        firstLineText = TextViewCellModel(text = TextContainer.Raw("$190.91")),
     )
 
-val rightTwoLineDoubleLine: RightSideUiModel
-    get() = RightSideUiModel.TwoLineText(
-        firstLineText = TextViewUiModel(text = TextContainer.Raw("$190.91")),
-        secondLineText = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+val rightTwoLineDoubleLine: RightSideCellModel
+    get() = RightSideCellModel.TwoLineText(
+        firstLineText = TextViewCellModel(text = TextContainer.Raw("$190.91")),
+        secondLineText = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
     )
 
-val rightSingleLineText: RightSideUiModel
-    get() = RightSideUiModel.SingleTextTwoIcon(
-        text = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
+val rightSingleLineText: RightSideCellModel
+    get() = RightSideCellModel.SingleTextTwoIcon(
+        text = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
     )
 
-val rightSingleLineTextIcon: RightSideUiModel
-    get() = RightSideUiModel.SingleTextTwoIcon(
-        text = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
-        firstIcon = ImageViewUiModel(
+val rightSingleLineTextIcon: RightSideCellModel
+    get() = RightSideCellModel.SingleTextTwoIcon(
+        text = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
+        firstIcon = ImageViewCellModel(
             icon = IconContainer.Res(R.drawable.ic_arrow_forward),
             iconTint = R.color.icons_mountain
         ),
     )
 
-val rightSingleLineIcon: RightSideUiModel
-    get() = RightSideUiModel.SingleTextTwoIcon(
-        firstIcon = ImageViewUiModel(
+val rightSingleLineIcon: RightSideCellModel
+    get() = RightSideCellModel.SingleTextTwoIcon(
+        firstIcon = ImageViewCellModel(
             icon = IconContainer.Res(R.drawable.ic_arrow_forward),
             iconTint = R.color.icons_mountain
         ),
     )
 
-val rightSingleLineTextTwoIcon: RightSideUiModel
-    get() = RightSideUiModel.SingleTextTwoIcon(
-        text = TextViewUiModel(text = TextContainer.Raw("23.8112 SOL")),
-        firstIcon = ImageViewUiModel(
+val rightSingleLineTextTwoIcon: RightSideCellModel
+    get() = RightSideCellModel.SingleTextTwoIcon(
+        text = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
+        firstIcon = ImageViewCellModel(
             icon = IconContainer.Res(R.drawable.ic_arrow_forward),
             iconTint = R.color.icons_mountain
         ),
-        secondIcon = ImageViewUiModel(
+        secondIcon = ImageViewCellModel(
             icon = IconContainer.Res(R.drawable.ic_info_outline),
             iconTint = R.color.icons_mountain
         ),
     )
 
-val rightTextBadge: RightSideUiModel
-    get() = RightSideUiModel.SingleTextTwoIcon(
-        text = TextViewUiModel(
+val rightTextBadge: RightSideCellModel
+    get() = RightSideCellModel.SingleTextTwoIcon(
+        text = TextViewCellModel(
             text = TextContainer.Raw("23.8112 SOL"),
-            badgeBackground = TextViewBackgroundUiModel(),
+            badgeBackground = TextViewBackgroundModel(),
         ),
-        firstIcon = ImageViewUiModel(
+        firstIcon = ImageViewCellModel(
             icon = IconContainer.Res(R.drawable.ic_arrow_forward),
             iconTint = R.color.icons_mountain
         ),
-        secondIcon = ImageViewUiModel(
+        secondIcon = ImageViewCellModel(
             icon = IconContainer.Res(R.drawable.ic_info_outline),
             iconTint = R.color.icons_mountain
         ),
     )
 
-val fullFit: ImageViewUiModel
+val fullFit: ImageViewCellModel
     get() = commonCircleImage(
         icon = IconContainer.Res(R.drawable.shape_bottom_navigation_background),
         strokeWidth = 2f.toPx(),
@@ -271,7 +272,7 @@ val fullFit: ImageViewUiModel
         iconTint = R.color.icons_night,
     )
 
-val centerIcon: ImageViewUiModel
+val centerIcon: ImageViewCellModel
     get() = commonCircleImage(
         icon = IconContainer.Res(R.drawable.ic_arrow_forward),
         strokeWidth = 2f.toPx(),

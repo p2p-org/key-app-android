@@ -1,5 +1,5 @@
 package org.p2p.uikit.model
 
-interface UiModelPayload {
+interface CellModelPayload {
     val payload: Any?
 }

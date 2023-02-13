@@ -17,8 +17,8 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
 
     val binding = inflateViewBinding<WidgetFinanceBlockBinding>()
 
-    private var _item: FinanceBlockUiModel? = null
-    val item: FinanceBlockUiModel
+    private var _item: FinanceBlockCellModel? = null
+    val item: FinanceBlockCellModel
         get() = _item ?: throw IllegalStateException("Not bind yet")
 
     init {
@@ -29,19 +29,19 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
         minHeight = 72.toPx()
     }
 
-    fun setOnClickAction(onItemClickAction: (view: UiKitFinanceBlockView, item: FinanceBlockUiModel) -> Unit) {
+    fun setOnClickAction(onItemClickAction: (view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit) {
         setOnClickListener {
             onItemClickAction.invoke(this, item)
         }
     }
 
-    fun bind(model: FinanceBlockUiModel) {
+    fun bind(model: FinanceBlockCellModel) {
         _item = model
         isEnabled = model.accessibility.isEnabled
         isClickable = model.accessibility.isClickable
-        binding.leftSideView.isVisible = model.leftSideUiModel != null
-        model.leftSideUiModel?.let { binding.leftSideView.bind(it) }
-        binding.rightSideView.isVisible = model.rightSideUiModel != null
-        model.rightSideUiModel?.let { binding.rightSideView.bind(it) }
+        binding.leftSideView.isVisible = model.leftSideCellModel != null
+        model.leftSideCellModel?.let { binding.leftSideView.bind(it) }
+        binding.rightSideView.isVisible = model.rightSideCellModel != null
+        model.rightSideCellModel?.let { binding.rightSideView.bind(it) }
     }
 }

@@ -7,7 +7,7 @@ import org.p2p.uikit.databinding.ItemFinanceBlockBinding
 class FinanceBlockViewHolder(
     private val binding: ItemFinanceBlockBinding,
     private val inflateListener: ((financeBlock: UiKitFinanceBlockView) -> Unit)? = null,
-    private val onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockUiModel) -> Unit)? = null,
+    private val onBindListener: ((view: UiKitFinanceBlockView, item: FinanceBlockCellModel) -> Unit)? = null,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     companion object {
@@ -18,11 +18,11 @@ class FinanceBlockViewHolder(
         inflateListener?.invoke(binding.root)
     }
 
-    private var _item: FinanceBlockUiModel? = null
-    val item: FinanceBlockUiModel
+    private var _item: FinanceBlockCellModel? = null
+    val item: FinanceBlockCellModel
         get() = _item!!
 
-    fun bind(model: FinanceBlockUiModel) {
+    fun bind(model: FinanceBlockCellModel) {
         _item = model
         binding.root.bind(item)
         onBindListener?.invoke(binding.root, item)

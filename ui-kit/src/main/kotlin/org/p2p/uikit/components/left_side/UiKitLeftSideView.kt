@@ -15,13 +15,13 @@ class UiKitLeftSideView @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<WidgetLeftSideIconTripleTextBinding>()
 
-    fun bind(model: LeftSideUiModel) {
+    fun bind(model: LeftSideCellModel) {
         when (model) {
-            is LeftSideUiModel.IconWithText -> binding.bind(model)
+            is LeftSideCellModel.IconWithText -> binding.bind(model)
         }
     }
 
-    private fun WidgetLeftSideIconTripleTextBinding.bind(model: LeftSideUiModel.IconWithText) {
+    private fun WidgetLeftSideIconTripleTextBinding.bind(model: LeftSideCellModel.IconWithText) {
         imageViewIcon.isVisible = model.icon != null
         model.icon?.let { imageViewIcon.bind(it) }
 
