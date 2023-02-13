@@ -5,5 +5,5 @@
 
 *   @1sakov @Davran331122 @kabramovp2p @gslevinkov @NikolaiEmelianov
 
-# No code owner review is required for pushes to the develop branch
-/develop @
+# This will exclude app/gradle.properties from code owner requirements
+!app/gradle.properties
