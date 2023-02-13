@@ -6,7 +6,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemHistoryMoonpayTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
@@ -14,11 +13,11 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class HistorySellTransactionViewHolder(
     parent: ViewGroup,
-    private val onItemClicked: (SellTransactionViewDetails) -> Unit,
+    private val onHistoryClicked: (HistoryItem) -> Unit,
     private val binding: ItemHistoryMoonpayTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
     fun onBind(item: HistoryItem.MoonpayTransactionItem) = with(binding) {
-        root.setOnClickListener { onItemClicked.invoke(item.transactionDetails) }
+        root.setOnClickListener { onHistoryClicked.invoke(item) }
         renderStatusIcon(item)
         renderTitleAndSubtitle(item)
         renderAmounts(item)
