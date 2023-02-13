@@ -2,31 +2,21 @@ package org.p2p.wallet.history.ui.token
 
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
-import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
-import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.recycler.RoundedDecoration
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
-import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
-import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
@@ -40,7 +30,6 @@ import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
-import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -60,16 +49,6 @@ class TokenHistoryFragment :
 
     private val tokenForHistory: Token.Active by args(EXTRA_TOKEN)
 
-    private val glideManager: GlideManager by inject()
-
-    private val historyAdapter: HistoryAdapter by unsafeLazy {
-        HistoryAdapter(
-            glideManager = glideManager,
-            onHistoryItemClicked = presenter::onItemClicked,
-            onRetryClicked = presenter::loadNextHistoryPage,
-        )
-    }
-
     private val binding: FragmentTokenHistoryBinding by viewBinding()
 
     private val receiveAnalytics: ReceiveAnalytics by inject()
@@ -81,12 +60,13 @@ class TokenHistoryFragment :
         binding.setupView()
         listenForSellTransactionDialogDismiss()
         lifecycle.addObserver(presenter)
+        binding.layoutHistoryList.addObserver(lifecycle)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
         childFragmentManager.setFragmentResultListener(
             SellTransactionDetailsBottomSheet.REQUEST_KEY_DISMISSED, this
-        ) { _, _ -> presenter.loadHistory() }
+        ) { _, _ -> binding.layoutHistoryList.loadHistory() }
     }
 
     private fun FragmentTokenHistoryBinding.setupView() {
@@ -95,14 +75,12 @@ class TokenHistoryFragment :
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
-        with(layoutHistoryList) {
-            refreshLayout.setOnRefreshListener { presenter.retryLoad() }
-            errorStateLayout.buttonRetry.setOnClickListener { presenter.retryLoad() }
-            historyRecyclerView.setupHistoryList()
-
-            emptyStateLayout.buttonBuy.setOnClickListener { onActionButtonClicked(ActionButton.BUY_BUTTON) }
-            emptyStateLayout.buttonReceive.setOnClickListener { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) }
-        }
+        binding.layoutHistoryList.bind(
+            onBuyClicked = { onActionButtonClicked(ActionButton.BUY_BUTTON) },
+            onReceiveClicked = { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) },
+            onHistoryItemClicked = presenter::onItemClicked,
+            token = tokenForHistory
+        )
     }
 
     private fun Toolbar.setupToolbar() {
@@ -149,74 +127,12 @@ class TokenHistoryFragment :
         }
     }
 
-    private fun RecyclerView.setupHistoryList() {
-        layoutManager = LinearLayoutManager(requireContext())
-
-        attachAdapter(historyAdapter)
-        addItemDecoration(RoundedDecoration(16f))
-        clearOnScrollListeners()
-
-        val scrollListener = EndlessScrollListener(
-            layoutManager = layoutManager as LinearLayoutManager,
-            loadNextPage = { presenter.loadNextHistoryPage() },
-        )
-        addOnScrollListener(scrollListener)
-    }
-
     override fun showError(@StringRes resId: Int, argument: String) {
         showErrorDialog(getString(resId, argument))
     }
 
-    override fun showRefreshing(isRefreshing: Boolean) {
-        binding.layoutHistoryList.refreshLayout.isRefreshing = isRefreshing
-    }
-
-    override fun showHistory(history: List<HistoryItem>) {
-        with(binding.layoutHistoryList) {
-            historyAdapter.setTransactions(history)
-            historyRecyclerView.invalidateItemDecorations()
-
-            val isEmpty = historyAdapter.isEmpty()
-            emptyStateLayout.root.isVisible = isEmpty
-            refreshLayout.isVisible = !isEmpty
-        }
-    }
-
     override fun showActionButtons(actionButtons: List<ActionButton>) {
         binding.viewActionButtons.showActionButtons(actionButtons)
-    }
-
-    override fun showPagingState(state: PagingState) {
-        historyAdapter.setPagingState(state)
-        with(binding.layoutHistoryList) {
-            when (state) {
-                is PagingState.InitialLoading -> {
-                    shimmerView.root.isVisible = true
-                    refreshLayout.isVisible = false
-                }
-                is PagingState.Idle -> {
-                    shimmerView.root.isVisible = false
-                    refreshLayout.isVisible = true
-                    errorStateLayout.root.isVisible = false
-                    emptyStateLayout.root.isVisible = historyAdapter.isEmpty()
-                    historyRecyclerView.isVisible = !historyAdapter.isEmpty()
-                }
-                is PagingState.Loading -> {
-                    shimmerView.root.isVisible = historyAdapter.isEmpty()
-                    refreshLayout.isVisible = true
-                    errorStateLayout.root.isVisible = false
-                    emptyStateLayout.root.isVisible = false
-                    historyRecyclerView.isVisible = !historyAdapter.isEmpty()
-                }
-                is PagingState.Error -> {
-                    shimmerView.root.isVisible = false
-                    refreshLayout.isVisible = true
-                    errorStateLayout.root.isVisible = historyAdapter.isEmpty()
-                    emptyStateLayout.root.isVisible = false
-                    historyRecyclerView.isVisible = !historyAdapter.isEmpty()
-                }
-            }
-        }
     }
 
     override fun showDetailsScreen(transaction: HistoryTransaction) {
@@ -228,14 +144,6 @@ class TokenHistoryFragment :
                 HistoryTransactionDetailsBottomSheetFragment.show(parentFragmentManager, state)
             }
             else -> Timber.e("Unsupported transactionType: $transaction")
-        }
-    }
-
-    override fun scrollToTop() {
-        with(binding.layoutHistoryList.historyRecyclerView) {
-            post {
-                smoothScrollToPosition(0)
-            }
         }
     }
 
