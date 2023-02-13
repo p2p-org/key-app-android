@@ -9,8 +9,8 @@ inputs:
   github-author-email:
     description: "Github author email"
     required: true
-  admin-access-token:
-    description: "Github access token with admin permissions"
+  admin-ssh-key:
+    description: "Github SSH with admin permissions"
     required: true
 
 runs:
@@ -22,5 +22,5 @@ runs:
         git config user.name 'key-app-bot'
         git config user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
-        token=${{ inputs.admin-access-token }}
-        git push https://$token@github.com/p2p-org/key-app-android.git
+        ssh-key=${{ inputs.admin-ssh-key }}
+        GIT_SSH_COMMAND="ssh -i ${{ secrets.SSH_PRIVATE_KEY }}" git push -u origin feature/PWN-6722-ci

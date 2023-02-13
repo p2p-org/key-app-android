@@ -116,7 +116,7 @@ jobs:
         uses: ./.github/actions/setup-commit
         with:
           github-author-email: ${{ vars.JIRA_USER_EMAIL }}
-          admin-access-token: ${{ secrets.ADMIN_ACCESS_TOKEN }}
+          admin-access-token: ${{ secrets.ADMIN_SSH_KEY }}
   update-jira-status:
     name: "Jira manipulations"
     needs:
