@@ -1,4 +1,4 @@
-package org.p2p.wallet.common.ui.bottomsheet
+package org.p2p.core.common
 
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri

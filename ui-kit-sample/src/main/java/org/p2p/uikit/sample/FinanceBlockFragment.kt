@@ -9,7 +9,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
-import org.p2p.core.common.IconContainer
+import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.finance_block.FinanceBlockCellModel
@@ -221,7 +221,7 @@ val rightSingleLineTextIcon: RightSideCellModel
     get() = RightSideCellModel.SingleTextTwoIcon(
         text = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
         firstIcon = ImageViewCellModel(
-            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+            icon = DrawableContainer(R.drawable.ic_arrow_forward),
             iconTint = R.color.icons_mountain
         ),
     )
@@ -229,7 +229,7 @@ val rightSingleLineTextIcon: RightSideCellModel
 val rightSingleLineIcon: RightSideCellModel
     get() = RightSideCellModel.SingleTextTwoIcon(
         firstIcon = ImageViewCellModel(
-            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+            icon = DrawableContainer(R.drawable.ic_arrow_forward),
             iconTint = R.color.icons_mountain
         ),
     )
@@ -238,11 +238,11 @@ val rightSingleLineTextTwoIcon: RightSideCellModel
     get() = RightSideCellModel.SingleTextTwoIcon(
         text = TextViewCellModel(text = TextContainer.Raw("23.8112 SOL")),
         firstIcon = ImageViewCellModel(
-            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+            icon = DrawableContainer(R.drawable.ic_arrow_forward),
             iconTint = R.color.icons_mountain
         ),
         secondIcon = ImageViewCellModel(
-            icon = IconContainer.Res(R.drawable.ic_info_outline),
+            icon = DrawableContainer(R.drawable.ic_info_outline),
             iconTint = R.color.icons_mountain
         ),
     )
@@ -254,18 +254,18 @@ val rightTextBadge: RightSideCellModel
             badgeBackground = TextViewBackgroundModel(),
         ),
         firstIcon = ImageViewCellModel(
-            icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+            icon = DrawableContainer(R.drawable.ic_arrow_forward),
             iconTint = R.color.icons_mountain
         ),
         secondIcon = ImageViewCellModel(
-            icon = IconContainer.Res(R.drawable.ic_info_outline),
+            icon = DrawableContainer(R.drawable.ic_info_outline),
             iconTint = R.color.icons_mountain
         ),
     )
 
 val fullFit: ImageViewCellModel
     get() = commonCircleImage(
-        icon = IconContainer.Res(R.drawable.shape_bottom_navigation_background),
+        icon = DrawableContainer(R.drawable.shape_bottom_navigation_background),
         strokeWidth = 2f.toPx(),
         strokeColor = R.color.icons_grass,
     ).copy(
@@ -274,7 +274,7 @@ val fullFit: ImageViewCellModel
 
 val centerIcon: ImageViewCellModel
     get() = commonCircleImage(
-        icon = IconContainer.Res(R.drawable.ic_arrow_forward),
+        icon = DrawableContainer(R.drawable.ic_arrow_forward),
         strokeWidth = 2f.toPx(),
         strokeColor = R.color.icons_electric,
     ).copy(

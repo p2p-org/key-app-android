@@ -5,8 +5,7 @@ import androidx.annotation.Px
 import androidx.core.view.isVisible
 import android.widget.ImageView
 import com.google.android.material.shape.ShapeAppearanceModel
-import org.p2p.core.common.IconContainer
-import org.p2p.core.common.setIcon
+import org.p2p.core.common.DrawableContainer
 import org.p2p.uikit.R
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
@@ -17,7 +16,7 @@ import org.p2p.uikit.utils.drawable.shapeDrawable
 import org.p2p.uikit.utils.getColorStateList
 
 data class ImageViewCellModel(
-    val icon: IconContainer,
+    val icon: DrawableContainer,
     @ColorRes val iconTint: Int? = null,
     val scaleType: ImageView.ScaleType = ImageView.ScaleType.CENTER,
     val background: DrawableCellModel? = null,
@@ -26,7 +25,7 @@ data class ImageViewCellModel(
 )
 
 fun commonCircleImage(
-    icon: IconContainer,
+    icon: DrawableContainer,
     @ColorRes backgroundTint: Int = R.color.icons_rain,
     @Px strokeWidth: Float = 0f,
     @ColorRes strokeColor: Int = android.R.color.transparent,
@@ -50,7 +49,7 @@ fun ImageView.bindOrGone(model: ImageViewCellModel?) {
 }
 
 fun ImageView.bind(model: ImageViewCellModel) {
-    setIcon(model.icon)
+    model.icon.applyTo(this)
     imageTintList = model.iconTint?.let { getColorStateList(it) }
     scaleType = model.scaleType
     model.background.applyBackground(this)
