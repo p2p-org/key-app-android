@@ -4,6 +4,3 @@
 # anywhere in your repository.
 
 *   @1sakov @Davran331122 @kabramovp2p @gslevinkov @NikolaiEmelianov
-
-# This will exclude app/gradle.properties from code owner requirements
-!app/gradle.properties
