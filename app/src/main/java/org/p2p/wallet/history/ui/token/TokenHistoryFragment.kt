@@ -186,22 +186,37 @@ class TokenHistoryFragment :
         binding.viewActionButtons.showActionButtons(actionButtons)
     }
 
-    override fun showPagingState(newState: PagingState) {
-        Timber.tag("_____STATE").d(newState.toString())
-        historyAdapter.setPagingState(newState)
+    override fun showPagingState(state: PagingState) {
+        historyAdapter.setPagingState(state)
         with(binding.layoutHistoryList) {
-            shimmerView.root.isVisible = newState == PagingState.InitialLoading
-            refreshLayout.isVisible = newState != PagingState.InitialLoading
-            errorStateLayout.root.isVisible = newState is PagingState.Error
-            emptyStateLayout.root.isVisible = newState == PagingState.Idle && historyAdapter.isEmpty()
-            historyRecyclerView.isVisible = isHistoryItemsVisible(newState)
+            when (state) {
+                is PagingState.InitialLoading -> {
+                    shimmerView.root.isVisible = true
+                    refreshLayout.isVisible = false
+                }
+                is PagingState.Idle -> {
+                    shimmerView.root.isVisible = false
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = false
+                    emptyStateLayout.root.isVisible = historyAdapter.isEmpty()
+                    historyRecyclerView.isVisible = !historyAdapter.isEmpty()
+                }
+                is PagingState.Loading -> {
+                    shimmerView.root.isVisible = historyAdapter.isEmpty()
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = false
+                    emptyStateLayout.root.isVisible = false
+                    historyRecyclerView.isVisible = !historyAdapter.isEmpty()
+                }
+                is PagingState.Error -> {
+                    shimmerView.root.isVisible = false
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = historyAdapter.isEmpty()
+                    emptyStateLayout.root.isVisible = false
+                    historyRecyclerView.isVisible = !historyAdapter.isEmpty()
+                }
+            }
         }
-    }
-
-    private fun isHistoryItemsVisible(state: PagingState): Boolean {
-        val isInitState = state == PagingState.Idle && !historyAdapter.isEmpty()
-        val isFetchPageErrorState = state is PagingState.Error && !historyAdapter.isEmpty()
-        return isInitState || isFetchPageErrorState || state == PagingState.Loading
     }
 
     override fun showDetailsScreen(transaction: HistoryTransaction) {
