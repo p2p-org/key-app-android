@@ -72,12 +72,16 @@ jobs:
         uses: ./.github/actions/setup-google-services
         with:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-      - name: "Restore properties files from cache"
-        uses: actions/cache@v3
-        with:
-          path: .
-          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
-          restore: true
+      - name: "Initialize project keys"
+        uses: ./.github/actions/setup-project
+        env:
+          inputs: ${{ env.setup_project_inputs }}
+#      - name: "Restore properties files from cache"
+#        uses: actions/cache@v3
+#        with:
+#          path: .
+#          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
+#          restore: true
       - name: "Generate a unique version build"
         uses: ./.github/actions/setup-version-build
 #      - name: "Send start deploy message to slack"
