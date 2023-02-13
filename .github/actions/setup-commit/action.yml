@@ -5,7 +5,7 @@ inputs:
   github-commit-message:
     description: "Github commit message"
     required: false
-    default: "Bump version"
+    default: "[CI-processing] - Bump version"
   github-author-name:
     description: "Github author email"
     required: false
