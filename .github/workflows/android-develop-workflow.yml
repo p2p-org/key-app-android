@@ -119,8 +119,7 @@ jobs:
       - name: "Commit and Push changes"
         uses: ./.github/actions/setup-commit
         with:
-          github-author-email: ${{ vars.JIRA_USER_EMAIL }}
-          admin-ssh-key: ${{ secrets.ADMIN_SSH_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
   update-jira-status:
     name: "Jira manipulations"
     needs:

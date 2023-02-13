@@ -6,10 +6,15 @@ inputs:
     description: "Github commit message"
     required: false
     default: "Bump version"
+  github-author-name:
+    description: "Github author email"
+    required: false
+    default: "key-app-bot"
   github-author-email:
     description: "Github author email"
-    required: true
-  admin-ssh-key:
+    required: false
+    default: "key-app-bot@github.com"
+  ssh-private-key:
     description: "Github SSH with admin permissions"
     required: true
 
@@ -19,8 +24,7 @@ runs:
     - name: Commit and push changes
       shell: bash
       run: |
-        git config user.name 'key-app-bot'
+        git config user.name '${{ inputs.github-author-name }}'
         git config user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
-        ssh-key=${{ inputs.admin-ssh-key }}
-        GIT_SSH_COMMAND="ssh -i $ssh-key" git push -u origin feature/PWN-6722-ci
+        GIT_SSH_COMMAND="ssh -i ${{ inputs.ssh-private-key }}" git push -u origin feature/PWN-6722-ci
