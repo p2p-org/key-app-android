@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - feature/PWN-6722-ci
 
 env:
   setup_project_inputs: |
