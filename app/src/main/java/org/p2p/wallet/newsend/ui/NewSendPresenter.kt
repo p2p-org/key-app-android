@@ -22,11 +22,11 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.newsend.SendFeeRelayerManager
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.CalculationMode
 import org.p2p.wallet.newsend.model.FeeLoadingState
 import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonState
-import org.p2p.wallet.newsend.interactor.SendInteractor
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendSolanaFee
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -44,7 +44,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
-import kotlin.properties.Delegates
+import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -61,7 +61,7 @@ class NewSendPresenter(
     sendModeProvider: SendModeProvider
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
-    private var token: Token.Active? by Delegates.observable(null) { _, _, newToken ->
+    private var token: Token.Active? by observable(null) { _, _, newToken ->
         if (newToken != null) {
             view?.showToken(newToken)
             calculationMode.updateToken(newToken)
@@ -69,8 +69,8 @@ class NewSendPresenter(
     }
 
     private val calculationMode = CalculationMode(
-        sendModeProvider,
-        resources.getString(R.string.common_less_than_minimum)
+        sendModeProvider = sendModeProvider,
+        lessThenMinString = resources.getString(R.string.common_less_than_minimum)
     )
     private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
@@ -150,7 +150,7 @@ class NewSendPresenter(
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                Timber.wtf("Couldn't find user's SOL account!")
+                Timber.e(IllegalStateException("Couldn't find user's SOL account!"))
                 return@launch
             }
 
@@ -166,8 +166,9 @@ class NewSendPresenter(
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
             }
-            updateInputValue(inputAmount.scaleShort().toPlainString(), forced = true)
-            calculationMode.updateInputAmount(inputAmount.scaleShort().toPlainString())
+            val newTextValue = inputAmount.scaleShort().toPlainString()
+            updateInputValue(newTextValue, forced = true)
+            calculationMode.updateInputAmount(newTextValue)
             disableInputs()
         }
     }
@@ -227,15 +228,15 @@ class NewSendPresenter(
             useCache = false
         )
 
-        updateButton(initialToken, feeRelayerManager.getState())
+        updateButton(sourceToken = initialToken, feeRelayerState = feeRelayerManager.getState())
     }
 
     override fun onTokenClicked() {
         newSendAnalytics.logTokenSelectionClicked()
         launch {
             val tokens = userInteractor.getUserTokens()
-            val result = tokens.filter { token -> !token.isZero }
-            view?.showTokenSelection(result, token)
+            val result = tokens.filterNot(Token.Active::isZero)
+            view?.showTokenSelection(tokens = result, selectedToken = token)
         }
     }
 
@@ -391,6 +392,7 @@ class NewSendPresenter(
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
             } catch (e: Throwable) {
+                Timber.i(e)
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
             }

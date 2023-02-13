@@ -4,14 +4,12 @@ import okio.IOException
 import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.moonpay.MoonpayErrorResponseType
 import org.p2p.wallet.moonpay.model.MoonpaySellError
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 class SellRepositoryErrorMapper {
     // add more errors if needed
     fun fromNetworkError(error: Throwable): MoonpaySellError = when (error) {
-        is UnknownHostException -> {
-            MoonpaySellError.NoInternetForRequest(error)
-        }
         is ServerException -> {
             val moonpayErrorType = error.jsonErrorBody
                 ?.getAsJsonPrimitive("type")
@@ -33,6 +31,9 @@ class SellRepositoryErrorMapper {
                     MoonpaySellError.UnknownError(error)
                 }
             }
+        }
+        is UnknownHostException, is SocketTimeoutException -> {
+            MoonpaySellError.NoInternetForRequest(error)
         }
         is IllegalStateException, is IOException -> {
             MoonpaySellError.UnknownError(error)
