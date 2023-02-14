@@ -6,6 +6,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isNotZero
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
@@ -28,6 +29,7 @@ class SellInteractor(
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val sharedPreferences: SharedPreferences,
 ) {

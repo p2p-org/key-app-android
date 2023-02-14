@@ -12,6 +12,8 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
+import timber.log.Timber
+import java.io.IOException
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.data.ErrorCode
@@ -20,8 +22,6 @@ import org.p2p.wallet.infrastructure.network.data.ServerException
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.rpc.RpcConstants
-import timber.log.Timber
-import java.io.IOException
 
 private const val TAG = "RpcInterceptor"
 
@@ -105,7 +105,6 @@ class RpcInterceptor(
     }
 
     private fun handleResponse(response: Response): Response {
-        Timber.tag(TAG).d(response.request.url.toString())
         val responseBody = try {
             response.body!!.string()
         } catch (e: Exception) {

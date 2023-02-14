@@ -30,6 +30,8 @@ import org.p2p.wallet.swap.interactor.serum.SerumSwapInteractor
 import org.p2p.wallet.swap.interactor.serum.SerumSwapMarketInteractor
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
 import org.p2p.wallet.swap.jupiter.domain.JupiterSwapInteractor
+import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesInMemoryRepository
+import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesLocalRepository
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesMapper
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRemoteRepository
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
@@ -114,6 +116,7 @@ object SwapModule : InjectionModule {
                 transactionManager = get(),
             )
         } bind OrcaSwapContract.Presenter::class
+
         initJupiterSwap()
     }
 
@@ -124,8 +127,9 @@ object SwapModule : InjectionModule {
         factoryOf(::JupiterSwapTransactionMapper)
 
         factoryOf(::JupiterSwapRoutesRemoteRepository) bind JupiterSwapRoutesRepository::class
+        singleOf(::JupiterSwapRoutesInMemoryRepository) bind JupiterSwapRoutesLocalRepository::class
         factoryOf(::JupiterSwapTransactionRemoteRepository) bind JupiterSwapTransactionRepository::class
-        
+
         factoryOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
 

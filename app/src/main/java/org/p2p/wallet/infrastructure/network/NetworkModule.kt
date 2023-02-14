@@ -10,6 +10,10 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.math.BigDecimal
+import java.util.concurrent.TimeUnit
 import org.p2p.solanaj.kits.transaction.network.MessageResponseDeserialization
 import org.p2p.solanaj.kits.transaction.network.transaction.MessageResponse
 import org.p2p.solanaj.utils.crypto.Base64String
@@ -39,10 +43,6 @@ import org.p2p.wallet.rpc.RpcModule.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.utils.Base58String
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.math.BigDecimal
-import java.util.concurrent.TimeUnit
 
 object NetworkModule : InjectionModule {
 
@@ -146,7 +146,7 @@ object NetworkModule : InjectionModule {
     }
 
     fun Scope.httpLoggingInterceptor(logTag: String): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor(DebugHttpLoggingLogger(get(), logTag)).apply {
+        return HttpLoggingInterceptor(DebugHttpLoggingLogger(gson = get(), logTag = logTag)).apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
     }
