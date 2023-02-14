@@ -78,7 +78,7 @@ class SellPayloadPresenter(
                 view.showLoading(isVisible = true)
                 needCheckForSellLock = true
                 // call order is important!
-                checkForSellLock()
+                checkForSellLock(isInitialCheck = true)
                 sellInteractor.getTokenForSell().also {
                     tokenCurrencyMode = CurrencyMode.Token(
                         symbol = it.tokenSymbol,
@@ -109,31 +109,31 @@ class SellPayloadPresenter(
         }
     }
 
-    private suspend fun checkForSellLock() {
+    private suspend fun checkForSellLock(isInitialCheck: Boolean) {
         if (!needCheckForSellLock) return
         needCheckForSellLock = false
-        view?.showButtonLoading(true)
+        view?.showButtonLoading(isLoading = true)
         val userTransactionInProcess = getUserTransactionInProcess()
-        view?.showButtonLoading(false)
+        view?.showButtonLoading(isLoading = false)
         if (userTransactionInProcess != null) {
-            // make readable in https://p2pvalidator.atlassian.net/browse/PWN-6354
             val amounts = userTransactionInProcess.amounts
 
             view?.navigateToSellLock(
-                SellTransactionViewDetails(
+                details = SellTransactionViewDetails(
                     transactionId = userTransactionInProcess.transactionId,
                     status = userTransactionInProcess.status,
                     formattedSolAmount = amounts.tokenAmount.formatTokenForMoonpay(),
                     formattedFiatAmount = amounts.amountInFiat.formatFiat(),
                     receiverAddress = userTransactionInProcess.moonpayDepositWalletAddress.base58Value,
                     fiatUiName = userTransactionInProcess.selectedFiat.uiSymbol.uppercase()
-                )
+                ),
+                isTransactionJustCreated = !isInitialCheck
             )
         }
     }
 
     override fun checkSellLock() {
-        launch { checkForSellLock() }
+        launch { checkForSellLock(isInitialCheck = false) }
     }
 
     override fun setNeedCheckForSellLock() {

@@ -2,7 +2,7 @@ package org.p2p.wallet.swap.jupiter.repository.model
 
 import java.math.BigInteger
 
-data class SwapFees(
+data class JupiterSwapFees(
     val signatureFee: BigInteger,
     /**
      * the total amount needed for deposit of serum order account(s).

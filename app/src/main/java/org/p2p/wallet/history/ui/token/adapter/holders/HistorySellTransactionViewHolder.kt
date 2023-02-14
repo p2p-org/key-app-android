@@ -7,18 +7,18 @@ import org.p2p.wallet.databinding.ItemHistoryMoonpayTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class HistorySellTransactionViewHolder(
     parent: ViewGroup,
-    private val onItemClicked: (SellTransactionViewDetails) -> Unit,
+    private val onHistoryClicked: (HistoryItem) -> Unit,
     private val binding: ItemHistoryMoonpayTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
     fun onBind(item: HistoryItem.MoonpayTransactionItem) = with(binding) {
-        root.setOnClickListener { onItemClicked.invoke(item.transactionDetails) }
+        root.setOnClickListener { onHistoryClicked.invoke(item) }
         renderStatusIcon(item)
         renderTitleAndSubtitle(item)
         renderAmounts(item)
@@ -59,7 +59,7 @@ class HistorySellTransactionViewHolder(
                 titleStatus = getString(R.string.transaction_history_moonpay_waiting_for_deposit_title)
                 subtitleReceiver = getString(
                     R.string.transaction_history_moonpay_waiting_for_deposit_subtitle,
-                    item.transactionDetails.receiverAddress.cutMiddle()
+                    item.transactionDetails.receiverAddress.cutStart()
                 )
             }
             SellTransactionStatus.PENDING -> {
@@ -82,17 +82,17 @@ class HistorySellTransactionViewHolder(
 
     private fun renderAmounts(item: HistoryItem.MoonpayTransactionItem) {
         if (item.status == SellTransactionStatus.COMPLETED) {
-            binding.layoutTransactionDetails.endAmountView.usdAmount = binding.getString(
+            binding.layoutTransactionDetails.endAmountView.topValue = binding.getString(
                 R.string.transaction_history_moonpay_amount_fiat,
                 item.amountInFiat,
                 item.transactionDetails.fiatUiName.uppercase()
             )
         } else {
-            binding.layoutTransactionDetails.endAmountView.usdAmount = binding.getString(
+            binding.layoutTransactionDetails.endAmountView.topValue = binding.getString(
                 R.string.transaction_history_moonpay_amount_sol,
                 item.amountInSol,
             )
         }
-        binding.layoutTransactionDetails.endAmountView.tokenAmount = null // hide SOL amount
+        binding.layoutTransactionDetails.endAmountView.bottomValue = null // hide SOL amount
     }
 }

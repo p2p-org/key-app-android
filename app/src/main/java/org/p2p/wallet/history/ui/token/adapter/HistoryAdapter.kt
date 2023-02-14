@@ -1,9 +1,9 @@
 package org.p2p.wallet.history.ui.token.adapter
 
-import android.annotation.SuppressLint
-import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import android.annotation.SuppressLint
+import android.view.ViewGroup
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.recycler.RoundedItem
 import org.p2p.uikit.utils.recycler.RoundedItemAdapterInterface
@@ -21,9 +21,6 @@ import org.p2p.wallet.history.ui.token.adapter.holders.HistoryTransactionViewHol
 import org.p2p.wallet.history.ui.token.adapter.holders.ProgressViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionSwapViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.TransactionViewHolder
-import org.p2p.wallet.moonpay.model.SellTransaction
-import org.p2p.wallet.sell.interactor.HistoryItemMapper
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 private const val TRANSACTION_VIEW_TYPE = 1
 private const val HISTORY_DATE_VIEW_TYPE = 2
@@ -34,9 +31,7 @@ private const val TRANSACTION_MOONPAY_VIEW_TYPE = 6
 
 class HistoryAdapter(
     private val glideManager: GlideManager,
-    private val historyItemMapper: HistoryItemMapper,
-    private val onTransactionClicked: (HistoryTransaction) -> Unit,
-    private val onMoonpayTransactionClicked: (SellTransactionViewDetails) -> Unit,
+    private val onHistoryItemClicked: (HistoryItem) -> Unit,
     private val onRetryClicked: () -> Unit,
 ) : RecyclerView.Adapter<HistoryTransactionViewHolder>(), RoundedItemAdapterInterface {
 
@@ -44,21 +39,16 @@ class HistoryAdapter(
     private val pagingController = HistoryAdapterPagingController(this)
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setTransactions(
-        newTransactions: List<HistoryTransaction>,
-        newMoonpayTransactions: List<SellTransaction>
-    ) {
+    fun setTransactions(newTransactions: List<HistoryItem>) {
         // force notifyDataSetChanged on first load
         // to fix jumping into the middle because of DiffUtil
         if (currentItems.isEmpty()) {
-            currentItems += historyItemMapper.fromDomainSell(newMoonpayTransactions) // goes first
-            currentItems += historyItemMapper.fromDomainBlockchain(newTransactions)
+            currentItems += newTransactions
             notifyDataSetChanged()
         } else {
             val oldItems = ArrayList(currentItems)
             currentItems.clear()
-            currentItems += historyItemMapper.fromDomainSell(newMoonpayTransactions) // goes first
-            currentItems += historyItemMapper.fromDomainBlockchain(newTransactions)
+            currentItems += newTransactions
 
             DiffUtil.calculateDiff(getDiffCallback(oldItems, currentItems))
                 .dispatchUpdatesTo(this)
@@ -67,11 +57,11 @@ class HistoryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryTransactionViewHolder {
         return when (viewType) {
-            TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, onTransactionClicked)
-            TRANSACTION_SWAP_VIEW_TYPE -> TransactionSwapViewHolder(parent, glideManager, onTransactionClicked)
+            TRANSACTION_VIEW_TYPE -> TransactionViewHolder(parent, glideManager, onHistoryItemClicked)
+            TRANSACTION_SWAP_VIEW_TYPE -> TransactionSwapViewHolder(parent, glideManager, onHistoryItemClicked)
             HISTORY_DATE_VIEW_TYPE -> DateViewHolder(parent)
             PROGRESS_VIEW_TYPE -> ProgressViewHolder(parent)
-            TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onMoonpayTransactionClicked)
+            TRANSACTION_MOONPAY_VIEW_TYPE -> HistorySellTransactionViewHolder(parent, onHistoryItemClicked)
             else -> ErrorViewHolder(parent)
         }
     }
@@ -81,7 +71,7 @@ class HistoryAdapter(
             is TransactionViewHolder -> holder.onBind(currentItems[position] as TransactionItem)
             is TransactionSwapViewHolder -> holder.onBind(currentItems[position] as TransactionItem)
             is DateViewHolder -> holder.onBind(currentItems[position] as DateItem)
-            is ErrorViewHolder -> holder.onBind(pagingController.currentPagingState, onRetryClicked)
+            is ErrorViewHolder -> holder.onBind(onRetryClicked)
             is HistorySellTransactionViewHolder -> holder.onBind(currentItems[position] as MoonpayTransactionItem)
             is ProgressViewHolder -> Unit
         }
@@ -165,13 +155,16 @@ class HistoryAdapter(
     fun isEmpty() = currentItems.isEmpty()
 
     override fun getRoundedItem(adapterPosition: Int): RoundedItem? {
-        // for progress item just get last item
-        // TODO PWN-6888 rewrite on pagination implementation
-        val position = if (adapterPosition == currentItems.size && pagingController.isPagingInLoadingState()) {
+        val position = if (adapterPosition == currentItems.size && needToShowAdditionalItem()) {
             adapterPosition - 1
         } else {
             adapterPosition
         }
         return currentItems.getOrNull(position) as? RoundedItem
+    }
+
+    private fun needToShowAdditionalItem(): Boolean {
+        val isFetchPageError = pagingController.isPagingErrorState() && currentItems.isNotEmpty()
+        return pagingController.isPagingInLoadingState() || isFetchPageError
     }
 }

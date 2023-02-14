@@ -23,24 +23,3 @@ runs:
     - name: Make gradlew executable
       shell: bash
       run: chmod +x ./gradlew
-
-    - name: Setup version
-      shell: bash
-      run: |
-        # Get the current date in milliseconds
-        timestamp=$(date +%s%3N)
-        
-        run_number=${{ github.run_number }}
-        
-        # Combine the timestamp with the GITHUB_RUN_NUMBER
-        version=$((timestamp + run_number))
-        
-        # Set the version build number using the unique identifier
-        ./gradlew setVersionBuild -Pversion=$version
-        echo "Set build version to ${version}"
-    - name: Store version number
-      shell: bash
-      id: store-version-number
-      run: echo "version=${version}"
-      env:
-        version: ${{ steps.store-version-number.outputs.version }}

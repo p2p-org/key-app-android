@@ -30,7 +30,6 @@ class HistoryAdapterPagingController(
     fun isPagingRequiresLoadingItem(state: PagingState = currentPagingState): Boolean =
         state !in noAdditionalItemRequiredState
 
-    fun isPagingInLoadingState(): Boolean = currentPagingState.run {
-        this is PagingState.Loading
-    }
+    fun isPagingInLoadingState(): Boolean = currentPagingState is PagingState.Loading
+    fun isPagingErrorState(): Boolean = currentPagingState is PagingState.Error
 }

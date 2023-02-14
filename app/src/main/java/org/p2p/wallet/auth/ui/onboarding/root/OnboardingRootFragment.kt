@@ -1,10 +1,10 @@
 package org.p2p.wallet.auth.ui.onboarding.root
 
-import androidx.fragment.app.Fragment
-import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.core.app.NotificationManagerCompat
+import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.wallet.R
@@ -13,7 +13,6 @@ import org.p2p.wallet.auth.ui.onboarding.continuestep.ContinueOnboardingFragment
 import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.replaceFragment
 
@@ -31,8 +30,8 @@ class OnboardingRootFragment :
         super.onViewCreated(view, savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val permissionName = Manifest.permission.POST_NOTIFICATIONS
-            val isNotificationPermissionGranted = PermissionsUtil.isGranted(requireContext(), permissionName)
+            val isNotificationPermissionGranted =
+                NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()
             presenter.logNotificationPermissionGranted(isNotificationPermissionGranted)
         }
     }

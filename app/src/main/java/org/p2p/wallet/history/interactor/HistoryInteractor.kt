@@ -165,12 +165,12 @@ class HistoryInteractor(
             .mapToHistoryTransactions()
             .first()
 
-    suspend fun getSellTransactions(): List<SellTransaction> {
+    suspend fun getSellTransactions(): List<SellTransaction>? {
         return if (sellEnabledFeatureToggle.isFeatureEnabled) {
             sellInteractor.loadUserSellTransactions()
                 .filterNot { hiddenSellTransactionsStorage.isTransactionHidden(it.transactionId) }
         } else {
-            emptyList()
+            null
         }
     }
 

@@ -110,7 +110,7 @@ fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
 
 fun BigDecimal.asPositiveUsdTransaction(): String = asUsdTransaction("+")
 fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
-private fun BigDecimal.asUsdTransaction(
+fun BigDecimal.asUsdTransaction(
     transactionSymbol: String
 ): String = if (lessThenMinValue()) "<$ 0.01" else "$transactionSymbol$ ${formatFiat()}"
 
