@@ -78,7 +78,7 @@ sealed class Token constructor(
                 isZero &&
                 visibility == TokenVisibility.DEFAULT
 
-        fun getFormattedUsdTotal(): String? = totalInUsd?.asUsd(total)
+        fun getFormattedUsdTotal(): String? = totalInUsd?.asUsd()
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
