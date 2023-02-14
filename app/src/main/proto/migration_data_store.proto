@@ -1,0 +1,12 @@
+syntax='proto3';
+
+option java_package = "org.p2p.wallet";
+option java_multiple_files = true;
+
+message PreferencesMigrationDataStore {
+  bool is_account_preferences_migrated = 1;
+  bool is_application_preferences_migrated = 2;
+  bool is_feature_toggle_preferences_migrated = 3;
+  bool is_pref_preferences_migrated = 4;
+  bool is_auth_preferences_migrated = 5;
+}

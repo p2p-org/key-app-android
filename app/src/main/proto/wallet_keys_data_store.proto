@@ -1,0 +1,9 @@
+syntax='proto3';
+
+option java_package = "org.p2p.wallet";
+option java_multiple_files = true;
+
+message WalletKeysDataStore {
+  string encrypted_public_key = 1;
+  string encrypted_private_key = 2;
+}

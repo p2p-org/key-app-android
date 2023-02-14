@@ -1,4 +1,4 @@
-syntax = 'proto3';
+syntax='proto3';
 
 option java_package = "org.p2p.wallet";
 option java_multiple_files = true;

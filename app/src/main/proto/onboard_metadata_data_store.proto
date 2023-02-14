@@ -1,0 +1,11 @@
+syntax='proto3';
+
+option java_package = "org.p2p.wallet";
+option java_multiple_files = true;
+
+message OnboardMetaDataStore {
+  string device_name = 1;
+  string custom_share_phone_number_e164 = 2;
+  string social_share_owner_email = 3;
+  string auth_provider = 4;
+}
