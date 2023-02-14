@@ -7,6 +7,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
@@ -23,12 +25,13 @@ import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsCon
 import org.p2p.wallet.history.ui.history.HistoryContract
 import org.p2p.wallet.history.ui.history.HistoryPresenter
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
+import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
+import org.p2p.wallet.history.ui.historylist.HistoryListViewPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
-import retrofit2.Retrofit
 
 object HistoryModule : InjectionModule {
 
@@ -57,6 +60,16 @@ object HistoryModule : InjectionModule {
 
         factoryOf(::HistoryPresenter) bind HistoryContract.Presenter::class
         factoryOf(::TokenHistoryPresenter) bind TokenHistoryContract.Presenter::class
+        factory { (token: Token.Active?) ->
+            HistoryListViewPresenter(
+                token = token,
+                historyInteractor = get(),
+                hiddenSellTransactionsStorage = get(),
+                environmentManager = get(),
+                sellTransactionsMapper = get(),
+                historyItemMapper = get()
+            )
+        } bind HistoryListViewContract.Presenter::class
         factoryOf(::TransactionDetailsPresenter) bind TransactionDetailsContract.Presenter::class
         factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) {
             bind<HistoryTransactionDetailsContract.Presenter>()
