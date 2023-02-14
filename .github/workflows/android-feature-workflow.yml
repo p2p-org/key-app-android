@@ -1,9 +1,9 @@
 # The workflow for feature pull requests before they are merged
-#on:
-#  pull_request:
-#    branches:
-#      - develop
-#      - release/*
+on:
+  pull_request:
+    branches:
+      - develop
+      - release/*
 
 env:
   setup_project_inputs: |
@@ -55,12 +55,6 @@ jobs:
         uses: ./.github/actions/setup-project
         env:
           inputs: ${{ env.setup_project_inputs }}
-      - name: "Send start deploy message to slack"
-        run: |
-          git fetch
-          cd bash_scripts
-          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
       - name: "Build & upload APK to Firebase (Feature)"
