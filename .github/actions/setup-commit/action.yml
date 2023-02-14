@@ -27,4 +27,4 @@ runs:
         git config user.name '${{ inputs.github-author-name }}'
         git config user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
-        GIT_SSH_COMMAND="ssh -i ${{ inputs.ssh-private-key }}" git push -u origin feature/PWN-6722-ci
+        git push -u origin ${{ github.ref }}
