@@ -12,6 +12,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryFetchListResult
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
@@ -73,6 +74,26 @@ class HistoryListViewPresenter(
         pagingJob = launch {
             view?.showPagingState(PagingState.Loading)
             fetchHistory()
+        }
+    }
+
+    override fun onItemClicked(historyItem: HistoryItem) {
+        when (historyItem) {
+            is HistoryItem.TransactionItem -> view?.onTransactionClicked(historyItem.transaction)
+            is HistoryItem.MoonpayTransactionItem -> {
+                val sellTransaction = moonpayTransactionsList.content
+                    .firstOrNull { it.transactionId == historyItem.transactionId }
+                if (sellTransaction != null) {
+                    view?.onSellTransactionClicked(historyItemMapper.sellTransactionToDetails(sellTransaction))
+                } else {
+                    Timber.e("Transaction not founded for history item! $historyItem")
+                }
+            }
+            else -> {
+                val errorMessage = "Unsupported Transaction click! $historyItem"
+                Timber.e(errorMessage)
+                throw UnsupportedOperationException(errorMessage)
+            }
         }
     }
 

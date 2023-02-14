@@ -19,7 +19,9 @@ import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.LayoutHistoryListBinding
 import org.p2p.wallet.history.model.HistoryItem
+import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 class HistoryListView @JvmOverloads constructor(
     context: Context,
@@ -37,18 +39,24 @@ class HistoryListView @JvmOverloads constructor(
 
     private lateinit var presenter: HistoryListViewContract.Presenter
 
+    private var onTransactionClickListener: (HistoryTransaction) -> Unit = {}
+    private var onSellTransactionClickListener: (SellTransactionViewDetails) -> Unit = {}
+
     fun bind(
         historyListViewPresenter: HistoryListViewContract.Presenter,
-        onHistoryItemClicked: (HistoryItem) -> Unit,
+        onTransactionClicked: (HistoryTransaction) -> Unit,
+        onSellTransactionClicked: (SellTransactionViewDetails) -> Unit,
         onBuyClicked: () -> Unit,
         onReceiveClicked: () -> Unit,
         token: Token.Active? = null
     ) {
         presenter = historyListViewPresenter
         tokenForHistory = token
+        onTransactionClickListener = onTransactionClicked
+        onSellTransactionClickListener = onSellTransactionClicked
         historyAdapter = HistoryAdapter(
             glideManager = glideManager,
-            onHistoryItemClicked = onHistoryItemClicked,
+            onHistoryItemClicked = presenter::onItemClicked,
             onRetryClicked = presenter::loadNextHistoryPage,
         )
         bindView(onBuyClicked, onReceiveClicked)
@@ -137,6 +145,14 @@ class HistoryListView @JvmOverloads constructor(
             emptyStateLayout.root.isVisible = isHistoryEmpty
             historyRecyclerView.isVisible = !isHistoryEmpty
         }
+    }
+
+    override fun onTransactionClicked(transaction: HistoryTransaction) {
+        onTransactionClickListener(transaction)
+    }
+
+    override fun onSellTransactionClicked(sellTransactionDetails: SellTransactionViewDetails) {
+        onSellTransactionClickListener(sellTransactionDetails)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) = with(binding) {

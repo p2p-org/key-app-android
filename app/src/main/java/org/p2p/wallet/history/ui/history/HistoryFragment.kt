@@ -40,7 +40,8 @@ class HistoryFragment :
                 historyListViewPresenter = historyListViewPresenter,
                 onBuyClicked = presenter::onBuyClicked,
                 onReceiveClicked = { replaceFragment(ReceiveSolanaFragment.create(token = null)) },
-                onHistoryItemClicked = presenter::onItemClicked
+                onTransactionClicked = presenter::onTransactionClicked,
+                onSellTransactionClicked = presenter::onSellTransactionClicked
             )
             addObserver(lifecycle)
         }

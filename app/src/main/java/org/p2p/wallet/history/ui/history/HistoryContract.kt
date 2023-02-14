@@ -4,7 +4,6 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
@@ -18,6 +17,7 @@ interface HistoryContract {
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {
         fun onBuyClicked()
-        fun onItemClicked(historyItem: HistoryItem)
+        fun onTransactionClicked(transaction: HistoryTransaction)
+        fun onSellTransactionClicked(sellTransactionDetails: SellTransactionViewDetails)
     }
 }

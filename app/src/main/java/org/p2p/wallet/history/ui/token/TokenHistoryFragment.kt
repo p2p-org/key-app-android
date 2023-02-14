@@ -82,7 +82,8 @@ class TokenHistoryFragment :
                 historyListViewPresenter = historyListViewPresenter,
                 onBuyClicked = { onActionButtonClicked(ActionButton.BUY_BUTTON) },
                 onReceiveClicked = { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) },
-                onHistoryItemClicked = presenter::onItemClicked,
+                onTransactionClicked = presenter::onTransactionClicked,
+                onSellTransactionClicked = presenter::onSellTransactionClicked,
                 token = tokenForHistory
             )
             addObserver(lifecycle)

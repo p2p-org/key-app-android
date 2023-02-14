@@ -1,10 +1,8 @@
 package org.p2p.wallet.history.ui.history
 
-import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.analytics.HistoryAnalytics
-import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
@@ -24,21 +22,14 @@ class HistoryPresenter(
         }
     }
 
-    override fun onItemClicked(historyItem: HistoryItem) {
-        when (historyItem) {
-            is HistoryItem.TransactionItem -> onTransactionItemClicked(historyItem.transaction)
-            is HistoryItem.MoonpayTransactionItem -> onSellTransactionClicked(historyItem.transactionDetails)
-            else -> {
-                val errorMessage = "Unsupported Transaction click! $historyItem"
-                Timber.e(errorMessage)
-                throw UnsupportedOperationException(errorMessage)
-            }
-        }
-    }
-
-    private fun onTransactionItemClicked(transaction: HistoryTransaction) {
+    override fun onTransactionClicked(transaction: HistoryTransaction) {
         logTransactionClicked(transaction)
         view?.openTransactionDetailsScreen(transaction)
+    }
+
+    override fun onSellTransactionClicked(sellTransactionDetails: SellTransactionViewDetails) {
+        historyAnalytics.logSellTransactionClicked(sellTransactionDetails)
+        view?.openSellTransactionDetails(sellTransactionDetails)
     }
 
     private fun logTransactionClicked(transaction: HistoryTransaction) {
@@ -56,10 +47,5 @@ class HistoryPresenter(
             }
             else -> Unit
         }
-    }
-
-    private fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails) {
-        historyAnalytics.logSellTransactionClicked(sellTransaction)
-        view?.openSellTransactionDetails(sellTransaction)
     }
 }
