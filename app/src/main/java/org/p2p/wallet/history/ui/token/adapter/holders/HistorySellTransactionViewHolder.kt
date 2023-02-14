@@ -6,7 +6,6 @@ import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemHistoryMoonpayTransactionBinding
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.getString
