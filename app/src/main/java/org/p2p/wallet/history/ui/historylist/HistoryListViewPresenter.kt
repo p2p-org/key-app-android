@@ -118,7 +118,7 @@ class HistoryListViewPresenter(
                 view?.showPagingState(PagingState.Idle)
             }
         } catch (e: CancellationException) {
-            Timber.w(e, "Cancelled history next page load")
+            Timber.i(e, "Cancelled history next page load")
         }
     }
 

@@ -9,7 +9,6 @@ import android.widget.FrameLayout
 import com.google.android.material.snackbar.Snackbar
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.TextContainer
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
@@ -36,16 +35,16 @@ class HistoryListView @JvmOverloads constructor(
 
     private lateinit var historyAdapter: HistoryAdapter
 
-    private val presenter: HistoryListViewContract.Presenter by inject { parametersOf(tokenForHistory) }
-
-    private var isBound = false
+    private lateinit var presenter: HistoryListViewContract.Presenter
 
     fun bind(
+        historyListViewPresenter: HistoryListViewContract.Presenter,
         onHistoryItemClicked: (HistoryItem) -> Unit,
         onBuyClicked: () -> Unit,
         onReceiveClicked: () -> Unit,
         token: Token.Active? = null
     ) {
+        presenter = historyListViewPresenter
         tokenForHistory = token
         historyAdapter = HistoryAdapter(
             glideManager = glideManager,
@@ -54,7 +53,6 @@ class HistoryListView @JvmOverloads constructor(
         )
         bindView(onBuyClicked, onReceiveClicked)
         presenter.attach(this)
-        isBound = true
     }
 
     private fun bindView(
@@ -84,13 +82,6 @@ class HistoryListView @JvmOverloads constructor(
             emptyStateLayout.buttonReceive.setOnClickListener {
                 onReceiveClicked.invoke()
             }
-        }
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (isBound) {
-            presenter.attach(this)
         }
     }
 
