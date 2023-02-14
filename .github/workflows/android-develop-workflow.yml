@@ -1,10 +1,11 @@
 # Workflow for develop branch changes.
 # When a pull request is being merged in develop, this workflows triggers
 on:
+  pull_request:
+    types: [closed]
   push:
     branches:
       - develop
-
 env:
   setup_project_inputs: |
     amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
@@ -26,7 +27,6 @@ env:
 
 jobs:
   android-lint:
-    if: github.event.pull_request.merged == true
     name: "Run ktlint check"
     runs-on: ubuntu-latest
     steps:
