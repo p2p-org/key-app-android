@@ -1,5 +1,8 @@
 package org.p2p.wallet.swap.jupiter.repository.tokens
 
+import timber.log.Timber
+import java.math.BigDecimal
+import kotlinx.coroutines.withContext
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.api.SwapJupiterApi
@@ -9,21 +12,25 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
-import java.math.BigDecimal
-import kotlinx.coroutines.withContext
 
-class JupiterSwapTokensRemoteRepository(
+internal class JupiterSwapTokensRemoteRepository(
     private val api: SwapJupiterApi,
     private val tokenPricesRepository: TokenPricesRemoteRepository,
+    private val swapTokensLocalRepository: JupiterSwapTokensLocalRepository,
     private val dispatchers: CoroutineDispatchers,
     private val userRepository: UserLocalRepository,
 ) : JupiterSwapTokensRepository {
 
     override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.io) {
+        swapTokensLocalRepository.getCachedTokens()
+            ?: fetchTokensFromRemote()
+                .also(swapTokensLocalRepository::setCachedTokens)
+    }
+
+    private suspend fun fetchTokensFromRemote(): List<JupiterSwapToken> {
         val tokens = api.getSwapTokens()
         val prices = fetchPricesForTokens(tokens)
-        tokens.toJupiterToken(prices)
+        return tokens.toJupiterToken(prices)
     }
 
     private suspend fun fetchPricesForTokens(tokens: List<JupiterTokenResponse>): Map<TokenId, BigDecimal> {
