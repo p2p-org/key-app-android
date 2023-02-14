@@ -69,10 +69,7 @@ jobs:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref }}
-          submodules: 'recursive'
           persist-credentials: false
-          fetch-depth: 0
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 #          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: "Initializing firebase configs"
