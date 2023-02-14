@@ -63,7 +63,6 @@ class TokenHistoryFragment :
         binding.setupView()
         listenForSellTransactionDialogDismiss()
         lifecycle.addObserver(presenter)
-        binding.layoutHistoryList.addObserver(lifecycle)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
@@ -78,13 +77,16 @@ class TokenHistoryFragment :
         totalTextView.text = tokenForHistory.getFormattedTotal(includeSymbol = true)
         usdTotalTextView.text = tokenForHistory.getFormattedUsdTotal()
         viewActionButtons.onButtonClicked = { onActionButtonClicked(it) }
-        binding.layoutHistoryList.bind(
-            historyListViewPresenter = historyListViewPresenter,
-            onBuyClicked = { onActionButtonClicked(ActionButton.BUY_BUTTON) },
-            onReceiveClicked = { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) },
-            onHistoryItemClicked = presenter::onItemClicked,
-            token = tokenForHistory
-        )
+        binding.layoutHistoryList.apply {
+            bind(
+                historyListViewPresenter = historyListViewPresenter,
+                onBuyClicked = { onActionButtonClicked(ActionButton.BUY_BUTTON) },
+                onReceiveClicked = { onActionButtonClicked(ActionButton.RECEIVE_BUTTON) },
+                onHistoryItemClicked = presenter::onItemClicked,
+                token = tokenForHistory
+            )
+            addObserver(lifecycle)
+        }
     }
 
     private fun Toolbar.setupToolbar() {

@@ -35,16 +35,19 @@ class HistoryFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.layoutHistoryList.bind(
-            historyListViewPresenter = historyListViewPresenter,
-            onBuyClicked = presenter::onBuyClicked,
-            onReceiveClicked = { replaceFragment(ReceiveSolanaFragment.create(token = null)) },
-            onHistoryItemClicked = presenter::onItemClicked
-        )
+        binding.layoutHistoryList.apply {
+            bind(
+                historyListViewPresenter = historyListViewPresenter,
+                onBuyClicked = presenter::onBuyClicked,
+                onReceiveClicked = { replaceFragment(ReceiveSolanaFragment.create(token = null)) },
+                onHistoryItemClicked = presenter::onItemClicked
+            )
+            addObserver(lifecycle)
+        }
+        binding.layoutHistoryList
 
         listenForSellTransactionDialogDismiss()
         lifecycle.addObserver(presenter)
-        binding.layoutHistoryList.addObserver(lifecycle)
     }
 
     private fun listenForSellTransactionDialogDismiss() {
