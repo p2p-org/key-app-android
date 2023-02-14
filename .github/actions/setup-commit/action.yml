@@ -12,8 +12,7 @@ inputs:
     default: "key-app-bot"
   github-author-email:
     description: "Github author email"
-    required: false
-    default: "key-app-bot@github.com"
+    required: true
   ssh-private-key:
     description: "Github SSH with admin permissions"
     required: true
