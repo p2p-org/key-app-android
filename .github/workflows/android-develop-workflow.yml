@@ -123,7 +123,7 @@ jobs:
       - name: "Commit and Push changes"
         uses: ./.github/actions/setup-commit
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          github-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           github-author-email: ${{ vars.GIT_AUTHOR_EMAIL }}
   update-jira-status:
     name: "Jira manipulations"
