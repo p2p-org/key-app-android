@@ -13,9 +13,6 @@ inputs:
   github-author-email:
     description: "Github author email"
     required: true
-  github-access-token:
-    description: "Github access token"
-    required: true
 
 runs:
   using: composite
@@ -26,5 +23,4 @@ runs:
         git config user.name '${{ inputs.github-author-name }}'
         git config user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
-        git remote set-url origin https://${{ inputs.github-access-token }}@github.com/p2p-org/key-app-android.git
-        git push -u origin ${{ github.ref }}
+        git push
