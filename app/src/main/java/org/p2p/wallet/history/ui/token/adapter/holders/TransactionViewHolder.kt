@@ -17,7 +17,7 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 class TransactionViewHolder(
     parent: ViewGroup,
     private val glideManager: GlideManager,
-    private val onTransactionClicked: (HistoryTransaction) -> Unit,
+    private val onHistoryClicked: (HistoryItem) -> Unit,
     private val binding: ItemHistoryTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
 
@@ -31,7 +31,7 @@ class TransactionViewHolder(
             else -> Timber.e("Unsupported transaction type for this ViewHolder: $item")
         }
         setStatus(item.transaction)
-        itemView.setOnClickListener { onTransactionClicked(item.transaction) }
+        itemView.setOnClickListener { onHistoryClicked(item) }
     }
 
     private fun showBurnOrMint(transaction: HistoryTransaction.BurnOrMint) {
