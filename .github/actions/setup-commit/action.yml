@@ -5,7 +5,14 @@ inputs:
   github-commit-message:
     description: "Github commit message"
     required: false
-    default: "Bump version"
+    default: "[CI-processing] - Bump version"
+  github-author-name:
+    description: "Github author email"
+    required: false
+    default: "key-app-bot"
+  github-author-email:
+    description: "Github author email"
+    required: true
 
 runs:
   using: composite
@@ -13,7 +20,7 @@ runs:
     - name: Commit and push changes
       shell: bash
       run: |
-        git config --global user.name 'key-app-github'
-        git config --global user.email 'key-app@github.com'
+        git config user.name '${{ inputs.github-author-name }}'
+        git config user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
         git push

@@ -1,10 +1,12 @@
 package org.p2p.wallet.history.ui.token
 
 import androidx.lifecycle.LifecycleOwner
+import timber.log.Timber
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
+import org.p2p.core.utils.merge
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -12,13 +14,15 @@ import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.interactor.HistoryFetchListResult
 import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.rpc.interactor.TokenInteractor
-import timber.log.Timber
+import org.p2p.wallet.sell.interactor.HistoryItemMapper
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 class TokenHistoryPresenter(
     private val token: Token.Active,
@@ -28,6 +32,7 @@ class TokenHistoryPresenter(
     private val renBtcInteractor: RenBtcInteractor,
     private val tokenInteractor: TokenInteractor,
     private val sellTransactionsMapper: HistorySellTransactionMapper,
+    private val historyItemMapper: HistoryItemMapper,
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     private object HistoryFetchFailure : Throwable(message = "Both transactions were not fetch due to errors")
@@ -90,7 +95,11 @@ class TokenHistoryPresenter(
 
     override fun loadHistory() {
         if (blockChainTransactionsList.hasFetchedItems() || sellTransactionsList.hasFetchedItems()) {
-            view?.showHistory(blockChainTransactionsList.content, sellTransactionsList.content)
+            view?.showHistory(
+                historyItemMapper.fromDomainSell(sellTransactionsList.content).merge( // goes first
+                    historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
+                )
+            )
             return
         }
         loadingJob = launch {
@@ -113,7 +122,13 @@ class TokenHistoryPresenter(
                 view?.showPagingState(PagingState.Error(HistoryFetchFailure))
                 Timber.e(HistoryFetchFailure, "Error getting transaction history for token")
             } else {
-                view?.showHistory(blockChainTransactionsList.content, sellTransactionsList.content)
+                val sellTransactions = historyItemMapper.fromDomainSell(sellTransactionsList.content)
+                val blockchainTransactions = historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
+                view?.showHistory(
+                    sellTransactions.merge( // goes first
+                        blockchainTransactions
+                    )
+                )
                 view?.showPagingState(PagingState.Idle)
             }
         } catch (e: CancellationException) {
@@ -145,7 +160,19 @@ class TokenHistoryPresenter(
         HistoryFetchListResult(isFailed = true)
     }
 
-    override fun onItemClicked(transaction: HistoryTransaction) {
+    override fun onItemClicked(historyItem: HistoryItem) {
+        when (historyItem) {
+            is HistoryItem.TransactionItem -> onTransactionItemClicked(historyItem.transaction)
+            is HistoryItem.MoonpayTransactionItem -> onSellTransactionClicked(historyItem.transactionDetails)
+            else -> {
+                val errorMessage = "Unsupported Transaction click! $historyItem"
+                Timber.e(errorMessage)
+                throw UnsupportedOperationException(errorMessage)
+            }
+        }
+    }
+
+    private fun onTransactionItemClicked(transaction: HistoryTransaction) {
         logTransactionClicked(transaction)
         view?.showDetailsScreen(transaction)
     }
@@ -165,6 +192,11 @@ class TokenHistoryPresenter(
             }
             else -> Unit // log other types later
         }
+    }
+
+    private fun onSellTransactionClicked(sellTransaction: SellTransactionViewDetails) {
+        historyAnalytics.logSellTransactionClicked(sellTransaction)
+        view?.openSellTransactionDetails(sellTransaction)
     }
 
     override fun closeAccount() {

@@ -14,11 +14,11 @@ import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class HistorySellTransactionViewHolder(
     parent: ViewGroup,
-    private val onItemClicked: (SellTransactionViewDetails) -> Unit,
+    private val onHistoryClicked: (HistoryItem) -> Unit,
     private val binding: ItemHistoryMoonpayTransactionBinding = parent.inflateViewBinding(attachToRoot = false),
 ) : HistoryTransactionViewHolder(binding.root) {
     fun onBind(item: HistoryItem.MoonpayTransactionItem) = with(binding) {
-        root.setOnClickListener { onItemClicked.invoke(item.transactionDetails) }
+        root.setOnClickListener { onHistoryClicked.invoke(item) }
         renderStatusIcon(item)
         renderTitleAndSubtitle(item)
         renderAmounts(item)

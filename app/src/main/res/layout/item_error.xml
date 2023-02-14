@@ -1,34 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="16dp"
+    android:background="@drawable/bg_snow_bottom_rounded_16"
+    android:paddingVertical="12dp">
 
-    <TextView
-        android:id="@+id/error"
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonRetry"
+        style="@style/UiKit.Components.Button.Large"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:text="@string/error_general_message"
-        android:textAppearance="@style/WalletTheme.TextAppearance.SemiBold16" />
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/bg_rain"
+        android:text="@string/common_try_again"
+        android:textColor="@color/text_night" />
 
-    <TextView
-        android:id="@+id/retryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="8dp"
-        android:text="@string/common_retry"
-        android:textAllCaps="false"
-        android:textAppearance="@style/WalletTheme.TextAppearance.Regular14"
-        android:textColor="?colorAccent" />
-
-</LinearLayout>
+</FrameLayout>

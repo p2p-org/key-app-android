@@ -1,11 +1,11 @@
 package org.p2p.wallet.history.ui.history
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import org.koin.android.ext.android.get
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
@@ -15,11 +15,11 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.FragmentHistoryBinding
+import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
-import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
@@ -27,7 +27,6 @@ import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import timber.log.Timber
 
 class HistoryFragment :
     BaseMvpFragment<HistoryContract.View, HistoryContract.Presenter>(R.layout.fragment_history),
@@ -44,10 +43,8 @@ class HistoryFragment :
     private val adapter: HistoryAdapter by unsafeLazy {
         HistoryAdapter(
             glideManager = glideManager,
-            historyItemMapper = get(),
-            onTransactionClicked = presenter::onItemClicked,
-            onMoonpayTransactionClicked = presenter::onSellTransactionClicked,
-            onRetryClicked = {}
+            onHistoryItemClicked = presenter::onItemClicked,
+            onRetryClicked = presenter::loadNextHistoryPage
         )
     }
 
@@ -92,21 +89,39 @@ class HistoryFragment :
     override fun showPagingState(state: PagingState) {
         adapter.setPagingState(state)
         with(binding.layoutHistoryList) {
-            shimmerView.root.isVisible = state == PagingState.InitialLoading
-            refreshLayout.isVisible = state != PagingState.InitialLoading
-            errorStateLayout.root.isVisible = state is PagingState.Error
-            emptyStateLayout.root.isVisible = state == PagingState.Idle && adapter.isEmpty()
-            historyRecyclerView.isVisible =
-                (state == PagingState.Idle && !adapter.isEmpty()) || state == PagingState.Loading
+            when (state) {
+                is PagingState.InitialLoading -> {
+                    shimmerView.root.isVisible = true
+                    refreshLayout.isVisible = false
+                }
+                is PagingState.Idle -> {
+                    shimmerView.root.isVisible = false
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = false
+                    emptyStateLayout.root.isVisible = adapter.isEmpty()
+                    historyRecyclerView.isVisible = !adapter.isEmpty()
+                }
+                is PagingState.Loading -> {
+                    shimmerView.root.isVisible = adapter.isEmpty()
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = false
+                    emptyStateLayout.root.isVisible = false
+                    historyRecyclerView.isVisible = !adapter.isEmpty()
+                }
+                is PagingState.Error -> {
+                    shimmerView.root.isVisible = false
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = adapter.isEmpty()
+                    emptyStateLayout.root.isVisible = false
+                    historyRecyclerView.isVisible = !adapter.isEmpty()
+                }
+            }
         }
     }
 
-    override fun showHistory(
-        blockChainTransactions: List<HistoryTransaction>,
-        sellTransactions: List<SellTransaction>
-    ) {
+    override fun showHistory(history: List<HistoryItem>) {
         with(binding.layoutHistoryList) {
-            adapter.setTransactions(blockChainTransactions, sellTransactions)
+            adapter.setTransactions(history)
             historyRecyclerView.invalidateItemDecorations()
 
             val isHistoryEmpty = adapter.isEmpty()
