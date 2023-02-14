@@ -44,7 +44,6 @@ class HistoryFragment :
             )
             addObserver(lifecycle)
         }
-        binding.layoutHistoryList
 
         listenForSellTransactionDialogDismiss()
         lifecycle.addObserver(presenter)
