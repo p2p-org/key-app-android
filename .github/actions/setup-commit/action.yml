@@ -5,12 +5,13 @@ inputs:
   github-commit-message:
     description: "Github commit message"
     required: false
-    default: "Bump version"
+    default: "[CI-processing] - Bump version"
+  github-author-name:
+    description: "Github author email"
+    required: false
+    default: "key-app-bot"
   github-author-email:
     description: "Github author email"
-    required: true
-  admin-access-token:
-    description: "Github access token with admin permissions"
     required: true
 
 runs:
@@ -19,8 +20,7 @@ runs:
     - name: Commit and push changes
       shell: bash
       run: |
-        git config user.name 'key-app-bot'
+        git config user.name '${{ inputs.github-author-name }}'
         git config user.email '${{ inputs.github-author-email }}'
         git commit -am "${{ inputs.github-commit-message }}"
-        token=${{ inputs.admin-access-token }}
-        git push https://$token@github.com/p2p-org/key-app-android.git --no-verify
+        git push

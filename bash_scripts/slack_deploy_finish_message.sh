@@ -1,6 +1,6 @@
 #!/bin/bash
 
-slack_ktlint_message="*The process of creating a new assembly is finished (100%)*:
+slack_ktlint_message="*The process of creating a new build is finished (100%)*:
 • *Upload to Firebase* -:white_check_mark:
 • *Upload to Slack* - :white_check_mark:"
 curl \
