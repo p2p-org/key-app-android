@@ -74,7 +74,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+#          ssh-known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: "Initializing firebase configs"
         uses: ./.github/actions/setup-google-services
         with:
