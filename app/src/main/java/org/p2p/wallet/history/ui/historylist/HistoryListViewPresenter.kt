@@ -79,7 +79,15 @@ class HistoryListViewPresenter(
 
     override fun onItemClicked(historyItem: HistoryItem) {
         when (historyItem) {
-            is HistoryItem.TransactionItem -> view?.onTransactionClicked(historyItem.transaction)
+            is HistoryItem.TransactionItem -> {
+                val historyTransaction = blockChainTransactionsList.content
+                    .firstOrNull { it.signature == historyItem.signature }
+                if (historyTransaction != null) {
+                    view?.onTransactionClicked(historyTransaction)
+                } else {
+                    Timber.e("Transaction not founded for history item! $historyItem")
+                }
+            }
             is HistoryItem.MoonpayTransactionItem -> {
                 val sellTransaction = moonpayTransactionsList.content
                     .firstOrNull { it.transactionId == historyItem.transactionId }

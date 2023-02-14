@@ -13,7 +13,6 @@ import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryItem.DateItem
 import org.p2p.wallet.history.model.HistoryItem.MoonpayTransactionItem
 import org.p2p.wallet.history.model.HistoryItem.TransactionItem
-import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.token.adapter.holders.DateViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.ErrorViewHolder
 import org.p2p.wallet.history.ui.token.adapter.holders.HistorySellTransactionViewHolder
@@ -79,7 +78,7 @@ class HistoryAdapter(
 
     override fun getItemId(position: Int): Long {
         return when (val item = currentItems.getOrNull(position)) {
-            is TransactionItem -> item.transaction.signature.hashCode().toLong()
+            is TransactionItem -> item.signature.hashCode().toLong()
             is DateItem -> item.date.hashCode().toLong()
             else -> RecyclerView.NO_ID
         }
@@ -113,9 +112,12 @@ class HistoryAdapter(
     }
 
     private fun getTransactionItemViewType(item: TransactionItem): Int {
-        return when (item.transaction) {
-            is HistoryTransaction.Swap -> TRANSACTION_SWAP_VIEW_TYPE
-            else -> TRANSACTION_VIEW_TYPE
+        // TODO migrate on one item in future when we will use UIModel
+        val hasSourceOrDestinationTokens = item.sourceIconUrl != null || item.destinationIconUrl != null
+        return if (hasSourceOrDestinationTokens) {
+            TRANSACTION_SWAP_VIEW_TYPE
+        } else {
+            TRANSACTION_VIEW_TYPE
         }
     }
 
@@ -129,7 +131,7 @@ class HistoryAdapter(
             val newItem = newList[newItemPosition]
             return when {
                 oldItem is TransactionItem && newItem is TransactionItem ->
-                    oldItem.transaction.signature == newItem.transaction.signature
+                    oldItem.signature == newItem.signature
                 oldItem is DateItem && newItem is DateItem ->
                     oldItem.date.isSameAs(newItem.date)
                 else ->
