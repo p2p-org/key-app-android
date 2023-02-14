@@ -22,5 +22,6 @@ runs:
       run: |
         git config user.name '${{ inputs.github-author-name }}'
         git config user.email '${{ inputs.github-author-email }}'
+        git pull
         git commit -am "${{ inputs.github-commit-message }}"
         git push
