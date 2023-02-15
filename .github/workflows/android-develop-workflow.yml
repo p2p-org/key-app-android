@@ -77,7 +77,6 @@ jobs:
           restore-keys: true
       - name: "Send start deploy message to slack"
         run: |
-          git fetch
           cd bash_scripts
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..

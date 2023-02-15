@@ -30,13 +30,8 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-#      - name: Run ktlint
-#        run: ./gradlew ktlint -PautoCorrect=0
-      - name: "Send start deploy message to slack"
-        run: |
-          cd bash_scripts
-          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
+      - name: Run ktlint
+        run: ./gradlew ktlint -PautoCorrect=0
   android-build-artifacts:
     name: "Run build feature artifacts"
     needs:
@@ -51,12 +46,12 @@ jobs:
         uses: ./.github/actions/setup-google-services
         with:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-#      - name: "Restore properties files cache"
-#        uses: actions/cache@v3
-#        with:
-#          path: .
-#          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
-#          restore-keys: true
+      - name: "Restore properties files cache"
+        uses: actions/cache@v3
+        with:
+          path: .
+          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
+          restore-keys: true
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
@@ -78,7 +73,6 @@ jobs:
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Send start deploy message to slack"
         run: |
-          git fetch
           cd bash_scripts
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
