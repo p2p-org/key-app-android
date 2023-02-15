@@ -76,7 +76,6 @@ runs:
       run: |
         touch analytics.properties
         echo "amplitudeDebugKey=${{ inputs.amplitude-key-debug }}" >> analytics.properties
-        echo "amplitudeDebugKey=${{ inputs.amplitude-key-debug }}"
         echo "amplitudeReleaseKey=${{ inputs.amplitude-key-release }}" >> analytics.properties
         echo "analytics.properties is successfully created"
     - name: "Create torus properties file"
@@ -112,5 +111,10 @@ runs:
         echo "auth.token=${{ inputs.sentry-auth-token }}" >> sentry.properties
         echo "auth.dsn=${{ inputs.sentry-auth-dsn }}" >> sentry.properties
         echo "sentry.properties is successfully created"
+    - name: Cache properties files
+      uses: actions/cache@v3
+      with:
+        path: .
+        key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
     - name: "Setup gradle"
       uses: ./.github/actions/setup-gradle

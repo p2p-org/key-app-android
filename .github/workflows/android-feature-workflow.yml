@@ -66,10 +66,12 @@ jobs:
         uses: ./.github/actions/setup-google-services
         with:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-      - name: "Initialize project keys"
-        uses: ./.github/actions/setup-project
+      - name: "Restore properties files cache"
+        uses: actions/cache@v3
         with:
-          inputs: ${{ env.setup_project_inputs }}
+          path: .
+          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
+          restore: true
       - name: "Send start deploy message to slack"
         run: |
           git fetch
