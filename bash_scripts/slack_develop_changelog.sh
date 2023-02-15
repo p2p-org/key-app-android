@@ -24,6 +24,7 @@ else
   changelog_message="*CHANGELOG*
 $commits"
 
+echo "$commits"
 #  curl \
 #    -F token="$1" \
 #    -F channel="$2"\

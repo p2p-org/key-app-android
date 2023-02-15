@@ -87,7 +87,6 @@ jobs:
       - name: "Upload changelog, and Jira ticket to slack channel"
         run: |
           cd bash_scripts
-          value=`cat timestamp.txt`
           bash slack_develop_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
