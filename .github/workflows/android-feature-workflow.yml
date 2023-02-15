@@ -33,7 +33,7 @@ jobs:
 
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        env:
+        with:
           inputs: ${{ env.setup_project_inputs }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
@@ -53,7 +53,7 @@ jobs:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        env:
+        with:
           inputs: ${{ env.setup_project_inputs }}
       - name: "Send start deploy message to slack"
         run: |
