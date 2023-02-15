@@ -15,6 +15,7 @@ import org.p2p.core.token.Token
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.recycler.RoundedDecoration
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.LayoutHistoryListBinding
@@ -78,7 +79,7 @@ class HistoryListView @JvmOverloads constructor(
 
             historyRecyclerView.addOnScrollListener(scrollListener)
             historyRecyclerView.attachAdapter(historyAdapter)
-            historyRecyclerView.addItemDecoration(RoundedDecoration(16f))
+            historyRecyclerView.addItemDecoration(RoundedDecoration(16f.toPx()))
             refreshLayout.setOnRefreshListener {
                 presenter.refreshHistory()
                 scrollListener.reset()

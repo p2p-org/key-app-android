@@ -6,9 +6,6 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 import org.p2p.core.token.Token
-import org.p2p.uikit.utils.attachAdapter
-import org.p2p.uikit.utils.recycler.RoundedDecoration
-import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistoryBinding
