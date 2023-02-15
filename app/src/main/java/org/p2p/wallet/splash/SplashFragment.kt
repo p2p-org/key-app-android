@@ -1,5 +1,9 @@
 package org.p2p.wallet.splash
 
+import android.os.Build
+import android.os.Bundle
+import android.view.View
+import androidx.core.app.NotificationManagerCompat
 import org.koin.android.ext.android.inject
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
@@ -19,6 +23,16 @@ class SplashFragment :
     }
 
     override val presenter: SplashContract.Presenter by inject()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val isNotificationPermissionGranted =
+                NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()
+            presenter.logNotificationPermissionGranted(isNotificationPermissionGranted)
+        }
+    }
 
     override fun navigateToOnboarding() {
         replaceFragment(OnboardingRootFragment.create(), addToBackStack = false)

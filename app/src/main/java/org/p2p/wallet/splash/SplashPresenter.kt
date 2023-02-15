@@ -14,10 +14,12 @@ import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 
 class SplashPresenter(
     private val authInteractor: AuthInteractor,
     private val userInteractor: UserInteractor,
+    private val onboardingAnalytics: OnboardingAnalytics,
     private val deeplinksManager: AppDeeplinksManager,
     private val seedPhraseInteractor: SeedPhraseInteractor,
     private val seedPhraseProvider: SeedPhraseProvider
@@ -28,6 +30,10 @@ class SplashPresenter(
         launch {
             loadPricesAndBids()
         }
+    }
+
+    override fun logNotificationPermissionGranted(isGranted: Boolean) {
+        onboardingAnalytics.setUserGrantedNotificationPermissions(isGranted = isGranted)
     }
 
     private fun loadPricesAndBids() {

@@ -10,5 +10,7 @@ interface SplashContract {
         fun navigateToMain()
     }
 
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun logNotificationPermissionGranted(isGranted: Boolean)
+    }
 }

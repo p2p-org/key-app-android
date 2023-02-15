@@ -1,9 +1,6 @@
 package org.p2p.wallet.auth.ui.onboarding.root
 
-import android.os.Build
-import android.os.Bundle
 import android.view.View
-import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -25,16 +22,6 @@ class OnboardingRootFragment :
     }
 
     override val presenter: OnboardingRootContract.Presenter by inject { parametersOf(this) }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val isNotificationPermissionGranted =
-                NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()
-            presenter.logNotificationPermissionGranted(isNotificationPermissionGranted)
-        }
-    }
 
     override fun navigateToOnboarding() {
         navigateTo(NewOnboardingFragment.create())
