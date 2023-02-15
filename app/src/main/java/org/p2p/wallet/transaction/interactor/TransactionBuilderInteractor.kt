@@ -2,9 +2,11 @@ package org.p2p.wallet.transaction.interactor
 
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.core.token.Token
-import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toUsd
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.threeten.bp.ZonedDateTime
 import java.math.BigInteger
 
@@ -20,10 +22,10 @@ class TransactionBuilderInteractor {
     ): HistoryTransaction {
         val amountA = sourceAmount.toBigDecimalOrZero()
         val amountB = destinationAmount.toBigDecimalOrZero()
-        return HistoryTransaction.Swap(
+        return RpcHistoryTransaction.Swap(
             signature = transactionId,
             date = ZonedDateTime.now(),
-            blockNumber = null,
+            blockNumber = -1,
             sourceAddress = source.publicKey,
             destinationAddress = destinationAddress,
             fee = BigInteger.ZERO,
@@ -35,7 +37,8 @@ class TransactionBuilderInteractor {
             sourceIconUrl = source.iconUrl.orEmpty(),
             destinationSymbol = destination.tokenSymbol,
             destinationIconUrl = destination.iconUrl.orEmpty(),
-            status = TransactionStatus.PENDING
+            status = HistoryTransactionStatus.PENDING,
+            type = RpcHistoryTransactionType.SWAP
         )
     }
 }

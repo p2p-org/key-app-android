@@ -5,17 +5,15 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.wallet.history.interactor.HistoryServiceInteractor
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 
 class HistoryTransactionDetailsBottomSheetPresenter(
-    private val state: TransactionDetailsLaunchState,
-    private val historyInteractor: HistoryInteractor,
+    private val historyInteractor: HistoryServiceInteractor,
     private val usernameInteractor: UsernameInteractor
 ) : BasePresenter<HistoryTransactionDetailsContract.View>(),
     HistoryTransactionDetailsContract.Presenter {
@@ -28,33 +26,33 @@ class HistoryTransactionDetailsBottomSheetPresenter(
     override fun load() {
         launch {
             view?.showLoading(isLoading = true)
-            when (state) {
-                is TransactionDetailsLaunchState.History -> loadDetailsByTransaction(state.transaction)
-                is TransactionDetailsLaunchState.Id -> loadDetailsById(state)
-            }
+//            when (state) {
+//                is TransactionDetailsLaunchState.History -> loadDetailsByTransaction(state.transaction)
+//                is TransactionDetailsLaunchState.Id -> loadDetailsById(state)
+//            }
             view?.showLoading(isLoading = false)
         }
     }
+//
+//    private suspend fun loadDetailsById(state: TransactionDetailsLaunchState.Id) {
+//        try {
+//            val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey)
+//            loadDetailsByTransaction(details)
+//        } catch (e: Throwable) {
+//            Timber.e(e, "Error loading transaction details")
+//            view?.showError(R.string.details_transaction_not_found)
+//        }
+//    }
 
-    private suspend fun loadDetailsById(state: TransactionDetailsLaunchState.Id) {
-        try {
-            val details = historyInteractor.getHistoryTransaction(state.tokenPublicKey)
-            loadDetailsByTransaction(details)
-        } catch (e: Throwable) {
-            Timber.e(e, "Error loading transaction details")
-            view?.showError(R.string.details_transaction_not_found)
-        }
-    }
-
-    private suspend fun loadDetailsByTransaction(transaction: HistoryTransaction) {
+    private suspend fun loadDetailsByTransaction(transaction: RpcHistoryTransaction) {
         when (transaction) {
-            is HistoryTransaction.Swap -> {
+            is RpcHistoryTransaction.Swap -> {
                 parseSwap(transaction)
             }
-            is HistoryTransaction.Transfer -> {
+            is RpcHistoryTransaction.Transfer -> {
                 parseTransfer(transaction)
             }
-            is HistoryTransaction.BurnOrMint -> {
+            is RpcHistoryTransaction.BurnOrMint -> {
                 parseBurnOrMint(transaction)
             }
             else -> {
@@ -64,7 +62,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
         }
     }
 
-    private fun parseSwap(transaction: HistoryTransaction.Swap) {
+    private fun parseSwap(transaction: RpcHistoryTransaction.Swap) {
         view?.apply {
             showDate(transaction.date.toDateTimeString())
             showStatus(transaction.status)
@@ -81,7 +79,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
         }
     }
 
-    private suspend fun parseTransfer(transaction: HistoryTransaction.Transfer) {
+    private suspend fun parseTransfer(transaction: RpcHistoryTransaction.Transfer) {
         view?.apply {
             showTransferView(transaction.getIcon())
             showAmount(
@@ -122,7 +120,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             .getOrNull()
     }
 
-    private fun parseBurnOrMint(transaction: HistoryTransaction.BurnOrMint) {
+    private fun parseBurnOrMint(transaction: RpcHistoryTransaction.BurnOrMint) {
         view?.apply {
             showDate(transaction.date.toDateTimeString())
 

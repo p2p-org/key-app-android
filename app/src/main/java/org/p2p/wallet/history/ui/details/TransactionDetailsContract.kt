@@ -5,14 +5,14 @@ import androidx.annotation.StringRes
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
-import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 
 interface TransactionDetailsContract {
 
     interface View : MvpView {
         fun showTitle(title: String)
         fun showDate(date: String)
-        fun showStatus(status: TransactionStatus)
+        fun showStatus(status: HistoryTransactionStatus)
         fun showSourceInfo(iconContainer: DrawableContainer, primaryInfo: String, secondaryInfo: String?)
         fun showDestinationInfo(iconContainer: DrawableContainer, primaryInfo: String, secondaryInfo: String?)
         fun showSignature(signature: String)

@@ -1,7 +1,7 @@
 package org.p2p.wallet.history.repository.remote
 
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
-import org.p2p.wallet.history.model.rpc.HistoryTransaction
+import org.p2p.wallet.history.model.HistoryTransaction
 
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellRemoteRepository
@@ -13,10 +13,20 @@ class MoonpayHistoryRemoteRepository(
     private val tokenKeyProvider: TokenKeyProvider
 ) : HistoryRemoteRepository {
 
+    private val allTransactions = mutableListOf<HistoryTransaction>()
+
     override suspend fun loadHistory(limit: Int, offset: Int): List<HistoryTransaction> {
         if (sellEnabledFeatureToggle.isFeatureEnabled) {
-            return repository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
+            val newTransactions = repository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
+            if (!allTransactions.containsAll(newTransactions)) {
+                allTransactions.addAll(newTransactions)
+            }
+            return allTransactions
         }
         return emptyList()
+    }
+
+    override fun findTransactionById(id: String): HistoryTransaction? {
+        return allTransactions.firstOrNull { it.getHistoryTransactionId() == id }
     }
 }

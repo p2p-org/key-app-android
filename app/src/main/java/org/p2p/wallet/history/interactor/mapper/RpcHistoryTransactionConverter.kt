@@ -7,27 +7,20 @@ import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionInfoResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTypeResponse
-import org.p2p.wallet.history.model.RenBtcType
-import org.p2p.wallet.history.model.rpc.BurnOrMint
-import org.p2p.wallet.history.model.rpc.CloseAccount
-import org.p2p.wallet.history.model.rpc.CreateAccount
-import org.p2p.wallet.history.model.rpc.HistoryTransaction
-import org.p2p.wallet.history.model.rpc.Swap
-import org.p2p.wallet.history.model.rpc.Transfer
-import org.p2p.wallet.history.model.rpc.TransferType
-import org.p2p.wallet.history.model.rpc.Unknown
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.threeten.bp.ZonedDateTime
 
 class RpcHistoryTransactionConverter(
     private val dispatchers: CoroutineDispatchers,
     private val tokenKeyProvider: TokenKeyProvider
 ) {
-    suspend fun mapTransactionDetailsToHistoryTransactions(
+    suspend fun toDomain(
         transactions: List<RpcHistoryTransactionResponse>,
-    ): List<HistoryTransaction> = withContext(dispatchers.io) {
+    ): List<RpcHistoryTransaction> = withContext(dispatchers.io) {
         transactions.mapNotNull { transaction ->
             when (transaction.type) {
                 RpcHistoryTypeResponse.SEND -> parseSend(transaction)
@@ -44,14 +37,14 @@ class RpcHistoryTransactionConverter(
         }.sortedByDescending { it.date.toInstant().toEpochMilli() }
     }
 
-    private fun parseReceive(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseReceive(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.Receive
-        return Transfer(
+        return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
             date = ZonedDateTime.parse(transaction.date),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            type = TransferType.RECEIVE,
+            type = transaction.type.toDomain(),
             senderAddress = info.counterParty.address,
             iconUrl = info.token.logoUrl.orEmpty(),
             totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
@@ -62,14 +55,14 @@ class RpcHistoryTransactionConverter(
         )
     }
 
-    private fun parseSend(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseSend(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.Send
-        return Transfer(
+        return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
             date = ZonedDateTime.parse(transaction.date),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            type = TransferType.SEND,
+            type = transaction.type.toDomain(),
             senderAddress = tokenKeyProvider.publicKey,
             iconUrl = info.token.logoUrl.orEmpty(),
             totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
@@ -80,9 +73,9 @@ class RpcHistoryTransactionConverter(
         )
     }
 
-    private fun parseSwap(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseSwap(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.Swap
-        return Swap(
+        return RpcHistoryTransaction.Swap(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
@@ -97,58 +90,63 @@ class RpcHistoryTransactionConverter(
             sourceSymbol = info.from.token.symbol.orEmpty(),
             sourceIconUrl = info.from.token.logoUrl.orEmpty(),
             destinationSymbol = info.to.token.symbol.orEmpty(),
-            destinationIconUrl = info.to.token.logoUrl.orEmpty()
+            destinationIconUrl = info.to.token.logoUrl.orEmpty(),
+            type = transaction.type.toDomain()
         )
     }
 
-    private fun parseStake(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseStake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.Stake
-        return Unknown(
+        return RpcHistoryTransaction.Unknown(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
-            status = transaction.status.toDomain()
+            status = transaction.status.toDomain(),
+            type = transaction.type.toDomain()
         )
     }
 
-    private fun parseUnstake(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
-        return Unknown(
+    private fun parseUnstake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
+        return RpcHistoryTransaction.Unknown(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
-            status = transaction.status.toDomain()
+            status = transaction.status.toDomain(),
+            type = transaction.type.toDomain()
         )
     }
 
-    private fun parseCreate(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseCreate(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.CreateAccount
-        return CreateAccount(
+        return RpcHistoryTransaction.CreateAccount(
             date = transaction.date.toZonedDateTime(),
             signature = transaction.signature,
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             iconUrl = info.token.logoUrl.orEmpty(),
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger(),
-            tokenSymbol = transaction.info.token.symbol.orEmpty()
+            tokenSymbol = transaction.info.token.symbol.orEmpty(),
+            type = transaction.type.toDomain()
         )
     }
 
-    private fun parseClose(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseClose(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.CloseAccount
-        return CloseAccount(
+        return RpcHistoryTransaction.CloseAccount(
             date = transaction.date.toZonedDateTime(),
             signature = transaction.signature,
             blockNumber = transaction.blockNumber.toInt(),
             account = info.token?.mint.orEmpty(),
             status = transaction.status.toDomain(),
             iconUrl = info.token?.logoUrl.orEmpty(),
-            tokenSymbol = transaction.info.token?.symbol.orEmpty()
+            tokenSymbol = transaction.info.token?.symbol.orEmpty(),
+            type = transaction.type.toDomain()
         )
     }
 
-    private fun parseMint(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseMint(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.Mint
-        return BurnOrMint(
+        return RpcHistoryTransaction.BurnOrMint(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
@@ -156,16 +154,16 @@ class RpcHistoryTransactionConverter(
             destination = info.token.mint,
             senderAddress = tokenKeyProvider.publicKey,
             iconUrl = info.token.logoUrl.orEmpty(),
-            type = RenBtcType.MINT,
+            type = transaction.type.toDomain(),
             totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
             total = info.amount.amount.toBigDecimalOrZero(),
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger()
         )
     }
 
-    private fun parseBurn(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseBurn(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.Burn
-        return BurnOrMint(
+        return RpcHistoryTransaction.BurnOrMint(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
@@ -173,27 +171,43 @@ class RpcHistoryTransactionConverter(
             destination = info.token.mint,
             senderAddress = tokenKeyProvider.publicKey,
             iconUrl = info.token.logoUrl.orEmpty(),
-            type = RenBtcType.BURN,
+            type = transaction.type.toDomain(),
             totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
             total = info.amount.amount.toBigDecimalOrZero(),
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger()
         )
     }
 
-    private fun parseUnknown(transaction: RpcHistoryTransactionResponse): HistoryTransaction {
+    private fun parseUnknown(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = transaction.info as RpcHistoryTransactionInfoResponse.Unknown
-        return Unknown(
+        return RpcHistoryTransaction.Unknown(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
-            status = transaction.status.toDomain()
+            status = transaction.status.toDomain(),
+            type = transaction.type.toDomain()
         )
     }
 }
 
-private fun RpcHistoryStatusResponse.toDomain(): TransactionStatus {
+private fun RpcHistoryStatusResponse.toDomain(): HistoryTransactionStatus {
     return when (this) {
-        RpcHistoryStatusResponse.SUCCESS -> TransactionStatus.COMPLETED
-        RpcHistoryStatusResponse.FAIL -> TransactionStatus.ERROR
+        RpcHistoryStatusResponse.SUCCESS -> HistoryTransactionStatus.COMPLETED
+        RpcHistoryStatusResponse.FAIL -> HistoryTransactionStatus.ERROR
+    }
+}
+
+private fun RpcHistoryTypeResponse.toDomain(): RpcHistoryTransactionType {
+    return when (this) {
+        RpcHistoryTypeResponse.SEND -> RpcHistoryTransactionType.SEND
+        RpcHistoryTypeResponse.RECEIVE -> RpcHistoryTransactionType.RECEIVE
+        RpcHistoryTypeResponse.SWAP -> RpcHistoryTransactionType.SWAP
+        RpcHistoryTypeResponse.STAKE -> RpcHistoryTransactionType.STAKE
+        RpcHistoryTypeResponse.UNSTAKE -> RpcHistoryTransactionType.UNSTAKE
+        RpcHistoryTypeResponse.CREATE_ACCOUNT -> RpcHistoryTransactionType.CREATE_ACCOUNT
+        RpcHistoryTypeResponse.CLOSE_ACCOUNT -> RpcHistoryTransactionType.CLOSE_ACCOUNT
+        RpcHistoryTypeResponse.MINT -> RpcHistoryTransactionType.MINT
+        RpcHistoryTypeResponse.BURN -> RpcHistoryTransactionType.BURN
+        RpcHistoryTypeResponse.UNKNOWN -> RpcHistoryTransactionType.UNKNOWN
     }
 }

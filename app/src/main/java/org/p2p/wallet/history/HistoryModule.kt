@@ -11,7 +11,6 @@ import retrofit2.Retrofit
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.databinding.ActivityRootBinding.bind
-import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
@@ -36,23 +35,7 @@ object HistoryModule : InjectionModule {
     override fun create(): Module = module {
         dataLayer()
 
-        factoryOf(::HistoryTransactionConverter)
         factoryOf(::RpcHistoryTransactionConverter)
-        factory {
-            HistoryInteractor(
-                rpcAccountRepository = get(),
-                transactionsLocalRepository = get(),
-                transactionsRemoteRepository = get(),
-                tokenKeyProvider = get(),
-                historyTransactionMapper = get(),
-                rpcSignatureRepository = get(),
-                userInteractor = get(),
-                sellInteractor = get(),
-                hiddenSellTransactionsStorage = get(),
-                sellEnabledFeatureToggle = get(),
-                serviceScope = get()
-            )
-        }
         factoryOf(::HistoryItemMapper)
         factoryOf(::HistorySellTransactionMapper)
 
@@ -69,9 +52,8 @@ object HistoryModule : InjectionModule {
             )
         } bind HistoryListViewContract.Presenter::class
         factoryOf(::TransactionDetailsPresenter) bind TransactionDetailsContract.Presenter::class
-        factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) {
-            bind<HistoryTransactionDetailsContract.Presenter>()
-        }
+        factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) bind
+            HistoryTransactionDetailsContract.Presenter::class
     }
 
     private fun Module.dataLayer() {

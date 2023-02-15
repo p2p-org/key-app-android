@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.model
+package org.p2p.wallet.history.ui.model
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes

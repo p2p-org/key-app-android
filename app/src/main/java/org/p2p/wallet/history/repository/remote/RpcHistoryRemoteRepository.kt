@@ -3,7 +3,8 @@ package org.p2p.wallet.history.repository.remote
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
 import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter
-import org.p2p.wallet.history.model.rpc.HistoryTransaction
+import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import java.util.Optional
@@ -21,7 +22,9 @@ class RpcHistoryRemoteRepository(
     private val converter: RpcHistoryTransactionConverter
 ) : HistoryRemoteRepository {
 
-    override suspend fun loadHistory(limit: Int, offset: Int): List<HistoryTransaction> {
+    private val allTransactions = mutableListOf<RpcHistoryTransaction>()
+
+    override suspend fun loadHistory(limit: Int, offset: Int): List<RpcHistoryTransaction> {
 
         val signature = historyServiceSignatureFieldGenerator.generateSignature(
             pubKey = tokenKeyProvider.publicKey,
@@ -40,7 +43,16 @@ class RpcHistoryRemoteRepository(
             method = REQUEST_PARAMS_NAME,
             params = requestParams
         )
+
         val response = historyApi.getTransactionHistory(rpcRequest).result
-        return converter.mapTransactionDetailsToHistoryTransactions(response)
+        val newTransactions = converter.toDomain(response)
+        if (!allTransactions.containsAll(newTransactions)) {
+            allTransactions.addAll(newTransactions)
+        }
+        return newTransactions
+    }
+
+    override fun findTransactionById(signature: String): HistoryTransaction? {
+        return allTransactions.firstOrNull { it.signature == signature }
     }
 }

@@ -18,7 +18,7 @@ import org.p2p.uikit.utils.recycler.RoundedDecoration
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.LayoutHistoryListBinding
-import org.p2p.wallet.history.model.HistoryItem
+import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails

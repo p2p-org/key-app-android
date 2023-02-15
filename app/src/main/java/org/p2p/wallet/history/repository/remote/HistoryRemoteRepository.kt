@@ -1,7 +1,8 @@
 package org.p2p.wallet.history.repository.remote
 
-import org.p2p.wallet.history.model.rpc.HistoryTransaction
+import org.p2p.wallet.history.model.HistoryTransaction
 
 interface HistoryRemoteRepository {
     suspend fun loadHistory(limit: Int, offset: Int): List<HistoryTransaction>
+    fun findTransactionById(signature: String): HistoryTransaction?
 }

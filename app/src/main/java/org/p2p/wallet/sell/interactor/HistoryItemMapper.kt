@@ -5,8 +5,8 @@ import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
-import org.p2p.wallet.history.model.HistoryItem
-import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.ui.model.HistoryItem
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
@@ -17,7 +17,7 @@ import org.p2p.wallet.utils.getStatusIcon
 class HistoryItemMapper(private val resources: Resources) {
 
     fun fromDomainBlockchain(
-        transactions: List<HistoryTransaction>
+        transactions: List<RpcHistoryTransaction>
     ): List<HistoryItem> = transactions.flatMapIndexed { i, transaction ->
         val isCurrentAndPreviousTransactionOnSameDay =
             i > 0 && transactions[i - 1].date.isSameDayAs(transaction.date)
@@ -33,7 +33,7 @@ class HistoryItemMapper(private val resources: Resources) {
 
         val iconRes: Int
         when (transaction) {
-            is HistoryTransaction.Swap -> with(transaction) {
+            is RpcHistoryTransaction.Swap -> with(transaction) {
                 sourceTokenIconUrl = sourceIconUrl
                 destinationTokenIconUrl = destinationIconUrl
 
@@ -44,7 +44,7 @@ class HistoryItemMapper(private val resources: Resources) {
                 endTopValueTextColor = getTextColor()
                 endBottomValue = "-${getSourceTotal()}"
             }
-            is HistoryTransaction.Transfer -> with(transaction) {
+            is RpcHistoryTransaction.Transfer -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
                 iconRes = getIcon()
 
@@ -54,8 +54,8 @@ class HistoryItemMapper(private val resources: Resources) {
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotal()
             }
-            is HistoryTransaction.BurnOrMint -> with(transaction) {
-                tokenIconUrl = getTokenIconUrl()
+            is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
+                tokenIconUrl = iconUrl
                 iconRes = getIcon()
 
                 startTitle = resources.getString(getTitle())
@@ -63,21 +63,21 @@ class HistoryItemMapper(private val resources: Resources) {
                 endTopValue = getTotal()
                 endBottomValue = getValue()
             }
-            is HistoryTransaction.CreateAccount -> with(transaction) {
-                tokenIconUrl = getTokenIconUrl()
+            is RpcHistoryTransaction.CreateAccount -> with(transaction) {
+                tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_create
 
                 startTitle = resources.getString(R.string.transaction_history_create)
                 startSubtitle = signature.cutMiddle()
             }
-            is HistoryTransaction.CloseAccount -> with(transaction) {
-                tokenIconUrl = getTokenIconUrl()
+            is RpcHistoryTransaction.CloseAccount -> with(transaction) {
+                tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_closed
 
                 startTitle = resources.getString(R.string.transaction_history_closed)
                 startSubtitle = signature.cutMiddle()
             }
-            is HistoryTransaction.Unknown -> {
+            is RpcHistoryTransaction.Unknown -> {
                 iconRes = R.drawable.ic_transaction_unknown
 
                 startTitle = resources.getString(R.string.transaction_history_unknown)
@@ -85,7 +85,7 @@ class HistoryItemMapper(private val resources: Resources) {
             }
         }
         val historyItem = HistoryItem.TransactionItem(
-            signature = transaction.signature,
+            signature = transaction.getHistoryTransactionId(),
             sourceIconUrl = sourceTokenIconUrl,
             destinationIconUrl = destinationTokenIconUrl,
             tokenIconUrl = tokenIconUrl,
