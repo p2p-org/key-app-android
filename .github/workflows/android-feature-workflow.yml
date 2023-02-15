@@ -88,7 +88,7 @@ jobs:
         run: |
           cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_shortlog_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} "develop"
+          bash slack_develop_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
           cd ..
 
       - name: "Send finish deploy message to slack"
