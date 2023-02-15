@@ -53,12 +53,12 @@ jobs:
           path: .
           key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
           restore: true
-#      - name: "Send start deploy message to slack"
-#        run: |
-#          git fetch
-#          cd bash_scripts
-#          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-#          cd ..
+      - name: "Send start deploy message to slack"
+        run: |
+          git fetch
+          cd bash_scripts
+          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          cd ..
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
       - name: "Build & upload APK to Firebase (Feature)"
@@ -66,22 +66,22 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: ./gradlew appDistributionUploadFeature
-#      - name: "Upload feature APK to Slack"
-#        uses: ./.github/actions/setup-slack
-#        with:
-#          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-#          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-#          build-type: "feature"
-#          artifact-type: "apk"
-#      - name: "Upload changelog, and Jira ticket to slack channel"
-#        run: |
-#          cd bash_scripts
-#          value=`cat timestamp.txt`
-#          bash slack_shortlog_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} "develop"
-#          cd ..
-#
-#      - name: "Send finish deploy message to slack"
-#        run: |
-#          cd bash_scripts
-#          value=`cat timestamp.txt`
-#          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+      - name: "Upload feature APK to Slack"
+        uses: ./.github/actions/setup-slack
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          build-type: "feature"
+          artifact-type: "apk"
+      - name: "Upload changelog, and Jira ticket to slack channel"
+        run: |
+          cd bash_scripts
+          value=`cat timestamp.txt`
+          bash slack_shortlog_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} "develop"
+          cd ..
+
+      - name: "Send finish deploy message to slack"
+        run: |
+          cd bash_scripts
+          value=`cat timestamp.txt`
+          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
