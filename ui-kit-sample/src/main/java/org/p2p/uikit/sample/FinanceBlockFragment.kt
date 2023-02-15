@@ -37,10 +37,10 @@ class FinanceBlockFragment : Fragment(R.layout.fragment_finance_block) {
                 finBlock.setOnClickAction { view, item ->
                     val rootPayload = finBlock.item.payload
                     item.payload
-                    view.binding.leftSideView
+                    view.leftSideView
                 }
 
-                finBlock.binding.rightSideView.setOnSwitchAction { view, item, isChecked ->
+                finBlock.rightSideView.setOnSwitchAction { view, item, isChecked ->
                     // root payload
                     val rootPayload = finBlock.item.payload
                     // inner payload

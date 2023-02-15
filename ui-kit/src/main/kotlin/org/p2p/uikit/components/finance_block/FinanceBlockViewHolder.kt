@@ -18,12 +18,10 @@ class FinanceBlockViewHolder(
         inflateListener?.invoke(binding.root)
     }
 
-    private var _item: FinanceBlockCellModel? = null
     val item: FinanceBlockCellModel
-        get() = _item!!
+        get() = binding.root.item
 
     fun bind(model: FinanceBlockCellModel) {
-        _item = model
         binding.root.bind(item)
         onBindListener?.invoke(binding.root, item)
     }
