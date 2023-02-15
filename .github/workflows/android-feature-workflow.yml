@@ -34,8 +34,6 @@ jobs:
 #        run: ./gradlew ktlint -PautoCorrect=0
       - name: "Send start deploy message to slack"
         run: |
-          git config user.email
-          git config user.name
           git fetch
           cd bash_scripts
           bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
