@@ -2,7 +2,7 @@
 
 # Set the branch names
 start_branch=develop
-end_branch=$(git rev-parse --abbrev-ref HEAD)
+end_branch=origin/$GITHUB_HEAD_REF
 
 # Fetch the latest changes
 git fetch origin
