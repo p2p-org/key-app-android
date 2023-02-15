@@ -1,8 +1,8 @@
 package org.p2p.wallet.auth.ui.verify
 
+import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
@@ -18,6 +18,7 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_KEYS = "EXTRA_KEYS"
 
+@Deprecated("Old onboarding flow, delete someday")
 class VerifySecurityKeyFragment :
     BaseMvpFragment<VerifySecurityKeyContract.View, VerifySecurityKeyContract.Presenter>(
         R.layout.fragment_verify_security_key

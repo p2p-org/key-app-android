@@ -1,5 +1,7 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
+import timber.log.Timber
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
@@ -10,8 +12,6 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
-import kotlinx.coroutines.launch
 
 class HistoryTransactionDetailsBottomSheetPresenter(
     private val state: TransactionDetailsLaunchState,
@@ -118,7 +118,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private suspend fun getTransferActorUsername(actorAddress: Base58String): UsernameDetails? {
         return runCatching { usernameInteractor.findUsernameByAddress(actorAddress) }
-            .onFailure { Timber.i(it) }
+            .onFailure { Timber.e(it) }
             .getOrNull()
     }
 

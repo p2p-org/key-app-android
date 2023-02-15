@@ -1,5 +1,8 @@
 package org.p2p.wallet.auth.ui.security
 
+import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
@@ -10,10 +13,9 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import androidx.core.content.FileProvider
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.GridLayoutManager
 import org.koin.android.ext.android.inject
+import timber.log.Timber
+import java.io.File
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.BuildConfig
@@ -30,9 +32,8 @@ import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import timber.log.Timber
-import java.io.File
 
+@Deprecated("Old onboarding flow, delete someday")
 class SecurityKeyFragment :
     BaseMvpFragment<SecurityKeyContract.View, SecurityKeyContract.Presenter>(R.layout.fragment_security_key),
     SecurityKeyContract.View,
