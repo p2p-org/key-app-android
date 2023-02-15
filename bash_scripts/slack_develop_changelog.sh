@@ -24,9 +24,9 @@ else
   changelog_message="*CHANGELOG*
 $commits"
 
-  curl \
-    -F token="$1" \
-    -F channel="$2"\
-    -F text="$changelog_message" \
-    https://slack.com/api/chat.postMessage
+#  curl \
+#    -F token="$1" \
+#    -F channel="$2"\
+#    -F text="$changelog_message" \
+#    https://slack.com/api/chat.postMessage
 fi

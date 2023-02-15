@@ -65,25 +65,25 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-      - name: "Send start deploy message to slack"
-        run: |
-          cd bash_scripts
-          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
-      - name: "Build feature APK"
-        run: ./gradlew assembleFeature
-      - name: "Build & upload APK to Firebase (Feature)"
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew appDistributionUploadFeature
-      - name: "Upload feature APK to Slack"
-        uses: ./.github/actions/setup-slack
-        with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "feature"
-          artifact-type: "apk"
+#      - name: "Send start deploy message to slack"
+#        run: |
+#          cd bash_scripts
+#          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+#          cd ..
+#      - name: "Build feature APK"
+#        run: ./gradlew assembleFeature
+#      - name: "Build & upload APK to Firebase (Feature)"
+#        env:
+#          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+#          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+#        run: ./gradlew appDistributionUploadFeature
+#      - name: "Upload feature APK to Slack"
+#        uses: ./.github/actions/setup-slack
+#        with:
+#          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+#          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+#          build-type: "feature"
+#          artifact-type: "apk"
       - name: "Upload changelog, and Jira ticket to slack channel"
         run: |
           cd bash_scripts
