@@ -92,8 +92,6 @@ sealed class HistoryTransaction(
             }
         }
 
-        fun getFormattedFee() = "$fee lamports"
-
         fun getSourceTotal(): String = "${amountA.formatToken()} $sourceSymbol"
 
         fun getDestinationTotal(): String = "${amountB.formatToken()} $destinationSymbol"
