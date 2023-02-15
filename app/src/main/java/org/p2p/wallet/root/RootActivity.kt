@@ -67,6 +67,7 @@ class RootActivity :
 
     private var snackbar: Snackbar? = null
     private var splashScreenBox: SplashScreenBox? = null
+    private var onSplashDataLoaded: Boolean = false
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -101,6 +102,7 @@ class RootActivity :
     }
 
     fun hideSplashScreen() {
+        onSplashDataLoaded = true
         splashScreenBox?.let {
             it.splashScreen.remove()
             decorSystemBarsDelegate.updateSystemBarsStyle(it.pendingStatusBarStyle, it.pendingNavigationBarStyle)
@@ -110,7 +112,7 @@ class RootActivity :
 
     private fun keepVisibleSplash(splashScreen: SplashScreen) {
         splashScreen.setOnExitAnimationListener { splashProvider ->
-            splashScreenBox = SplashScreenBox(splashProvider)
+            if (onSplashDataLoaded) splashProvider.remove() else splashScreenBox = SplashScreenBox(splashProvider)
         }
     }
 
@@ -183,7 +185,7 @@ class RootActivity :
         navigationBarStyle: SystemIconsStyle? = null,
     ) {
         val splashScreenBox = this.splashScreenBox
-        if (splashScreenBox != null) {
+        if (!onSplashDataLoaded && splashScreenBox != null) {
             this.splashScreenBox = splashScreenBox.copy(
                 pendingStatusBarStyle = statusBarStyle,
                 pendingNavigationBarStyle = navigationBarStyle
