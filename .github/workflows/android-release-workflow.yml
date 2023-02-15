@@ -4,24 +4,6 @@ on:
     branches:
       - release/*
 
-env:
-  setup_project_inputs: |
-    amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
-    amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
-    torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
-    torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
-    rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
-    moonpay-key: ${{ secrets.MOONPAY_KEY }}
-    moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
-    intercom-key: ${{ secrets.INTERCOM_API_KEY }}
-    intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
-    apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
-    compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
-    sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
-    sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
-    lokalise-key: ${{ secrets.LOKALISE_KEY }}
-    lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-
 jobs:
   android-build-store-release:
     name: "Run build store release artifacts"
@@ -49,8 +31,22 @@ jobs:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
-        env:
-          inputs: ${{ env.setup_project_inputs }}
+        with:
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          torus-subverifier-store: ${{ secrets.TORUS_SUB_VERIFIER_RELEASE_STORE }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: Create and fill p2pwallet.jks
         run: echo "${{ secrets.KEYSTORE_SECRET }}" | base64 --decode -> p2pwallet.jks
       - name: "Build release AAB&APK artifacts"
