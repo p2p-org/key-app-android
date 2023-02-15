@@ -43,3 +43,17 @@ ext.releaseChangelog = { releaseName, buildType ->
             .append("${branchChangelog()}")
             .toString()
 }
+
+task gitChangelogTask(type: Exec) {
+    def from = findProperty('fromCommit')
+    def to = findProperty('toCommit')
+
+    executable "sh"
+    args "-c", "git log $from..$to --no-merges --pretty=format:\"%h - %s - %an\" > CHANGELOG.txt"
+
+    doFirst {
+        if (from == null || to == null) {
+            throw new GradleException("fromCommit or toCommit is not defined. Did you set properties? (-PfromCommit=somecommithash -PtoCommit=somecommithash)")
+        }
+    }
+}
