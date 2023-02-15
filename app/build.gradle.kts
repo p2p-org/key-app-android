@@ -1,4 +1,3 @@
-import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 
 plugins {
@@ -9,15 +8,6 @@ plugins {
 }
 
 android {
-
-    buildTypes {
-        getByName("feature") {
-            configure<CrashlyticsExtension> {
-                mappingFileUploadEnabled = true
-            }
-        }
-    }
-
     applicationVariants.all {
         outputs
             .map { it as BaseVariantOutputImpl }
