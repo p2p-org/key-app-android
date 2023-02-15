@@ -45,12 +45,25 @@ jobs:
         uses: ./.github/actions/setup-google-services
         with:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-      - name: "Restore properties files cache"
-        uses: actions/cache@v3
+      - name: "Initialize project keys"
+        uses: ./.github/actions/setup-project
         with:
-          path: .
-          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
-          restore: true
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: Run unit tests
         run: ./gradlew testDebug
   android-build-artifacts:
@@ -69,12 +82,25 @@ jobs:
         uses: ./.github/actions/setup-google-services
         with:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-      - name: "Restore properties files cache"
-        uses: actions/cache@v3
+      - name: "Initialize project keys"
+        uses: ./.github/actions/setup-project
         with:
-          path: .
-          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
-          restore-keys: true
+          amplitude-key-debug: ${{ secrets.AMPLITUDE_KEY_DEBUG }}
+          amplitude-key-release: ${{ secrets.AMPLITUDE_KEY_RELEASE }}
+          torus-verifier-debug: ${{ secrets.TORUS_VERIFIER_DEBUG }}
+          torus-verifier-feature: ${{ secrets.TORUS_VERIFIER_FEATURE }}
+          torus-verifier-release: ${{ secrets.TORUS_VERIFIER_RELEASE }}
+          rpc-pool-key: ${{ secrets.RPC_POOL_API_KEY }}
+          moonpay-key: ${{ secrets.MOONPAY_KEY }}
+          moonpay-sandbox-key: ${{ secrets.MOONPAY_SANDBOX_KEY }}
+          intercom-key: ${{ secrets.INTERCOM_API_KEY }}
+          intercom-app-id: ${{ secrets.INTERCOM_APP_ID }}
+          apps-flyer-key: ${{ secrets.APPS_FLYER_KEY }}
+          compare-key: ${{ secrets.COMPARE_PUBLIC_KEY }}
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
+          lokalise-key: ${{ secrets.LOKALISE_KEY }}
+          lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Send start deploy message to slack"
         run: |
           cd bash_scripts

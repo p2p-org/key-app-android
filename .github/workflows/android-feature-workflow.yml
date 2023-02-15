@@ -46,12 +46,6 @@ jobs:
         uses: ./.github/actions/setup-google-services
         with:
           google-services-content: ${{ secrets.GOOGLE_SERVICE_JSON_SECRET }}
-      - name: "Restore properties files cache"
-        uses: actions/cache@v3
-        with:
-          path: .
-          key: ${{ runner.os }}-properties-files-${{ hashFiles('analytics.properties', 'torus.properties', 'apikeys.properties', 'sentry.properties') }}
-          restore-keys: true
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
