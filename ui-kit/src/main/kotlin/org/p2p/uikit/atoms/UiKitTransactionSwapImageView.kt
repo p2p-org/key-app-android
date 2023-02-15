@@ -1,10 +1,10 @@
 package org.p2p.uikit.atoms
 
+import androidx.annotation.DrawableRes
+import androidx.core.content.res.use
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import androidx.annotation.DrawableRes
-import androidx.core.content.res.use
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionSwapImageBinding
@@ -38,8 +38,8 @@ class TransactionSwapImageView @JvmOverloads constructor(
 
     fun setSourceAndDestinationImages(
         glideManager: GlideManager,
-        sourceIconUrl: String,
-        destinationIconUrl: String
+        sourceIconUrl: String?,
+        destinationIconUrl: String?
     ) {
         with(binding) {
             glideManager.apply {

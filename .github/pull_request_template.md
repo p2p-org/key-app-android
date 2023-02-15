@@ -8,6 +8,6 @@ https://p2pvalidator.atlassian.net/browse/
 
 ## Screenshots (Optional)
 
-Screenshot #1 | Screenshot #2 | Screenshot #3
-:------------:|:-------------:|:------------:
-[Paste Pic 1] | [Paste Pic 2] | [Paste Pic 3]
+| Screenshot #1 | Screenshot #2 | Screenshot #3 |
+|:-------------:|:-------------:|:-------------:|
+| [Paste Pic 1] | [Paste Pic 2] | [Paste Pic 3] |

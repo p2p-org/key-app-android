@@ -23,11 +23,13 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSellLockBinding
 import org.p2p.wallet.home.MainFragment
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.wallet.newsend.ui.NewSendFragment
-import org.p2p.wallet.sell.analytics.SellAnalytics
-import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.newsend.ui.NewSendFragment
+import org.p2p.wallet.newsend.ui.SendOpenedFrom
+import org.p2p.wallet.sell.analytics.SellAnalytics
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
+import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
@@ -41,18 +43,22 @@ import org.p2p.wallet.utils.withArgs
 import java.math.BigDecimal
 
 private const val ARG_SELL_LOCKED = "ARG_SELL_LOCKED"
+private const val ARG_IS_TRANSACTION_JUST_CREATED = "ARG_IS_TRANSACTION_JUST_CREATED"
 
 class SellLockedFragment :
     BaseMvpFragment<SellLockedContract.View, SellLockedContract.Presenter>(R.layout.fragment_sell_lock),
     SellLockedContract.View {
 
     companion object {
-        fun create(details: SellTransactionViewDetails): SellLockedFragment {
+        fun create(details: SellTransactionViewDetails, isTransactionJustCreated: Boolean): SellLockedFragment {
             require(details.status == SellTransactionStatus.WAITING_FOR_DEPOSIT) {
                 "This fragment is used only if status == waiting for deposit"
             }
             return SellLockedFragment()
-                .withArgs(ARG_SELL_LOCKED to details)
+                .withArgs(
+                    ARG_SELL_LOCKED to details,
+                    ARG_IS_TRANSACTION_JUST_CREATED to isTransactionJustCreated
+                )
         }
     }
 
@@ -60,14 +66,17 @@ class SellLockedFragment :
 
     private val binding: FragmentSellLockBinding by viewBinding()
     private val details: SellTransactionViewDetails by args(ARG_SELL_LOCKED)
+    private val isTransactionJustCreated: Boolean by args(ARG_IS_TRANSACTION_JUST_CREATED)
     private val sellAnalytics: SellAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.setNavigationOnClickListener { showWarningDialog() }
+        binding.toolbar.setNavigationOnClickListener {
+            if (isTransactionJustCreated) showWarningDialog() else navigateBackToMain()
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            showWarningDialog()
+            if (isTransactionJustCreated) showWarningDialog() else navigateBackToMain()
         }
 
         setupViews()
@@ -123,7 +132,7 @@ class SellLockedFragment :
         buttonAction.setOnClickListener { presenter.onSendClicked() }
 
         buttonRemoveOrCancel.setText(R.string.sell_details_button_cancel)
-        buttonRemoveOrCancel.isVisible = true
+        buttonRemoveOrCancel.isVisible = !isTransactionJustCreated
         buttonRemoveOrCancel.setOnClickListener { presenter.onCancelTransactionClicked() }
     }
 
@@ -136,7 +145,7 @@ class SellLockedFragment :
         textViewFiatValue.isVisible = false
 
         textViewReceiverTitle.setText(R.string.sell_details_send_to)
-        textViewReceiverAddress.text = details.receiverAddress.cutMiddle()
+        textViewReceiverAddress.text = details.receiverAddress.cutMiddle(cutCount = CUT_ADDRESS_SYMBOLS_COUNT)
     }
 
     private fun renderCopyButton() = with(binding.layoutDetails.imageViewCopy) {
@@ -166,7 +175,8 @@ class SellLockedFragment :
             NewSendFragment.create(
                 recipient = recipient,
                 initialToken = tokenToSend,
-                inputAmount = sendAmount
+                inputAmount = sendAmount,
+                openedFrom = SendOpenedFrom.SELL_FLOW
             )
         )
     }
