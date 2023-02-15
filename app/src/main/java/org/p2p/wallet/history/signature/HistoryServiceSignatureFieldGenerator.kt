@@ -1,6 +1,5 @@
 package org.p2p.wallet.history.signature
 
-import org.p2p.solanaj.utils.crypto.decodeFromBase58
 import org.p2p.wallet.auth.gateway.repository.mapper.BorshSerializable
 import org.p2p.wallet.auth.gateway.repository.mapper.PushServiceSignatureFieldGenerator
 import org.p2p.wallet.auth.gateway.repository.mapper.write
@@ -21,7 +20,7 @@ class HistoryServiceSignatureFieldGenerator(
         return pushServiceSignatureFieldGenerator.generateSignatureField(
             userPrivateKey = privateKey.toBase58Instance(),
             structToSerialize = HistoryBorshSignature(
-                pubkey = pubKey.decodeFromBase58(),
+                pubkey = pubKey,
                 offset = offset,
                 limit = limit,
                 mint = mint
@@ -30,15 +29,15 @@ class HistoryServiceSignatureFieldGenerator(
     }
 
     inner class HistoryBorshSignature(
-        private val pubkey: ByteArray,
+        private val pubkey: String,
         private val offset: Long,
         private val limit: Long,
         private val mint: Optional<String>
     ) :
         BorshSerializable {
         override fun serializeSelf(): ByteArray = getBorshBuffer()
-            .write(pubkey)
             .write(
+                pubkey,
                 offset,
                 limit,
                 mint

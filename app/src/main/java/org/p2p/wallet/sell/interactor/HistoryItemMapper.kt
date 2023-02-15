@@ -5,6 +5,8 @@ import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
+import org.p2p.wallet.common.date.toZonedDateTime
+import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.moonpay.model.SellTransaction
@@ -16,11 +18,24 @@ import org.p2p.wallet.utils.getStatusIcon
 
 class HistoryItemMapper(private val resources: Resources) {
 
-    fun fromDomainBlockchain(
-        transactions: List<RpcHistoryTransaction>
-    ): List<HistoryItem> = transactions.flatMapIndexed { i, transaction ->
+    fun toAdapterItem(transactions: List<HistoryTransaction>): List<HistoryItem> {
+        val adapterItems = mutableListOf<HistoryItem>()
+        transactions.forEachIndexed { index, item ->
+            when {
+                item is RpcHistoryTransaction -> {
+                    parse(item, adapterItems)
+                }
+
+                item is SellTransaction -> {
+                }
+            }
+        }
+        return adapterItems
+    }
+
+    fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
         val isCurrentAndPreviousTransactionOnSameDay =
-            i > 0 && transactions[i - 1].date.isSameDayAs(transaction.date)
+            cache.isNotEmpty() && cache.last().date.isSameDayAs(transaction.date)
         var tokenIconUrl: String? = null
         var sourceTokenIconUrl: String? = null
         var destinationTokenIconUrl: String? = null
@@ -96,13 +111,16 @@ class HistoryItemMapper(private val resources: Resources) {
             endTopValueTextColor = endTopValueTextColor,
             endBottomValue = endBottomValue,
             statusIcon = transaction.status.getStatusIcon(),
+            date = transaction.date
         )
         if (isCurrentAndPreviousTransactionOnSameDay) {
-            listOf(historyItem)
+            cache.add(historyItem)
         } else {
-            listOf(
-                HistoryItem.DateItem(transaction.date),
-                historyItem
+            cache.addAll(
+                listOf(
+                    HistoryItem.DateItem(transaction.date),
+                    historyItem
+                )
             )
         }
     }
@@ -178,6 +196,7 @@ class HistoryItemMapper(private val resources: Resources) {
             titleStatus = titleStatus,
             subtitleReceiver = subtitleReceiver,
             endTopValue = endTopValue,
+            date = it.updatedAt.toZonedDateTime()
         )
     }
 

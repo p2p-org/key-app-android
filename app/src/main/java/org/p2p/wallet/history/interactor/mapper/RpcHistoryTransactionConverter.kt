@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.interactor.mapper
 
+import com.google.gson.Gson
 import kotlinx.coroutines.withContext
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.date.toZonedDateTime
@@ -12,11 +13,13 @@ import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
+import org.p2p.wallet.utils.fromJsonReified
 import org.threeten.bp.ZonedDateTime
 
 class RpcHistoryTransactionConverter(
     private val dispatchers: CoroutineDispatchers,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val gson: Gson
 ) {
     suspend fun toDomain(
         transactions: List<RpcHistoryTransactionResponse>,
@@ -38,7 +41,10 @@ class RpcHistoryTransactionConverter(
     }
 
     private fun parseReceive(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.Receive
+        val info =
+            gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Receive>(transaction.info.toString())
+                ?: error("Parsing error: cannot parse json object")
+
         return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
             date = ZonedDateTime.parse(transaction.date),
@@ -56,7 +62,9 @@ class RpcHistoryTransactionConverter(
     }
 
     private fun parseSend(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.Send
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Send>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+
         return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
             date = ZonedDateTime.parse(transaction.date),
@@ -74,7 +82,9 @@ class RpcHistoryTransactionConverter(
     }
 
     private fun parseSwap(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.Swap
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Swap>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+
         return RpcHistoryTransaction.Swap(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
@@ -96,7 +106,8 @@ class RpcHistoryTransactionConverter(
     }
 
     private fun parseStake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.Stake
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Stake>(transaction.info.toString())
+
         return RpcHistoryTransaction.Unknown(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
@@ -117,7 +128,9 @@ class RpcHistoryTransactionConverter(
     }
 
     private fun parseCreate(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.CreateAccount
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.CreateAccount>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+
         return RpcHistoryTransaction.CreateAccount(
             date = transaction.date.toZonedDateTime(),
             signature = transaction.signature,
@@ -125,13 +138,15 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             iconUrl = info.token.logoUrl.orEmpty(),
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger(),
-            tokenSymbol = transaction.info.token.symbol.orEmpty(),
+            tokenSymbol = info.token.symbol.orEmpty(),
             type = transaction.type.toDomain()
         )
     }
 
     private fun parseClose(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.CloseAccount
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.CloseAccount>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+
         return RpcHistoryTransaction.CloseAccount(
             date = transaction.date.toZonedDateTime(),
             signature = transaction.signature,
@@ -139,13 +154,15 @@ class RpcHistoryTransactionConverter(
             account = info.token?.mint.orEmpty(),
             status = transaction.status.toDomain(),
             iconUrl = info.token?.logoUrl.orEmpty(),
-            tokenSymbol = transaction.info.token?.symbol.orEmpty(),
+            tokenSymbol = info.token?.symbol.orEmpty(),
             type = transaction.type.toDomain()
         )
     }
 
     private fun parseMint(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.Mint
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Mint>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+
         return RpcHistoryTransaction.BurnOrMint(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
@@ -162,7 +179,9 @@ class RpcHistoryTransactionConverter(
     }
 
     private fun parseBurn(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.Burn
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Burn>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+
         return RpcHistoryTransaction.BurnOrMint(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
@@ -179,7 +198,6 @@ class RpcHistoryTransactionConverter(
     }
 
     private fun parseUnknown(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        val info = transaction.info as RpcHistoryTransactionInfoResponse.Unknown
         return RpcHistoryTransaction.Unknown(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),

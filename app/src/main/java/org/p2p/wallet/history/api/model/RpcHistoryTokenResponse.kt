@@ -15,6 +15,6 @@ data class RpcHistoryTokenResponse(
     val decimals: Int,
     @SerializedName("name")
     val name: String? = null,
-    @SerializedName("name")
+    @SerializedName("coinGeckoId")
     val coinGeckoId: String? = null
 )

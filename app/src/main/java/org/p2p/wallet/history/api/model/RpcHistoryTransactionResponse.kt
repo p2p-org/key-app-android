@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.api.model
 
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 data class RpcHistoryTransactionResponse(
@@ -16,5 +17,5 @@ data class RpcHistoryTransactionResponse(
     @SerializedName("block_number")
     val blockNumber: Long,
     @SerializedName("info")
-    val info: RpcHistoryTransactionInfoResponse
+    val info: JsonObject
 )

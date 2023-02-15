@@ -1,9 +1,11 @@
 package org.p2p.wallet.history.ui.historylist
 
 import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryServiceInteractor
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
@@ -33,7 +35,18 @@ class HistoryListViewPresenter(
 
     override fun loadNextHistoryPage() = Unit
 
-    override fun loadHistory() = Unit
+    override fun loadHistory() {
+        launch {
+            try {
+                val items = historyInteractor.loadHistory(20, 0)
+                val adapterItems = historyItemMapper.toAdapterItem(items)
+                view?.showHistory(adapterItems)
+                view?.showPagingState(PagingState.Idle)
+            } catch (e: Throwable) {
+                Timber.tag("______").e(e)
+            }
+        }
+    }
 
     override fun refreshHistory() = Unit
 

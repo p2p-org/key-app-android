@@ -2,14 +2,14 @@ package org.p2p.wallet.history.api.model
 
 import com.google.gson.annotations.SerializedName
 
-sealed class RpcHistoryTransactionInfoResponse {
+abstract class RpcHistoryTransactionInfoResponse {
 
     data class Send(
         @SerializedName("amount")
         val amount: RpcHistoryAmountResponse,
         @SerializedName("token")
         val token: RpcHistoryTokenResponse,
-        @SerializedName("counterparty")
+        @SerializedName("account")
         val counterParty: RpcHistoryCounterPartyResponse
     ) : RpcHistoryTransactionInfoResponse()
 
@@ -18,7 +18,7 @@ sealed class RpcHistoryTransactionInfoResponse {
         val amount: RpcHistoryAmountResponse,
         @SerializedName("token")
         val token: RpcHistoryTokenResponse,
-        @SerializedName("counterparty")
+        @SerializedName("account")
         val counterParty: RpcHistoryCounterPartyResponse
     ) : RpcHistoryTransactionInfoResponse()
 
