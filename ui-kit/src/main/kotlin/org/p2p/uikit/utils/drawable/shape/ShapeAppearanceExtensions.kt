@@ -52,6 +52,12 @@ fun shapeTopRounded24dp(): ShapeAppearanceModel = shapeTopRounded(top = 24f.toPx
 
 fun shapeBottomRounded24dp(): ShapeAppearanceModel = shapeBottomRounded(bottom = 24f.toPx())
 
+fun shapeRounded16dp(): ShapeAppearanceModel = shapeRoundedAll(16f.toPx())
+
+fun shapeTopRounded16dp(): ShapeAppearanceModel = shapeTopRounded(top = 16f.toPx())
+
+fun shapeBottomRounded16dp(): ShapeAppearanceModel = shapeBottomRounded(bottom = 16f.toPx())
+
 fun shapeTopRounded(@Px top: Float = 0f): ShapeAppearanceModel = shapeRounded(
     topLeft = top,
     topRight = top,

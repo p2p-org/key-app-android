@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+    <TextView
+        android:id="@+id/textViewWidgetTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountTitle"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="You pay" />
+
+    <TextView
+        android:id="@+id/textViewAvailableAmountTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:maxLines="1"
+        android:text="@string/common_all"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewWidgetTitle"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountValue"
+        app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle" />
+
+    <TextView
+        android:id="@+id/textViewAvailableAmountValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_sky"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewWidgetTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle"
+        tools:text="12.30 SOL" />
+
+    <TextView
+        android:id="@+id/textViewAmountName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.LargeTitle"
+        app:layout_constraintBottom_toTopOf="@+id/textViewBalance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewWidgetTitle"
+        tools:text="USD" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageViewChangeAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewAmountName"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toEndOf="@+id/textViewAmountName"
+        app:layout_constraintTop_toTopOf="@+id/textViewAmountName"
+        app:srcCompat="@drawable/ic_arrow_down"
+        app:tint="@color/elements_night" />
+
+
+    <View
+        android:id="@+id/viewEditTextClickable"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:color/transparent"
+        android:duplicateParentState="true"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewAmountName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/imageViewChangeAmount"
+        app:layout_constraintTop_toTopOf="@+id/textViewAmountName" />
+
+    <EditText
+        android:id="@+id/editTextAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:digits="0123456789."
+        android:duplicateParentState="true"
+        android:hint="@string/amounts_view_zero_hint"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title1"
+        android:textColor="@color/text_night"
+        android:textColorHint="@color/text_night"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/viewEditTextClickable"
+        app:layout_constraintEnd_toEndOf="@+id/viewEditTextClickable"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/viewEditTextClickable"
+        app:layout_constraintTop_toTopOf="@+id/viewEditTextClickable" />
+
+    <TextView
+        android:id="@+id/textViewFiatAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:duplicateParentState="true"
+        android:gravity="end"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewBalance"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewBalance"
+        app:layout_constraintTop_toTopOf="@+id/textViewBalance"
+        tools:text="≈0 USD" />
+
+    <TextView
+        android:id="@+id/textViewBalance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="12dp"
+        android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
+        android:textColor="@color/text_mountain"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textViewFiatAmount"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Balance 16.28" />
+</merge>

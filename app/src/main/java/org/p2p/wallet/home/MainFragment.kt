@@ -1,8 +1,5 @@
 package org.p2p.wallet.home
 
-import android.content.res.Configuration
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.collection.SparseArrayCompat
 import androidx.collection.set
@@ -11,8 +8,10 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import android.content.res.Configuration
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
@@ -38,12 +37,13 @@ import org.p2p.wallet.settings.ui.settings.NewSettingsFragment
 import org.p2p.wallet.solend.ui.earn.SolendEarnFragment
 import org.p2p.wallet.solend.ui.earn.StubSolendEarnFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
+import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
-import org.p2p.wallet.swap.ui.orca.OrcaSwapOpenedFrom
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import kotlinx.coroutines.launch
 
 private const val ARG_MAIN_FRAGMENT_ACTIONS = "ARG_MAIN_FRAGMENT_ACTION"
 
@@ -201,7 +201,8 @@ class MainFragment :
                 ScreenTab.EARN_SCREEN -> StubSolendEarnFragment.create()
                 ScreenTab.HISTORY_SCREEN -> HistoryFragment.create()
                 ScreenTab.SETTINGS_SCREEN -> NewSettingsFragment.create()
-                ScreenTab.SWAP_SCREEN -> OrcaSwapFragment.create(OrcaSwapOpenedFrom.MAIN_SCREEN)
+                ScreenTab.SWAP_SCREEN -> JupiterSwapFragment()
+//                    OrcaSwapFragment.create(OrcaSwapOpenedFrom.MAIN_SCREEN)
                 else -> error("Can't create fragment for $clickedTab")
             }
             tabCachedFragments[itemId] = fragment
