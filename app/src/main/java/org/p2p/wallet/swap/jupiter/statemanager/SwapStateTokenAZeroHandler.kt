@@ -4,13 +4,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
-class SwapStateTokenAZeroReducer(
+class SwapStateTokenAZeroHandler(
     private val swapRoutesRefresher: SwapRoutesRefresher
-) : SwapStateReducer {
+) : SwapStateHandler {
 
-    override fun canReduce(oldState: SwapState): Boolean = oldState is SwapState.TokenAZero
+    override fun canHandle(oldState: SwapState): Boolean = oldState is SwapState.TokenAZero
 
-    override fun reduceNewState(oldState: SwapState, action: SwapStateAction): Flow<SwapState> {
+    override fun handle(oldState: SwapState, action: SwapStateAction): Flow<SwapState> {
         oldState as SwapState.TokenAZero
         return flow {
             when (action) {

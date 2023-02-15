@@ -5,19 +5,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 
-class SwapStateStore(private val reducers: Set<SwapStateReducer>) {
+class SwapStateManager(private val handlers: Set<SwapStateHandler>) {
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)
 
     fun observe(): StateFlow<SwapState> = state
 
-    suspend fun dispatchAction(action: SwapStateAction) {
+    suspend fun onAction(action: SwapStateAction) {
         val currentState = state.value
 
-        val reducedStates: Flow<SwapState> =
-            reducers.firstOrNull { it.canReduce(currentState) }
-                ?.reduceNewState(currentState, action)
+        val newStates: Flow<SwapState> =
+            handlers.firstOrNull { it.canHandle(currentState) }
+                ?.handle(currentState, action)
                 ?: return
 
-        reducedStates.collectLatest(state::emit)
+        newStates.collectLatest(state::emit)
     }
 }
