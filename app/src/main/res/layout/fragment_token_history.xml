@@ -62,9 +62,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/usdTotalTextView" />
 
-        <include
+        <org.p2p.wallet.history.ui.historylist.HistoryListView
             android:id="@+id/layoutHistoryList"
-            layout="@layout/layout_history_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
