@@ -4,6 +4,14 @@ import androidx.core.content.edit
 import android.content.SharedPreferences
 import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.MnemonicException
+import timber.log.Timber
+import java.math.BigDecimal
+import java.math.BigInteger
+import kotlinx.coroutines.withContext
+import org.p2p.core.utils.Constants.SOL_NAME
+import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.scaleLong
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
@@ -14,18 +22,10 @@ import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.user.repository.prices.TokenId
-import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
-import org.p2p.core.utils.fromLamports
+import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
 import org.p2p.wallet.utils.mnemoticgenerator.English
-import org.p2p.core.utils.scaleLong
 import org.p2p.wallet.utils.toBase58Instance
-import timber.log.Timber
-import java.math.BigDecimal
-import java.math.BigInteger
-import kotlinx.coroutines.withContext
-import org.p2p.core.utils.Constants.SOL_NAME
 
 // duck-taped, extract to storage some day
 const val KEY_IS_AUTH_BY_SEED_PHRASE = "KEY_IS_AUTH_BY_SEED_PHRASE"
@@ -96,6 +96,7 @@ class SeedPhraseInteractor(
         adminAnalytics.logPasswordCreated()
     }
 
+    @Deprecated("Old onboarding flow, delete someday")
     suspend fun generateSecretKeys(): List<String> = authRepository.generatePhrase()
 
     sealed interface SeedPhraseVerifyResult {

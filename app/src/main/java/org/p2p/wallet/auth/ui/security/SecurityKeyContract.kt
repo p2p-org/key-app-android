@@ -1,10 +1,11 @@
 package org.p2p.wallet.auth.ui.security
 
 import android.graphics.Bitmap
+import java.io.File
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import java.io.File
 
+@Deprecated("Old onboarding flow, delete someday")
 interface SecurityKeyContract {
 
     interface View : MvpView {

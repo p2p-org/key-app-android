@@ -30,7 +30,7 @@ class SeedPhraseProvider(
         set(value) {
             field = value
             saveSeedPhraseToStorage(value)
-            Timber.tag(TAG).i("updating user seed phrase: ${value.size}")
+            Timber.tag(TAG).i("updating user seed phrase: isEmpty=${value.isEmpty()}")
         }
 
     private var seedPhraseProvider: SeedPhraseSource = SeedPhraseSource.NOT_PROVIDED
