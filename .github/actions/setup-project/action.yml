@@ -76,6 +76,7 @@ runs:
       run: |
         touch analytics.properties
         echo "amplitudeDebugKey=${{ inputs.amplitude-key-debug }}" >> analytics.properties
+        echo "amplitudeDebugKey=${{ inputs.amplitude-key-debug }}"
         echo "amplitudeReleaseKey=${{ inputs.amplitude-key-release }}" >> analytics.properties
         echo "analytics.properties is successfully created"
     - name: "Create torus properties file"
