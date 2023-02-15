@@ -3,15 +3,12 @@ package org.p2p.wallet.history.ui.historylist
 import androidx.lifecycle.LifecycleOwner
 import timber.log.Timber
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
 import org.p2p.core.utils.merge
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
-import org.p2p.wallet.history.interactor.HistoryFetchListResult
-import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.history.interactor.HistoryServiceInteractor
 import org.p2p.wallet.history.model.HistoryItem
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
@@ -22,22 +19,12 @@ import org.p2p.wallet.sell.interactor.HistoryItemMapper
 
 class HistoryListViewPresenter(
     private val token: Token.Active?,
-    private val historyInteractor: HistoryInteractor,
+    private val historyInteractor: HistoryServiceInteractor,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val environmentManager: NetworkEnvironmentManager,
     private val sellTransactionsMapper: HistorySellTransactionMapper,
     private val historyItemMapper: HistoryItemMapper,
 ) : BasePresenter<HistoryListViewContract.View>(), HistoryListViewContract.Presenter {
-
-    private object HistoryFetchFailure : Throwable(message = "Both transactions were not fetch due to errors")
-
-    private var isPagingEnded = false
-    private var refreshJob: Job? = null
-    private var pagingJob: Job? = null
-
-    private var lastTransactionSignature: String? = null
-    private var blockChainTransactionsList = HistoryFetchListResult<HistoryTransaction>()
-    private var moonpayTransactionsList = HistoryFetchListResult<SellTransaction>()
 
     override fun attach(view: HistoryListViewContract.View) {
         super.attach(view)
@@ -49,32 +36,9 @@ class HistoryListViewPresenter(
         loadHistory()
     }
 
-    override fun refreshHistory() {
-        isPagingEnded = false
-        lastTransactionSignature = null
-        refreshJob?.cancel()
-        blockChainTransactionsList.clearContent()
-        moonpayTransactionsList.clearContent()
-        pagingJob?.cancel()
-
-        refreshJob = launch {
-            view?.showRefreshing(isRefreshing = true)
-            fetchHistory(isRefresh = true)
-            view?.showRefreshing(isRefreshing = false)
-            view?.scrollToTop()
-        }
-    }
 
     override fun loadNextHistoryPage() {
-        if (isPagingEnded) return
-
-        if (pagingJob?.isActive == true) {
-            return
-        }
-        pagingJob = launch {
-            view?.showPagingState(PagingState.Loading)
-            fetchHistory()
-        }
+        //TODO
     }
 
     override fun onItemClicked(historyItem: HistoryItem) {
@@ -98,20 +62,7 @@ class HistoryListViewPresenter(
     }
 
     override fun loadHistory() {
-        if (blockChainTransactionsList.hasFetchedItems() || moonpayTransactionsList.hasFetchedItems()) {
-            val sellTransactions = historyItemMapper.fromDomainSell(moonpayTransactionsList.content)
-            val blockchainTransactions = historyItemMapper.fromDomainBlockchain(blockChainTransactionsList.content)
-            view?.showHistory(
-                sellTransactions.merge( // goes first
-                    blockchainTransactions
-                )
-            )
-            return
-        }
-        launch {
-            view?.showPagingState(PagingState.InitialLoading)
-            fetchHistory(isRefresh = true)
-        }
+
     }
 
     private suspend fun fetchHistory(isRefresh: Boolean = false) {

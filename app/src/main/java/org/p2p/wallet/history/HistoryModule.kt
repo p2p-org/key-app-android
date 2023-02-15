@@ -11,13 +11,10 @@ import retrofit2.Retrofit
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
-import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
+import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetPresenter
@@ -39,7 +36,7 @@ object HistoryModule : InjectionModule {
         dataLayer()
 
         factoryOf(::HistoryTransactionConverter)
-        factoryOf(::HistoryTransactionMapper)
+        factoryOf(::RpcHistoryTransactionConverter)
         factory {
             HistoryInteractor(
                 rpcAccountRepository = get(),

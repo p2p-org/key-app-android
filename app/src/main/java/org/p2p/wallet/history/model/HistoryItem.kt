@@ -2,6 +2,7 @@ package org.p2p.wallet.history.model
 
 import org.threeten.bp.ZonedDateTime
 import org.p2p.uikit.utils.recycler.RoundedItem
+import org.p2p.wallet.history.model.rpc.HistoryTransaction
 
 sealed interface HistoryItem {
     data class TransactionItem(val transaction: HistoryTransaction) : HistoryItem, RoundedItem

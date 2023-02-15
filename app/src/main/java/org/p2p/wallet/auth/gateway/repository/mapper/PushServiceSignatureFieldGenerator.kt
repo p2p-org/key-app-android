@@ -8,7 +8,7 @@ import timber.log.Timber
 
 private const val TAG = "GatewayServiceSignatureFieldGenerator"
 
-class GatewayServiceSignatureFieldGenerator {
+class PushServiceSignatureFieldGenerator {
     @Throws(GatewayServiceError.RequestCreationFailure::class)
     fun generateSignatureField(
         userPrivateKey: Base58String,
