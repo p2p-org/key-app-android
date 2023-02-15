@@ -10,6 +10,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.databinding.ActivityRootBinding.bind
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
@@ -77,6 +78,5 @@ object HistoryModule : InjectionModule {
         factoryOf(::TransactionDetailsEntityMapper)
         singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
         single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java) }
-        singleOf(::TransactionDetailsRpcRepository) bind TransactionDetailsRemoteRepository::class
     }
 }

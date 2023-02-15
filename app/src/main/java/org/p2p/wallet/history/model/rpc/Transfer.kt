@@ -6,7 +6,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
-import org.p2p.core.token.TokenData
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.asUsdTransaction
 import org.p2p.core.utils.formatToken

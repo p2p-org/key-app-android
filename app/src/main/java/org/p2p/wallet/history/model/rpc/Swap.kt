@@ -12,7 +12,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 
 @Parcelize
-    data class Swap(
+data class Swap(
     override val signature: String,
     override val date: ZonedDateTime,
     override val blockNumber: Int?,
@@ -28,37 +28,37 @@ import java.math.BigInteger
     val sourceIconUrl: String,
     val destinationSymbol: String,
     val destinationIconUrl: String,
-    ) : HistoryTransaction(date) {
+) : HistoryTransaction(date) {
 
-        fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
+    fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
 
-        fun getReceivedUsdAmount(): String? = amountReceivedInUsd?.asUsd()
+    fun getReceivedUsdAmount(): String? = amountReceivedInUsd?.asUsd()
 
-        fun getSentUsdAmount(): String? = amountSentInUsd?.asUsd()
+    fun getSentUsdAmount(): String? = amountSentInUsd?.asUsd()
 
-        fun getFormattedAmount() =
-            "${amountA.formatToken()} $sourceSymbol to ${amountB.formatToken()} $destinationSymbol"
+    fun getFormattedAmount() =
+        "${amountA.formatToken()} $sourceSymbol to ${amountB.formatToken()} $destinationSymbol"
 
-        @StringRes
-        fun getTypeName(): Int = when {
-            isFailed -> R.string.transaction_history_swap_failed
-            isPending -> R.string.transaction_history_swap_pending
-            else -> R.string.transaction_history_swap
-        }
-
-        @ColorRes
-        fun getTextColor() = when {
-            isFailed -> {
-                R.color.text_rose
-            }
-            else -> {
-                R.color.text_mint
-            }
-        }
-
-        fun getFormattedFee() = "$fee lamports"
-
-        fun getSourceTotal(): String = "${amountA.formatToken()} $sourceSymbol"
-
-        fun getDestinationTotal(): String = "${amountB.formatToken()} $destinationSymbol"
+    @StringRes
+    fun getTypeName(): Int = when {
+        isFailed -> R.string.transaction_history_swap_failed
+        isPending -> R.string.transaction_history_swap_pending
+        else -> R.string.transaction_history_swap
     }
+
+    @ColorRes
+    fun getTextColor() = when {
+        isFailed -> {
+            R.color.text_rose
+        }
+        else -> {
+            R.color.text_mint
+        }
+    }
+
+    fun getFormattedFee() = "$fee lamports"
+
+    fun getSourceTotal(): String = "${amountA.formatToken()} $sourceSymbol"
+
+    fun getDestinationTotal(): String = "${amountB.formatToken()} $destinationSymbol"
+}

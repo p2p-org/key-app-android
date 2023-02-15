@@ -1,7 +1,6 @@
 package org.p2p.wallet.history.model.rpc
 
 import kotlinx.android.parcel.Parcelize
-import org.p2p.core.token.TokenData
 import org.p2p.wallet.transaction.model.TransactionStatus
 import org.threeten.bp.ZonedDateTime
 import java.math.BigInteger

@@ -15,7 +15,7 @@ class MoonpayHistoryRemoteRepository(
 
     override suspend fun loadHistory(limit: Int, offset: Int): List<HistoryTransaction> {
         if (sellEnabledFeatureToggle.isFeatureEnabled) {
-           return repository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
+            return repository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
         }
         return emptyList()
     }

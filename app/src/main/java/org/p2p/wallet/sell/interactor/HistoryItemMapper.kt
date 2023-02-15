@@ -10,21 +10,99 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
+import org.p2p.wallet.utils.getStatusIcon
 
 class HistoryItemMapper(private val resources: Resources) {
+
     fun fromDomainBlockchain(
         transactions: List<HistoryTransaction>
     ): List<HistoryItem> = transactions.flatMapIndexed { i, transaction ->
         val isCurrentAndPreviousTransactionOnSameDay =
             i > 0 && transactions[i - 1].date.isSameDayAs(transaction.date)
+        var tokenIconUrl: String? = null
+        var sourceTokenIconUrl: String? = null
+        var destinationTokenIconUrl: String? = null
+
+        val startTitle: String?
+        val startSubtitle: String?
+        var endTopValue: String? = null
+        var endTopValueTextColor: Int? = null
+        var endBottomValue: String? = null
+
+        val iconRes: Int
+        when (transaction) {
+            is HistoryTransaction.Swap -> with(transaction) {
+                sourceTokenIconUrl = sourceIconUrl
+                destinationTokenIconUrl = destinationIconUrl
+
+                iconRes = R.drawable.ic_swap_simple
+                startTitle = "$sourceSymbol to $destinationSymbol"
+                startSubtitle = resources.getString(getTypeName())
+                endTopValue = "+${getDestinationTotal()}"
+                endTopValueTextColor = getTextColor()
+                endBottomValue = "-${getSourceTotal()}"
+            }
+            is HistoryTransaction.Transfer -> with(transaction) {
+                tokenIconUrl = getTokenIconUrl()
+                iconRes = getIcon()
+
+                startTitle = getAddress()
+                startSubtitle = resources.getString(getTypeName())
+                endTopValue = getValue()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
+            }
+            is HistoryTransaction.BurnOrMint -> with(transaction) {
+                tokenIconUrl = getTokenIconUrl()
+                iconRes = getIcon()
+
+                startTitle = resources.getString(getTitle())
+                startSubtitle = signature.cutMiddle()
+                endTopValue = getTotal()
+                endBottomValue = getValue()
+            }
+            is HistoryTransaction.CreateAccount -> with(transaction) {
+                tokenIconUrl = getTokenIconUrl()
+                iconRes = R.drawable.ic_transaction_create
+
+                startTitle = resources.getString(R.string.transaction_history_create)
+                startSubtitle = signature.cutMiddle()
+            }
+            is HistoryTransaction.CloseAccount -> with(transaction) {
+                tokenIconUrl = getTokenIconUrl()
+                iconRes = R.drawable.ic_transaction_closed
+
+                startTitle = resources.getString(R.string.transaction_history_closed)
+                startSubtitle = signature.cutMiddle()
+            }
+            is HistoryTransaction.Unknown -> {
+                iconRes = R.drawable.ic_transaction_unknown
+
+                startTitle = resources.getString(R.string.transaction_history_unknown)
+                startSubtitle = transaction.signature.cutMiddle()
+            }
+        }
+        val historyItem = HistoryItem.TransactionItem(
+            signature = transaction.signature,
+            sourceIconUrl = sourceTokenIconUrl,
+            destinationIconUrl = destinationTokenIconUrl,
+            tokenIconUrl = tokenIconUrl,
+            iconRes = iconRes,
+            startTitle = startTitle,
+            startSubtitle = startSubtitle,
+            endTopValue = endTopValue,
+            endTopValueTextColor = endTopValueTextColor,
+            endBottomValue = endBottomValue,
+            statusIcon = transaction.status.getStatusIcon(),
+        )
         if (isCurrentAndPreviousTransactionOnSameDay) {
-            listOf(HistoryItem.TransactionItem(transaction))
+            listOf(historyItem)
         } else {
             listOf(
                 HistoryItem.DateItem(transaction.date),
-                // todo map items according to state
-                HistoryItem.TransactionItem(transaction)
+                historyItem
             )
         }
     }

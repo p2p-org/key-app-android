@@ -2,7 +2,6 @@ package org.p2p.wallet.history.repository.remote
 
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
-import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
 import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter
 import org.p2p.wallet.history.model.rpc.HistoryTransaction
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator

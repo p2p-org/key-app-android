@@ -197,4 +197,3 @@ private fun RpcHistoryStatusResponse.toDomain(): TransactionStatus {
         RpcHistoryStatusResponse.FAIL -> TransactionStatus.ERROR
     }
 }
-

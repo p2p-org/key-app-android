@@ -24,10 +24,4 @@ sealed class HistoryTransaction(
     @IgnoredOnParcel
     val isPending: Boolean
         get() = status == TransactionStatus.PENDING
-
-
-
-
-
-
 }

@@ -77,12 +77,12 @@ sealed class RpcHistoryTransactionInfoResponse {
         val token: RpcHistoryTokenResponse,
         @SerializedName("amount")
         val amount: RpcHistoryAmountResponse
-    ): RpcHistoryTransactionInfoResponse()
+    ) : RpcHistoryTransactionInfoResponse()
 
     data class Unknown(
         @SerializedName("token")
         val token: RpcHistoryTokenResponse?,
         @SerializedName("amount")
         val amount: RpcHistoryAmountResponse?
-    ): RpcHistoryTransactionInfoResponse()
+    ) : RpcHistoryTransactionInfoResponse()
 }
