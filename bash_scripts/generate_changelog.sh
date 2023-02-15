@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Checkout to develop branch first
-git checkout develop
-
 # Get the commit hash of the develop branch
 develop_commit_hash=$(git rev-parse develop)
 

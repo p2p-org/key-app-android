@@ -103,6 +103,7 @@ jobs:
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Generate changelog"
         run: |
+          git checkout develop
           chmod +x bash_scripts/generate_changelog.sh
           bash_scripts/generate_changelog.sh
       - name: "Send start deploy message to slack"
