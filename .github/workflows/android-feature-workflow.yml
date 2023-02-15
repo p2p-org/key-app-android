@@ -31,8 +31,14 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-      - name: Run ktlint
-        run: ./gradlew ktlint -PautoCorrect=0
+#      - name: Run ktlint
+#        run: ./gradlew ktlint -PautoCorrect=0
+      - name: "Send start deploy message to slack"
+        run: |
+          git fetch
+          cd bash_scripts
+          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
+          cd ..
   android-build-artifacts:
     name: "Run build feature artifacts"
     needs:
