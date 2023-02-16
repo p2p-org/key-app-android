@@ -6,7 +6,9 @@ import org.p2p.core.common.TextContainer
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shapeDrawable
+import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
@@ -23,19 +25,19 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
         binding.swapWidgetFrom.bind(
             SwapWidgetModel(
                 isStatic = false,
-                widgetTitle = TextViewCellModel(
+                widgetTitle = TextViewCellModel.Raw(
                     text = TextContainer("You pay")
                 ),
-                availableAmount = TextViewCellModel(
+                availableAmount = TextViewCellModel.Raw(
                     text = TextContainer("3600.284564646 USDC")
                 ),
-                amountName = TextViewCellModel(
+                amountName = TextViewCellModel.Raw(
                     text = TextContainer("USDC")
                 ),
-                balance = TextViewCellModel(
+                balance = TextViewCellModel.Raw(
                     text = TextContainer("Balance 3600.28")
                 ),
-                fiatAmount = TextViewCellModel(
+                fiatAmount = TextViewCellModel.Raw(
                     text = TextContainer("≈2 USD")
                 ),
             )
@@ -44,17 +46,20 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
         binding.swapWidgetTo.bind(
             SwapWidgetModel(
                 isStatic = true,
-                widgetTitle = TextViewCellModel(
+                widgetTitle = TextViewCellModel.Raw(
                     text = TextContainer("You receive")
                 ),
-                amountName = TextViewCellModel(
+                amountName = TextViewCellModel.Raw(
                     text = TextContainer("SOL")
                 ),
-                balance = TextViewCellModel(
+                balance = TextViewCellModel.Raw(
                     text = TextContainer("Balance 4.4535")
                 ),
-                fiatAmount = TextViewCellModel(
+                fiatAmount = TextViewCellModel.Raw(
                     text = TextContainer("≈1984 USD")
+                ),
+                amount = TextViewCellModel.Raw(
+                    text = TextContainer("≈1984 Copy")
                 ),
             )
         )
