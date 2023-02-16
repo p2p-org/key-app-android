@@ -7,4 +7,4 @@ develop_commit_hash=$(git rev-parse origin/develop)
 current_commit_hash=$(git rev-parse origin/$GITHUB_HEAD_REF)
 
 # Run the gradle task with the fromCommit and toCommit properties set
-git log $develop_commit_hash..$current_commit_hash --no-merges --pretty=format:\"%h - %s - %an\" > CHANGELOG.txt
+git log "$develop_commit_hash".."$current_commit_hash" --no-merges --pretty=format:\"%h - %s - %an\" > CHANGELOG.txt
