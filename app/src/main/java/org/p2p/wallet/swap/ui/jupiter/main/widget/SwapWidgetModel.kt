@@ -42,13 +42,13 @@ fun swapToAmountLoading(
     )
 
 private fun bigSkeleton(): SkeletonCellModel = SkeletonCellModel(
-    height = 24.toPx(),
+    height = 20.toPx(),
     width = 84.toPx(),
     radius = 6f.toPx(),
 )
 
 private fun smallSkeleton(): SkeletonCellModel = SkeletonCellModel(
-    height = 12.toPx(),
+    height = 8.toPx(),
     width = 84.toPx(),
     radius = 2f.toPx(),
 )

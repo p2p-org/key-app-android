@@ -10,7 +10,9 @@ import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
+import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bindSkeleton
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
@@ -36,6 +38,15 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
             SwapWidgetModel.Loading(
                 isStatic = true,
                 widgetTitle = TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_you_receive)),
+            )
+        )
+        binding.textViewRate.bindSkeleton(
+            TextViewCellModel.Skeleton(
+                SkeletonCellModel(
+                    height = 16.toPx(),
+                    width = 160.toPx(),
+                    radius = 4f.toPx(),
+                )
             )
         )
 

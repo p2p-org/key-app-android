@@ -70,10 +70,9 @@ fun TextView.bindOrGone(model: TextViewCellModel?) {
 }
 
 fun TextView.bind(model: TextViewCellModel) {
-    saveAndGetInitialTextStyle()
     when (model) {
         is TextViewCellModel.Raw -> bind(model)
-        is TextViewCellModel.Skeleton -> bind(model)
+        is TextViewCellModel.Skeleton -> bindSkeleton(model)
     }
 }
 
@@ -107,7 +106,8 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
     model.text.applyTo(this)
 }
 
-fun TextView.bind(model: TextViewCellModel.Skeleton) {
+fun TextView.bindSkeleton(model: TextViewCellModel.Skeleton) {
+    saveAndGetInitialTextStyle()
     val transparent = context.getColorStateList(android.R.color.transparent)
     setTextColor(transparent)
     setHintTextColor(transparent)
