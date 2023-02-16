@@ -4,7 +4,7 @@ import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryBlockState
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryConfig
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseQueryTxMint
 import org.p2p.solanaj.kits.renBridge.renVM.types.ResponseSubmitTxMint
-import org.p2p.solanaj.model.types.RpcRequest2
+import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.wallet.infrastructure.network.data.CommonResponse
 import org.p2p.wallet.utils.emptyString
 import retrofit2.http.Body
@@ -15,25 +15,25 @@ interface RenPoolApi {
 
     @POST
     suspend fun queryMint(
-        @Body rpcRequest: RpcRequest2,
+        @Body rpcRequest: RpcMapRequest,
         @Url url: String = emptyString()
     ): CommonResponse<ResponseQueryTxMint>
 
     @POST
     suspend fun queryBlockState(
-        @Body rpcRequest: RpcRequest2,
+        @Body rpcRequest: RpcMapRequest,
         @Url url: String = emptyString()
     ): CommonResponse<ResponseQueryBlockState>
 
     @POST
     suspend fun queryConfig(
-        @Body rpcReuest: RpcRequest2,
+        @Body rpcReuest: RpcMapRequest,
         @Url url: String = emptyString()
     ): CommonResponse<ResponseQueryConfig>
 
     @POST
     suspend fun submitTx(
-        @Body rpcRequest: RpcRequest2,
+        @Body rpcRequest: RpcMapRequest,
         @Url url: String = emptyString()
     ): CommonResponse<ResponseSubmitTxMint>
 }

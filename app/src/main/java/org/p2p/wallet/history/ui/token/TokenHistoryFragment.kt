@@ -15,7 +15,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
@@ -144,11 +144,13 @@ class TokenHistoryFragment :
 
     override fun showDetailsScreen(transaction: HistoryTransaction) {
         when (transaction) {
-            is HistoryTransaction.Swap,
-            is HistoryTransaction.Transfer,
-            is HistoryTransaction.BurnOrMint -> {
-                val state = TransactionDetailsLaunchState.History(transaction)
-                HistoryTransactionDetailsBottomSheetFragment.show(parentFragmentManager, state)
+            is RpcHistoryTransaction.Swap,
+            is RpcHistoryTransaction.Transfer,
+            is RpcHistoryTransaction.BurnOrMint -> {
+                HistoryTransactionDetailsBottomSheetFragment.show(
+                    fragmentManager = parentFragmentManager,
+                    signature = transaction.getHistoryTransactionId()
+                )
             }
             else -> Timber.e("Unsupported transactionType: $transaction")
         }

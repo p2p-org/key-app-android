@@ -3,7 +3,7 @@ package org.p2p.wallet.auth.ui.phone
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
-import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
+import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
@@ -120,7 +120,7 @@ class PhoneNumberEnterPresenter(
                 }
             }
         } catch (error: Throwable) {
-            if (error is GatewayServiceError) {
+            if (error is PushServiceError) {
                 handleGatewayServiceError(error)
             } else {
                 Timber.e(error, "Phone number submission failed")
@@ -130,7 +130,7 @@ class PhoneNumberEnterPresenter(
         }
     }
 
-    private fun handleGatewayServiceError(gatewayServiceError: GatewayServiceError) {
+    private fun handleGatewayServiceError(gatewayServiceError: PushServiceError) {
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(gatewayServiceError)) {
             is GatewayHandledState.CriticalError -> {
                 view?.navigateToCriticalErrorScreen(gatewayHandledResult)
@@ -162,7 +162,7 @@ class PhoneNumberEnterPresenter(
                 }
             }
         } catch (error: Throwable) {
-            if (error is GatewayServiceError) {
+            if (error is PushServiceError) {
                 handleGatewayServiceError(error)
             } else {
                 Timber.e(error, "Phone number submission failed")

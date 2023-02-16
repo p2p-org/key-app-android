@@ -1,10 +1,9 @@
 package org.p2p.solanaj.model.types
 
 import com.google.gson.annotations.SerializedName
-import com.google.protobuf.Any
 import java.util.UUID
 
-data class RpcRequest2(
+data class RpcMapRequest(
     @SerializedName("method")
     val method: String,
 

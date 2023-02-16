@@ -3,7 +3,7 @@ package org.p2p.wallet.auth.ui.smsinput
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
-import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
+import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
 import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.interactor.restore.RestoreWalletInteractor
@@ -91,7 +91,7 @@ class NewSmsInputPresenter(
         connectToTimer()
     }
 
-    private fun handleGatewayError(error: GatewayServiceError) {
+    private fun handleGatewayError(error: PushServiceError) {
         when (val gatewayHandledResult = gatewayServiceErrorHandler.handle(error)) {
             is GatewayHandledState.CriticalError -> {
                 view?.navigateToGatewayErrorScreen(gatewayHandledResult)
@@ -122,7 +122,7 @@ class NewSmsInputPresenter(
             createWalletAnalytics.logSmsValidationResult(isSmsValid = true)
 
             view?.navigateToPinCreate()
-        } catch (gatewayError: GatewayServiceError) {
+        } catch (gatewayError: PushServiceError) {
             createWalletAnalytics.logSmsValidationResult(isSmsValid = false)
             handleGatewayError(gatewayError)
         } catch (error: Throwable) {
@@ -141,7 +141,7 @@ class NewSmsInputPresenter(
 
             val onboardFlow = onboardingInteractor.currentFlow as OnboardingFlow.RestoreWallet
             tryRestoreUser(onboardFlow)
-        } catch (gatewayError: GatewayServiceError) {
+        } catch (gatewayError: PushServiceError) {
             restoreWalletAnalytics.logRestoreSmsValidationResult(isSmsValid = false)
             handleGatewayError(gatewayError)
         } catch (error: Throwable) {
@@ -194,7 +194,7 @@ class NewSmsInputPresenter(
                         )
                     }
                 }
-            } catch (gatewayError: GatewayServiceError) {
+            } catch (gatewayError: PushServiceError) {
                 handleGatewayError(gatewayError)
             } catch (error: Throwable) {
                 Timber.e(error, "Resending sms failed")

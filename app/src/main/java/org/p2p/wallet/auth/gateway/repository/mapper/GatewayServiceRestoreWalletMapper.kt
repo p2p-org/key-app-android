@@ -12,7 +12,7 @@ import java.util.Date
 import java.util.Locale
 
 class GatewayServiceRestoreWalletMapper(
-    private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator
+    private val signatureFieldGenerator: PushServiceSignatureFieldGenerator
 ) {
     private class RestoreWalletSignatureStruct(
         val restoreId: String,

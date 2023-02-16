@@ -3,7 +3,7 @@ package org.p2p.wallet.history.ui.token.adapter.holders
 import android.view.ViewGroup
 import org.p2p.core.glide.GlideManager
 import org.p2p.wallet.databinding.ItemTransactionSwapBinding
-import org.p2p.wallet.history.model.HistoryItem
+import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.utils.viewbinding.getColor
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
