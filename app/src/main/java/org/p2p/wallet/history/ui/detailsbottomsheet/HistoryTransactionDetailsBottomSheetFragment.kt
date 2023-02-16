@@ -15,8 +15,7 @@ import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHistoryTransactionDetailsBinding
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
@@ -26,7 +25,7 @@ import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val EXTRA_STATE = "EXTRA_STATE"
+private const val EXTRA_TX_SIGNATURE = "EXTRA_TX_SIGNATURE"
 
 class HistoryTransactionDetailsBottomSheetFragment :
     BaseMvpBottomSheet<HistoryTransactionDetailsContract.View, HistoryTransactionDetailsContract.Presenter>(
@@ -35,9 +34,9 @@ class HistoryTransactionDetailsBottomSheetFragment :
     HistoryTransactionDetailsContract.View {
 
     companion object {
-        fun show(fragmentManager: FragmentManager, state: TransactionDetailsLaunchState) {
+        fun show(fragmentManager: FragmentManager, signature: String) {
             HistoryTransactionDetailsBottomSheetFragment()
-                .withArgs(EXTRA_STATE to state)
+                .withArgs(EXTRA_TX_SIGNATURE to signature)
                 .show(fragmentManager, HistoryTransactionDetailsBottomSheetFragment::javaClass.name)
         }
 
@@ -47,7 +46,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
-    private val state: TransactionDetailsLaunchState by args(EXTRA_STATE)
+    private val state: String by args(EXTRA_TX_SIGNATURE)
 
     private val binding: DialogHistoryTransactionDetailsBinding by viewBinding()
 
@@ -95,12 +94,12 @@ class HistoryTransactionDetailsBottomSheetFragment :
         binding.textViewDate.text = date
     }
 
-    override fun showStatus(status: TransactionStatus) {
+    override fun showStatus(status: HistoryTransactionStatus) {
         binding.textViewStatus.setText(status.resValue)
         val color = when (status) {
-            TransactionStatus.COMPLETED -> R.color.color_green
-            TransactionStatus.PENDING -> R.color.systemWarningMain
-            TransactionStatus.ERROR -> R.color.systemErrorMain
+            HistoryTransactionStatus.COMPLETED -> R.color.color_green
+            HistoryTransactionStatus.PENDING -> R.color.systemWarningMain
+            HistoryTransactionStatus.ERROR -> R.color.systemErrorMain
         }
 
         binding.transactionImageView.setStatus(status)

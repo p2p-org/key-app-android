@@ -3,7 +3,7 @@ package org.p2p.wallet.history.analytics
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.common.analytics.Analytics
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
-import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.newsend.analytics.NewSendAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
@@ -20,7 +20,7 @@ class HistoryAnalytics(
     private val analyticsInteractor: ScreensAnalyticsInteractor,
 ) {
 
-    fun logSwapTransactionClicked(transaction: HistoryTransaction.Swap) {
+    fun logSwapTransactionClicked(transaction: RpcHistoryTransaction.Swap) {
         swapAnalytics.logSwapShowingDetails(
             swapStatus = SwapAnalytics.SwapStatus.SUCCESS,
             lastScreenName = analyticsInteractor.getPreviousScreenName(),
@@ -33,7 +33,7 @@ class HistoryAnalytics(
     }
 
     fun logTransferTransactionClicked(
-        transaction: HistoryTransaction.Transfer,
+        transaction: RpcHistoryTransaction.Transfer,
         isRenBtcSessionActive: Boolean
     ) {
         if (transaction.isSend) {
@@ -45,7 +45,7 @@ class HistoryAnalytics(
             sendAnalytics.logSendShowingDetails(
                 sendStatus = NewSendAnalytics.SendStatus.SUCCESS,
                 lastScreenName = analyticsInteractor.getPreviousScreenName(),
-                tokenName = transaction.tokenData.symbol,
+                tokenName = transaction.symbol,
                 sendNetwork = sendNetwork,
                 sendSum = transaction.total,
                 sendUSD = transaction.totalInUsd.orZero()
@@ -59,7 +59,7 @@ class HistoryAnalytics(
             receiveAnalytics.logReceiveShowingDetails(
                 receiveSum = transaction.total,
                 receiveUSD = transaction.totalInUsd.orZero(),
-                tokenName = transaction.tokenData.symbol,
+                tokenName = transaction.symbol,
                 receiveNetwork = receiveNetwork
             )
         }

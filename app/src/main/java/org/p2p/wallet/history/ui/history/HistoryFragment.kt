@@ -10,7 +10,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistoryBinding
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -62,13 +62,13 @@ class HistoryFragment :
 
     override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {
         when (transaction) {
-            is HistoryTransaction.Swap,
-            is HistoryTransaction.Transfer,
-            is HistoryTransaction.BurnOrMint -> {
-                val state = TransactionDetailsLaunchState.History(transaction)
+            is RpcHistoryTransaction.Swap,
+            is RpcHistoryTransaction.Transfer,
+            is RpcHistoryTransaction.BurnOrMint -> {
+                val transaction = transaction as RpcHistoryTransaction
                 HistoryTransactionDetailsBottomSheetFragment.show(
                     fragmentManager = parentFragmentManager,
-                    state = state
+                    signature = transaction.signature
                 )
             }
             else -> {

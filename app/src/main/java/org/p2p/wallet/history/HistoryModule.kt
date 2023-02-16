@@ -1,7 +1,6 @@
 package org.p2p.wallet.history
 
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -10,14 +9,17 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.di.InjectionModule
+import org.p2p.wallet.history.api.RpcHistoryServiceApi
 import org.p2p.wallet.history.interactor.HistoryInteractor
-import org.p2p.wallet.history.interactor.mapper.HistoryTransactionConverter
-import org.p2p.wallet.history.interactor.mapper.HistoryTransactionMapper
+import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRemoteRepository
-import org.p2p.wallet.history.repository.remote.TransactionDetailsRpcRepository
+import org.p2p.wallet.history.repository.remote.HistoryRemoteRepository
+import org.p2p.wallet.history.repository.remote.HistoryRepository
+import org.p2p.wallet.history.repository.remote.MoonpayHistoryRemoteRepository
+import org.p2p.wallet.history.repository.remote.RpcHistoryRepository
+import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
 import org.p2p.wallet.history.ui.details.TransactionDetailsContract
 import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetPresenter
@@ -38,23 +40,7 @@ object HistoryModule : InjectionModule {
     override fun create(): Module = module {
         dataLayer()
 
-        factoryOf(::HistoryTransactionConverter)
-        factoryOf(::HistoryTransactionMapper)
-        factory {
-            HistoryInteractor(
-                rpcAccountRepository = get(),
-                transactionsLocalRepository = get(),
-                transactionsRemoteRepository = get(),
-                tokenKeyProvider = get(),
-                historyTransactionMapper = get(),
-                rpcSignatureRepository = get(),
-                userInteractor = get(),
-                sellInteractor = get(),
-                hiddenSellTransactionsStorage = get(),
-                sellEnabledFeatureToggle = get(),
-                serviceScope = get()
-            )
-        }
+        factoryOf(::RpcHistoryTransactionConverter)
         factoryOf(::HistoryItemMapper)
         factoryOf(::HistorySellTransactionMapper)
 
@@ -62,24 +48,38 @@ object HistoryModule : InjectionModule {
         factoryOf(::TokenHistoryPresenter) bind TokenHistoryContract.Presenter::class
         factory { (token: Token.Active?) ->
             HistoryListViewPresenter(
-                token = token,
                 historyInteractor = get(),
-                hiddenSellTransactionsStorage = get(),
                 environmentManager = get(),
-                sellTransactionsMapper = get(),
                 historyItemMapper = get()
             )
         } bind HistoryListViewContract.Presenter::class
         factoryOf(::TransactionDetailsPresenter) bind TransactionDetailsContract.Presenter::class
-        factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) {
-            bind<HistoryTransactionDetailsContract.Presenter>()
-        }
+        factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) bind
+            HistoryTransactionDetailsContract.Presenter::class
     }
 
     private fun Module.dataLayer() {
+        single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(RpcHistoryServiceApi::class.java) }
         factoryOf(::TransactionDetailsEntityMapper)
+        singleOf(::HistoryServiceSignatureFieldGenerator)
         singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
         single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(RpcHistoryApi::class.java) }
-        singleOf(::TransactionDetailsRpcRepository) bind TransactionDetailsRemoteRepository::class
+        factoryOf(::HistoryInteractor)
+        single<HistoryRemoteRepository> {
+            val remotes = listOf(
+                RpcHistoryRepository(
+                    historyApi = get(),
+                    tokenKeyProvider = get(),
+                    historyServiceSignatureFieldGenerator = get(),
+                    converter = get()
+                ),
+                MoonpayHistoryRemoteRepository(
+                    sellEnabledFeatureToggle = get(),
+                    repository = get(),
+                    tokenKeyProvider = get()
+                )
+            )
+            HistoryRepository(remotes)
+        }
     }
 }

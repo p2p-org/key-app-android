@@ -13,7 +13,7 @@ import org.p2p.wallet.auth.gateway.api.request.OtpMethod
 import org.p2p.wallet.auth.gateway.api.request.RegisterWalletRequest
 import org.p2p.wallet.auth.gateway.api.response.GatewayServiceResponse
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
-import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
+import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
 import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.utils.Base58String
@@ -27,7 +27,7 @@ import java.util.Locale
 const val TIMESTAMP_PATTERN_GATEWAY_SERVICE = "yyyy-MM-dd HH:mm:ssXXX"
 
 class GatewayServiceCreateWalletMapper(
-    private val signatureFieldGenerator: GatewayServiceSignatureFieldGenerator,
+    private val signatureFieldGenerator: PushServiceSignatureFieldGenerator,
     private val onboardingMetadataCipher: GatewayServiceOnboardingMetadataCipher,
     private val errorMapper: GatewayServiceErrorMapper,
     private val gson: Gson
@@ -69,7 +69,7 @@ class GatewayServiceCreateWalletMapper(
                 .toByteArray()
     }
 
-    @Throws(GatewayServiceError::class)
+    @Throws(PushServiceError::class)
     fun <T> fromNetwork(response: GatewayServiceResponse<T>): T {
         if (response.errorBody != null) {
             throw errorMapper.fromNetwork(response.errorBody)

@@ -129,13 +129,13 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
 
     private fun handleSwapSuccess(state: TransactionState.SwapSuccess) {
         val message = getString(R.string.swap_successfully_format, state.fromToken, state.toToken)
-        val signature = state.transaction.signature
+        val signature = state.transaction.getHistoryTransactionId()
         setSuccessState(message, signature)
     }
 
     private fun handleSendSuccess(state: TransactionState.SendSuccess) {
         val message = getString(R.string.send_successfully_format, state.sourceTokenSymbol)
-        val signature = state.transaction.signature
+        val signature = state.transaction.getHistoryTransactionId()
         setSuccessState(message, signature)
     }
 
