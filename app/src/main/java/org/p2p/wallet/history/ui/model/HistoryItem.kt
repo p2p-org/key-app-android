@@ -1,4 +1,4 @@
-package org.p2p.wallet.history.model
+package org.p2p.wallet.history.ui.model
 
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -6,7 +6,10 @@ import org.threeten.bp.ZonedDateTime
 import org.p2p.uikit.utils.recycler.RoundedItem
 
 sealed interface HistoryItem {
+    val date: ZonedDateTime
+
     data class TransactionItem(
+        override val date: ZonedDateTime,
         val signature: String,
         val tokenIconUrl: String?,
         val sourceIconUrl: String?,
@@ -22,9 +25,10 @@ sealed interface HistoryItem {
         val statusIcon: Int?
     ) : HistoryItem, RoundedItem
 
-    data class DateItem(val date: ZonedDateTime) : HistoryItem
+    data class DateItem(override val date: ZonedDateTime) : HistoryItem
 
     data class MoonpayTransactionItem(
+        override val date: ZonedDateTime,
         val transactionId: String,
 
         val statusIconRes: Int,

@@ -13,8 +13,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.core.common.DrawableContainer
 import org.p2p.wallet.databinding.FragmentTransactionTransferBinding
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
-import org.p2p.wallet.transaction.model.TransactionStatus
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutEnd
@@ -26,7 +25,7 @@ import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 import org.p2p.wallet.utils.withTextOrInvisible
 
-private const val EXTRA_STATE = "EXTRA_STATE"
+private const val EXTRA_TX_SIGNATURE = "EXTRA_TX_SIGNATURE"
 
 class TransactionDetailsFragment :
     BaseMvpFragment<TransactionDetailsContract.View, TransactionDetailsContract.Presenter>(
@@ -35,17 +34,15 @@ class TransactionDetailsFragment :
     TransactionDetailsContract.View {
 
     companion object {
-        fun create(state: TransactionDetailsLaunchState) =
+        fun create(txSignature: String) =
             TransactionDetailsFragment()
-                .withArgs(EXTRA_STATE to state)
+                .withArgs(EXTRA_TX_SIGNATURE to txSignature)
     }
 
-    private val state: TransactionDetailsLaunchState by args(EXTRA_STATE)
-
     private val binding: FragmentTransactionTransferBinding by viewBinding()
-
+    private val txSignature: String by args(EXTRA_TX_SIGNATURE)
     override val presenter: TransactionDetailsContract.Presenter by inject {
-        parametersOf(state)
+        parametersOf(txSignature)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,12 +68,12 @@ class TransactionDetailsFragment :
         binding.textViewDate.text = date
     }
 
-    override fun showStatus(status: TransactionStatus) {
+    override fun showStatus(status: HistoryTransactionStatus) {
         binding.statusTextView.setText(status.resValue)
         val color = when (status) {
-            TransactionStatus.COMPLETED -> R.color.color_green
-            TransactionStatus.PENDING -> R.color.systemWarningMain
-            TransactionStatus.ERROR -> R.color.systemErrorMain
+            HistoryTransactionStatus.COMPLETED -> R.color.color_green
+            HistoryTransactionStatus.PENDING -> R.color.systemWarningMain
+            HistoryTransactionStatus.ERROR -> R.color.systemErrorMain
         }
 
         binding.statusColorView.setBackgroundColor(getColor(color))

@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.user.interactor.UserInteractor
@@ -34,10 +35,10 @@ class HistoryPresenter(
 
     private fun logTransactionClicked(transaction: HistoryTransaction) {
         when (transaction) {
-            is HistoryTransaction.Swap -> {
+            is RpcHistoryTransaction.Swap -> {
                 historyAnalytics.logSwapTransactionClicked(transaction)
             }
-            is HistoryTransaction.Transfer -> {
+            is RpcHistoryTransaction.Transfer -> {
                 launch {
                     historyAnalytics.logTransferTransactionClicked(
                         transaction = transaction,
