@@ -26,7 +26,7 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
 
     private var _item: FinanceBlockCellModel? = null
     val item: FinanceBlockCellModel
-        get() = _item ?: throw IllegalStateException("Not bind yet")
+        get() = _item ?: error("Not bind yet")
 
     init {
         val paddingHorizontal = 16.toPx()

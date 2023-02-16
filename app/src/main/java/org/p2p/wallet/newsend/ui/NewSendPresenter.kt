@@ -1,6 +1,15 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
+import org.threeten.bp.ZonedDateTime
+import timber.log.Timber
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.util.Date
+import java.util.UUID
+import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
@@ -38,15 +47,6 @@ import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
-import org.threeten.bp.ZonedDateTime
-import timber.log.Timber
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.util.Date
-import java.util.UUID
-import kotlin.properties.Delegates.observable
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -392,7 +392,7 @@ class NewSendPresenter(
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
             } catch (e: Throwable) {
-                Timber.i(e)
+                Timber.e(e)
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
             }

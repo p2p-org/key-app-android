@@ -19,7 +19,7 @@ class UiKitIconWrapper @JvmOverloads constructor(
         when (this) {
             IconWrapperCellModel.SingleIcon::class -> inflateViewBinding<WidgetIconWrapperSingleBinding>()
             IconWrapperCellModel.TwoIcon::class -> inflateViewBinding<WidgetIconWrapperTwoBinding>()
-            else -> throw IllegalArgumentException("add remaining type")
+            else -> error("No type for viewPool: $this")
         }
     }
 

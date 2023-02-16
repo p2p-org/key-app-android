@@ -44,9 +44,10 @@ fun shapeCircle(): ShapeAppearanceModel = ShapeAppearanceModel.builder()
     .setAllCornerSizes(PILL)
     .build()
 
-fun shapeRounded24dp(): ShapeAppearanceModel = ShapeAppearanceModel.builder()
-    .setAllCorners(CornerFamily.ROUNDED, 24f.toPx())
-    .build()
+fun shapeRounded24dp(): ShapeAppearanceModel =
+    ShapeAppearanceModel.builder()
+        .setAllCorners(CornerFamily.ROUNDED, 24f.toPx())
+        .build()
 
 fun shapeTopRounded24dp(): ShapeAppearanceModel = shapeTopRounded(top = 24f.toPx())
 

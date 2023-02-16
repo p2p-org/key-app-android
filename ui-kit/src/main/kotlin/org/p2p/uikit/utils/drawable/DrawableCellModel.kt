@@ -20,7 +20,7 @@ data class DrawableCellModel(
 
 fun shapeDrawable(
     shape: ShapeAppearanceModel = shapeRectangle(),
-) = MaterialShapeDrawable(shape)
+): MaterialShapeDrawable = MaterialShapeDrawable(shape)
 
 fun DrawableCellModel?.applyBackground(view: View) {
     val model = this

@@ -8,6 +8,7 @@ import org.p2p.uikit.utils.requireContext
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemVerifySecurityKeyBinding
 
+@Deprecated("Old onboarding flow, delete someday")
 class VerifySecurityKeyAdapter(private val block: (Int, String) -> Unit) :
     RecyclerView.Adapter<VerifySecurityKeyAdapter.ViewHolder>() {
 

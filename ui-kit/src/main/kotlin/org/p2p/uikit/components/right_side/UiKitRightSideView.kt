@@ -20,12 +20,12 @@ class UiKitRightSideView @JvmOverloads constructor(
         when (this) {
             RightSideCellModel.TwoLineText::class -> inflateViewBinding<WidgetRightSideDoubleTextBinding>()
             RightSideCellModel.SingleTextTwoIcon::class -> inflateViewBinding<WidgetRightSideSingleTextTwoIconBinding>()
-            else -> throw IllegalArgumentException("add remaining type")
+            else -> error("No type for viewPool: $this")
         }
     }
 
     val item: RightSideCellModel
-        get() = currentModel ?: throw IllegalStateException("Not bind yet")
+        get() = currentModel ?: error("Not bind yet")
 
     init {
         if (isInEditMode) {

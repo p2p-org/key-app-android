@@ -24,26 +24,8 @@ data class TextViewCellModel(
     @ColorRes val textColor: Int? = null,
     val textSizeSp: Float? = null,
     val gravity: Int = Gravity.CENTER,
-    val background: DrawableCellModel? = null,
-    val padding: InitialViewPadding? = null,
-) {
-    constructor(
-        text: TextContainer,
-        @StyleRes textAppearance: Int? = null,
-        @ColorRes textColor: Int? = null,
-        textSizeSp: Float? = null,
-        gravity: Int = Gravity.CENTER,
-        badgeBackground: TextViewBackgroundModel? = null
-    ) : this(
-        text = text,
-        textAppearance = textAppearance,
-        textColor = textColor,
-        textSizeSp = textSizeSp,
-        gravity = gravity,
-        background = badgeBackground?.background,
-        padding = badgeBackground?.padding
-    )
-}
+    val badgeBackground: TextViewBackgroundModel? = null
+)
 
 data class TextViewBackgroundModel(
     val background: DrawableCellModel = badgeRounded(),
@@ -72,15 +54,15 @@ fun TextView.bindOrGone(model: TextViewCellModel?) {
 
 fun TextView.bind(model: TextViewCellModel) {
     model.textAppearance?.let { setTextAppearance(it) }
-    model.textColor?.let { setTextColor(getColorStateList(it)) }
+    model.textColor?.let { getColorStateList(it) }
     model.textSizeSp?.let { textSize = it }
     gravity = model.gravity
-    model.background?.applyBackground(this)
+    model.badgeBackground?.background?.applyBackground(this)
     updatePadding(
-        left = model.padding?.left.orZero(),
-        top = model.padding?.top.orZero(),
-        right = model.padding?.right.orZero(),
-        bottom = model.padding?.bottom.orZero(),
+        left = model.badgeBackground?.padding?.left.orZero(),
+        top = model.badgeBackground?.padding?.top.orZero(),
+        right = model.badgeBackground?.padding?.right.orZero(),
+        bottom = model.badgeBackground?.padding?.bottom.orZero(),
     )
     model.text.applyTo(this)
 }
