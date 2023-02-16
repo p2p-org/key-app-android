@@ -6,9 +6,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shapeDrawable
-import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding

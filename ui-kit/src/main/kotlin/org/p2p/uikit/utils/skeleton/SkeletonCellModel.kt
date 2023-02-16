@@ -32,7 +32,7 @@ fun View.bindSkeleton(model: SkeletonCellModel) {
     skeletonDrawable.intrinsicWidth = model.width
     skeletonDrawable.intrinsicHeight = model.height
 
-    //shadow
+    // shadow
     background = skeletonDrawable
     backgroundTintList = context.getColorStateList(android.R.color.transparent)
 
