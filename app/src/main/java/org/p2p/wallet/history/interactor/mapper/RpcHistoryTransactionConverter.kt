@@ -1,7 +1,6 @@
 package org.p2p.wallet.history.interactor.mapper
 
 import com.google.gson.Gson
-import kotlinx.coroutines.withContext
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
@@ -10,20 +9,18 @@ import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTypeResponse
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.fromJsonReified
 import org.threeten.bp.ZonedDateTime
 
 class RpcHistoryTransactionConverter(
-    private val dispatchers: CoroutineDispatchers,
     private val tokenKeyProvider: TokenKeyProvider,
     private val gson: Gson
 ) {
-    suspend fun toDomain(
+    fun toDomain(
         transaction: RpcHistoryTransactionResponse,
-    ): RpcHistoryTransaction = withContext(dispatchers.io) {
+    ): RpcHistoryTransaction =
         when (transaction.type) {
             RpcHistoryTypeResponse.SEND -> parseSend(transaction)
             RpcHistoryTypeResponse.RECEIVE -> parseReceive(transaction)
@@ -36,7 +33,6 @@ class RpcHistoryTransactionConverter(
             RpcHistoryTypeResponse.BURN -> parseBurn(transaction)
             RpcHistoryTypeResponse.UNKNOWN -> parseUnknown(transaction)
         }
-    }
 
     private fun parseReceive(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info =

@@ -17,7 +17,7 @@ class MoonpayHistoryRemoteRepository(
 
     private val allTransactions = mutableListOf<HistoryTransaction>()
 
-    private var historyPagingState = HistoryPagingState.INITIAL
+    private var historyPagingState = HistoryPagingState.ACTIVE
 
     override fun getPagingState(): HistoryPagingState {
         return historyPagingState
@@ -25,7 +25,7 @@ class MoonpayHistoryRemoteRepository(
 
     override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
         if (!sellEnabledFeatureToggle.isFeatureEnabled || !mintAddress.isNullOrEmpty()) {
-            historyPagingState = HistoryPagingState.IDLE
+            historyPagingState = HistoryPagingState.INACTIVE
             return HistoryPagingResult.Success(emptyList())
         }
         allTransactions.clear()
@@ -36,7 +36,7 @@ class MoonpayHistoryRemoteRepository(
             if (!allTransactions.containsAll(newTransactions)) {
                 allTransactions.addAll(newTransactions)
             }
-            historyPagingState = HistoryPagingState.IDLE
+            historyPagingState = HistoryPagingState.INACTIVE
             HistoryPagingResult.Success(newTransactions)
         } catch (e: Throwable) {
             HistoryPagingResult.Error(e)

@@ -3,7 +3,6 @@ package org.p2p.wallet.history.repository.remote
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
-import timber.log.Timber
 
 private const val TAG = "HistoryRepository"
 
@@ -12,14 +11,12 @@ class HistoryRepository(
 ) : HistoryRemoteRepository {
 
     override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
-        val result = repositories.filter { it.getPagingState() == HistoryPagingState.INITIAL }
-            .map { it.loadHistory(limit, mintAddress) }
+        val result = repositories.map { it.loadHistory(limit, mintAddress) }
         return parsePagingResult(result)
     }
 
     override suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult {
-        val result = repositories.filter { it.getPagingState() == HistoryPagingState.INITIAL }
-            .map { it.loadNextPage(limit) }
+        val result = repositories.map { it.loadNextPage(limit) }
         return parsePagingResult(result)
     }
 
@@ -34,10 +31,10 @@ class HistoryRepository(
     }
 
     override fun getPagingState(): HistoryPagingState {
-        return if (repositories.any { it.getPagingState() == HistoryPagingState.INITIAL }) {
-            HistoryPagingState.INITIAL
+        return if (repositories.any { it.getPagingState() == HistoryPagingState.ACTIVE }) {
+            HistoryPagingState.ACTIVE
         } else {
-            HistoryPagingState.IDLE
+            HistoryPagingState.INACTIVE
         }
     }
 
@@ -56,8 +53,6 @@ class HistoryRepository(
             }
         }
         val errorMessage = errorMessageBuilder.toString()
-        Timber.tag(TAG).d("Error stack trace: $errorMessage")
-        Timber.tag(TAG).d("New transaction fetched, size = ${newTransactions.size}")
         if (errorMessage.isNotEmpty()) {
             return HistoryPagingResult.Error(Throwable(errorMessage))
         }

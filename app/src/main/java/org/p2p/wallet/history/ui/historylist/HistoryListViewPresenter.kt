@@ -44,6 +44,7 @@ class HistoryListViewPresenter(
                 view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
                 Timber.e("Error on loading next history page: $e")
+                view?.showPagingState(PagingState.Error(e))
             }
         }
     }

@@ -8,8 +8,8 @@ import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
+import org.p2p.wallet.infrastructure.network.data.EmptyDataException
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import timber.log.Timber
 import java.util.Optional
 
 private const val REQUEST_PARAMS_USER_ID = "user_id"
@@ -28,15 +28,13 @@ class RpcHistoryRepository(
 ) : HistoryRemoteRepository {
 
     private val allTransactions = mutableMapOf<String, MutableList<RpcHistoryTransactionResponse>>()
-    private var historyPagingState = HistoryPagingState.INITIAL
+    private var historyPagingState = HistoryPagingState.ACTIVE
 
     override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
         allTransactions.clear()
-
         return try {
             val response = fetchHistoryTransactions(limit, mintAddress)
             val domainItems = response.map { converter.toDomain(it) }
-
             HistoryPagingResult.Success(domainItems)
         } catch (e: Throwable) {
             HistoryPagingResult.Error(e)
@@ -70,6 +68,11 @@ class RpcHistoryRepository(
         mintAddress: String?
     ): List<RpcHistoryTransactionResponse> {
         val tokenAddress = mintAddress ?: tokenKeyProvider.publicKey
+
+        if (historyPagingState == HistoryPagingState.INACTIVE) {
+            return findTransactionsByToken(tokenAddress)
+        }
+
         val offset = findTransactionsByToken(tokenAddress).size.toLong()
         val signature = historyServiceSignatureFieldGenerator.generateSignature(
             pubKey = tokenKeyProvider.publicKey,
@@ -89,24 +92,23 @@ class RpcHistoryRepository(
             method = REQUEST_PARAMS_NAME,
             params = requestParams
         )
-        val result = historyApi.getTransactionHistory(rpcRequest).result
-        if (result.isEmpty() || result.size < limit) {
-            historyPagingState = HistoryPagingState.IDLE
-        }
-        Timber.tag(TAG).d(
-            "Load history result: address =$tokenAddress\n" +
-                " offset = $offset\n " +
-                "size = ${result.size}"
-        )
-
         val localTransactions = findTransactionsByToken(
             token = tokenAddress
         )
-        if (!localTransactions.containsAll(result)) {
-            localTransactions.addAll(result)
+        return try {
+            val result = historyApi.getTransactionHistory(rpcRequest).result
+            if (result.size < limit) {
+                historyPagingState = HistoryPagingState.INACTIVE
+            }
+            if (!localTransactions.containsAll(result)) {
+                localTransactions.addAll(result)
+            }
+            allTransactions[tokenAddress] = localTransactions
+            findTransactionsByToken(tokenAddress)
+        } catch (e: EmptyDataException) {
+            historyPagingState = HistoryPagingState.INACTIVE
+            findTransactionsByToken(tokenAddress)
         }
-        allTransactions[tokenAddress] = localTransactions
-        return findTransactionsByToken(tokenAddress)
     }
 
     private fun findTransactionsByToken(token: String): MutableList<RpcHistoryTransactionResponse> {
