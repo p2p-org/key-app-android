@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: develop
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
@@ -41,6 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: develop
       - name: "Initializing firebase configs"
         uses: ./.github/actions/setup-google-services
         with:
@@ -76,6 +80,7 @@ jobs:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
         with:
+          ref: develop
           fetch-depth: 0
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: "Initializing firebase configs"
@@ -147,6 +152,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: develop
       - name: "Find a Jira ticket and move it to READY FOR TESTING"
         uses: ./.github/actions/setup-jira-rft
         with:
