@@ -250,8 +250,8 @@
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
     <string name="main_enter_incorrect_amount">Incorrect amount</string>
-    <string name="main_burn_renbtc">Burn renBTC</string>
-    <string name="main_mint_renbtc">Mint renBTC</string>
+    <string name="main_burn">Burn</string>
+    <string name="main_mint">Mint</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_key_app_username_sol_address">Username / address</string>
     <string name="main_reserve_username">Reserve your username now</string>

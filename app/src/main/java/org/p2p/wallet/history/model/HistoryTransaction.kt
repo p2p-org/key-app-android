@@ -191,7 +191,7 @@ sealed class HistoryTransaction(
             get() = type == RenBtcType.BURN
 
         @StringRes
-        fun getTitle(): Int = if (isBurn) R.string.main_burn_renbtc else R.string.main_mint_renbtc
+        fun getTitle(): Int = if (isBurn) R.string.main_burn else R.string.main_mint
 
         fun getTokenIconUrl(): String? = tokenData?.iconUrl
 
