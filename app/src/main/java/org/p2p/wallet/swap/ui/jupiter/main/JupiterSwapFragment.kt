@@ -42,7 +42,7 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
         binding.imageViewSwapTokens.background = shapeDrawable(shapeCircle())
         binding.imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
         binding.imageViewSwapTokens.rippleForeground(shapeCircle())
-        binding.imageViewSwapTokens.setOnClickListener {  }
+        binding.imageViewSwapTokens.setOnClickListener { }
         setYellowAller()
         binding.linearLayoutAlert.isVisible = true
     }
