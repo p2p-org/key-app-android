@@ -48,14 +48,12 @@ task gitChangelogTask(type: Exec) {
     def from = findProperty('fromCommit')
     def to = findProperty('toCommit')
 
+    executable "sh"
+    args "-c", "git log $from..$to --no-merges --pretty=format:\"%h - %s - %an\" > CHANGELOG.txt"
+
     doFirst {
         if (from == null || to == null) {
             throw new GradleException("fromCommit or toCommit is not defined. Did you set properties? (-PfromCommit=somecommithash -PtoCommit=somecommithash)")
         }
     }
-
-    def changelogs = sh("git log $from..$to --no-merges --pretty=format:\"%h - %s - %an\"").trim()
-
-    file("CHANGELOG.txt").createNewFile()
-    file("CHANGELOG.txt").write(changelogs)
 }
