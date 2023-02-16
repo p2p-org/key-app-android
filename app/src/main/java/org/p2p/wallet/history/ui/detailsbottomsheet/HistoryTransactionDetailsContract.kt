@@ -25,6 +25,6 @@ interface HistoryTransactionDetailsContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun load()
+        fun load(transactionId: String)
     }
 }

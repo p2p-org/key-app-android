@@ -73,15 +73,10 @@ class HistoryListViewPresenter(
 
             when (historyItem) {
                 is HistoryItem.TransactionItem -> {
-                    val item = historyInteractor.findTransactionById(historyItem.signature) ?: error(
-                        "Transaction not founded for history item! $historyItem"
-                    )
-                    view?.onTransactionClicked(item)
+                    view?.onTransactionClicked(historyItem.transactionId)
                 }
                 is HistoryItem.MoonpayTransactionItem -> {
-                    val item = historyInteractor.findTransactionById(historyItem.transactionId) ?: error(
-                        "Transaction not founded for history item! $historyItem"
-                    )
+                    val item = historyInteractor.findTransactionById(historyItem.transactionId) ?: return@launch
                     val adapterItem = historyItemMapper.toAdapterItem(item as SellTransaction)
                     view?.onSellTransactionClicked(adapterItem)
                 }
@@ -94,7 +89,7 @@ class HistoryListViewPresenter(
         }
     }
 
-    private suspend fun handlePagingResult(result: HistoryPagingResult): List<HistoryTransaction> {
+    private fun handlePagingResult(result: HistoryPagingResult): List<HistoryTransaction> {
         return when (result) {
             is HistoryPagingResult.Error -> error(result.cause)
             is HistoryPagingResult.Success -> result.data
