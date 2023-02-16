@@ -11,6 +11,7 @@ import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 import org.p2p.uikit.utils.withTextOrGone
 
+@Deprecated("use [UiKitFinanceBlockView] without [FinanceBlockCellModel.rightSideCellModel]")
 class UiKitStartAmountView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

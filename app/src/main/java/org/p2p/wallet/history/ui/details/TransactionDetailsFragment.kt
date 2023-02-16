@@ -11,7 +11,7 @@ import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
+import org.p2p.core.common.DrawableContainer
 import org.p2p.wallet.databinding.FragmentTransactionTransferBinding
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.transaction.model.TransactionStatus

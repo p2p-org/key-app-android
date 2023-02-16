@@ -7,7 +7,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
+import org.p2p.core.common.DrawableContainer
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.TransactionDetailsLaunchState
