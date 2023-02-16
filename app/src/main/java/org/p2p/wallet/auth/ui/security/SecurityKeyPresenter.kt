@@ -2,15 +2,16 @@ package org.p2p.wallet.auth.ui.security
 
 import android.content.Context
 import android.graphics.Bitmap
+import kotlin.properties.Delegates
 import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.repository.FileRepository
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import kotlin.properties.Delegates
 
 private const val SECURITY_KEY_IMAGE_NAME = "SecureKey"
 
+@Deprecated("Old onboarding flow, delete someday")
 class SecurityKeyPresenter(
     private val context: Context,
     private val seedPhraseInteractor: SeedPhraseInteractor,

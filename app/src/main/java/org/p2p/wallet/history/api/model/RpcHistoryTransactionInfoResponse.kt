@@ -2,7 +2,7 @@ package org.p2p.wallet.history.api.model
 
 import com.google.gson.annotations.SerializedName
 
-abstract class RpcHistoryTransactionInfoResponse {
+sealed class RpcHistoryTransactionInfoResponse {
 
     data class Send(
         @SerializedName("amount")
@@ -10,7 +10,7 @@ abstract class RpcHistoryTransactionInfoResponse {
         @SerializedName("token")
         val token: RpcHistoryTokenResponse,
         @SerializedName("account")
-        val counterParty: RpcHistoryCounterPartyResponse
+        val counterParty: RpcHistoryAccountResponse
     ) : RpcHistoryTransactionInfoResponse()
 
     data class Receive(
@@ -19,7 +19,7 @@ abstract class RpcHistoryTransactionInfoResponse {
         @SerializedName("token")
         val token: RpcHistoryTokenResponse,
         @SerializedName("account")
-        val counterParty: RpcHistoryCounterPartyResponse
+        val counterParty: RpcHistoryAccountResponse
     ) : RpcHistoryTransactionInfoResponse()
 
     data class Swap(
@@ -30,12 +30,12 @@ abstract class RpcHistoryTransactionInfoResponse {
         @SerializedName("transitive")
         val transitive: List<RpcHistorySwapTokenResponse>?,
         @SerializedName("swap_programs")
-        val swapPrograms: List<String>?
+        val swapPrograms: List<RpcHistoryAccountResponse>?
     ) : RpcHistoryTransactionInfoResponse()
 
     data class Stake(
         @SerializedName("stake")
-        val account: RpcHistoryCounterPartyResponse,
+        val account: RpcHistoryAccountResponse,
         @SerializedName("token")
         val token: RpcHistoryTokenResponse,
         @SerializedName("amount")
@@ -44,7 +44,7 @@ abstract class RpcHistoryTransactionInfoResponse {
 
     data class Unstake(
         @SerializedName("stake")
-        val account: RpcHistoryCounterPartyResponse,
+        val account: RpcHistoryAccountResponse,
         @SerializedName("token")
         val token: RpcHistoryTokenResponse,
         @SerializedName("amount")

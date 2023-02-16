@@ -27,6 +27,7 @@ class HistoryItemMapper(private val resources: Resources) {
                 }
 
                 item is SellTransaction -> {
+                    // TODO provide mapper for sell transactions
                 }
             }
         }
@@ -200,7 +201,7 @@ class HistoryItemMapper(private val resources: Resources) {
         )
     }
 
-    fun sellTransactionToDetails(sellTransaction: SellTransaction): SellTransactionViewDetails {
+    fun toAdapterItem(sellTransaction: SellTransaction): SellTransactionViewDetails {
         val receiverAddress = if (sellTransaction is SellTransaction.WaitingForDepositTransaction) {
             sellTransaction.moonpayDepositWalletAddress.base58Value
         } else {

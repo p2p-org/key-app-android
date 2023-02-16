@@ -15,15 +15,14 @@ class MoonpayHistoryRemoteRepository(
 
     private val allTransactions = mutableListOf<HistoryTransaction>()
 
-    override suspend fun loadHistory(limit: Int, offset: Int): List<HistoryTransaction> {
-        if (sellEnabledFeatureToggle.isFeatureEnabled) {
-            val newTransactions = repository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
-            if (!allTransactions.containsAll(newTransactions)) {
-                allTransactions.addAll(newTransactions)
-            }
-            return allTransactions
+    override suspend fun loadHistory(limit: Int): List<HistoryTransaction> {
+        if (!sellEnabledFeatureToggle.isFeatureEnabled) return emptyList()
+
+        val newTransactions = repository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
+        if (!allTransactions.containsAll(newTransactions)) {
+            allTransactions.addAll(newTransactions)
         }
-        return emptyList()
+        return allTransactions
     }
 
     override fun findTransactionById(id: String): HistoryTransaction? {

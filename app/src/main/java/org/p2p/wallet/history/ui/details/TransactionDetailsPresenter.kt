@@ -1,14 +1,14 @@
 package org.p2p.wallet.history.ui.details
 
+import org.p2p.core.common.DrawableContainer
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
-import org.p2p.wallet.history.interactor.HistoryServiceInteractor
+import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.utils.cutMiddle
 
@@ -17,7 +17,7 @@ private const val DELAY_IN_MS = 5000L
 class TransactionDetailsPresenter(
     private val resourcesProvider: ResourcesProvider,
     private val userLocalRepository: UserLocalRepository,
-    private val historyInteractor: HistoryServiceInteractor
+    private val historyInteractor: HistoryInteractor
 ) : BasePresenter<TransactionDetailsContract.View>(),
     TransactionDetailsContract.Presenter {
 

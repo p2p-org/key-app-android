@@ -1,7 +1,6 @@
 package org.p2p.wallet.history.api.model
 
 enum class HistoryServiceError(val errorCode: Int) {
-
     INVALID_JSON(-32700),
     INVALID_REQUEST(-32600),
     METHOD_NOT_FOUND(-32601),

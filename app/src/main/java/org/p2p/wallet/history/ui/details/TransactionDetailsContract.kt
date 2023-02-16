@@ -2,9 +2,9 @@ package org.p2p.wallet.history.ui.details
 
 import android.text.SpannableString
 import androidx.annotation.StringRes
+import org.p2p.core.common.DrawableContainer
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.common.ui.bottomsheet.DrawableContainer
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 
 interface TransactionDetailsContract {

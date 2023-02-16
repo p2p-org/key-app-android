@@ -15,7 +15,7 @@ private const val REQUEST_PARAMS_OFFSET = "offset"
 private const val REQUEST_PARAMS_SIGNATURE = "signature"
 private const val REQUEST_PARAMS_NAME = "get_transactions"
 
-class RpcHistoryRemoteRepository(
+class RpcHistoryRepository(
     private val historyApi: RpcHistoryServiceApi,
     private val tokenKeyProvider: TokenKeyProvider,
     private val historyServiceSignatureFieldGenerator: HistoryServiceSignatureFieldGenerator,
@@ -24,19 +24,19 @@ class RpcHistoryRemoteRepository(
 
     private val allTransactions = mutableListOf<RpcHistoryTransaction>()
 
-    override suspend fun loadHistory(limit: Int, offset: Int): List<RpcHistoryTransaction> {
+    override suspend fun loadHistory(limit: Int): List<RpcHistoryTransaction> {
 
         val signature = historyServiceSignatureFieldGenerator.generateSignature(
             pubKey = tokenKeyProvider.publicKey,
             privateKey = tokenKeyProvider.keyPair,
-            offset = offset.toLong(),
+            offset = allTransactions.size.toLong(),
             limit = limit.toLong(),
             mint = Optional.empty()
         )
         val requestParams = mapOf(
             REQUEST_PARAMS_USER_ID to tokenKeyProvider.publicKey,
             REQUEST_PARAMS_LIMIT to limit,
-            REQUEST_PARAMS_OFFSET to offset,
+            REQUEST_PARAMS_OFFSET to allTransactions.size.toLong(),
             REQUEST_PARAMS_SIGNATURE to signature
         )
         val rpcRequest = RpcMapRequest(
@@ -52,7 +52,7 @@ class RpcHistoryRemoteRepository(
         return newTransactions
     }
 
-    override fun findTransactionById(signature: String): HistoryTransaction? {
-        return allTransactions.firstOrNull { it.signature == signature }
+    override fun findTransactionById(id: String): HistoryTransaction? {
+        return allTransactions.firstOrNull { it.getHistoryTransactionId() == id }
     }
 }

@@ -1,7 +1,7 @@
 package org.p2p.wallet.auth.gateway.repository.mapper
 
 import org.p2p.solanaj.utils.TweetNaclFast
-import org.p2p.wallet.auth.gateway.repository.model.GatewayServiceError
+import org.p2p.wallet.auth.gateway.repository.model.PushServiceError
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 import timber.log.Timber
@@ -9,7 +9,7 @@ import timber.log.Timber
 private const val TAG = "GatewayServiceSignatureFieldGenerator"
 
 class PushServiceSignatureFieldGenerator {
-    @Throws(GatewayServiceError.RequestCreationFailure::class)
+    @Throws(PushServiceError.RequestCreationFailure::class)
     fun generateSignatureField(
         userPrivateKey: Base58String,
         structToSerialize: BorshSerializable
@@ -23,7 +23,7 @@ class PushServiceSignatureFieldGenerator {
             .toBase58Instance()
     } catch (error: Throwable) {
         Timber.i(error)
-        throw GatewayServiceError.RequestCreationFailure(
+        throw PushServiceError.RequestCreationFailure(
             message = "Failed to generate signature field",
             cause = error
         )

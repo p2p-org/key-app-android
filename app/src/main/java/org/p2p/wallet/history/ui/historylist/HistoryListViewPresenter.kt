@@ -3,23 +3,18 @@ package org.p2p.wallet.history.ui.historylist
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
-import org.p2p.wallet.history.interactor.HistoryServiceInteractor
+import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.ui.model.HistoryItem
-import org.p2p.wallet.history.ui.history.HistorySellTransactionMapper
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.infrastructure.sell.HiddenSellTransactionsStorageContract
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
 
+private const val PAGE_SIZE = 20
 class HistoryListViewPresenter(
-    private val token: Token.Active?,
-    private val historyInteractor: HistoryServiceInteractor,
-    private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
+    private val historyInteractor: HistoryInteractor,
     private val environmentManager: NetworkEnvironmentManager,
-    private val sellTransactionsMapper: HistorySellTransactionMapper,
     private val historyItemMapper: HistoryItemMapper,
 ) : BasePresenter<HistoryListViewContract.View>(), HistoryListViewContract.Presenter {
 
@@ -38,12 +33,14 @@ class HistoryListViewPresenter(
     override fun loadHistory() {
         launch {
             try {
-                val items = historyInteractor.loadHistory(20, 0)
+                view?.showPagingState(PagingState.InitialLoading)
+                val items = historyInteractor.loadHistory(PAGE_SIZE)
                 val adapterItems = historyItemMapper.toAdapterItem(items)
                 view?.showHistory(adapterItems)
                 view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
-                Timber.tag("______").e(e)
+                Timber.e("Error on loading history: $e")
+                view?.showPagingState(PagingState.Error(e))
             }
         }
     }
@@ -53,16 +50,17 @@ class HistoryListViewPresenter(
     override fun onItemClicked(historyItem: HistoryItem) {
         when (historyItem) {
             is HistoryItem.TransactionItem -> {
-                val item = historyInteractor.findTransactionBySignature(historyItem.signature) ?: error(
+                val item = historyInteractor.findTransactionById(historyItem.signature) ?: error(
                     "Transaction not founded for history item! $historyItem"
                 )
                 view?.onTransactionClicked(item)
             }
             is HistoryItem.MoonpayTransactionItem -> {
-                val item = historyInteractor.findTransactionBySignature(historyItem.transactionId) ?: error(
+                val item = historyInteractor.findTransactionById(historyItem.transactionId) ?: error(
                     "Transaction not founded for history item! $historyItem"
                 )
-                view?.onSellTransactionClicked(historyItemMapper.sellTransactionToDetails(item as SellTransaction))
+                val adapterItem = historyItemMapper.toAdapterItem(item as SellTransaction)
+                view?.onSellTransactionClicked(adapterItem)
             }
             else -> {
                 val errorMessage = "Unsupported Transaction click! $historyItem"

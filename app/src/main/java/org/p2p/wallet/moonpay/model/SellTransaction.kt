@@ -1,7 +1,7 @@
 package org.p2p.wallet.moonpay.model
 
 import org.p2p.wallet.common.date.toZonedDateTime
-import org.p2p.wallet.history.model.moonpay.MoonPayTransaction
+import org.p2p.wallet.history.model.moonpay.MoonpayHistoryTransaction
 import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionFailureReason
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
@@ -10,7 +10,7 @@ import org.threeten.bp.ZonedDateTime
 
 sealed class SellTransaction(
     val status: SellTransactionStatus
-) : MoonPayTransaction() {
+) : MoonpayHistoryTransaction() {
     abstract val metadata: SellTransactionMetadata
     abstract val transactionId: String
     abstract val amounts: SellTransactionAmounts

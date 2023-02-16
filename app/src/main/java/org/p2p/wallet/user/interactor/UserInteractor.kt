@@ -1,7 +1,9 @@
 package org.p2p.wallet.user.interactor
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
+import android.content.SharedPreferences
+import timber.log.Timber
+import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
@@ -16,7 +18,6 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
-import java.util.Date
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
@@ -49,6 +50,12 @@ class UserInteractor(
         val allTokens = availableTokensSymbols.mapNotNull { tokenSymbol ->
             val userToken = userTokens.find { it.tokenSymbol == tokenSymbol }
             userToken ?: findTokenDataBySymbol(tokenSymbol)
+        }
+
+        if (allTokens.isEmpty()) {
+            Timber.e(
+                IllegalStateException("No tokens to buy! All tokens: ${userTokens.map(Token.Active::tokenSymbol)}")
+            )
         }
 
         return allTokens
