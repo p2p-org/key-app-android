@@ -13,12 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="8dp"
         android:duplicateParentState="true"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountTitle"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="You pay" />
@@ -27,12 +23,16 @@
         android:id="@+id/textViewAvailableAmountTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
         android:layout_marginEnd="4dp"
         android:text="@string/common_all"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
         app:layout_constraintBottom_toBottomOf="@+id/textViewWidgetTitle"
         app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountValue"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/textViewWidgetTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle" />
 
     <TextView
@@ -40,16 +40,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_sky"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/textViewWidgetTitle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewAvailableAmountTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle"
         tools:text="12.30 SOL" />
 
     <TextView
-        android:id="@+id/textViewAmountName"
+        android:id="@+id/textViewCurrencyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -62,14 +66,14 @@
         tools:text="USD" />
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/imageViewChangeAmount"
+        android:id="@+id/textViewChangeCurrency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textViewAmountName"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewCurrencyName"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toEndOf="@+id/textViewAmountName"
-        app:layout_constraintTop_toTopOf="@+id/textViewAmountName"
+        app:layout_constraintStart_toEndOf="@+id/textViewCurrencyName"
+        app:layout_constraintTop_toTopOf="@+id/textViewCurrencyName"
         app:srcCompat="@drawable/ic_arrow_down"
         app:tint="@color/elements_night" />
 
@@ -82,11 +86,11 @@
         android:layout_marginEnd="16dp"
         android:background="@android:color/transparent"
         android:duplicateParentState="true"
-        app:layout_constraintBottom_toBottomOf="@+id/textViewAmountName"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewCurrencyName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/imageViewChangeAmount"
-        app:layout_constraintTop_toTopOf="@+id/textViewAmountName" />
+        app:layout_constraintStart_toEndOf="@+id/textViewChangeCurrency"
+        app:layout_constraintTop_toTopOf="@+id/textViewCurrencyName" />
 
     <EditText
         android:id="@+id/editTextAmount"
@@ -120,19 +124,25 @@
         app:layout_constraintBottom_toBottomOf="@+id/textViewBalance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textViewBalance"
-        tools:text="≈0 USD" />
+        tools:text="≈0 USD"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/textViewBalance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="6dp"
         android:layout_marginBottom="12dp"
         android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textViewFiatAmount"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Balance 16.28" />

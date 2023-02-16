@@ -85,27 +85,87 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:text="@string/swap_main_fee_inform"
                 android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
                 android:textColor="@color/text_mountain"
-                app:layout_constraintBottom_toTopOf="@+id/viewAlert"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayoutAlert"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/swapWidgetTo"
-                tools:text="Key App doesn’t make any profit from swap 💚" />
+                app:layout_constraintTop_toBottomOf="@+id/swapWidgetTo" />
 
-
-            <View
-                android:id="@+id/viewAlert"
+            <!--TODO component-->
+            <LinearLayout
+                android:id="@+id/linearLayoutAlert"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewFeeInform" />
+                app:layout_constraintTop_toBottomOf="@+id/textViewFeeInform"
+                tools:background="@color/bg_light_sun"
+                tools:visibility="visible">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imageviewAlert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="8dp"
+                    app:srcCompat="@drawable/ic_warning_solid"
+                    tools:tint="@color/icons_sun" />
+
+                <TextView
+                    android:id="@+id/textViewAlert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/swap_main_alert"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3" />
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
+    <org.p2p.uikit.components.UiKitButton
+        android:id="@+id/buttonError"
+        style="@style/UiKit.Components.Button.Large"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="44dp"
+        android:autoSizeMaxTextSize="16sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeTextType="uniform"
+        android:backgroundTint="@color/bg_rain"
+        android:enabled="false"
+        android:maxLines="1"
+        android:text="@string/send_enter_amount"
+        android:textColor="@color/text_mountain"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <org.p2p.uikit.components.UiKitSliderSolidButton
+        android:id="@+id/sliderSend"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="44dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:sliderIcon="@drawable/ic_arrow_right"
+        tools:sliderText="Swap USDC → SOL"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
