@@ -4,7 +4,7 @@
 last_commit_hash=$(cat last_commit_hash.txt)
 
 # Get the current head commit hash
-current_commit_hash="$(git rev-parse "$GITHUB_HEAD_REF")"
+current_commit_hash="$(git rev-parse HEAD)"
 echo "current commit: $current_commit_hash"
 
 printf "$(git log "$last_commit_hash".."$current_commit_hash" --no-merges --pretty=format:\"%h - %s - %an\")" > changelog.txt
