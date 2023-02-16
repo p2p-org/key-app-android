@@ -1,12 +1,15 @@
 package org.p2p.wallet.history.model.rpc
 
-import android.content.res.Resources
-import android.os.Parcelable
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import kotlinx.android.parcel.Parcelize
+import android.content.res.Resources
+import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
+import java.math.BigDecimal
+import java.math.BigInteger
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.asUsdTransaction
@@ -20,8 +23,6 @@ import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.CUT_4_SYMBOLS
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
-import java.math.BigDecimal
-import java.math.BigInteger
 
 sealed class RpcHistoryTransaction(
     override val date: ZonedDateTime,
@@ -54,12 +55,12 @@ sealed class RpcHistoryTransaction(
         val fee: BigInteger
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
-        @kotlinx.android.parcel.IgnoredOnParcel
+        @IgnoredOnParcel
         val isBurn: Boolean
             get() = type == RpcHistoryTransactionType.BURN
 
         @StringRes
-        fun getTitle(): Int = if (isBurn) R.string.main_burn_renbtc else R.string.main_mint_renbtc
+        fun getTitle(): Int = if (isBurn) R.string.main_burn else R.string.main_mint
 
         @DrawableRes
         fun getIcon(): Int = if (isBurn) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
