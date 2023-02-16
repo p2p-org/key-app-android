@@ -22,22 +22,20 @@ class RpcHistoryTransactionConverter(
     private val gson: Gson
 ) {
     suspend fun toDomain(
-        transactions: List<RpcHistoryTransactionResponse>,
-    ): List<RpcHistoryTransaction> = withContext(dispatchers.io) {
-        transactions.mapNotNull { transaction ->
-            when (transaction.type) {
-                RpcHistoryTypeResponse.SEND -> parseSend(transaction)
-                RpcHistoryTypeResponse.RECEIVE -> parseReceive(transaction)
-                RpcHistoryTypeResponse.SWAP -> parseSwap(transaction)
-                RpcHistoryTypeResponse.STAKE -> parseStake(transaction)
-                RpcHistoryTypeResponse.UNSTAKE -> parseUnstake(transaction)
-                RpcHistoryTypeResponse.CREATE_ACCOUNT -> parseCreate(transaction)
-                RpcHistoryTypeResponse.CLOSE_ACCOUNT -> parseClose(transaction)
-                RpcHistoryTypeResponse.MINT -> parseMint(transaction)
-                RpcHistoryTypeResponse.BURN -> parseBurn(transaction)
-                RpcHistoryTypeResponse.UNKNOWN -> parseUnknown(transaction)
-            }
-        }.sortedByDescending { it.date.toInstant().toEpochMilli() }
+        transaction: RpcHistoryTransactionResponse,
+    ): RpcHistoryTransaction = withContext(dispatchers.io) {
+        when (transaction.type) {
+            RpcHistoryTypeResponse.SEND -> parseSend(transaction)
+            RpcHistoryTypeResponse.RECEIVE -> parseReceive(transaction)
+            RpcHistoryTypeResponse.SWAP -> parseSwap(transaction)
+            RpcHistoryTypeResponse.STAKE -> parseStake(transaction)
+            RpcHistoryTypeResponse.UNSTAKE -> parseUnstake(transaction)
+            RpcHistoryTypeResponse.CREATE_ACCOUNT -> parseCreate(transaction)
+            RpcHistoryTypeResponse.CLOSE_ACCOUNT -> parseClose(transaction)
+            RpcHistoryTypeResponse.MINT -> parseMint(transaction)
+            RpcHistoryTypeResponse.BURN -> parseBurn(transaction)
+            RpcHistoryTypeResponse.UNKNOWN -> parseUnknown(transaction)
+        }
     }
 
     private fun parseReceive(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
