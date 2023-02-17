@@ -68,16 +68,16 @@ class HistoryListViewPresenter(
     override fun refreshHistory() {
         launch {
             try {
-                delay(300L)
-                view?.showRefreshing(true)
+                view?.showRefreshing(isRefreshing = true)
                 val result = historyInteractor.loadHistory(PAGE_SIZE)
                 val newHistoryTransactions = handlePagingResult(result)
                 val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
                 view?.showHistory(adapterItems)
-                view?.showRefreshing(false)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on loading history: $e")
                 view?.showPagingState(PagingState.Error(e))
+            } finally {
+                view?.showRefreshing(isRefreshing = false)
             }
         }
     }

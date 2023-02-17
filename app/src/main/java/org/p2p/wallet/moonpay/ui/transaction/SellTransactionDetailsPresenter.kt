@@ -44,6 +44,36 @@ class SellTransactionDetailsPresenter(
     private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
     private var currentTransaction: SellTransactionViewDetails? = null
 
+    override fun load(transactionId: String) {
+        launch {
+            try {
+                val sellTransaction = historyInteractor.findTransactionById(transactionId)
+                if (sellTransaction is SellTransaction) {
+                    val currentTransaction = mapper.toSellDetailsModel(sellTransaction)
+                    val viewState = when (currentTransaction.status) {
+                        SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+                            buildWaitingForDepositViewState(currentTransaction)
+                        }
+                        SellTransactionStatus.PENDING -> {
+                            buildPendingViewState(currentTransaction)
+                        }
+                        SellTransactionStatus.COMPLETED -> {
+                            buildCompletedViewState(currentTransaction)
+                        }
+                        SellTransactionStatus.FAILED -> {
+                            buildFailedViewState(currentTransaction)
+                        }
+                    }
+                    historyAnalytics.logSellTransactionClicked(currentTransaction)
+                    view?.renderViewState(viewState)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on loading moonpay transaction details: $e")
+                view?.showErrorMessage(e)
+            }
+        }
+    }
+
     private fun buildWaitingForDepositViewState(
         transaction: SellTransactionViewDetails
     ): SellTransactionDetailsViewState {
@@ -209,30 +239,6 @@ class SellTransactionDetailsPresenter(
                 sendAmount = transaction.formattedSolAmount.toBigDecimal(),
                 receiverAddress = transaction.receiverAddress
             )
-        }
-    }
-
-    override fun load(transactionId: String) {
-        launch {
-            try {
-                val sellTransaction = historyInteractor.findTransactionById(transactionId)
-                if (sellTransaction is SellTransaction) {
-                    val currentTransaction = mapper.toSellDetailsModel(sellTransaction)
-                    val viewState = when (currentTransaction.status) {
-                        SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
-                            buildWaitingForDepositViewState(currentTransaction)
-                        }
-                        SellTransactionStatus.PENDING -> buildPendingViewState(currentTransaction)
-                        SellTransactionStatus.COMPLETED -> buildCompletedViewState(currentTransaction)
-                        SellTransactionStatus.FAILED -> buildFailedViewState(currentTransaction)
-                    }
-                    historyAnalytics.logSellTransactionClicked(currentTransaction)
-                    view?.renderViewState(viewState)
-                }
-            } catch (e: Throwable) {
-                Timber.e(e, "Error on loading moonpay transaction details: $e")
-                view?.showErrorMessage(e)
-            }
         }
     }
 

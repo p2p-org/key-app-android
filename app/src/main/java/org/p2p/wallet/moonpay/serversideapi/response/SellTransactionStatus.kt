@@ -10,7 +10,6 @@ enum class SellTransactionStatus {
     PENDING,
 
     @SerializedName("failed")
-
     FAILED,
 
     @SerializedName("completed")
