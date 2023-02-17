@@ -63,5 +63,9 @@ fun String.toZonedDateTime(): ZonedDateTime {
     }
 }
 
+fun ZonedDateTime.dateMilli(): Long {
+    return this.toInstant().toEpochMilli()
+}
+
 private fun DateTimeFormatter.formatWithLocale(temporal: TemporalAccessor) =
     withLocale(Locale.ENGLISH).format(temporal)
