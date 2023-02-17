@@ -22,7 +22,7 @@ data class RenTransaction(
             val scaleMedium = if (amount.isNotZero()) amount.scaleMedium() else "N/A"
             context.getString(R.string.receive_renbtc_format, scaleMedium)
         } else {
-            context.getString(R.string.main_mint)
+            context.getString(R.string.common_mint)
         }
     }
 

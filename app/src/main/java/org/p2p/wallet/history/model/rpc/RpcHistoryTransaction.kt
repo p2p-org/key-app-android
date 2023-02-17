@@ -59,7 +59,7 @@ sealed class RpcHistoryTransaction(
             get() = type == RpcHistoryTransactionType.BURN
 
         @StringRes
-        fun getTitle(): Int = if (isBurn) R.string.main_burn else R.string.main_mint
+        fun getTitle(): Int = if (isBurn) R.string.common_burn else R.string.common_mint
 
         @DrawableRes
         fun getIcon(): Int = if (isBurn) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
