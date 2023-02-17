@@ -3,7 +3,6 @@ package org.p2p.wallet.history.ui.history
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.analytics.HistoryAnalytics
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.user.interactor.UserInteractor
 
 class HistoryPresenter(
@@ -23,8 +22,7 @@ class HistoryPresenter(
         view?.openTransactionDetailsScreen(transactionId)
     }
 
-    override fun onSellTransactionClicked(sellTransactionDetails: SellTransactionViewDetails) {
-        historyAnalytics.logSellTransactionClicked(sellTransactionDetails)
-        view?.openSellTransactionDetails(sellTransactionDetails)
+    override fun onSellTransactionClicked(transactionId: String) {
+        view?.openSellTransactionDetails(transactionId)
     }
 }
