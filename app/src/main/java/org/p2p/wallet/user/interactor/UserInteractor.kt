@@ -9,7 +9,7 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.home.ui.main.TOKENS_VALID_FOR_BUY
+import org.p2p.wallet.home.ui.main.TOKEN_SYMBOLS_VALID_FOR_BUY
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
@@ -40,11 +40,11 @@ class UserInteractor(
     fun getUserTokensFlow(): Flow<List<Token.Active>> =
         mainLocalRepository.getTokensFlow()
 
-    suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKENS_VALID_FOR_BUY): Token? =
+    suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY): Token? =
         getTokensForBuy(availableTokensSymbols).firstOrNull()
 
     suspend fun getTokensForBuy(
-        availableTokensSymbols: List<String> = TOKENS_VALID_FOR_BUY
+        availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY
     ): List<Token> {
         val userTokens = getUserTokens()
         val allTokens = availableTokensSymbols.mapNotNull { tokenSymbol ->
