@@ -11,8 +11,8 @@ sealed class TextContainer {
         operator fun invoke(@StringRes textRes: Int) =
             Res(textRes)
 
-        operator fun invoke(@StringRes textRes: Int, args: List<Any>) =
-            ResParams(textRes, args)
+        operator fun invoke(@StringRes textRes: Int, vararg args: Any) =
+            ResParams(textRes, args.toList())
 
         operator fun invoke(text: String) =
             Raw(text)
