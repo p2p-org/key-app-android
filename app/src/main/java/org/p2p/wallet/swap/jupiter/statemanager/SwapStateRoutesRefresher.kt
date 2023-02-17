@@ -6,6 +6,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwap
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
@@ -19,8 +20,8 @@ class SwapStateRoutesRefresher(
 ) {
     suspend fun refreshRoutes(
         state: MutableStateFlow<SwapState>,
-        tokenA: Token.Active,
-        tokenB: Token,
+        tokenA: SwapTokenModel,
+        tokenB: SwapTokenModel,
         amountTokenA: BigDecimal,
         slippage: Double,
         activeRouteOrdinal: Int
@@ -69,13 +70,13 @@ class SwapStateRoutesRefresher(
     }
 
     private suspend fun fetchRoutes(
-        tokenA: Token.Active,
-        tokenB: Token,
+        tokenA: SwapTokenModel,
+        tokenB: SwapTokenModel,
         amountTokenA: BigDecimal,
     ): List<JupiterSwapRoute> {
         val routesRequest = JupiterSwap(
-            inputMint = tokenA.mintAddress.toBase58Instance(),
-            outputMint = tokenB.mintAddress.toBase58Instance(),
+            inputMint = tokenA.mintAddress,
+            outputMint = tokenB.mintAddress,
             amountInLamports = amountTokenA.toLamports(tokenA.decimals)
         )
         return swapRoutesRepository.getSwapRoutes(

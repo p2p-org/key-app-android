@@ -1,28 +1,28 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import java.math.BigDecimal
-import org.p2p.core.token.Token
 import org.p2p.solanaj.utils.crypto.Base64String
+import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
+import java.math.BigDecimal
 
 sealed interface SwapState {
     object InitialLoading : SwapState
     data class TokenAZero(
-        val tokenA: Token.Active,
-        val tokenB: Token,
+        val tokenA: SwapTokenModel,
+        val tokenB: SwapTokenModel,
         val slippage: Double
     ) : SwapState
 
     data class LoadingRoutes(
-        val tokenA: Token.Active,
-        val tokenB: Token,
+        val tokenA: SwapTokenModel,
+        val tokenB: SwapTokenModel,
         val amountTokenA: BigDecimal,
         val slippage: Double
     ) : SwapState
 
     data class LoadingTransaction(
-        val tokenA: Token.Active,
-        val tokenB: Token,
+        val tokenA: SwapTokenModel,
+        val tokenB: SwapTokenModel,
         val amountTokenA: BigDecimal,
         val routes: List<JupiterSwapRoute>,
         val activeRoute: Int,
@@ -31,8 +31,8 @@ sealed interface SwapState {
     ) : SwapState
 
     data class SwapLoaded(
-        val tokenA: Token.Active,
-        val tokenB: Token,
+        val tokenA: SwapTokenModel,
+        val tokenB: SwapTokenModel,
         val amountTokenA: BigDecimal,
         val amountTokenB: BigDecimal,
         val routes: List<JupiterSwapRoute>,
