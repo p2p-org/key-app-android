@@ -17,9 +17,6 @@ sealed class SwapStateAction {
     data class TokenAChanged(val newTokenA: SwapTokenModel) : SwapStateAction()
     data class TokenBChanged(val newTokenB: SwapTokenModel) : SwapStateAction()
     data class TokenAAmountChanged(
-        val tokenA: SwapTokenModel,
-        val tokenB: SwapTokenModel,
-        val slippage: Double,
         val newAmount: BigDecimal
     ) : SwapStateAction()
 }

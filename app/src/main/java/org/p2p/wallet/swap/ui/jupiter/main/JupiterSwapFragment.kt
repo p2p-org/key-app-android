@@ -15,14 +15,18 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindSkeleton
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.common.mvp.BaseFragment
+import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
+class JupiterSwapFragment :
+    BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
+    JupiterSwapContract.View {
 
     private val binding: FragmentJupiterSwapBinding by viewBinding()
+    override val presenter: JupiterSwapContract.Presenter
+        get() = TODO("Not yet implemented")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,6 +62,22 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
         }
         setYellowAlert()
         binding.linearLayoutAlert.isVisible = true
+    }
+
+    override fun setFirstTokenWidgetState(state: SwapWidgetModel) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setSecondTokenWidgetState(state: SwapWidgetModel) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setButtonState(tokenA: SwapWidgetModel, tokenB: SwapWidgetModel) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setRatioState(tokenA: SwapWidgetModel, tokenB: SwapWidgetModel) {
+        TODO("Not yet implemented")
     }
 
     private fun setYellowAlert() {
