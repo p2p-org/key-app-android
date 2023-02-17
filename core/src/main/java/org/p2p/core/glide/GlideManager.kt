@@ -32,7 +32,6 @@ class GlideManager(context: Context) {
                 .load(Uri.parse(url))
                 .apply(RequestOptions().override(size, size))
                 .scaleCrop(url, circleCrop)
-                .run { if (circleCrop) circleCrop() else centerCrop() }
                 .into(imageView)
         } else {
             Glide

@@ -201,14 +201,14 @@ sealed class RpcHistoryTransaction(
         fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
 
         @StringRes
-        fun getTypeName(): Int = when {
-            status.isPending() -> {
-                if (isSend) R.string.transaction_history_send_pending
-                else R.string.transaction_history_receive_pending
+        fun getTypeName(): Int = when (type) {
+            RpcHistoryTransactionType.RECEIVE -> {
+                if (status.isPending()) R.string.transaction_history_receive_pending
+                else R.string.transaction_history_receive
             }
             else -> {
-                if (isSend) R.string.transaction_history_send
-                else R.string.transaction_history_receive
+                if (status.isPending()) R.string.transaction_history_send_pending
+                else R.string.transaction_history_send
             }
         }
 
@@ -218,6 +218,67 @@ sealed class RpcHistoryTransaction(
                 R.color.text_rose
             }
             isSend -> {
+                R.color.text_night
+            }
+            else -> {
+                R.color.text_mint
+            }
+        }
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
+            "${total.scaleMedium().formatToken()} $symbol"
+        } else {
+            "${total.formatToken()} $symbol"
+        }
+
+        fun getFormattedAmount(): String? = totalInUsd?.asUsd()
+    }
+
+    @Parcelize
+    data class StakeUnstake(
+        override val signature: String,
+        override val date: ZonedDateTime,
+        override val blockNumber: Int,
+        override val status: HistoryTransactionStatus,
+        override val type: RpcHistoryTransactionType,
+        val senderAddress: String,
+        val iconUrl: String?,
+        val totalInUsd: BigDecimal?,
+        val symbol: String,
+        val total: BigDecimal,
+        val destination: String,
+        val fee: BigInteger,
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
+
+        @IgnoredOnParcel
+        val isStake: Boolean
+            get() = type == RpcHistoryTransactionType.STAKE
+
+        fun getTokenIconUrl(): String? = iconUrl
+
+        @DrawableRes
+        fun getIcon(): Int = if (isStake) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
+
+        fun getAddress(): String = if (isStake) destination.cutStart() else senderAddress.cutStart()
+
+        fun getValue(): String? = totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isStake))
+
+        fun getTotal(): String = "${getSymbol(isStake)}${getFormattedTotal()}"
+
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
+
+        @StringRes
+        fun getTypeName(): Int = when (type) {
+            RpcHistoryTransactionType.UNSTAKE -> R.string.transaction_history_unstake
+            else -> R.string.transaction_history_stake
+        }
+
+        @ColorRes
+        fun getTextColor() = when {
+            !status.isCompleted() -> {
+                R.color.text_rose
+            }
+            isStake -> {
                 R.color.text_night
             }
             else -> {

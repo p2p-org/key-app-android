@@ -101,7 +101,7 @@ class RpcHistoryTransactionConverter(
     private fun parseStake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Stake>(transaction.info.toString())
 
-        return RpcHistoryTransaction.Transfer(
+        return RpcHistoryTransaction.StakeUnstake(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
@@ -119,7 +119,7 @@ class RpcHistoryTransactionConverter(
 
     private fun parseUnstake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Unstake>(transaction.info.toString())
-        return RpcHistoryTransaction.Transfer(
+        return RpcHistoryTransaction.StakeUnstake(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
