@@ -76,7 +76,7 @@ class HistoryListViewPresenter(
                 }
                 is HistoryItem.MoonpayTransactionItem -> {
                     val item = historyInteractor.findTransactionById(historyItem.transactionId) ?: return@launch
-                    val adapterItem = historyItemMapper.toAdapterItem(item as SellTransaction)
+                    val adapterItem = historyItemMapper.toSellDetailsModel(item as SellTransaction)
                     view?.onSellTransactionClicked(adapterItem)
                 }
                 else -> {
