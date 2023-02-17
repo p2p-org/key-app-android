@@ -5,346 +5,255 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_gravity="bottom">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="none"
-        tools:visibility="visible">
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_rounded_transparent_8"
+        android:backgroundTint="@color/backgroundPrimary">
 
-        <LinearLayout
+        <View
+            android:id="@+id/viewPointer"
+            android:layout_width="32dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/shape_bottomsheet_pointer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            style="@style/UiKit.TextAppearance.SemiBold.Title3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="16dp"
+            android:gravity="center"
+            android:text="@string/transaction_progress_title"
+            android:textColor="@color/text_night"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/viewPointer" />
+
+        <TextView
+            android:id="@+id/textViewSubtitle"
+            style="@style/UiKit.TextAppearance.Regular.Text3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+            tools:text="Today @ 15:28" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutTransactionDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@color/bg_smoke"
+            android:gravity="center"
             android:orientation="vertical"
-            tools:visibility="visible">
+            android:paddingVertical="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewSubtitle">
 
-            <org.p2p.uikit.atoms.UiKitTransactionImageView
-                android:id="@+id/transactionImageView"
-                android:layout_width="@dimen/history_transaction_details_image_size"
-                android:layout_height="@dimen/history_transaction_details_image_size"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+            <org.p2p.uikit.atoms.UiKitRoundedImageView
+                android:id="@+id/imageViewFirstToken"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginEnd="32dp"
+                android:background="@drawable/bg_rounded_solid_rain_24"
+                app:cornerRadius="32dp"
+                app:layout_constraintEnd_toEndOf="@+id/imageViewSecondToken"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintTop_toTopOf="parent"
-                app:statusIconSize="@dimen/history_transaction_details_image_icon_size" />
+                app:layout_goneMarginEnd="-32dp"
+                tools:src="@tools:sample/avatars" />
 
-            <org.p2p.uikit.atoms.TransactionSwapImageView
-                android:id="@+id/transactionSwapImageView"
-                android:layout_width="@dimen/history_transaction_details_image_size"
-                android:layout_height="@dimen/history_transaction_details_image_size"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
+            <org.p2p.uikit.atoms.UiKitRoundedImageView
+                android:id="@+id/imageViewSecondToken"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="32dp"
+                android:background="@drawable/bg_rounded_solid_rain_24"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:cornerRadius="32dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tokenIconSize="@dimen/history_transaction_details_image_token_icon_size" />
+                tools:src="@tools:sample/avatars" />
 
             <TextView
-                android:id="@+id/amountTextTokenView"
-                android:layout_width="match_parent"
+                android:id="@+id/textViewAmountUsd"
+                style="@style/UiKit.TextAppearance.SemiBold.LargeTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
                 android:textColor="@color/text_night"
-                tools:text="0.02113 renBTC" />
-
-            <TextView
-                android:id="@+id/amountTextUsdView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="12dp"
-                android:gravity="center"
-                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-                android:textColor="@color/text_mountain"
-                tools:text="~$989.12" />
-
-            <TextView
-                android:id="@+id/textViewDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="12dp"
-                android:gravity="center"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
-                android:textColor="@color/text_mountain"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="October 21, 2022 @ 14:56" />
+                app:layout_constraintTop_toBottomOf="@id/imageViewFirstToken"
+                tools:text="-$10" />
 
-            <LinearLayout
-                android:id="@+id/containerUsername"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textViewAmountTokens"
+                style="@style/UiKit.TextAppearance.Regular.Text2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/text_mountain"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewAmountUsd"
+                tools:text="0.622181417 SOL" />
 
-                <TextView
-                    android:id="@+id/textViewUsernameTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_username"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
+            <ImageView
+                android:id="@id/imageViewShare"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_night_circle"
+                android:contentDescription="@string/main_share"
+                android:foreground="?attr/selectableItemBackground"
+                android:padding="12dp"
+                android:src="@drawable/ic_share"
+                app:layout_constraintEnd_toStartOf="@+id/imageViewExplorer"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewAmountTokens"
+                app:tint="@color/icons_snow" />
 
-                <TextView
-                    android:id="@+id/textViewUsernameValue"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="middle"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    app:drawableEndCompat="@drawable/ic_copy"
-                    tools:text="mad.key.sol" />
+            <ImageView
+                android:id="@id/imageViewExplorer"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/bg_night_circle"
+                android:contentDescription="@string/main_share"
+                android:foreground="?attr/selectableItemBackground"
+                android:padding="12dp"
+                android:src="@drawable/ic_external_filled"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageViewShare"
+                app:layout_constraintTop_toBottomOf="@id/textViewAmountTokens"
+                app:tint="@color/icons_snow" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/containerSource"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/imageViewShareText"
+                style="@style/UiKit.TextAppearance.SemiBold.Label2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:text="@string/transaction_details_share"
+                android:textColor="@color/text_night"
+                app:layout_constraintEnd_toEndOf="@id/imageViewShare"
+                app:layout_constraintStart_toStartOf="@id/imageViewShare"
+                app:layout_constraintTop_toBottomOf="@id/imageViewShare" />
 
-                <TextView
-                    android:id="@+id/textViewSourceTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_from"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/textViewSourceAddress"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="middle"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    tools:text="FfRBgsYFtBW7Vo5hRetqEbdxrwU8KNRn1ma6sBTBeJEr" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/containerDestination"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/imageViewExplorerText"
+                style="@style/UiKit.TextAppearance.SemiBold.Label2"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:text="@string/transaction_details_explorer"
+                android:textColor="@color/text_night"
+                app:layout_constraintEnd_toEndOf="@id/imageViewExplorer"
+                app:layout_constraintStart_toStartOf="@id/imageViewExplorer"
+                app:layout_constraintTop_toBottomOf="@id/imageViewExplorer" />
 
-                <TextView
-                    android:id="@+id/textViewDestinationTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_to"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/textViewDestinationAddress"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="middle"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    tools:text="bc1q830ddmnzc2539vmudxz44amm2x84j5yjvc209nrlw5c7s805nusq7k4tyf" />
+        <TextView
+            android:id="@+id/textViewSendReceiveTitle"
+            style="@style/UiKit.TextAppearance.Regular.Text4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="28dp"
+            android:gravity="center_vertical"
+            android:text="@string/transaction_details_send_to"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toTopOf="@+id/textViewFeeTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutTransactionDetails"
+            app:layout_goneMarginBottom="12dp" />
 
-            </LinearLayout>
+        <TextView
+            android:id="@+id/textViewSendReceiveValue"
+            style="@style/UiKit.TextAppearance.SemiBold.Text4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="28dp"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical|end"
+            android:textColor="@color/text_night"
+            app:drawableEndCompat="@drawable/ic_copy_filled"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textViewSendReceiveTitle"
+            app:layout_constraintTop_toBottomOf="@id/layoutTransactionDetails"
+            tools:text="\@kirill.key" />
 
-            <LinearLayout
-                android:id="@+id/containerActor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
+        <TextView
+            android:id="@+id/textViewFeeTitle"
+            style="@style/UiKit.TextAppearance.Regular.Text4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="32dp"
+            android:gravity="center_vertical"
+            android:text="@string/transaction_transaction_fee_title"
+            android:textColor="@color/text_mountain"
+            app:layout_constraintBottom_toTopOf="@+id/progressStateTransaction"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewSendReceiveTitle"
+            app:layout_goneMarginBottom="12dp" />
 
-                <TextView
-                    android:id="@+id/textViewActorAddressTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_actor_address_title"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
+        <TextView
+            android:id="@+id/textViewFeeValue"
+            style="@style/UiKit.TextAppearance.SemiBold.Text4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="32dp"
+            android:gravity="center_vertical|end"
+            android:text="@string/transaction_transaction_fee_free_value"
+            android:textColor="@color/text_night"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textViewFeeTitle"
+            app:layout_constraintTop_toBottomOf="@id/textViewSendReceiveTitle" />
 
-                <TextView
-                    android:id="@+id/textViewActorAddressValue"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="middle"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    app:drawableEndCompat="@drawable/ic_copy"
-                    tools:text="FfRBgsYFtBW7Vo5hRetqEbdxrwU8KNRn1ma6sBTBeJEr" />
-            </LinearLayout>
+        <org.p2p.wallet.transaction.ui.ProgressStateWidget
+            android:id="@+id/progressStateTransaction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewFeeValue"
+            tools:visibility="gone" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textViewFeesTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_fee"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/textViewFees"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="end"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/textIconActive"
-                    tools:text="Free by Key App" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textViewStatusTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_status"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/textViewStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="end"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    tools:text="Completed" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textViewTransactionIdTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawablePadding="8dp"
-                    android:text="@string/transaction_details_transaction_id"
-                    android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                    android:textColor="@color/text_night" />
-
-                <TextView
-                    android:id="@+id/textViewTransactionId"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:drawablePadding="6dp"
-                    android:ellipsize="middle"
-                    android:gravity="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
-                    android:textColor="@color/text_mountain"
-                    app:drawableEndCompat="@drawable/ic_copy"
-                    tools:text="k97y8u209j0...uiei" />
-
-            </LinearLayout>
-
-            <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/buttonDone"
-                style="@style/UiKit.Components.Button.Large"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="20dp"
-                android:backgroundTint="@color/bg_night"
-                android:text="@string/transaction_details_done_button"
-                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/transactionIdTextView" />
-
-            <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/buttonDetails"
-                style="@style/UiKit.Components.Button.Large.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="20dp"
-                android:text="@string/transaction_details_details_button"
-                android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text2"
-                android:textColor="@color/text_night" />
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <org.p2p.wallet.common.ui.widget.ProgressView
-        android:id="@+id/progressView"
+        android:id="@+id/viewProgress"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:visibility="gone"

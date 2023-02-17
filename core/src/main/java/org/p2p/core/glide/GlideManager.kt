@@ -19,10 +19,14 @@ class GlideManager(context: Context) {
             .listener(SvgSoftwareLayerSetter())
     }
 
-    fun load(imageView: ImageView, url: String?, size: Int = DEFAULT_IMAGE_SIZE, circleCrop: Boolean = false) {
-        if (url.isNullOrEmpty()) return
-
-        if (url.contains(".svg")) {
+    fun load(
+        imageView: ImageView,
+        url: String?,
+        size: Int = DEFAULT_IMAGE_SIZE,
+        circleCrop: Boolean = false,
+        placeholder: Int = R.drawable.ic_placeholder_image
+    ) {
+        if (url?.contains(".svg") == true) {
             requestBuilder
                 .load(Uri.parse(url))
                 .apply(RequestOptions().override(size, size))
@@ -32,8 +36,15 @@ class GlideManager(context: Context) {
             Glide
                 .with(imageView)
                 .load(url)
-                .placeholder(R.drawable.ic_placeholder_image)
-                .run { if (circleCrop) circleCrop() else this }
+                .placeholder(placeholder)
+                .error(placeholder)
+                .run {
+                    when {
+                        circleCrop -> circleCrop()
+                        url.isNullOrEmpty() -> fitCenter()
+                        else -> this
+                    }
+                }
                 .into(imageView)
         }
     }

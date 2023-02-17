@@ -145,10 +145,13 @@ sealed class RpcHistoryTransaction(
         fun getFormattedAmount() =
             "${amountA.formatToken()} $sourceSymbol to ${amountB.formatToken()} $destinationSymbol"
 
+        fun getFormattedAmountWithArrow() =
+            "${amountA.formatToken()} $sourceSymbol → ${amountB.formatToken()} $destinationSymbol"
+
         @StringRes
         fun getTypeName(): Int = when {
-            status.isCompleted() -> R.string.transaction_history_swap
-            else -> R.string.transaction_history_swap_failed
+            status.isPending() -> R.string.transaction_history_swap_pending
+            else -> R.string.transaction_history_swap
         }
 
         @ColorRes
@@ -207,13 +210,13 @@ sealed class RpcHistoryTransaction(
 
         @StringRes
         fun getTypeName(): Int = when {
-            status.isCompleted() -> {
-                if (isSend) R.string.transaction_history_send
-                else R.string.transaction_history_receive
+            status.isPending() -> {
+                if (isSend) R.string.transaction_history_send_pending
+                else R.string.transaction_history_receive_pending
             }
             else -> {
-                if (isSend) R.string.transaction_history_send_failed
-                else R.string.transaction_history_receive_failed
+                if (isSend) R.string.transaction_history_send
+                else R.string.transaction_history_receive
             }
         }
 
