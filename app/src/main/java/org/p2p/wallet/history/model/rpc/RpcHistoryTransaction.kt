@@ -76,6 +76,8 @@ sealed class RpcHistoryTransaction(
             }
 
         fun getFormattedAmount(): String? = totalInUsd?.asUsd()
+
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
     }
 
     @Parcelize
@@ -88,14 +90,7 @@ sealed class RpcHistoryTransaction(
         val account: String,
         val iconUrl: String?,
         val tokenSymbol: String,
-    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
-
-        fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
-            "$tokenSymbol $operationText"
-        } else {
-            operationText
-        }
-    }
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type)
 
     @Parcelize
     data class CreateAccount(
@@ -108,12 +103,7 @@ sealed class RpcHistoryTransaction(
         val fee: BigInteger,
         val tokenSymbol: String,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
-
-        fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
-            "$tokenSymbol $operationText"
-        } else {
-            operationText
-        }
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
     }
 
     @Parcelize
@@ -145,10 +135,13 @@ sealed class RpcHistoryTransaction(
         fun getFormattedAmount() =
             "${amountA.formatToken()} $sourceSymbol to ${amountB.formatToken()} $destinationSymbol"
 
+        fun getFormattedAmountWithArrow() =
+            "${amountA.formatToken()} $sourceSymbol → ${amountB.formatToken()} $destinationSymbol"
+
         @StringRes
         fun getTypeName(): Int = when {
-            status.isCompleted() -> R.string.transaction_history_swap
-            else -> R.string.transaction_history_swap_failed
+            status.isPending() -> R.string.transaction_history_swap_pending
+            else -> R.string.transaction_history_swap
         }
 
         @ColorRes
@@ -161,7 +154,7 @@ sealed class RpcHistoryTransaction(
             }
         }
 
-        fun getFormattedFee() = "$fee lamports"
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
 
         fun getSourceTotal(): String = "${amountA.formatToken()} $sourceSymbol"
 
@@ -205,15 +198,17 @@ sealed class RpcHistoryTransaction(
 
         fun getTotal(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
 
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
+
         @StringRes
         fun getTypeName(): Int = when {
-            status.isCompleted() -> {
-                if (isSend) R.string.transaction_history_send
-                else R.string.transaction_history_receive
+            status.isPending() -> {
+                if (isSend) R.string.transaction_history_send_pending
+                else R.string.transaction_history_receive_pending
             }
             else -> {
-                if (isSend) R.string.transaction_history_send_failed
-                else R.string.transaction_history_receive_failed
+                if (isSend) R.string.transaction_history_send
+                else R.string.transaction_history_receive
             }
         }
 

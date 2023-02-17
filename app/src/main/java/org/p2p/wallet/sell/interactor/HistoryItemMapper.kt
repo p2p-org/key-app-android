@@ -12,7 +12,6 @@ import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
@@ -57,12 +56,12 @@ class HistoryItemMapper(private val resources: Resources) {
                 sourceTokenIconUrl = sourceIconUrl
                 destinationTokenIconUrl = destinationIconUrl
 
-                iconRes = R.drawable.ic_swap_simple
+                iconRes = R.drawable.ic_swap_arrows
                 startTitle = "$sourceSymbol to $destinationSymbol"
                 startSubtitle = resources.getString(getTypeName())
                 endTopValue = "+${getDestinationTotal()}"
                 endTopValueTextColor = getTextColor()
-                endBottomValue = "-${getSourceTotal()}"
+                endBottomValue = getSourceTotal()
             }
             is RpcHistoryTransaction.Transfer -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
@@ -88,14 +87,14 @@ class HistoryItemMapper(private val resources: Resources) {
                 iconRes = R.drawable.ic_transaction_create
 
                 startTitle = resources.getString(R.string.transaction_history_create)
-                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutEnd())
+                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
             }
             is RpcHistoryTransaction.CloseAccount -> with(transaction) {
                 tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_closed
 
                 startTitle = resources.getString(R.string.transaction_history_closed)
-                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutEnd())
+                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
             }
             is RpcHistoryTransaction.Unknown -> {
                 iconRes = R.drawable.ic_transaction_unknown
@@ -103,7 +102,7 @@ class HistoryItemMapper(private val resources: Resources) {
                 startTitle = resources.getString(R.string.transaction_history_unknown)
                 startSubtitle = resources.getString(
                     R.string.transaction_history_signature_format,
-                    transaction.signature.cutEnd()
+                    transaction.signature.cutStart()
                 )
             }
         }

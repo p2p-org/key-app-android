@@ -1,6 +1,7 @@
 package org.p2p.core.glide
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.widget.ImageView
@@ -19,22 +20,39 @@ class GlideManager(context: Context) {
             .listener(SvgSoftwareLayerSetter())
     }
 
-    fun load(imageView: ImageView, url: String?, size: Int = DEFAULT_IMAGE_SIZE, circleCrop: Boolean = false) {
-        if (url.isNullOrEmpty()) return
-
-        if (url.contains(".svg")) {
+    fun load(
+        imageView: ImageView,
+        url: String?,
+        size: Int = DEFAULT_IMAGE_SIZE,
+        circleCrop: Boolean = false,
+        placeholder: Int = R.drawable.ic_placeholder_image
+    ) {
+        if (url?.contains(".svg") == true) {
             requestBuilder
                 .load(Uri.parse(url))
                 .apply(RequestOptions().override(size, size))
+                .scaleCrop(url, circleCrop)
                 .run { if (circleCrop) circleCrop() else centerCrop() }
                 .into(imageView)
         } else {
             Glide
                 .with(imageView)
                 .load(url)
-                .placeholder(R.drawable.ic_placeholder_image)
-                .run { if (circleCrop) circleCrop() else this }
+                .placeholder(placeholder)
+                .error(placeholder)
+                .scaleCrop(url, circleCrop)
                 .into(imageView)
+        }
+    }
+
+    private fun RequestBuilder<out Drawable>.scaleCrop(
+        url: String?,
+        circleCrop: Boolean = false
+    ): RequestBuilder<out Drawable> {
+        return when {
+            circleCrop -> circleCrop()
+            url.isNullOrEmpty() -> fitCenter()
+            else -> this
         }
     }
 
