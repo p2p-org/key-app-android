@@ -22,5 +22,6 @@ interface SellTransactionDetailsContract {
         fun onRemoveFromHistoryClicked()
         fun onCancelTransactionClicked()
         fun onSendClicked()
+        fun load(transactionId: String)
     }
 }

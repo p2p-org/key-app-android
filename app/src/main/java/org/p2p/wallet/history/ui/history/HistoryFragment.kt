@@ -13,7 +13,6 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -64,7 +63,7 @@ class HistoryFragment :
         )
     }
 
-    override fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails) {
-        SellTransactionDetailsBottomSheet.show(childFragmentManager, sellTransaction)
+    override fun openSellTransactionDetails(transactionId: String) {
+        SellTransactionDetailsBottomSheet.show(childFragmentManager, transactionId)
     }
 }

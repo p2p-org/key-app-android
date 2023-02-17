@@ -5,9 +5,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import android.content.res.ColorStateList
+import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import android.view.View
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import org.p2p.core.token.Token
 import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
@@ -18,7 +19,6 @@ import org.p2p.wallet.newsend.model.AddressState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.ui.NewSendFragment
 import org.p2p.wallet.newsend.ui.SendOpenedFrom
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getColorStateListCompat
@@ -30,7 +30,7 @@ import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 import java.math.BigDecimal
 
-private const val ARG_DETAILS = "ARG_DETAILS"
+private const val ARG_TRANSACTION_ID = "ARG_TRANSACTION_ID"
 
 class SellTransactionDetailsBottomSheet :
     BaseMvpBottomSheet<SellTransactionDetailsContract.View, SellTransactionDetailsContract.Presenter>(
@@ -41,19 +41,24 @@ class SellTransactionDetailsBottomSheet :
     companion object {
         const val REQUEST_KEY_DISMISSED = "REQUEST_KEY_DISMISSED"
 
-        fun show(fm: FragmentManager, details: SellTransactionViewDetails) {
+        fun show(fm: FragmentManager, transactionId: String) {
             SellTransactionDetailsBottomSheet()
-                .withArgs(ARG_DETAILS to details)
+                .withArgs(ARG_TRANSACTION_ID to transactionId)
                 .show(fm, SelectTokenBottomSheet::javaClass.name)
         }
     }
 
-    override val presenter: SellTransactionDetailsContract.Presenter by inject { parametersOf(details) }
+    override val presenter: SellTransactionDetailsContract.Presenter by inject()
     private val binding: DialogSendTransactionDetailsBinding by viewBinding()
 
-    private val details: SellTransactionViewDetails by args(ARG_DETAILS)
+    private val transactionId: String by args(ARG_TRANSACTION_ID)
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.load(transactionId)
+    }
 
     override fun renderViewState(viewState: SellTransactionDetailsViewState) {
         renderTitle(viewState.titleBlock)
