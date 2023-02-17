@@ -21,14 +21,16 @@ class HistoryItemMapper(private val resources: Resources) {
     fun toAdapterItem(transactions: List<HistoryTransaction>): List<HistoryItem> {
         val rpcHistoryItems = mutableListOf<HistoryItem>()
         val sellHistoryItems = mutableListOf<HistoryItem>()
-        transactions.forEachIndexed { index, item ->
-            when {
-                item is RpcHistoryTransaction -> {
+        transactions.forEachIndexed { _, item ->
+            when (item) {
+                is RpcHistoryTransaction -> {
                     parse(item, rpcHistoryItems)
                 }
-
-                item is SellTransaction -> {
-                    parse(item, sellHistoryItems)
+                is SellTransaction -> {
+                    // Sell transactions with cancel reason, should not appear in history
+                    if (!item.isCancelled()) {
+                        parse(item, sellHistoryItems)
+                    }
                 }
             }
         }

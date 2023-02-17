@@ -21,7 +21,6 @@ import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.LayoutHistoryListBinding
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 class HistoryListView @JvmOverloads constructor(
     context: Context,
@@ -40,12 +39,12 @@ class HistoryListView @JvmOverloads constructor(
     private lateinit var presenter: HistoryListViewContract.Presenter
 
     private var onTransactionClickListener: (String) -> Unit = {}
-    private var onSellTransactionClickListener: (SellTransactionViewDetails) -> Unit = {}
+    private var onSellTransactionClickListener: (String) -> Unit = {}
 
     fun bind(
         historyListViewPresenter: HistoryListViewContract.Presenter,
         onTransactionClicked: (String) -> Unit,
-        onSellTransactionClicked: (SellTransactionViewDetails) -> Unit,
+        onSellTransactionClicked: (String) -> Unit,
         onBuyClicked: () -> Unit,
         onReceiveClicked: () -> Unit,
         token: Token.Active? = null
@@ -151,8 +150,8 @@ class HistoryListView @JvmOverloads constructor(
         onTransactionClickListener(transactionId)
     }
 
-    override fun onSellTransactionClicked(sellTransactionDetails: SellTransactionViewDetails) {
-        onSellTransactionClickListener(sellTransactionDetails)
+    override fun onSellTransactionClicked(transactionId: String) {
+        onSellTransactionClickListener(transactionId)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) = with(binding) {

@@ -11,7 +11,6 @@ import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
-import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
 
 private const val PAGE_SIZE = 20
@@ -66,7 +65,22 @@ class HistoryListViewPresenter(
         }
     }
 
-    override fun refreshHistory() = Unit
+    override fun refreshHistory() {
+        launch {
+            try {
+                view?.showRefreshing(isRefreshing = true)
+                val result = historyInteractor.loadHistory(PAGE_SIZE)
+                val newHistoryTransactions = handlePagingResult(result)
+                val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
+                view?.showHistory(adapterItems)
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on loading history: $e")
+                view?.showPagingState(PagingState.Error(e))
+            } finally {
+                view?.showRefreshing(isRefreshing = false)
+            }
+        }
+    }
 
     override fun onItemClicked(historyItem: HistoryItem) {
         launch {
@@ -75,9 +89,7 @@ class HistoryListViewPresenter(
                     view?.onTransactionClicked(historyItem.transactionId)
                 }
                 is HistoryItem.MoonpayTransactionItem -> {
-                    val item = historyInteractor.findTransactionById(historyItem.transactionId) ?: return@launch
-                    val adapterItem = historyItemMapper.toSellDetailsModel(item as SellTransaction)
-                    view?.onSellTransactionClicked(adapterItem)
+                    view?.onSellTransactionClicked(historyItem.transactionId)
                 }
                 else -> {
                     val errorMessage = "Unsupported Transaction click! $historyItem"

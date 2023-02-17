@@ -41,9 +41,16 @@ import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
+import org.p2p.wallet.user.repository.prices.TokenId
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, Constants.BTC_SYMBOL, Constants.ETH_SYMBOL, Constants.USDT_SYMBOL)
-val TOKENS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
+val POPULAR_TOKENS_COINGECKO_IDS = setOf(
+    Constants.SOL_COINGECKO_ID,
+    Constants.BTC_COINGECKO_ID,
+    Constants.ETH_COINGECKO_ID,
+    Constants.USDC_COINGECKO_ID
+).map { TokenId(it) }
+val TOKEN_SYMBOLS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 private val LOAD_TOKENS_DELAY_MS = 1.toDuration(DurationUnit.SECONDS).inWholeMilliseconds
 
@@ -173,7 +180,7 @@ class HomePresenter(
     }
 
     override fun onBuyTokenClicked(token: Token) {
-        if (token.tokenSymbol !in TOKENS_VALID_FOR_BUY) {
+        if (token.tokenSymbol !in TOKEN_SYMBOLS_VALID_FOR_BUY) {
             view?.showBuyInfoScreen(token)
         } else {
             onBuyToken(token)

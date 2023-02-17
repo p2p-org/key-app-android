@@ -29,7 +29,7 @@
     <string name="jupiterQuoteBaseUrl">https://quote-api.jup.ag/</string>
 
     <string name="notificationServiceBaseUrl">https://push-service.key.app/</string>
-    <string name="notificationServiceTestBaseUrl">http://35.234.120.240:9090/notifier/</string>
+    <string name="notificationServiceTestBaseUrl">https://push-service.keyapp.org/</string>
 
     <string name="web3AuthServiceBaseUrl">https://web3-auth.keyapp.org/</string>
     <string name="registerUsernameServiceTestUrl">https://name-register.keyapp.org/</string>
