@@ -15,7 +15,24 @@ sealed interface SwapWidgetModel {
         val amount: TextViewCellModel? = null,
         val balance: TextViewCellModel? = null,
         val fiatAmount: TextViewCellModel? = null,
-    ) : SwapWidgetModel
+    ) : SwapWidgetModel {
+        companion object {
+            fun swapToAmountLoading(
+                tokenName: String,
+                userBalance: String? = null,
+            ): Content =
+                Content(
+                    isStatic = true,
+                    widgetTitle = TextViewCellModel.Raw(TextContainer(R.string.swap_main_you_receive)),
+                    currencyName = TextViewCellModel.Raw(TextContainer(tokenName)),
+                    amount = TextViewCellModel.Skeleton(bigSkeleton()),
+                    balance = userBalance
+                        ?.let { TextViewCellModel.Raw(TextContainer(R.string.swap_main_balance_amount, listOf(it))) },
+                    fiatAmount = null,
+                    availableAmount = null,
+                )
+        }
+    }
 
     data class Loading(
         val isStatic: Boolean = false,
@@ -25,21 +42,6 @@ sealed interface SwapWidgetModel {
         val balanceSkeleton: TextViewCellModel.Skeleton = TextViewCellModel.Skeleton(smallSkeleton()),
     ) : SwapWidgetModel
 }
-
-fun swapToAmountLoading(
-    tokenName: String,
-    userBalance: String? = null,
-): SwapWidgetModel.Content =
-    SwapWidgetModel.Content(
-        isStatic = true,
-        widgetTitle = TextViewCellModel.Raw(TextContainer(R.string.swap_main_you_receive)),
-        currencyName = TextViewCellModel.Raw(TextContainer(tokenName)),
-        amount = TextViewCellModel.Skeleton(bigSkeleton()),
-        balance = userBalance
-            ?.let { TextViewCellModel.Raw(TextContainer(R.string.swap_main_balance_amount, listOf(it))) },
-        fiatAmount = null,
-        availableAmount = null,
-    )
 
 private fun bigSkeleton(): SkeletonCellModel = SkeletonCellModel(
     height = 20.toPx(),

@@ -40,37 +40,37 @@ class SwapWidget @JvmOverloads constructor(
         }
     }
 
-    private fun bindLoading(model: SwapWidgetModel.Loading) {
+    private fun bindLoading(model: SwapWidgetModel.Loading) = with(binding) {
         isEnabled = !model.isStatic
-        binding.textViewWidgetTitle.bindOrGone(model.widgetTitle)
-        binding.textViewAvailableAmountTitle.isVisible = false
-        binding.textViewAvailableAmountValue.isVisible = false
-        binding.textViewCurrencyName.bindOrGone(model.currencySkeleton)
+        textViewWidgetTitle.bindOrGone(model.widgetTitle)
+        textViewAvailableAmountTitle.isVisible = false
+        textViewAvailableAmountValue.isVisible = false
+        textViewCurrencyName.bindOrGone(model.currencySkeleton)
         bindInput(model, model.amountSkeleton)
-        binding.textViewBalance.bindOrGone(model.balanceSkeleton)
-        binding.textViewFiatAmount.isVisible = false
+        textViewBalance.bindOrGone(model.balanceSkeleton)
+        textViewFiatAmount.isVisible = false
     }
 
-    private fun bindContent(model: SwapWidgetModel.Content) {
+    private fun bindContent(model: SwapWidgetModel.Content) = with(binding) {
         isEnabled = !model.isStatic
-        binding.textViewWidgetTitle.bindOrGone(model.widgetTitle)
-        binding.textViewAvailableAmountTitle.isVisible = model.availableAmount != null
-        binding.textViewAvailableAmountValue.bindOrGone(model.availableAmount)
-        binding.textViewCurrencyName.bindOrGone(model.currencyName)
+        textViewWidgetTitle.bindOrGone(model.widgetTitle)
+        textViewAvailableAmountTitle.isVisible = model.availableAmount != null
+        textViewAvailableAmountValue.bindOrGone(model.availableAmount)
+        textViewCurrencyName.bindOrGone(model.currencyName)
         bindInput(model, model.amount)
-        binding.textViewBalance.bindOrGone(model.balance)
-        binding.textViewFiatAmount.bindOrGone(model.fiatAmount)
+        textViewBalance.bindOrGone(model.balance)
+        textViewFiatAmount.bindOrGone(model.fiatAmount)
     }
 
-    private fun bindInput(model: SwapWidgetModel, amount: TextViewCellModel?) {
+    private fun bindInput(model: SwapWidgetModel, amount: TextViewCellModel?) = with(binding) {
         val isStatic = when (model) {
             is SwapWidgetModel.Content -> model.isStatic
             is SwapWidgetModel.Loading -> model.isStatic
         }
         val isNotEnabled = isStatic || model is SwapWidgetModel.Loading
-        binding.editTextAmount.inputType = if (isNotEnabled) InputType.TYPE_NULL else initInputType
-        binding.editTextAmount.isFocusable = !isNotEnabled
-        binding.editTextAmount.bindOrGone(amount ?: TextViewCellModel.Raw(text = TextContainer("")))
+        editTextAmount.inputType = if (isNotEnabled) InputType.TYPE_NULL else initInputType
+        editTextAmount.isFocusable = !isNotEnabled
+        editTextAmount.bindOrGone(amount ?: TextViewCellModel.Raw(text = TextContainer("")))
     }
 
     private fun backgroundTint(): ColorStateList {
