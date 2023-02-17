@@ -27,12 +27,12 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.swapWidgetFrom.bind(
+       /* binding.swapWidgetFrom.bind(
             SwapWidgetModel.Loading(
                 isStatic = false,
                 widgetTitle = TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_you_pay)),
             )
-        )
+        )*/
 
         binding.swapWidgetTo.bind(
             SwapWidgetModel.Loading(

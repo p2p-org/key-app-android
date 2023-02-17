@@ -28,12 +28,14 @@
         android:text="@string/common_all"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/textViewWidgetTitle"
         app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountValue"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/textViewWidgetTitle"
-        app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle" />
+        app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/textViewAvailableAmountValue"
@@ -94,15 +96,19 @@
 
     <EditText
         android:id="@+id/editTextAmount"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:autoSizeMaxTextSize="28sp"
+        android:autoSizeTextType="uniform"
         android:background="@android:color/transparent"
         android:digits="0123456789."
         android:duplicateParentState="true"
         android:hint="@string/amounts_view_zero_hint"
         android:imeOptions="actionDone"
-        android:inputType="numberDecimal"
+        android:inputType="textMultiLine"
         android:maxLines="1"
+        android:lines="1"
+        android:isScrollContainer="false"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Title1"
         android:textColor="@color/text_night"
         android:textColorHint="@color/text_night"
