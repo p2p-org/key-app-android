@@ -21,7 +21,6 @@ import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
@@ -146,7 +145,7 @@ class TokenHistoryFragment :
         )
     }
 
-    override fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails) {
-        SellTransactionDetailsBottomSheet.show(childFragmentManager, sellTransaction)
+    override fun openSellTransactionDetails(transactionId: String) {
+        SellTransactionDetailsBottomSheet.show(childFragmentManager, transactionId)
     }
 }

@@ -6,13 +6,10 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
-import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.rpc.interactor.TokenInteractor
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 class TokenHistoryPresenter(
     private val token: Token.Active,
-    private val historyAnalytics: HistoryAnalytics,
     private val tokenInteractor: TokenInteractor,
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
@@ -39,9 +36,8 @@ class TokenHistoryPresenter(
         view?.showDetailsScreen(transactionId)
     }
 
-    override fun onSellTransactionClicked(sellTransactionDetails: SellTransactionViewDetails) {
-        historyAnalytics.logSellTransactionClicked(sellTransactionDetails)
-        view?.openSellTransactionDetails(sellTransactionDetails)
+    override fun onSellTransactionClicked(transactionId: String) {
+        view?.openSellTransactionDetails(transactionId)
     }
 
     override fun closeAccount() {
