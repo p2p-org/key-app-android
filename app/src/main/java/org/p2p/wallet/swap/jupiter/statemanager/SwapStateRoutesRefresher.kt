@@ -2,7 +2,6 @@ package org.p2p.wallet.swap.jupiter.statemanager
 
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.p2p.core.token.Token
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
