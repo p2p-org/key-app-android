@@ -1,25 +1,24 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
+import android.content.res.Resources
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
-import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.history.analytics.HistoryAnalytics
-import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
-import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.toBase58Instance
 
 class HistoryTransactionDetailsBottomSheetPresenter(
+    private val resources: Resources,
     private val historyInteractor: HistoryInteractor,
     private val usernameInteractor: UsernameInteractor,
-    private val historyAnalytics: HistoryAnalytics,
-    private val renBtcInteractor: RenBtcInteractor
 ) : BasePresenter<HistoryTransactionDetailsContract.View>(),
     HistoryTransactionDetailsContract.Presenter {
 
@@ -39,16 +38,21 @@ class HistoryTransactionDetailsBottomSheetPresenter(
     }
 
     private suspend fun loadDetailsByTransaction(transaction: HistoryTransaction?) {
+        if (transaction == null) {
+            view?.showError(R.string.details_transaction_not_found)
+            return
+        }
+
+        view?.showDate(transaction.date)
+        showStatusAndSignature(transaction as? RpcHistoryTransaction)
         when (transaction) {
-            is RpcHistoryTransaction.Swap -> {
-                parseSwap(transaction)
-            }
-            is RpcHistoryTransaction.Transfer -> {
-                parseTransfer(transaction)
-            }
-            is RpcHistoryTransaction.BurnOrMint -> {
-                parseBurnOrMint(transaction)
-            }
+            is RpcHistoryTransaction.Swap -> parseSwap(transaction)
+            is RpcHistoryTransaction.Transfer -> parseTransfer(transaction)
+            is RpcHistoryTransaction.BurnOrMint -> parseBurnOrMint(transaction)
+            is RpcHistoryTransaction.CreateAccount -> parseCreateAccount(transaction)
+            is RpcHistoryTransaction.CloseAccount -> parseCloseAccount(transaction)
+            is RpcHistoryTransaction.Unknown -> parseUnknown(transaction)
+            // TODO PWN-5813 add other states !
             else -> {
                 Timber.e("Unsupported transaction: $transaction")
                 view?.showError(R.string.details_transaction_not_found)
@@ -58,37 +62,37 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun parseSwap(transaction: RpcHistoryTransaction.Swap) {
         view?.apply {
-            showDate(transaction.date.toDateTimeString())
-            showStatus(transaction.status)
-
             showTransactionId(transaction.signature)
-            showAddresses(transaction.sourceAddress, transaction.destinationAddress)
 
             val usdTotal = transaction.getReceivedUsdAmount()
-            val total = transaction.getFormattedAmount()
+            val total = transaction.getFormattedAmountWithArrow()
             showAmount(total, usdTotal)
-            showFee()
+            showFee(transaction.getFormattedFee())
 
-            showSwapView(transaction.sourceIconUrl.orEmpty(), transaction.destinationIconUrl.orEmpty())
+            val sourceIcon = transaction.sourceIconUrl
+            val destinationIcon = transaction.destinationIconUrl
+            if (sourceIcon.isNullOrEmpty() && destinationIcon.isNullOrEmpty()) {
+                showTransferView(null, R.drawable.ic_swap_arrows)
+            } else {
+                showSwapView(sourceIcon, destinationIcon)
+            }
+            hideSendReceiveTitleAndValue()
         }
     }
 
     private suspend fun parseTransfer(transaction: RpcHistoryTransaction.Transfer) {
         view?.apply {
-            showTransferView(transaction.getIcon())
+            showTransferView(transaction.iconUrl, transaction.getIcon())
+            showFee(transaction.getFormattedFee())
             showAmount(
                 amountToken = transaction.getFormattedTotal(),
                 amountUsd = transaction.getFormattedAmount()
             )
-            showDate(transaction.date.toDateTimeString())
             showTransferAddress(
                 isSend = transaction.isSend,
                 senderAddress = transaction.senderAddress,
                 receiverAddress = transaction.destination
             )
-            showFee()
-            showStatus(transaction.status)
-            showTransactionId(transaction.signature)
         }
     }
 
@@ -116,33 +120,92 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun parseBurnOrMint(transaction: RpcHistoryTransaction.BurnOrMint) {
         view?.apply {
-            showDate(transaction.date.toDateTimeString())
-
             showTransactionId(transaction.signature)
-            showAddresses(transaction.senderAddress, transaction.destination)
 
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
-            showFee()
-            showTransferView(transaction.getIcon())
+            showFee(transaction.getFormattedFee())
+            showTransferView(transaction.iconUrl, transaction.getIcon())
+            showStateTitleValue(
+                resources.getString(
+                    if (transaction.isBurn) R.string.transaction_details_burn
+                    else R.string.transaction_details_mint
+                ),
+                transaction.signature.cutMiddle()
+            )
         }
     }
 
-    private fun logTransactionClicked(transaction: HistoryTransaction) {
+    private fun parseCreateAccount(transaction: RpcHistoryTransaction.CreateAccount) {
+        view?.apply {
+            showTransactionId(transaction.signature)
+            showFee(transaction.getFormattedFee())
+            showTransferView(transaction.iconUrl, R.drawable.ic_transaction_create)
+            hideSendReceiveTitleAndValue()
+            showStateTitleValue(
+                resources.getString(R.string.transaction_details_created),
+                transaction.signature.cutMiddle()
+            )
+        }
+    }
+
+    private fun parseCloseAccount(transaction: RpcHistoryTransaction.CloseAccount) {
+        view?.apply {
+            showTransactionId(transaction.signature)
+            showAmount(resources.getString(R.string.transaction_details_no_balance_change), amountUsd = null)
+            showTransferView(transaction.iconUrl, R.drawable.ic_transaction_closed)
+            showStateTitleValue(
+                resources.getString(R.string.transaction_details_closed),
+                transaction.signature.cutMiddle()
+            )
+        }
+    }
+
+    private fun parseUnknown(transaction: RpcHistoryTransaction.Unknown) {
+        view?.apply {
+            showTransactionId(transaction.signature)
+            showAmount(amountToken = null, amountUsd = null)
+            showTransferView(tokenIconUrl = null, placeholderIcon = R.drawable.ic_transaction_unknown)
+            showStateTitleValue(
+                resources.getString(R.string.transaction_details_signature),
+                transaction.signature.cutMiddle()
+            )
+        }
+    }
+
+    private fun showStatusAndSignature(transaction: RpcHistoryTransaction?) {
+        val status = transaction?.status ?: return
+        val colorRes: Int
+        val titleRes: Int
+        when (status) {
+            HistoryTransactionStatus.COMPLETED -> {
+                titleRes = R.string.transaction_details_title_succeeded
+                colorRes = if (transaction is RpcHistoryTransaction.Swap) R.color.text_night else R.color.text_mint
+            }
+            HistoryTransactionStatus.PENDING -> {
+                titleRes = R.string.transaction_details_title_submitted
+                colorRes = R.color.text_sun
+            }
+            HistoryTransactionStatus.ERROR -> {
+                titleRes = R.string.transaction_details_title_failed
+                colorRes = R.color.text_rose
+                showErrorState(transaction)
+            }
+        }
+        view?.apply {
+            showStatus(titleRes, colorRes)
+            showTransactionId(transaction.signature)
+        }
+    }
+
+    private fun showErrorState(transaction: RpcHistoryTransaction) {
         when (transaction) {
-            is RpcHistoryTransaction.Swap -> {
-                historyAnalytics.logSwapTransactionClicked(transaction)
-            }
-            is RpcHistoryTransaction.Transfer -> {
-                launch {
-                    historyAnalytics.logTransferTransactionClicked(
-                        transaction = transaction,
-                        isRenBtcSessionActive = renBtcInteractor.isUserHasActiveSession()
-                    )
-                }
-            }
-            else -> Unit
+            is RpcHistoryTransaction.Swap -> R.string.transaction_details_status_message_swap
+            is RpcHistoryTransaction.Transfer -> R.string.transaction_details_status_message_send
+            else -> null
+        }?.let { errorMessage ->
+            view?.showErrorState(errorMessage)
         }
     }
 }

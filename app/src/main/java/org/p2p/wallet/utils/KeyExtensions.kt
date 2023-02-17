@@ -6,6 +6,7 @@ import org.p2p.solanaj.programs.SerumSwapProgram.usdtMint
 
 const val CUT_ADDRESS_SYMBOLS_COUNT = 6
 const val CUT_4_SYMBOLS = 4
+const val CUT_7_SYMBOLS = 7
 const val CUT_16_SYMBOLS = 16
 
 fun String.toPublicKey() = PublicKey(this)
