@@ -7,11 +7,12 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.utils.cutEnd
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
@@ -84,24 +85,27 @@ class HistoryItemMapper(private val resources: Resources) {
                 iconRes = R.drawable.ic_transaction_create
 
                 startTitle = resources.getString(R.string.transaction_history_create)
-                startSubtitle = signature.cutMiddle()
+                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutEnd())
             }
             is RpcHistoryTransaction.CloseAccount -> with(transaction) {
                 tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_closed
 
                 startTitle = resources.getString(R.string.transaction_history_closed)
-                startSubtitle = signature.cutMiddle()
+                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutEnd())
             }
             is RpcHistoryTransaction.Unknown -> {
                 iconRes = R.drawable.ic_transaction_unknown
 
                 startTitle = resources.getString(R.string.transaction_history_unknown)
-                startSubtitle = transaction.signature.cutMiddle()
+                startSubtitle = resources.getString(
+                    R.string.transaction_history_signature_format,
+                    transaction.signature.cutEnd()
+                )
             }
         }
         val historyItem = HistoryItem.TransactionItem(
-            signature = transaction.getHistoryTransactionId(),
+            transactionId = transaction.getHistoryTransactionId(),
             sourceIconUrl = sourceTokenIconUrl,
             destinationIconUrl = destinationTokenIconUrl,
             tokenIconUrl = tokenIconUrl,

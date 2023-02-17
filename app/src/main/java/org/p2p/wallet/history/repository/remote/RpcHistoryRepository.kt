@@ -52,11 +52,12 @@ class RpcHistoryRepository(
     }
 
     override suspend fun findTransactionById(id: String): HistoryTransaction? {
-        return allTransactions.flatMap { it.value }.firstOrNull {
-            id == it.signature
-        }?.let {
-            converter.toDomain(it)
-        }
+        return allTransactions.flatMap { it.value }
+            .firstOrNull {
+                id == it.signature
+            }?.let {
+                converter.toDomain(it)
+            }
     }
 
     override fun getPagingState(): HistoryPagingState {
@@ -70,10 +71,10 @@ class RpcHistoryRepository(
         val tokenAddress = mintAddress ?: tokenKeyProvider.publicKey
 
         if (historyPagingState == HistoryPagingState.INACTIVE) {
-            return findTransactionsByToken(tokenAddress)
+            return findTransactionsByTokenAddress(tokenAddress)
         }
 
-        val offset = findTransactionsByToken(tokenAddress).size.toLong()
+        val offset = findTransactionsByTokenAddress(tokenAddress).size.toLong()
         val signature = historyServiceSignatureFieldGenerator.generateSignature(
             pubKey = tokenKeyProvider.publicKey,
             privateKey = tokenKeyProvider.keyPair,
@@ -92,7 +93,7 @@ class RpcHistoryRepository(
             method = REQUEST_PARAMS_NAME,
             params = requestParams
         )
-        val localTransactions = findTransactionsByToken(
+        val localTransactions = findTransactionsByTokenAddress(
             token = tokenAddress
         )
         return try {
@@ -104,14 +105,14 @@ class RpcHistoryRepository(
                 localTransactions.addAll(result)
             }
             allTransactions[tokenAddress] = localTransactions
-            findTransactionsByToken(tokenAddress)
+            findTransactionsByTokenAddress(tokenAddress)
         } catch (e: EmptyDataException) {
             historyPagingState = HistoryPagingState.INACTIVE
-            findTransactionsByToken(tokenAddress)
+            findTransactionsByTokenAddress(tokenAddress)
         }
     }
 
-    private fun findTransactionsByToken(token: String): MutableList<RpcHistoryTransactionResponse> {
+    private fun findTransactionsByTokenAddress(token: String): MutableList<RpcHistoryTransactionResponse> {
         return allTransactions.getOrPut(token) { mutableListOf() }
     }
 }

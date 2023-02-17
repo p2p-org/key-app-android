@@ -1,14 +1,14 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.setTextColorRes
@@ -25,7 +25,7 @@ import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
-private const val EXTRA_TX_SIGNATURE = "EXTRA_TX_SIGNATURE"
+private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
 
 class HistoryTransactionDetailsBottomSheetFragment :
     BaseMvpBottomSheet<HistoryTransactionDetailsContract.View, HistoryTransactionDetailsContract.Presenter>(
@@ -34,9 +34,9 @@ class HistoryTransactionDetailsBottomSheetFragment :
     HistoryTransactionDetailsContract.View {
 
     companion object {
-        fun show(fragmentManager: FragmentManager, signature: String) {
+        fun show(fragmentManager: FragmentManager, transactionId: String) {
             HistoryTransactionDetailsBottomSheetFragment()
-                .withArgs(EXTRA_TX_SIGNATURE to signature)
+                .withArgs(EXTRA_TRANSACTION_ID to transactionId)
                 .show(fragmentManager, HistoryTransactionDetailsBottomSheetFragment::javaClass.name)
         }
 
@@ -46,13 +46,13 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
-    private val state: String by args(EXTRA_TX_SIGNATURE)
+    private val transactionId: String by args(EXTRA_TRANSACTION_ID)
 
     private val binding: DialogHistoryTransactionDetailsBinding by viewBinding()
 
     private val glideManager: GlideManager by inject()
 
-    override val presenter: HistoryTransactionDetailsContract.Presenter by inject { parametersOf(state) }
+    override val presenter: HistoryTransactionDetailsContract.Presenter by inject()
 
     override fun getTheme(): Int = R.style.WalletTheme_BottomSheet_Rounded
 
@@ -64,12 +64,19 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.load(transactionId)
+    }
+
     override fun showError(@StringRes messageId: Int) {
         showInfoDialog(
             titleRes = R.string.error_general_title,
             messageRes = messageId,
             primaryButtonRes = R.string.common_retry,
-            primaryCallback = presenter::load,
+            primaryCallback = { presenter.load(transactionId) },
+            secondaryButtonRes = R.string.common_ok,
+            secondaryCallback = { dismissAllowingStateLoss() },
             isCancelable = false
         )
     }

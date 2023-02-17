@@ -17,6 +17,7 @@
     <color name="night_30">#4D2B2B2B</color>
 
     <color name="snow">#FFFFFF</color>
+    <color name="snow_60">#99FFFFFF</color>
     <color name="cloud">#FAFCFF</color>
     <color name="smoke">#F2F5FA</color>
     <color name="smoke_transparent">#002B2B2B</color>
@@ -86,6 +87,7 @@
     <color name="icons_silver">@color/silver</color>
 
     <color name="bg_snow">@color/snow</color>
+    <color name="bg_snow_60">@color/snow_60</color>
     <color name="bg_cloud">@color/cloud</color>
     <color name="bg_smoke">@color/smoke</color>
     <color name="bg_rain">@color/rain</color>

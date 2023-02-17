@@ -17,6 +17,7 @@ class HistoryInteractor(
     }
 
     suspend fun findTransactionById(id: String): HistoryTransaction? {
-        return historyServiceRepository.findTransactionById(id)
+        val foundTransaction = historyServiceRepository.findTransactionById(id)
+        return foundTransaction
     }
 }
