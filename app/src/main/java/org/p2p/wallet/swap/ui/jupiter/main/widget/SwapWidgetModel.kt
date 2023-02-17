@@ -27,7 +27,7 @@ sealed interface SwapWidgetModel {
                     currencyName = TextViewCellModel.Raw(TextContainer(tokenName)),
                     amount = TextViewCellModel.Skeleton(bigSkeleton()),
                     balance = userBalance
-                        ?.let { TextViewCellModel.Raw(TextContainer(R.string.swap_main_balance_amount, listOf(it))) },
+                        ?.let { TextViewCellModel.Raw(TextContainer(R.string.swap_main_balance_amount, it)) },
                     fiatAmount = null,
                     availableAmount = null,
                 )
