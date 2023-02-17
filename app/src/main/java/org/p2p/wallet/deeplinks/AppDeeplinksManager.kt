@@ -12,6 +12,8 @@ import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.utils.toStringMap
 
+private const val EXTRA_TAB_SCREEN = "EXTRA_TAB_SCREEN"
+
 class AppDeeplinksManager(
     private val context: Context,
     private val intercomDeeplinkManager: IntercomDeeplinkManager
@@ -19,7 +21,6 @@ class AppDeeplinksManager(
 
     companion object {
         const val NOTIFICATION_TYPE = "eventType"
-        const val DEEPLINK_MAIN_SCREEN_EXTRA = "DEEPLINK_SCREEN_EXTRA"
     }
 
     private var mainTabsSwitcher: MainTabsSwitcher? = null
@@ -70,7 +71,7 @@ class AppDeeplinksManager(
                         )
                         intent.addDeeplinkDataToIntent(notificationType)
                     }
-                    extras.containsKey(DEEPLINK_MAIN_SCREEN_EXTRA) -> {
+                    extras.containsKey(EXTRA_TAB_SCREEN) -> {
                         switchToMainTabIfPossible(intent)
                     }
                 }
@@ -97,9 +98,12 @@ class AppDeeplinksManager(
     }
 
     private fun Intent.addDeeplinkDataToIntent(notificationType: NotificationType) {
-        if (notificationType == NotificationType.RECEIVE) {
-            putExtra(DEEPLINK_MAIN_SCREEN_EXTRA, R.id.historyItem)
+        val navigationId = when (notificationType) {
+            NotificationType.RECEIVE -> R.id.historyItem
+            NotificationType.DEFAULT -> R.id.homeItem
         }
+
+        putExtra(EXTRA_TAB_SCREEN, navigationId)
     }
 
     private fun switchToMainTabIfPossible(intent: Intent) {
@@ -107,7 +111,7 @@ class AppDeeplinksManager(
 
         rootListener?.popBackStackToMain()
 
-        val clickedTab = ScreenTab.fromTabId(extras.getInt(DEEPLINK_MAIN_SCREEN_EXTRA))!!
+        val clickedTab = ScreenTab.fromTabId(extras.getInt(EXTRA_TAB_SCREEN))!!
         mainTabsSwitcher?.navigate(clickedTab) ?: savePendingIntent(intent)
     }
 
