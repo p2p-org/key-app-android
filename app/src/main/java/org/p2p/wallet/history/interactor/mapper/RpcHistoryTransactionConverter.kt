@@ -101,22 +101,37 @@ class RpcHistoryTransactionConverter(
     private fun parseStake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Stake>(transaction.info.toString())
 
-        return RpcHistoryTransaction.Unknown(
+        return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            type = transaction.type.toDomain()
+            type = transaction.type.toDomain(),
+            senderAddress = tokenKeyProvider.publicKey,
+            iconUrl = info?.token?.logoUrl,
+            totalInUsd = info?.amount?.usdAmount.toBigDecimalOrZero(),
+            symbol = info?.token?.symbol.orEmpty(),
+            total = info?.amount?.amount.toBigDecimalOrZero(),
+            destination = info?.token?.mint.orEmpty(),
+            fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger()
         )
     }
 
     private fun parseUnstake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
-        return RpcHistoryTransaction.Unknown(
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Unstake>(transaction.info.toString())
+        return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            type = transaction.type.toDomain()
+            type = transaction.type.toDomain(),
+            senderAddress = info?.token?.mint.orEmpty(),
+            iconUrl = info?.token?.logoUrl,
+            totalInUsd = info?.amount?.usdAmount.toBigDecimalOrZero(),
+            symbol = info?.token?.symbol.orEmpty(),
+            total = info?.amount?.amount.toBigDecimalOrZero(),
+            destination = tokenKeyProvider.publicKey,
+            fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger()
         )
     }
 
