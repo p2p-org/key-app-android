@@ -149,10 +149,10 @@ class DebugSettingsAdapter(
         private val onSettingsRowSwitchListener: (titleResId: Int, isSelected: Boolean) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val title = binding.textViewSettingName
-        private val subtitle = binding.textViewSettingSubtitle
+        private val title = binding.textViewSettingsName
+        private val subtitle = binding.textViewSettingsSubtitle
         private val switcher = binding.switchChangeSettings
-        private val icon = binding.imageViewSettingIcon
+        private val icon = binding.imageViewSettingsIcon
 
         fun bind(item: SettingsRow.Switcher) {
             title.setText(item.titleResId)
