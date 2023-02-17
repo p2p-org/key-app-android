@@ -40,7 +40,7 @@ class RpcHistoryTransactionConverter(
 
         return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
-            date = ZonedDateTime.parse(transaction.date),
+            date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
@@ -60,7 +60,7 @@ class RpcHistoryTransactionConverter(
 
         return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
-            date = ZonedDateTime.parse(transaction.date),
+            date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),

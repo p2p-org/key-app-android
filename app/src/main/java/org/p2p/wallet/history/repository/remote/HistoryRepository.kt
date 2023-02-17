@@ -56,7 +56,10 @@ class HistoryRepository(
         if (errorMessage.isNotEmpty()) {
             return HistoryPagingResult.Error(Throwable(errorMessage))
         }
-
-        return HistoryPagingResult.Success(newTransactions)
+        return newTransactions.sortedByDescending { transaction ->
+            transaction.date
+                .toInstant()
+                .toEpochMilli()
+        }.let { HistoryPagingResult.Success(it) }
     }
 }
