@@ -1,11 +1,11 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
-import android.os.Bundle
-import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
@@ -75,6 +75,8 @@ class HistoryTransactionDetailsBottomSheetFragment :
             messageRes = messageId,
             primaryButtonRes = R.string.common_retry,
             primaryCallback = { presenter.load(transactionId) },
+            secondaryButtonRes = R.string.common_ok,
+            secondaryCallback = { dismissAllowingStateLoss() },
             isCancelable = false
         )
     }
