@@ -1,5 +1,6 @@
 package org.p2p.wallet.history.ui.detailsbottomsheet
 
+import android.content.res.Resources
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.R
@@ -11,9 +12,11 @@ import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.Base58String
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.toBase58Instance
 
 class HistoryTransactionDetailsBottomSheetPresenter(
+    private val resources: Resources,
     private val historyInteractor: HistoryInteractor,
     private val usernameInteractor: UsernameInteractor,
 ) : BasePresenter<HistoryTransactionDetailsContract.View>(),
@@ -46,6 +49,9 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             is RpcHistoryTransaction.Swap -> parseSwap(transaction)
             is RpcHistoryTransaction.Transfer -> parseTransfer(transaction)
             is RpcHistoryTransaction.BurnOrMint -> parseBurnOrMint(transaction)
+            is RpcHistoryTransaction.CreateAccount -> parseCreateAccount(transaction)
+            is RpcHistoryTransaction.CloseAccount -> parseCloseAccount(transaction)
+            is RpcHistoryTransaction.Unknown -> parseUnknown(transaction)
             // TODO PWN-5813 add other states !
             else -> {
                 Timber.e("Unsupported transaction: $transaction")
@@ -61,7 +67,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             val usdTotal = transaction.getReceivedUsdAmount()
             val total = transaction.getFormattedAmountWithArrow()
             showAmount(total, usdTotal)
-            showFee()
+            showFee(transaction.getFormattedFee())
 
             val sourceIcon = transaction.sourceIconUrl
             val destinationIcon = transaction.destinationIconUrl
@@ -77,7 +83,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
     private suspend fun parseTransfer(transaction: RpcHistoryTransaction.Transfer) {
         view?.apply {
             showTransferView(transaction.iconUrl, transaction.getIcon())
-            showFee()
+            showFee(transaction.getFormattedFee())
             showAmount(
                 amountToken = transaction.getFormattedTotal(),
                 amountUsd = transaction.getFormattedAmount()
@@ -119,9 +125,52 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
-            showFee()
+            showFee(transaction.getFormattedFee())
             showTransferView(transaction.iconUrl, transaction.getIcon())
+            showStateTitleValue(
+                resources.getString(
+                    if (transaction.isBurn) R.string.transaction_details_burn
+                    else R.string.transaction_details_mint
+                ),
+                transaction.signature.cutMiddle()
+            )
+        }
+    }
+
+    private fun parseCreateAccount(transaction: RpcHistoryTransaction.CreateAccount) {
+        view?.apply {
+            showTransactionId(transaction.signature)
+            showFee(transaction.getFormattedFee())
+            showTransferView(transaction.iconUrl, R.drawable.ic_transaction_create)
             hideSendReceiveTitleAndValue()
+            showStateTitleValue(
+                resources.getString(R.string.transaction_details_created),
+                transaction.signature.cutMiddle()
+            )
+        }
+    }
+
+    private fun parseCloseAccount(transaction: RpcHistoryTransaction.CloseAccount) {
+        view?.apply {
+            showTransactionId(transaction.signature)
+            showAmount(resources.getString(R.string.transaction_details_no_balance_change), amountUsd = null)
+            showTransferView(transaction.iconUrl, R.drawable.ic_transaction_closed)
+            showStateTitleValue(
+                resources.getString(R.string.transaction_details_closed),
+                transaction.signature.cutMiddle()
+            )
+        }
+    }
+
+    private fun parseUnknown(transaction: RpcHistoryTransaction.Unknown) {
+        view?.apply {
+            showTransactionId(transaction.signature)
+            showAmount(amountToken = null, amountUsd = null)
+            showTransferView(tokenIconUrl = null, placeholderIcon = R.drawable.ic_transaction_unknown)
+            showStateTitleValue(
+                resources.getString(R.string.transaction_details_signature),
+                transaction.signature.cutMiddle()
+            )
         }
     }
 

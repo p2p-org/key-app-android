@@ -115,6 +115,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewAmountUsd"
+                app:layout_goneMarginTop="16dp"
                 tools:text="0.622181417 SOL" />
 
             <ImageView
@@ -203,7 +204,6 @@
             android:drawablePadding="4dp"
             android:gravity="center_vertical|end"
             android:textColor="@color/text_night"
-            app:drawableEndCompat="@drawable/ic_copy_filled"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/textViewSendReceiveTitle"
             app:layout_constraintTop_toBottomOf="@id/layoutTransactionDetails"

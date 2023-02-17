@@ -31,6 +31,7 @@ import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
+import org.p2p.wallet.utils.withTextOrGone
 
 private const val EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID"
 
@@ -97,12 +98,16 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
     override fun showTransferView(tokenIconUrl: String?, placeholderIcon: Int) = with(binding) {
         imageViewSecondToken.isVisible = false
-        glideManager.load(
-            imageView = imageViewFirstToken,
-            url = tokenIconUrl,
-            size = IMAGE_SIZE,
-            placeholder = placeholderIcon
-        )
+        if (tokenIconUrl.isNullOrEmpty()) {
+            imageViewFirstToken.setImageResource(placeholderIcon)
+        } else {
+            glideManager.load(
+                imageView = imageViewFirstToken,
+                url = tokenIconUrl,
+                size = IMAGE_SIZE,
+                placeholder = placeholderIcon
+            )
+        }
     }
 
     override fun showSwapView(sourceIconUrl: String?, destinationIconUrl: String?) = with(binding) {
@@ -145,6 +150,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showSenderAddress(senderAddress: Base58String, senderUsername: String?) = with(binding) {
+        textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled, 0)
         textViewSendReceiveTitle.text = getString(R.string.transaction_details_receive_from)
         if (senderUsername != null) {
             textViewSendReceiveValue.text = senderUsername
@@ -172,6 +178,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     override fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?) = with(binding) {
+        textViewSendReceiveValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_copy_filled, 0)
         textViewSendReceiveTitle.text = getString(R.string.transaction_details_send_to)
         if (receiverUsername != null) {
             textViewSendReceiveValue.text = receiverUsername
@@ -196,22 +203,26 @@ class HistoryTransactionDetailsBottomSheetFragment :
         }
     }
 
+    override fun showStateTitleValue(title: String, value: String) = with(binding) {
+        textViewSendReceiveTitle.text = title
+        textViewSendReceiveValue.text = value
+    }
+
     override fun hideSendReceiveTitleAndValue() = with(binding) {
         textViewSendReceiveTitle.isGone = true
         textViewSendReceiveValue.isGone = true
     }
 
-    override fun showAmount(amountToken: String, amountUsd: String?) = with(binding) {
-        textViewAmountTokens.text = amountToken
-        textViewAmountUsd.text = amountUsd
-        textViewAmountUsd.isVisible = amountUsd != null
+    override fun showAmount(amountToken: String?, amountUsd: String?) = with(binding) {
+        textViewAmountTokens.withTextOrGone(amountToken)
+        textViewAmountUsd.withTextOrGone(amountUsd)
     }
 
-    override fun showFee(renBtcFee: String?) = with(binding) {
-        if (renBtcFee.isNullOrEmpty()) {
+    override fun showFee(fees: String?) = with(binding) {
+        if (fees.isNullOrEmpty()) {
             textViewFeeValue.text = getString(R.string.transaction_transaction_fee_free_value)
         } else {
-            textViewFeeValue.text = renBtcFee
+            textViewFeeValue.text = fees
         }
     }
 

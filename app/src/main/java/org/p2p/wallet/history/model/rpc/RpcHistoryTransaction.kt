@@ -76,6 +76,8 @@ sealed class RpcHistoryTransaction(
             }
 
         fun getFormattedAmount(): String? = totalInUsd?.asUsd()
+
+        fun getFormattedFee(): String? = if(fee != BigInteger.ZERO) "$fee lamports" else null
     }
 
     @Parcelize
@@ -88,14 +90,7 @@ sealed class RpcHistoryTransaction(
         val account: String,
         val iconUrl: String?,
         val tokenSymbol: String,
-    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
-
-        fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
-            "$tokenSymbol $operationText"
-        } else {
-            operationText
-        }
-    }
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type)
 
     @Parcelize
     data class CreateAccount(
@@ -108,12 +103,7 @@ sealed class RpcHistoryTransaction(
         val fee: BigInteger,
         val tokenSymbol: String,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
-
-        fun getInfo(operationText: String): String = if (tokenSymbol.isNotBlank()) {
-            "$tokenSymbol $operationText"
-        } else {
-            operationText
-        }
+        fun getFormattedFee(): String? = if(fee != BigInteger.ZERO) "$fee lamports" else null
     }
 
     @Parcelize
@@ -164,7 +154,7 @@ sealed class RpcHistoryTransaction(
             }
         }
 
-        fun getFormattedFee() = "$fee lamports"
+        fun getFormattedFee(): String? = if(fee != BigInteger.ZERO) "$fee lamports" else null
 
         fun getSourceTotal(): String = "${amountA.formatToken()} $sourceSymbol"
 
@@ -207,6 +197,8 @@ sealed class RpcHistoryTransaction(
         fun getValue(): String? = totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isSend))
 
         fun getTotal(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
+
+        fun getFormattedFee(): String? = if(fee != BigInteger.ZERO) "$fee lamports" else null
 
         @StringRes
         fun getTypeName(): Int = when {

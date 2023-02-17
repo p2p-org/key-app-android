@@ -1,6 +1,7 @@
 package org.p2p.core.glide
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.widget.ImageView
@@ -30,6 +31,7 @@ class GlideManager(context: Context) {
             requestBuilder
                 .load(Uri.parse(url))
                 .apply(RequestOptions().override(size, size))
+                .scaleCrop(url, circleCrop)
                 .run { if (circleCrop) circleCrop() else centerCrop() }
                 .into(imageView)
         } else {
@@ -38,14 +40,19 @@ class GlideManager(context: Context) {
                 .load(url)
                 .placeholder(placeholder)
                 .error(placeholder)
-                .run {
-                    when {
-                        circleCrop -> circleCrop()
-                        url.isNullOrEmpty() -> fitCenter()
-                        else -> this
-                    }
-                }
+                .scaleCrop(url, circleCrop)
                 .into(imageView)
+        }
+    }
+
+    private fun RequestBuilder<out Drawable>.scaleCrop(
+        url: String?,
+        circleCrop: Boolean = false
+    ): RequestBuilder<out Drawable> {
+        return when {
+            circleCrop -> circleCrop()
+            url.isNullOrEmpty() -> fitCenter()
+            else -> this
         }
     }
 

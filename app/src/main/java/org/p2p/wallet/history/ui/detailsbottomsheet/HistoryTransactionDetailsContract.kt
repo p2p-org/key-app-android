@@ -16,12 +16,13 @@ interface HistoryTransactionDetailsContract {
         fun showStatus(@StringRes titleResId: Int, @ColorRes colorId: Int)
         fun showErrorState(@StringRes errorMessageResId: Int)
         fun showTransactionId(signature: String)
-        fun showAmount(amountToken: String, amountUsd: String?)
-        fun showFee(renBtcFee: String? = null)
+        fun showAmount(amountToken: String?, amountUsd: String?)
+        fun showFee(fees: String? = null)
         fun showLoading(isLoading: Boolean)
         fun showError(@StringRes messageId: Int)
         fun showSenderAddress(senderAddress: Base58String, senderUsername: String?)
         fun showReceiverAddress(receiverAddress: Base58String, receiverUsername: String?)
+        fun showStateTitleValue(title: String, value: String)
         fun hideSendReceiveTitleAndValue()
     }
 
