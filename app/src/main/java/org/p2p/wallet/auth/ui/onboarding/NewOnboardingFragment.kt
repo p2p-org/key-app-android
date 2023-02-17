@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
 import org.koin.android.ext.android.inject
+import java.io.File
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
@@ -35,7 +36,6 @@ import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import java.io.File
 
 class NewOnboardingFragment :
     BaseMvpFragment<NewOnboardingContract.View, NewOnboardingContract.Presenter>(R.layout.fragment_new_onboarding),
