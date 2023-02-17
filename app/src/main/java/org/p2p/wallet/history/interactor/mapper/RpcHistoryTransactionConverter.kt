@@ -1,8 +1,6 @@
 package org.p2p.wallet.history.interactor.mapper
 
 import com.google.gson.Gson
-import org.threeten.bp.ZonedDateTime
-import kotlinx.coroutines.withContext
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
@@ -11,34 +9,29 @@ import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTypeResponse
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.fromJsonReified
 
 class RpcHistoryTransactionConverter(
-    private val dispatchers: CoroutineDispatchers,
     private val tokenKeyProvider: TokenKeyProvider,
     private val gson: Gson
 ) {
-    suspend fun toDomain(
-        transactions: List<RpcHistoryTransactionResponse>,
-    ): List<RpcHistoryTransaction> = withContext(dispatchers.io) {
-        transactions.map { transaction ->
-            when (transaction.type) {
-                RpcHistoryTypeResponse.SEND -> parseSend(transaction)
-                RpcHistoryTypeResponse.RECEIVE -> parseReceive(transaction)
-                RpcHistoryTypeResponse.SWAP -> parseSwap(transaction)
-                RpcHistoryTypeResponse.STAKE -> parseStake(transaction)
-                RpcHistoryTypeResponse.UNSTAKE -> parseUnstake(transaction)
-                RpcHistoryTypeResponse.CREATE_ACCOUNT -> parseCreate(transaction)
-                RpcHistoryTypeResponse.CLOSE_ACCOUNT -> parseClose(transaction)
-                RpcHistoryTypeResponse.MINT -> parseMint(transaction)
-                RpcHistoryTypeResponse.BURN -> parseBurn(transaction)
-                RpcHistoryTypeResponse.UNKNOWN -> parseUnknown(transaction)
-            }
-        }.sortedByDescending { it.date.toInstant().toEpochMilli() }
-    }
+    fun toDomain(
+        transaction: RpcHistoryTransactionResponse,
+    ): RpcHistoryTransaction =
+        when (transaction.type) {
+            RpcHistoryTypeResponse.SEND -> parseSend(transaction)
+            RpcHistoryTypeResponse.RECEIVE -> parseReceive(transaction)
+            RpcHistoryTypeResponse.SWAP -> parseSwap(transaction)
+            RpcHistoryTypeResponse.STAKE -> parseStake(transaction)
+            RpcHistoryTypeResponse.UNSTAKE -> parseUnstake(transaction)
+            RpcHistoryTypeResponse.CREATE_ACCOUNT -> parseCreate(transaction)
+            RpcHistoryTypeResponse.CLOSE_ACCOUNT -> parseClose(transaction)
+            RpcHistoryTypeResponse.MINT -> parseMint(transaction)
+            RpcHistoryTypeResponse.BURN -> parseBurn(transaction)
+            RpcHistoryTypeResponse.UNKNOWN -> parseUnknown(transaction)
+        }
 
     private fun parseReceive(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info =
@@ -47,7 +40,7 @@ class RpcHistoryTransactionConverter(
 
         return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
-            date = ZonedDateTime.parse(transaction.date),
+            date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
@@ -67,7 +60,7 @@ class RpcHistoryTransactionConverter(
 
         return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
-            date = ZonedDateTime.parse(transaction.date),
+            date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),

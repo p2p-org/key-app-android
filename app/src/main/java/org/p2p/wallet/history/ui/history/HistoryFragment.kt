@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentHistoryBinding
-import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
@@ -60,21 +57,11 @@ class HistoryFragment :
         replaceFragment(NewBuyFragment.create(token))
     }
 
-    override fun openTransactionDetailsScreen(transaction: HistoryTransaction) {
-        when (transaction) {
-            is RpcHistoryTransaction.Swap,
-            is RpcHistoryTransaction.Transfer,
-            is RpcHistoryTransaction.BurnOrMint -> {
-                val transaction = transaction as RpcHistoryTransaction
-                HistoryTransactionDetailsBottomSheetFragment.show(
-                    fragmentManager = parentFragmentManager,
-                    signature = transaction.signature
-                )
-            }
-            else -> {
-                Timber.e(IllegalArgumentException("Unsupported transaction type: $transaction"))
-            }
-        }
+    override fun openTransactionDetailsScreen(transactionId: String) {
+        HistoryTransactionDetailsBottomSheetFragment.show(
+            fragmentManager = parentFragmentManager,
+            transactionId = transactionId
+        )
     }
 
     override fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails) {

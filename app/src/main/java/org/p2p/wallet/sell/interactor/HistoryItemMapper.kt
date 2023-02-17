@@ -105,7 +105,7 @@ class HistoryItemMapper(private val resources: Resources) {
             }
         }
         val historyItem = HistoryItem.TransactionItem(
-            signature = transaction.getHistoryTransactionId(),
+            transactionId = transaction.getHistoryTransactionId(),
             sourceIconUrl = sourceTokenIconUrl,
             destinationIconUrl = destinationTokenIconUrl,
             tokenIconUrl = tokenIconUrl,

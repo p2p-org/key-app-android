@@ -78,7 +78,7 @@ class HistoryAdapter(
 
     override fun getItemId(position: Int): Long {
         return when (val item = currentItems.getOrNull(position)) {
-            is TransactionItem -> item.signature.hashCode().toLong()
+            is TransactionItem -> item.transactionId.hashCode().toLong()
             is DateItem -> item.date.hashCode().toLong()
             else -> RecyclerView.NO_ID
         }
@@ -131,7 +131,7 @@ class HistoryAdapter(
             val newItem = newList[newItemPosition]
             return when {
                 oldItem is TransactionItem && newItem is TransactionItem ->
-                    oldItem.signature == newItem.signature
+                    oldItem.transactionId == newItem.transactionId
                 oldItem is DateItem && newItem is DateItem ->
                     oldItem.date.isSameAs(newItem.date)
                 else ->
