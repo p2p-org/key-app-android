@@ -1,23 +1,24 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class SwapStateManager(private val handlers: Set<SwapStateHandler>) {
+class SwapStateManager(
+    private val handlers: Set<SwapStateHandler>,
+    private val scope: SwapCoroutineScope
+) {
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)
+    private var activeActionHandle: Job? = null
+    private var refreshJob: Job? = null
 
     fun observe(): StateFlow<SwapState> = state
 
-    suspend fun onAction(action: SwapStateAction) {
+    fun onNewAction(action: SwapStateAction) {
         val currentState = state.value
+        val actionHandler = handlers.firstOrNull { it.canHandle(currentState) } ?: return
 
-        val newStates: Flow<SwapState> =
-            handlers.firstOrNull { it.canHandle(currentState) }
-                ?.handle(currentState, action)
-                ?: return
-
-        newStates.collectLatest(state::emit)
+        activeActionHandle = scope.launch { actionHandler.handleAction(state, action) }
     }
 }

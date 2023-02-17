@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import org.p2p.core.token.Token
 
 sealed class SwapStateAction {
-    data class RouteChanged(val ordinalRouteNumber: Int) : SwapStateAction()
+    data class ActiveRouteChanged(val ordinalRouteNumber: Int) : SwapStateAction()
     data class SlippageChanged(val newSlippageValue: Double) : SwapStateAction()
 
     data class InitialLoadingFinished(
