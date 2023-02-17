@@ -19,5 +19,6 @@
     <string name="transaction_history_receive_failed">Receive failed</string>
     <string name="transaction_history_create">Create account</string>
     <string name="transaction_history_closed">Close account</string>
+    <string name="transaction_history_signature_format">Signature: %s</string>
 
 </resources>
