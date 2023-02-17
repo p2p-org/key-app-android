@@ -55,7 +55,7 @@ class UserRemoteRepository(
             val tokenIds = (
                 accounts.mapNotNull {
                     userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.coingeckoId
-                } + POPULAR_TOKENS_COINGECKO_IDS
+                } + POPULAR_TOKENS_COINGECKO_IDS.map { it.id }
                 ).distinct()
 
             // Load and save user tokens prices
