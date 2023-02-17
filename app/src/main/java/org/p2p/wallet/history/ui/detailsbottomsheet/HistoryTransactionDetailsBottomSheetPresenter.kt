@@ -8,12 +8,12 @@ import org.p2p.wallet.auth.username.repository.model.UsernameDetails
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.analytics.HistoryAnalytics
-import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.toBase58Instance
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.renbtc.interactor.RenBtcInteractor
+import org.p2p.wallet.utils.Base58String
 
 class HistoryTransactionDetailsBottomSheetPresenter(
     private val historyInteractor: HistoryInteractor,
@@ -30,6 +30,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
                 val transaction = historyInteractor.findTransactionById(transactionId)
                 loadDetailsByTransaction(transaction)
             } catch (e: Throwable) {
+                Timber.e(e, "Error on finding transaction by id: $e")
                 view?.showErrorMessage(e)
             } finally {
                 view?.showLoading(isLoading = false)
@@ -68,7 +69,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             showAmount(total, usdTotal)
             showFee()
 
-            showSwapView(transaction.sourceIconUrl, transaction.destinationIconUrl)
+            showSwapView(transaction.sourceIconUrl.orEmpty(), transaction.destinationIconUrl.orEmpty())
         }
     }
 

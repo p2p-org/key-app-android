@@ -60,7 +60,7 @@ class HistoryListViewPresenter(
                 view?.showHistory(adapterItems)
                 view?.showPagingState(PagingState.Idle)
             } catch (e: Throwable) {
-                Timber.e("Error on loading history: $e")
+                Timber.e(e, "Error on loading history: $e")
                 view?.showPagingState(PagingState.Error(e))
             }
         }
@@ -70,7 +70,6 @@ class HistoryListViewPresenter(
 
     override fun onItemClicked(historyItem: HistoryItem) {
         launch {
-
             when (historyItem) {
                 is HistoryItem.TransactionItem -> {
                     view?.onTransactionClicked(historyItem.transactionId)
@@ -82,8 +81,7 @@ class HistoryListViewPresenter(
                 }
                 else -> {
                     val errorMessage = "Unsupported Transaction click! $historyItem"
-                    Timber.e(errorMessage)
-                    throw UnsupportedOperationException(errorMessage)
+                    Timber.e(UnsupportedOperationException(errorMessage))
                 }
             }
         }

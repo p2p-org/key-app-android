@@ -4,4 +4,5 @@
 
     <item name="tip_view_arrow_image_view" type="id" />
     <item name="seed_phrase_watcher_tag_id" type="id" />
+    <item name="initial_text_style_tag_id" type="id" />
 </resources>

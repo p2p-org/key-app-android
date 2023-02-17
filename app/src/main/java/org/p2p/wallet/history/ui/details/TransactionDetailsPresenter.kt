@@ -1,15 +1,15 @@
 package org.p2p.wallet.history.ui.details
 
 import org.p2p.core.common.DrawableContainer
+import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
 import org.p2p.wallet.common.ResourcesProvider
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.cutMiddle
 
 private const val DELAY_IN_MS = 5000L
@@ -47,13 +47,13 @@ class TransactionDetailsPresenter(
         view?.showStatus(transaction.status)
 
         view?.showSourceInfo(
-            iconContainer = DrawableContainer(transaction.sourceIconUrl),
+            iconContainer = DrawableContainer(transaction.sourceIconUrl.orEmpty()),
             primaryInfo = transaction.getSourceTotal(),
             secondaryInfo = transaction.getSentUsdAmount()
         )
 
         view?.showDestinationInfo(
-            iconContainer = DrawableContainer(transaction.destinationIconUrl),
+            iconContainer = DrawableContainer(transaction.destinationIconUrl.orEmpty()),
             primaryInfo = transaction.getDestinationTotal(),
             secondaryInfo = null
         )
@@ -73,7 +73,7 @@ class TransactionDetailsPresenter(
 
         val isSend = transaction.isSend
 
-        val iconRawContainer = DrawableContainer(transaction.iconUrl)
+        val iconRawContainer = DrawableContainer(transaction.iconUrl.orEmpty())
         val iconResContainer = DrawableContainer(R.drawable.ic_wallet_gray)
 
         val formattedTotal = transaction.getFormattedTotal(scaleMedium = true)

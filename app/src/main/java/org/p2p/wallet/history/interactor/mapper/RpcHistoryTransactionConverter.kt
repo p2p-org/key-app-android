@@ -7,8 +7,8 @@ import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionInfoResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTypeResponse
-import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.fromJsonReified
@@ -46,7 +46,7 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             senderAddress = info.counterParty.address,
-            iconUrl = info.token.logoUrl.orEmpty(),
+            iconUrl = info.token.logoUrl,
             totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
             symbol = info.token.symbol.orEmpty(),
             total = info.amount.amount.toBigDecimalOrZero(),
@@ -66,7 +66,7 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             senderAddress = tokenKeyProvider.publicKey,
-            iconUrl = info.token.logoUrl.orEmpty(),
+            iconUrl = info.token.logoUrl,
             totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
             symbol = info.token.symbol.orEmpty(),
             total = info.amount.amount.toBigDecimalOrZero(),
@@ -92,9 +92,9 @@ class RpcHistoryTransactionConverter(
             amountSentInUsd = info.from.amount.usdAmount.toBigDecimalOrZero(),
             amountReceivedInUsd = info.to.amount.usdAmount.toBigDecimalOrZero(),
             sourceSymbol = info.from.token.symbol.orEmpty(),
-            sourceIconUrl = info.from.token.logoUrl.orEmpty(),
+            sourceIconUrl = info.from.token.logoUrl,
             destinationSymbol = info.to.token.symbol.orEmpty(),
-            destinationIconUrl = info.to.token.logoUrl.orEmpty(),
+            destinationIconUrl = info.to.token.logoUrl,
             type = transaction.type.toDomain()
         )
     }
@@ -130,7 +130,7 @@ class RpcHistoryTransactionConverter(
             signature = transaction.signature,
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            iconUrl = info.token.logoUrl.orEmpty(),
+            iconUrl = info.token.logoUrl,
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger(),
             tokenSymbol = info.token.symbol.orEmpty(),
             type = transaction.type.toDomain()
@@ -147,7 +147,7 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             account = info.token?.mint.orEmpty(),
             status = transaction.status.toDomain(),
-            iconUrl = info.token?.logoUrl.orEmpty(),
+            iconUrl = info.token?.logoUrl,
             tokenSymbol = info.token?.symbol.orEmpty(),
             type = transaction.type.toDomain()
         )
@@ -164,7 +164,7 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             destination = info.token.mint,
             senderAddress = tokenKeyProvider.publicKey,
-            iconUrl = info.token.logoUrl.orEmpty(),
+            iconUrl = info.token.logoUrl,
             type = transaction.type.toDomain(),
             totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
             total = info.amount.amount.toBigDecimalOrZero(),
@@ -183,7 +183,7 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             destination = info.token.mint,
             senderAddress = tokenKeyProvider.publicKey,
-            iconUrl = info.token.logoUrl.orEmpty(),
+            iconUrl = info.token.logoUrl,
             type = transaction.type.toDomain(),
             totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
             total = info.amount.amount.toBigDecimalOrZero(),
