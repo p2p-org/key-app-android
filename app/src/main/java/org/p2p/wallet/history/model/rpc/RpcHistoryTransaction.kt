@@ -77,7 +77,7 @@ sealed class RpcHistoryTransaction(
 
         fun getFormattedAmount(): String? = totalInUsd?.asUsd()
 
-        fun getFormattedFee(): String? = if(fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
     }
 
     @Parcelize
@@ -103,7 +103,7 @@ sealed class RpcHistoryTransaction(
         val fee: BigInteger,
         val tokenSymbol: String,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
-        fun getFormattedFee(): String? = if(fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
     }
 
     @Parcelize
@@ -154,7 +154,7 @@ sealed class RpcHistoryTransaction(
             }
         }
 
-        fun getFormattedFee(): String? = if(fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
 
         fun getSourceTotal(): String = "${amountA.formatToken()} $sourceSymbol"
 
@@ -198,7 +198,7 @@ sealed class RpcHistoryTransaction(
 
         fun getTotal(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
 
-        fun getFormattedFee(): String? = if(fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
 
         @StringRes
         fun getTypeName(): Int = when {
