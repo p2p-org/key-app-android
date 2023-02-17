@@ -73,6 +73,16 @@ class HistoryItemMapper(private val resources: Resources) {
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotal()
             }
+            is RpcHistoryTransaction.StakeUnstake -> with(transaction) {
+                tokenIconUrl = getTokenIconUrl()
+                iconRes = getIcon()
+
+                startTitle = resources.getString(getTypeName())
+                startSubtitle = resources.getString(R.string.transaction_history_vote_format, getAddress())
+                endTopValue = getValue()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
+            }
             is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
                 tokenIconUrl = iconUrl
                 iconRes = getIcon()

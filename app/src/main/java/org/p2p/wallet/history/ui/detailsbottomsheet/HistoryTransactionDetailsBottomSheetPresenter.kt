@@ -51,6 +51,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             is RpcHistoryTransaction.BurnOrMint -> parseBurnOrMint(transaction)
             is RpcHistoryTransaction.CreateAccount -> parseCreateAccount(transaction)
             is RpcHistoryTransaction.CloseAccount -> parseCloseAccount(transaction)
+            is RpcHistoryTransaction.StakeUnstake -> parseStakeUnstake(transaction)
             is RpcHistoryTransaction.Unknown -> parseUnknown(transaction)
             // TODO PWN-5813 add other states !
             else -> {
@@ -157,6 +158,25 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             showTransferView(transaction.iconUrl, R.drawable.ic_transaction_closed)
             showStateTitleValue(
                 resources.getString(R.string.transaction_details_closed),
+                transaction.signature.cutMiddle()
+            )
+        }
+    }
+
+    private fun parseStakeUnstake(transaction: RpcHistoryTransaction.StakeUnstake) {
+        view?.apply {
+            showTransactionId(transaction.signature)
+
+            val usdTotal = transaction.getFormattedAmount()
+            val total = transaction.getFormattedTotal()
+            showAmount(total, usdTotal)
+            showFee(transaction.getFormattedFee())
+            showTransferView(transaction.iconUrl, transaction.getIcon())
+            showStateTitleValue(
+                resources.getString(
+                    if (transaction.isStake) R.string.transaction_details_stake
+                    else R.string.transaction_details_unstake
+                ),
                 transaction.signature.cutMiddle()
             )
         }

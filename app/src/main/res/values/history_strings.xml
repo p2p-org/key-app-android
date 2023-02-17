@@ -11,12 +11,15 @@
     <string name="transaction_history_swap">Swap</string>
     <string name="transaction_history_swap_pending">Swapping…</string>
     <string name="transaction_history_send">Send</string>
+    <string name="transaction_history_stake">Stake</string>
+    <string name="transaction_history_unstake">Unstake</string>
     <string name="transaction_history_send_pending">Sending…</string>
     <string name="transaction_history_receive">Receive</string>
     <string name="transaction_history_receive_pending">Receiving…</string>
     <string name="transaction_history_create">Create account</string>
     <string name="transaction_history_closed">Close account</string>
     <string name="transaction_history_signature_format">Signature: %s</string>
+    <string name="transaction_history_vote_format">Vote account: %s</string>
 
     <string name="transaction_details_title">Transaction %s</string>
     <string name="transaction_details_title_submitted">submitted</string>
