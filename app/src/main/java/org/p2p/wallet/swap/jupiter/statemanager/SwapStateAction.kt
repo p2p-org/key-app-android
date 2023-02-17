@@ -19,4 +19,7 @@ sealed class SwapStateAction {
     data class TokenAAmountChanged(
         val newAmount: BigDecimal
     ) : SwapStateAction()
+
+    object SwitchTokens : SwapStateAction()
+    object ConfirmTokenChanged : SwapStateAction()
 }

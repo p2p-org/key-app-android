@@ -18,6 +18,7 @@ import androidx.core.content.res.use
 import androidx.core.view.isVisible
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
+import org.p2p.core.common.TextContainer
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSliderSolidButtonBinding
 import org.p2p.uikit.utils.dip
@@ -91,6 +92,11 @@ class UiKitSliderSolidButton @JvmOverloads constructor(
     fun setActionText(actionText: String) = with(binding) {
         textViewAction.text = actionText
         textViewActionTop.text = actionText
+    }
+
+    fun setActionText(actionText: TextContainer) = with(binding) {
+        actionText.applyTo(textViewAction)
+        actionText.applyTo(textViewActionTop)
     }
 
     fun setLightStyle(isLight: Boolean) {
