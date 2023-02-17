@@ -27,12 +27,12 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-       /* binding.swapWidgetFrom.bind(
+        binding.swapWidgetFrom.bind(
             SwapWidgetModel.Loading(
                 isStatic = false,
                 widgetTitle = TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_you_pay)),
             )
-        )*/
+        )
 
         binding.swapWidgetTo.bind(
             SwapWidgetModel.Loading(
@@ -53,12 +53,14 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
         binding.imageViewSwapTokens.background = shapeDrawable(shapeCircle())
         binding.imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
         binding.imageViewSwapTokens.rippleForeground(shapeCircle())
-        binding.imageViewSwapTokens.setOnClickListener { }
-        setYellowAller()
+        binding.imageViewSwapTokens.setOnClickListener {
+            // todo PWN-7111
+        }
+        setYellowAlert()
         binding.linearLayoutAlert.isVisible = true
     }
 
-    private fun setYellowAller() {
+    private fun setYellowAlert() {
         val context = binding.root.context
         DrawableCellModel(
             drawable = shapeDrawable(shapeRoundedAll(8f.toPx())),
@@ -66,11 +68,11 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
             strokeWidth = 1f.toPx(),
             strokeColor = R.color.bg_sun,
         ).applyBackground(binding.linearLayoutAlert)
-        binding.imageviewAlert.imageTintList = context.getColorStateList(R.color.icons_sun)
+        binding.imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_sun)
         binding.textViewAlert.setTextColor(context.getColorStateList(R.color.text_night))
     }
 
-    private fun setRoseAller() {
+    private fun setRoseAlert() {
         val context = binding.root.context
         DrawableCellModel(
             drawable = shapeDrawable(shapeRoundedAll(8f.toPx())),
@@ -78,7 +80,7 @@ class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
             strokeWidth = 1f.toPx(),
             strokeColor = R.color.bg_rose,
         ).applyBackground(binding.linearLayoutAlert)
-        binding.imageviewAlert.imageTintList = context.getColorStateList(R.color.icons_rose)
+        binding.imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_rose)
         binding.textViewAlert.setTextColor(context.getColorStateList(R.color.text_rose))
     }
 }

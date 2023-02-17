@@ -1,12 +1,15 @@
 package org.p2p.wallet.history.model.rpc
 
-import android.content.res.Resources
-import android.os.Parcelable
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import kotlinx.android.parcel.Parcelize
+import android.content.res.Resources
+import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
+import java.math.BigDecimal
+import java.math.BigInteger
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.asUsdTransaction
@@ -17,11 +20,8 @@ import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.wallet.R
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.utils.CUT_4_SYMBOLS
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
-import java.math.BigDecimal
-import java.math.BigInteger
 
 sealed class RpcHistoryTransaction(
     override val date: ZonedDateTime,
@@ -47,19 +47,19 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         val destination: String,
         val senderAddress: String,
-        val iconUrl: String,
+        val iconUrl: String?,
         override val type: RpcHistoryTransactionType,
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val fee: BigInteger
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
-        @kotlinx.android.parcel.IgnoredOnParcel
+        @IgnoredOnParcel
         val isBurn: Boolean
             get() = type == RpcHistoryTransactionType.BURN
 
         @StringRes
-        fun getTitle(): Int = if (isBurn) R.string.main_burn_renbtc else R.string.main_mint_renbtc
+        fun getTitle(): Int = if (isBurn) R.string.common_burn else R.string.common_mint
 
         @DrawableRes
         fun getIcon(): Int = if (isBurn) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
@@ -86,7 +86,7 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
         val account: String,
-        val iconUrl: String,
+        val iconUrl: String?,
         val tokenSymbol: String,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
@@ -104,7 +104,7 @@ sealed class RpcHistoryTransaction(
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
-        val iconUrl: String,
+        val iconUrl: String?,
         val fee: BigInteger,
         val tokenSymbol: String,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
@@ -131,9 +131,9 @@ sealed class RpcHistoryTransaction(
         val amountSentInUsd: BigDecimal?,
         val amountReceivedInUsd: BigDecimal?,
         val sourceSymbol: String,
-        val sourceIconUrl: String,
+        val sourceIconUrl: String?,
         val destinationSymbol: String,
-        val destinationIconUrl: String,
+        val destinationIconUrl: String?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
@@ -176,7 +176,7 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
         val senderAddress: String,
-        val iconUrl: String,
+        val iconUrl: String?,
         val totalInUsd: BigDecimal?,
         val symbol: String,
         val total: BigDecimal,
@@ -184,7 +184,7 @@ sealed class RpcHistoryTransaction(
         val fee: BigInteger,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
-        @kotlinx.android.parcel.IgnoredOnParcel
+        @IgnoredOnParcel
         val isSend: Boolean
             get() = type == RpcHistoryTransactionType.SEND
 
@@ -239,8 +239,6 @@ sealed class RpcHistoryTransaction(
         fun getFormattedAmount(): String? = totalInUsd?.asUsd()
     }
 
-    private val ADDRESS_SYMBOL_COUNT = 10
-
     @Parcelize
     data class Unknown(
         override val signature: String,
@@ -249,14 +247,4 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type)
-
-    fun cutAddress(address: String): String {
-        if (address.length < ADDRESS_SYMBOL_COUNT) {
-            return address
-        }
-
-        val firstSix = address.take(CUT_4_SYMBOLS)
-        val lastFour = address.takeLast(CUT_4_SYMBOLS)
-        return "$firstSix...$lastFour"
-    }
 }
