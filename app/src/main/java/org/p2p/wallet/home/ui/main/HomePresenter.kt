@@ -40,11 +40,13 @@ import kotlinx.coroutines.launch
 import org.p2p.core.utils.Constants.BTC_COINGECKO_ID
 import org.p2p.core.utils.Constants.ETH_COINGECKO_ID
 import org.p2p.core.utils.Constants.SOL_COINGECKO_ID
+import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.Constants.USDC_COINGECKO_ID
+import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 
 val POPULAR_TOKENS = setOf(USDC_COINGECKO_ID, SOL_COINGECKO_ID, BTC_COINGECKO_ID, ETH_COINGECKO_ID, USDC_COINGECKO_ID)
-val TOKENS_VALID_FOR_BUY = listOf(USDC_COINGECKO_ID, SOL_COINGECKO_ID)
+val TOKENS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 private val LOAD_TOKENS_DELAY_MS = 1.toDuration(DurationUnit.SECONDS).inWholeMilliseconds
 
