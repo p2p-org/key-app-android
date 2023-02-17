@@ -20,19 +20,20 @@ import org.p2p.wallet.utils.getStatusIcon
 class HistoryItemMapper(private val resources: Resources) {
 
     fun toAdapterItem(transactions: List<HistoryTransaction>): List<HistoryItem> {
-        val adapterItems = mutableListOf<HistoryItem>()
+        val rpcHistoryItems = mutableListOf<HistoryItem>()
+        val sellHistoryItems = mutableListOf<HistoryItem>()
         transactions.forEachIndexed { index, item ->
             when {
                 item is RpcHistoryTransaction -> {
-                    parse(item, adapterItems)
+                    parse(item, rpcHistoryItems)
                 }
 
                 item is SellTransaction -> {
-                    // TODO provide mapper for sell transactions
+                    parse(item, sellHistoryItems)
                 }
             }
         }
-        return adapterItems
+        return sellHistoryItems + rpcHistoryItems
     }
 
     fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
@@ -130,18 +131,19 @@ class HistoryItemMapper(private val resources: Resources) {
         }
     }
 
-    fun fromDomainSell(
-        transactions: List<SellTransaction>
-    ): List<HistoryItem.MoonpayTransactionItem> = transactions.map {
-        val receiverAddress = if (it is SellTransaction.WaitingForDepositTransaction) {
-            it.moonpayDepositWalletAddress.base58Value
+    fun parse(
+        transaction: SellTransaction,
+        cache: MutableList<HistoryItem>
+    ) {
+        val receiverAddress = if (transaction is SellTransaction.WaitingForDepositTransaction) {
+            transaction.moonpayDepositWalletAddress.base58Value
         } else {
             resources.getString(R.string.sell_details_receiver_moonpay_bank)
         }
 
-        val formattedSolAmount = it.amounts.tokenAmount.formatToken()
-        val formattedFiatAmount = it.amounts.amountInFiat.formatFiat()
-        val fiatUiName = it.selectedFiat.uiSymbol
+        val formattedSolAmount = transaction.amounts.tokenAmount.formatToken()
+        val formattedFiatAmount = transaction.amounts.amountInFiat.formatFiat()
+        val fiatUiName = transaction.selectedFiat.uiSymbol
 
         val iconRes: Int
         val backgroundRes: Int
@@ -153,7 +155,7 @@ class HistoryItemMapper(private val resources: Resources) {
             R.string.transaction_history_moonpay_amount_sol,
             formattedSolAmount,
         )
-        when (it.status) {
+        when (transaction.status) {
             SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
                 titleStatus = resources.getString(R.string.transaction_history_moonpay_waiting_for_deposit_title)
                 subtitleReceiver = resources.getString(
@@ -192,20 +194,21 @@ class HistoryItemMapper(private val resources: Resources) {
                 )
             }
         }
-
-        HistoryItem.MoonpayTransactionItem(
-            transactionId = it.transactionId,
-            statusIconRes = iconRes,
-            statusBackgroundRes = backgroundRes,
-            statusIconColor = iconColor,
-            titleStatus = titleStatus,
-            subtitleReceiver = subtitleReceiver,
-            endTopValue = endTopValue,
-            date = it.updatedAt.toZonedDateTime()
+        cache.add(
+            HistoryItem.MoonpayTransactionItem(
+                transactionId = transaction.transactionId,
+                statusIconRes = iconRes,
+                statusBackgroundRes = backgroundRes,
+                statusIconColor = iconColor,
+                titleStatus = titleStatus,
+                subtitleReceiver = subtitleReceiver,
+                endTopValue = endTopValue,
+                date = transaction.updatedAt.toZonedDateTime()
+            )
         )
     }
 
-    fun toAdapterItem(sellTransaction: SellTransaction): SellTransactionViewDetails {
+    fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
         val receiverAddress = if (sellTransaction is SellTransaction.WaitingForDepositTransaction) {
             sellTransaction.moonpayDepositWalletAddress.base58Value
         } else {
