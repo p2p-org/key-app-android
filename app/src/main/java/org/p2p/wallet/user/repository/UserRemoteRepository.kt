@@ -11,7 +11,7 @@ import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.solanaj.model.types.Account
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.ui.main.POPULAR_TOKENS
+import org.p2p.wallet.home.ui.main.POPULAR_TOKENS_COINGECKO_IDS
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironment
 import org.p2p.wallet.infrastructure.network.environment.NetworkEnvironmentManager
@@ -55,7 +55,7 @@ class UserRemoteRepository(
             val tokenIds = (
                 accounts.mapNotNull {
                     userLocalRepository.findTokenData(it.account.data.parsed.info.mint)?.coingeckoId
-                } + POPULAR_TOKENS
+                } + POPULAR_TOKENS_COINGECKO_IDS
                 ).distinct()
 
             // Load and save user tokens prices

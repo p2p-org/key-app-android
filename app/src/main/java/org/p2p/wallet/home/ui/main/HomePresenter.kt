@@ -43,6 +43,13 @@ import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 
 val POPULAR_TOKENS = setOf(USDC_SYMBOL, SOL_SYMBOL, Constants.BTC_SYMBOL, Constants.ETH_SYMBOL, Constants.USDT_SYMBOL)
+val POPULAR_TOKENS_COINGECKO_IDS = setOf(
+    Constants.USDC_COINGECKO_ID,
+    Constants.SOL_COINGECKO_ID,
+    Constants.BTC_COINGECKO_ID,
+    Constants.ETH_COINGECKO_ID,
+    Constants.USDC_COINGECKO_ID
+)
 val TOKENS_VALID_FOR_BUY = listOf(USDC_SYMBOL, SOL_SYMBOL)
 
 private val LOAD_TOKENS_DELAY_MS = 1.toDuration(DurationUnit.SECONDS).inWholeMilliseconds
