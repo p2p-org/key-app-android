@@ -37,7 +37,8 @@ class SwapWidgetMapper {
             balance = balance(token),
             currencyName = tokenName(token),
             amount = tokenAmount(token, tokenAmount),
-            fiatAmount = fiatAmount(token, tokenAmount)
+            fiatAmount = fiatAmount(token, tokenAmount),
+            amountMaxDecimals = token.decimals,
         )
     }
 
@@ -54,7 +55,8 @@ class SwapWidgetMapper {
             balance = balance(token),
             currencyName = tokenName(token),
             amount = tokenAmount(token, tokenAmount),
-            fiatAmount = fiatAmount
+            fiatAmount = fiatAmount,
+            amountMaxDecimals = token.decimals,
         )
     }
 

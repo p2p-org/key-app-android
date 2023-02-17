@@ -94,6 +94,22 @@
         app:layout_constraintStart_toEndOf="@+id/textViewChangeCurrency"
         app:layout_constraintTop_toTopOf="@+id/textViewCurrencyName" />
 
+    <TextView
+        android:id="@+id/textViewShadowAutoSize"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:autoSizeMaxTextSize="28sp"
+        android:autoSizeTextType="uniform"
+        android:background="@android:color/transparent"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title1"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/viewEditTextClickable"
+        app:layout_constraintEnd_toEndOf="@+id/viewEditTextClickable"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/viewEditTextClickable"
+        app:layout_constraintTop_toTopOf="@+id/viewEditTextClickable" />
+
     <EditText
         android:id="@+id/editTextAmount"
         android:layout_width="wrap_content"
