@@ -98,7 +98,7 @@ class RpcHistoryRepository(
         )
         return try {
             val result = historyApi.getTransactionHistory(rpcRequest).result
-            if (result.size < limit) {
+            if (result.isEmpty() || result.size < limit) {
                 historyPagingState = HistoryPagingState.INACTIVE
             }
             if (!localTransactions.containsAll(result)) {

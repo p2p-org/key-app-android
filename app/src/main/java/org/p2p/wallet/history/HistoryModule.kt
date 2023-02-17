@@ -31,6 +31,7 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.history.ui.historylist.HistoryListViewPresenter
 import org.p2p.wallet.history.ui.token.TokenHistoryContract
 import org.p2p.wallet.history.ui.token.TokenHistoryPresenter
+import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.rpc.api.RpcHistoryApi
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
@@ -59,7 +60,11 @@ object HistoryModule : InjectionModule {
     }
 
     private fun Module.dataLayer() {
-        single { get<Retrofit>(named(RpcModule.RPC_RETROFIT_QUALIFIER)).create(RpcHistoryServiceApi::class.java) }
+        single {
+            get<Retrofit>(named(PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER)).create(
+                RpcHistoryServiceApi::class.java
+            )
+        }
         factoryOf(::TransactionDetailsEntityMapper)
         singleOf(::HistoryServiceSignatureFieldGenerator)
         singleOf(::TransactionDetailsDatabaseRepository) bind TransactionDetailsLocalRepository::class
