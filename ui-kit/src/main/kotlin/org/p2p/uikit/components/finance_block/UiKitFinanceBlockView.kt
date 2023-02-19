@@ -26,12 +26,17 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
 
     private var _item: FinanceBlockCellModel? = null
     val item: FinanceBlockCellModel
-        get() = _item ?: error("Not bind yet")
+        get() = _item ?: error("Method ::bind was not called")
 
     init {
         val paddingHorizontal = 16.toPx()
         val paddingVertical = 12.toPx()
-        updatePadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical)
+        updatePadding(
+            left = paddingHorizontal,
+            top = paddingVertical,
+            right = paddingHorizontal,
+            bottom = paddingVertical
+        )
         rippleForeground()
         minHeight = 72.toPx()
     }
@@ -42,13 +47,13 @@ class UiKitFinanceBlockView @JvmOverloads constructor(
         }
     }
 
-    fun bind(model: FinanceBlockCellModel) {
+    fun bind(model: FinanceBlockCellModel) = with(binding) {
         _item = model
         isEnabled = model.accessibility.isEnabled
         isClickable = model.accessibility.isClickable
-        binding.leftSideView.isVisible = model.leftSideCellModel != null
-        model.leftSideCellModel?.let { binding.leftSideView.bind(it) }
-        binding.rightSideView.isVisible = model.rightSideCellModel != null
-        model.rightSideCellModel?.let { binding.rightSideView.bind(it) }
+        leftSideView.isVisible = model.leftSideCellModel != null
+        model.leftSideCellModel?.let(leftSideView::bind)
+        rightSideView.isVisible = model.rightSideCellModel != null
+        model.rightSideCellModel?.let(rightSideView::bind)
     }
 }
