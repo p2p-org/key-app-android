@@ -28,7 +28,8 @@ class UiKitToolbar @JvmOverloads constructor(
 
     fun setSearchMenu(
         @MenuRes menuRes: Int = R.menu.menu_ui_kit_toolbar_search,
-        @StringRes searchHintRes: Int = R.string.common_search
+        @StringRes searchHintRes: Int = R.string.common_search,
+        showKeyboard: Boolean = true
     ) {
         inflateMenu(menuRes)
 
@@ -36,8 +37,10 @@ class UiKitToolbar @JvmOverloads constructor(
         searchView = search.actionView as SearchView
         searchView!!.apply {
             queryHint = getString(searchHintRes)
-            onActionViewExpanded()
-            showSoftKeyboard()
+            if (showKeyboard) {
+                onActionViewExpanded()
+                showSoftKeyboard()
+            }
             setOnQueryTextListener(this@UiKitToolbar)
         }
     }

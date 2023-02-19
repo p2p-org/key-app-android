@@ -22,7 +22,7 @@ class FinanceBlockViewHolder(
         get() = binding.root.item
 
     fun bind(model: FinanceBlockCellModel) {
-        binding.root.bind(item)
-        onBindListener?.invoke(binding.root, item)
+        binding.root.bind(model)
+        onBindListener?.invoke(binding.root, model)
     }
 }
