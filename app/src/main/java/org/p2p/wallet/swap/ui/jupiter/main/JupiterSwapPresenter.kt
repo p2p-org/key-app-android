@@ -1,19 +1,16 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class JupiterSwapPresenter(
     private val stateManager: SwapStateManager,
-    private val dispatchers: CoroutineDispatchers,
     private val widgetMapper: SwapWidgetMapper,
     private val buttonMapper: SwapButtonMapper,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
@@ -23,7 +20,6 @@ class JupiterSwapPresenter(
 
         stateManager.observe()
             .onEach(::handleFeatureState)
-            .flowOn(dispatchers.io)
             .launchIn(this)
     }
 
