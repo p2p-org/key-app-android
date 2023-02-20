@@ -25,5 +25,8 @@ runs:
           current_commit_hash="$(git rev-parse "$GITHUB_BASE_REF")"
         fi
         
+        echo "current_commit_hash: $current_commit_hash"
+        echo "current_commit_hash2: $(git rev-parse "$GITHUB_BASE_REF")"
+        
         # Run the gradle task with the fromCommit and toCommit properties set
         ./gradlew gitChangelogTask -PfromCommit=$last_commit_hash -PtoCommit=$current_commit_hash
