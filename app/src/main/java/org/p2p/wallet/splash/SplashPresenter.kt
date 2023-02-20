@@ -13,10 +13,7 @@ import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 import timber.log.Timber
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-private const val MINIMUM_SPLASH_SHOWING_TIME_MS = 2000L
 
 class SplashPresenter(
     private val authInteractor: AuthInteractor,
@@ -29,7 +26,6 @@ class SplashPresenter(
     override fun attach(view: SplashContract.View) {
         super.attach(view)
         launch {
-            delay(MINIMUM_SPLASH_SHOWING_TIME_MS)
             loadPricesAndBids()
         }
     }

@@ -1,13 +1,13 @@
 package org.p2p.wallet.home.ui.new.adapter
 
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
@@ -55,7 +55,7 @@ class NewSelectTokenViewHolder(
             imageViewWrapped.isVisible = token.isWrapped
             textViewTokenName.text = token.tokenName
             textViewAmount.text = token.getFormattedTotal(includeSymbol = true)
-            endAmountView.usdAmount = token.getFormattedUsdTotal()
+            endAmountView.topValue = token.getFormattedUsdTotal()
 
             root.setOnClickListener { onItemClicked(token) }
         }

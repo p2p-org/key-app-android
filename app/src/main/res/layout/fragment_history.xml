@@ -19,9 +19,8 @@
         app:titleMargin="16dp"
         app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3" />
 
-    <include
+    <org.p2p.wallet.history.ui.historylist.HistoryListView
         android:id="@+id/layoutHistoryList"
-        layout="@layout/layout_history_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

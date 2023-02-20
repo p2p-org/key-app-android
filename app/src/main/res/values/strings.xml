@@ -44,6 +44,8 @@
     <string name="common_sorry">Sorry</string>
     <string name="common_less_than_minimum">Less than 0.01</string>
     <string name="not_available">N/A</string>
+    <string name="common_burn">Burn</string>
+    <string name="common_mint">Mint</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -250,8 +252,6 @@
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
     <string name="main_enter_incorrect_amount">Incorrect amount</string>
-    <string name="main_burn_renbtc">Burn renBTC</string>
-    <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_key_app_username_sol_address">Username / address</string>
     <string name="main_reserve_username">Reserve your username now</string>
@@ -465,13 +465,6 @@
     <string name="transaction_details_details_button">@string/common_transaction_details</string>
 
     <!--TransactionHistory-->
-    <string name="transaction_history_unknown">Unknown</string>
-    <string name="transaction_history_swap">Swap</string>
-    <string name="transaction_history_send">Send</string>
-    <string name="transaction_history_receive">Receive</string>
-    <string name="transaction_history_create">Create</string>
-    <string name="transaction_history_closed">Closed</string>
-
     <string name="transaction_history_moonpay_failed_title">You\'ve not sent</string>
     <string name="transaction_history_moonpay_failed_subtitle">SOL to Moonpay</string>
     <string name="transaction_history_moonpay_waiting_for_deposit_title">You need to send SOL</string>

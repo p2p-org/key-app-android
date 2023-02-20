@@ -1,8 +1,8 @@
 package org.p2p.wallet.infrastructure.network.provider
 
+import timber.log.Timber
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
-import timber.log.Timber
 
 private const val TAG = "SeedPhraseProvider"
 
@@ -30,7 +30,7 @@ class SeedPhraseProvider(
         set(value) {
             field = value
             saveSeedPhraseToStorage(value)
-            Timber.tag(TAG).i("updating user seed phrase: $value")
+            Timber.tag(TAG).i("updating user seed phrase: isEmpty=${value.isEmpty()}")
         }
 
     private var seedPhraseProvider: SeedPhraseSource = SeedPhraseSource.NOT_PROVIDED

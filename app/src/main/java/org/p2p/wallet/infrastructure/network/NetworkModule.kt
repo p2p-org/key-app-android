@@ -14,8 +14,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
-import org.p2p.solanaj.kits.transaction.network.MessageResponseDeserialization
-import org.p2p.solanaj.kits.transaction.network.transaction.MessageResponse
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -67,7 +65,6 @@ object NetworkModule : InjectionModule {
                 .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
                 .registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
                 .registerTypeAdapter(Base64String::class.java, Base64TypeAdapter)
-                .registerTypeAdapter(MessageResponse::class.java, MessageResponseDeserialization)
                 .setLenient()
                 .disableHtmlEscaping()
                 .create()

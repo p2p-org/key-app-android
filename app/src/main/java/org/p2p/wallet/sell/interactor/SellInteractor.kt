@@ -55,7 +55,7 @@ class SellInteractor(
         return try {
             homeLocalRepository.getUserBalance().isNotZero()
         } catch (error: Throwable) {
-            Timber.tag(TAG).i(error, "Cant get user balance")
+            Timber.tag(TAG).e(error, "Cant get user balance")
             false
         }
     }

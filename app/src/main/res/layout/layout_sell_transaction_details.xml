@@ -44,11 +44,11 @@
         android:id="@+id/containerAmounts"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:background="@color/bg_smoke"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingBottom="24dp"
+        android:paddingVertical="24dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toTopOf="@+id/containerMessage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -59,7 +59,6 @@
             android:id="@+id/imageViewToken"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginTop="24dp"
             android:contentDescription="@null"
             android:src="@drawable/ic_sol"
             app:layout_constraintBottom_toTopOf="@+id/textViewAmount"
@@ -120,9 +119,6 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:contentDescription="@null"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewTitle"
             tools:srcCompat="@drawable/ic_info_rounded" />
 
         <TextView
@@ -133,7 +129,6 @@
             android:gravity="start"
             android:text="@string/sell_details_pending_body"
             android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3"
-            app:layout_constraintTop_toBottomOf="@id/imageViewToken"
             tools:text="It usually takes up to 3 business days. Any questions regarding your transaction can be answered via\nMoonpay help center" />
 
     </LinearLayout>
@@ -173,8 +168,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="8dp"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
-            android:textColor="@color/text_night"
+            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text4"
+            android:textColor="@color/text_mountain"
             app:layout_constraintBottom_toBottomOf="@+id/imageViewCopy"
             app:layout_constraintEnd_toStartOf="@id/imageViewCopy"
             app:layout_constraintTop_toTopOf="@+id/imageViewCopy"

@@ -1,4 +1,4 @@
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +7,6 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="32dp"
     android:background="@drawable/bg_snow_rounded_16"
-    android:orientation="vertical"
     android:paddingVertical="16dp"
     android:visibility="gone"
     tools:visibility="visible">
@@ -21,11 +20,54 @@
         app:shimmer_highlight_alpha="0"
         app:shimmer_highlight_color="@color/backgroundAppStroke">
 
-        <include
-            layout="@layout/item_history_shimmer"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/item_history_shimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                layout="@layout/item_history_shimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+            <include
+                layout="@layout/item_history_shimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+            <include
+                layout="@layout/item_history_shimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+            <include
+                layout="@layout/item_history_shimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+            <include
+                layout="@layout/item_history_shimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+            <include
+                layout="@layout/item_history_shimmer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
-</LinearLayout>
+</FrameLayout>
