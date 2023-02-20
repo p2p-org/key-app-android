@@ -70,9 +70,8 @@ class RootPresenter(
     ) {
         if (toggle.isFeatureEnabled) {
             val asyncWrap = async {
-                runCatching { request.invoke() }
-                    .onSuccess { Timber.tag(TAG).i("Request for ${toggle.featureKey} added and completed") }
-                    .onFailure { Timber.e(it) }
+                request.invoke()
+                Timber.tag(TAG).i("Request for ${toggle.featureKey} added and completed")
             }
             add(asyncWrap)
         } else {
