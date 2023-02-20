@@ -158,14 +158,16 @@ object SwapModule : InjectionModule {
         }
 
         factory {
+            // todo create static storage
+            val stateManager = SwapStateManager(
+                dispatchers = get(),
+                handlers = get(),
+            )
             JupiterSwapPresenter(
                 dispatchers = get(),
                 widgetMapper = get(),
                 buttonMapper = get(),
-                stateManager = SwapStateManager(
-                    dispatchers = get(),
-                    handlers = get(),
-                )
+                stateManager = stateManager
             )
         } bind JupiterSwapContract.Presenter::class
     }
