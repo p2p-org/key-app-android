@@ -12,8 +12,15 @@ runs:
         
         github_sha=${{ github.sha }}
         
+        last_branch=$GITHUB_REF_NAME
+        last_commit="$(git rev-parse $last_branch)"
+        
+        echo "data ${last_branch} ${last_commit} ${github_sha}"
+        
         # Get the current head commit hash
-        current_commit_hash="$(git rev-parse $github_sha)"
+        current_commit_hash="$(git rev-parse $last_branch)"
+        
+        echo "data ${current_commit_hash}"
         
         # Run the gradle task with the fromCommit and toCommit properties set
-        ./gradlew gitChangelogTask -PfromCommit=$last_commit_hash -PtoCommit=$github_sha
+        ./gradlew gitChangelogTask -PfromCommit=$last_commit_hash -PtoCommit=$current_commit_hash
