@@ -109,10 +109,7 @@ jobs:
       - name: "Generate changelog"
         uses: ./.github/actions/setup-changelog
       - name: "Send start deploy message to slack"
-        run: |
-          cd bash_scripts
-          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
+        run: bash bash_scripts/slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Generate a unique version build"
         uses: ./.github/actions/setup-version-build
       - name: "Build feature APK"
@@ -130,15 +127,11 @@ jobs:
           build-type: "feature"
           artifact-type: "apk"
       - name: "Upload changelog, and Jira ticket to slack channel"
-        run: |
-          cd bash_scripts
-          bash slack_upload_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} CHANGELOG.txt
-          cd ..
+        run: bash bash_scripts/slack_upload_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} CHANGELOG.txt
       - name: "Send finish deploy message to slack"
         run: |
-          cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash bash_scripts/slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
       - name: "Commit and Push changes"
         uses: ./.github/actions/setup-commit
         with:
@@ -157,3 +150,14 @@ jobs:
         with:
           jira-base-url: ${{ vars.JIRA_BASE_URL }}
           jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
+  save-last-commit-hash:
+    name: "Save last commit hash for future changelogs"
+    needs:
+      - android-build-artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: develop
+      - name: "Get last commit hash and save into last_commit_hash.txt"
+        run: printf "$(git log -n 1 --pretty=%H)" > last_commit_hash.txt
