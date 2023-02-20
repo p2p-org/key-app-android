@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.ui.jupiter.main
 import androidx.core.view.isInvisible
 import android.os.Bundle
 import android.view.View
+import org.koin.android.ext.android.inject
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
@@ -23,8 +24,7 @@ class JupiterSwapFragment :
     JupiterSwapContract.View {
 
     private val binding: FragmentJupiterSwapBinding by viewBinding()
-    override val presenter: JupiterSwapContract.Presenter
-        get() = TODO("Not yet implemented")
+    override val presenter: JupiterSwapContract.Presenter by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,7 +32,7 @@ class JupiterSwapFragment :
         binding.imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
         binding.imageViewSwapTokens.rippleForeground(shapeCircle())
         binding.imageViewSwapTokens.setOnClickListener {
-            // todo PWN-7111
+            presenter.switchTokens()
         }
     }
 

@@ -35,8 +35,20 @@ import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionMapper
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateRoutesRefresher
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateInitialLoadingHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingRoutesHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateLoadingTransactionHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateSwapLoadedHandler
+import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapContract
+import org.p2p.wallet.swap.ui.jupiter.main.JupiterSwapPresenter
+import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
+import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
 import retrofit2.Retrofit
@@ -124,5 +136,37 @@ object SwapModule : InjectionModule {
         factoryOf(::JupiterSwapTransactionRemoteRepository) bind JupiterSwapTransactionRepository::class
         factoryOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
         factoryOf(::JupiterSwapInteractor)
+
+        factoryOf(::SwapStateRoutesRefresher)
+        factoryOf(::SwapWidgetMapper)
+        factoryOf(::SwapButtonMapper)
+
+        factoryOf(::SwapStateInitialLoadingHandler)
+        factoryOf(::SwapStateLoadingRoutesHandler)
+        factoryOf(::SwapStateLoadingTransactionHandler)
+        factoryOf(::SwapStateSwapLoadedHandler)
+        factoryOf(::SwapStateTokenAZeroHandler)
+
+        factory<Set<SwapStateHandler>> {
+            setOf(
+                get<SwapStateInitialLoadingHandler>(),
+                get<SwapStateLoadingRoutesHandler>(),
+                get<SwapStateLoadingTransactionHandler>(),
+                get<SwapStateSwapLoadedHandler>(),
+                get<SwapStateTokenAZeroHandler>(),
+            )
+        }
+
+        factory {
+            JupiterSwapPresenter(
+                dispatchers = get(),
+                widgetMapper = get(),
+                buttonMapper = get(),
+                stateManager = SwapStateManager(
+                    dispatchers = get(),
+                    handlers = get(),
+                )
+            )
+        } bind JupiterSwapContract.Presenter::class
     }
 }

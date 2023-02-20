@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
+import org.p2p.core.utils.isZero
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
@@ -32,11 +33,17 @@ class JupiterSwapPresenter(
     }
 
     override fun onTokenAmountChange(amount: String) {
-        stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(amount.toBigDecimal()))
+        val newAmount = amount.toBigDecimal()
+        val action = if (newAmount.isZero()) {
+            SwapStateAction.EmptyAmountTokenA
+        } else {
+            SwapStateAction.TokenAAmountChanged(newAmount)
+        }
+        stateManager.onNewAction(action)
     }
 
     override fun onSwapTokenClick() {
-        stateManager.onNewAction(SwapStateAction.ConfirmTokenChanged)
+        stateManager.onNewAction(SwapStateAction.SwapSuccess)
     }
 
     private fun handleFeatureState(state: SwapState) {
@@ -65,6 +72,12 @@ class JupiterSwapPresenter(
                 view?.setFirstTokenWidgetState(widgetMapper.mapTokenA(state.tokenA, state.amountTokenA))
                 view?.setSecondTokenWidgetState(widgetMapper.mapTokenB(state.tokenB, state.amountTokenB))
                 view?.setButtonState(buttonMapper.mapReadyToSwap(state.tokenA, state.tokenB))
+            }
+            is SwapState.SwapException.FeatureExceptionWrapper -> {
+                // todo
+            }
+            is SwapState.SwapException.OtherException -> {
+                // todo
             }
         }
     }

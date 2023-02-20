@@ -27,7 +27,7 @@ class JupiterSwapTokensRemoteRepository(
     }
 
     private suspend fun fetchPricesForTokens(tokens: List<JupiterTokenResponse>): Map<TokenId, BigDecimal> {
-        val tokensIds = tokens.mapNotNull { it.extensions.coingeckoId?.let(::TokenId) }
+        val tokensIds = tokens.mapNotNull { it.extensions?.coingeckoId?.let(::TokenId) }
         return tokenPricesRepository.getTokenPricesByIdsMap(tokensIds, Constants.USD_SYMBOL)
             .mapValues { it.value.price }
     }
@@ -41,7 +41,7 @@ class JupiterSwapTokensRemoteRepository(
             tokenMint = response.address.toBase58Instance(),
             chainId = response.chainId,
             decimals = response.decimals,
-            coingeckoId = response.extensions.coingeckoId,
+            coingeckoId = response.extensions?.coingeckoId,
             logoUri = tokenLogoUri,
             tokenName = response.name,
             tokenSymbol = response.symbol,
@@ -51,11 +51,11 @@ class JupiterSwapTokensRemoteRepository(
     }
 
     private fun JupiterTokenResponse.getTokenPrice(prices: Map<TokenId, BigDecimal>): BigDecimal? {
-        val tokenPrice = extensions.coingeckoId?.let { prices[TokenId(it)] }
+        val tokenPrice = extensions?.coingeckoId?.let { prices[TokenId(it)] }
 
         if (tokenPrice == null) {
             val errorMessage = buildString {
-                append("Couldn't find any price for token with id: ${extensions.coingeckoId}; ")
+                append("Couldn't find any price for token with id: ${extensions?.coingeckoId}; ")
                 append("available prices: $prices")
             }
             Timber.i(errorMessage)

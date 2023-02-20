@@ -1,7 +1,5 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
-import java.math.BigDecimal
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -11,6 +9,8 @@ import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.utils.toBase58Instance
+import java.math.BigDecimal
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class SwapStateRoutesRefresher(
     private val tokenKeyProvider: TokenKeyProvider,
@@ -37,7 +37,11 @@ class SwapStateRoutesRefresher(
             tokenB = tokenB,
             amountTokenA = amountTokenA,
         )
-        val amountTokenB = updatedRoutes[activeRouteOrdinal]
+
+        val bestRoute = updatedRoutes.getOrNull(activeRouteOrdinal)
+            ?: throw FeatureException.RoutesNotFound
+
+        val amountTokenB = bestRoute
             .outAmountInLamports
             .fromLamports(tokenA.decimals)
 
