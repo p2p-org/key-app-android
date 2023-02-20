@@ -26,10 +26,10 @@ private const val SHOULD_SHOW_SELL_INFORM_DIALOG_KEY = "SHOULD_SHOW_SELL_INFORM_
 class SellInteractor(
     private val sellRepository: SellRepository,
     private val currencyRepository: MoonpayCurrenciesRepository,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val homeLocalRepository: HomeLocalRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val userInteractor: UserInteractor,
+    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
     private val hiddenSellTransactionsStorage: HiddenSellTransactionsStorageContract,
     private val sharedPreferences: SharedPreferences,
 ) {
@@ -42,11 +42,7 @@ class SellInteractor(
     }
 
     suspend fun loadSellAvailability() {
-        if (sellEnabledFeatureToggle.isFeatureEnabled) {
-            sellRepository.loadMoonpayFlags()
-        } else {
-            Timber.tag(TAG).i("Moonpay flags will not fetch, feature toggle is disabled")
-        }
+        sellRepository.loadMoonpayFlags()
     }
 
     suspend fun isSellAvailable(): Boolean {
