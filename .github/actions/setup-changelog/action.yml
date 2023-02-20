@@ -21,7 +21,7 @@ runs:
         # Determine the current head commit hash
         if [ -n "$GITHUB_HEAD_REF" ]; then
           # This is a pull request, use GITHUB_HEAD_REF
-          current_commit_hash="$(git log -n 1 --pretty=%H "$GITHUB_HEAD_REF")"
+          current_commit_hash="$(git log -n 1 --pretty=%H origin/$GITHUB_HEAD_REF)"
         else
           # This is not a pull request, use GITHUB_BASE_REF
           current_commit_hash="$(git rev-parse "$GITHUB_BASE_REF")"
