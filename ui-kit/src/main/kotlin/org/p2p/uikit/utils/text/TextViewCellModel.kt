@@ -32,6 +32,7 @@ sealed interface TextViewCellModel {
         val textSize: TextViewSize? = null,
         val gravity: Int? = null,
         val badgeBackground: TextViewBackgroundModel? = null,
+        val autoSizeConfiguration: TextViewAutoSizeConfiguration? = null,
     ) : TextViewCellModel
 
     data class Skeleton(
@@ -42,6 +43,23 @@ sealed interface TextViewCellModel {
 data class TextViewSize(
     val textSize: Float,
     val typedValue: Int = TypedValue.COMPLEX_UNIT_SP
+)
+
+// Default minimum size for auto-sizing text in scaled pixels.
+private const val DEFAULT_AUTO_SIZE_MIN_TEXT_SIZE_IN_SP = 12
+
+// Default maximum size for auto-sizing text in scaled pixels.
+private const val DEFAULT_AUTO_SIZE_MAX_TEXT_SIZE_IN_SP = 112
+
+// Default value for the step size in pixels.
+private const val DEFAULT_AUTO_SIZE_GRANULARITY_IN_PX = 1
+
+data class TextViewAutoSizeConfiguration(
+    val autoSizeMinTextSize: Int = DEFAULT_AUTO_SIZE_MIN_TEXT_SIZE_IN_SP,
+    val autoSizeMaxTextSize: Int = DEFAULT_AUTO_SIZE_MAX_TEXT_SIZE_IN_SP,
+    val autoSizeStepGranularity: Int = DEFAULT_AUTO_SIZE_GRANULARITY_IN_PX,
+    val typedValue: Int = TypedValue.COMPLEX_UNIT_SP,
+    val autoSizeTextType: Int = TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM,
 )
 
 data class TextViewBackgroundModel(
@@ -97,6 +115,21 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
     setHintTextColor(initialTextStyle.hintTextColors)
     foreground = null
     foregroundTintList = null
+
+    val autoSize = model.autoSizeConfiguration
+    val initialAutoSize = initialTextStyle.textViewAutoSizeConfiguration
+    val autoSizeTextType =
+        (autoSize?.autoSizeTextType ?: initialAutoSize.autoSizeTextType)
+    setAutoSizeTextTypeWithDefaults(autoSizeTextType)
+    if (autoSizeTextType != TextView.AUTO_SIZE_TEXT_TYPE_NONE) {
+        setAutoSizeTextTypeUniformWithConfiguration(
+            autoSize?.autoSizeMinTextSize ?: initialAutoSize.autoSizeMinTextSize,
+            autoSize?.autoSizeMaxTextSize ?: initialAutoSize.autoSizeMaxTextSize,
+            autoSize?.autoSizeStepGranularity ?: initialAutoSize.autoSizeStepGranularity,
+            autoSize?.typedValue ?: initialAutoSize.typedValue,
+        )
+    }
+
     updatePadding(
         left = model.badgeBackground?.padding?.left.orZero(),
         top = model.badgeBackground?.padding?.top.orZero(),
@@ -133,6 +166,7 @@ private data class InitialTextStyle(
     val background: Drawable?,
     val backgroundTint: ColorStateList?,
     val gravity: Int,
+    val textViewAutoSizeConfiguration: TextViewAutoSizeConfiguration,
 ) {
     constructor(textView: TextView) : this(
         textSize = textView.textSize,
@@ -143,5 +177,12 @@ private data class InitialTextStyle(
         backgroundTint = textView.backgroundTintList,
         gravity = textView.gravity,
         hintTextColors = textView.hintTextColors,
+        textViewAutoSizeConfiguration = TextViewAutoSizeConfiguration(
+            autoSizeTextType = textView.autoSizeTextType,
+            autoSizeMinTextSize = textView.autoSizeMinTextSize,
+            autoSizeMaxTextSize = textView.autoSizeMaxTextSize,
+            autoSizeStepGranularity = textView.autoSizeStepGranularity,
+            typedValue = TypedValue.COMPLEX_UNIT_PX,
+        ),
     )
 }
