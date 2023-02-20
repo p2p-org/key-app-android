@@ -20,9 +20,7 @@ import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.databinding.LayoutHistoryListBinding
 import org.p2p.wallet.history.ui.model.HistoryItem
-import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.token.adapter.HistoryAdapter
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 
 class HistoryListView @JvmOverloads constructor(
     context: Context,
@@ -40,13 +38,13 @@ class HistoryListView @JvmOverloads constructor(
 
     private lateinit var presenter: HistoryListViewContract.Presenter
 
-    private var onTransactionClickListener: (HistoryTransaction) -> Unit = {}
-    private var onSellTransactionClickListener: (SellTransactionViewDetails) -> Unit = {}
+    private var onTransactionClickListener: (String) -> Unit = {}
+    private var onSellTransactionClickListener: (String) -> Unit = {}
 
     fun bind(
         historyListViewPresenter: HistoryListViewContract.Presenter,
-        onTransactionClicked: (HistoryTransaction) -> Unit,
-        onSellTransactionClicked: (SellTransactionViewDetails) -> Unit,
+        onTransactionClicked: (String) -> Unit,
+        onSellTransactionClicked: (String) -> Unit,
         onBuyClicked: () -> Unit,
         onReceiveClicked: () -> Unit,
         token: Token.Active? = null
@@ -148,12 +146,12 @@ class HistoryListView @JvmOverloads constructor(
         }
     }
 
-    override fun onTransactionClicked(transaction: HistoryTransaction) {
-        onTransactionClickListener(transaction)
+    override fun onTransactionClicked(transactionId: String) {
+        onTransactionClickListener(transactionId)
     }
 
-    override fun onSellTransactionClicked(sellTransactionDetails: SellTransactionViewDetails) {
-        onSellTransactionClickListener(sellTransactionDetails)
+    override fun onSellTransactionClicked(transactionId: String) {
+        onSellTransactionClickListener(transactionId)
     }
 
     override fun showRefreshing(isRefreshing: Boolean) = with(binding) {

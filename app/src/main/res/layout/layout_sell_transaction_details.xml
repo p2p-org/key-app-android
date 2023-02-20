@@ -43,11 +43,12 @@
     <LinearLayout
         android:id="@+id/containerAmounts"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:background="@color/bg_smoke"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingVertical="24dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintBottom_toTopOf="@+id/containerMessage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

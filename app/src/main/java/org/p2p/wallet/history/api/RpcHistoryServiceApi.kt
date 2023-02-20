@@ -10,6 +10,7 @@ import retrofit2.http.POST
 import retrofit2.http.Url
 
 private const val HEADER_CHANNEL_ID = "android"
+
 interface RpcHistoryServiceApi {
 
     @POST

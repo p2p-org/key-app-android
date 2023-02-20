@@ -21,44 +21,71 @@ import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.util.Locale
 import kotlinx.coroutines.launch
+import org.p2p.wallet.history.analytics.HistoryAnalytics
+import org.p2p.wallet.history.interactor.HistoryInteractor
+import org.p2p.wallet.moonpay.model.SellTransaction
+import org.p2p.wallet.sell.interactor.HistoryItemMapper
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 
 private const val DATE_FORMAT = "MMMM dd, yyyy"
 private const val TIME_FORMAT = "HH:mm"
 
 class SellTransactionDetailsPresenter(
-    private val currentTransaction: SellTransactionViewDetails,
     private val sellInteractor: SellInteractor,
     private val userInteractor: UserInteractor,
-    private val resources: Resources
+    private val historyInteractor: HistoryInteractor,
+    private val mapper: HistoryItemMapper,
+    private val resources: Resources,
+    private val historyAnalytics: HistoryAnalytics
 ) : BasePresenter<SellTransactionDetailsContract.View>(),
     SellTransactionDetailsContract.Presenter {
 
     private val dateFormat by unsafeLazy { DateTimeFormatter.ofPattern(DATE_FORMAT, Locale.US) }
     private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
+    private var currentTransaction: SellTransactionViewDetails? = null
 
-    override fun attach(view: SellTransactionDetailsContract.View) {
-        super.attach(view)
-
-        val viewState = when (currentTransaction.status) {
-            SellTransactionStatus.WAITING_FOR_DEPOSIT -> buildWaitingForDepositViewState()
-            SellTransactionStatus.PENDING -> buildPendingViewState()
-            SellTransactionStatus.COMPLETED -> buildCompletedViewState()
-            SellTransactionStatus.FAILED -> buildFailedViewState()
+    override fun load(transactionId: String) {
+        launch {
+            try {
+                val sellTransaction = historyInteractor.findTransactionById(transactionId)
+                if (sellTransaction is SellTransaction) {
+                    val currentTransaction = mapper.toSellDetailsModel(sellTransaction)
+                    val viewState = when (currentTransaction.status) {
+                        SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
+                            buildWaitingForDepositViewState(currentTransaction)
+                        }
+                        SellTransactionStatus.PENDING -> {
+                            buildPendingViewState(currentTransaction)
+                        }
+                        SellTransactionStatus.COMPLETED -> {
+                            buildCompletedViewState(currentTransaction)
+                        }
+                        SellTransactionStatus.FAILED -> {
+                            buildFailedViewState(currentTransaction)
+                        }
+                    }
+                    historyAnalytics.logSellTransactionClicked(currentTransaction)
+                    view?.renderViewState(viewState)
+                }
+            } catch (e: Throwable) {
+                Timber.e(e, "Error on loading moonpay transaction details: $e")
+                view?.showErrorMessage(e)
+            }
         }
-        view.renderViewState(viewState)
     }
 
-    private fun buildWaitingForDepositViewState(): SellTransactionDetailsViewState {
+    private fun buildWaitingForDepositViewState(
+        transaction: SellTransactionViewDetails
+    ): SellTransactionDetailsViewState {
         val titleBlock = SellTransactionDetailsViewState.TitleBlock(
             title = resources.getString(
                 R.string.sell_details_waiting_deposit_title,
-                currentTransaction.formattedSolAmount
+                transaction.formattedSolAmount
             ),
-            updatedAt = currentTransaction.updatedAtTitle(),
+            updatedAt = transaction.updatedAtTitle(),
             boldAmount = resources.getString(
                 R.string.sell_details_token_amount,
-                currentTransaction.formattedSolAmount,
+                transaction.formattedSolAmount,
                 Constants.SOL_SYMBOL
             ),
             labelAmount = null,
@@ -68,9 +95,9 @@ class SellTransactionDetailsPresenter(
         )
         val receiverBlock = SellTransactionDetailsViewState.ReceiverBlock(
             receiverTitle = resources.getString(R.string.sell_details_send_to),
-            receiverValue = currentTransaction.receiverAddress.cutMiddle(cutCount = CUT_ADDRESS_SYMBOLS_COUNT),
+            receiverValue = transaction.receiverAddress.cutMiddle(cutCount = CUT_ADDRESS_SYMBOLS_COUNT),
             isCopyEnabled = true,
-            copyValueProvider = currentTransaction::receiverAddress
+            copyValueProvider = transaction::receiverAddress
         )
         val buttonsBlock = SellTransactionDetailsViewState.ButtonsBlock(
             mainButtonTitle = resources.getString(R.string.sell_details_button_send),
@@ -86,15 +113,15 @@ class SellTransactionDetailsPresenter(
         )
     }
 
-    private fun buildPendingViewState(): SellTransactionDetailsViewState {
+    private fun buildPendingViewState(transaction: SellTransactionViewDetails): SellTransactionDetailsViewState {
         val titleBlock = SellTransactionDetailsViewState.TitleBlock(
             title = resources.getString(
                 R.string.sell_details_pending_title
             ),
-            updatedAt = currentTransaction.updatedAtTitle(),
+            updatedAt = transaction.updatedAtTitle(),
             boldAmount = resources.getString(
                 R.string.sell_details_token_amount,
-                currentTransaction.formattedSolAmount,
+                transaction.formattedSolAmount,
                 Constants.SOL_SYMBOL
             ),
             labelAmount = null,
@@ -119,20 +146,20 @@ class SellTransactionDetailsPresenter(
         )
     }
 
-    private fun buildCompletedViewState(): SellTransactionDetailsViewState {
+    private fun buildCompletedViewState(transaction: SellTransactionViewDetails): SellTransactionDetailsViewState {
         val titleBlock = SellTransactionDetailsViewState.TitleBlock(
             title = resources.getString(
                 R.string.sell_details_completed_title
             ),
-            updatedAt = currentTransaction.updatedAtTitle(),
+            updatedAt = transaction.updatedAtTitle(),
             boldAmount = resources.getString(
                 R.string.sell_details_fiat_amount,
-                currentTransaction.formattedFiatAmount,
-                currentTransaction.fiatUiName
+                transaction.formattedFiatAmount,
+                transaction.fiatUiName
             ),
             labelAmount = resources.getString(
                 R.string.sell_details_token_amount,
-                currentTransaction.formattedSolAmount,
+                transaction.formattedSolAmount,
                 Constants.SOL_SYMBOL
             )
         )
@@ -158,16 +185,16 @@ class SellTransactionDetailsPresenter(
         )
     }
 
-    private fun buildFailedViewState(): SellTransactionDetailsViewState {
+    private fun buildFailedViewState(transaction: SellTransactionViewDetails): SellTransactionDetailsViewState {
         val titleBlock = SellTransactionDetailsViewState.TitleBlock(
             title = resources.getString(
                 R.string.sell_details_failed_title,
-                currentTransaction.formattedSolAmount
+                transaction.formattedSolAmount
             ),
-            updatedAt = currentTransaction.updatedAtTitle(),
+            updatedAt = transaction.updatedAtTitle(),
             boldAmount = resources.getString(
                 R.string.sell_details_token_amount,
-                currentTransaction.formattedSolAmount,
+                transaction.formattedSolAmount,
                 Constants.SOL_SYMBOL
             ),
             labelAmount = null,
@@ -189,7 +216,8 @@ class SellTransactionDetailsPresenter(
 
     override fun onCancelTransactionClicked() {
         launch {
-            when (val result = sellInteractor.cancelTransaction(currentTransaction.transactionId)) {
+            val transaction = currentTransaction ?: return@launch
+            when (val result = sellInteractor.cancelTransaction(transaction.transactionId)) {
                 is MoonpaySellCancelResult.CancelSuccess -> {
                     view?.showUiKitSnackBar(messageResId = R.string.sell_details_cancel_success)
                     view?.close()
@@ -205,16 +233,18 @@ class SellTransactionDetailsPresenter(
     override fun onSendClicked() {
         launch {
             val solToken = userInteractor.getUserSolToken() ?: return@launch
+            val transaction = currentTransaction ?: return@launch
             view?.navigateToSendScreen(
                 tokenToSend = solToken,
-                sendAmount = currentTransaction.formattedSolAmount.toBigDecimal(),
-                receiverAddress = currentTransaction.receiverAddress
+                sendAmount = transaction.formattedSolAmount.toBigDecimal(),
+                receiverAddress = transaction.receiverAddress
             )
         }
     }
 
     override fun onRemoveFromHistoryClicked() {
-        sellInteractor.hideTransactionFromHistory(currentTransaction.transactionId)
+        val transaction = currentTransaction ?: return
+        sellInteractor.hideTransactionFromHistory(transaction.transactionId)
         view?.close()
     }
 
