@@ -41,31 +41,57 @@ class JupiterSwapPresenter(
 
     private fun handleFeatureState(state: SwapState) {
         when (state) {
-            SwapState.InitialLoading -> {
-                view?.setFirstTokenWidgetState(widgetMapper.mapWidgetLoading(isTokenA = true))
-                view?.setSecondTokenWidgetState(widgetMapper.mapWidgetLoading(isTokenA = false))
-                view?.setButtonState(SwapButtonState.Hide)
-            }
-            is SwapState.TokenAZero -> {
-                view?.setFirstTokenWidgetState(widgetMapper.mapTokenA(state.tokenA, tokenAmount = null))
-                view?.setSecondTokenWidgetState(widgetMapper.mapTokenB(state.tokenB, tokenAmount = null))
-                view?.setButtonState(buttonMapper.mapEnterAmount())
-            }
-            is SwapState.LoadingRoutes -> {
-                view?.setFirstTokenWidgetState(widgetMapper.mapTokenA(state.tokenA, state.amountTokenA))
-                view?.setSecondTokenWidgetState(widgetMapper.mapTokenBLoading(state.tokenB))
-                view?.setButtonState(buttonMapper.mapLoading())
-            }
-            is SwapState.LoadingTransaction -> {
-                view?.setFirstTokenWidgetState(widgetMapper.mapTokenA(state.tokenA, state.amountTokenA))
-                view?.setSecondTokenWidgetState(widgetMapper.mapTokenB(state.tokenB, state.amountTokenB))
-                view?.setButtonState(buttonMapper.mapLoading())
-            }
-            is SwapState.SwapLoaded -> {
-                view?.setFirstTokenWidgetState(widgetMapper.mapTokenA(state.tokenA, state.amountTokenA))
-                view?.setSecondTokenWidgetState(widgetMapper.mapTokenB(state.tokenB, state.amountTokenB))
-                view?.setButtonState(buttonMapper.mapReadyToSwap(state.tokenA, state.tokenB))
-            }
+            SwapState.InitialLoading -> handleInitialLoading()
+            is SwapState.TokenAZero -> handleTokenAZero(state)
+            is SwapState.LoadingRoutes -> handleLoadingRoutes(state)
+            is SwapState.LoadingTransaction -> handleLoadingTransaction(state)
+            is SwapState.SwapLoaded -> handleSwapLoaded(state)
         }
+    }
+
+    private fun handleSwapLoaded(state: SwapState.SwapLoaded) {
+        view?.setFirstTokenWidgetState(
+            state = widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = state.amountTokenA)
+        )
+        view?.setSecondTokenWidgetState(
+            state = widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = state.amountTokenB)
+        )
+        view?.setButtonState(
+            buttonState = buttonMapper.mapReadyToSwap(tokenA = state.tokenA, tokenB = state.tokenB)
+        )
+    }
+
+    private fun handleLoadingTransaction(state: SwapState.LoadingTransaction) {
+        view?.setFirstTokenWidgetState(
+            state = widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = state.amountTokenA)
+        )
+        view?.setSecondTokenWidgetState(
+            state = widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = state.amountTokenB)
+        )
+        view?.setButtonState(buttonState = buttonMapper.mapLoading())
+    }
+
+    private fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
+        view?.setFirstTokenWidgetState(
+            state = widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = state.amountTokenA)
+        )
+        view?.setSecondTokenWidgetState(state = widgetMapper.mapTokenBLoading(token = state.tokenB))
+        view?.setButtonState(buttonState = buttonMapper.mapLoading())
+    }
+
+    private fun handleTokenAZero(state: SwapState.TokenAZero) {
+        view?.setFirstTokenWidgetState(
+            state = widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = null)
+        )
+        view?.setSecondTokenWidgetState(
+            state = widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+        )
+        view?.setButtonState(buttonMapper.mapEnterAmount())
+    }
+
+    private fun handleInitialLoading() {
+        view?.setFirstTokenWidgetState(state = widgetMapper.mapWidgetLoading(isTokenA = true))
+        view?.setSecondTokenWidgetState(state = widgetMapper.mapWidgetLoading(isTokenA = false))
+        view?.setButtonState(buttonState = SwapButtonState.Hide)
     }
 }

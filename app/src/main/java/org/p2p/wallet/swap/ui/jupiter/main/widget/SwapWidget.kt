@@ -37,10 +37,12 @@ class SwapWidget @JvmOverloads constructor(
         minHeight = 120.toPx()
         background = shapeDrawable(shapeRounded16dp())
         backgroundTintList = backgroundTint()
-        binding.textViewWidgetTitle.setTextColor(widgetTitleTint())
-        initInputType = binding.editTextAmount.inputType
-        binding.editTextAmount.doAfterTextChanged { resizeInput(it) }
-        binding.viewEditTextClickable.setOnClickListener { binding.editTextAmount.focusAndShowKeyboard(true) }
+        with(binding) {
+            textViewWidgetTitle.setTextColor(widgetTitleTint())
+            initInputType = editTextAmount.inputType
+            editTextAmount.doAfterTextChanged { resizeInput(it) }
+            viewEditTextClickable.setOnClickListener { editTextAmount.focusAndShowKeyboard(true) }
+        }
     }
 
     fun bind(model: SwapWidgetModel) {

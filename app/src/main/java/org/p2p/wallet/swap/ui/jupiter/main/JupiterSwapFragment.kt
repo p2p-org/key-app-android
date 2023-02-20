@@ -3,6 +3,7 @@ package org.p2p.wallet.swap.ui.jupiter.main
 import androidx.core.view.isInvisible
 import android.os.Bundle
 import android.view.View
+import org.p2p.core.common.bind
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
@@ -28,11 +29,13 @@ class JupiterSwapFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imageViewSwapTokens.background = shapeDrawable(shapeCircle())
-        binding.imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
-        binding.imageViewSwapTokens.rippleForeground(shapeCircle())
-        binding.imageViewSwapTokens.setOnClickListener {
-            // todo PWN-7111
+        with(binding) {
+            imageViewSwapTokens.background = shapeDrawable(shapeCircle())
+            imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
+            imageViewSwapTokens.rippleForeground(shapeCircle())
+            imageViewSwapTokens.setOnClickListener {
+                // todo PWN-7111
+            }
         }
     }
 
@@ -49,9 +52,9 @@ class JupiterSwapFragment :
             is SwapButtonState.Disabled -> {
                 buttonError.isInvisible = false
                 sliderSend.isInvisible = true
-                buttonState.text.applyTo(buttonError)
+                buttonError.bind(buttonState.text)
             }
-            SwapButtonState.Hide -> {
+            is SwapButtonState.Hide -> {
                 buttonError.isInvisible = true
                 sliderSend.isInvisible = true
             }

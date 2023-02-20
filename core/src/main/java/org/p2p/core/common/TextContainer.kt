@@ -18,36 +18,32 @@ sealed class TextContainer {
             Raw(text)
     }
 
-    abstract fun applyTo(textView: TextView)
     abstract fun getString(context: Context): String
 
     @Parcelize
-    data class Res(@StringRes private val textRes: Int) : TextContainer(), Parcelable {
-        override fun applyTo(textView: TextView) {
-            textView.setText(textRes)
-        }
-
+    data class Res(@StringRes val textRes: Int) : TextContainer(), Parcelable {
         override fun getString(context: Context): String =
             context.getString(textRes)
     }
 
     data class ResParams(@StringRes val textRes: Int, val args: List<Any>) : TextContainer() {
-        override fun applyTo(textView: TextView) {
-            textView.text = textView.context.getString(textRes, *args.toTypedArray())
-        }
-
         override fun getString(context: Context): String =
             context.getString(textRes, *args.toTypedArray())
     }
 
     @Parcelize
     data class Raw(
-        private val text: CharSequence
+        val text: CharSequence
     ) : TextContainer(), Parcelable {
-        override fun applyTo(textView: TextView) {
-            textView.text = text
-        }
-
         override fun getString(context: Context): String = text.toString()
+    }
+}
+
+fun TextView.bind(textContainer: TextContainer) {
+    when (textContainer) {
+        is TextContainer.Raw -> text = textContainer.text
+        is TextContainer.Res -> setText(textContainer.textRes)
+        is TextContainer.ResParams ->
+            text = context.getString(textContainer.textRes, textContainer.args.toTypedArray())
     }
 }

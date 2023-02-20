@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.widget.TextView
 import org.p2p.core.common.TextContainer
+import org.p2p.core.common.bind
 import org.p2p.core.utils.insets.InitialViewPadding
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.R
@@ -136,7 +137,7 @@ fun TextView.bind(model: TextViewCellModel.Raw) {
         right = model.badgeBackground?.padding?.right.orZero(),
         bottom = model.badgeBackground?.padding?.bottom.orZero(),
     )
-    model.text.applyTo(this)
+    bind(model.text)
 }
 
 fun TextView.bindSkeleton(model: TextViewCellModel.Skeleton) {

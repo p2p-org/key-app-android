@@ -3,11 +3,12 @@ package org.p2p.wallet.swap.ui.jupiter.main.mapper
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
+import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
-import org.p2p.wallet.swap.ui.jupiter.main.widget.bigSkeleton
 import java.math.BigDecimal
 
 class SwapWidgetMapper {
@@ -67,7 +68,11 @@ class SwapWidgetMapper {
             isStatic = true,
             widgetTitle = swapWidgetToTitle(),
             currencyName = tokenName(token),
-            amount = TextViewCellModel.Skeleton(bigSkeleton()),
+            amount = textCellSkeleton(
+                height = 20.toPx(),
+                width = 84.toPx(),
+                radius = 6f.toPx(),
+            ),
             balance = balance(token),
             fiatAmount = null,
             availableAmount = null,
