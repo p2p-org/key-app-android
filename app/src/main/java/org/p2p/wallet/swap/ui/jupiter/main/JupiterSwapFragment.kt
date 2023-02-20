@@ -3,7 +3,6 @@ package org.p2p.wallet.swap.ui.jupiter.main
 import androidx.core.view.isInvisible
 import android.os.Bundle
 import android.view.View
-import org.p2p.core.common.TextContainer
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
@@ -35,15 +34,6 @@ class JupiterSwapFragment :
         binding.imageViewSwapTokens.setOnClickListener {
             // todo PWN-7111
         }
-
-        binding.swapWidgetFrom.bind(
-            SwapWidgetModel.Content(
-                isStatic = false,
-                amount = TextViewCellModel.Raw(TextContainer("1000.0023")),
-                currencyName = TextViewCellModel.Raw(TextContainer("SOL")),
-                amountMaxDecimals = 6
-            )
-        )
     }
 
     override fun setFirstTokenWidgetState(state: SwapWidgetModel) {

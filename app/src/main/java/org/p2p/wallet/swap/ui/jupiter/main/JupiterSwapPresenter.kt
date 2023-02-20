@@ -36,7 +36,7 @@ class JupiterSwapPresenter(
     }
 
     override fun onSwapTokenClick() {
-        stateManager.onNewAction(SwapStateAction.SwitchTokens)
+        stateManager.onNewAction(SwapStateAction.ConfirmTokenChanged)
     }
 
     private fun handleFeatureState(state: SwapState) {
