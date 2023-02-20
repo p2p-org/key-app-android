@@ -63,8 +63,6 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun parseSwap(transaction: RpcHistoryTransaction.Swap) {
         view?.apply {
-            showTransactionId(transaction.signature)
-
             val usdTotal = transaction.getReceivedUsdAmount()
             val total = transaction.getFormattedAmountWithArrow()
             showAmount(total, usdTotal)
@@ -121,8 +119,6 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun parseBurnOrMint(transaction: RpcHistoryTransaction.BurnOrMint) {
         view?.apply {
-            showTransactionId(transaction.signature)
-
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
@@ -140,7 +136,9 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun parseCreateAccount(transaction: RpcHistoryTransaction.CreateAccount) {
         view?.apply {
-            showTransactionId(transaction.signature)
+            val usdTotal = transaction.getFormattedAmount()
+            val total = transaction.getFormattedTotal()
+            showAmount(total, usdTotal)
             showFee(transaction.getFormattedFee())
             showTransferView(transaction.iconUrl, R.drawable.ic_transaction_create)
             hideSendReceiveTitleAndValue()
@@ -153,7 +151,6 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun parseCloseAccount(transaction: RpcHistoryTransaction.CloseAccount) {
         view?.apply {
-            showTransactionId(transaction.signature)
             showAmount(resources.getString(R.string.transaction_details_no_balance_change), amountUsd = null)
             showTransferView(transaction.iconUrl, R.drawable.ic_transaction_closed)
             showStateTitleValue(
@@ -165,8 +162,6 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun parseStakeUnstake(transaction: RpcHistoryTransaction.StakeUnstake) {
         view?.apply {
-            showTransactionId(transaction.signature)
-
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
@@ -184,8 +179,9 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun parseUnknown(transaction: RpcHistoryTransaction.Unknown) {
         view?.apply {
-            showTransactionId(transaction.signature)
-            showAmount(amountToken = null, amountUsd = null)
+            val usdTotal = transaction.getFormattedAmount()
+            val total = transaction.getFormattedTotal()
+            showAmount(total, usdTotal)
             showTransferView(tokenIconUrl = null, placeholderIcon = R.drawable.ic_transaction_unknown)
             showStateTitleValue(
                 resources.getString(R.string.transaction_details_signature),

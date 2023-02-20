@@ -231,6 +231,7 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
+            tokenSymbol = info.token?.symbol.orEmpty(),
             amount = RpcHistoryAmount(total, totalInUsd)
         )
     }

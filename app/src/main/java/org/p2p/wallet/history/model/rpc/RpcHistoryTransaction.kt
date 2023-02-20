@@ -34,7 +34,7 @@ sealed class RpcHistoryTransaction(
         return signature
     }
 
-    protected fun getSymbol(isSend: Boolean): String = if (isSend) "-" else "+"
+    protected fun getSymbol(isNegativeOperation: Boolean): String = if (isNegativeOperation) "-" else "+"
 
     fun getBlockNumber(): String = blockNumber.let { "#$it" }
 
@@ -104,6 +104,14 @@ sealed class RpcHistoryTransaction(
         val tokenSymbol: String,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
         fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
+            "${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+        } else {
+            "${amount.total.formatToken()} $tokenSymbol"
+        }
+
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
     }
 
     @Parcelize
@@ -298,6 +306,15 @@ sealed class RpcHistoryTransaction(
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
+        val tokenSymbol: String,
         val amount: RpcHistoryAmount
-    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type)
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
+        fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
+            "${amount.total.scaleMedium().formatToken()} $tokenSymbol"
+        } else {
+            "${amount.total.formatToken()} $tokenSymbol"
+        }
+
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
+    }
 }
