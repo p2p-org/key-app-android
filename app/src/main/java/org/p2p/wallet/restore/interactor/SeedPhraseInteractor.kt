@@ -21,6 +21,7 @@ import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
+import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.prices.TokenId
 import org.p2p.wallet.user.repository.prices.TokenPricesRemoteRepository
@@ -99,11 +100,6 @@ class SeedPhraseInteractor(
     @Deprecated("Old onboarding flow, delete someday")
     suspend fun generateSecretKeys(): List<String> = authRepository.generatePhrase()
 
-    sealed interface SeedPhraseVerifyResult {
-        class VerifiedSeedPhrase(val seedPhraseWord: List<SeedPhraseWord>) : SeedPhraseVerifyResult
-        object VerifyByChecksumFailed : SeedPhraseVerifyResult
-    }
-
     fun verifySeedPhrase(secretKeys: List<SeedPhraseWord>): SeedPhraseVerifyResult {
         val validWords = English.INSTANCE.words
         val seedWords = secretKeys.map { it.text }
@@ -113,26 +109,26 @@ class SeedPhraseInteractor(
             key.copy(isValid = isValid)
         }
 
-        return if (validatedKeys.any { !it.isValid }) {
-            updateSeedPhraseAuthFlag(isAuthSuccess = false)
-            SeedPhraseVerifyResult.VerifiedSeedPhrase(validatedKeys)
-        } else {
-            try {
-                MnemonicCode.INSTANCE.check(seedWords)
-                updateSeedPhraseAuthFlag(isAuthSuccess = true)
+        val isInvalidSeedPhrase = validatedKeys.any { !it.isValid }
+        if (isInvalidSeedPhrase) {
+            setSeedPhraseAuthSuccess(isSuccess = false)
+            return SeedPhraseVerifyResult.Invalid(validatedKeys)
+        }
 
-                SeedPhraseVerifyResult.VerifiedSeedPhrase(validatedKeys)
-            } catch (checkError: MnemonicException) {
-                Timber.i(checkError)
-                updateSeedPhraseAuthFlag(isAuthSuccess = false)
-                SeedPhraseVerifyResult.VerifyByChecksumFailed
-            }
+        return try {
+            MnemonicCode.INSTANCE.check(seedWords)
+            setSeedPhraseAuthSuccess(isSuccess = true)
+            SeedPhraseVerifyResult.Verified(validatedKeys)
+        } catch (checkError: MnemonicException) {
+            Timber.i(checkError)
+            setSeedPhraseAuthSuccess(isSuccess = false)
+            SeedPhraseVerifyResult.VerificationFailed
         }
     }
 
-    private fun updateSeedPhraseAuthFlag(isAuthSuccess: Boolean) {
+    private fun setSeedPhraseAuthSuccess(isSuccess: Boolean) {
         sharedPreferences.edit {
-            putBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, isAuthSuccess)
+            putBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, isSuccess)
         }
     }
 }
