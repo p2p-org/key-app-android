@@ -16,7 +16,7 @@ class SwapStateManager(
 ) : CoroutineScope {
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)
-    private var activeActionHandle: Job? = null
+    private var activeActionHandleJob: Job? = null
     private var refreshJob: Job? = null
 
     fun observe(): StateFlow<SwapState> = state
@@ -26,8 +26,8 @@ class SwapStateManager(
         val actionHandler = handlers.firstOrNull { it.canHandle(currentState) } ?: return
 
         refreshJob?.cancel()
-        activeActionHandle?.cancel()
-        activeActionHandle = launch { actionHandler.handleAction(state, action) }
+        activeActionHandleJob?.cancel()
+        activeActionHandleJob = launch { actionHandler.handleAction(state, action) }
     }
 
     fun finishWork() {

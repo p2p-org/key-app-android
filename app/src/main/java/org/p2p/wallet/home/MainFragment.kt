@@ -80,8 +80,6 @@ class MainFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        deeplinksManager.mainTabsSwitcher = this
-
         with(binding) {
             bottomNavigation.setOnItemSelectedListener { tab ->
                 triggerTokensUpdateIfNeeded()
@@ -98,12 +96,14 @@ class MainFragment :
         if (tabCachedFragments.isEmpty) {
             createCachedTabFragments()
         }
-        deeplinksManager.handleSavedDeeplinkIntent()
 
         if (onCreateActions?.isNotEmpty() == true) {
             onCreateActions?.forEach(::doOnCreateAction)
             onCreateActions = arrayListOf()
         }
+
+        deeplinksManager.setTabsSwitcher(this)
+        deeplinksManager.executeHomePendingDeeplink()
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -166,7 +166,7 @@ class MainFragment :
     }
 
     override fun onDestroyView() {
-        deeplinksManager.mainTabsSwitcher = null
+        deeplinksManager.clearTabsSwitcher()
         super.onDestroyView()
     }
 

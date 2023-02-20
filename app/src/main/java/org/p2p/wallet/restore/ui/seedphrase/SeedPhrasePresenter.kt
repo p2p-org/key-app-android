@@ -6,9 +6,9 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import org.p2p.wallet.restore.interactor.SeedPhraseInteractor.SeedPhraseVerifyResult
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
+import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 
 private const val SEED_PHRASE_SIZE_SHORT = 12
 private const val SEED_PHRASE_SIZE_LONG = 24
@@ -56,22 +56,20 @@ class SeedPhrasePresenter(
     override fun verifySeedPhrase() {
         launch {
             when (val result = seedPhraseInteractor.verifySeedPhrase(currentSeedPhrase)) {
-                // TODO simplify code
-                is SeedPhraseVerifyResult.VerifiedSeedPhrase -> {
-                    currentSeedPhrase = result.seedPhraseWord
-                    if (currentSeedPhrase.all(SeedPhraseWord::isValid)) {
-                        seedPhraseProvider.setUserSeedPhrase(
-                            words = currentSeedPhrase.map { it.text },
-                            provider = SeedPhraseSource.MANUAL
-                        )
-                        view?.navigateToDerievableAccounts(currentSeedPhrase)
-                    } else {
-                        // warning: updateSeedPhrase causes keyboard to appear, so add a check
-                        view?.updateSeedPhraseView(currentSeedPhrase)
-                        view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_words_failed)
-                    }
+                is SeedPhraseVerifyResult.Verified -> {
+                    currentSeedPhrase = result.seedPhrase
+                    seedPhraseProvider.setUserSeedPhrase(
+                        words = result.getKeys(),
+                        provider = SeedPhraseSource.MANUAL
+                    )
                 }
-                is SeedPhraseVerifyResult.VerifyByChecksumFailed -> {
+                is SeedPhraseVerifyResult.Invalid -> {
+                    // warning: updateSeedPhrase causes keyboard to appear, so add a check
+                    currentSeedPhrase = result.seedPhraseWord
+                    view?.updateSeedPhraseView(currentSeedPhrase)
+                    view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_words_failed)
+                }
+                is SeedPhraseVerifyResult.VerificationFailed -> {
                     view?.showUiKitSnackBar(messageResId = R.string.seed_phrase_verify_checksum_failed)
                 }
             }

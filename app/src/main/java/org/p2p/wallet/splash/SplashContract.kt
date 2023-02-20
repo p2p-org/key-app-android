@@ -7,7 +7,6 @@ interface SplashContract {
     interface View : MvpView {
         fun navigateToOnboarding()
         fun navigateToSignIn()
-        fun navigateToMain()
     }
 
     interface Presenter : MvpPresenter<View>

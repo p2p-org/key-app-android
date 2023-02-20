@@ -6,6 +6,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import timber.log.Timber
 import kotlin.properties.Delegates
+import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 
 class ResetSeedPhrasePresenter(
     private val seedPhraseInteractor: SeedPhraseInteractor,
@@ -32,8 +33,8 @@ class ResetSeedPhrasePresenter(
 
     override fun verifySeedPhrase() {
         val verifyResult = seedPhraseInteractor.verifySeedPhrase(keys)
-        if (verifyResult is SeedPhraseInteractor.SeedPhraseVerifyResult.VerifiedSeedPhrase) {
-            val isValid = verifyResult.seedPhraseWord.none { !it.isValid }
+        if (verifyResult is SeedPhraseVerifyResult.Verified) {
+            val isValid = verifyResult.seedPhrase.none { !it.isValid }
             val resetResult = if (isValid) AuthAnalytics.ResetResult.SUCCESS else AuthAnalytics.ResetResult.ERROR
             authAnalytics.logAuthResetValidated(resetResult)
         } else {
