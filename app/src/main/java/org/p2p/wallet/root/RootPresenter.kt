@@ -5,7 +5,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import org.p2p.wallet.common.feature_toggles.toggles.remote.BooleanFeatureToggle
+import org.p2p.core.utils.addIf
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NewSwapEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -23,7 +23,7 @@ class RootPresenter(
     private val sellInteractor: SellInteractor,
     private val swapTokensRepository: JupiterSwapTokensRepository,
     private val swapRoutesRepository: JupiterSwapRoutesRepository,
-    private val newSwapEnabled: NewSwapEnabledFeatureToggle,
+    private val newSwapEnabledFeatureToggle: NewSwapEnabledFeatureToggle,
     private val sellEnabledFeatureToggle: SellEnabledFeatureToggle
 ) : BasePresenter<RootContract.View>(), RootContract.Presenter {
 
@@ -50,32 +50,17 @@ class RootPresenter(
         add(async { orcaInfoInteractor.load() })
         add(async { feeRelayerAccountInteractor.getRelayInfo() })
 
-        addIfToggleEnabled(
-            toggle = sellEnabledFeatureToggle,
-            request = sellInteractor::loadSellAvailability,
+        addIf(
+            predicate = sellEnabledFeatureToggle.isFeatureEnabled,
+            value = async { sellInteractor.loadSellAvailability() }
         )
-        addIfToggleEnabled(
-            toggle = newSwapEnabled,
-            request = swapTokensRepository::getTokens,
-        )
-        addIfToggleEnabled(
-            toggle = newSwapEnabled,
-            request = swapRoutesRepository::loadAllSwapRoutes,
+        addIf(
+            predicate = newSwapEnabledFeatureToggle.isFeatureEnabled,
+            async { swapRoutesRepository.loadAllSwapRoutes() },
+            async { swapTokensRepository.getTokens() }
         )
     }
-
-    private fun MutableList<Deferred<Any>>.addIfToggleEnabled(
-        toggle: BooleanFeatureToggle,
-        request: suspend () -> Any,
-    ) {
-        if (toggle.isFeatureEnabled) {
-            val asyncWrap = async {
-                request.invoke()
-                Timber.tag(TAG).i("Request for ${toggle.featureKey} added and completed")
-            }
-            add(asyncWrap)
-        } else {
-            Timber.tag(TAG).i("Request for ${toggle.featureKey} won't add")
+        .also {
+            Timber.tag(TAG).i("Total requests added: ${it.size}")
         }
-    }
 }
