@@ -7,6 +7,7 @@ import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionInfoResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTypeResponse
+import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -37,7 +38,8 @@ class RpcHistoryTransactionConverter(
         val info =
             gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Receive>(transaction.info.toString())
                 ?: error("Parsing error: cannot parse json object")
-
+        val total = info.amount.amount.toBigDecimalOrZero()
+        val totalInUsd = info.amount.usdAmount.toBigDecimalOrZero()
         return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
@@ -46,9 +48,8 @@ class RpcHistoryTransactionConverter(
             type = transaction.type.toDomain(),
             senderAddress = info.counterParty.address,
             iconUrl = info.token.logoUrl,
-            totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
+            amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
-            total = info.amount.amount.toBigDecimalOrZero(),
             destination = tokenKeyProvider.publicKey,
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger()
         )
@@ -57,6 +58,8 @@ class RpcHistoryTransactionConverter(
     private fun parseSend(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Send>(transaction.info.toString())
             ?: error("Parsing error: cannot parse json object")
+        val total = info.amount.amount.toBigDecimalOrZero()
+        val totalInUsd = info.amount.usdAmount.toBigDecimalOrZero()
 
         return RpcHistoryTransaction.Transfer(
             signature = transaction.signature,
@@ -66,9 +69,8 @@ class RpcHistoryTransactionConverter(
             type = transaction.type.toDomain(),
             senderAddress = tokenKeyProvider.publicKey,
             iconUrl = info.token.logoUrl,
-            totalInUsd = info.amount.usdAmount.toBigDecimalOrZero(),
+            amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
-            total = info.amount.amount.toBigDecimalOrZero(),
             destination = info.counterParty.address,
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger()
         )
@@ -77,6 +79,10 @@ class RpcHistoryTransactionConverter(
     private fun parseSwap(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Swap>(transaction.info.toString())
             ?: error("Parsing error: cannot parse json object")
+        val sourceTotal = info.from.amount.amount.toBigDecimalOrZero()
+        val sourceTotalInUsd = info.from.amount.usdAmount.toBigDecimalOrZero()
+        val destinationTotal = info.from.amount.amount.toBigDecimalOrZero()
+        val destinationTotalInUsd = info.from.amount.amount.toBigDecimalOrZero()
 
         return RpcHistoryTransaction.Swap(
             signature = transaction.signature,
@@ -85,11 +91,9 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             sourceAddress = info.from.token.mint,
             destinationAddress = info.to.token.mint,
+            receiveAmount = RpcHistoryAmount(sourceTotal, sourceTotalInUsd),
+            sentAmount = RpcHistoryAmount(destinationTotal, destinationTotalInUsd),
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger(),
-            amountA = info.from.amount.amount.toBigDecimalOrZero(),
-            amountB = info.to.amount.amount.toBigDecimalOrZero(),
-            amountSentInUsd = info.from.amount.usdAmount.toBigDecimalOrZero(),
-            amountReceivedInUsd = info.to.amount.usdAmount.toBigDecimalOrZero(),
             sourceSymbol = info.from.token.symbol.orEmpty(),
             sourceIconUrl = info.from.token.logoUrl,
             destinationSymbol = info.to.token.symbol.orEmpty(),
@@ -100,6 +104,9 @@ class RpcHistoryTransactionConverter(
 
     private fun parseStake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Stake>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+        val total = info.amount.amount.toBigDecimalOrZero()
+        val totalInUsd = info.amount.usdAmount.toBigDecimalOrZero()
 
         return RpcHistoryTransaction.StakeUnstake(
             signature = transaction.signature,
@@ -108,28 +115,30 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             senderAddress = tokenKeyProvider.publicKey,
-            iconUrl = info?.token?.logoUrl,
-            totalInUsd = info?.amount?.usdAmount.toBigDecimalOrZero(),
-            symbol = info?.token?.symbol.orEmpty(),
-            total = info?.amount?.amount.toBigDecimalOrZero(),
-            destination = info?.token?.mint.orEmpty(),
+            iconUrl = info.token.logoUrl,
+            amount = RpcHistoryAmount(total, totalInUsd),
+            symbol = info.token.symbol.orEmpty(),
+            destination = info.token?.mint.orEmpty(),
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger()
         )
     }
 
     private fun parseUnstake(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Unstake>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+        val total = info.amount.amount.toBigDecimalOrZero()
+        val totalInUsd = info.amount.usdAmount.toBigDecimalOrZero()
+
         return RpcHistoryTransaction.StakeUnstake(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            senderAddress = info?.token?.mint.orEmpty(),
-            iconUrl = info?.token?.logoUrl,
-            totalInUsd = info?.amount?.usdAmount.toBigDecimalOrZero(),
-            symbol = info?.token?.symbol.orEmpty(),
-            total = info?.amount?.amount.toBigDecimalOrZero(),
+            amount = RpcHistoryAmount(total, totalInUsd),
+            senderAddress = info.token.mint,
+            iconUrl = info.token.logoUrl,
+            symbol = info.token.symbol.orEmpty(),
             destination = tokenKeyProvider.publicKey,
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger()
         )
@@ -138,6 +147,8 @@ class RpcHistoryTransactionConverter(
     private fun parseCreate(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.CreateAccount>(transaction.info.toString())
             ?: error("Parsing error: cannot parse json object")
+        val total = info.amount.amount.toBigDecimalOrZero()
+        val totalInUsd = info.amount.usdAmount.toBigDecimalOrZero()
 
         return RpcHistoryTransaction.CreateAccount(
             date = transaction.date.toZonedDateTime(),
@@ -147,7 +158,8 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             fee = transaction.fees.sumOf { it.amount?.amount.toBigDecimalOrZero() }.toBigInteger(),
             tokenSymbol = info.token.symbol.orEmpty(),
-            type = transaction.type.toDomain()
+            type = transaction.type.toDomain(),
+            amount = RpcHistoryAmount(total, totalInUsd)
         )
     }
 
@@ -206,12 +218,18 @@ class RpcHistoryTransactionConverter(
     }
 
     private fun parseUnknown(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Unknown>(transaction.info.toString())
+            ?: error("Parsing error: cannot parse json object")
+
+        val total = info.amount?.amount.toBigDecimalOrZero()
+        val totalInUsd = info.amount?.usdAmount.toBigDecimalOrZero()
         return RpcHistoryTransaction.Unknown(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            type = transaction.type.toDomain()
+            type = transaction.type.toDomain(),
+            amount = RpcHistoryAmount(total, totalInUsd)
         )
     }
 }

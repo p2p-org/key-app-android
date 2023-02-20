@@ -99,6 +99,7 @@ sealed class RpcHistoryTransaction(
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
+        val amount: RpcHistoryAmount,
         val iconUrl: String?,
         val fee: BigInteger,
         val tokenSymbol: String,
@@ -116,10 +117,8 @@ sealed class RpcHistoryTransaction(
         val sourceAddress: String,
         val destinationAddress: String,
         val fee: BigInteger,
-        val amountA: BigDecimal,
-        val amountB: BigDecimal,
-        val amountSentInUsd: BigDecimal?,
-        val amountReceivedInUsd: BigDecimal?,
+        val receiveAmount: RpcHistoryAmount,
+        val sentAmount: RpcHistoryAmount,
         val sourceSymbol: String,
         val sourceIconUrl: String?,
         val destinationSymbol: String,
@@ -128,15 +127,15 @@ sealed class RpcHistoryTransaction(
 
         fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
 
-        fun getReceivedUsdAmount(): String? = amountReceivedInUsd?.asUsd()
+        fun getReceivedUsdAmount(): String? = receiveAmount.totalInUsd?.asUsd()
 
-        fun getSentUsdAmount(): String? = amountSentInUsd?.asUsd()
+        fun getSentUsdAmount(): String? = sentAmount.totalInUsd?.asUsd()
 
         fun getFormattedAmount() =
-            "${amountA.formatToken()} $sourceSymbol to ${amountB.formatToken()} $destinationSymbol"
+            "${receiveAmount.total.formatToken()} $sourceSymbol to ${sentAmount.total.formatToken()} $destinationSymbol"
 
         fun getFormattedAmountWithArrow() =
-            "${amountA.formatToken()} $sourceSymbol → ${amountB.formatToken()} $destinationSymbol"
+            "${receiveAmount.total.formatToken()} $sourceSymbol → ${sentAmount.total.formatToken()} $destinationSymbol"
 
         @StringRes
         fun getTypeName(): Int = when {
@@ -156,9 +155,9 @@ sealed class RpcHistoryTransaction(
 
         fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
 
-        fun getSourceTotal(): String = "${amountA.formatToken()} $sourceSymbol"
+        fun getSourceTotal(): String = "${receiveAmount.total.formatToken()} $sourceSymbol"
 
-        fun getDestinationTotal(): String = "${amountB.formatToken()} $destinationSymbol"
+        fun getDestinationTotal(): String = "${sentAmount.total.formatToken()} $destinationSymbol"
     }
 
     @Parcelize
@@ -170,9 +169,8 @@ sealed class RpcHistoryTransaction(
         override val type: RpcHistoryTransactionType,
         val senderAddress: String,
         val iconUrl: String?,
-        val totalInUsd: BigDecimal?,
+        val amount: RpcHistoryAmount,
         val symbol: String,
-        val total: BigDecimal,
         val destination: String,
         val fee: BigInteger,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
@@ -194,7 +192,7 @@ sealed class RpcHistoryTransaction(
 
         fun getAddress(): String = if (isSend) "To ${destination.cutStart()}" else "From ${senderAddress.cutStart()}"
 
-        fun getValue(): String? = totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isSend))
+        fun getValue(): String? = amount.totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isSend))
 
         fun getTotal(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
 
@@ -226,12 +224,12 @@ sealed class RpcHistoryTransaction(
         }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
-            "${total.scaleMedium().formatToken()} $symbol"
+            "${amount.total.scaleMedium().formatToken()} $symbol"
         } else {
-            "${total.formatToken()} $symbol"
+            "${amount.total.formatToken()} $symbol"
         }
 
-        fun getFormattedAmount(): String? = totalInUsd?.asUsd()
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
     }
 
     @Parcelize
@@ -243,9 +241,8 @@ sealed class RpcHistoryTransaction(
         override val type: RpcHistoryTransactionType,
         val senderAddress: String,
         val iconUrl: String?,
-        val totalInUsd: BigDecimal?,
+        val amount: RpcHistoryAmount,
         val symbol: String,
-        val total: BigDecimal,
         val destination: String,
         val fee: BigInteger,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
@@ -261,7 +258,7 @@ sealed class RpcHistoryTransaction(
 
         fun getAddress(): String = if (isStake) destination.cutStart() else senderAddress.cutStart()
 
-        fun getValue(): String? = totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isStake))
+        fun getValue(): String? = amount.totalInUsd?.scaleShortOrFirstNotZero()?.asUsdTransaction(getSymbol(isStake))
 
         fun getTotal(): String = "${getSymbol(isStake)}${getFormattedTotal()}"
 
@@ -287,12 +284,12 @@ sealed class RpcHistoryTransaction(
         }
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
-            "${total.scaleMedium().formatToken()} $symbol"
+            "${amount.total.scaleMedium().formatToken()} $symbol"
         } else {
-            "${total.formatToken()} $symbol"
+            "${amount.total.formatToken()} $symbol"
         }
 
-        fun getFormattedAmount(): String? = totalInUsd?.asUsd()
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
     }
 
     @Parcelize
@@ -301,6 +298,7 @@ sealed class RpcHistoryTransaction(
         override val date: ZonedDateTime,
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
-        override val type: RpcHistoryTransactionType
+        override val type: RpcHistoryTransactionType,
+        val amount: RpcHistoryAmount
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type)
 }
