@@ -57,9 +57,9 @@ class SeedPhrasePresenter(
         launch {
             when (val result = seedPhraseInteractor.verifySeedPhrase(currentSeedPhrase)) {
                 is SeedPhraseVerifyResult.Verified -> {
-                    currentSeedPhrase = result.seedPhraseWord
+                    currentSeedPhrase = result.seedPhrase
                     seedPhraseProvider.setUserSeedPhrase(
-                        words = currentSeedPhrase.map { it.text },
+                        words = result.getKeys(),
                         provider = SeedPhraseSource.MANUAL
                     )
                 }

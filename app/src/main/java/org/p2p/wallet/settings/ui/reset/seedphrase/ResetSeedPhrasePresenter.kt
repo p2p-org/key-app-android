@@ -34,7 +34,7 @@ class ResetSeedPhrasePresenter(
     override fun verifySeedPhrase() {
         val verifyResult = seedPhraseInteractor.verifySeedPhrase(keys)
         if (verifyResult is SeedPhraseVerifyResult.Verified) {
-            val isValid = verifyResult.seedPhraseWord.none { !it.isValid }
+            val isValid = verifyResult.seedPhrase.none { !it.isValid }
             val resetResult = if (isValid) AuthAnalytics.ResetResult.SUCCESS else AuthAnalytics.ResetResult.ERROR
             authAnalytics.logAuthResetValidated(resetResult)
         } else {
