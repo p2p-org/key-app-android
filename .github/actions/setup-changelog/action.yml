@@ -10,8 +10,10 @@ runs:
         # Get the latest commit hash was saved in last_commit_hash.txt
         last_commit_hash=$(cat last_commit_hash.txt)
         
+        github_sha=${{ github.sha }}
+        
         # Get the current head commit hash
-        current_commit_hash="$(git rev-parse HEAD)"
+        current_commit_hash="$(git rev-parse $github_sha)"
         
         # Run the gradle task with the fromCommit and toCommit properties set
         ./gradlew gitChangelogTask -PfromCommit=$last_commit_hash -PtoCommit=$current_commit_hash
