@@ -12,15 +12,18 @@ runs:
         
         github_sha=${{ github.sha }}
         
-        last_branch=$GITHUB_REF_NAME
-        last_commit="$(git rev-parse $last_branch)"
+        echo "Branch: $GITHUB_HEAD_REF"
+        echo "Commit: $(git log -1 --pretty=%B)"
+        echo "SHA: $(git rev-parse HEAD)"
         
-        echo "data ${last_branch} ${last_commit} ${github_sha}"
-        
-        # Get the current head commit hash
-        current_commit_hash="$(git rev-parse $last_branch)"
-        
-        echo "data ${current_commit_hash}"
+        # Determine the current head commit hash
+        if [ -n "$GITHUB_HEAD_REF" ]; then
+          # This is a pull request, use GITHUB_HEAD_REF
+          current_commit_hash="$(git rev-parse "$GITHUB_HEAD_REF")"
+        else
+          # This is not a pull request, use GITHUB_BASE_REF
+          current_commit_hash="$(git rev-parse "$GITHUB_BASE_REF")"
+        fi
         
         # Run the gradle task with the fromCommit and toCommit properties set
         ./gradlew gitChangelogTask -PfromCommit=$last_commit_hash -PtoCommit=$current_commit_hash
