@@ -9,8 +9,7 @@ class SwapStateTokenAZeroHandler(
     override fun canHandle(oldState: SwapState): Boolean = oldState is SwapState.TokenAZero
 
     override suspend fun handleAction(state: MutableStateFlow<SwapState>, action: SwapStateAction) {
-        val oldState = state.value
-        oldState as SwapState.TokenAZero
+        val oldState = state.value as SwapState.TokenAZero
 
         when (action) {
             is SwapStateAction.SlippageChanged -> {
