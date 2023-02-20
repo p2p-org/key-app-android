@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: develop
       - name: "Initialize project keys"
         uses: ./.github/actions/setup-project
         with:
@@ -41,6 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: develop
       - name: "Initializing firebase configs"
         uses: ./.github/actions/setup-google-services
         with:
@@ -76,6 +80,7 @@ jobs:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
         with:
+          ref: develop
           fetch-depth: 0
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: "Initializing firebase configs"
@@ -101,11 +106,10 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+      - name: "Generate changelog"
+        uses: ./.github/actions/setup-changelog
       - name: "Send start deploy message to slack"
-        run: |
-          cd bash_scripts
-          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
+        run: bash bash_scripts/slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Generate a unique version build"
         uses: ./.github/actions/setup-version-build
       - name: "Build feature APK"
@@ -123,17 +127,11 @@ jobs:
           build-type: "feature"
           artifact-type: "apk"
       - name: "Upload changelog, and Jira ticket to slack channel"
-        run: |
-          cd bash_scripts
-          value=`cat timestamp.txt`
-          bash slack_develop_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
-
+        run: bash bash_scripts/slack_upload_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} CHANGELOG.txt
       - name: "Send finish deploy message to slack"
         run: |
-          cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash bash_scripts/slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
       - name: "Commit and Push changes"
         uses: ./.github/actions/setup-commit
         with:
@@ -145,8 +143,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: develop
       - name: "Find a Jira ticket and move it to READY FOR TESTING"
         uses: ./.github/actions/setup-jira-rft
         with:
           jira-base-url: ${{ vars.JIRA_BASE_URL }}
           jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
+  save-last-commit-hash:
+    name: "Save last commit hash for future changelogs"
+    needs:
+      - android-build-artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: develop
+      - name: "Get last commit hash and save into last_commit_hash.txt"
+        run: printf "$(git log -n 1 --pretty=%H)" > last_commit_hash.txt

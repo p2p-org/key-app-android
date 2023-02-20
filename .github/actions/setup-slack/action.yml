@@ -24,6 +24,5 @@ runs:
         curl \
         -F token="${{ inputs.bot-token }}" \
         -F channels="${{ inputs.channel-id }}" \
-        -F initial_comment="Hey! Build type: ${{ inputs.build-type }} artifact type: ${{ inputs.artifact-type }}. Success :tada:" \
         -F "file=@$(find app/build/outputs/${{ inputs.artifact-type }}/${{ inputs.build-type }} -name 'key-app*')" \
         https://slack.com/api/files.upload

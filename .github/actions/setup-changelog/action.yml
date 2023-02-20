@@ -1,0 +1,26 @@
+name: "Generate changelog"
+description: "Getting commits from last commit hash to current one"
+
+runs:
+  using: composite
+  steps:
+    - name: "Find last commit hash and current one"
+      shell: bash
+      run: |
+        # Get the latest commit hash was saved in last_commit_hash.txt
+        last_commit_hash=$(cat last_commit_hash.txt)
+        
+        # Fetch the latest changes from the remote repository
+        git fetch origin
+        
+        # Determine the current head commit hash
+        if [ -n "$GITHUB_HEAD_REF" ]; then
+          # This is a pull request, use GITHUB_HEAD_REF
+          current_commit_hash="$(git log -n 1 --pretty=%H origin/$GITHUB_HEAD_REF)"
+        else
+          # This is not a pull request, use GITHUB_BASE_REF
+          current_commit_hash="$(git log -n 1 --pretty=%H origin/$GITHUB_BASE_REF)"
+        fi
+        
+        # Run the gradle task with the fromCommit and toCommit properties set
+        ./gradlew gitChangelogTask -PfromCommit=$last_commit_hash -PtoCommit=$current_commit_hash

@@ -24,5 +24,5 @@ class DepositTickerStorage(
                 currentBalance.toString()
             )
         )
-    ).max()
+    ).maxOrNull() ?: BigDecimal.ZERO
 }
