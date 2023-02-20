@@ -19,7 +19,6 @@ import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
-import org.p2p.wallet.history.HistoryStrategyModule
 import org.p2p.wallet.home.HomeModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
@@ -88,7 +87,6 @@ object AppModule {
                 DebugSettingsModule.create(),
                 SwapModule.create(),
                 SendModule.create(),
-                HistoryStrategyModule.create(),
                 TransactionManagerModule.create(),
                 SolendModule.create(),
                 SellModule.create()
