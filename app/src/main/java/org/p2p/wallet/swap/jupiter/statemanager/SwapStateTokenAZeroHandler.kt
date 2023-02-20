@@ -2,11 +2,13 @@ package org.p2p.wallet.swap.jupiter.statemanager
 
 import kotlinx.coroutines.flow.MutableStateFlow
 
+private const val DEFAULT_ACTIVE_ROUTE_ORDINAL = 1
+
 class SwapStateTokenAZeroHandler(
     private val swapRoutesRefresher: SwapStateRoutesRefresher
 ) : SwapStateHandler {
 
-    override fun canHandle(oldState: SwapState): Boolean = oldState is SwapState.TokenAZero
+    override fun canHandle(state: SwapState): Boolean = state is SwapState.TokenAZero
 
     override suspend fun handleAction(state: MutableStateFlow<SwapState>, action: SwapStateAction) {
         val oldState = state.value
@@ -23,7 +25,7 @@ class SwapStateTokenAZeroHandler(
                     tokenB = oldState.tokenB,
                     amountTokenA = action.newAmount,
                     slippage = oldState.slippage,
-                    activeRouteOrdinal = 1
+                    activeRouteOrdinal = DEFAULT_ACTIVE_ROUTE_ORDINAL
                 )
             }
             is SwapStateAction.TokenAChanged -> {

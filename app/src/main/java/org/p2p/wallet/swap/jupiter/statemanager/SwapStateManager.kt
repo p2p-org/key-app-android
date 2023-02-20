@@ -10,7 +10,7 @@ class SwapStateManager(
     private val scope: SwapCoroutineScope
 ) {
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)
-    private var activeActionHandle: Job? = null
+    private var activeActionHandleJob: Job? = null
     private var refreshJob: Job? = null
 
     fun observe(): StateFlow<SwapState> = state
@@ -19,6 +19,6 @@ class SwapStateManager(
         val currentState = state.value
         val actionHandler = handlers.firstOrNull { it.canHandle(currentState) } ?: return
 
-        activeActionHandle = scope.launch { actionHandler.handleAction(state, action) }
+        activeActionHandleJob = scope.launch { actionHandler.handleAction(state, action) }
     }
 }

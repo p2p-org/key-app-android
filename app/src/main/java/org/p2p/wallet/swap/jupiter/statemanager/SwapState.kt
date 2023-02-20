@@ -7,6 +7,7 @@ import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
 
 sealed interface SwapState {
     object InitialLoading : SwapState
+
     data class TokenAZero(
         val tokenA: Token.Active,
         val tokenB: Token,
