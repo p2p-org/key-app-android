@@ -6,7 +6,6 @@ import androidx.annotation.StringRes
 import android.content.res.Resources
 import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
-import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -45,12 +44,11 @@ sealed class RpcHistoryTransaction(
         override val date: ZonedDateTime,
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
+        val amount: RpcHistoryAmount,
         val destination: String,
         val senderAddress: String,
         val iconUrl: String?,
         override val type: RpcHistoryTransactionType,
-        val totalInUsd: BigDecimal?,
-        val total: BigDecimal,
         val fee: BigInteger
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
@@ -66,16 +64,17 @@ sealed class RpcHistoryTransaction(
 
         fun getValue(): String = "${getSymbol(isBurn)} ${getFormattedAmount()} ${Constants.USD_SYMBOL}"
 
-        fun getTotal(): String = "${getSymbol(isBurn)} ${total.scaleMedium().formatToken()} ${Constants.REN_BTC_SYMBOL}"
+        fun getTotal(): String =
+            "${getSymbol(isBurn)} ${amount.total.scaleMedium().formatToken()} ${Constants.REN_BTC_SYMBOL}"
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String =
             if (scaleMedium) {
-                "${total.scaleMedium().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
+                "${amount.total.scaleMedium().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
             } else {
-                "${total.scaleLong().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
+                "${amount.total.scaleLong().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
             }
 
-        fun getFormattedAmount(): String? = totalInUsd?.asUsd()
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
 
         fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
     }

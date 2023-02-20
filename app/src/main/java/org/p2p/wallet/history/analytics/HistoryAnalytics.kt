@@ -26,8 +26,8 @@ class HistoryAnalytics(
             lastScreenName = analyticsInteractor.getPreviousScreenName(),
             tokenAName = transaction.sourceSymbol,
             tokenBName = transaction.destinationSymbol,
-            swapSum = transaction.amountA,
-            swapUSD = transaction.amountSentInUsd.orZero(),
+            swapSum = transaction.receiveAmount.total,
+            swapUSD = transaction.sentAmount.totalInUsd.orZero(),
             feesSource = SwapAnalytics.FeeSource.UNKNOWN
         )
     }
@@ -47,8 +47,8 @@ class HistoryAnalytics(
                 lastScreenName = analyticsInteractor.getPreviousScreenName(),
                 tokenName = transaction.symbol,
                 sendNetwork = sendNetwork,
-                sendSum = transaction.total,
-                sendUSD = transaction.totalInUsd.orZero()
+                sendSum = transaction.amount.total,
+                sendUSD = transaction.amount.totalInUsd.orZero()
             )
         } else {
             val receiveNetwork = if (isRenBtcSessionActive) {
@@ -57,8 +57,8 @@ class HistoryAnalytics(
                 ReceiveAnalytics.ReceiveNetwork.SOLANA
             }
             receiveAnalytics.logReceiveShowingDetails(
-                receiveSum = transaction.total,
-                receiveUSD = transaction.totalInUsd.orZero(),
+                receiveSum = transaction.amount.total,
+                receiveUSD = transaction.amount.totalInUsd.orZero(),
                 tokenName = transaction.symbol,
                 receiveNetwork = receiveNetwork
             )

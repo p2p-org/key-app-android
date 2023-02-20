@@ -24,6 +24,7 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -446,8 +447,7 @@ class NewSendPresenter(
             blockNumber = -1,
             type = RpcHistoryTransactionType.SEND,
             senderAddress = tokenKeyProvider.publicKey,
-            totalInUsd = calculationMode.getCurrentAmountUsd(),
-            total = calculationMode.getCurrentAmount(),
+            amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
             destination = recipientAddress.addressState.address,
             fee = BigInteger.ZERO,
             status = HistoryTransactionStatus.PENDING,
