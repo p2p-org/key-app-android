@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.jupiter.statemanager
 
 import java.math.BigDecimal
 import org.p2p.core.token.Token
+import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 
 sealed class SwapStateAction {
     data class ActiveRouteChanged(val ordinalRouteNumber: Int) : SwapStateAction()
@@ -15,14 +16,14 @@ sealed class SwapStateAction {
 
     object RefreshRoutes : SwapStateAction()
 
-    data class TokenAChanged(val newTokenA: Token.Active) : SwapStateAction()
+    data class TokenAChanged(val newTokenA: SwapTokenModel) : SwapStateAction()
 
-    data class TokenBChanged(val newTokenB: Token) : SwapStateAction()
+    data class TokenBChanged(val newTokenB: SwapTokenModel) : SwapStateAction()
 
     data class TokenAAmountChanged(
-        val tokenA: Token.Active,
-        val tokenB: Token,
-        val slippage: Double,
         val newAmount: BigDecimal
     ) : SwapStateAction()
+
+    object SwitchTokens : SwapStateAction()
+    object SwapSuccess : SwapStateAction()
 }

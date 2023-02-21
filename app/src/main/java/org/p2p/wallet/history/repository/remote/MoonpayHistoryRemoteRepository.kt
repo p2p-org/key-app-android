@@ -19,7 +19,7 @@ class MoonpayHistoryRemoteRepository(
 
     private var historyPagingState = HistoryPagingState.ACTIVE
 
-    override fun getPagingState(): HistoryPagingState {
+    override fun getPagingState(mintAddress: String?): HistoryPagingState {
         return historyPagingState
     }
 
