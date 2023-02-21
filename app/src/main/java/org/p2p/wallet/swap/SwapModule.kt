@@ -174,7 +174,6 @@ object SwapModule : InjectionModule {
                 handlers = get(),
             )
             JupiterSwapPresenter(
-                dispatchers = get(),
                 widgetMapper = get(),
                 buttonMapper = get(),
                 stateManager = stateManager

@@ -4,7 +4,6 @@ import java.math.BigDecimal
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
-import java.math.BigDecimal
 
 sealed interface SwapState {
     object InitialLoading : SwapState
