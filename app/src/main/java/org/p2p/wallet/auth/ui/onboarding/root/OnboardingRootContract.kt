@@ -14,7 +14,6 @@ interface OnboardingRootContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun logNotificationPermissionGranted(isGranted: Boolean)
         fun validDeeplink(deeplink: Uri)
     }
 }

@@ -59,10 +59,6 @@ class OnboardingRootPresenter(
         return tokenKeyProvider.keyPair.isNotEmpty() && !authInteractor.isAuthorized()
     }
 
-    override fun logNotificationPermissionGranted(isGranted: Boolean) {
-        onboardingAnalytics.setUserGrantedNotificationPermissions(isGranted = isGranted)
-    }
-
     override fun validDeeplink(deeplink: Uri) {
         val seedPhrase = deeplink.getQueryParameter(DeeplinkQuery.value) ?: return
         if (seedPhrase.isBlank()) return
