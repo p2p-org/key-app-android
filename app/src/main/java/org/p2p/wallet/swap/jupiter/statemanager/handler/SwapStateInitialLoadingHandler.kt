@@ -1,8 +1,6 @@
 package org.p2p.wallet.swap.jupiter.statemanager.handler
 
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_SLIPPAGE
@@ -11,8 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
 class SwapStateInitialLoadingHandler(
-    private val jupiterTokensRepository: JupiterSwapTokensRepository,
-    private val homeLocalRepository: HomeLocalRepository,
     private val dispatchers: CoroutineDispatchers,
     private val initialTokenSelector: InitialTokenSelector,
 ) : SwapStateHandler {

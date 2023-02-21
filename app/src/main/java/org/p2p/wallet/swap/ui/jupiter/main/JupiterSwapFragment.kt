@@ -4,7 +4,9 @@ import androidx.core.view.isInvisible
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.bind
+import org.p2p.core.token.Token
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
@@ -17,15 +19,34 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
+import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
+import org.p2p.wallet.utils.args
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
+import org.p2p.wallet.utils.withArgs
+import java.util.*
+
+private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
 class JupiterSwapFragment :
     BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
     JupiterSwapContract.View {
 
+    companion object {
+        fun create(token: Token.Active? = null): JupiterSwapFragment =
+            JupiterSwapFragment()
+                .withArgs(
+                    EXTRA_TOKEN to token,
+                )
+    }
+
+    private val stateManagerHolderKey: String = UUID.randomUUID().toString()
+    private val token: Token.Active? by args(EXTRA_TOKEN)
     private val binding: FragmentJupiterSwapBinding by viewBinding()
-    override val presenter: JupiterSwapContract.Presenter by inject()
+    override val presenter: JupiterSwapContract.Presenter by inject {
+        parametersOf(token, stateManagerHolderKey)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,5 +113,14 @@ class JupiterSwapFragment :
         ).applyBackground(binding.linearLayoutAlert)
         binding.imageViewAlert.imageTintList = context.getColorStateList(R.color.icons_rose)
         binding.textViewAlert.setTextColor(context.getColorStateList(R.color.text_rose))
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SwapModule.swapStateManagerHolder.remove(stateManagerHolderKey)
     }
 }

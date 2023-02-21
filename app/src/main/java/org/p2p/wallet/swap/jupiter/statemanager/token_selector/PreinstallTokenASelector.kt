@@ -2,7 +2,6 @@ package org.p2p.wallet.swap.jupiter.statemanager.token_selector
 
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
@@ -11,7 +10,6 @@ import kotlinx.coroutines.withContext
 
 class PreinstallTokenASelector(
     private val jupiterTokensRepository: JupiterSwapTokensRepository,
-    private val homeLocalRepository: HomeLocalRepository,
     private val dispatchers: CoroutineDispatchers,
     private val preinstallTokenA: Token.Active,
 ) : InitialTokenSelector {
