@@ -48,8 +48,6 @@ task gitChangelogTask(type: Exec) {
     def from = findProperty('fromCommit')
     def to = findProperty('toCommit')
 
-    print("from: $from, to: $to")
-
     executable "sh"
     args "-c", "git log $from..$to --no-merges --pretty=format:\"%h - %s - %an\" > CHANGELOG.txt"
 
