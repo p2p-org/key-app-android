@@ -1,6 +1,7 @@
 package org.p2p.wallet.android
 
 import Dependencies
+import Versions
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
@@ -46,9 +47,12 @@ android {
     }
 
     testOptions {
+        unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         unitTests.all {
+            it.useJUnitPlatform()
             it.maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
             it.maxHeapSize = "512m"
             it.testLogging {
