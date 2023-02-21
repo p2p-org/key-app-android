@@ -1,43 +1,45 @@
 package org.p2p.uikit.utils.skeleton
 
-import androidx.annotation.ColorRes
 import androidx.annotation.Px
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.PaintDrawable
 import android.view.Gravity
 import android.view.View
 import org.p2p.uikit.R
+import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.getColorStateList
 
 data class SkeletonCellModel(
     @Px val height: Int,
     @Px val width: Int,
     @Px val radius: Float = 0f,
     val gravity: Int = Gravity.CENTER,
-    @ColorRes val tint: Int = R.color.bg_rain,
 )
 
 fun View.bindSkeleton(model: SkeletonCellModel) {
-    val roundedCorners = floatArrayOf(
-        model.radius,
-        model.radius,
-        model.radius,
-        model.radius,
-        model.radius,
-        model.radius,
-        model.radius,
-        model.radius
-    )
 
-    val roundRectShape = RoundRectShape(roundedCorners, null, null)
-    val skeletonDrawable = ShapeDrawable(roundRectShape)
-    skeletonDrawable.intrinsicWidth = model.width
-    skeletonDrawable.intrinsicHeight = model.height
+    fun setupSkeleton(drawable: PaintDrawable): Drawable = drawable.apply {
+        setCornerRadius(model.radius)
+        intrinsicWidth = model.width
+        intrinsicHeight = model.height
+        setTintList(context.getColorStateList(android.R.color.transparent))
+    }
 
-    // shadow
-    background = skeletonDrawable
-    backgroundTintList = context.getColorStateList(android.R.color.transparent)
+    val shimmer = Shimmer.ColorHighlightBuilder()
+        .setHighlightAlpha(0f)
+        .setHighlightColor(getColor(R.color.bg_snow))
+        .setBaseAlpha(1f)
+        .setBaseColor(getColor(R.color.bg_rain))
+        .setAutoStart(true)
+        .build()
+    val skeletonDrawable = SkeletonDrawable()
+    skeletonDrawable.setShimmer(shimmer)
 
-    foreground = skeletonDrawable.mutate().constantState?.newDrawable()
-    foregroundTintList = context.getColorStateList(model.tint)
-    model.gravity.let { foregroundGravity = it }
+    val shadowBackground = setupSkeleton(PaintDrawable())
+    val skeleton = setupSkeleton(skeletonDrawable)
+
+    background = shadowBackground
+    backgroundTintList = getColorStateList(android.R.color.transparent)
+    foreground = skeleton
+    foregroundGravity = model.gravity
 }
