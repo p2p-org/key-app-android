@@ -1,6 +1,15 @@
 package org.p2p.wallet.newsend.ui
 
 import android.content.res.Resources
+import org.threeten.bp.ZonedDateTime
+import timber.log.Timber
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.util.Date
+import java.util.UUID
+import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
@@ -15,8 +24,9 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.TransferType
-import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -29,24 +39,16 @@ import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendSolanaFee
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
-import org.p2p.wallet.transaction.model.TransactionStatus
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
-import org.threeten.bp.ZonedDateTime
-import timber.log.Timber
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.util.Date
-import java.util.UUID
-import kotlin.properties.Delegates.observable
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -392,7 +394,7 @@ class NewSendPresenter(
                 val transactionState = TransactionState.SendSuccess(buildTransaction(result), token.tokenSymbol)
                 transactionManager.emitTransactionState(internalTransactionId, transactionState)
             } catch (e: Throwable) {
-                Timber.i(e)
+                Timber.e(e)
                 val message = e.getErrorMessage { res -> resources.getString(res) }
                 transactionManager.emitTransactionState(internalTransactionId, TransactionState.Error(message))
             }
@@ -439,18 +441,18 @@ class NewSendPresenter(
     }
 
     private fun buildTransaction(transactionId: String): HistoryTransaction =
-        HistoryTransaction.Transfer(
+        RpcHistoryTransaction.Transfer(
             signature = transactionId,
             date = ZonedDateTime.now(),
-            blockNumber = null,
-            type = TransferType.SEND,
+            blockNumber = -1,
+            type = RpcHistoryTransactionType.SEND,
             senderAddress = tokenKeyProvider.publicKey,
-            tokenData = TokenConverter.toTokenData(token!!),
-            totalInUsd = calculationMode.getCurrentAmountUsd(),
-            total = calculationMode.getCurrentAmount(),
+            amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
             destination = recipientAddress.addressState.address,
-            fee = BigInteger.ZERO,
-            status = TransactionStatus.PENDING
+            fee = BigInteger.ZERO.toString(),
+            status = HistoryTransactionStatus.PENDING,
+            iconUrl = emptyString(),
+            symbol = emptyString()
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {

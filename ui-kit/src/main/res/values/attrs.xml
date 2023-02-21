@@ -18,15 +18,6 @@
         <attr name="bottomValue" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="UiKitBadgeView">
-        <attr name="hasStroke" format="boolean" />
-        <attr name="android:textColor" />
-        <attr name="shape" format="enum">
-            <enum name="oval" value="0" />
-            <enum name="rectangle" value="1" />
-        </attr>
-    </declare-styleable>
-
     <declare-styleable name="UiKitRoundedImageView">
         <attr name="cornerRadius" />
     </declare-styleable>

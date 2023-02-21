@@ -1,0 +1,14 @@
+<resources>
+    <string name="swap_main_you_pay">You pay</string>
+    <string name="swap_main_you_receive">You receive</string>
+    <string name="swap_main_balance_amount">Balance %s</string>
+    <string name="swap_main_available_amount">All %s</string>
+    <string name="swap_main_fiat_value">≈%s USD</string>
+    <string name="swap_main_button_loading">Counting…</string>
+    <string name="swap_main_button_enter_amount">Enter amount</string>
+    <string name="swap_main_button_ready_to_swap">Swap %s → %s</string>
+    <string name="swap_main_fee_inform">Key App doesn\’t make any profit from swap 💚</string>
+    <string name="swap_main_confirm_button">Swap %s → %s</string>
+    <string name="swap_main_alert">The price is higher due to the large amount of cash lost for the pair of tokens. Split your transaction for few small swaps.</string>
+
+</resources>

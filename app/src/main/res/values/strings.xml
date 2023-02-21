@@ -43,7 +43,10 @@
     <string name="common_sell_all">Sell all</string>
     <string name="common_sorry">Sorry</string>
     <string name="common_less_than_minimum">Less than 0.01</string>
+    <string name="common_less_than_minimum_with_dollar">Less than $0.01</string>
     <string name="not_available">N/A</string>
+    <string name="common_burn">Burn</string>
+    <string name="common_mint">Mint</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -250,8 +253,6 @@
     <string name="main_swap_min_receive">Receive at least:</string>
     <string name="main_enter_the_amount">Enter the amount</string>
     <string name="main_enter_incorrect_amount">Incorrect amount</string>
-    <string name="main_burn_renbtc">Burn renBTC</string>
-    <string name="main_mint_renbtc">Mint renBTC</string>
     <string name="main_scan_qr">Scan QR</string>
     <string name="main_key_app_username_sol_address">Username / address</string>
     <string name="main_reserve_username">Reserve your username now</string>

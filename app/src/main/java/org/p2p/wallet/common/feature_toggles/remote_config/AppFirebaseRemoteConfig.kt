@@ -2,12 +2,17 @@ package org.p2p.wallet.common.feature_toggles.remote_config
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
-import org.p2p.wallet.BuildConfig
 import timber.log.Timber
+import org.p2p.wallet.BuildConfig
 
 private const val NO_VALUE = ""
 
 class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
+
+    private class RemoteConfigError(
+        override val message: String,
+        override val cause: Throwable
+    ) : Throwable()
 
     private var isFetchFailed: Boolean = false
 
@@ -33,7 +38,7 @@ class AppFirebaseRemoteConfig : RemoteConfigValuesProvider {
             }
             .addOnFailureListener { error ->
                 isFetchFailed = true
-                Timber.e(IllegalStateException("Remote config is not fetched and activated", error))
+                Timber.e(RemoteConfigError("Remote config is not fetched and activated", error))
 
                 onConfigLoaded.invoke(emptyMap())
             }

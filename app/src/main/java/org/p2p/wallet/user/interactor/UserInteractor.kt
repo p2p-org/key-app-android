@@ -1,13 +1,15 @@
 package org.p2p.wallet.user.interactor
 
-import android.content.SharedPreferences
 import androidx.core.content.edit
+import android.content.SharedPreferences
+import timber.log.Timber
+import java.util.Date
 import kotlinx.coroutines.flow.Flow
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.wallet.home.ui.main.TOKENS_VALID_FOR_BUY
+import org.p2p.wallet.home.ui.main.TOKEN_SYMBOLS_VALID_FOR_BUY
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
@@ -16,7 +18,6 @@ import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserRepository
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.emptyString
-import java.util.Date
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
 
@@ -39,16 +40,22 @@ class UserInteractor(
     fun getUserTokensFlow(): Flow<List<Token.Active>> =
         mainLocalRepository.getTokensFlow()
 
-    suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKENS_VALID_FOR_BUY): Token? =
+    suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY): Token? =
         getTokensForBuy(availableTokensSymbols).firstOrNull()
 
     suspend fun getTokensForBuy(
-        availableTokensSymbols: List<String> = TOKENS_VALID_FOR_BUY
+        availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY
     ): List<Token> {
         val userTokens = getUserTokens()
         val allTokens = availableTokensSymbols.mapNotNull { tokenSymbol ->
             val userToken = userTokens.find { it.tokenSymbol == tokenSymbol }
             userToken ?: findTokenDataBySymbol(tokenSymbol)
+        }
+
+        if (allTokens.isEmpty()) {
+            Timber.e(
+                IllegalStateException("No tokens to buy! All tokens: ${userTokens.map(Token.Active::tokenSymbol)}")
+            )
         }
 
         return allTokens

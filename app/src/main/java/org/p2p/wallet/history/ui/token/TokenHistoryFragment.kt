@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 import org.p2p.core.token.Token
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -14,8 +13,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NewBuyFeatureToggle
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentTokenHistoryBinding
-import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.history.model.TransactionDetailsLaunchState
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetFragment
 import org.p2p.wallet.history.ui.historylist.HistoryListViewContract
 import org.p2p.wallet.moonpay.ui.BuySolanaFragment
@@ -24,7 +21,6 @@ import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.newsend.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.token.ReceiveTokenFragment
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.swap.ui.orca.OrcaSwapFragment
 import org.p2p.wallet.utils.args
@@ -142,19 +138,14 @@ class TokenHistoryFragment :
         binding.viewActionButtons.showActionButtons(actionButtons)
     }
 
-    override fun showDetailsScreen(transaction: HistoryTransaction) {
-        when (transaction) {
-            is HistoryTransaction.Swap,
-            is HistoryTransaction.Transfer,
-            is HistoryTransaction.BurnOrMint -> {
-                val state = TransactionDetailsLaunchState.History(transaction)
-                HistoryTransactionDetailsBottomSheetFragment.show(parentFragmentManager, state)
-            }
-            else -> Timber.e("Unsupported transactionType: $transaction")
-        }
+    override fun showDetailsScreen(transactionId: String) {
+        HistoryTransactionDetailsBottomSheetFragment.show(
+            fragmentManager = parentFragmentManager,
+            transactionId = transactionId
+        )
     }
 
-    override fun openSellTransactionDetails(sellTransaction: SellTransactionViewDetails) {
-        SellTransactionDetailsBottomSheet.show(childFragmentManager, sellTransaction)
+    override fun openSellTransactionDetails(transactionId: String) {
+        SellTransactionDetailsBottomSheet.show(childFragmentManager, transactionId)
     }
 }

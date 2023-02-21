@@ -4,9 +4,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.common.ui.recycler.PagingState
-import org.p2p.wallet.history.model.HistoryItem
-import org.p2p.wallet.history.model.HistoryTransaction
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
+import org.p2p.wallet.history.ui.model.HistoryItem
 
 interface HistoryListViewContract {
     interface View : MvpView {
@@ -15,8 +13,9 @@ interface HistoryListViewContract {
         fun scrollToTop()
         fun showHistory(history: List<HistoryItem>)
 
-        fun onTransactionClicked(transaction: HistoryTransaction)
-        fun onSellTransactionClicked(sellTransactionDetails: SellTransactionViewDetails)
+        fun onTransactionClicked(transactionId: String)
+
+        fun onSellTransactionClicked(transactionId: String)
     }
 
     interface Presenter : MvpPresenter<View>, DefaultLifecycleObserver {

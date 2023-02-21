@@ -11,6 +11,7 @@ import org.p2p.uikit.utils.dip
  * app:cornerRadius - corner radius
  * doesn't work in design mode
  */
+@Deprecated(message = "use UiKitIconWrapper")
 class UiKitRoundedImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

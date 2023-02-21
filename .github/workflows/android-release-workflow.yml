@@ -12,13 +12,6 @@ jobs:
     steps:
       - name: "Checkout to the current commit hash"
         uses: actions/checkout@v3
-      - name: "Send start deploy message to slack"
-        run: |
-          git fetch
-          cd bash_scripts
-          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
-
       - name: "Create release signing configs properties"
         uses: ./.github/actions/setup-signing-configs
         with:
@@ -63,15 +56,3 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           build-type: "release"
           artifact-type: "bundle"
-      - name: "Upload git changelog and Jira ticket to Slack channel"
-        run: |
-          cd bash_scripts
-          value=`cat timestamp.txt`
-          bash slack_shortlog_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} "main"
-          cd ..
-
-      - name: "Send finish deploy message to Slack"
-        run: |
-          cd bash_scripts
-          value=`cat timestamp.txt`
-          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value

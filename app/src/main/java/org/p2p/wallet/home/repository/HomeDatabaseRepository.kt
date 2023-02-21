@@ -49,12 +49,4 @@ class HomeDatabaseRepository(
     override suspend fun clear() {
         tokenDao.clearAll()
     }
-
-    override suspend fun getUserSolanaToken(): Token.Active? {
-        val userTokens = getUserTokens()
-        val initialToken = userTokens.find { it.isUSDC && !it.isZero }
-            ?: userTokens.minBy { it.totalInLamports }
-
-        return if (initialToken.isSOL) initialToken else userTokens.find { it.isSOL }
-    }
 }

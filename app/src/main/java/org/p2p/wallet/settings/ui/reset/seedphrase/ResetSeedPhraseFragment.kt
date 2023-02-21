@@ -1,5 +1,8 @@
 package org.p2p.wallet.settings.ui.reset.seedphrase
 
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.fragment.app.setFragmentResult
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -7,17 +10,14 @@ import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
-import androidx.core.os.bundleOf
-import androidx.core.view.isVisible
-import androidx.fragment.app.setFragmentResult
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import org.koin.android.ext.android.inject
+import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.uikit.organisms.seedphrase.adapter.SeedPhraseAdapter
 import org.p2p.uikit.utils.attachAdapter
-import org.p2p.core.utils.hideKeyboard
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
@@ -34,6 +34,7 @@ import org.p2p.wallet.utils.withArgs
 private const val EXTRA_REQUEST_KEY = "EXTRA_REQUEST_KEY"
 private const val EXTRA_RESULT_KEY = "EXTRA_RESULT_KEY"
 
+@Deprecated("Old onboarding flow, delete someday")
 class ResetSeedPhraseFragment :
     BaseMvpFragment<ResetSeedPhraseContract.View, ResetSeedPhraseContract.Presenter>(
         R.layout.fragment_reset_seed_phrase

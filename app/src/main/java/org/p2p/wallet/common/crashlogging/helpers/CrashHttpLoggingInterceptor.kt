@@ -4,8 +4,8 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONObject
-import org.p2p.wallet.utils.bodyAsString
 import timber.log.Timber
+import org.p2p.wallet.utils.bodyAsString
 
 private const val TAG = "CrashHttpLoggingInterceptor"
 
@@ -18,12 +18,19 @@ class CrashHttpLoggingInterceptor : Interceptor {
 
         val requestLog = createRequestLog(request)
         Timber.tag(TAG).i(requestLog)
-        Timber.tag(TAG).d(request.bodyAsString())
 
         val response = chain.proceed(request)
+
         val responseLog = createResponseLog(response)
         Timber.tag(TAG).i(responseLog)
-        Timber.tag(TAG).d(response.peekBody(Long.MAX_VALUE).string())
+
+        val responseBody = response.peekBody(Long.MAX_VALUE).string()
+        val responseBodySize = responseBody.length
+        if (responseBodySize < 10_000) {
+            Timber.tag(TAG).d(responseBody)
+        } else {
+            Timber.i("Skipping logging response body, it's too big: $responseBodySize")
+        }
 
         return response
     }

@@ -5,8 +5,10 @@ import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
-import org.p2p.wallet.history.model.HistoryItem
+import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.ui.model.HistoryItem
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
@@ -16,11 +18,28 @@ import org.p2p.wallet.utils.getStatusIcon
 
 class HistoryItemMapper(private val resources: Resources) {
 
-    fun fromDomainBlockchain(
-        transactions: List<HistoryTransaction>
-    ): List<HistoryItem> = transactions.flatMapIndexed { i, transaction ->
+    fun toAdapterItem(transactions: List<HistoryTransaction>): List<HistoryItem> {
+        val rpcHistoryItems = mutableListOf<HistoryItem>()
+        val sellHistoryItems = mutableListOf<HistoryItem>()
+        transactions.forEachIndexed { _, item ->
+            when (item) {
+                is RpcHistoryTransaction -> {
+                    parse(item, rpcHistoryItems)
+                }
+                is SellTransaction -> {
+                    // Sell transactions with cancel reason, should not appear in history
+                    if (!item.isCancelled()) {
+                        parse(item, sellHistoryItems)
+                    }
+                }
+            }
+        }
+        return sellHistoryItems + rpcHistoryItems
+    }
+
+    fun parse(transaction: RpcHistoryTransaction, cache: MutableList<HistoryItem>) {
         val isCurrentAndPreviousTransactionOnSameDay =
-            i > 0 && transactions[i - 1].date.isSameDayAs(transaction.date)
+            cache.isNotEmpty() && cache.last().date.isSameDayAs(transaction.date)
         var tokenIconUrl: String? = null
         var sourceTokenIconUrl: String? = null
         var destinationTokenIconUrl: String? = null
@@ -33,18 +52,18 @@ class HistoryItemMapper(private val resources: Resources) {
 
         val iconRes: Int
         when (transaction) {
-            is HistoryTransaction.Swap -> with(transaction) {
+            is RpcHistoryTransaction.Swap -> with(transaction) {
                 sourceTokenIconUrl = sourceIconUrl
                 destinationTokenIconUrl = destinationIconUrl
 
-                iconRes = R.drawable.ic_swap_simple
+                iconRes = R.drawable.ic_swap_arrows
                 startTitle = "$sourceSymbol to $destinationSymbol"
                 startSubtitle = resources.getString(getTypeName())
                 endTopValue = "+${getDestinationTotal()}"
                 endTopValueTextColor = getTextColor()
-                endBottomValue = "-${getSourceTotal()}"
+                endBottomValue = getSourceTotal()
             }
-            is HistoryTransaction.Transfer -> with(transaction) {
+            is RpcHistoryTransaction.Transfer -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
                 iconRes = getIcon()
 
@@ -54,8 +73,18 @@ class HistoryItemMapper(private val resources: Resources) {
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotal()
             }
-            is HistoryTransaction.BurnOrMint -> with(transaction) {
+            is RpcHistoryTransaction.StakeUnstake -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
+                iconRes = getIcon()
+
+                startTitle = resources.getString(getTypeName())
+                startSubtitle = resources.getString(R.string.transaction_history_vote_format, getAddress())
+                endTopValue = getValue()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
+            }
+            is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
+                tokenIconUrl = iconUrl
                 iconRes = getIcon()
 
                 startTitle = resources.getString(getTitle())
@@ -63,29 +92,32 @@ class HistoryItemMapper(private val resources: Resources) {
                 endTopValue = getTotal()
                 endBottomValue = getValue()
             }
-            is HistoryTransaction.CreateAccount -> with(transaction) {
-                tokenIconUrl = getTokenIconUrl()
+            is RpcHistoryTransaction.CreateAccount -> with(transaction) {
+                tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_create
 
                 startTitle = resources.getString(R.string.transaction_history_create)
-                startSubtitle = signature.cutMiddle()
+                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
             }
-            is HistoryTransaction.CloseAccount -> with(transaction) {
-                tokenIconUrl = getTokenIconUrl()
+            is RpcHistoryTransaction.CloseAccount -> with(transaction) {
+                tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_closed
 
                 startTitle = resources.getString(R.string.transaction_history_closed)
-                startSubtitle = signature.cutMiddle()
+                startSubtitle = resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
             }
-            is HistoryTransaction.Unknown -> {
+            is RpcHistoryTransaction.Unknown -> {
                 iconRes = R.drawable.ic_transaction_unknown
 
                 startTitle = resources.getString(R.string.transaction_history_unknown)
-                startSubtitle = transaction.signature.cutMiddle()
+                startSubtitle = resources.getString(
+                    R.string.transaction_history_signature_format,
+                    transaction.signature.cutStart()
+                )
             }
         }
         val historyItem = HistoryItem.TransactionItem(
-            signature = transaction.signature,
+            transactionId = transaction.getHistoryTransactionId(),
             sourceIconUrl = sourceTokenIconUrl,
             destinationIconUrl = destinationTokenIconUrl,
             tokenIconUrl = tokenIconUrl,
@@ -96,29 +128,33 @@ class HistoryItemMapper(private val resources: Resources) {
             endTopValueTextColor = endTopValueTextColor,
             endBottomValue = endBottomValue,
             statusIcon = transaction.status.getStatusIcon(),
+            date = transaction.date
         )
         if (isCurrentAndPreviousTransactionOnSameDay) {
-            listOf(historyItem)
+            cache.add(historyItem)
         } else {
-            listOf(
-                HistoryItem.DateItem(transaction.date),
-                historyItem
+            cache.addAll(
+                listOf(
+                    HistoryItem.DateItem(transaction.date),
+                    historyItem
+                )
             )
         }
     }
 
-    fun fromDomainSell(
-        transactions: List<SellTransaction>
-    ): List<HistoryItem.MoonpayTransactionItem> = transactions.map {
-        val receiverAddress = if (it is SellTransaction.WaitingForDepositTransaction) {
-            it.moonpayDepositWalletAddress.base58Value
+    fun parse(
+        transaction: SellTransaction,
+        cache: MutableList<HistoryItem>
+    ) {
+        val receiverAddress = if (transaction is SellTransaction.WaitingForDepositTransaction) {
+            transaction.moonpayDepositWalletAddress.base58Value
         } else {
             resources.getString(R.string.sell_details_receiver_moonpay_bank)
         }
 
-        val formattedSolAmount = it.amounts.tokenAmount.formatToken()
-        val formattedFiatAmount = it.amounts.amountInFiat.formatFiat()
-        val fiatUiName = it.selectedFiat.uiSymbol
+        val formattedSolAmount = transaction.amounts.tokenAmount.formatToken()
+        val formattedFiatAmount = transaction.amounts.amountInFiat.formatFiat()
+        val fiatUiName = transaction.selectedFiat.uiSymbol
 
         val iconRes: Int
         val backgroundRes: Int
@@ -130,7 +166,7 @@ class HistoryItemMapper(private val resources: Resources) {
             R.string.transaction_history_moonpay_amount_sol,
             formattedSolAmount,
         )
-        when (it.status) {
+        when (transaction.status) {
             SellTransactionStatus.WAITING_FOR_DEPOSIT -> {
                 titleStatus = resources.getString(R.string.transaction_history_moonpay_waiting_for_deposit_title)
                 subtitleReceiver = resources.getString(
@@ -169,19 +205,21 @@ class HistoryItemMapper(private val resources: Resources) {
                 )
             }
         }
-
-        HistoryItem.MoonpayTransactionItem(
-            transactionId = it.transactionId,
-            statusIconRes = iconRes,
-            statusBackgroundRes = backgroundRes,
-            statusIconColor = iconColor,
-            titleStatus = titleStatus,
-            subtitleReceiver = subtitleReceiver,
-            endTopValue = endTopValue,
+        cache.add(
+            HistoryItem.MoonpayTransactionItem(
+                transactionId = transaction.transactionId,
+                statusIconRes = iconRes,
+                statusBackgroundRes = backgroundRes,
+                statusIconColor = iconColor,
+                titleStatus = titleStatus,
+                subtitleReceiver = subtitleReceiver,
+                endTopValue = endTopValue,
+                date = transaction.updatedAt.toZonedDateTime()
+            )
         )
     }
 
-    fun sellTransactionToDetails(sellTransaction: SellTransaction): SellTransactionViewDetails {
+    fun toSellDetailsModel(sellTransaction: SellTransaction): SellTransactionViewDetails {
         val receiverAddress = if (sellTransaction is SellTransaction.WaitingForDepositTransaction) {
             sellTransaction.moonpayDepositWalletAddress.base58Value
         } else {

@@ -10,7 +10,18 @@ class JupiterSwapRoutesRemoteRepository(
     private val api: SwapJupiterApi,
     private val dispatchers: CoroutineDispatchers,
     private val mapper: JupiterSwapRoutesMapper,
+    private val localRepository: JupiterSwapRoutesLocalRepository
 ) : JupiterSwapRoutesRepository {
+
+    override suspend fun loadAllSwapRoutes() {
+        val response = api.getSwapRoutesMap()
+        localRepository.setCachedSwapRoutes(
+            JupiterAvailableSwapRoutesMap(
+                tokenMints = response.mintKeys,
+                allRoutes = response.routeMap.mapKeys { it.key.toInt() }
+            )
+        )
+    }
 
     override suspend fun getSwapRoutes(
         jupiterSwap: JupiterSwap,
@@ -24,4 +35,7 @@ class JupiterSwapRoutesRemoteRepository(
         )
         mapper.fromNetwork(response)
     }
+
+    override suspend fun getSwappableTokenMints(sourceTokenMint: Base58String): List<Base58String> =
+        localRepository.getSwappableTokenMints(sourceTokenMint)
 }

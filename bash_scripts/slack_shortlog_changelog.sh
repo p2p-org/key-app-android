@@ -1,5 +1,4 @@
 #!/bin/bash
-git fetch
 
 printf "$(git shortlog origin/$3..origin/$GITHUB_HEAD_REF)" > changelog.txt
 
