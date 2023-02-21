@@ -7,6 +7,11 @@ import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.common.bind
 import org.p2p.core.token.Token
+import org.p2p.core.utils.insets.appleBottomInsets
+import org.p2p.core.utils.insets.appleTopInsets
+import org.p2p.core.utils.insets.consume
+import org.p2p.core.utils.insets.doOnApplyWindowInsets
+import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
@@ -50,11 +55,22 @@ class JupiterSwapFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
+            swapWidgetFrom.onAmountChanged = { presenter.onTokenAmountChange(it) }
             imageViewSwapTokens.background = shapeDrawable(shapeCircle())
             imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
             imageViewSwapTokens.rippleForeground(shapeCircle())
             imageViewSwapTokens.setOnClickListener {
                 presenter.switchTokens()
+            }
+        }
+    }
+
+    override fun applyWindowInsets(rootView: View) {
+        rootView.doOnApplyWindowInsets { _, insets, _ ->
+            insets.systemAndIme().consume {
+                binding.toolbar.appleTopInsets(this)
+                binding.scrollView.appleBottomInsets(this)
+                binding.frameLayoutSliderSend.appleBottomInsets(this)
             }
         }
     }

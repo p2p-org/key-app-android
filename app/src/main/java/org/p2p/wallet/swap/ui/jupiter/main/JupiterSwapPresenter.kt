@@ -30,7 +30,6 @@ class JupiterSwapPresenter(
     }
 
     override fun onTokenAmountChange(amount: String) {
-        stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(amount.toBigDecimalOrZero()))
         val newAmount = amount.toBigDecimalOrZero()
         val action = if (newAmount.isZero()) {
             SwapStateAction.EmptyAmountTokenA

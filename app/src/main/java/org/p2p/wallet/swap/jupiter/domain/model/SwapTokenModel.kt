@@ -10,6 +10,7 @@ sealed interface SwapTokenModel {
     val mintAddress: Base58String
     val decimals: Int
     val tokenName: String
+    val tokenSymbol: String
     val iconUrl: String?
 
     data class UserToken(
@@ -18,6 +19,7 @@ sealed interface SwapTokenModel {
         override val decimals: Int = details.decimals
         override val mintAddress: Base58String = details.mintAddress.toBase58Instance()
         override val tokenName: String = details.tokenName
+        override val tokenSymbol: String = details.tokenSymbol
         override val iconUrl: String? = details.iconUrl
     }
 
@@ -28,5 +30,6 @@ sealed interface SwapTokenModel {
         override val mintAddress: Base58String = details.tokenMint
         override val tokenName: String = details.tokenName
         override val iconUrl: String? = details.logoUri
+        override val tokenSymbol: String = details.tokenSymbol
     }
 }

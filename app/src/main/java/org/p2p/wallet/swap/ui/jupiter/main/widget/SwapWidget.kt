@@ -8,6 +8,7 @@ import android.content.res.ColorStateList
 import android.text.InputType
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.widget.EditText
 import android.widget.TextView
 import org.p2p.core.common.TextContainer
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
@@ -42,9 +43,7 @@ class SwapWidget @JvmOverloads constructor(
             initInputType = editTextAmount.inputType
             editTextAmount.doAfterTextChanged { resizeInput(it) }
             viewEditTextClickable.setOnClickListener {
-                if (this@SwapWidget.isEnabled)
-                    editTextAmount.requestFocusFromTouch()
-                editTextAmount.focusAndShowKeyboard(true)
+                if (isEnabled) editTextAmount.focusAndShowKeyboard(true)
             }
         }
     }
@@ -83,9 +82,9 @@ class SwapWidget @JvmOverloads constructor(
             is SwapWidgetModel.Content -> model.isStatic
             is SwapWidgetModel.Loading -> model.isStatic
         }
-        val isNotEnabled = isStatic || model is SwapWidgetModel.Loading
-        editTextAmount.inputType = if (isNotEnabled) InputType.TYPE_NULL else initInputType
-        editTextAmount.isFocusable = !isNotEnabled
+        val readOnly = isStatic || model is SwapWidgetModel.Loading
+        val inputType = if (readOnly) InputType.TYPE_NULL else initInputType
+        editTextAmount.setReadOnly(readOnly, inputType)
         val amountMaxDecimals = when (model) {
             is SwapWidgetModel.Content -> model.amountMaxDecimals ?: DEFAULT_DECIMAL
             is SwapWidgetModel.Loading -> DEFAULT_DECIMAL
@@ -93,7 +92,14 @@ class SwapWidget @JvmOverloads constructor(
         updateFormatter(amountMaxDecimals)
         internalOnAmountChanged = null
         editTextAmount.bindOrGone(amount ?: TextViewCellModel.Raw(text = TextContainer("")))
+        editTextAmount.setSelection(editTextAmount.text.length)
         internalOnAmountChanged = { onAmountChanged(it) }
+    }
+
+    private fun EditText.setReadOnly(readOnly: Boolean, inputType: Int = InputType.TYPE_NULL) {
+        isFocusable = !readOnly
+        isFocusableInTouchMode = !readOnly
+        this.inputType = inputType
     }
 
     private fun updateFormatter(amountMaxDecimals: Int) {

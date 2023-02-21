@@ -97,7 +97,7 @@ class SwapWidgetMapper {
 
     private fun tokenName(token: SwapTokenModel): TextViewCellModel.Raw =
         TextViewCellModel.Raw(
-            TextContainer(token.tokenName)
+            TextContainer(token.tokenSymbol)
         )
 
     private fun balance(token: SwapTokenModel): TextViewCellModel.Raw? =
@@ -119,7 +119,7 @@ class SwapWidgetMapper {
 
     private fun availableAmountText(token: SwapTokenModel.UserToken): TextViewCellModel.Raw =
         TextViewCellModel.Raw(
-            TextContainer(R.string.swap_main_available_amount, tokenAmount(token))
+            TextContainer(tokenAmount(token))
         )
 
     private fun tokenAmount(token: SwapTokenModel.UserToken): String =
