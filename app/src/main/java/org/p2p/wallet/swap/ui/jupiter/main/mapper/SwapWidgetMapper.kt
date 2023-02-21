@@ -97,12 +97,7 @@ class SwapWidgetMapper {
 
     private fun tokenName(token: SwapTokenModel): TextViewCellModel.Raw =
         TextViewCellModel.Raw(
-            TextContainer(
-                when (token) {
-                    is SwapTokenModel.JupiterToken -> token.token.tokenName
-                    is SwapTokenModel.UserToken -> token.token.tokenName
-                }
-            )
+            TextContainer(token.tokenName)
         )
 
     private fun balance(token: SwapTokenModel): TextViewCellModel.Raw? =

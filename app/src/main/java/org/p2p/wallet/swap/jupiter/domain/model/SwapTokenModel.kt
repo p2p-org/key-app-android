@@ -9,12 +9,14 @@ sealed interface SwapTokenModel {
 
     val mintAddress: Base58String
     val decimals: Int
+    val tokenName: String
 
     data class UserToken(
         val token: Token.Active,
     ) : SwapTokenModel {
         override val decimals: Int = token.decimals
         override val mintAddress: Base58String = token.mintAddress.toBase58Instance()
+        override val tokenName: String = token.tokenName
     }
 
     data class JupiterToken(
@@ -23,5 +25,6 @@ sealed interface SwapTokenModel {
     ) : SwapTokenModel {
         override val decimals: Int = token.decimals
         override val mintAddress: Base58String = token.tokenMint
+        override val tokenName: String = token.tokenName
     }
 }

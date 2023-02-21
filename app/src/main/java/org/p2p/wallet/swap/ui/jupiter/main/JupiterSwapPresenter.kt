@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
+import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
@@ -28,7 +29,7 @@ class JupiterSwapPresenter(
     }
 
     override fun onTokenAmountChange(amount: String) {
-        stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(amount.toBigDecimal()))
+        stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(amount.toBigDecimalOrZero()))
     }
 
     override fun onSwapTokenClick() {
