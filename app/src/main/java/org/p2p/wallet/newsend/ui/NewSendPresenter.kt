@@ -4,7 +4,6 @@ import android.content.res.Resources
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.util.Date
 import java.util.UUID
 import kotlin.properties.Delegates.observable
@@ -449,7 +448,7 @@ class NewSendPresenter(
             senderAddress = tokenKeyProvider.publicKey,
             amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
             destination = recipientAddress.addressState.address,
-            fee = BigInteger.ZERO.toString(),
+            fees = null,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = emptyString(),
             symbol = emptyString()

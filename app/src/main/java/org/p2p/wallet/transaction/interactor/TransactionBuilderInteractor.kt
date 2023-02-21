@@ -1,7 +1,6 @@
 package org.p2p.wallet.transaction.interactor
 
 import org.threeten.bp.ZonedDateTime
-import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toUsd
@@ -29,7 +28,7 @@ class TransactionBuilderInteractor {
             blockNumber = -1,
             sourceAddress = source.publicKey,
             destinationAddress = destinationAddress,
-            fee = BigInteger.ZERO.toString(),
+            fees = null,
             sentAmount = RpcHistoryAmount(amountA, amountA.toUsd(source)),
             receiveAmount = RpcHistoryAmount(amountB, amountB.toUsd(destination.rate)),
             sourceSymbol = source.tokenSymbol,

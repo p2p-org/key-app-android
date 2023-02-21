@@ -2,6 +2,7 @@ package org.p2p.wallet.history.ui.detailsbottomsheet
 
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import androidx.core.text.buildSpannedString
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
@@ -14,13 +15,21 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.Locale
 import org.p2p.core.glide.GlideManager
+import org.p2p.core.utils.DEFAULT_DECIMAL
+import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.lessThenMinValue
+import org.p2p.core.utils.orZero
+import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.toDateString
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHistoryTransactionDetailsBinding
+import org.p2p.wallet.history.model.rpc.RpcFee
 import org.p2p.wallet.utils.Base58String
 import org.p2p.wallet.utils.CUT_7_SYMBOLS
+import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
@@ -70,6 +79,8 @@ class HistoryTransactionDetailsBottomSheetFragment :
     private val timeFormat by unsafeLazy { DateTimeFormatter.ofPattern(TIME_FORMAT, Locale.US) }
 
     private val titleStateFormat: String by unsafeLazy { getString(R.string.transaction_details_title) }
+
+    private val lessThenMinString by unsafeLazy { getString(R.string.common_less_than_minimum_with_dollar) }
 
     override fun onStart() {
         super.onStart()
@@ -218,16 +229,44 @@ class HistoryTransactionDetailsBottomSheetFragment :
         textViewAmountUsd.withTextOrGone(amountUsd)
     }
 
-    override fun showFee(fees: String?) = with(binding) {
-        if (fees.isNullOrEmpty()) {
-            textViewFeeValue.text = getString(R.string.transaction_transaction_fee_free_value)
-        } else {
-            textViewFeeValue.text = fees
-        }
+    override fun showFee(fees: List<RpcFee>?) = with(binding) {
+        textViewFeeValue.text = fees.formatFees(lessThenMinString)
     }
 
     override fun showLoading(isLoading: Boolean) {
         binding.layoutContent.isGone = isLoading
         binding.viewProgress.isVisible = isLoading
+    }
+
+    private fun List<RpcFee>?.formatFees(lessThenMinString: String): CharSequence {
+        return this?.let { fees ->
+            buildSpannedString {
+                fees.mapIndexed { index, feeAmount ->
+                    val feeInFiat = feeAmount.totalInUsd.orZero()
+                    val formattedUsdAmount = if (feeInFiat.lessThenMinValue()) lessThenMinString
+                    else "$${feeInFiat.formatFiat()}"
+
+                    val highlightedText = "($formattedUsdAmount)"
+                    val commonText = buildString {
+                        append(feeAmount.totalInTokens.formatToken(feeAmount.tokensDecimals ?: DEFAULT_DECIMAL))
+                        appendWhitespace()
+                        append(feeAmount.tokenSymbol.orEmpty())
+                        appendWhitespace()
+                        append(highlightedText)
+                    }
+
+                    append(
+                        SpanUtils.highlightText(
+                            commonText,
+                            highlightedText,
+                            getColor(R.color.backgroundDisabled)
+                        )
+                    )
+                    if (index != fees.size - 1) {
+                        append("\n")
+                    }
+                }
+            }
+        } ?: getString(R.string.transaction_transaction_fee_free_value)
     }
 }

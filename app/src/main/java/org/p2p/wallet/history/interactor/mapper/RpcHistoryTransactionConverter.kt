@@ -1,35 +1,26 @@
 package org.p2p.wallet.history.interactor.mapper
 
-import android.content.res.Resources
 import com.google.gson.Gson
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.DEFAULT_DECIMAL
-import org.p2p.core.utils.formatFiat
-import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.lessThenMinValue
 import org.p2p.core.utils.toBigDecimalOrZero
-import org.p2p.wallet.R
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryFeeResponse
 import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionInfoResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTypeResponse
+import org.p2p.wallet.history.model.rpc.RpcFee
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.fromJsonReified
 
 class RpcHistoryTransactionConverter(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val gson: Gson,
-    resources: Resources
+    private val gson: Gson
 ) {
-
-    private val lessThenMinString = resources.getString(R.string.common_less_than_minimum_with_dollar)
 
     fun toDomain(
         transaction: RpcHistoryTransactionResponse,
@@ -64,7 +55,7 @@ class RpcHistoryTransactionConverter(
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
             destination = tokenKeyProvider.publicKey,
-            fee = transaction.fees.formatFees(lessThenMinString)
+            fees = transaction.fees.parseFees()
         )
     }
 
@@ -85,7 +76,7 @@ class RpcHistoryTransactionConverter(
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
             destination = info.counterParty.address,
-            fee = transaction.fees.formatFees(lessThenMinString)
+            fees = transaction.fees.parseFees()
         )
     }
 
@@ -106,7 +97,7 @@ class RpcHistoryTransactionConverter(
             destinationAddress = info.to.token.mint,
             receiveAmount = RpcHistoryAmount(sourceTotal, sourceTotalInUsd),
             sentAmount = RpcHistoryAmount(destinationTotal, destinationTotalInUsd),
-            fee = transaction.fees.formatFees(lessThenMinString),
+            fees = transaction.fees.parseFees(),
             sourceSymbol = info.from.token.symbol.orEmpty(),
             sourceIconUrl = info.from.token.logoUrl,
             destinationSymbol = info.to.token.symbol.orEmpty(),
@@ -131,8 +122,8 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
-            destination = info.token.mint.orEmpty(),
-            fee = transaction.fees.formatFees(lessThenMinString)
+            destination = info.token.mint,
+            fees = transaction.fees.parseFees()
         )
     }
 
@@ -153,7 +144,7 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             symbol = info.token.symbol.orEmpty(),
             destination = tokenKeyProvider.publicKey,
-            fee = transaction.fees.formatFees(lessThenMinString)
+            fees = transaction.fees.parseFees()
         )
     }
 
@@ -169,7 +160,7 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             iconUrl = info.token.logoUrl,
-            fee = transaction.fees.formatFees(lessThenMinString),
+            fees = transaction.fees.parseFees(),
             tokenSymbol = info.token.symbol.orEmpty(),
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd)
@@ -208,7 +199,7 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            fee = transaction.fees.formatFees(lessThenMinString)
+            fees = transaction.fees.parseFees()
         )
     }
 
@@ -228,7 +219,7 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            fee = transaction.fees.formatFees(lessThenMinString)
+            fees = transaction.fees.parseFees()
         )
     }
 
@@ -272,22 +263,14 @@ private fun RpcHistoryTypeResponse.toDomain(): RpcHistoryTransactionType {
     }
 }
 
-private fun List<RpcHistoryFeeResponse>.formatFees(lessThenMinString: String): String? {
+private fun List<RpcHistoryFeeResponse>.parseFees(): List<RpcFee>? {
     return if (this.all { fee -> fee.payer == Constants.FEE_RELAYER_ACCOUNT }) {
         null
     } else {
-        return joinToString(separator = "\n") { fee ->
+        map { fee ->
+            val feeInTokens = fee.amount?.amount.toBigDecimalOrZero()
             val feeInFiat = fee.amount?.usdAmount.toBigDecimalOrZero()
-            val formattedUsdAmount = if (feeInFiat.lessThenMinValue()) lessThenMinString
-            else "$${feeInFiat.formatFiat()}"
-            val formatDecimals = fee.token?.decimals ?: DEFAULT_DECIMAL
-            buildString {
-                append(fee.amount?.amount.toBigDecimalOrZero().formatToken(formatDecimals))
-                appendWhitespace()
-                append(fee.token?.symbol.orEmpty())
-                appendWhitespace()
-                append("($formattedUsdAmount)")
-            }
+            RpcFee(feeInTokens, feeInFiat, fee.token?.decimals, fee.token?.symbol)
         }
     }
 }

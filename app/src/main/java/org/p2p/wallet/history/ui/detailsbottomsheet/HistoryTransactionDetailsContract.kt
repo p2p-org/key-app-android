@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import org.threeten.bp.ZonedDateTime
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
+import org.p2p.wallet.history.model.rpc.RpcFee
 import org.p2p.wallet.utils.Base58String
 
 interface HistoryTransactionDetailsContract {
@@ -17,7 +18,7 @@ interface HistoryTransactionDetailsContract {
         fun showErrorState(errorMessage: String)
         fun showTransactionId(signature: String)
         fun showAmount(amountToken: String?, amountUsd: String?)
-        fun showFee(fees: String? = null)
+        fun showFee(fees: List<RpcFee>?)
         fun showLoading(isLoading: Boolean)
         fun showError(@StringRes messageId: Int)
         fun showSenderAddress(senderAddress: Base58String, senderUsername: String?)
