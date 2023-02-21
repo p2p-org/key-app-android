@@ -15,12 +15,12 @@ class SwapButtonMapper {
 
     fun mapReadyToSwap(tokenA: SwapTokenModel, tokenB: SwapTokenModel): SwapButtonState.ReadyToSwap {
         val firstName = when (tokenA) {
-            is SwapTokenModel.JupiterToken -> tokenA.token.tokenName
-            is SwapTokenModel.UserToken -> tokenA.token.tokenName
+            is SwapTokenModel.JupiterToken -> tokenA.details.tokenName
+            is SwapTokenModel.UserToken -> tokenA.details.tokenName
         }
         val secondName = when (tokenB) {
-            is SwapTokenModel.JupiterToken -> tokenB.token.tokenName
-            is SwapTokenModel.UserToken -> tokenB.token.tokenName
+            is SwapTokenModel.JupiterToken -> tokenB.details.tokenName
+            is SwapTokenModel.UserToken -> tokenB.details.tokenName
         }
         return SwapButtonState.ReadyToSwap(
             text = TextContainer(R.string.swap_main_button_ready_to_swap, firstName, secondName)
