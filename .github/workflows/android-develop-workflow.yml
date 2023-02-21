@@ -160,4 +160,4 @@ jobs:
         with:
           ref: develop
       - name: "Get last commit hash and save into last_commit_hash.txt"
-        run: printf "$(git log -n 1 --pretty=%H)" > last_commit_hash.txt
+        run: git rev-parse HEAD > last_commit_hash.txt

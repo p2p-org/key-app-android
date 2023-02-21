@@ -1,0 +1,31 @@
+// example './gradlew setVersionBuild -Pversion=10'
+task setVersionBuild {
+    def appVersionsFile = file("${rootDir}/buildSrc/src/main/java/AppVersions.kt")
+    def versionCodeProperty = "const val VERSION_BUILD ="
+    def version = project.hasProperty('version') ? project.property('version') : null
+
+    if (version == null) {
+        doLast {
+            println("Error: version property not defined.")
+            throw new StopExecutionException()
+        }
+        return
+    }
+
+    doLast {
+        def newContent = appVersionsFile.readLines()
+                .collect { line ->
+                    if (line.contains(versionCodeProperty)) {
+                        "    $versionCodeProperty $version"
+                    } else {
+                        line
+                    }
+                }
+                .join("\n")
+
+        // Append a newline character to the last line
+        newContent += '\n'
+
+        appVersionsFile.write(newContent)
+    }
+}
