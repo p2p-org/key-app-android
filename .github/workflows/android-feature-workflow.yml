@@ -69,8 +69,8 @@ jobs:
         run: ./gradlew testDebug
   android-build-artifacts:
     name: "Run build feature artifacts"
-    needs:
-      - android-lint
+#    needs:
+#      - android-lint
 #      - android-unit-tests
 
     runs-on: ubuntu-latest
