@@ -6,4 +6,6 @@ import org.p2p.wallet.utils.Base58String
 
 interface JupiterSwapRoutesRepository {
     suspend fun getSwapRoutes(jupiterSwap: JupiterSwap, userPublicKey: Base58String): List<JupiterSwapRoute>
+    suspend fun loadAllSwapRoutes()
+    suspend fun getSwappableTokenMints(sourceTokenMint: Base58String): List<Base58String>
 }

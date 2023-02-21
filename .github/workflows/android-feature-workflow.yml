@@ -65,11 +65,11 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+      - name: "Generate changelog"
+        uses: ./.github/actions/setup-changelog
       - name: "Send start deploy message to slack"
         run: |
-          cd bash_scripts
-          bash slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-          cd ..
+          bash bash_scripts/slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
       - name: "Build feature APK"
         run: ./gradlew assembleFeature
       - name: "Build & upload APK to Firebase (Feature)"
@@ -86,13 +86,8 @@ jobs:
           artifact-type: "apk"
       - name: "Upload changelog, and Jira ticket to slack channel"
         run: |
-          cd bash_scripts
-          value=`cat timestamp.txt`
-          bash slack_shortlog_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} "develop"
-          cd ..
-
+          bash bash_scripts/slack_upload_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} CHANGELOG.txt
       - name: "Send finish deploy message to slack"
         run: |
-          cd bash_scripts
           value=`cat timestamp.txt`
-          bash slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+          bash bash_scripts/slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value

@@ -3,8 +3,8 @@ package org.p2p.wallet.infrastructure.network.interceptor
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import okhttp3.logging.HttpLoggingInterceptor
-import org.p2p.wallet.utils.invokeAndForget
 import timber.log.Timber
+import org.p2p.wallet.utils.invokeAndForget
 
 private const val TAG = "_DebugLogger"
 
@@ -24,6 +24,10 @@ class DebugHttpLoggingLogger(
             return
         }
 
+        if (message.length > 10_000) {
+            Timber.tag(logTag + TAG).e("Response body is too big (${message.length}), skipping")
+            return
+        }
         kotlin.runCatching {
             val parsedJson = JsonParser.parseString(message).let { gson.toJson(it) }
             Timber.tag(logTag + TAG).d(parsedJson)

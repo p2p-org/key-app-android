@@ -6,5 +6,5 @@ data class RpcHistorySwapTokenResponse(
     @SerializedName("token")
     val token: RpcHistoryTokenResponse,
     @SerializedName("amount")
-    val amount: RpcHistoryAmountResponse
+    val amounts: RpcHistoryAmountResponse
 )

@@ -43,6 +43,7 @@
     <string name="common_sell_all">Sell all</string>
     <string name="common_sorry">Sorry</string>
     <string name="common_less_than_minimum">Less than 0.01</string>
+    <string name="common_less_than_minimum_with_dollar">Less than $0.01</string>
     <string name="not_available">N/A</string>
     <string name="common_burn">Burn</string>
     <string name="common_mint">Mint</string>
