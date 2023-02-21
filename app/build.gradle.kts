@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("org.p2p.wallet.android.application")
@@ -24,6 +25,21 @@ android {
 
     bundle {
         language { enableSplit = false }
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
+        animationsDisabled = true
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        unitTests.all {
+            it.useJUnitPlatform()
+            it.maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
+            it.maxHeapSize = "512m"
+            it.testLogging {
+                events = setOf(TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+            }
+        }
     }
 }
 
