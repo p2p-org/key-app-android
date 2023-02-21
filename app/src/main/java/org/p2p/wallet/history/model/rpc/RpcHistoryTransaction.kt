@@ -6,7 +6,6 @@ import androidx.annotation.StringRes
 import android.content.res.Resources
 import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
-import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.Constants
@@ -49,7 +48,7 @@ sealed class RpcHistoryTransaction(
         val senderAddress: String,
         val iconUrl: String?,
         override val type: RpcHistoryTransactionType,
-        val fee: BigInteger
+        val fee: String?
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         @IgnoredOnParcel
@@ -76,7 +75,7 @@ sealed class RpcHistoryTransaction(
 
         fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
 
-        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = fee
     }
 
     @Parcelize
@@ -100,10 +99,10 @@ sealed class RpcHistoryTransaction(
         override val type: RpcHistoryTransactionType,
         val amount: RpcHistoryAmount,
         val iconUrl: String?,
-        val fee: BigInteger,
+        val fee: String?,
         val tokenSymbol: String,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
-        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = fee
 
         fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
             "${amount.total.scaleMedium().formatToken()} $tokenSymbol"
@@ -123,7 +122,7 @@ sealed class RpcHistoryTransaction(
         override val type: RpcHistoryTransactionType,
         val sourceAddress: String,
         val destinationAddress: String,
-        val fee: BigInteger,
+        val fee: String?,
         val receiveAmount: RpcHistoryAmount,
         val sentAmount: RpcHistoryAmount,
         val sourceSymbol: String,
@@ -160,7 +159,7 @@ sealed class RpcHistoryTransaction(
             }
         }
 
-        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = fee
 
         fun getSourceTotal(): String = "${receiveAmount.total.formatToken()} $sourceSymbol"
 
@@ -179,7 +178,7 @@ sealed class RpcHistoryTransaction(
         val amount: RpcHistoryAmount,
         val symbol: String,
         val destination: String,
-        val fee: BigInteger,
+        val fee: String?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         @IgnoredOnParcel
@@ -203,7 +202,7 @@ sealed class RpcHistoryTransaction(
 
         fun getTotal(): String = "${getSymbol(isSend)}${getFormattedTotal()}"
 
-        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = fee
 
         @StringRes
         fun getTypeName(): Int = when (type) {
@@ -251,7 +250,7 @@ sealed class RpcHistoryTransaction(
         val amount: RpcHistoryAmount,
         val symbol: String,
         val destination: String,
-        val fee: BigInteger,
+        val fee: String?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         @IgnoredOnParcel
@@ -269,7 +268,7 @@ sealed class RpcHistoryTransaction(
 
         fun getTotal(): String = "${getSymbol(isStake)}${getFormattedTotal()}"
 
-        fun getFormattedFee(): String? = if (fee != BigInteger.ZERO) "$fee lamports" else null
+        fun getFormattedFee(): String? = fee
 
         @StringRes
         fun getTypeName(): Int = when (type) {
