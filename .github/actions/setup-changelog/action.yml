@@ -22,5 +22,7 @@ runs:
           current_commit_hash="$(git log -n 1 --pretty=%H origin/$GITHUB_BASE_REF)"
         fi
         
+        echo "COMMIT: $last_commit_hash"
+        
         # Run the gradle task with the fromCommit and toCommit properties set
         ./gradlew gitChangelogTask -PfromCommit=$last_commit_hash -PtoCommit=$current_commit_hash
