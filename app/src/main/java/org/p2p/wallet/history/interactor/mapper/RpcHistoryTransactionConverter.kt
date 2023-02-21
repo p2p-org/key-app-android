@@ -3,6 +3,7 @@ package org.p2p.wallet.history.interactor.mapper
 import android.content.res.Resources
 import com.google.gson.Gson
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.lessThenMinValue
@@ -279,8 +280,9 @@ private fun List<RpcHistoryFeeResponse>.formatFees(lessThenMinString: String): S
             val feeInFiat = fee.amount?.usdAmount.toBigDecimalOrZero()
             val formattedUsdAmount = if (feeInFiat.lessThenMinValue()) lessThenMinString
             else "$${feeInFiat.formatFiat()}"
+            val formatDecimals = fee.token?.decimals ?: DEFAULT_DECIMAL
             buildString {
-                append(fee.amount?.amount.toBigDecimalOrZero().formatToken())
+                append(fee.amount?.amount.toBigDecimalOrZero().formatToken(formatDecimals))
                 appendWhitespace()
                 append(fee.token?.symbol.orEmpty())
                 appendWhitespace()

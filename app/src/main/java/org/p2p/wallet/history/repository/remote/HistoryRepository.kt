@@ -5,8 +5,6 @@ import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 
-private const val TAG = "HistoryRepository"
-
 class HistoryRepository(
     private val repositories: List<HistoryRemoteRepository>
 ) : HistoryRemoteRepository {
@@ -42,14 +40,14 @@ class HistoryRepository(
     private fun parsePagingResult(pagingResult: List<HistoryPagingResult>): HistoryPagingResult {
         val newTransactions = mutableListOf<HistoryTransaction>()
         val errorMessageBuilder = StringBuilder()
-        pagingResult.forEach { pagingResult ->
-            when (pagingResult) {
+        pagingResult.forEach { result ->
+            when (result) {
                 is HistoryPagingResult.Error -> {
-                    errorMessageBuilder.append(pagingResult.cause)
+                    errorMessageBuilder.append(result.cause)
                     errorMessageBuilder.append("\n")
                 }
                 is HistoryPagingResult.Success -> {
-                    newTransactions.addAll(pagingResult.data)
+                    newTransactions.addAll(result.data)
                 }
             }
         }

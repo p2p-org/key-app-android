@@ -131,10 +131,10 @@ class HistoryTransactionDetailsBottomSheetFragment :
         textViewAmountUsd.setTextColor(getColor(colorId))
     }
 
-    override fun showErrorState(errorMessageResId: Int) = with(binding.progressStateTransaction) {
+    override fun showErrorState(errorMessage: String) = with(binding.progressStateTransaction) {
         isVisible = true
         setFailedState()
-        setDescriptionText(errorMessageResId)
+        setDescriptionText(errorMessage)
     }
 
     override fun showTransactionId(signature: String) {

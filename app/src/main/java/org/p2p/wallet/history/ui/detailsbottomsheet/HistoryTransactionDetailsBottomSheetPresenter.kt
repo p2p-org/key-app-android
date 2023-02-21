@@ -217,11 +217,16 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun showErrorState(transaction: RpcHistoryTransaction) {
         when (transaction) {
-            is RpcHistoryTransaction.Swap -> R.string.transaction_details_status_message_swap
-            is RpcHistoryTransaction.Transfer -> R.string.transaction_details_status_message_send
+            is RpcHistoryTransaction.Swap -> resources.getString(transaction.getTypeName())
+            is RpcHistoryTransaction.Transfer -> resources.getString(transaction.getTypeName())
+            is RpcHistoryTransaction.BurnOrMint -> resources.getString(transaction.getTitle())
+            is RpcHistoryTransaction.StakeUnstake -> resources.getString(transaction.getTypeName())
+            is RpcHistoryTransaction.Unknown -> resources.getString(R.string.transaction_history_unknown)
             else -> null
-        }?.let { errorMessage ->
-            view?.showErrorState(errorMessage)
+        }?.let { errorTypeName ->
+            view?.showErrorState(
+                resources.getString(R.string.transaction_details_status_message_format, errorTypeName)
+            )
         }
     }
 }

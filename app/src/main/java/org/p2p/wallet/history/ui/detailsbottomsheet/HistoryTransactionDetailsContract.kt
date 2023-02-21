@@ -14,7 +14,7 @@ interface HistoryTransactionDetailsContract {
         fun showSwapView(sourceIconUrl: String?, destinationIconUrl: String?)
         fun showDate(date: ZonedDateTime)
         fun showStatus(@StringRes titleResId: Int, @ColorRes colorId: Int)
-        fun showErrorState(@StringRes errorMessageResId: Int)
+        fun showErrorState(errorMessage: String)
         fun showTransactionId(signature: String)
         fun showAmount(amountToken: String?, amountUsd: String?)
         fun showFee(fees: String? = null)
