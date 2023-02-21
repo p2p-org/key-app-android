@@ -1,63 +1,73 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
-import androidx.core.view.isVisible
+import androidx.core.view.isInvisible
 import android.os.Bundle
 import android.view.View
-import org.p2p.core.common.TextContainer
+import org.p2p.core.common.bind
 import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.drawable.applyBackground
 import org.p2p.uikit.utils.drawable.shape.rippleForeground
 import org.p2p.uikit.utils.drawable.shape.shapeCircle
 import org.p2p.uikit.utils.drawable.shape.shapeRoundedAll
 import org.p2p.uikit.utils.drawable.shapeDrawable
-import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.text.bindSkeleton
+import org.p2p.uikit.utils.text.bind
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.common.mvp.BaseFragment
+import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class JupiterSwapFragment : BaseFragment(R.layout.fragment_jupiter_swap) {
+class JupiterSwapFragment :
+    BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
+    JupiterSwapContract.View {
 
     private val binding: FragmentJupiterSwapBinding by viewBinding()
+    override val presenter: JupiterSwapContract.Presenter
+        get() = TODO("Not yet implemented")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.swapWidgetFrom.bind(
-            SwapWidgetModel.Loading(
-                isStatic = false,
-                widgetTitle = TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_you_pay)),
-            )
-        )
-
-        binding.swapWidgetTo.bind(
-            SwapWidgetModel.Loading(
-                isStatic = true,
-                widgetTitle = TextViewCellModel.Raw(text = TextContainer(R.string.swap_main_you_receive)),
-            )
-        )
-        binding.textViewRate.bindSkeleton(
-            TextViewCellModel.Skeleton(
-                SkeletonCellModel(
-                    height = 16.toPx(),
-                    width = 160.toPx(),
-                    radius = 4f.toPx(),
-                )
-            )
-        )
-
-        binding.imageViewSwapTokens.background = shapeDrawable(shapeCircle())
-        binding.imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
-        binding.imageViewSwapTokens.rippleForeground(shapeCircle())
-        binding.imageViewSwapTokens.setOnClickListener {
-            // todo PWN-7111
+        with(binding) {
+            imageViewSwapTokens.background = shapeDrawable(shapeCircle())
+            imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
+            imageViewSwapTokens.rippleForeground(shapeCircle())
+            imageViewSwapTokens.setOnClickListener {
+                // todo PWN-7111
+            }
         }
-        setYellowAlert()
-        binding.linearLayoutAlert.isVisible = true
+    }
+
+    override fun setFirstTokenWidgetState(state: SwapWidgetModel) {
+        binding.swapWidgetFrom.bind(state)
+    }
+
+    override fun setSecondTokenWidgetState(state: SwapWidgetModel) {
+        binding.swapWidgetTo.bind(state)
+    }
+
+    override fun setButtonState(buttonState: SwapButtonState) = with(binding) {
+        when (buttonState) {
+            is SwapButtonState.Disabled -> {
+                buttonError.isInvisible = false
+                sliderSend.isInvisible = true
+                buttonError.bind(buttonState.text)
+            }
+            is SwapButtonState.Hide -> {
+                buttonError.isInvisible = true
+                sliderSend.isInvisible = true
+            }
+            is SwapButtonState.ReadyToSwap -> {
+                buttonError.isInvisible = true
+                sliderSend.isInvisible = false
+                sliderSend.setActionText(buttonState.text)
+            }
+        }
+    }
+
+    override fun setRatioState(state: TextViewCellModel) {
+        binding.textViewRate.bind(state)
     }
 
     private fun setYellowAlert() {

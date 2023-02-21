@@ -28,12 +28,14 @@
         android:text="@string/common_all"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         android:textColor="@color/text_mountain"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/textViewWidgetTitle"
         app:layout_constraintEnd_toStartOf="@+id/textViewAvailableAmountValue"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/textViewWidgetTitle"
-        app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle" />
+        app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/textViewAvailableAmountValue"
@@ -91,6 +93,22 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/textViewChangeCurrency"
         app:layout_constraintTop_toTopOf="@+id/textViewCurrencyName" />
+
+    <TextView
+        android:id="@+id/textViewShadowAutoSize"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:autoSizeMaxTextSize="28sp"
+        android:autoSizeTextType="uniform"
+        android:background="@android:color/transparent"
+        android:maxLines="1"
+        android:textAppearance="@style/UiKit.TextAppearance.Regular.Title1"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/viewEditTextClickable"
+        app:layout_constraintEnd_toEndOf="@+id/viewEditTextClickable"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/viewEditTextClickable"
+        app:layout_constraintTop_toTopOf="@+id/viewEditTextClickable" />
 
     <EditText
         android:id="@+id/editTextAmount"
