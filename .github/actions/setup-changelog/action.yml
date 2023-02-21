@@ -10,9 +10,6 @@ runs:
         # Get the latest commit hash was saved in last_commit_hash.txt
         last_commit_hash=$(<last_commit_hash.txt)
         
-        # Fetch the latest changes from the remote repository
-        git fetch origin
-        
         # Determine the current head commit hash
         if [ -n "$GITHUB_HEAD_REF" ]; then
           # This is a pull request, use GITHUB_HEAD_REF
