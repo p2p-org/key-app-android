@@ -44,7 +44,7 @@ class SwapWidget @JvmOverloads constructor(
             viewEditTextClickable.setOnClickListener {
                 if (this@SwapWidget.isEnabled)
                     editTextAmount.requestFocusFromTouch()
-                    editTextAmount.focusAndShowKeyboard(true)
+                editTextAmount.focusAndShowKeyboard(true)
             }
         }
     }
