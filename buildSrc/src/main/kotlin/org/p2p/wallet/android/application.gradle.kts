@@ -13,7 +13,7 @@ plugins {
 
 apply {
     from("${project.rootDir}/.scripts/ktlint.gradle")
-    from("${project.rootDir}/.scripts/versioning.gradle.kts")
+    from("${project.rootDir}/.scripts/versioning.gradle")
     from("${project.rootDir}/.scripts/signing.gradle")
     from("${project.rootDir}/.scripts/config.gradle")
     from("${project.rootDir}/.scripts/analytics.gradle")

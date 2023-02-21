@@ -33,7 +33,6 @@ android {
         animationsDisabled = true
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         unitTests.all {
-            it.useJUnitPlatform()
             it.maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
             it.maxHeapSize = "512m"
             it.testLogging {
