@@ -25,4 +25,4 @@ runs:
         echo "COMMIT: $last_commit_hash"
         
         # Run the gradle task with the fromCommit and toCommit properties set
-        ./gradlew gitChangelogTask -PfromCommit=$last_commit_hash -PtoCommit=$current_commit_hash
+        ./gradlew gitChangelogTask -PfromCommit=$(<last_commit_hash.txt) -PtoCommit=$current_commit_hash
