@@ -25,5 +25,5 @@ sealed class SwapStateAction {
     ) : SwapStateAction()
 
     object SwitchTokens : SwapStateAction()
-    object ConfirmTokenChanged : SwapStateAction()
+    object SwapSuccess : SwapStateAction()
 }
