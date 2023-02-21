@@ -11,7 +11,6 @@ sealed class SwapStateAction {
     object InitialLoading : SwapStateAction()
 
     object RefreshRoutes : SwapStateAction()
-
     object EmptyAmountTokenA : SwapStateAction()
 
     data class TokenAChanged(val newTokenA: SwapTokenModel) : SwapStateAction()

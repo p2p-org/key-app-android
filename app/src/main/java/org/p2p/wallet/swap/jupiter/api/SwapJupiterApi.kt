@@ -1,16 +1,17 @@
 package org.p2p.wallet.swap.jupiter.api
 
-import org.p2p.wallet.swap.jupiter.api.request.CreateSwapTransactionRequest
-import org.p2p.wallet.swap.jupiter.api.response.CreateSwapTransactionResponse
-import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
-import org.p2p.wallet.utils.Base58String
-import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 import retrofit2.http.Url
 import java.math.BigInteger
+import org.p2p.wallet.swap.jupiter.api.request.CreateSwapTransactionRequest
+import org.p2p.wallet.swap.jupiter.api.response.CreateSwapTransactionResponse
+import org.p2p.wallet.swap.jupiter.api.response.JupiterAllSwapRoutesResponse
+import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
+import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
+import org.p2p.wallet.utils.Base58String
 
 interface SwapJupiterApi {
     @GET
@@ -31,4 +32,7 @@ interface SwapJupiterApi {
         @Query("userPublicKey") userPublicKey: Base58String,
         @Query("asLegacyTransaction") asLegacyTransaction: Boolean = true
     ): SwapJupiterQuoteResponse
+
+    @GET("v4/indexed-route-map")
+    suspend fun getSwapRoutesMap(): JupiterAllSwapRoutesResponse
 }

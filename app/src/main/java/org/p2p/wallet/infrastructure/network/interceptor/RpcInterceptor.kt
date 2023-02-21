@@ -65,7 +65,6 @@ class RpcInterceptor(
     }
 
     private fun handleResponse(response: Response): Response {
-        Timber.tag(TAG).d(response.request.url.toString())
         val responseBody = try {
             response.body!!.string()
         } catch (e: Exception) {

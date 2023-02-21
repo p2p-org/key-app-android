@@ -24,6 +24,9 @@ import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.CORRECT_AMOUNT
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.NO_ACTION
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy.SELECT_FEE_PAYER
 import org.p2p.wallet.history.model.HistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -36,18 +39,16 @@ import org.p2p.wallet.newsend.model.FeeRelayerState
 import org.p2p.wallet.newsend.model.NewSendButtonState
 import org.p2p.wallet.newsend.model.SearchResult
 import org.p2p.wallet.newsend.model.SendSolanaFee
+import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.model.TransactionState
-import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.updates.ConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
-import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
-import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
-import org.p2p.wallet.utils.emptyString
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
@@ -446,10 +447,9 @@ class NewSendPresenter(
             blockNumber = -1,
             type = RpcHistoryTransactionType.SEND,
             senderAddress = tokenKeyProvider.publicKey,
-            totalInUsd = calculationMode.getCurrentAmountUsd(),
-            total = calculationMode.getCurrentAmount(),
+            amount = RpcHistoryAmount(calculationMode.getCurrentAmount(), calculationMode.getCurrentAmountUsd()),
             destination = recipientAddress.addressState.address,
-            fee = BigInteger.ZERO,
+            fee = BigInteger.ZERO.toString(),
             status = HistoryTransactionStatus.PENDING,
             iconUrl = emptyString(),
             symbol = emptyString()

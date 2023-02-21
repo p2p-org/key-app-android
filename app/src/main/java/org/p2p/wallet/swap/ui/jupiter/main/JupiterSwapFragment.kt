@@ -28,11 +28,13 @@ class JupiterSwapFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imageViewSwapTokens.background = shapeDrawable(shapeCircle())
-        binding.imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
-        binding.imageViewSwapTokens.rippleForeground(shapeCircle())
-        binding.imageViewSwapTokens.setOnClickListener {
-            presenter.switchTokens()
+        with(binding) {
+            imageViewSwapTokens.background = shapeDrawable(shapeCircle())
+            imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
+            imageViewSwapTokens.rippleForeground(shapeCircle())
+            imageViewSwapTokens.setOnClickListener {
+                presenter.switchTokens()
+            }
         }
     }
 
@@ -49,9 +51,9 @@ class JupiterSwapFragment :
             is SwapButtonState.Disabled -> {
                 buttonError.isInvisible = false
                 sliderSend.isInvisible = true
-                buttonState.text.applyTo(buttonError)
+                buttonError.bind(buttonState.text)
             }
-            SwapButtonState.Hide -> {
+            is SwapButtonState.Hide -> {
                 buttonError.isInvisible = true
                 sliderSend.isInvisible = true
             }

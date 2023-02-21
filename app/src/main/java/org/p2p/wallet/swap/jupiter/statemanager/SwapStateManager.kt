@@ -1,11 +1,11 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineScope
 import org.p2p.wallet.swap.jupiter.statemanager.handler.SwapStateHandler
 import timber.log.Timber
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -25,7 +25,6 @@ class SwapStateManager(
         const val DEFAULT_ACTIVE_ROUTE_ORDINAL = 1
         const val DEFAULT_SLIPPAGE = 0.5
     }
-
     override val coroutineContext: CoroutineContext = SupervisorJob() + dispatchers.io
     private val state = MutableStateFlow<SwapState>(SwapState.InitialLoading)
     private var activeActionHandleJob: Job? = null

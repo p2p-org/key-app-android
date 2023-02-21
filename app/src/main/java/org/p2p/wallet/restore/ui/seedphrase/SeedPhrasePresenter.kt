@@ -1,13 +1,13 @@
 package org.p2p.wallet.restore.ui.seedphrase
 
+import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.launch
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
-import kotlin.properties.Delegates.observable
-import kotlinx.coroutines.launch
 import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 
 private const val SEED_PHRASE_SIZE_SHORT = 12
@@ -62,6 +62,7 @@ class SeedPhrasePresenter(
                         words = result.getKeys(),
                         provider = SeedPhraseSource.MANUAL
                     )
+                    view?.navigateToDerievableAccounts(currentSeedPhrase)
                 }
                 is SeedPhraseVerifyResult.Invalid -> {
                     // warning: updateSeedPhrase causes keyboard to appear, so add a check

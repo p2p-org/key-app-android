@@ -7,7 +7,6 @@ import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 
 interface JupiterSwapContract {
     interface View : MvpView {
-
         fun setFirstTokenWidgetState(state: SwapWidgetModel)
         fun setSecondTokenWidgetState(state: SwapWidgetModel)
         fun setButtonState(buttonState: SwapButtonState)

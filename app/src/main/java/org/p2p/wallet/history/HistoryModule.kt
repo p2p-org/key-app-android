@@ -20,8 +20,6 @@ import org.p2p.wallet.history.repository.remote.HistoryRepository
 import org.p2p.wallet.history.repository.remote.MoonpayHistoryRemoteRepository
 import org.p2p.wallet.history.repository.remote.RpcHistoryRepository
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
-import org.p2p.wallet.history.ui.details.TransactionDetailsContract
-import org.p2p.wallet.history.ui.details.TransactionDetailsPresenter
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsBottomSheetPresenter
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
 import org.p2p.wallet.history.ui.history.HistoryContract
@@ -54,7 +52,6 @@ object HistoryModule : InjectionModule {
                 historyItemMapper = get()
             )
         } bind HistoryListViewContract.Presenter::class
-        factoryOf(::TransactionDetailsPresenter) bind TransactionDetailsContract.Presenter::class
         factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) bind
             HistoryTransactionDetailsContract.Presenter::class
     }

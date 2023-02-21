@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.jupiter.statemanager
 
+import java.math.BigDecimal
 import org.p2p.solanaj.utils.crypto.Base64String
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapRoute
