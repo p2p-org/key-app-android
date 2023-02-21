@@ -34,8 +34,8 @@ jobs:
         run: ./gradlew ktlint -PautoCorrect=0
   android-unit-tests:
     name: "Run unit tests"
-    needs:
-      - android-lint
+#    needs:
+#      - android-lint
 
     runs-on: ubuntu-latest
     steps:
@@ -69,8 +69,8 @@ jobs:
         run: ./gradlew testDebug
   android-build-artifacts:
     name: "Run build feature artifacts"
-#    needs:
-#      - android-lint
+    needs:
+      - android-lint
 #      - android-unit-tests
 
     runs-on: ubuntu-latest
@@ -127,31 +127,3 @@ jobs:
         run: |
           value=`cat timestamp.txt`
           bash bash_scripts/slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-
-# TODO: remove it, it's only for testing purposes
-  update-jira-status:
-    name: "Jira manipulations"
-    needs:
-      - android-build-artifacts
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: develop
-      - name: "Find a Jira ticket and move it to READY FOR TESTING"
-        uses: ./.github/actions/setup-jira-rft
-        with:
-          jira-base-url: ${{ vars.JIRA_BASE_URL }}
-          jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
-
-  save-last-commit-hash:
-    name: "Save last commit hash for future changelogs"
-    needs:
-      - android-build-artifacts
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: develop
-      - name: "Get last commit hash and save into last_commit_hash.txt"
-        run: git rev-parse HEAD > last_commit_hash.txt
