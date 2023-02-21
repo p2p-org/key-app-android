@@ -91,7 +91,7 @@ class SwapWidgetMapper {
 
     private fun tokenAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw {
         val decimals = token.decimals
-        val amountText = tokenAmount?.formatToken(decimals) ?: "0"
+        val amountText = tokenAmount?.formatToken(decimals) ?: ""
         return TextViewCellModel.Raw(TextContainer(amountText))
     }
 

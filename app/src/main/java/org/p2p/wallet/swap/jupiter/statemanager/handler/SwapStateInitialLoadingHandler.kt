@@ -1,14 +1,20 @@
 package org.p2p.wallet.swap.jupiter.statemanager.handler
 
-import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_SLIPPAGE
+import org.p2p.wallet.swap.jupiter.statemanager.token_selector.InitialTokenSelector
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
 
 class SwapStateInitialLoadingHandler(
     private val jupiterTokensRepository: JupiterSwapTokensRepository,
+    private val homeLocalRepository: HomeLocalRepository,
+    private val dispatchers: CoroutineDispatchers,
+    private val initialTokenSelector: InitialTokenSelector,
 ) : SwapStateHandler {
 
     override fun canHandle(state: SwapState): Boolean = state is SwapState.InitialLoading
@@ -17,19 +23,16 @@ class SwapStateInitialLoadingHandler(
         stateFlow: MutableStateFlow<SwapState>,
         state: SwapState,
         action: SwapStateAction
-    ) {
+    ) = withContext(dispatchers.io) {
         val oldState = state as SwapState.InitialLoading
 
         when (action) {
             is SwapStateAction.InitialLoading -> {
                 stateFlow.value = SwapState.InitialLoading
-
-                val jupiterTokens = jupiterTokensRepository.getTokens()
-                val first = jupiterTokens.find { it.tokenName == "SOL" } ?: return
-                val second = jupiterTokens.find { it.tokenName == "USDC" } ?: return
+                val (tokenA, tokenB) = initialTokenSelector.getTokenPair()
                 stateFlow.value = SwapState.TokenAZero(
-                    tokenA = SwapTokenModel.JupiterToken(first, first.logoUri),
-                    tokenB = SwapTokenModel.JupiterToken(second, second.logoUri),
+                    tokenA = tokenA,
+                    tokenB = tokenB,
                     slippage = DEFAULT_SLIPPAGE
                 )
             }

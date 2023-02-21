@@ -41,7 +41,11 @@ class SwapWidget @JvmOverloads constructor(
             textViewWidgetTitle.setTextColor(widgetTitleTint())
             initInputType = editTextAmount.inputType
             editTextAmount.doAfterTextChanged { resizeInput(it) }
-            viewEditTextClickable.setOnClickListener { editTextAmount.focusAndShowKeyboard(true) }
+            viewEditTextClickable.setOnClickListener {
+                if (this@SwapWidget.isEnabled)
+                    editTextAmount.requestFocusFromTouch()
+                    editTextAmount.focusAndShowKeyboard(true)
+            }
         }
     }
 
@@ -53,7 +57,7 @@ class SwapWidget @JvmOverloads constructor(
     }
 
     private fun bindLoading(model: SwapWidgetModel.Loading) = with(binding) {
-        isEnabled = !model.isStatic
+        isEnabled = false
         textViewWidgetTitle.bindOrGone(model.widgetTitle)
         textViewAvailableAmountTitle.isVisible = false
         textViewAvailableAmountValue.isVisible = false
@@ -86,15 +90,20 @@ class SwapWidget @JvmOverloads constructor(
             is SwapWidgetModel.Content -> model.amountMaxDecimals ?: DEFAULT_DECIMAL
             is SwapWidgetModel.Loading -> DEFAULT_DECIMAL
         }
+        updateFormatter(amountMaxDecimals)
+        internalOnAmountChanged = null
+        editTextAmount.bindOrGone(amount ?: TextViewCellModel.Raw(text = TextContainer("")))
+        internalOnAmountChanged = { onAmountChanged(it) }
+    }
+
+    private fun updateFormatter(amountMaxDecimals: Int) {
+        AmountFractionTextWatcher.uninstallFrom(binding.editTextAmount)
         AmountFractionTextWatcher.installOn(
             editText = binding.editTextAmount,
             maxDecimalsAllowed = amountMaxDecimals,
             maxIntLength = Int.MAX_VALUE,
             onValueChanged = { internalOnAmountChanged?.invoke(it) }
         )
-        internalOnAmountChanged = null
-        editTextAmount.bindOrGone(amount ?: TextViewCellModel.Raw(text = TextContainer("")))
-        internalOnAmountChanged = { onAmountChanged(it) }
     }
 
     private fun resizeInput(text: CharSequence?) = with(binding) {
