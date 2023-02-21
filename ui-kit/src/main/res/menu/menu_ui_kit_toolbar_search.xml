@@ -9,4 +9,10 @@
         app:actionLayout="@layout/item_toolbar_search"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/menuItemSearchIcon"
+        android:title="@string/common_search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="always" />
+
 </menu>
