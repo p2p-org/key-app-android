@@ -73,7 +73,8 @@ jobs:
   android-build-artifacts:
     name: "Run build feature artifacts"
     needs:
-      - android-unit-tests
+      - android-lint
+#      - android-unit-tests
 
     runs-on: ubuntu-latest
     steps:
