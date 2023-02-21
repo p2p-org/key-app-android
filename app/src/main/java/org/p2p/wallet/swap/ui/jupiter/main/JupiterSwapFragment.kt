@@ -22,7 +22,6 @@ import org.p2p.wallet.databinding.FragmentJupiterSwapBinding
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 import java.util.*
