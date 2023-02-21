@@ -2,7 +2,6 @@ package org.p2p.wallet.android
 
 import Dependencies
 import Versions
-import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("com.android.library")
@@ -45,22 +44,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
-
-    testOptions {
-        unitTests.isReturnDefaultValues = true
-        unitTests.isIncludeAndroidResources = true
-        animationsDisabled = true
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
-        unitTests.all {
-            it.useJUnitPlatform()
-            it.maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
-            it.maxHeapSize = "512m"
-            it.testLogging {
-                events = setOf(TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-            }
-        }
-    }
-
 
     buildFeatures {
         viewBinding = true
