@@ -3,6 +3,7 @@ package org.p2p.wallet.history.ui.historylist
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.token.Token
 import timber.log.Timber
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -19,6 +20,7 @@ class HistoryListViewPresenter(
     private val historyInteractor: HistoryInteractor,
     private val environmentManager: NetworkEnvironmentManager,
     private val historyItemMapper: HistoryItemMapper,
+    private val token: Token.Active?
 ) : BasePresenter<HistoryListViewContract.View>(), HistoryListViewContract.Presenter {
 
     override fun attach(view: HistoryListViewContract.View) {
@@ -36,7 +38,7 @@ class HistoryListViewPresenter(
             try {
                 delay(300L)
                 view?.showPagingState(PagingState.Loading)
-                val result = historyInteractor.loadNextPage(PAGE_SIZE)
+                val result = historyInteractor.loadNextPage(PAGE_SIZE, token?.mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
                 val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
                 view?.showHistory(adapterItems)
@@ -53,7 +55,7 @@ class HistoryListViewPresenter(
             try {
                 delay(300L)
                 view?.showPagingState(PagingState.InitialLoading)
-                val result = historyInteractor.loadHistory(PAGE_SIZE)
+                val result = historyInteractor.loadHistory(PAGE_SIZE, token?.mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
                 val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
                 view?.showHistory(adapterItems)
@@ -69,7 +71,7 @@ class HistoryListViewPresenter(
         launch {
             try {
                 view?.showRefreshing(isRefreshing = true)
-                val result = historyInteractor.loadHistory(PAGE_SIZE)
+                val result = historyInteractor.loadHistory(PAGE_SIZE, token?.mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
                 val adapterItems = historyItemMapper.toAdapterItem(newHistoryTransactions)
                 view?.showHistory(adapterItems)

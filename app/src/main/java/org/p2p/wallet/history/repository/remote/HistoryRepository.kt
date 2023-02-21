@@ -17,7 +17,7 @@ class HistoryRepository(
     }
 
     override suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult {
-        val result = repositories.map { it.loadNextPage(limit) }
+        val result = repositories.map { it.loadNextPage(limit, mintAddress) }
         return parsePagingResult(result)
     }
 
@@ -31,8 +31,8 @@ class HistoryRepository(
         return null
     }
 
-    override fun getPagingState(): HistoryPagingState {
-        return if (repositories.any { it.getPagingState() == HistoryPagingState.ACTIVE }) {
+    override fun getPagingState(mintAddress: String?): HistoryPagingState {
+        return if (repositories.any { it.getPagingState(mintAddress) == HistoryPagingState.ACTIVE }) {
             HistoryPagingState.ACTIVE
         } else {
             HistoryPagingState.INACTIVE
