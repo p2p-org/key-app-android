@@ -49,7 +49,8 @@ object HistoryModule : InjectionModule {
             HistoryListViewPresenter(
                 historyInteractor = get(),
                 environmentManager = get(),
-                historyItemMapper = get()
+                historyItemMapper = get(),
+                token = token
             )
         } bind HistoryListViewContract.Presenter::class
         factoryOf(::HistoryTransactionDetailsBottomSheetPresenter) bind
