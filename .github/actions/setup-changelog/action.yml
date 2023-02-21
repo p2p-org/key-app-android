@@ -7,6 +7,9 @@ runs:
     - name: "Find last commit hash and current one"
       shell: bash
       run: |
+        # Fetch the latest changes from the remote repository
+        git fetch origin
+        
         # Get the latest commit hash was saved in last_commit_hash.txt
         last_commit_hash=$(<last_commit_hash.txt)
         
