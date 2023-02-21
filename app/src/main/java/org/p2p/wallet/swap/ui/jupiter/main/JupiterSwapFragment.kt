@@ -130,10 +130,6 @@ class JupiterSwapFragment :
         binding.textViewAlert.setTextColor(context.getColorStateList(R.color.text_rose))
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         SwapModule.swapStateManagerHolder.remove(stateManagerHolderKey)

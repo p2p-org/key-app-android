@@ -11,7 +11,6 @@ import org.p2p.wallet.swap.jupiter.api.response.CreateSwapTransactionResponse
 import org.p2p.wallet.swap.jupiter.api.response.JupiterAllSwapRoutesResponse
 import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
-import org.p2p.wallet.utils.Base58String
 
 interface SwapJupiterApi {
     @GET
