@@ -1,6 +1,5 @@
 package org.p2p.wallet.splash
 
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.NotificationManagerCompat
@@ -26,12 +25,9 @@ class SplashFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val isNotificationPermissionGranted =
-                NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()
-            presenter.logNotificationPermissionGranted(isNotificationPermissionGranted)
-        }
+        val isNotificationPermissionGranted =
+            NotificationManagerCompat.from(requireContext()).areNotificationsEnabled()
+        presenter.logNotificationPermissionGranted(isNotificationPermissionGranted)
     }
 
     override fun navigateToOnboarding() {
