@@ -81,7 +81,7 @@ class SwapWidgetMapper {
     private fun fiatAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw? {
         if (tokenAmount == null) return null
         val ratio = when (token) {
-            is SwapTokenModel.JupiterToken -> token.details.priceInUsd
+            is SwapTokenModel.JupiterToken -> null
             is SwapTokenModel.UserToken -> token.details.totalInUsd
         } ?: return null
 
