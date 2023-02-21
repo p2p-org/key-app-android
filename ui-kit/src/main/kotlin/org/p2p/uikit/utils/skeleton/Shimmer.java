@@ -8,13 +8,8 @@
 package org.p2p.uikit.utils.skeleton;
 
 import android.animation.ValueAnimator;
-import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.RectF;
-import android.util.AttributeSet;
-
-import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,10 +19,6 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
-/**
- * A Shimmer is an object detailing all of the configuration options available for {@link
- * ShimmerFrameLayout}
- */
 class Shimmer {
   private static final int COMPONENT_COUNT = 4;
 
@@ -141,111 +132,6 @@ class Shimmer {
 
     // Gets around unchecked cast
     protected abstract T getThis();
-
-    /** Applies all specified options from the {@link AttributeSet}. */
-    public T consumeAttributes(Context context, AttributeSet attrs) {
-      TypedArray a = context.obtainStyledAttributes(attrs, com.facebook.shimmer.R.styleable.ShimmerFrameLayout, 0, 0);
-      return consumeAttributes(a);
-    }
-
-    T consumeAttributes(TypedArray a) {
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_clip_to_children)) {
-        setClipToChildren(
-            a.getBoolean(
-                com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_clip_to_children, mShimmer.clipToChildren));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_auto_start)) {
-        setAutoStart(
-            a.getBoolean(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_auto_start, mShimmer.autoStart));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_base_alpha)) {
-        setBaseAlpha(a.getFloat(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_base_alpha, 0.3f));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_highlight_alpha)) {
-        setHighlightAlpha(a.getFloat(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_highlight_alpha, 1f));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_duration)) {
-        setDuration(
-            a.getInt(
-                com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_duration, (int) mShimmer.animationDuration));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_repeat_count)) {
-        setRepeatCount(
-            a.getInt(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_repeat_count, mShimmer.repeatCount));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_repeat_delay)) {
-        setRepeatDelay(
-            a.getInt(
-                com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_repeat_delay, (int) mShimmer.repeatDelay));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_repeat_mode)) {
-        setRepeatMode(
-            a.getInt(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_repeat_mode, mShimmer.repeatMode));
-      }
-
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_direction)) {
-        int direction =
-            a.getInt(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_direction, mShimmer.direction);
-        switch (direction) {
-          default:
-          case Direction.LEFT_TO_RIGHT:
-            setDirection(Direction.LEFT_TO_RIGHT);
-            break;
-          case Direction.TOP_TO_BOTTOM:
-            setDirection(Direction.TOP_TO_BOTTOM);
-            break;
-          case Direction.RIGHT_TO_LEFT:
-            setDirection(Direction.RIGHT_TO_LEFT);
-            break;
-          case Direction.BOTTOM_TO_TOP:
-            setDirection(Direction.BOTTOM_TO_TOP);
-            break;
-        }
-      }
-
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_shape)) {
-        int shape = a.getInt(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_shape, mShimmer.shape);
-        switch (shape) {
-          default:
-          case Shape.LINEAR:
-            setShape(Shape.LINEAR);
-            break;
-          case Shape.RADIAL:
-            setShape(Shape.RADIAL);
-            break;
-        }
-      }
-
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_dropoff)) {
-        setDropoff(a.getFloat(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_dropoff, mShimmer.dropoff));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_fixed_width)) {
-        setFixedWidth(
-            a.getDimensionPixelSize(
-                com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_fixed_width, mShimmer.fixedWidth));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_fixed_height)) {
-        setFixedHeight(
-            a.getDimensionPixelSize(
-                com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_fixed_height, mShimmer.fixedHeight));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_intensity)) {
-        setIntensity(
-            a.getFloat(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_intensity, mShimmer.intensity));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_width_ratio)) {
-        setWidthRatio(
-            a.getFloat(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_width_ratio, mShimmer.widthRatio));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_height_ratio)) {
-        setHeightRatio(
-            a.getFloat(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_height_ratio, mShimmer.heightRatio));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_tilt)) {
-        setTilt(a.getFloat(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_tilt, mShimmer.tilt));
-      }
-      return getThis();
-    }
 
     /** Copies the configuration of an already built Shimmer to this builder */
     public T copyFrom(Shimmer other) {
@@ -447,21 +333,6 @@ class Shimmer {
     /** Sets the base color for the shimmer. */
     public ColorHighlightBuilder setBaseColor(@ColorInt int color) {
       mShimmer.baseColor = (mShimmer.baseColor & 0xFF000000) | (color & 0x00FFFFFF);
-      return getThis();
-    }
-
-    @Override
-    ColorHighlightBuilder consumeAttributes(TypedArray a) {
-      super.consumeAttributes(a);
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_base_color)) {
-        setBaseColor(
-            a.getColor(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_base_color, mShimmer.baseColor));
-      }
-      if (a.hasValue(com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_highlight_color)) {
-        setHighlightColor(
-            a.getColor(
-                com.facebook.shimmer.R.styleable.ShimmerFrameLayout_shimmer_highlight_color, mShimmer.highlightColor));
-      }
       return getThis();
     }
 
