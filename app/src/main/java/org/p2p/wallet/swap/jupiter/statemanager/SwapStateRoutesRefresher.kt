@@ -37,7 +37,11 @@ class SwapStateRoutesRefresher(
             tokenB = tokenB,
             amountTokenA = amountTokenA,
         )
-        val amountTokenB = updatedRoutes[activeRouteOrdinal]
+
+        val bestRoute = updatedRoutes.getOrNull(activeRouteOrdinal)
+            ?: throw FeatureException.RoutesNotFound
+
+        val amountTokenB = bestRoute
             .outAmountInLamports
             .fromLamports(tokenA.decimals)
 
