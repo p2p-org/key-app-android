@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.ui.jupiter.main.mapper
 
+import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
@@ -9,7 +10,6 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
-import java.math.BigDecimal
 
 class SwapWidgetMapper {
 
@@ -81,7 +81,7 @@ class SwapWidgetMapper {
     private fun fiatAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw? {
         if (tokenAmount == null) return null
         val ratio = when (token) {
-            is SwapTokenModel.JupiterToken -> null
+            is SwapTokenModel.JupiterToken -> BigDecimal.ZERO
             is SwapTokenModel.UserToken -> token.details.totalInUsd
         } ?: return null
 
