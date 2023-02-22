@@ -41,4 +41,19 @@ sealed interface SwapState {
         val swapBlockchainTransaction: Base64String,
         val slippage: Double
     ) : SwapState
+
+    sealed interface SwapException : SwapState {
+
+        val previousFeatureState: SwapState
+
+        data class FeatureExceptionWrapper(
+            override val previousFeatureState: SwapState,
+            val featureException: FeatureException,
+        ) : SwapException
+
+        data class OtherException(
+            override val previousFeatureState: SwapState,
+            val exception: Throwable,
+        ) : SwapException
+    }
 }

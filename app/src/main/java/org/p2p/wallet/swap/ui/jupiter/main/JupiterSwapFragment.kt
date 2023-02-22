@@ -132,6 +132,7 @@ class JupiterSwapFragment :
 
     override fun onDestroy() {
         super.onDestroy()
-        SwapModule.swapStateManagerHolder.remove(stateManagerHolderKey)
+        // todo next pr
+//        SwapModule.swapStateManagerHolder.remove(stateManagerHolderKey)
     }
 }
