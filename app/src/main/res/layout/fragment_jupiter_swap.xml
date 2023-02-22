@@ -73,10 +73,10 @@
                 android:layout_height="36dp"
                 android:rotation="90"
                 android:scaleType="center"
-                app:layout_constraintBottom_toBottomOf="@+id/swapWidgetTo"
+                app:layout_constraintBottom_toTopOf="@+id/swapWidgetTo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/swapWidgetFrom"
+                app:layout_constraintTop_toBottomOf="@+id/swapWidgetFrom"
                 app:srcCompat="@drawable/ic_swap_20"
                 tools:background="@color/bg_rain" />
 

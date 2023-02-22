@@ -1,8 +1,7 @@
 # Workflow for develop branch changes.
 # When a pull request is being merged in develop, this workflows triggers
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - develop
 
@@ -73,7 +72,8 @@ jobs:
   android-build-artifacts:
     name: "Run build feature artifacts"
     needs:
-      - android-unit-tests
+      - android-lint
+#      - android-unit-tests
 
     runs-on: ubuntu-latest
     steps:
@@ -160,4 +160,4 @@ jobs:
         with:
           ref: develop
       - name: "Get last commit hash and save into last_commit_hash.txt"
-        run: printf "$(git log -n 1 --pretty=%H)" > last_commit_hash.txt
+        run: git rev-parse HEAD > last_commit_hash.txt

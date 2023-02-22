@@ -2,13 +2,19 @@ package org.p2p.wallet.swap.ui.jupiter.main.widget
 
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import android.content.Context
 import android.content.res.ColorStateList
 import android.text.InputType
 import android.util.AttributeSet
+import android.util.TypedValue
+import android.widget.TextView
 import org.p2p.core.common.TextContainer
+import org.p2p.core.textwatcher.AmountFractionTextWatcher
+import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.uikit.utils.drawable.shape.shapeRounded16dp
 import org.p2p.uikit.utils.drawable.shapeDrawable
+import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -24,13 +30,19 @@ class SwapWidget @JvmOverloads constructor(
 
     private val binding = inflateViewBinding<WidgetSwapBinding>()
     private val initInputType: Int
+    private var internalOnAmountChanged: ((newAmount: String) -> Unit)? = null
+    var onAmountChanged: (newAmount: String) -> Unit = {}
 
     init {
         minHeight = 120.toPx()
         background = shapeDrawable(shapeRounded16dp())
         backgroundTintList = backgroundTint()
-        binding.textViewWidgetTitle.setTextColor(widgetTitleTint())
-        initInputType = binding.editTextAmount.inputType
+        with(binding) {
+            textViewWidgetTitle.setTextColor(widgetTitleTint())
+            initInputType = editTextAmount.inputType
+            editTextAmount.doAfterTextChanged { resizeInput(it) }
+            viewEditTextClickable.setOnClickListener { editTextAmount.focusAndShowKeyboard(true) }
+        }
     }
 
     fun bind(model: SwapWidgetModel) {
@@ -70,7 +82,25 @@ class SwapWidget @JvmOverloads constructor(
         val isNotEnabled = isStatic || model is SwapWidgetModel.Loading
         editTextAmount.inputType = if (isNotEnabled) InputType.TYPE_NULL else initInputType
         editTextAmount.isFocusable = !isNotEnabled
+        val amountMaxDecimals = when (model) {
+            is SwapWidgetModel.Content -> model.amountMaxDecimals ?: DEFAULT_DECIMAL
+            is SwapWidgetModel.Loading -> DEFAULT_DECIMAL
+        }
+        AmountFractionTextWatcher.installOn(
+            editText = binding.editTextAmount,
+            maxDecimalsAllowed = amountMaxDecimals,
+            maxIntLength = Int.MAX_VALUE,
+            onValueChanged = { internalOnAmountChanged?.invoke(it) }
+        )
+        internalOnAmountChanged = null
         editTextAmount.bindOrGone(amount ?: TextViewCellModel.Raw(text = TextContainer("")))
+        internalOnAmountChanged = { onAmountChanged(it) }
+    }
+
+    private fun resizeInput(text: CharSequence?) = with(binding) {
+        textViewShadowAutoSize.setText(text, TextView.BufferType.EDITABLE)
+        val textSize = textViewShadowAutoSize.textSize
+        editTextAmount.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
     }
 
     private fun backgroundTint(): ColorStateList {
