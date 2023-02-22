@@ -65,5 +65,9 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
+#          testing purposes
+      - name: "Generate changelog"
+        uses: ./.github/actions/setup-changelog
+#        testing purposes region
       - name: Run unit tests
         run: ./gradlew testDebug
