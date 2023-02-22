@@ -61,6 +61,7 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
 import retrofit2.Retrofit
 import retrofit2.create
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
+import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 
 object SwapModule : InjectionModule {
 
@@ -190,6 +191,7 @@ object SwapModule : InjectionModule {
                 get<SwapStateTokenAZeroHandler>(),
             )
         }
+        factoryOf(::SwapTokenRateLoader)
 
         factory { (token: Token.Active?, stateManagerHolderKey: String) ->
             val stateManager = SwapStateManagerHolder.getOrCreate(stateManagerHolderKey) {
@@ -199,9 +201,12 @@ object SwapModule : InjectionModule {
                 )
             }
             JupiterSwapPresenter(
+                stateManager = stateManager,
                 widgetMapper = get(),
                 buttonMapper = get(),
-                stateManager = stateManager
+                rateLoaderTokenA = get(),
+                rateLoaderTokenB = get(),
+                dispatchers = get(),
             )
         } bind JupiterSwapContract.Presenter::class
     }
