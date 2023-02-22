@@ -30,13 +30,11 @@ task setVersionBuild {
     }
 }
 
-// example './gradlew setLastCommitHash -Phash="somehash"'
+// example './gradlew setLastCommitHash -Phash=somehash'
 task setLastCommitHash {
     def appVersionsFile = file("${rootDir}/buildSrc/src/main/java/LastCommit.kt")
     def versionCodeProperty = "const val COMMIT_HASH ="
     def hash = project.hasProperty('hash') ? project.property('hash') : null
-
-    println("HHHASH: $hash")
 
     if (hash == null) {
         doLast {
@@ -50,7 +48,7 @@ task setLastCommitHash {
         def newContent = appVersionsFile.readLines()
                 .collect { line ->
                     if (line.contains(versionCodeProperty)) {
-                        "    $versionCodeProperty $hash"
+                        "    $versionCodeProperty \"$hash\""
                     } else {
                         line
                     }
