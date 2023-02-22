@@ -1,5 +1,10 @@
 package org.p2p.wallet.transaction.ui
 
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.addListener
+import androidx.core.view.isVisible
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
@@ -9,16 +14,11 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
-import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.animation.addListener
-import androidx.core.view.isVisible
+import java.util.concurrent.TimeUnit
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.WidgetProgressStateBinding
-import java.util.concurrent.TimeUnit
 
 private const val STATUS_ANIMATION_DURATION = 200L
 
@@ -44,6 +44,10 @@ class ProgressStateWidget @JvmOverloads constructor(
 
     fun setDescriptionText(@StringRes textRes: Int) {
         binding.textViewDescription.setText(textRes)
+    }
+
+    fun setDescriptionText(text: String?) {
+        binding.textViewDescription.text = text
     }
 
     fun setSuccessState() = with(binding) {

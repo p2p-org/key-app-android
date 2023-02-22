@@ -1,10 +1,9 @@
 package org.p2p.wallet.history.ui.historylist
 
 import androidx.lifecycle.LifecycleOwner
-import kotlinx.coroutines.delay
+import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
-import timber.log.Timber
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
 import org.p2p.wallet.history.interactor.HistoryInteractor
@@ -36,7 +35,6 @@ class HistoryListViewPresenter(
     override fun loadNextHistoryPage() {
         launch {
             try {
-                delay(300L)
                 view?.showPagingState(PagingState.Loading)
                 val result = historyInteractor.loadNextPage(PAGE_SIZE, token?.mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)
@@ -53,7 +51,6 @@ class HistoryListViewPresenter(
     override fun loadHistory() {
         launch {
             try {
-                delay(300L)
                 view?.showPagingState(PagingState.InitialLoading)
                 val result = historyInteractor.loadHistory(PAGE_SIZE, token?.mintAddress)
                 val newHistoryTransactions = handlePagingResult(result)

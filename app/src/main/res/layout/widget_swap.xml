@@ -116,7 +116,6 @@
         android:layout_height="0dp"
         android:background="@android:color/transparent"
         android:digits="0123456789."
-        android:duplicateParentState="true"
         android:hint="@string/amounts_view_zero_hint"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
