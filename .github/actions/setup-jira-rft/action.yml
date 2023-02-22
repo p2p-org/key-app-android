@@ -18,11 +18,8 @@ runs:
         chmod +x ./bash_scripts/find_jira_key.sh
         jira_ticket=$(./bash_scripts/find_jira_key.sh)
         echo "JIRA Ticket: $jira_ticket"
-      env:
-        jira-ticket: ${{ steps.find-jira-ticket.outputs.jira_ticket }}
     - name: "Update JIRA issue status"
       shell: bash
-      if: steps.find-jira-ticket.outputs.jira_ticket != ''
       run: |
         curl -D- -H "Authorization: Basic ${{ inputs.jira-api-token }}" \
           -X PUT \
