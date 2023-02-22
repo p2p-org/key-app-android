@@ -143,7 +143,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             showTransferView(transaction.iconUrl, R.drawable.ic_transaction_create)
             hideSendReceiveTitleAndValue()
             showStateTitleValue(
-                resources.getString(R.string.transaction_details_created),
+                resources.getString(R.string.transaction_details_signature),
                 transaction.signature.cutMiddle()
             )
         }
@@ -152,9 +152,10 @@ class HistoryTransactionDetailsBottomSheetPresenter(
     private fun parseCloseAccount(transaction: RpcHistoryTransaction.CloseAccount) {
         view?.apply {
             showAmount(resources.getString(R.string.transaction_details_no_balance_change), amountUsd = null)
+            showFee(transaction.fees)
             showTransferView(transaction.iconUrl, R.drawable.ic_transaction_closed)
             showStateTitleValue(
-                resources.getString(R.string.transaction_details_closed),
+                resources.getString(R.string.transaction_details_signature),
                 transaction.signature.cutMiddle()
             )
         }
@@ -196,8 +197,10 @@ class HistoryTransactionDetailsBottomSheetPresenter(
         val titleRes: Int
         when (status) {
             HistoryTransactionStatus.COMPLETED -> {
+                val isSend = transaction is RpcHistoryTransaction.Transfer && transaction.isSend
+                val notGreen = transaction is RpcHistoryTransaction.Swap || isSend
                 titleRes = R.string.transaction_details_title_succeeded
-                colorRes = if (transaction is RpcHistoryTransaction.Swap) R.color.text_night else R.color.text_mint
+                colorRes = if (notGreen) R.color.text_night else R.color.text_mint
             }
             HistoryTransactionStatus.PENDING -> {
                 titleRes = R.string.transaction_details_title_submitted

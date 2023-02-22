@@ -9,7 +9,8 @@ import org.threeten.bp.ZonedDateTime
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.asNegativeUsdTransaction
+import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.asUsdTransaction
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.scaleLong
@@ -73,7 +74,7 @@ sealed class RpcHistoryTransaction(
                 "${amount.total.scaleLong().toPlainString()} ${Constants.REN_BTC_SYMBOL}"
             }
 
-        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isBurn))
     }
 
     @Parcelize
@@ -85,6 +86,7 @@ sealed class RpcHistoryTransaction(
         override val type: RpcHistoryTransactionType,
         val account: String,
         val iconUrl: String?,
+        val fees: List<RpcFee>?,
         val tokenSymbol: String,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type)
 
@@ -106,7 +108,7 @@ sealed class RpcHistoryTransaction(
             "${amount.total.formatToken()} $tokenSymbol"
         }
 
-        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asNegativeUsdTransaction()
     }
 
     @Parcelize
@@ -129,15 +131,20 @@ sealed class RpcHistoryTransaction(
 
         fun getTitle(): String = "$sourceSymbol → $destinationSymbol"
 
-        fun getReceivedUsdAmount(): String? = receiveAmount.totalInUsd?.asUsd()
+        fun getReceivedUsdAmount(): String? = receiveAmount.totalInUsd?.asPositiveUsdTransaction()
 
-        fun getSentUsdAmount(): String? = sentAmount.totalInUsd?.asUsd()
+        fun getSentUsdAmount(): String? = sentAmount.totalInUsd?.asNegativeUsdTransaction()
 
         fun getFormattedAmount() =
             "${receiveAmount.total.formatToken()} $sourceSymbol to ${sentAmount.total.formatToken()} $destinationSymbol"
 
-        fun getFormattedAmountWithArrow() =
-            "${receiveAmount.total.formatToken()} $sourceSymbol → ${sentAmount.total.formatToken()} $destinationSymbol"
+        fun getFormattedAmountWithArrow(): String {
+            return buildString {
+                append("${receiveAmount.total.abs().formatToken()} $sourceSymbol")
+                append(" → ")
+                append("${sentAmount.total.formatToken()} $destinationSymbol")
+            }
+        }
 
         @StringRes
         fun getTypeName(): Int = when {
@@ -227,7 +234,7 @@ sealed class RpcHistoryTransaction(
             "${amount.total.formatToken()} $symbol"
         }
 
-        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isSend))
     }
 
     @Parcelize
@@ -285,7 +292,7 @@ sealed class RpcHistoryTransaction(
             "${amount.total.formatToken()} $symbol"
         }
 
-        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isStake))
     }
 
     @Parcelize
@@ -304,6 +311,6 @@ sealed class RpcHistoryTransaction(
             "${amount.total.formatToken()} $tokenSymbol"
         }
 
-        fun getFormattedAmount(): String? = amount.totalInUsd?.asUsd()
+        fun getFormattedAmount(): String? = amount.totalInUsd?.asNegativeUsdTransaction()
     }
 }
