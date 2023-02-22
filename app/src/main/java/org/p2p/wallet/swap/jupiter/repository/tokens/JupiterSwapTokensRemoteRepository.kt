@@ -16,9 +16,11 @@ internal class JupiterSwapTokensRemoteRepository(
 ) : JupiterSwapTokensRepository {
 
     override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.io) {
-        swapTokensLocalRepository.getCachedTokens()
-            ?: fetchTokensFromRemote()
+        val cachedTokens = swapTokensLocalRepository.getCachedTokens()
+        cachedTokens.ifEmpty {
+            fetchTokensFromRemote()
                 .also(swapTokensLocalRepository::setCachedTokens)
+        }
     }
 
     private suspend fun fetchTokensFromRemote(): List<JupiterSwapToken> {
