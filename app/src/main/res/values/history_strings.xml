@@ -31,8 +31,6 @@
     <string name="transaction_details_signature">Signature</string>
     <string name="transaction_details_burn">Burn signature</string>
     <string name="transaction_details_mint">Mint signature</string>
-    <string name="transaction_details_created">Account created</string>
-    <string name="transaction_details_closed">Account closed</string>
     <string name="transaction_details_stake">Stake signature</string>
     <string name="transaction_details_unstake">Unstake signature</string>
 

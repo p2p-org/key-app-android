@@ -179,7 +179,8 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             iconUrl = info.token?.logoUrl,
             tokenSymbol = info.token?.symbol.orEmpty(),
-            type = transaction.type.toDomain()
+            type = transaction.type.toDomain(),
+            fees = transaction.fees.parseFees()
         )
     }
 
