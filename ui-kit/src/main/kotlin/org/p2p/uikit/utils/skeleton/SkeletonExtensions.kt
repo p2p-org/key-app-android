@@ -12,9 +12,10 @@ fun textCellSkeleton(
     gravity: Int = Gravity.CENTER,
 ): TextViewCellModel.Skeleton = TextViewCellModel.Skeleton(
     roundedSkeleton(
-        height = 8.toPx(),
-        width = 84.toPx(),
-        radius = 2f.toPx(),
+        height = height,
+        width = width,
+        radius = radius,
+        gravity = gravity,
     )
 )
 

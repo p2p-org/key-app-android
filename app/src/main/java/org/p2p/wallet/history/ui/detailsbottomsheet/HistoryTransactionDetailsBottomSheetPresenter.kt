@@ -66,7 +66,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             val usdTotal = transaction.getReceivedUsdAmount()
             val total = transaction.getFormattedAmountWithArrow()
             showAmount(total, usdTotal)
-            showFee(transaction.getFormattedFee())
+            showFee(transaction.fees)
 
             val sourceIcon = transaction.sourceIconUrl
             val destinationIcon = transaction.destinationIconUrl
@@ -82,7 +82,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
     private suspend fun parseTransfer(transaction: RpcHistoryTransaction.Transfer) {
         view?.apply {
             showTransferView(transaction.iconUrl, transaction.getIcon())
-            showFee(transaction.getFormattedFee())
+            showFee(transaction.fees)
             showAmount(
                 amountToken = transaction.getFormattedTotal(),
                 amountUsd = transaction.getFormattedAmount()
@@ -122,7 +122,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
-            showFee(transaction.getFormattedFee())
+            showFee(transaction.fees)
             showTransferView(transaction.iconUrl, transaction.getIcon())
             showStateTitleValue(
                 resources.getString(
@@ -139,7 +139,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
-            showFee(transaction.getFormattedFee())
+            showFee(transaction.fees)
             showTransferView(transaction.iconUrl, R.drawable.ic_transaction_create)
             hideSendReceiveTitleAndValue()
             showStateTitleValue(
@@ -165,7 +165,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             val usdTotal = transaction.getFormattedAmount()
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
-            showFee(transaction.getFormattedFee())
+            showFee(transaction.fees)
             showTransferView(transaction.iconUrl, transaction.getIcon())
             showStateTitleValue(
                 resources.getString(
@@ -217,11 +217,16 @@ class HistoryTransactionDetailsBottomSheetPresenter(
 
     private fun showErrorState(transaction: RpcHistoryTransaction) {
         when (transaction) {
-            is RpcHistoryTransaction.Swap -> R.string.transaction_details_status_message_swap
-            is RpcHistoryTransaction.Transfer -> R.string.transaction_details_status_message_send
+            is RpcHistoryTransaction.Swap -> resources.getString(transaction.getTypeName())
+            is RpcHistoryTransaction.Transfer -> resources.getString(transaction.getTypeName())
+            is RpcHistoryTransaction.BurnOrMint -> resources.getString(transaction.getTitle())
+            is RpcHistoryTransaction.StakeUnstake -> resources.getString(transaction.getTypeName())
+            is RpcHistoryTransaction.Unknown -> resources.getString(R.string.transaction_history_unknown)
             else -> null
-        }?.let { errorMessage ->
-            view?.showErrorState(errorMessage)
+        }?.also { errorTypeName ->
+            view?.showErrorState(
+                resources.getString(R.string.transaction_details_status_message_format, errorTypeName)
+            )
         }
     }
 }
