@@ -32,6 +32,8 @@ jobs:
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: "Testing last commit changelog"
         uses: ./.github/actions/setup-changelog
+      - name: "Get last commit hash and save into LastCommit.kt"
+        run: ./gradlew setLastCommitHash -Phash=$(git rev-parse HEAD)
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
