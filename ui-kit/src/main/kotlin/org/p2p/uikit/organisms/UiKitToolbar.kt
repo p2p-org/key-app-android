@@ -3,7 +3,6 @@ package org.p2p.uikit.organisms
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
@@ -34,6 +33,7 @@ class UiKitToolbar @JvmOverloads constructor(
     ) {
         inflateMenu(menuRes)
 
+
         val search = menu.findItem(R.id.menuItemSearch)
         searchView = search.actionView as SearchView
         searchView!!.apply {
@@ -43,13 +43,6 @@ class UiKitToolbar @JvmOverloads constructor(
                 showSoftKeyboard()
             }
             setOnQueryTextListener(this@UiKitToolbar)
-        }
-
-        val searchIcon = menu.findItem(R.id.menuItemSearchIcon)
-        searchIcon.isVisible = false
-        searchIcon.setOnMenuItemClickListener {
-            toggleSearchView()
-            true
         }
     }
 
@@ -74,21 +67,5 @@ class UiKitToolbar @JvmOverloads constructor(
 
             return@setOnEditorActionListener false
         }
-    }
-
-    fun toggleSearchView() {
-        searchView?.apply {
-            if (isShown) {
-                isVisible = false
-                onActionViewCollapsed()
-            } else {
-                isVisible = true
-                onActionViewExpanded()
-            }
-        }
-    }
-
-    fun setSearchMenuItemVisibility(isVisible: Boolean) {
-        menu?.findItem(R.id.menuItemSearch)?.isVisible = isVisible
     }
 }

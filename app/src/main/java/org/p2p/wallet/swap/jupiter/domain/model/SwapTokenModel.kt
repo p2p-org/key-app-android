@@ -14,20 +14,20 @@ sealed interface SwapTokenModel {
 
     data class UserToken(
         val details: Token.Active,
-        val tokenAmount: BigDecimal = token.total,
-        val tokenAmountInUsd: BigDecimal? = token.totalInUsd
     ) : SwapTokenModel {
         override val decimals: Int = details.decimals
         override val mintAddress: Base58String = details.mintAddress.toBase58Instance()
         override val tokenName: String = details.tokenName
+        val tokenAmount: BigDecimal = details.total
+        val tokenAmountInUsd: BigDecimal? = details.totalInUsd
     }
 
     data class JupiterToken(
         val details: JupiterSwapToken,
-        val iconUrl: String? = token.logoUri,
     ) : SwapTokenModel {
         override val decimals: Int = details.decimals
         override val mintAddress: Base58String = details.tokenMint
         override val tokenName: String = details.tokenName
+        val iconUrl: String? = details.logoUri
     }
 }

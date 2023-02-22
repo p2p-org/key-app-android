@@ -40,7 +40,7 @@ class SwapTokensToCellItemsMapper {
     }
 
     private val otherTokensSorter = Comparator<SwapTokenModel.JupiterToken> { current, next ->
-        current.token.tokenName.compareTo(next.token.tokenName)
+        current.details.tokenName.compareTo(next.details.tokenName)
     }
 
     fun toCellItems(
@@ -61,17 +61,17 @@ class SwapTokensToCellItemsMapper {
             is SwapTokenModel.JupiterToken -> {
                 createTokenFinanceCellModel(
                     tokenIconUrl = chosenToken.iconUrl.orEmpty().toUri(),
-                    tokenName = chosenToken.token.tokenName,
+                    tokenName = chosenToken.details.tokenName,
                     totalTokenAmount = null,
                     totalTokenPriceInUsd = null
                 )
             }
             is SwapTokenModel.UserToken -> {
                 createTokenFinanceCellModel(
-                    tokenIconUrl = chosenToken.token.iconUrl.orEmpty().toUri(),
-                    tokenName = chosenToken.token.tokenName,
-                    totalTokenAmount = chosenToken.token.getFormattedTotal(includeSymbol = true),
-                    totalTokenPriceInUsd = chosenToken.token.getFormattedUsdTotal()
+                    tokenIconUrl = chosenToken.details.iconUrl.orEmpty().toUri(),
+                    tokenName = chosenToken.details.tokenName,
+                    totalTokenAmount = chosenToken.details.getFormattedTotal(includeSymbol = true),
+                    totalTokenPriceInUsd = chosenToken.details.getFormattedUsdTotal()
                 )
             }
         }
@@ -86,10 +86,10 @@ class SwapTokensToCellItemsMapper {
             .sortedWith(userTokensSorter)
             .map {
                 createTokenFinanceCellModel(
-                    tokenIconUrl = it.token.iconUrl.orEmpty().toUri(),
-                    tokenName = it.token.tokenName,
-                    totalTokenAmount = it.token.getFormattedTotal(includeSymbol = true),
-                    totalTokenPriceInUsd = it.token.getFormattedUsdTotal()
+                    tokenIconUrl = it.details.iconUrl.orEmpty().toUri(),
+                    tokenName = it.details.tokenName,
+                    totalTokenAmount = it.details.getFormattedTotal(includeSymbol = true),
+                    totalTokenPriceInUsd = it.details.getFormattedUsdTotal()
                 )
             }
 
@@ -103,8 +103,8 @@ class SwapTokensToCellItemsMapper {
             .sortedWith(otherTokensSorter)
             .map {
                 createTokenFinanceCellModel(
-                    tokenIconUrl = it.token.logoUri.orEmpty().toUri(),
-                    tokenName = it.token.tokenName,
+                    tokenIconUrl = it.details.logoUri.orEmpty().toUri(),
+                    tokenName = it.details.tokenName,
                     totalTokenAmount = null,
                     totalTokenPriceInUsd = null
                 )
