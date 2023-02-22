@@ -44,6 +44,6 @@ fun TextView.bind(textContainer: TextContainer) {
         is TextContainer.Raw -> text = textContainer.text
         is TextContainer.Res -> setText(textContainer.textRes)
         is TextContainer.ResParams ->
-            text = context.getString(textContainer.textRes, textContainer.args.toTypedArray())
+            text = context.getString(textContainer.textRes, *textContainer.args.toTypedArray())
     }
 }
