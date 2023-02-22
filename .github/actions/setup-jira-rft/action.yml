@@ -18,11 +18,8 @@ runs:
         chmod +x ./bash_scripts/find_jira_key.sh
         jira_ticket=$(./bash_scripts/find_jira_key.sh)
         echo "JIRA Ticket: $jira_ticket"
-    - name: "Update JIRA issue status"
-      shell: bash
-      run: |
-        curl -D- -H "Authorization: Basic ${{ inputs.jira-api-token }}" \
-          -X PUT \
-          -H "Content-Type: application/json" \
-          -d '{"fields": {"status": {"name": "QA"}}}' \
-          https://${{ inputs.jira-base-url }}/rest/api/2/issue/${{ env.jira-ticket }}
+    - name: "Jira Ticket Transition"
+      uses: atlassian/gajira-transition@v3
+      with:
+        issue: ${{ steps.find-jira-ticket.outputs.jira_ticket }}
+        transition: "QA"
