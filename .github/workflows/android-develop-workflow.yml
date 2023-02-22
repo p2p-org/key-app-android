@@ -1,8 +1,7 @@
 # Workflow for develop branch changes.
 # When a pull request is being merged in develop, this workflows triggers
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - develop
 
@@ -10,6 +9,8 @@ jobs:
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
+    # Triggering this workflow only when PR is merged. Merge commit has the length of 2
+    if: ${{ github.event.head_commit.parents | length == 2 }}
     steps:
       - uses: actions/checkout@v3
         with:
