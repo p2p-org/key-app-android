@@ -45,13 +45,6 @@ class UiKitToolbar @JvmOverloads constructor(
             }
             setOnQueryTextListener(this@UiKitToolbar)
         }
-
-        val searchIcon = menu.findItem(R.id.menuItemSearchIcon)
-        searchIcon.isVisible = false
-        searchIcon.setOnMenuItemClickListener {
-            toggleSearchView()
-            true
-        }
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
@@ -75,21 +68,5 @@ class UiKitToolbar @JvmOverloads constructor(
 
             return@setOnEditorActionListener false
         }
-    }
-
-    fun toggleSearchView() {
-        searchView?.apply {
-            if (isShown) {
-                isVisible = false
-                onActionViewCollapsed()
-            } else {
-                isVisible = true
-                onActionViewExpanded()
-            }
-        }
-    }
-
-    fun setSearchMenuItemVisibility(isVisible: Boolean) {
-        menu?.findItem(R.id.menuItemSearch)?.isVisible = isVisible
     }
 }
