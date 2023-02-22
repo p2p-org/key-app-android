@@ -8,6 +8,8 @@ import android.widget.LinearLayout
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSectionHeaderBinding
 import org.p2p.uikit.utils.inflateViewBinding
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bind
 
 internal class UiKitSectionHeader @JvmOverloads constructor(
     context: Context,
@@ -62,7 +64,7 @@ internal class UiKitSectionHeader @JvmOverloads constructor(
     }
 
     internal fun bind(model: SectionHeaderCellModel) {
-        model.sectionTitle.applyTo(binding.titleTextView)
+        binding.titleTextView.bind(TextViewCellModel.Raw(model.sectionTitle))
         binding.chevronImageView.isVisible = model.isShevronVisible
     }
 }
