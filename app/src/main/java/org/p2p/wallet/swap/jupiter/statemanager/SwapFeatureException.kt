@@ -2,11 +2,11 @@ package org.p2p.wallet.swap.jupiter.statemanager
 
 import java.math.BigDecimal
 
-open class FeatureException : Exception() {
+open class SwapFeatureException : Exception() {
 
     data class NotValidTokenA(
         val notValidAmount: BigDecimal,
-    ) : FeatureException()
+    ) : SwapFeatureException()
 
-    object RoutesNotFound : FeatureException()
+    object RoutesNotFound : SwapFeatureException()
 }

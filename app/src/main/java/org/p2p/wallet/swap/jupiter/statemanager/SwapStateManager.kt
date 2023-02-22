@@ -48,7 +48,7 @@ class SwapStateManager(
                 }
             } catch (cancelled: CancellationException) {
                 Timber.i(cancelled)
-            } catch (featureException: FeatureException) {
+            } catch (featureException: SwapFeatureException) {
                 Timber.e(featureException)
                 state.value = SwapState.SwapException.FeatureExceptionWrapper(
                     previousFeatureState = actualNoErrorState(),
