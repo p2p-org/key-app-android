@@ -11,7 +11,6 @@ import org.p2p.wallet.swap.jupiter.api.response.CreateSwapTransactionResponse
 import org.p2p.wallet.swap.jupiter.api.response.JupiterAllSwapRoutesResponse
 import org.p2p.wallet.swap.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.swap.jupiter.api.response.tokens.JupiterTokenResponse
-import org.p2p.wallet.utils.Base58String
 
 interface SwapJupiterApi {
     @GET
@@ -26,10 +25,10 @@ interface SwapJupiterApi {
 
     @GET("v4/quote")
     suspend fun getSwapRoutes(
-        @Query("inputMint") inputMint: Base58String,
-        @Query("outputMint") outputMint: Base58String,
+        @Query("inputMint") inputMint: String,
+        @Query("outputMint") outputMint: String,
         @Query("amount") amountInLamports: BigInteger,
-        @Query("userPublicKey") userPublicKey: Base58String,
+        @Query("userPublicKey") userPublicKey: String,
         @Query("asLegacyTransaction") asLegacyTransaction: Boolean = true
     ): SwapJupiterQuoteResponse
 

@@ -28,10 +28,10 @@ class JupiterSwapRoutesRemoteRepository(
         userPublicKey: Base58String
     ): List<JupiterSwapRoute> = with(dispatchers.io) {
         val response = api.getSwapRoutes(
-            inputMint = jupiterSwap.inputMint,
-            outputMint = jupiterSwap.outputMint,
+            inputMint = jupiterSwap.inputMint.base58Value,
+            outputMint = jupiterSwap.outputMint.base58Value,
             amountInLamports = jupiterSwap.amountInLamports,
-            userPublicKey = userPublicKey
+            userPublicKey = userPublicKey.base58Value
         )
         mapper.fromNetwork(response)
     }

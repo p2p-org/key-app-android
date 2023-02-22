@@ -3,8 +3,6 @@ package org.p2p.wallet.common.mvp
 import androidx.annotation.AnimRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.View
@@ -14,6 +12,8 @@ import android.view.animation.AnimationUtils
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.insets.appleInsetPadding
+import org.p2p.core.utils.insets.consume
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
@@ -109,15 +109,15 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
     }
 
     protected open fun applyWindowInsets(rootView: View) {
-        rootView.doOnApplyWindowInsets { view, insets, initialPadding ->
-            val systemAndIme = insets.systemAndIme()
-            view.updatePadding(
-                left = initialPadding.left + systemAndIme.left,
-                top = initialPadding.top + systemAndIme.top,
-                right = initialPadding.right + systemAndIme.right,
-                bottom = initialPadding.bottom + systemAndIme.bottom,
-            )
-            WindowInsetsCompat.CONSUMED
+        rootView.doOnApplyWindowInsets { view, insets, _ ->
+            insets.systemAndIme().consume {
+                view.appleInsetPadding(
+                    left = this.left,
+                    top = this.top,
+                    right = this.right,
+                    bottom = this.bottom,
+                )
+            }
         }
     }
 
