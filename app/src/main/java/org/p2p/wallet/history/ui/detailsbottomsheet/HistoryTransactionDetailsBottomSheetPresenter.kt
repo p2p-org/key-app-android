@@ -223,7 +223,7 @@ class HistoryTransactionDetailsBottomSheetPresenter(
             is RpcHistoryTransaction.StakeUnstake -> resources.getString(transaction.getTypeName())
             is RpcHistoryTransaction.Unknown -> resources.getString(R.string.transaction_history_unknown)
             else -> null
-        }?.let { errorTypeName ->
+        }?.also { errorTypeName ->
             view?.showErrorState(
                 resources.getString(R.string.transaction_details_status_message_format, errorTypeName)
             )

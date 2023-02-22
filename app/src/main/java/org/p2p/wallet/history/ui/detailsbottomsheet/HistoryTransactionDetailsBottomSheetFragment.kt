@@ -239,12 +239,19 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     private fun List<RpcFee>?.formatFees(lessThenMinString: String): CharSequence {
-        return this?.let { fees ->
+        return if (this == null) {
+            getString(R.string.transaction_transaction_fee_free_value)
+        } else {
+            val fees = this
             buildSpannedString {
                 fees.mapIndexed { index, feeAmount ->
+                    val isNotLast = index != size - 1
                     val feeInFiat = feeAmount.totalInUsd.orZero()
-                    val formattedUsdAmount = if (feeInFiat.lessThenMinValue()) lessThenMinString
-                    else "$${feeInFiat.formatFiat()}"
+                    val formattedUsdAmount = if (feeInFiat.lessThenMinValue()) {
+                        lessThenMinString
+                    } else {
+                        "$${feeInFiat.formatFiat()}"
+                    }
 
                     val highlightedText = "($formattedUsdAmount)"
                     val commonText = buildString {
@@ -262,11 +269,11 @@ class HistoryTransactionDetailsBottomSheetFragment :
                             getColor(R.color.backgroundDisabled)
                         )
                     )
-                    if (index != fees.size - 1) {
+                    if (isNotLast) {
                         append("\n")
                     }
                 }
             }
-        } ?: getString(R.string.transaction_transaction_fee_free_value)
+        }
     }
 }

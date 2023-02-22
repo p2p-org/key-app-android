@@ -270,7 +270,12 @@ private fun List<RpcHistoryFeeResponse>.parseFees(): List<RpcFee>? {
         map { fee ->
             val feeInTokens = fee.amount?.amount.toBigDecimalOrZero()
             val feeInFiat = fee.amount?.usdAmount.toBigDecimalOrZero()
-            RpcFee(feeInTokens, feeInFiat, fee.token?.decimals, fee.token?.symbol)
+            RpcFee(
+                totalInTokens = feeInTokens,
+                totalInUsd = feeInFiat,
+                tokensDecimals = fee.token?.decimals,
+                tokenSymbol = fee.token?.symbol
+            )
         }
     }
 }
