@@ -3,6 +3,7 @@ package org.p2p.uikit.organisms
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
 import android.view.inputmethod.EditorInfo
@@ -28,7 +29,8 @@ class UiKitToolbar @JvmOverloads constructor(
 
     fun setSearchMenu(
         @MenuRes menuRes: Int = R.menu.menu_ui_kit_toolbar_search,
-        @StringRes searchHintRes: Int = R.string.common_search
+        @StringRes searchHintRes: Int = R.string.common_search,
+        showKeyboard: Boolean = true
     ) {
         inflateMenu(menuRes)
 
@@ -37,7 +39,9 @@ class UiKitToolbar @JvmOverloads constructor(
         searchView!!.apply {
             queryHint = getString(searchHintRes)
             onActionViewExpanded()
-            showSoftKeyboard()
+            if (showKeyboard) {
+                showSoftKeyboard()
+            }
             setOnQueryTextListener(this@UiKitToolbar)
         }
     }
