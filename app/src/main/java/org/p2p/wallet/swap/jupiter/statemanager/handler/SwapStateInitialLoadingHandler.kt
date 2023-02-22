@@ -21,7 +21,6 @@ class SwapStateInitialLoadingHandler(
         when (action) {
             is SwapStateAction.InitialLoading -> {
                 stateFlow.value = SwapState.InitialLoading
-
             }
             else -> Unit
         }
