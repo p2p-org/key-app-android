@@ -60,6 +60,7 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
 import retrofit2.Retrofit
 import retrofit2.create
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 
 object SwapModule : InjectionModule {
@@ -157,23 +158,23 @@ object SwapModule : InjectionModule {
         factory { (token: Token.Active?) ->
             if (token == null) {
                 CommonSwapTokenSelector(
-                    get(),
-                    get(),
-                    get(),
+                    jupiterTokensRepository = get(),
+                    homeLocalRepository = get(),
+                    dispatchers = get(),
                 )
             } else {
                 PreinstallTokenASelector(
-                    get(),
-                    get(),
-                    get(),
-                    token,
+                    jupiterTokensRepository = get(),
+                    dispatchers = get(),
+                    homeLocalRepository = get(),
+                    preinstallTokenA = token,
                 )
             }
         }
         factory { (token: Token.Active?) ->
             SwapStateInitialLoadingHandler(
-                get(),
-                get(parameters = { parametersOf(token) })
+                dispatchers = get(),
+                initialTokenSelector = get(parameters = { parametersOf(token) })
             )
         }
         factoryOf(::SwapStateLoadingRoutesHandler)
@@ -209,5 +210,4 @@ object SwapModule : InjectionModule {
             )
         } bind JupiterSwapContract.Presenter::class
     }
-    val swapStateManagerHolder = mutableMapOf<String, SwapStateManager>()
 }

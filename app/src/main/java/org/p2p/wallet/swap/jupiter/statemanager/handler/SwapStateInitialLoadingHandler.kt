@@ -2,10 +2,10 @@ package org.p2p.wallet.swap.jupiter.statemanager.handler
 
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_SLIPPAGE
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_SLIPPAGE
 import org.p2p.wallet.swap.jupiter.statemanager.token_selector.SwapInitialTokenSelector
 
 class SwapStateInitialLoadingHandler(

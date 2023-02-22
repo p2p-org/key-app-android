@@ -1,11 +1,11 @@
 package org.p2p.wallet.swap.ui.jupiter.main
 
-import java.math.BigDecimal
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.p2p.core.utils.isZero
+import java.math.BigDecimal
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.flowOn
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
@@ -13,6 +13,7 @@ import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
@@ -56,6 +57,10 @@ class JupiterSwapPresenter(
 
     override fun onSwapTokenClick() {
         stateManager.onNewAction(SwapStateAction.SwapSuccess)
+    }
+
+    override fun finishFeature(stateManagerHolderKey: String) {
+        SwapStateManagerHolder.clear(stateManagerHolderKey)
     }
 
     private fun handleFeatureState(state: SwapState) {

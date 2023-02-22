@@ -132,6 +132,6 @@ class JupiterSwapFragment :
 
     override fun onDestroy() {
         super.onDestroy()
-        SwapModule.swapStateManagerHolder.remove(stateManagerHolderKey)
+        presenter.finishFeature(stateManagerHolderKey)
     }
 }
