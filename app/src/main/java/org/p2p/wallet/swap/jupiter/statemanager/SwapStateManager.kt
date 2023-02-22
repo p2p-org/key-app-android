@@ -48,7 +48,7 @@ class SwapStateManager(
                 }
             } catch (cancelled: CancellationException) {
                 Timber.i(cancelled)
-            } catch (featureException: FeatureException) {
+            } catch (featureException: SwapFeatureException) {
                 Timber.e(featureException)
                 state.value = SwapState.SwapException.FeatureExceptionWrapper(
                     previousFeatureState = actualNoErrorState(),
@@ -77,7 +77,7 @@ class SwapStateManager(
                     delay(DELAY_IN_MILLIS)
                     handleNewAction(SwapStateAction.RefreshRoutes)
                 }
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 Timber.e(e)
                 // todo ignore?
             }

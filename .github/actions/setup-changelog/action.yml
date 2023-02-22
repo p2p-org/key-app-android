@@ -19,7 +19,7 @@ runs:
           current_commit_hash="$(git log -n 1 --pretty=%H origin/$GITHUB_HEAD_REF)"
         else
           # This is not a pull request, use GITHUB_BASE_REF
-          current_commit_hash="$(git log -n 1 --pretty=%H origin/$GITHUB_BASE_REF)"
+          current_commit_hash="$(git log -n 1 --pretty=%H origin/develop)"
         fi
         
         # Run the gradle task with the fromCommit and toCommit properties set
