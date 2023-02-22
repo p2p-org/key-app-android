@@ -81,8 +81,8 @@ class SwapWidgetMapper {
     private fun fiatAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw? {
         if (tokenAmount == null) return null
         val ratio = when (token) {
-            is SwapTokenModel.JupiterToken -> BigDecimal.ZERO
-            is SwapTokenModel.UserToken -> token.details.totalInUsd
+            is SwapTokenModel.JupiterToken -> tokenAmount
+            is SwapTokenModel.UserToken -> token.token.totalInUsd
         } ?: return null
 
         val usd = tokenAmount.multiply(ratio).formatFiat()
@@ -97,7 +97,12 @@ class SwapWidgetMapper {
 
     private fun tokenName(token: SwapTokenModel): TextViewCellModel.Raw =
         TextViewCellModel.Raw(
-            TextContainer(token.tokenName)
+            TextContainer(
+                when (token) {
+                    is SwapTokenModel.JupiterToken -> token.token.tokenName
+                    is SwapTokenModel.UserToken -> token.token.tokenName
+                }
+            )
         )
 
     private fun balance(token: SwapTokenModel): TextViewCellModel.Raw? =
@@ -123,7 +128,7 @@ class SwapWidgetMapper {
         )
 
     private fun tokenAmount(token: SwapTokenModel.UserToken): String =
-        token.details.total.formatToken(token.details.decimals)
+        token.token.total.formatToken(token.token.decimals)
 
     private fun swapWidgetFromTitle(): TextViewCellModel.Raw =
         TextViewCellModel.Raw(TextContainer(R.string.swap_main_you_pay))

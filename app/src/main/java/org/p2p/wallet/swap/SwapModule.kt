@@ -44,6 +44,10 @@ import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransaction
 import org.p2p.wallet.swap.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRemoteRepository
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import org.p2p.wallet.swap.ui.jupiter.tokens.SwapTokensContract
+import org.p2p.wallet.swap.ui.jupiter.tokens.interactor.SwapTokensInteractor
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensToCellItemsMapper
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
 
@@ -134,5 +138,9 @@ object SwapModule : InjectionModule {
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
 
         factoryOf(::JupiterSwapInteractor)
+
+        factoryOf(::SwapTokensInteractor)
+        factoryOf(::SwapTokensToCellItemsMapper)
+        factoryOf(::SwapTokensPresenter) bind SwapTokensContract.Presenter::class
     }
 }

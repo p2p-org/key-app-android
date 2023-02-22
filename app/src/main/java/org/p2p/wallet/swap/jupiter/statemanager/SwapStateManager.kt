@@ -8,6 +8,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class SwapStateManager(
@@ -20,6 +22,10 @@ class SwapStateManager(
     private var refreshJob: Job? = null
 
     fun observe(): StateFlow<SwapState> = state
+
+    suspend fun <T> getStateValue(getter: (state: SwapState) -> T): T {
+        return getter.invoke(state.first())
+    }
 
     fun onNewAction(action: SwapStateAction) {
         val currentState = state.value

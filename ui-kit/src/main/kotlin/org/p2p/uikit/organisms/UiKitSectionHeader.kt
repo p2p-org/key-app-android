@@ -1,15 +1,16 @@
-package org.p2p.uikit.organisms
+package org.p2p.uikit.organisms.sectionheader
 
+import androidx.core.content.res.use
+import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
-import androidx.core.content.res.use
-import androidx.core.view.isVisible
+import org.p2p.core.common.bind
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSectionHeaderBinding
 import org.p2p.uikit.utils.inflateViewBinding
 
-class UiKitSectionHeader @JvmOverloads constructor(
+internal class UiKitSectionHeader @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -59,5 +60,10 @@ class UiKitSectionHeader @JvmOverloads constructor(
             .animate()
             .rotation(rotationValue)
             .start()
+    }
+
+    internal fun bind(model: SectionHeaderCellModel) {
+        binding.titleTextView.bind(model.sectionTitle)
+        binding.chevronImageView.isVisible = model.isShevronVisible
     }
 }

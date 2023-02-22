@@ -1,5 +1,6 @@
 package org.p2p.wallet.swap.jupiter.domain.model
 
+import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.utils.Base58String
@@ -13,6 +14,8 @@ sealed interface SwapTokenModel {
 
     data class UserToken(
         val details: Token.Active,
+        val tokenAmount: BigDecimal = token.total,
+        val tokenAmountInUsd: BigDecimal? = token.totalInUsd
     ) : SwapTokenModel {
         override val decimals: Int = details.decimals
         override val mintAddress: Base58String = details.mintAddress.toBase58Instance()
@@ -21,7 +24,7 @@ sealed interface SwapTokenModel {
 
     data class JupiterToken(
         val details: JupiterSwapToken,
-        val iconUrl: String?,
+        val iconUrl: String? = token.logoUri,
     ) : SwapTokenModel {
         override val decimals: Int = details.decimals
         override val mintAddress: Base58String = details.tokenMint

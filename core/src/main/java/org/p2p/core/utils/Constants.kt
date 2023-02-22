@@ -30,6 +30,8 @@ object Constants {
 
     // Arbitrary mint to represent SOL (not wrapped SOL).
     const val SOL_MINT = "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ"
+    const val USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    const val USDT_MINT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
 
     const val SOL_NAME = "Solana"
 
