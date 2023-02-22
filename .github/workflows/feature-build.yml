@@ -133,8 +133,8 @@ jobs:
         run: |
           value=`cat timestamp.txt`
           bash bash_scripts/slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
-      - name: "Get last commit hash and save into last_commit_hash.txt"
-        run: git rev-parse HEAD > last_commit_hash.txt
+      - name: "Get last commit hash and save into LastCommit.kt"
+        run: ./gradlew setLastCommitHash -Phash=$(git rev-parse HEAD)
       - name: "Commit and Push changes"
         uses: ./.github/actions/setup-commit
         with:
