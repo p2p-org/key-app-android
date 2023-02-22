@@ -41,7 +41,6 @@
 
     <string name="transaction_details_no_balance_change">No balance change</string>
 
-    <string name="transaction_details_status_message_swap">There was a problem with the swap, your funds were refunded</string>
-    <string name="transaction_details_status_message_send">The transaction was rejected by the Solana blockchain 🥺</string>
+    <string name="transaction_details_status_message_format">There was a problem with the %s, your funds were refunded</string>
 
 </resources>
