@@ -5,8 +5,6 @@ import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 
-private const val TAG = "HistoryRepository"
-
 class HistoryRepository(
     private val repositories: List<HistoryRemoteRepository>
 ) : HistoryRemoteRepository {
@@ -17,7 +15,7 @@ class HistoryRepository(
     }
 
     override suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult {
-        val result = repositories.map { it.loadNextPage(limit) }
+        val result = repositories.map { it.loadNextPage(limit, mintAddress) }
         return parsePagingResult(result)
     }
 
@@ -31,8 +29,8 @@ class HistoryRepository(
         return null
     }
 
-    override fun getPagingState(): HistoryPagingState {
-        return if (repositories.any { it.getPagingState() == HistoryPagingState.ACTIVE }) {
+    override fun getPagingState(mintAddress: String?): HistoryPagingState {
+        return if (repositories.any { it.getPagingState(mintAddress) == HistoryPagingState.ACTIVE }) {
             HistoryPagingState.ACTIVE
         } else {
             HistoryPagingState.INACTIVE
@@ -42,14 +40,14 @@ class HistoryRepository(
     private fun parsePagingResult(pagingResult: List<HistoryPagingResult>): HistoryPagingResult {
         val newTransactions = mutableListOf<HistoryTransaction>()
         val errorMessageBuilder = StringBuilder()
-        pagingResult.forEach { pagingResult ->
-            when (pagingResult) {
+        pagingResult.forEach { result ->
+            when (result) {
                 is HistoryPagingResult.Error -> {
-                    errorMessageBuilder.append(pagingResult.cause)
+                    errorMessageBuilder.append(result.cause)
                     errorMessageBuilder.append("\n")
                 }
                 is HistoryPagingResult.Success -> {
-                    newTransactions.addAll(pagingResult.data)
+                    newTransactions.addAll(result.data)
                 }
             }
         }

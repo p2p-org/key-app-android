@@ -17,8 +17,7 @@ private const val REQUEST_PARAMS_LIMIT = "limit"
 private const val REQUEST_PARAMS_OFFSET = "offset"
 private const val REQUEST_PARAMS_SIGNATURE = "signature"
 private const val REQUEST_PARAMS_NAME = "get_transactions"
-
-private const val TAG = "RpcHistoryRepository"
+private const val REQUEST_PARAMS_MINT = "mint"
 
 class RpcHistoryRepository(
     private val historyApi: RpcHistoryServiceApi,
@@ -28,10 +27,11 @@ class RpcHistoryRepository(
 ) : HistoryRemoteRepository {
 
     private val allTransactions = mutableMapOf<String, MutableList<RpcHistoryTransactionResponse>>()
-    private var historyPagingState = HistoryPagingState.ACTIVE
+    private val tokenPagingState = mutableMapOf<String, HistoryPagingState>()
 
     override suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
         allTransactions.clear()
+        tokenPagingState.clear()
         return try {
             val response = fetchHistoryTransactions(limit, mintAddress)
             val domainItems = response.map { converter.toDomain(it) }
@@ -60,8 +60,9 @@ class RpcHistoryRepository(
             }
     }
 
-    override fun getPagingState(): HistoryPagingState {
-        return historyPagingState
+    override fun getPagingState(mintAddress: String?): HistoryPagingState {
+        val tokenAddress = mintAddress ?: tokenKeyProvider.publicKey
+        return tokenPagingState.getOrPut(tokenAddress) { HistoryPagingState.ACTIVE }
     }
 
     private suspend fun fetchHistoryTransactions(
@@ -69,12 +70,13 @@ class RpcHistoryRepository(
         mintAddress: String?
     ): List<RpcHistoryTransactionResponse> {
         val tokenAddress = mintAddress ?: tokenKeyProvider.publicKey
-
+        val historyPagingState = getPagingState(tokenAddress)
         if (historyPagingState == HistoryPagingState.INACTIVE) {
             return findTransactionsByTokenAddress(tokenAddress)
         }
 
         val offset = findTransactionsByTokenAddress(tokenAddress).size.toLong()
+
         val signature = historyServiceSignatureFieldGenerator.generateSignature(
             pubKey = tokenKeyProvider.publicKey,
             privateKey = tokenKeyProvider.keyPair,
@@ -86,7 +88,8 @@ class RpcHistoryRepository(
             REQUEST_PARAMS_USER_ID to tokenKeyProvider.publicKey,
             REQUEST_PARAMS_LIMIT to limit,
             REQUEST_PARAMS_OFFSET to offset,
-            REQUEST_PARAMS_SIGNATURE to signature
+            REQUEST_PARAMS_SIGNATURE to signature,
+            REQUEST_PARAMS_MINT to mintAddress
         )
 
         val rpcRequest = RpcMapRequest(
@@ -99,7 +102,7 @@ class RpcHistoryRepository(
         return try {
             val result = historyApi.getTransactionHistory(rpcRequest).result
             if (result.isEmpty() || result.size < limit) {
-                historyPagingState = HistoryPagingState.INACTIVE
+                tokenPagingState[tokenAddress] = HistoryPagingState.INACTIVE
             }
             if (!localTransactions.containsAll(result)) {
                 localTransactions.addAll(result)
@@ -107,7 +110,7 @@ class RpcHistoryRepository(
             allTransactions[tokenAddress] = localTransactions
             findTransactionsByTokenAddress(tokenAddress)
         } catch (e: EmptyDataException) {
-            historyPagingState = HistoryPagingState.INACTIVE
+            tokenPagingState[tokenAddress] = HistoryPagingState.INACTIVE
             findTransactionsByTokenAddress(tokenAddress)
         }
     }

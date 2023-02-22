@@ -8,16 +8,15 @@ class HistoryInteractor(
     private val historyServiceRepository: HistoryRemoteRepository
 ) {
 
-    suspend fun loadHistory(limit: Int): HistoryPagingResult {
-        return historyServiceRepository.loadHistory(limit)
+    suspend fun loadHistory(limit: Int, mintAddress: String?): HistoryPagingResult {
+        return historyServiceRepository.loadHistory(limit, mintAddress)
     }
 
-    suspend fun loadNextPage(limit: Int): HistoryPagingResult {
-        return historyServiceRepository.loadNextPage(limit)
+    suspend fun loadNextPage(limit: Int, mintAddress: String?): HistoryPagingResult {
+        return historyServiceRepository.loadNextPage(limit, mintAddress)
     }
 
     suspend fun findTransactionById(id: String): HistoryTransaction? {
-        val foundTransaction = historyServiceRepository.findTransactionById(id)
-        return foundTransaction
+        return historyServiceRepository.findTransactionById(id)
     }
 }

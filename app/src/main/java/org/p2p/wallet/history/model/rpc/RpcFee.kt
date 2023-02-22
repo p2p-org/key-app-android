@@ -5,7 +5,9 @@ import java.math.BigDecimal
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class RpcHistoryAmount(
-    val total: BigDecimal,
-    val totalInUsd: BigDecimal?
+class RpcFee(
+    val totalInTokens: BigDecimal,
+    val totalInUsd: BigDecimal?,
+    val tokensDecimals: Int?,
+    val tokenSymbol: String?
 ) : Parcelable

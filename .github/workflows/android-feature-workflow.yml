@@ -32,16 +32,16 @@ jobs:
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
       - name: Run ktlint
         run: ./gradlew ktlint -PautoCorrect=0
-  android-build-artifacts:
-    name: "Run build feature artifacts"
+  android-unit-tests:
+    name: "Run unit tests"
     needs:
       - android-lint
 
     runs-on: ubuntu-latest
-    environment: manual
     steps:
-      - name: "Checkout to the current commit hash"
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          ref: develop
       - name: "Initializing firebase configs"
         uses: ./.github/actions/setup-google-services
         with:
@@ -65,29 +65,5 @@ jobs:
           sentry-auth-dsn: ${{ secrets.SENTRY_AUTH_DSN }}
           lokalise-key: ${{ secrets.LOKALISE_KEY }}
           lokalise-app-id: ${{ secrets.LOKALISE_APP_ID }}
-      - name: "Generate changelog"
-        uses: ./.github/actions/setup-changelog
-      - name: "Send start deploy message to slack"
-        run: |
-          bash bash_scripts/slack_deploy_start_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }}
-      - name: "Build feature APK"
-        run: ./gradlew assembleFeature
-      - name: "Build & upload APK to Firebase (Feature)"
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        run: ./gradlew appDistributionUploadFeature
-      - name: "Upload feature APK to Slack"
-        uses: ./.github/actions/setup-slack
-        with:
-          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          build-type: "feature"
-          artifact-type: "apk"
-      - name: "Upload changelog, and Jira ticket to slack channel"
-        run: |
-          bash bash_scripts/slack_upload_changelog.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} CHANGELOG.txt
-      - name: "Send finish deploy message to slack"
-        run: |
-          value=`cat timestamp.txt`
-          bash bash_scripts/slack_deploy_finish_message.sh ${{ secrets.SLACK_BOT_TOKEN }} ${{ secrets.SLACK_CHANNEL_ID }} $value
+      - name: Run unit tests
+        run: ./gradlew testDebug

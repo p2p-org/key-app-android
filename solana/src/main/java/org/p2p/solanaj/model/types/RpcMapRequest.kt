@@ -8,7 +8,7 @@ data class RpcMapRequest(
     val method: String,
 
     @SerializedName("params")
-    val params: Map<String, kotlin.Any>?,
+    val params: Map<String, Any?>,
 
     @SerializedName("jsonrpc")
     val jsonrpc: String = "2.0",
@@ -17,7 +17,7 @@ data class RpcMapRequest(
     val id: String = UUID.randomUUID().toString()
 ) {
 
-    constructor(method: String, params: MutableMap<String, kotlin.Any>) : this(
+    constructor(method: String, params: Map<String, kotlin.Any?>) : this(
         method = method, params = params, jsonrpc = "2.0"
     )
 }

@@ -11,5 +11,5 @@ interface HistoryRemoteRepository {
 
     suspend fun findTransactionById(id: String): HistoryTransaction?
 
-    fun getPagingState(): HistoryPagingState
+    fun getPagingState(mintAddress: String?): HistoryPagingState
 }

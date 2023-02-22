@@ -9,5 +9,7 @@ interface SplashContract {
         fun navigateToSignIn()
     }
 
-    interface Presenter : MvpPresenter<View>
+    interface Presenter : MvpPresenter<View> {
+        fun logNotificationPermissionGranted(isGranted: Boolean)
+    }
 }
