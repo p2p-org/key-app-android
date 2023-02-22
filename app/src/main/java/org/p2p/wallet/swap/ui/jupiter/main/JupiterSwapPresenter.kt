@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.onEach
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapButtonMapper
 import org.p2p.wallet.swap.ui.jupiter.main.mapper.SwapWidgetMapper
 
@@ -45,8 +45,7 @@ class JupiterSwapPresenter(
     }
 
     override fun finishFeature(stateManagerHolderKey: String) {
-        SwapModule.swapStateManagerHolder[stateManagerHolderKey]?.finishWork()
-        SwapModule.swapStateManagerHolder.remove(stateManagerHolderKey)
+        SwapStateManagerHolder.clear(stateManagerHolderKey)
     }
 
     private fun handleFeatureState(state: SwapState) {

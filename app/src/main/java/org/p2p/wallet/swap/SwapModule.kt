@@ -60,6 +60,7 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
 import retrofit2.Retrofit
 import retrofit2.create
+import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 
 object SwapModule : InjectionModule {
 
@@ -191,7 +192,7 @@ object SwapModule : InjectionModule {
         }
 
         factory { (token: Token.Active?, stateManagerHolderKey: String) ->
-            val stateManager = swapStateManagerHolder.getOrPut(stateManagerHolderKey) {
+            val stateManager = SwapStateManagerHolder.getOrCreate(stateManagerHolderKey) {
                 SwapStateManager(
                     dispatchers = get(),
                     handlers = get(parameters = { parametersOf(token) }),
@@ -204,5 +205,4 @@ object SwapModule : InjectionModule {
             )
         } bind JupiterSwapContract.Presenter::class
     }
-    val swapStateManagerHolder = mutableMapOf<String, SwapStateManager>()
 }
