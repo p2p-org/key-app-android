@@ -19,7 +19,7 @@ class CommonSwapTokenSelector(
         val userTokensJob = async { homeLocalRepository.getUserTokens() }
         val jupiterTokens = jupiterTokensJob.await()
         val userTokens = userTokensJob.await()
-        val haveUCDC = userTokens.any { it.isUSDC }
+        val haveUSDC = userTokens.any { it.isUSDC }
         val haveSOL = userTokens.any { it.isSOL }
         val jupiterMints = jupiterTokens.map { it.tokenMint.base58Value }
         val userTokensContainsJupiter = userTokens.filter {
@@ -31,7 +31,7 @@ class CommonSwapTokenSelector(
         val tokenB: SwapTokenModel
 
         when {
-            haveUCDC -> {
+            haveUSDC -> {
                 tokenA = SwapTokenModel.UserToken(userTokens.first { it.isUSDC })
                 tokenB = jupiterSwapGetTokenB(jupiterTokens, userTokens, true)
             }
