@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.ui.jupiter.main
 
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.core.utils.isZero
 import org.p2p.wallet.swap.jupiter.statemanager.SwapState
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
@@ -29,7 +30,13 @@ class JupiterSwapPresenter(
     }
 
     override fun onTokenAmountChange(amount: String) {
-        stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(amount.toBigDecimalOrZero()))
+        val newAmount = amount.toBigDecimalOrZero()
+        val action = if (newAmount.isZero()) {
+            SwapStateAction.EmptyAmountTokenA
+        } else {
+            SwapStateAction.TokenAAmountChanged(newAmount)
+        }
+        stateManager.onNewAction(action)
     }
 
     override fun onSwapTokenClick() {
@@ -43,6 +50,12 @@ class JupiterSwapPresenter(
             is SwapState.LoadingRoutes -> handleLoadingRoutes(state)
             is SwapState.LoadingTransaction -> handleLoadingTransaction(state)
             is SwapState.SwapLoaded -> handleSwapLoaded(state)
+            is SwapState.SwapException.FeatureExceptionWrapper -> {
+                // todo
+            }
+            is SwapState.SwapException.OtherException -> {
+                // todo
+            }
         }
     }
 
