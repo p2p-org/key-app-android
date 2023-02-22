@@ -54,7 +54,7 @@ class SwapStateManager(
                     previousFeatureState = actualNoErrorState(),
                     featureException = featureException,
                 )
-            } catch (exception: Exception) {
+            } catch (exception: Throwable) {
                 Timber.e(exception)
                 state.value = SwapState.SwapException.OtherException(
                     previousFeatureState = actualNoErrorState(),
