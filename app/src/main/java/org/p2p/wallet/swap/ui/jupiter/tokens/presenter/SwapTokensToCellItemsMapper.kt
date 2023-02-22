@@ -147,16 +147,10 @@ class SwapTokensToCellItemsMapper {
                 .let(::commonCircleImage)
                 .let(IconWrapperCellModel::SingleIcon)
 
-        val tokenNameText = TextViewCellModel.Raw(
-            TextContainer.Raw(tokenName),
-            textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text3,
-            textColor = R.color.text_night
-        )
+        val tokenNameText = TextViewCellModel.Raw(TextContainer.Raw(tokenName),)
         val symbolOrAmountText = totalTokenAmount?.let { "$totalTokenAmount $tokenName" } ?: tokenName
         val tokenSymbolWithAmount = TextViewCellModel.Raw(
             TextContainer.Raw(symbolOrAmountText),
-            textAppearance = R.style.UiKit_TextAppearance_Regular_Label1,
-            textColor = R.color.text_mountain
         )
 
         return LeftSideCellModel.IconWithText(
@@ -171,8 +165,6 @@ class SwapTokensToCellItemsMapper {
 
         val totalTokenInUsdText = TextViewCellModel.Raw(
             TextContainer.Raw("${Constants.USD_SYMBOL} $totalTokenPriceInUsd"),
-            textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text3,
-            textColor = R.color.text_night
         )
         return RightSideCellModel.TwoLineText(
             firstLineText = totalTokenInUsdText,
