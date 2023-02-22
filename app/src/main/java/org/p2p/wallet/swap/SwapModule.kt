@@ -194,7 +194,7 @@ object SwapModule : InjectionModule {
         factoryOf(::SwapTokenRateLoader)
 
         factory { (token: Token.Active?, stateManagerHolderKey: String) ->
-            val stateManager = swapStateManagerHolder.getOrPut(stateManagerHolderKey) {
+            val stateManager = SwapStateManagerHolder.getOrCreate(stateManagerHolderKey) {
                 SwapStateManager(
                     dispatchers = get(),
                     handlers = get(parameters = { parametersOf(token) }),
