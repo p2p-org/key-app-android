@@ -2,6 +2,7 @@ package org.p2p.wallet.swap.ui.jupiter.main.mapper
 
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.uikit.utils.skeleton.textCellSkeleton
@@ -91,7 +92,7 @@ class SwapWidgetMapper {
 
     private fun tokenAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw {
         val decimals = token.decimals
-        val amountText = tokenAmount?.formatToken(decimals) ?: ""
+        val amountText = tokenAmount?.formatToken(decimals) ?: emptyString()
         return TextViewCellModel.Raw(TextContainer(amountText))
     }
 

@@ -56,7 +56,7 @@ class SwapWidget @JvmOverloads constructor(
     }
 
     private fun bindLoading(model: SwapWidgetModel.Loading) = with(binding) {
-        isEnabled = false
+        isEnabled = !model.isStatic
         textViewWidgetTitle.bindOrGone(model.widgetTitle)
         textViewAvailableAmountTitle.isVisible = false
         textViewAvailableAmountValue.isVisible = false
