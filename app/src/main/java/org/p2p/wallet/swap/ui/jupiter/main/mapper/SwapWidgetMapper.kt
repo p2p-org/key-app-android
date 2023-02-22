@@ -10,6 +10,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
+import org.p2p.wallet.swap.ui.jupiter.main.SwapRateLoaderState
 import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 
 class SwapWidgetMapper {
@@ -28,6 +29,30 @@ class SwapWidgetMapper {
         }
     }
 
+    fun mapFiatAmount(
+        state: SwapRateLoaderState,
+        widgetModel: SwapWidgetModel.Content,
+        tokenAmount: BigDecimal
+    ): SwapWidgetModel.Content {
+        return when (state) {
+            SwapRateLoaderState.Empty,
+            SwapRateLoaderState.Error,
+            is SwapRateLoaderState.HaveNotRate -> widgetModel.copy(fiatAmount = null)
+            is SwapRateLoaderState.Loaded -> widgetModel.copy(
+                fiatAmount = fiatAmount(
+                    fiatAmount = tokenAmount.multiply(state.rate)
+                )
+            )
+            SwapRateLoaderState.Loading -> widgetModel.copy(
+                fiatAmount = textCellSkeleton(
+                    height = 8.toPx(),
+                    width = 84.toPx(),
+                    radius = 2f.toPx(),
+                )
+            )
+        }
+    }
+
     fun mapTokenA(
         token: SwapTokenModel,
         tokenAmount: BigDecimal? = null,
@@ -39,17 +64,12 @@ class SwapWidgetMapper {
             balance = balance(token),
             currencyName = tokenName(token),
             amount = tokenAmount(token, tokenAmount),
-            fiatAmount = fiatAmount(token, tokenAmount),
+            fiatAmount = null,
             amountMaxDecimals = token.decimals,
         )
     }
 
     fun mapTokenB(token: SwapTokenModel, tokenAmount: BigDecimal?): SwapWidgetModel {
-        var fiatAmount = fiatAmount(token, tokenAmount)
-        if (true) {
-            // todo price impact
-            fiatAmount = fiatAmount?.copy(textColor = R.color.text_night)
-        }
         return SwapWidgetModel.Content(
             isStatic = true,
             widgetTitle = swapWidgetToTitle(),
@@ -57,7 +77,7 @@ class SwapWidgetMapper {
             balance = balance(token),
             currencyName = tokenName(token),
             amount = tokenAmount(token, tokenAmount),
-            fiatAmount = fiatAmount,
+            fiatAmount = null,
             amountMaxDecimals = token.decimals,
         )
     }
@@ -79,14 +99,8 @@ class SwapWidgetMapper {
             availableAmount = null,
         )
 
-    private fun fiatAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw? {
-        if (tokenAmount == null) return null
-        val ratio = when (token) {
-            is SwapTokenModel.JupiterToken -> BigDecimal.ZERO
-            is SwapTokenModel.UserToken -> token.details.totalInUsd
-        } ?: return null
-
-        val usd = tokenAmount.multiply(ratio).formatFiat()
+    private fun fiatAmount(fiatAmount: BigDecimal): TextViewCellModel.Raw {
+        val usd = fiatAmount.formatFiat()
         return TextViewCellModel.Raw(TextContainer(R.string.swap_main_fiat_value, usd))
     }
 
