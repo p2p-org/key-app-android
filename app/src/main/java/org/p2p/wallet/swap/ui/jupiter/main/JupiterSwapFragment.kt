@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import java.util.UUID
 import org.p2p.core.common.bind
 import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.appleBottomInsets
@@ -28,7 +29,6 @@ import org.p2p.wallet.swap.ui.jupiter.main.widget.SwapWidgetModel
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
-import java.util.*
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 
