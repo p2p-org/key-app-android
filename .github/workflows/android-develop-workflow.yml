@@ -9,8 +9,7 @@ jobs:
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
-    # Triggering this workflow only when PR is merged. Merge commit has the length of 2
-    if: size(github.event.head_commit.parents) == 2
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v3
         with:
