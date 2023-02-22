@@ -19,8 +19,8 @@ class CommonSwapTokenSelector(
         val userTokensJob = async { homeLocalRepository.getUserTokens() }
         val jupiterTokens = jupiterTokensJob.await()
         val userTokens = userTokensJob.await()
-        val haveUSDC = userTokens.any { it.isUSDC }
-        val haveSOL = userTokens.any { it.isSOL }
+        val userHasUsdc = userTokens.any { it.isUSDC }
+        val userHasSol = userTokens.any { it.isSOL }
         val jupiterMints = jupiterTokens.map { it.tokenMint.base58Value }
         val userTokensContainsJupiter = userTokens.filter {
             jupiterMints.contains(it.mintAddress)
@@ -31,23 +31,35 @@ class CommonSwapTokenSelector(
         val tokenB: SwapTokenModel
 
         when {
-            haveUSDC -> {
+            userHasUsdc -> {
                 tokenA = SwapTokenModel.UserToken(userTokens.first { it.isUSDC })
-                tokenB = jupiterSwapGetTokenB(jupiterTokens, userTokens, true)
+                tokenB = getTokenB(
+                    jupiterTokens = jupiterTokens,
+                    userTokens = userTokens,
+                    findSolOrUsdc = true
+                )
             }
-            haveSOL -> {
+            userHasSol -> {
                 tokenA = SwapTokenModel.UserToken(userTokens.first { it.isSOL })
-                tokenB = jupiterSwapGetTokenB(jupiterTokens, userTokens, false)
+                tokenB = getTokenB(
+                    jupiterTokens = jupiterTokens,
+                    userTokens = userTokens,
+                    findSolOrUsdc = false
+                )
             }
             userTokenWithMaxAmount != null -> {
                 tokenA = SwapTokenModel.UserToken(userTokenWithMaxAmount)
-                tokenB = jupiterSwapGetTokenB(jupiterTokens, userTokens, false)
+                tokenB = getTokenB(
+                    jupiterTokens = jupiterTokens,
+                    userTokens = userTokens,
+                    findSolOrUsdc = false
+                )
             }
             // not have any tokens
             else -> {
-                val jupiterUSDC = jupiterTokens.first { it.tokenSymbol == Constants.USDC_SYMBOL }
+                val jupiterUsdc = jupiterTokens.first { it.tokenSymbol == Constants.USDC_SYMBOL }
                 val jupiterSol = jupiterTokens.first { it.tokenMint.base58Value == Constants.WRAPPED_SOL_MINT }
-                tokenA = SwapTokenModel.JupiterToken(jupiterUSDC)
+                tokenA = SwapTokenModel.JupiterToken(jupiterUsdc)
                 tokenB = SwapTokenModel.JupiterToken(jupiterSol)
             }
         }

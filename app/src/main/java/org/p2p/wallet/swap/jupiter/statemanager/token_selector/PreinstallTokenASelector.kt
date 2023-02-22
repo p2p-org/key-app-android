@@ -6,7 +6,6 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
-import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
 
 class PreinstallTokenASelector(
@@ -23,17 +22,11 @@ class PreinstallTokenASelector(
         val userTokens = userTokensJob.await()
 
         val tokenA: SwapTokenModel = SwapTokenModel.UserToken(preinstallTokenA)
-        val tokenB: SwapTokenModel = getTokenB(jupiterTokens, userTokens)
+        val tokenB: SwapTokenModel = getTokenB(
+            jupiterTokens = jupiterTokens,
+            userTokens = userTokens,
+            findSolOrUsdc = !preinstallTokenA.isSOL
+        )
         tokenA to tokenB
     }
-
-    private fun getTokenB(
-        jupiterTokens: List<JupiterSwapToken>,
-        userTokens: List<Token.Active>
-    ): SwapTokenModel =
-        if (preinstallTokenA.isSOL) {
-            jupiterSwapGetTokenB(jupiterTokens, userTokens, false)
-        } else {
-            jupiterSwapGetTokenB(jupiterTokens, userTokens, true)
-        }
 }

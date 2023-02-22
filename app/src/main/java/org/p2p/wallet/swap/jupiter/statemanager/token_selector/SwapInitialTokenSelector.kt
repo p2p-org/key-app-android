@@ -8,15 +8,13 @@ import org.p2p.wallet.swap.jupiter.repository.model.JupiterSwapToken
 interface SwapInitialTokenSelector {
 
     suspend fun getTokenPair(): Pair<SwapTokenModel, SwapTokenModel>
-}
 
-fun jupiterSwapGetTokenB(
-    jupiterTokens: List<JupiterSwapToken>,
-    userTokens: List<Token.Active>,
-    findSolOrUSDC: Boolean,
-): SwapTokenModel =
-    when {
-        findSolOrUSDC -> {
+    fun getTokenB(
+        jupiterTokens: List<JupiterSwapToken>,
+        userTokens: List<Token.Active>,
+        findSolOrUsdc: Boolean,
+    ): SwapTokenModel =
+        if (findSolOrUsdc) {
             val userSol = userTokens.firstOrNull { it.isSOL }
             val jupiterSol = jupiterTokens.first { it.tokenMint.base58Value == Constants.WRAPPED_SOL_MINT }
             if (userSol != null) {
@@ -24,14 +22,13 @@ fun jupiterSwapGetTokenB(
             } else {
                 SwapTokenModel.JupiterToken(jupiterSol)
             }
-        }
-        else -> {
-            val userUSDC = userTokens.firstOrNull { it.isUSDC }
-            val jupiterUSDC = jupiterTokens.first { it.tokenSymbol == Constants.USDC_SYMBOL }
-            if (userUSDC != null) {
-                SwapTokenModel.UserToken(userUSDC)
+        } else {
+            val userUsdc = userTokens.firstOrNull { it.isUSDC }
+            val jupiterUsdc = jupiterTokens.first { it.tokenSymbol == Constants.USDC_SYMBOL }
+            if (userUsdc != null) {
+                SwapTokenModel.UserToken(userUsdc)
             } else {
-                SwapTokenModel.JupiterToken(jupiterUSDC)
+                SwapTokenModel.JupiterToken(jupiterUsdc)
             }
         }
-    }
+}
