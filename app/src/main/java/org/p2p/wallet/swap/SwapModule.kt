@@ -164,6 +164,7 @@ object SwapModule : InjectionModule {
                 PreinstallTokenASelector(
                     get(),
                     get(),
+                    get(),
                     token,
                 )
             }

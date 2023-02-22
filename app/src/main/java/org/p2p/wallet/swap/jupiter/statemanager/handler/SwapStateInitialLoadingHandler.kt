@@ -6,11 +6,11 @@ import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager.Companion.DEFAU
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.wallet.infrastructure.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.swap.jupiter.statemanager.token_selector.InitialTokenSelector
+import org.p2p.wallet.swap.jupiter.statemanager.token_selector.SwapInitialTokenSelector
 
 class SwapStateInitialLoadingHandler(
     private val dispatchers: CoroutineDispatchers,
-    private val initialTokenSelector: InitialTokenSelector,
+    private val initialTokenSelector: SwapInitialTokenSelector,
 ) : SwapStateHandler {
 
     override fun canHandle(state: SwapState): Boolean = state is SwapState.InitialLoading
