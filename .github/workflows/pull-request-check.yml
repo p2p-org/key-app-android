@@ -7,8 +7,11 @@ on:
 
 jobs:
   test:
-    name: "Testing last commit changelog"
-    uses: ./.github/actions/setup-changelog
+    name: "Run ktlint check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Testing last commit changelog"
+        uses: ./.github/actions/setup-changelog
   android-lint:
     name: "Run ktlint check"
     runs-on: ubuntu-latest
