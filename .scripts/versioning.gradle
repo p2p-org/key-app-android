@@ -29,3 +29,35 @@ task setVersionBuild {
         appVersionsFile.write(newContent)
     }
 }
+
+// example './gradlew setLastCommitHash -Phash=somehash'
+task setLastCommitHash {
+    def appVersionsFile = file("${rootDir}/buildSrc/src/main/java/LastCommit.kt")
+    def versionCodeProperty = "const val COMMIT_HASH ="
+    def hash = project.hasProperty('hash') ? project.property('hash') : null
+
+    if (hash == null) {
+        doLast {
+            println("Error: hash property not defined.")
+            throw new StopExecutionException()
+        }
+        return
+    }
+
+    doLast {
+        def newContent = appVersionsFile.readLines()
+                .collect { line ->
+                    if (line.contains(versionCodeProperty)) {
+                        "    $versionCodeProperty \"$hash\""
+                    } else {
+                        line
+                    }
+                }
+                .join("\n")
+
+        // Append a newline character to the last line
+        newContent += '\n'
+
+        appVersionsFile.write(newContent)
+    }
+}
