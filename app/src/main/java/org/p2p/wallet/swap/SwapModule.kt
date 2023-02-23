@@ -65,6 +65,7 @@ import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensToCellItemsMapper
 import org.p2p.wallet.swap.ui.orca.OrcaSwapContract
 import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
+import org.p2p.wallet.swap.ui.SwapFragmentFactory
 
 object SwapModule : InjectionModule {
 
@@ -79,6 +80,8 @@ object SwapModule : InjectionModule {
                 interceptor = null
             ).create(OrcaApi::class.java)
         }
+
+        factoryOf(::SwapFragmentFactory)
 
         single {
             SerumSwapInteractor(

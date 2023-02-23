@@ -67,7 +67,7 @@ class OrcaSwapFragment :
             OrcaSwapFragment()
                 .withArgs(EXTRA_OPENED_FROM to source)
 
-        fun create(token: Token, source: OrcaSwapOpenedFrom = OrcaSwapOpenedFrom.OTHER): OrcaSwapFragment =
+        fun create(token: Token.Active, source: OrcaSwapOpenedFrom = OrcaSwapOpenedFrom.OTHER): OrcaSwapFragment =
             OrcaSwapFragment()
                 .withArgs(
                     EXTRA_TOKEN to token,
