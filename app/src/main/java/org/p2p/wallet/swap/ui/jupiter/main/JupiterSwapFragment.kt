@@ -54,14 +54,24 @@ class JupiterSwapFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-            swapWidgetFrom.onAmountChanged = { presenter.onTokenAmountChange(it) }
+            setupWidgetsActionCallbacks()
             imageViewSwapTokens.background = shapeDrawable(shapeCircle())
             imageViewSwapTokens.backgroundTintList = view.context.getColorStateList(R.color.button_rain)
             imageViewSwapTokens.rippleForeground(shapeCircle())
             imageViewSwapTokens.setOnClickListener {
                 presenter.switchTokens()
             }
+
+            sliderSend.onSlideCompleteListener = { sliderSend.showCompleteAnimation() }
+            sliderSend.onSlideCollapseCompleted = { presenter.onSwapTokenClick() }
         }
+    }
+
+    private fun setupWidgetsActionCallbacks() = with(binding) {
+        swapWidgetFrom.onAmountChanged = { presenter.onTokenAmountChange(it) }
+        swapWidgetFrom.onAllAmountClick = { presenter.onAllAmountClick() }
+        swapWidgetFrom.onChangeTokenClick = { presenter.onChangeTokenAClick() }
+        swapWidgetTo.onChangeTokenClick = { presenter.onChangeTokenBClick() }
     }
 
     override fun applyWindowInsets(rootView: View) {
@@ -103,6 +113,14 @@ class JupiterSwapFragment :
 
     override fun setRatioState(state: TextViewCellModel) {
         binding.textViewRate.bind(state)
+    }
+
+    override fun openChangeTokenAScreen() {
+        TODO("Not yet implemented")
+    }
+
+    override fun openChangeTokenBScreen() {
+        TODO("Not yet implemented")
     }
 
     private fun setYellowAlert() {

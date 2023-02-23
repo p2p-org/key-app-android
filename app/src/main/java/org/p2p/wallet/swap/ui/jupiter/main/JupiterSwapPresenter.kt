@@ -28,6 +28,7 @@ class JupiterSwapPresenter(
     private val dispatchers: CoroutineDispatchers,
 ) : BasePresenter<JupiterSwapContract.View>(), JupiterSwapContract.Presenter {
 
+    private var featureState: SwapState? = null
     private var rateTokenAJob: Job? = null
     private var rateTokenBJob: Job? = null
     private var debounceInputJob: Job? = null
@@ -60,6 +61,59 @@ class JupiterSwapPresenter(
         stateManager.onNewAction(SwapStateAction.SwapSuccess)
     }
 
+    override fun onAllAmountClick() {
+        val allTokenAAmount = when (val featureState = featureState) {
+            SwapState.InitialLoading,
+            is SwapState.SwapLoaded,
+            is SwapState.TokenAZero,
+            is SwapState.LoadingRoutes,
+            is SwapState.LoadingTransaction -> getTokenAAmount(featureState)
+            is SwapState.SwapException -> getTokenAAmount(featureState.previousFeatureState)
+            null -> null
+        }
+        if (allTokenAAmount != null) {
+            stateManager.onNewAction(SwapStateAction.TokenAAmountChanged(allTokenAAmount))
+        }
+    }
+
+    private fun getTokenAAmount(state: SwapState): BigDecimal? {
+        val tokenA = when (state) {
+            is SwapState.LoadingRoutes -> state.tokenA
+            is SwapState.LoadingTransaction -> state.tokenA
+            is SwapState.SwapLoaded -> state.tokenA
+            is SwapState.TokenAZero -> state.tokenA
+            SwapState.InitialLoading,
+            is SwapState.SwapException.FeatureExceptionWrapper,
+            is SwapState.SwapException.OtherException -> null
+        }
+        return (tokenA as? SwapTokenModel.UserToken)?.details?.total
+    }
+
+    override fun onChangeTokenAClick() {
+        if (isChangeTokenScreenAvailable(featureState)) {
+            view?.openChangeTokenAScreen()
+        }
+    }
+
+    override fun onChangeTokenBClick() {
+        if (isChangeTokenScreenAvailable(featureState)) {
+            view?.openChangeTokenBScreen()
+        }
+    }
+
+    private fun isChangeTokenScreenAvailable(featureState: SwapState?): Boolean {
+        return when (featureState) {
+            null,
+            SwapState.InitialLoading -> false
+            is SwapState.LoadingRoutes,
+            is SwapState.LoadingTransaction,
+            is SwapState.SwapLoaded,
+            is SwapState.TokenAZero -> true
+            is SwapState.SwapException ->
+                isChangeTokenScreenAvailable(featureState.previousFeatureState)
+        }
+    }
+
     override fun finishFeature(stateManagerHolderKey: String) {
         managerHolder.clear(stateManagerHolderKey)
     }
@@ -78,6 +132,7 @@ class JupiterSwapPresenter(
                 // todo
             }
         }
+        featureState = state
     }
 
     private fun handleSwapLoaded(state: SwapState.SwapLoaded) {
