@@ -4,26 +4,27 @@ import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.swap.jupiter.domain.model.SwapTokenModel
 import org.p2p.wallet.swap.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.swap.jupiter.repository.tokens.JupiterSwapTokensRepository
-import org.p2p.wallet.swap.jupiter.statemanager.SwapState
-import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.utils.Base58String
 
 class SwapTokensInteractor(
     private val homeLocalRepository: HomeLocalRepository,
     private val swapTokensRepository: JupiterSwapTokensRepository,
     private val swapRoutesRepository: JupiterSwapRoutesRepository,
-    private val swapStateManager: SwapStateManager
+//    private val swapStateManager: SwapStateManager
 ) {
     suspend fun getCurrentTokenA(): SwapTokenModel {
-        return swapStateManager.getStateValue { state ->
-            when (state) {
-                is SwapState.TokenAZero -> state.tokenA
-                is SwapState.LoadingRoutes -> state.tokenA
-                is SwapState.LoadingTransaction -> state.tokenA
-                is SwapState.SwapLoaded -> state.tokenA
-                else -> error("Illegal swap state, can't find selected token A for the list: $state")
-            }
-        }
+        return SwapTokenModel.UserToken(
+            homeLocalRepository.getUserTokens().last()
+        )
+//        return swapStateManager.getStateValue { state ->
+//            when (state) {
+//                is SwapState.TokenAZero -> state.tokenA
+//                is SwapState.LoadingRoutes -> state.tokenA
+//                is SwapState.LoadingTransaction -> state.tokenA
+//                is SwapState.SwapLoaded -> state.tokenA
+//                else -> error("Illegal swap state, can't find selected token A for the list: $state")
+//            }
+//        }
     }
 
     suspend fun getAllTokensA(): List<SwapTokenModel> {
