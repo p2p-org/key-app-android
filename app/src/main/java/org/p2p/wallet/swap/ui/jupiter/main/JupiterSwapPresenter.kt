@@ -109,9 +109,7 @@ class JupiterSwapPresenter(
             is SwapState.LoadingTransaction,
             is SwapState.SwapLoaded,
             is SwapState.TokenAZero -> true
-            is SwapState.SwapException.FeatureExceptionWrapper ->
-                isChangeTokenScreenAvailable(featureState.previousFeatureState)
-            is SwapState.SwapException.OtherException ->
+            is SwapState.SwapException ->
                 isChangeTokenScreenAvailable(featureState.previousFeatureState)
         }
     }
