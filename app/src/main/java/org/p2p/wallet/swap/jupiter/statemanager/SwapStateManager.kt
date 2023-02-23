@@ -45,6 +45,9 @@ class SwapStateManager(
     fun onNewAction(action: SwapStateAction) {
         refreshJob?.cancel()
         activeActionHandleJob?.cancel()
+        if (action is SwapStateAction.CancelJobs){
+            return
+        }
         activeActionHandleJob = launch {
             try {
                 handleNewAction(action)
@@ -83,7 +86,7 @@ class SwapStateManager(
                     delay(DELAY_IN_MILLIS)
                     handleNewAction(SwapStateAction.RefreshRoutes)
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Timber.e(e)
                 // todo ignore?
             }
