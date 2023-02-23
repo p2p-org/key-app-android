@@ -61,9 +61,6 @@ import org.p2p.wallet.swap.ui.orca.OrcaSwapPresenter
 import retrofit2.Retrofit
 import retrofit2.create
 import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
-import retrofit2.Retrofit
-import retrofit2.create
-import org.p2p.wallet.swap.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.swap.ui.jupiter.main.SwapTokenRateLoader
 
 object SwapModule : InjectionModule {
