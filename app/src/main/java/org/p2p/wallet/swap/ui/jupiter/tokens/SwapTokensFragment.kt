@@ -16,7 +16,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapTokensBinding
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensAdapter
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensChangeToken
+import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensListMode
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.unsafeLazy
@@ -31,14 +31,14 @@ class SwapTokensFragment :
     SearchView.OnQueryTextListener {
 
     companion object {
-        fun create(tokenToChange: SwapTokensChangeToken): SwapTokensFragment =
+        fun create(tokenToChange: SwapTokensListMode): SwapTokensFragment =
             SwapTokensFragment()
                 .withArgs(ARG_CHANGE_TOKEN to tokenToChange)
     }
 
     private val binding: FragmentJupiterSwapTokensBinding by viewBinding()
 
-    private val tokenToChange: SwapTokensChangeToken by args(ARG_CHANGE_TOKEN)
+    private val tokenToChange: SwapTokensListMode by args(ARG_CHANGE_TOKEN)
 
     override val presenter: SwapTokensContract.Presenter by inject { parametersOf(tokenToChange) }
 

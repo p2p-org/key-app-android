@@ -53,40 +53,57 @@ class SwapTokensToCellItemsMapper {
         this += chosenTokenGroup(chosenToken)
 
         this += userTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.UserToken>())
-        this += allOtherTokens(swapTokens.filterIsInstance<SwapTokenModel.JupiterToken>())
+        this += allOtherTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.JupiterToken>())
     }
 
     private fun chosenTokenGroup(
         chosenToken: SwapTokenModel
     ): List<AnyCellItem> = buildList {
-        val sectionHeaderCell = createSectionHeader(R.string.swap_tokens_section_chosen_token)
-        val chosenTokenCell = when (chosenToken) {
+        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_chosen_token)
+        val chosenToken = when (chosenToken) {
             is SwapTokenModel.JupiterToken -> chosenToken.toTokenFinanceCellModel()
             is SwapTokenModel.UserToken -> chosenToken.toTokenFinanceCellModel()
         }
 
-        this += sectionHeaderCell
-        this += chosenTokenCell
+        this += sectionHeader
+        this += chosenToken
     }
 
     private fun userTokensGroup(userTokens: List<SwapTokenModel.UserToken>): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
-        val userTokenItems = userTokens
+        val userTokens = userTokens
             .sortedWith(userTokensSorter)
             .map { it.toTokenFinanceCellModel() }
 
         this += sectionHeader
-        this += userTokenItems
+        this += userTokens
     }
 
-    private fun allOtherTokens(otherTokens: List<SwapTokenModel.JupiterToken>): List<AnyCellItem> = buildList {
+    private fun allOtherTokensGroup(otherTokens: List<SwapTokenModel.JupiterToken>): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
-        val otherTokenItems = otherTokens
+        val otherTokens = otherTokens
             .sortedWith(otherTokensSorter)
             .map { it.toTokenFinanceCellModel() }
 
         this += sectionHeader
-        this += otherTokenItems
+        this += otherTokens
+    }
+
+    fun toSearchResultCellModels(
+        foundSwapTokens: List<SwapTokenModel>
+    ): List<AnyCellItem> = foundTokensGroup(foundSwapTokens)
+
+    private fun foundTokensGroup(foundSwapTokens: List<SwapTokenModel>): List<AnyCellItem> = buildList {
+        val sectionHeader = createSectionHeader(R.string.swap_tokens_section_search_result)
+        val searchResultTokens = foundSwapTokens.map {
+            when (it) {
+                is SwapTokenModel.JupiterToken -> it.toTokenFinanceCellModel()
+                is SwapTokenModel.UserToken -> it.toTokenFinanceCellModel()
+            }
+        }
+
+        this += sectionHeader
+        this += searchResultTokens
     }
 
     private fun createSectionHeader(@StringRes stringRes: Int): SectionHeaderCellModel {
