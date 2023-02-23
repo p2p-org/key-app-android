@@ -163,8 +163,7 @@ class MainFragment :
                 is NewSettingsFragment -> tabCachedFragments.put(R.id.settingsItem, fragment)
                 is SolendEarnFragment -> tabCachedFragments.put(R.id.earnItem, fragment)
                 is OrcaSwapFragment,
-                is JupiterSwapFragment
-                -> tabCachedFragments.put(R.id.swapItem, fragment)
+                is JupiterSwapFragment -> tabCachedFragments.put(R.id.swapItem, fragment)
             }
         }
         binding.bottomNavigation.setSelectedItemId(R.id.homeItem)
