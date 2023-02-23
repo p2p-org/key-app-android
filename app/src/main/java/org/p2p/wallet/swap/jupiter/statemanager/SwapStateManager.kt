@@ -12,6 +12,8 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 private const val DELAY_IN_MILLIS = 20_000L
@@ -35,6 +37,10 @@ class SwapStateManager(
     }
 
     fun observe(): StateFlow<SwapState> = state
+
+    suspend fun <T> getStateValue(getter: (state: SwapState) -> T): T {
+        return getter.invoke(state.first())
+    }
 
     fun onNewAction(action: SwapStateAction) {
         refreshJob?.cancel()

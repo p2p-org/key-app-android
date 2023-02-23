@@ -1,6 +1,10 @@
 package org.p2p.core.token
 
 import android.os.Parcelable
+import java.math.BigDecimal
+import java.math.BigInteger
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.p2p.core.R
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
@@ -10,15 +14,12 @@ import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toPowerValue
-import java.math.BigDecimal
-import java.math.BigInteger
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
 sealed class Token constructor(
     open val publicKey: String?,
@@ -78,20 +79,15 @@ sealed class Token constructor(
                 isZero &&
                 visibility == TokenVisibility.DEFAULT
 
-        fun getFormattedUsdTotal(): String? = totalInUsd?.asUsd()
+        fun getFormattedUsdTotal(includeSymbol: Boolean = true): String? {
+            return if(includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
+        }
 
         fun getFormattedTotal(includeSymbol: Boolean = false): String =
             if (includeSymbol) {
-                "${total.formatToken()} $tokenSymbol"
+                "${total.formatToken(decimals)} $tokenSymbol"
             } else {
-                total.formatToken()
-            }
-
-        fun getTotal(includeSymbol: Boolean = false): String =
-            if (includeSymbol) {
-                "${total.formatToken()} $tokenSymbol"
-            } else {
-                total.formatToken()
+                total.formatToken(decimals)
             }
 
         fun getVisibilityIcon(isZerosHidden: Boolean): Int =

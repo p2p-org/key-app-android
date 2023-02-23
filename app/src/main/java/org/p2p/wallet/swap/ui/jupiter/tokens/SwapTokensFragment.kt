@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.attachAdapter
@@ -15,10 +17,9 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapTokensBinding
 import org.p2p.wallet.swap.ui.jupiter.tokens.adapter.SwapTokensAdapter
 import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensChangeToken
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensMapper
-import org.p2p.wallet.swap.ui.jupiter.tokens.presenter.SwapTokensPresenter
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.unsafeLazy
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -39,10 +40,13 @@ class SwapTokensFragment :
 
     private val tokenToChange: SwapTokensChangeToken by args(ARG_CHANGE_TOKEN)
 
-    override val presenter: SwapTokensContract.Presenter
-        get() = SwapTokensPresenter(tokenToChange, SwapTokensMapper())
+    override val presenter: SwapTokensContract.Presenter by inject { parametersOf(tokenToChange) }
 
-    private val adapter = SwapTokensAdapter()
+    private val adapter: SwapTokensAdapter by unsafeLazy {
+        SwapTokensAdapter(
+            onTokenClicked = presenter::onTokenClicked
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
