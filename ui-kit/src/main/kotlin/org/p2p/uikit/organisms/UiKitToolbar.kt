@@ -34,6 +34,7 @@ class UiKitToolbar @JvmOverloads constructor(
     ) {
         inflateMenu(menuRes)
 
+
         val search = menu.findItem(R.id.menuItemSearch)
         searchView = search.actionView as SearchView
         searchView!!.apply {

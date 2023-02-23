@@ -1,12 +1,12 @@
 package org.p2p.wallet.home.ui.main.adapter
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
@@ -82,7 +82,7 @@ class TokenViewHolder(
     fun bindBalance(item: HomeElementItem.Shown) {
         renderItem = item
         binding.valueTextView withTextOrGone token.getFormattedUsdTotal()
-        binding.totalTextView.text = token.getTotal(includeSymbol = true)
+        binding.totalTextView.text = token.getFormattedTotal(includeSymbol = true)
     }
 
     private fun loadImage(imageView: ImageView, url: String) {

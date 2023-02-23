@@ -5,11 +5,10 @@ import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
+import org.p2p.core.common.bind
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetSectionHeaderBinding
 import org.p2p.uikit.utils.inflateViewBinding
-import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.uikit.utils.text.bind
 
 internal class UiKitSectionHeader @JvmOverloads constructor(
     context: Context,
@@ -64,7 +63,7 @@ internal class UiKitSectionHeader @JvmOverloads constructor(
     }
 
     internal fun bind(model: SectionHeaderCellModel) {
-        binding.titleTextView.bind(TextViewCellModel.Raw(model.sectionTitle))
+        binding.titleTextView.bind(model.sectionTitle)
         binding.chevronImageView.isVisible = model.isShevronVisible
     }
 }
